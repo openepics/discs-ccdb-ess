@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition 
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    template="/template/ConfigManagerTemplate.xhtml"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://java.sun.com/jsf/core"   
+    xmlns:h="http://java.sun.com/jsf/html">              
+
+    <ui:define name="content">      
+        <p:growl id="messages" showDetail="true"/>
+        
+        <p:layout id="manage-layout" style="min-width: 100%;min-height: 900px;" >
+            <p:layoutUnit id="searchPanel" position="west" resizable="true" size="" 
+                          minSize="200" maxSize="300" header="Search Component Types" collapsible="true">                
+                <ui:include  src="search.xhtml" />	
+            </p:layoutUnit>
+            
+            <p:layoutUnit id="managePanel" position="center" resizable="true" size="" minSize="200" maxSize="300" 
+                          header="Manage Component Types" collapsible="true" >
+                <p:panelGrid id="detailsPanel" columns="2" styleClass="noBorders" >
+                    <ui:include  src="property.xhtml" />
+                    <ui:include  src="artifact.xhtml" />
+                    <ui:include  src="assembly.xhtml" />
+                </p:panelGrid>	
+            </p:layoutUnit>
+        </p:layout>
+               
+        <p:dialog modal="true" widgetVar="statusDialog" header="Status" draggable="false" closable="false" resizable="false">
+            <p:graphicImage value="../..//resources/images/ajax-loader.gif" />
+        </p:dialog>
+        
+        <script type="text/javascript">
+            function start() {
+                PF('statusDialog').show();
+            }
+
+            function stop() {
+                PF('statusDialog').hide();
+            }
+        </script>  
+    </ui:define>
+</ui:composition>

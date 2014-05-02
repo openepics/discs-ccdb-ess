@@ -1,0 +1,189 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package org.openepics.discs.conf.ent;
+
+import java.io.Serializable;
+import java.util.Date;
+import java.util.List;
+import javax.persistence.Basic;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+
+/**
+ *
+ * @author vuppala
+ */
+@Entity
+@Table(name = "slot_relation")
+@XmlRootElement
+@NamedQueries({
+    @NamedQuery(name = "SlotRelation.findAll", query = "SELECT s FROM SlotRelation s"),
+    @NamedQuery(name = "SlotRelation.findBySlotRelationId", query = "SELECT s FROM SlotRelation s WHERE s.slotRelationId = :slotRelationId"),
+    @NamedQuery(name = "SlotRelation.findByName", query = "SELECT s FROM SlotRelation s WHERE s.name = :name"),
+    @NamedQuery(name = "SlotRelation.findByIname", query = "SELECT s FROM SlotRelation s WHERE s.iname = :iname"),
+    @NamedQuery(name = "SlotRelation.findByDescription", query = "SELECT s FROM SlotRelation s WHERE s.description = :description"),
+    @NamedQuery(name = "SlotRelation.findByModifiedAt", query = "SELECT s FROM SlotRelation s WHERE s.modifiedAt = :modifiedAt"),
+    @NamedQuery(name = "SlotRelation.findByModifiedBy", query = "SELECT s FROM SlotRelation s WHERE s.modifiedBy = :modifiedBy"),
+    @NamedQuery(name = "SlotRelation.findByVersion", query = "SELECT s FROM SlotRelation s WHERE s.version = :version")})
+public class SlotRelation implements Serializable {
+    private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "slot_relation_id")
+    private Integer slotRelationId;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 32)
+    @Column(name = "name")
+    private String name;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 32)
+    @Column(name = "iname")
+    private String iname;
+    @Size(max = 255)
+    @Column(name = "description")
+    private String description;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "modified_at")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date modifiedAt;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 64)
+    @Column(name = "modified_by")
+    private String modifiedBy;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "version")
+    private int version;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "slotRelation1")
+    private List<SlotPair> slotPairList;
+
+    public SlotRelation() {
+    }
+
+    public SlotRelation(Integer slotRelationId) {
+        this.slotRelationId = slotRelationId;
+    }
+
+    public SlotRelation(Integer slotRelationId, String name, String iname, Date modifiedAt, String modifiedBy, int version) {
+        this.slotRelationId = slotRelationId;
+        this.name = name;
+        this.iname = iname;
+        this.modifiedAt = modifiedAt;
+        this.modifiedBy = modifiedBy;
+        this.version = version;
+    }
+
+    public Integer getSlotRelationId() {
+        return slotRelationId;
+    }
+
+    public void setSlotRelationId(Integer slotRelationId) {
+        this.slotRelationId = slotRelationId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getIname() {
+        return iname;
+    }
+
+    public void setIname(String iname) {
+        this.iname = iname;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Date getModifiedAt() {
+        return modifiedAt;
+    }
+
+    public void setModifiedAt(Date modifiedAt) {
+        this.modifiedAt = modifiedAt;
+    }
+
+    public String getModifiedBy() {
+        return modifiedBy;
+    }
+
+    public void setModifiedBy(String modifiedBy) {
+        this.modifiedBy = modifiedBy;
+    }
+
+    public int getVersion() {
+        return version;
+    }
+
+    public void setVersion(int version) {
+        this.version = version;
+    }
+
+    @XmlTransient
+    public List<SlotPair> getSlotPairList() {
+        return slotPairList;
+    }
+
+    public void setSlotPairList(List<SlotPair> slotPairList) {
+        this.slotPairList = slotPairList;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (slotRelationId != null ? slotRelationId.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof SlotRelation)) {
+            return false;
+        }
+        SlotRelation other = (SlotRelation) object;
+        if ((this.slotRelationId == null && other.slotRelationId != null) || (this.slotRelationId != null && !this.slotRelationId.equals(other.slotRelationId))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "org.openepics.discs.conf.ent.SlotRelation[ slotRelationId=" + slotRelationId + " ]";
+    }
+    
+}

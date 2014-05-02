@@ -1,0 +1,125 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition 
+    xmlns:ui="http://java.sun.com/jsf/facelets"   
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://java.sun.com/jsf/core"   
+    xmlns:h="http://java.sun.com/jsf/html">              
+
+    <h:form id="searchForm"  prependId="false">
+        <p:contextMenu for="searchTable">  
+            <p:menuitem value="Add" icon="ui-icon-plus"  update=":compTypeForm :messages" 
+                        actionListener="#{componentTypeMananger.onCompTypeAdd}"
+                        process="@this"  onclick="PF('editDialog').show()"/>  
+            <p:menuitem value="Edit" icon="ui-icon-pencil" update=":compTypeForm :messages" 
+                        actionListener="#{componentTypeMananger.onCompTypeEdit}"
+                        process="@this searchTable" oncomplete="PF('editDialog').show()"/>  
+            <p:menuitem value="Delete" icon="ui-icon-trash"  
+                        onclick="PF('deleteConfirm').show()"/>  
+        </p:contextMenu>  
+
+        <ui:remove> -------------------------- Search  ------------------- </ui:remove>    
+
+        <p:dataTable id="searchTable" var="ctype" value="#{componentTypeMananger.objects}" 
+                     scrollRows="25" scrollable="true" liveScroll="true"   scrollHeight="200"                  
+                     selectionMode="single" selection="#{componentTypeMananger.selectedObject}" 
+                     emptyMessage="No records found!" 
+                     rowKey="#{ctype.componentTypeId}}" >
+
+            <p:ajax event="rowSelect" listener="#{componentTypeMananger.onCompTypeSelect}" update=":propertyForm :messages" />
+
+            <p:column id="id" headerText="ID" sortBy="#{ctype.componentTypeId}" filterBy="#{ctype.componentTypeId}">
+                <h:outputText value="#{ctype.componentTypeId}"/>
+            </p:column>
+            <p:column id="desc" headerText="Description" filterBy="#{ctype.description}" filterMatchMode="contains">
+                <h:outputText value="#{ctype.description}"/>
+            </p:column>
+            <p:column id="units" headerText="Super Type" sortBy="#{ctype.superComponentType.componentTypeId}" filterBy="#{ctype.superComponentType.componentTypeId}" filterMatchMode="contains">
+                <h:outputText value="#{ctype.superComponentType.componentTypeId}"/>
+            </p:column>                  
+            <p:column id="moddate" headerText="Date Modified" rendered="false" >
+                <h:outputText value="#{ctype.modifiedAt}">
+                    <f:convertDateTime pattern="#{msgs.dateFormat}" />
+                </h:outputText>
+            </p:column>
+            <p:column id="modby" headerText="Modified By"  rendered="false">
+                <h:outputText value="#{ctype.modifiedBy}" />                      
+            </p:column>
+            
+            <f:facet name="footer">
+                <p:commandButton id="addBtn" value="Add" icon="ui-icon-plus" actionListener="#{componentTypeMananger.onCompTypeAdd}"
+                                 process="@this" update="@form :messages"  oncomplete="PF('editDialog').show()" />
+            </f:facet>
+        </p:dataTable>
+
+    </h:form>
+
+    <p:dialog widgetVar="editDialog"  appendTo="@(body)">
+        <h:form id="compTypeForm" prependId="false">
+            <p:panelGrid id="ctypeEditPanel" >
+                <p:row>
+                    <p:column><h:outputLabel value="Component Type ID:" /></p:column>
+                    <p:column><h:inputText id="icode" value="#{componentTypeMananger.inputObject.componentTypeId}" 
+                                           required="true"  /> 
+                    </p:column>
+                </p:row>
+                <p:row>                       
+                    <p:column><h:outputLabel value="Description:" /></p:column>
+                    <p:column><p:inputTextarea id="desc" value="#{componentTypeMananger.inputObject.description}" 
+                                               required="true"   rows="5" cols="50"  /> </p:column>
+                </p:row>
+                <p:row>
+                    <p:column><h:outputLabel value="Super Component Type" /></p:column>
+                    <p:column><p:selectOneMenu id="parent" value="#{componentTypeMananger.inputObject.superComponentType}"   
+                                               var="ct"  
+                                               converter="#{componentTypeConverter}" rendered="true"
+                                               filter="true" filterMatchMode="startsWith">  
+                            <f:selectItem itemLabel="Select One"  itemValue="" />
+                            <f:selectItems value="#{componentTypeMananger.objects}" var="ctype" itemLabel="#{ctype.componentTypeId}" itemValue="#{ctype}"/>
+                            <p:column>  
+                                #{ct.componentTypeId}
+                            </p:column>                                                
+                            <p:column >  
+                                <h:outputText value="#{ct.description}" />  
+                            </p:column> 
+                        </p:selectOneMenu>
+                    </p:column>
+                </p:row>
+            </p:panelGrid>
+            <p:toolbar>
+                <p:toolbarGroup  align="right" >                      
+                    <p:commandButton value="Save" icon="ui-icon-disk" 
+                                     update=":searchForm:searchTable :messages" 
+                                     process="@this :compTypeForm" actionListener="#{componentTypeMananger.onCompTypeSave}"
+                                     oncomplete="PF('editDialog').hide()"
+                                     /> 
+                    <p:separator /> 
+                    <p:commandButton value="Cancel" icon="ui-icon-close"                                         
+                                     process="@this"  onclick="PF('editDialog').hide()"
+                                     />
+                </p:toolbarGroup>
+            </p:toolbar> 
+        </h:form>  
+    </p:dialog>
+
+    <ui:remove> -------------------------- Delete Component Type Confirm ------------------- </ui:remove>
+    <p:dialog widgetVar="deleteConfirm">  
+        <f:facet name="header">  
+            <h:outputText value="Delete Property"/> 
+        </f:facet>
+        <h:form id="compTypeDelForm" prependId="false">
+            <h:outputText value="Do you really want to delete this record?" />
+
+            <p:separator /> 
+            <p:commandButton value="Yes" style="float: left"  
+                             icon="ui-icon-check"
+                             process="@form" update="@all"
+                             oncomplete="PF('deleteConfirm').hide()"                                                                
+                             actionListener="#{componentTypeMananger.onCompTypeDelete}"/> 
+            <p:commandButton  type="cancel" value="No" style="float: right"
+                              icon="ui-icon-close"
+                              update="@none" process="@this"                                  
+                              onclick="PF('deleteConfirm').hide()"  />  
+        </h:form>
+    </p:dialog>
+</ui:composition>

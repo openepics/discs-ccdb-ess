@@ -1,0 +1,54 @@
+
+
+Copyright (c) Facility for Rare Isotope Beam (FRIB)
+
+Release Notes: Proteus: Configuration Application
+
+Overview: Proteus is a tool for managing the configuration information of an Accelerator Facility. 
+
+Proteus: Configuration Version 0.95 Date: 2013-May-17
+
+ Summary of Changes from Previous Version:
+   - Moved entities to separate project
+   - Data loader program
+   - Fixed defects
+   - Modified schema to handle concurrency control
+
+ Known Defects:
+  - If ChannelFinder is disabled, signal information is not retrieved from configuration's tables
+  - REST API retrieves signal information from configuration's tables only. It does not interface with ChannelFinder.
+  - Data loader is not documented
+  - Signals are pushed every few seconds instead of whenever the values change
+  - Lattice portion does not work with the latest Lattice/Model schema 
+
+Proteus: Configuration Version 0.93 Date: 2013-Mar-31
+
+ Summary of Changes from Previous Version:
+   - REST Service
+   - Java and Python APIs
+   - Measurement data visualization
+   - EPICS V4 Service (prototype)
+   - Control system: integration with pvManager and ChannelFinder
+
+ Known Defects:
+  - Sometimes CAJ does not shut down propertly. In such case it keeps throwing NullPointer exceptions.
+  - Signals are pushed every few seconds instead of whenever the values change.
+
+Proteus: Configuration Version 0.92 Date: 2012-Oct-23
+
+ Summary of Changes from Previous Version:
+   - Refactoring of code
+
+ Known Defects:
+  - The images in Properties are erratic. They do not get displayed properly.
+
+
+Proteus: Configuration Version 0.91 Date: 2012-Oct-10
+
+ Summary of Changes from Previous Version:
+   - Initial version
+
+ Known Defects:
+  - The images in Properties are erratic. They do not get displayed properly.
+
+
