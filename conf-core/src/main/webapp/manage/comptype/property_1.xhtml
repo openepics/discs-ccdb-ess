@@ -1,0 +1,63 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition 
+    xmlns:ui="http://java.sun.com/jsf/facelets"    
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://java.sun.com/jsf/core"   
+    xmlns:h="http://java.sun.com/jsf/html">              
+
+    <ui:remove> -------------------------- Properties ------------------- </ui:remove>
+    <h:form id="propertyForm" prependId="false" >
+        <p:panel toggleable="true" >
+            <f:facet name="header">
+                <h:outputText value="Properties : " /> 
+                <p:commandButton  icon="ui-icon-plus"  update="propertyTable :messages" 
+                                  process="@this" actionListener="#{componentTypeMananger.onPropertyAdd}" />
+            </f:facet>    
+
+            <p:contextMenu for="propertyTable" widgetVar="propMenu">  
+                <p:menuitem value="Delete Property" icon="ui-icon-trash"  update="propertyTable  :messages" 
+                            actionListener="#{componentTypeMananger.onPropertyDelete}"
+                            />  
+                <p:menuitem value="Hide Menu" icon="ui-icon-close"  onclick="PF('propMenu').hide()"/>                  
+            </p:contextMenu>
+            <p:dataTable id="propertyTable" var="ctp" value="#{componentTypeMananger.selectedCompProps}" 
+                         scrollRows="25" scrollable="true" liveScroll="true"   scrollHeight="200"                               
+                         emptyMessage="No properties."  editMode="row" editable="true" 
+                         rowKey="#{ctp.componentTypePropertyPK}}"  >                
+
+                <p:ajax event="rowEdit" listener="#{componentTypeMananger.onPropertySave}" update="propertyTable  :messages" />                  
+                <p:ajax event="rowEditInit" listener="#{componentTypeMananger.onPropertyInit}" update=":messages" />                  
+                <p:ajax event="rowEditCancel" listener="#{componentTypeMananger.onPropertyCancel}" update="propertyTable  :messages" />
+
+                <p:column id="ops" width="10%">
+                    <p:commandLink  styleClass="ui-icon ui-icon-trash"  update="propertyTable  :messages" 
+                                    process="@this" action="#{componentTypeMananger.onPropertyDelete(ctp)}" />
+
+                </p:column>
+                <p:column id="id" headerText="Name" sortBy="#{ctp.componentTypePropertyPK.property}">
+                    <p:cellEditor>
+                        <f:facet name="output"><h:outputText value="#{ctp.componentTypePropertyPK.property}" /></f:facet>
+                        <f:facet name="input">
+                            <h:selectOneMenu value="#{ctp.componentTypePropertyPK.property}" style="width:100%">
+                                <f:selectItem itemLabel="Select One" itemValue="" />
+                                <f:selectItems value="#{propertyManager.objects}" var="prop" itemLabel="#{prop.propertyId}" itemValue="#{prop.propertyId}" />
+                            </h:selectOneMenu>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>           
+                <p:column id="value" headerText="Value">
+                    <p:cellEditor>
+                        <f:facet name="output"><h:outputText value="#{ctp.value}" /></f:facet>
+                        <f:facet name="input"><p:inputText id="invalue" value="#{ctp.value}" style="width:100%"/></f:facet>
+                        <p:watermark for="invalue" value="Enter value of property"/>
+                    </p:cellEditor> 
+                    <p:watermark for="invalue" value="Enter value of property"/>
+                </p:column>
+                <p:column style="width:15%">
+                    <p:rowEditor/>                                
+                </p:column>
+            </p:dataTable>
+        </p:panel>
+    </h:form>
+</ui:composition>

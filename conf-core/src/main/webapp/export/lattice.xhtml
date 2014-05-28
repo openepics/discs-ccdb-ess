@@ -1,0 +1,140 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition 
+    xmlns:ui="http://java.sun.com/jsf/facelets"   
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://java.sun.com/jsf/core"   
+    xmlns:h="http://java.sun.com/jsf/html">              
+
+    <h:form id="searchForm"  prependId="false">
+        <p:contextMenu for="searchTable">  
+            <p:menuitem value="Add" icon="ui-icon-plus"  update=":slotEditForm :messages" 
+                        actionListener="#{slotManager.onSlotAdd}"
+                        process="@this"  oncomplete="PF('editSlotDialog').show()"/>  
+            <p:menuitem value="Edit" icon="ui-icon-pencil" update=":slotEditForm :messages" 
+                        actionListener="#{slotManager.onSlotEdit}"
+                        process="@this searchTable" oncomplete="PF('editDialog').show()"/>  
+            <p:menuitem value="Delete" icon="ui-icon-trash"  
+                        onclick="PF('deleteConfirm').show()"/>  
+        </p:contextMenu>  
+
+        <ui:remove> -------------------------- Search  ------------------- </ui:remove>    
+
+        <p:dataTable id="searchTable" var="item" value="#{slotManager.objects}" 
+                     scrollRows="25" scrollable="true" liveScroll="true"   scrollHeight="200"                  
+                     selectionMode="single" selection="#{slotManager.selectedObject}" 
+                     emptyMessage="No records found!" 
+                     rowKey="#{item.slotId}}" >
+
+            <f:facet name="footer">
+                <p:commandButton id="addBtn" value="Add" icon="ui-icon-plus" actionListener="#{slotManager.onSlotAdd}"
+                                 process="@this" update=":slotEditForm :messages"  oncomplete="PF('editDialog').show()" />
+            </f:facet>
+            <p:ajax event="rowSelect" listener="#{slotManager.onSlotSelect}" update=":detailsPanel :messages" />
+
+            <p:column id="id" headerText="Name" sortBy="#{item.name}" filterBy="#{item.name}">
+                <h:outputText value="#{item.name}"/>
+            </p:column>
+            <p:column id="desc" headerText="Description" filterBy="#{item.description}" filterMatchMode="contains">
+                <h:outputText value="#{item.description}"/>
+            </p:column>
+            <p:column id="type" headerText="Type" sortBy="#{item.componentType.componentTypeId}" 
+                      filterBy="#{item.componentType.componentTypeId}" filterMatchMode="contains">
+                <h:outputText value="#{item.componentType.componentTypeId}"/>
+            </p:column>                  
+            <p:column id="moddate" headerText="Date Modified" rendered="false" >
+                <h:outputText value="#{item.modifiedAt}">
+                    <f:convertDateTime pattern="#{msgs.dateFormat}" />
+                </h:outputText>
+            </p:column>
+            <p:column id="modby" headerText="Modified By"  rendered="false">
+                <h:outputText value="#{item.modifiedBy}" />                      
+            </p:column>
+        </p:dataTable>
+
+    </h:form>
+
+    <p:dialog  header="Edit a Slot" appendTo="@(body)"   widgetVar="editDialog">
+        <h:form id="slotEditForm" prependId="false">
+            <p:panelGrid id="itemEditPanel" >
+                <p:row>
+                    <p:column><h:outputLabel value="Slot Name:" /></p:column>
+                    <p:column><h:inputText id="icode" value="#{slotManager.inputObject.name}" 
+                                           required="true"  /> 
+                    </p:column>
+                </p:row>
+                <p:row>                       
+                    <p:column><h:outputLabel value="Description:" /></p:column>
+                    <p:column><p:inputTextarea id="desc" value="#{slotManager.inputObject.description}" 
+                                               required="true"   rows="5" cols="50"  /> </p:column>
+                </p:row>
+                <p:row>
+                    <p:column><h:outputLabel value="Component Type:" /></p:column>
+                    <p:column>
+                        <p:selectOneMenu  value="#{slotManager.inputObject.componentType}"   
+                                               var="ct" converter="#{componentTypeConverter}" 
+                                               filter="true" filterMatchMode="startsWith">  
+                            <f:selectItem itemLabel="Select One"  itemValue="" />
+                            <f:selectItems value="#{componentTypeMananger.objects}" var="ctype" itemLabel="#{ctype.componentTypeId}" itemValue="#{ctype}"/>
+                            <p:column>  
+                                #{ct.componentTypeId}
+                            </p:column>                                                
+                            <p:column >  
+                                <h:outputText value="#{ct.description}" />  
+                            </p:column> 
+                        </p:selectOneMenu>
+                    </p:column>
+                </p:row>
+                <p:row>                       
+                    <p:column><h:outputLabel value="Hosting Slot:" /></p:column>
+                    <p:column><p:selectBooleanCheckbox value="#{slotManager.inputObject.isAbstract}"/> </p:column>
+                </p:row>
+                <p:row>                       
+                    <p:column><h:outputLabel value="Location:" /></p:column>
+                    <p:column>
+                        <h:outputLabel value="X: " />
+                        <p:inputText value="#{slotManager.inputObject.globalX}"/> 
+                        <h:outputLabel value="Y: " />
+                        <p:inputText value="#{slotManager.inputObject.globalY}"/> 
+                        <h:outputLabel value="Z: " />
+                        <p:inputText value="#{slotManager.inputObject.globalZ}"/>                         
+                    </p:column>
+                </p:row>
+            </p:panelGrid>
+            <p:toolbar>
+                <p:toolbarGroup  align="right" >                      
+                    <p:commandButton value="Save" icon="ui-icon-disk" ajax="false"
+                                     update=":searchForm:searchTable :messages" 
+                                     process="@form" actionListener="#{slotManager.onSlotSave}"
+                                     oncomplete="PF('editDialog').hide()"
+                                     /> 
+                    <p:separator /> 
+                    <p:commandButton value="Cancel" icon="ui-icon-close"                                         
+                                     process="@this"  onclick="PF('editDialog').hide()"
+                                     />
+                </p:toolbarGroup>
+            </p:toolbar> 
+        </h:form>  
+    </p:dialog>
+
+    <ui:remove> -------------------------- Delete Component Type Confirm ------------------- </ui:remove>
+    <p:dialog widgetVar="deleteConfirm">  
+        <f:facet name="header">  
+            <h:outputText value="Delete Property"/> 
+        </f:facet>
+        <h:form id="compTypeDelForm" prependId="false">
+            <h:outputText value="Do you really want to delete this record?" />
+
+            <p:separator /> 
+            <p:commandButton value="Yes" style="float: left"  
+                             icon="ui-icon-check"
+                             process="@this" update="@all"
+                             oncomplete="PF('deleteConfirm').hide()"                                                                
+                             actionListener="#{slotManager.onSlotDelete}"/> 
+            <p:commandButton  type="cancel" value="No" style="float: right"
+                              icon="ui-icon-close"
+                              update=":messages" process="@this"                                  
+                              onclick="PF('deleteConfirm').hide()"  />  
+        </h:form>
+    </p:dialog>
+</ui:composition>
