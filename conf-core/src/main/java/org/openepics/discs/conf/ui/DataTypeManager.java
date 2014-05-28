@@ -6,14 +6,15 @@
 
 package org.openepics.discs.conf.ui;
 
+import org.openepics.discs.conf.util.Utility;
 import java.io.Serializable;
 import java.util.List;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 import org.openepics.discs.conf.ejb.ConfigurationEJBLocal;
 import org.openepics.discs.conf.ent.DataType;
 
@@ -21,7 +22,7 @@ import org.openepics.discs.conf.ent.DataType;
  *
  * @author vuppala
  */
-@ManagedBean
+@Named
 @ViewScoped
 public class DataTypeManager implements Serializable {
 

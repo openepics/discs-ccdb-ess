@@ -40,6 +40,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "InstallationRecord.findAll", query = "SELECT i FROM InstallationRecord i"),
     @NamedQuery(name = "InstallationRecord.findByInstallationRecordId", query = "SELECT i FROM InstallationRecord i WHERE i.installationRecordId = :installationRecordId"),
+    @NamedQuery(name = "InstallationRecord.findByRecordNumber", query = "SELECT i FROM InstallationRecord i WHERE i.recordNumber = :recordNumber"),
     @NamedQuery(name = "InstallationRecord.findByInstallDate", query = "SELECT i FROM InstallationRecord i WHERE i.installDate = :installDate"),
     @NamedQuery(name = "InstallationRecord.findByUninstallDate", query = "SELECT i FROM InstallationRecord i WHERE i.uninstallDate = :uninstallDate"),
     @NamedQuery(name = "InstallationRecord.findByModifiedAt", query = "SELECT i FROM InstallationRecord i WHERE i.modifiedAt = :modifiedAt"),
@@ -52,6 +53,11 @@ public class InstallationRecord implements Serializable {
     @Basic(optional = false)
     @Column(name = "installation_record_id")
     private Integer installationRecordId;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 64)
+    @Column(name = "record_number")
+    private String recordNumber;
     @Basic(optional = false)
     @NotNull
     @Column(name = "install_date")
@@ -81,9 +87,9 @@ public class InstallationRecord implements Serializable {
     @JoinColumn(name = "slot", referencedColumnName = "slot_id")
     @ManyToOne(optional = false)
     private Slot slot;
-    @JoinColumn(name = "physical_component", referencedColumnName = "device_id")
+    @JoinColumn(name = "device", referencedColumnName = "device_id")
     @ManyToOne(optional = false)
-    private Device physicalComponent;
+    private Device device;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "installationRecord")
     private List<InstallationArtifact> installationArtifactList;
 
@@ -94,8 +100,9 @@ public class InstallationRecord implements Serializable {
         this.installationRecordId = installationRecordId;
     }
 
-    public InstallationRecord(Integer installationRecordId, Date installDate, Date modifiedAt, String modifiedBy, int version) {
+    public InstallationRecord(Integer installationRecordId, String recordNumber, Date installDate, Date modifiedAt, String modifiedBy, int version) {
         this.installationRecordId = installationRecordId;
+        this.recordNumber = recordNumber;
         this.installDate = installDate;
         this.modifiedAt = modifiedAt;
         this.modifiedBy = modifiedBy;
@@ -108,6 +115,14 @@ public class InstallationRecord implements Serializable {
 
     public void setInstallationRecordId(Integer installationRecordId) {
         this.installationRecordId = installationRecordId;
+    }
+
+    public String getRecordNumber() {
+        return recordNumber;
+    }
+
+    public void setRecordNumber(String recordNumber) {
+        this.recordNumber = recordNumber;
     }
 
     public Date getInstallDate() {
@@ -166,12 +181,12 @@ public class InstallationRecord implements Serializable {
         this.slot = slot;
     }
 
-    public Device getPhysicalComponent() {
-        return physicalComponent;
+    public Device getDevice() {
+        return device;
     }
 
-    public void setPhysicalComponent(Device physicalComponent) {
-        this.physicalComponent = physicalComponent;
+    public void setDevice(Device device) {
+        this.device = device;
     }
 
     @XmlTransient

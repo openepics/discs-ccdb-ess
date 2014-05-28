@@ -28,7 +28,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "Config.findAll", query = "SELECT c FROM Config c"),
     @NamedQuery(name = "Config.findByName", query = "SELECT c FROM Config c WHERE c.name = :name"),
-    @NamedQuery(name = "Config.findByValue", query = "SELECT c FROM Config c WHERE c.value = :value")})
+    @NamedQuery(name = "Config.findByPropValue", query = "SELECT c FROM Config c WHERE c.propValue = :propValue")})
 public class Config implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -38,8 +38,8 @@ public class Config implements Serializable {
     @Column(name = "name")
     private String name;
     @Size(max = 128)
-    @Column(name = "value")
-    private String value;
+    @Column(name = "prop_value")
+    private String propValue;
 
     public Config() {
     }
@@ -56,12 +56,12 @@ public class Config implements Serializable {
         this.name = name;
     }
 
-    public String getValue() {
-        return value;
+    public String getPropValue() {
+        return propValue;
     }
 
-    public void setValue(String value) {
-        this.value = value;
+    public void setPropValue(String propValue) {
+        this.propValue = propValue;
     }
 
     @Override

@@ -6,6 +6,15 @@ Release Notes: Proteus: Configuration Application
 
 Overview: Proteus is a tool for managing the configuration information of an Accelerator Facility. 
 
+Proteus: Configuration Manager Version 1.0 Date: 
+
+ Summary of Changes from Previous Version:
+   - Online editing
+   - Artifacts
+   - Type, slot, and device Assembly
+   - Data types and units
+   - New terminology
+
 Proteus: Configuration Version 0.95 Date: 2013-May-17
 
  Summary of Changes from Previous Version:

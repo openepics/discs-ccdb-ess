@@ -1,0 +1,105 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition 
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://java.sun.com/jsf/core"   
+    xmlns:h="http://java.sun.com/jsf/html">              
+
+    <ui:remove> -------------------------- Related Slots ------------------- </ui:remove>
+    <h:form id="relslotForm" prependId="false" rendered="#{slotManager.selectedObject ne null}">
+        <p:panel toggleable="true" id="relslotPanel" >
+            <f:facet name="header">                           
+                <h:outputText value="Related Slots : " />
+                <p:commandButton  icon="ui-icon-plus"  update=":slotpairInputForm :messages" 
+                                  process="@this" actionListener="#{slotManager.onRelSlotAdd}" 
+                                  oncomplete="PF('relslotDlg').show()" rendered="false"/>   
+                <p:commandLink  styleClass="ui-icon ui-icon-circle-plus"  style="display:inline-block;" 
+                                update=":slotpairInputForm :messages"  title="Add"
+                                process="@this" actionListener="#{slotManager.onRelSlotAdd}" 
+                                oncomplete="PF('relslotDlg').show()"/> 
+            </f:facet>
+            <p:dataTable id="relslotTable" var="rslot" value="#{slotManager.relatedSlots}" 
+                         scrollRows="25" scrollable="true" liveScroll="true"   scrollHeight="200"                               
+                         emptyMessage="No related slots found"                         
+                         rowKey="#{rslot.slotPairId}}"  >              
+
+                <p:column id="ops" width="10%">
+                    <p:commandLink  styleClass="ui-icon ui-icon-trash"  style="display:inline-block;"
+                                    update="relslotTable  :messages"  title="Delete"
+                                    process="@this" action="#{slotManager.onRelSlotDelete(rslot)}" />                   
+                    <p:commandLink styleClass="ui-icon ui-icon-pencil"  style="display:inline-block;"
+                                   update=":slotpairInputForm :messages" title="Edit"
+                                   process="@this"  action="#{slotManager.onRelSlotEdit(rslot)}"
+                                   oncomplete="PF('relslotDlg').show()" />
+                </p:column>
+                <p:column  headerText="Parent">
+                    <h:outputText value="#{rslot.parentSlot.name}" />
+                </p:column>          
+                <p:column  headerText="Relationship">
+                    <h:outputText value="#{rslot.slotRelation.name}" />
+                </p:column> 
+                <p:column  headerText="Child">
+                    <h:outputText value="#{rslot.childSlot.name}" />
+                </p:column>            
+            </p:dataTable>
+        </p:panel>
+    </h:form>
+
+    <ui:remove> -------------------------- Add Related Slot ------------------- </ui:remove>
+    <p:dialog header="Add/Edit Related Slot" widgetVar="relslotDlg">
+        <h:form id="slotpairInputForm" prependId="false" enctype="multipart/form-data">
+            <p:panelGrid id="relslotInputPanel" >
+                <p:row>
+                    <p:column><h:outputLabel value="Relationship :" /></p:column>
+                    <p:column>
+                        <p:selectOneMenu  value="#{slotManager.inputSlotPair.slotRelation}"   
+                                          var="srel" converter="#{relationConverter}" 
+                                          filter="true" filterMatchMode="startsWith" required="true">                              
+                            <f:selectItems value="#{relationManager.objects}" var="r" itemLabel="#{r.name}" itemValue="#{r}"/>
+                            <p:column>  
+                                #{srel.name}
+                            </p:column>                                                
+                            <p:column >  
+                                <h:outputText value="#{srel.description}" />  
+                            </p:column> 
+                        </p:selectOneMenu>
+                    </p:column>
+                </p:row>
+                <p:row>
+                    <p:column><h:outputLabel value="Child Slot :" /></p:column>
+                    <p:column>
+                        <p:selectOneMenu  value="#{slotManager.inputSlotPair.childSlot}"   
+                                          var="slt" converter="#{slotConverter}" 
+                                          filter="true" filterMatchMode="startsWith" required="true">  
+                            <f:selectItem itemLabel="Select One"  itemValue="" />
+                            <f:selectItems value="#{slotManager.objects}" var="s" itemLabel="#{s.name}" itemValue="#{s}"/>
+                            <p:column>  
+                                #{slt.name}
+                            </p:column>                                                
+                            <p:column >  
+                                <h:outputText value="#{slt.description}" />  
+                            </p:column> 
+                        </p:selectOneMenu>
+                    </p:column>
+                </p:row>
+                
+                <p:row>
+                    <p:column colspan="2">
+                        <p:toolbar>
+                            <p:toolbarGroup  align="right" >                      
+                                <p:commandButton value="Save" icon="ui-icon-disk" 
+                                                 update=":relslotForm:relslotPanel relslotInputPanel :messages"
+                                                 process="@form" actionListener="#{slotManager.onRelSlotSave}"                                               
+                                                 oncomplete="if (!args.validationFailed &amp;&amp; args.success) PF('relslotDlg').hide()" /> 
+                                <p:separator /> 
+                                <p:commandButton value="Cancel" icon="ui-icon-close"                                         
+                                                 onclick="PF('relslotDlg').hide()" />
+                            </p:toolbarGroup>
+                        </p:toolbar>
+                    </p:column>
+                </p:row>
+            </p:panelGrid>
+        </h:form>
+    </p:dialog>
+</ui:composition>

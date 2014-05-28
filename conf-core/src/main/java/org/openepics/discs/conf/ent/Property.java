@@ -13,6 +13,8 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -37,6 +39,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "Property.findAll", query = "SELECT p FROM Property p"),
     @NamedQuery(name = "Property.findByPropertyId", query = "SELECT p FROM Property p WHERE p.propertyId = :propertyId"),
+    @NamedQuery(name = "Property.findByName", query = "SELECT p FROM Property p WHERE p.name = :name"),
     @NamedQuery(name = "Property.findByDescription", query = "SELECT p FROM Property p WHERE p.description = :description"),
     @NamedQuery(name = "Property.findByAssociation", query = "SELECT p FROM Property p WHERE p.association = :association"),
     @NamedQuery(name = "Property.findByModifiedAt", query = "SELECT p FROM Property p WHERE p.modifiedAt = :modifiedAt"),
@@ -45,11 +48,15 @@ import javax.xml.bind.annotation.XmlTransient;
 public class Property implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "property_id")
+    private Integer propertyId;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)
-    @Column(name = "property_id")
-    private String propertyId;
+    @Column(name = "name")
+    private String name;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 255)
@@ -74,28 +81,31 @@ public class Property implements Serializable {
     @NotNull
     @Column(name = "version")
     private int version;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "property1")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "property")
+    private List<ComptypeProperty> comptypePropertyList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "property")
     private List<DeviceProperty> devicePropertyList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "property1")
-    private List<ComponentTypeProperty> componentTypePropertyList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "property")
+    private List<AlignmentProperty> alignmentPropertyList;
     @JoinColumn(name = "data_type", referencedColumnName = "data_type_id")
     @ManyToOne(optional = false)
     private DataType dataType;
     @JoinColumn(name = "unit", referencedColumnName = "unit_id")
     @ManyToOne
     private Unit unit;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "property1")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "property")
     private List<SlotProperty> slotPropertyList;
 
     public Property() {
     }
 
-    public Property(String propertyId) {
+    public Property(Integer propertyId) {
         this.propertyId = propertyId;
     }
 
-    public Property(String propertyId, String description, String association, Date modifiedAt, String modifiedBy, int version) {
+    public Property(Integer propertyId, String name, String description, String association, Date modifiedAt, String modifiedBy, int version) {
         this.propertyId = propertyId;
+        this.name = name;
         this.description = description;
         this.association = association;
         this.modifiedAt = modifiedAt;
@@ -103,12 +113,20 @@ public class Property implements Serializable {
         this.version = version;
     }
 
-    public String getPropertyId() {
+    public Integer getPropertyId() {
         return propertyId;
     }
 
-    public void setPropertyId(String propertyId) {
+    public void setPropertyId(Integer propertyId) {
         this.propertyId = propertyId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getDescription() {
@@ -152,6 +170,15 @@ public class Property implements Serializable {
     }
 
     @XmlTransient
+    public List<ComptypeProperty> getComptypePropertyList() {
+        return comptypePropertyList;
+    }
+
+    public void setComptypePropertyList(List<ComptypeProperty> comptypePropertyList) {
+        this.comptypePropertyList = comptypePropertyList;
+    }
+
+    @XmlTransient
     public List<DeviceProperty> getDevicePropertyList() {
         return devicePropertyList;
     }
@@ -161,12 +188,12 @@ public class Property implements Serializable {
     }
 
     @XmlTransient
-    public List<ComponentTypeProperty> getComponentTypePropertyList() {
-        return componentTypePropertyList;
+    public List<AlignmentProperty> getAlignmentPropertyList() {
+        return alignmentPropertyList;
     }
 
-    public void setComponentTypePropertyList(List<ComponentTypeProperty> componentTypePropertyList) {
-        this.componentTypePropertyList = componentTypePropertyList;
+    public void setAlignmentPropertyList(List<AlignmentProperty> alignmentPropertyList) {
+        this.alignmentPropertyList = alignmentPropertyList;
     }
 
     public DataType getDataType() {

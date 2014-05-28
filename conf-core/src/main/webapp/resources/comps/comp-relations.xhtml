@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:cc="http://java.sun.com/jsf/composite">
+
+    <!-- INTERFACE -->
+    <cc:interface>
+        <cc:attribute name="selectedComponent" required="true"/>
+        <cc:attribute name="collapsed" required="false" default="false"/> 
+    </cc:interface>
+
+    <!-- IMPLEMENTATION -->
+    <cc:implementation>
+        <p:panel header="Relationships" toggleable="true"  style="border: 0px;" collapsed="#{cc.attrs.collapsed}">  
+            <p:dataTable id="reltable" var="child" emptyMessage="" value="#{cc.attrs.selectedComponent.slotPairList1}" >				
+                <p:column id="name" headerText="Name"  >
+                    <h:outputText value="#{child.slotRelation.name}" />                                                 
+                </p:column>
+                <p:column id="component" headerText="Component" >
+                    <h:outputText value="#{child.childSlot.name}" />
+                </p:column>  
+            </p:dataTable>  
+            <p:dataTable id="ireltable" var="parent" emptyMessage="" value="#{cc.attrs.selectedComponent.slotPairList}" >				
+                <p:column id="name"   >
+                    <h:outputText value="#{parent.slotRelation.iname}" />                                                 
+                </p:column>
+                <p:column id="component" >
+                    <h:outputText value="#{parent.parentSlot.name}" />
+                </p:column>  
+            </p:dataTable>
+        </p:panel>
+    </cc:implementation>
+</html>

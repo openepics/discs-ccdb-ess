@@ -1,0 +1,54 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition 
+    xmlns:ui="http://java.sun.com/jsf/facelets"   
+    xmlns:p="http://primefaces.org/ui"
+    template="/template/ConfigManagerTemplate.xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"   
+    xmlns:h="http://java.sun.com/jsf/html">              
+
+    <ui:define name="content">
+
+        <h:form id="searchForm"  prependId="false"> 
+            <p:dataTable id="searchTable" var="item" value="#{deviceManager.objects}" 
+                         scrollRows="25" scrollable="true" liveScroll="true"   scrollHeight="500"                  
+                         selectionMode="single" selection="#{deviceManager.selectedObject}" 
+                         filteredValue="#{deviceManager.filteredObjects}"
+                         emptyMessage="No devices found!" 
+                         rowKey="#{item.deviceId}}" >
+
+                <p:column id="id" headerText="Name" sortBy="#{item.serialNumber}" filterBy="#{item.serialNumber}">
+                    <h:outputText value="#{item.serialNumber}"/>
+                </p:column>
+                <p:column id="desc" headerText="Description" filterBy="#{item.description}" filterMatchMode="contains">
+                    <h:outputText value="#{item.description}"/>
+                </p:column>
+                <p:column id="type" headerText="Type" sortBy="#{item.componentType.name}" 
+                          filterBy="#{item.componentType.name}" filterMatchMode="contains">
+                    <h:outputText value="#{item.componentType.name}"/>
+                </p:column>
+                <p:column headerText="Part Of" sortBy="#{item.asmParent.serialNumber}" 
+                          filterBy="#{item.asmParent.serialNumber}" filterMatchMode="contains">
+                    <h:outputText value="#{item.asmParent.serialNumber}"/>
+                </p:column>
+                <p:column  headerText="Asm Position" >
+                    <h:outputText value="#{item.asmPosition}"/>
+                </p:column>
+                <p:column  headerText="Asm Comment" >
+                    <h:outputText value="#{item.asmDescription}"/>
+                </p:column>
+
+                <p:column id="moddate" headerText="Date Modified" rendered="false" >
+                    <h:outputText value="#{item.modifiedAt}">
+                        <f:convertDateTime pattern="#{msgs.dateFormat}" />
+                    </h:outputText>
+                </p:column>
+                <p:column id="modby" headerText="Modified By"  rendered="false">
+                    <h:outputText value="#{item.modifiedBy}" />                      
+                </p:column>
+            </p:dataTable>
+        </h:form>
+        
+    </ui:define>
+</ui:composition>
+

@@ -18,10 +18,15 @@
             </p:row>
             <p:row>
                 <p:column  >
-                    <p:panelGrid id="detailsPanel" columns="3" styleClass="noBorders" >
-                        <ui:include  src="property.xhtml" />
-                        <ui:include  src="artifact.xhtml" />
-                        
+                    <p:panelGrid id="detailsPanel" styleClass="noBorders" >
+                        <p:row>
+                            <p:column>
+                                <ui:include  src="artifact.xhtml"/>
+                            </p:column>
+                            <p:column width="50%">
+                                
+                            </p:column>
+                        </p:row>                        
                     </p:panelGrid>	
                 </p:column>
             </p:row>

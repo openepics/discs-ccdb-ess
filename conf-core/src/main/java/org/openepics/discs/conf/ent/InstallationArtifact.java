@@ -37,6 +37,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "InstallationArtifact.findAll", query = "SELECT i FROM InstallationArtifact i"),
     @NamedQuery(name = "InstallationArtifact.findByArtifactId", query = "SELECT i FROM InstallationArtifact i WHERE i.artifactId = :artifactId"),
     @NamedQuery(name = "InstallationArtifact.findByName", query = "SELECT i FROM InstallationArtifact i WHERE i.name = :name"),
+    @NamedQuery(name = "InstallationArtifact.findByIsInternal", query = "SELECT i FROM InstallationArtifact i WHERE i.isInternal = :isInternal"),
     @NamedQuery(name = "InstallationArtifact.findByDescription", query = "SELECT i FROM InstallationArtifact i WHERE i.description = :description"),
     @NamedQuery(name = "InstallationArtifact.findByModifiedBy", query = "SELECT i FROM InstallationArtifact i WHERE i.modifiedBy = :modifiedBy"),
     @NamedQuery(name = "InstallationArtifact.findByModifiedAt", query = "SELECT i FROM InstallationArtifact i WHERE i.modifiedAt = :modifiedAt")})
@@ -52,6 +53,10 @@ public class InstallationArtifact implements Serializable {
     @Size(min = 1, max = 128)
     @Column(name = "name")
     private String name;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "is_internal")
+    private boolean isInternal;
     @Size(max = 255)
     @Column(name = "description")
     private String description;
@@ -82,9 +87,10 @@ public class InstallationArtifact implements Serializable {
         this.artifactId = artifactId;
     }
 
-    public InstallationArtifact(Integer artifactId, String name, String uri, String modifiedBy, Date modifiedAt) {
+    public InstallationArtifact(Integer artifactId, String name, boolean isInternal, String uri, String modifiedBy, Date modifiedAt) {
         this.artifactId = artifactId;
         this.name = name;
+        this.isInternal = isInternal;
         this.uri = uri;
         this.modifiedBy = modifiedBy;
         this.modifiedAt = modifiedAt;
@@ -104,6 +110,14 @@ public class InstallationArtifact implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public boolean getIsInternal() {
+        return isInternal;
+    }
+
+    public void setIsInternal(boolean isInternal) {
+        this.isInternal = isInternal;
     }
 
     public String getDescription() {

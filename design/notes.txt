@@ -1,0 +1,4 @@
+add part# to device?
+make user/role id autoinc
+set modifiedat defaults for all
+add unit to alignment prop

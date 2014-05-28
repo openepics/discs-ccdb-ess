@@ -9,8 +9,10 @@ package org.openepics.discs.conf.ent;
 import java.io.Serializable;
 import javax.persistence.Basic;
 import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
@@ -28,50 +30,47 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "SlotPair.findAll", query = "SELECT s FROM SlotPair s"),
-    @NamedQuery(name = "SlotPair.findBySlotRelation", query = "SELECT s FROM SlotPair s WHERE s.slotPairPK.slotRelation = :slotRelation"),
-    @NamedQuery(name = "SlotPair.findByParentSlot", query = "SELECT s FROM SlotPair s WHERE s.slotPairPK.parentSlot = :parentSlot"),
-    @NamedQuery(name = "SlotPair.findByChildSlot", query = "SELECT s FROM SlotPair s WHERE s.slotPairPK.childSlot = :childSlot"),
+    @NamedQuery(name = "SlotPair.findBySlotPairId", query = "SELECT s FROM SlotPair s WHERE s.slotPairId = :slotPairId"),
     @NamedQuery(name = "SlotPair.findByVersion", query = "SELECT s FROM SlotPair s WHERE s.version = :version")})
 public class SlotPair implements Serializable {
     private static final long serialVersionUID = 1L;
-    @EmbeddedId
-    protected SlotPairPK slotPairPK;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "slot_pair_id")
+    private Integer slotPairId;
     @Basic(optional = false)
     @NotNull
     @Column(name = "version")
     private int version;
-    @JoinColumn(name = "child_slot", referencedColumnName = "slot_id", insertable = false, updatable = false)
+    @JoinColumn(name = "child_slot", referencedColumnName = "slot_id")
     @ManyToOne(optional = false)
-    private Slot slot;
-    @JoinColumn(name = "slot_relation", referencedColumnName = "slot_relation_id", insertable = false, updatable = false)
+    private Slot childSlot;
+    @JoinColumn(name = "slot_relation", referencedColumnName = "slot_relation_id")
     @ManyToOne(optional = false)
-    private SlotRelation slotRelation1;
-    @JoinColumn(name = "parent_slot", referencedColumnName = "slot_id", insertable = false, updatable = false)
+    private SlotRelation slotRelation;
+    @JoinColumn(name = "parent_slot", referencedColumnName = "slot_id")
     @ManyToOne(optional = false)
-    private Slot slot1;
+    private Slot parentSlot;
 
     public SlotPair() {
     }
 
-    public SlotPair(SlotPairPK slotPairPK) {
-        this.slotPairPK = slotPairPK;
+    public SlotPair(Integer slotPairId) {
+        this.slotPairId = slotPairId;
     }
 
-    public SlotPair(SlotPairPK slotPairPK, int version) {
-        this.slotPairPK = slotPairPK;
+    public SlotPair(Integer slotPairId, int version) {
+        this.slotPairId = slotPairId;
         this.version = version;
     }
 
-    public SlotPair(int slotRelation, int parentSlot, int childSlot) {
-        this.slotPairPK = new SlotPairPK(slotRelation, parentSlot, childSlot);
+    public Integer getSlotPairId() {
+        return slotPairId;
     }
 
-    public SlotPairPK getSlotPairPK() {
-        return slotPairPK;
-    }
-
-    public void setSlotPairPK(SlotPairPK slotPairPK) {
-        this.slotPairPK = slotPairPK;
+    public void setSlotPairId(Integer slotPairId) {
+        this.slotPairId = slotPairId;
     }
 
     public int getVersion() {
@@ -82,34 +81,34 @@ public class SlotPair implements Serializable {
         this.version = version;
     }
 
-    public Slot getSlot() {
-        return slot;
+    public Slot getChildSlot() {
+        return childSlot;
     }
 
-    public void setSlot(Slot slot) {
-        this.slot = slot;
+    public void setChildSlot(Slot childSlot) {
+        this.childSlot = childSlot;
     }
 
-    public SlotRelation getSlotRelation1() {
-        return slotRelation1;
+    public SlotRelation getSlotRelation() {
+        return slotRelation;
     }
 
-    public void setSlotRelation1(SlotRelation slotRelation1) {
-        this.slotRelation1 = slotRelation1;
+    public void setSlotRelation(SlotRelation slotRelation) {
+        this.slotRelation = slotRelation;
     }
 
-    public Slot getSlot1() {
-        return slot1;
+    public Slot getParentSlot() {
+        return parentSlot;
     }
 
-    public void setSlot1(Slot slot1) {
-        this.slot1 = slot1;
+    public void setParentSlot(Slot parentSlot) {
+        this.parentSlot = parentSlot;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (slotPairPK != null ? slotPairPK.hashCode() : 0);
+        hash += (slotPairId != null ? slotPairId.hashCode() : 0);
         return hash;
     }
 
@@ -120,7 +119,7 @@ public class SlotPair implements Serializable {
             return false;
         }
         SlotPair other = (SlotPair) object;
-        if ((this.slotPairPK == null && other.slotPairPK != null) || (this.slotPairPK != null && !this.slotPairPK.equals(other.slotPairPK))) {
+        if ((this.slotPairId == null && other.slotPairId != null) || (this.slotPairId != null && !this.slotPairId.equals(other.slotPairId))) {
             return false;
         }
         return true;
@@ -128,7 +127,7 @@ public class SlotPair implements Serializable {
 
     @Override
     public String toString() {
-        return "org.openepics.discs.conf.ent.SlotPair[ slotPairPK=" + slotPairPK + " ]";
+        return "org.openepics.discs.conf.ent.SlotPair[ slotPairId=" + slotPairId + " ]";
     }
     
 }

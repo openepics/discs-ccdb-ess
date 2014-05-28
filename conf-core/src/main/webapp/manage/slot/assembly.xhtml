@@ -6,69 +6,100 @@
     xmlns:f="http://java.sun.com/jsf/core"   
     xmlns:h="http://java.sun.com/jsf/html">              
 
-    <ui:remove> -------------------------- Assembly ------------------- </ui:remove>
-    <h:form id="assemblyForm" prependId="false" >
-        <p:panel toggleable="true"  visible="#{slotManager.selectedObject ne null}">
+    <ui:remove> -------------------------- Asembly Slots ------------------- </ui:remove>
+    <h:form id="partSlotForm" prependId="false" rendered="#{slotManager.selectedObject ne null}">
+        <p:panel toggleable="true" id="partSlotPanel" >
             <f:facet name="header">                           
-                <h:outputText value="Type Assembly : " />
-                <p:commandButton  icon="ui-icon-plus"  update="asmTable :messages" 
-                                  process="@this" actionListener="#{slotManager.onAsmAdd}" />
+                <h:outputText value="Assembly Parts : " />
+                <p:commandButton  icon="ui-icon-plus"  update=":partslotInputForm :messages" 
+                                  process="@this" actionListener="#{slotManager.onPartSlotAdd}" 
+                                  oncomplete="PF('partslotDlg').show()" rendered="false"/>   
+                <p:commandLink  styleClass="ui-icon ui-icon-circle-plus"  style="display:inline-block;" 
+                                update=":partslotInputForm :messages"  title="Add"
+                                process="@this" actionListener="#{slotManager.onPartSlotAdd}" 
+                                oncomplete="PF('partslotDlg').show()"/> 
             </f:facet>
-            <p:dataTable id="asmTable" var="asmp" value="#{slotManager.selectedParts}" 
+            <p:dataTable id="partSlotTable" var="pslot" value="#{slotManager.asmSlots}" 
                          scrollRows="25" scrollable="true" liveScroll="true"   scrollHeight="200"                               
-                         emptyMessage="No artifacts found"  editMode="row" editable="true" 
-                         rowKey="#{asmp.slotAsmPK}}"  >                
-
-                <p:ajax event="rowEdit" listener="#{slotManager.onAsmSave}" update="asmTable  :messages" />                  
-                <p:ajax event="rowEditInit" listener="#{slotManager.onAsmEdit}" update=":messages" />                  
-                <p:ajax event="rowEditCancel" listener="#{slotManager.onAsmCancel}" update="asmTable  :messages" />                  
+                         emptyMessage="No assembly slots found"                         
+                         rowKey="#{pslot.slotId}}"  >              
 
                 <p:column id="ops" width="10%">
-                    <p:commandLink  styleClass="ui-icon ui-icon-trash"  update="asmTable  :messages" 
-                                    process="@this" action="#{slotManager.onAsmDelete(asmp)}" />
-
+                    <p:commandLink  styleClass="ui-icon ui-icon-trash"  style="display:inline-block;"
+                                    update="partSlotTable  :messages"  title="Delete"
+                                    process="@this" action="#{slotManager.onPartSlotDelete(pslot)}" />                   
+                    <p:commandLink styleClass="ui-icon ui-icon-pencil"  style="display:inline-block;"
+                                   update=":partslotInputForm :messages" title="Edit"
+                                   process="@this"  action="#{slotManager.onPartSlotEdit(pslot)}"
+                                   oncomplete="PF('partslotDlg').show()" />
                 </p:column>
-                <p:column headerText="Position">
-                    <p:cellEditor>
-                        <f:facet name="output"><h:outputText value="#{asmp.childPosition}" /></f:facet>
-                        <f:facet name="input"><p:inputText id="inname" value="#{asmp.childPosition}" style="width:100%"/></f:facet>
-                    </p:cellEditor> 
-                    <p:watermark for="inname" value="Enter Position"/>
-                </p:column>
-                <p:column headerText="Comp Type">
-                    <p:cellEditor>
-                        <f:facet name="output"><h:outputText value="to be filled" /></f:facet>
-                        <f:facet name="input">
-                            <p:selectOneMenu id="parent" value="#{asmp.childType}"   
-                                             var="ct"  
-                                             converter="#{componentTypeConverter}" rendered="true"
-                                             filter="true" filterMatchMode="startsWith" style="width: 100%;">  
-                                <f:selectItem itemLabel="Select One"  itemValue="" />
-                                <f:selectItems value="#{slotManager.objects}" var="ctype" itemLabel="#{ctype.componentTypeId}" itemValue="#{ctype}"/>
-                                <p:column>  
-                                    #{ct.componentTypeId}
-                                </p:column>                                                
-                                <p:column >  
-                                    <h:outputText value="#{ct.description}" />  
-                                </p:column> 
-                            </p:selectOneMenu>
-                        </f:facet>
-                    </p:cellEditor> 
-                </p:column>
-
-                <p:column headerText="Description">
-                    <p:cellEditor>
-                        <f:facet name="output"><h:outputText value="#{asmp.description}" /></f:facet>
-                        <f:facet name="input"><p:inputText id="indesc" value="#{asmp.description}" style="width:100%"/></f:facet>
-
-                    </p:cellEditor> 
-                    <p:watermark for="indesc" value="Enter description"/>
-                </p:column>
-
-                <p:column style="width:15%">
-                    <p:rowEditor />
+                          
+                <p:column  headerText="Position">
+                    <h:outputText value="#{pslot.asmPosition}" />
+                </p:column> 
+                <p:column  headerText="Slot">
+                    <h:outputText value="#{pslot.name}" />
+                </p:column>            
+                <p:column  headerText="Comment">
+                    <h:outputText value="#{pslot.asmComment}" />
                 </p:column>
             </p:dataTable>
+
         </p:panel>
     </h:form>
+
+    <ui:remove> -------------------------- Add Related Slot ------------------- </ui:remove>
+    <p:dialog header="Add/Edit Assembly Parts" widgetVar="partslotDlg">
+        <h:form id="partslotInputForm" prependId="false" enctype="multipart/form-data">
+            <p:panelGrid id="partSlotInputPanel" >
+                <p:row>
+                    <p:column><h:outputLabel value="Position :" /></p:column>
+                    <p:column>
+                        <h:inputText id="ppos" value="#{slotManager.inputAsmPosition}"   /> 
+                        <p:message for="ppos"  />
+                    </p:column>
+                </p:row>
+                <p:row>
+                    <p:column><h:outputLabel value="Part :" /></p:column>
+                    <p:column>
+                        <p:selectOneMenu  value="#{slotManager.inputAsmSlot}"   
+                                          var="spart" converter="#{slotConverter}" 
+                                          filter="true" filterMatchMode="startsWith" required="true">                              
+                            <f:selectItems value="#{slotManager.objects}" var="r" itemLabel="#{r.name}" itemValue="#{r}"/>
+                            <p:column>  
+                                #{spart.name}
+                            </p:column>                                                
+                            <p:column >  
+                                <h:outputText value="#{spart.description}" />  
+                            </p:column> 
+                        </p:selectOneMenu>
+                    </p:column>
+                </p:row>
+                <p:row>                       
+                    <p:column><h:outputLabel value="Comment :" /></p:column>
+                    <p:column>
+                        <p:inputTextarea id="rdesc" value="#{slotManager.inputAsmComment}" 
+                                         rows="5" cols="64"  /> 
+                        <p:message for="rdesc"  />
+                    </p:column>                   
+                </p:row>
+                
+                <p:row>
+                    <p:column colspan="2">
+                        <p:toolbar>
+                            <p:toolbarGroup  align="right" >                      
+                                <p:commandButton value="Save" icon="ui-icon-disk" 
+                                                 update=":partSlotForm:partSlotPanel partSlotInputPanel :messages"
+                                                 process="@form" actionListener="#{slotManager.onPartSlotSave}"                                               
+                                                 oncomplete="if (!args.validationFailed &amp;&amp; args.success) PF('partslotDlg').hide()" /> 
+                                <p:separator /> 
+                                <p:commandButton value="Cancel" icon="ui-icon-close"                                         
+                                                 onclick="PF('partslotDlg').hide()" />
+                            </p:toolbarGroup>
+                        </p:toolbar>
+                    </p:column>
+                </p:row>
+            </p:panelGrid>
+        </h:form>
+    </p:dialog>
 </ui:composition>

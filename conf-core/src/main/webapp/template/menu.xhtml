@@ -5,6 +5,7 @@
     xmlns:ui="http://java.sun.com/jsf/facelets"
     xmlns:f="http://java.sun.com/jsf/core"
     xmlns:p="http://primefaces.org/ui"
+    xmlns:fc="http://java.sun.com/jsf/composite/comps"
     xmlns:h="http://java.sun.com/jsf/html">
 
     <h:form id="menuform">
@@ -13,23 +14,45 @@
         <p:menubar id="mainMenu"  styleClass="menubar">
             <p:menuitem value="Home" icon="ui-icon-home" title="Home" url="/"/>
             
-            <p:menuitem value="Browse" icon="ui-icon-note" title="Home" url="browse.xhtml"/>
-            
-            <p:submenu label="Manage" icon="ui-icon-newwin" rendered="true">                          
-                <p:menuitem value="Propeties" title="Edit Properties" 
-                            url="/manage/property/" icon="ui-icon-newwin" />
-                <p:menuitem value="Component Types" title="Edit Component Types" 
-                            url="/manage/comptype/" icon="ui-icon-newwin" />               
-                <p:menuitem value="Slots" title="Edit Layout Slots" 
-                            url="/manage/slot/" icon="ui-icon-newwin" />
-                <p:menuitem value="Slot Relationships" title="Edit Layout Slots" 
-                            url="/manage/slot/" icon="ui-icon-newwin" />
-                <p:menuitem value="Devices" title="Device Assemblies" 
-                            url="/manage/slot/" icon="ui-icon-newwin" />                
-                <p:menuitem value="Installations" title="Edit Installation Records" 
-                            url="/manage/slot/" icon="ui-icon-newwin" />
+            <p:submenu label="Browse" icon="ui-icon-note" rendered="true"> 
+                <p:menuitem value="Alignments" title="Browse Alignment Records" 
+                            url="/browse/alignment/" icon="ui-icon-note" disabled="true"/>
+                <p:menuitem value="Data Types" title="Browse Data Types" 
+                            url="/browse/alignment/" icon="ui-icon-note" disabled="true"/>
+                <p:menuitem value="Component Types" title="Browse Component Types" 
+                            url="/browse/alignment/" icon="ui-icon-note" disabled="true"/>
+                
+                <p:menuitem value="Devices" icon="ui-icon-note" title="Browse Devices" url="/browse/device/"/>
+                <p:menuitem value="Installations" title="Browse Installations" 
+                            url="/browse/alignment/" icon="ui-icon-note" disabled="true"/>
+                
+                <p:menuitem value="Properties" title="Browse Properties" 
+                            url="/browse/alignment/" icon="ui-icon-note" disabled="true"/>
+                <p:menuitem value="Slots" icon="ui-icon-note" title="Browse Slots" url="/browse/slot/"/>
+                <p:menuitem value="Units" title="Browse Installations" 
+                            url="/browse/alignment/" icon="ui-icon-note" disabled="true"/>
+            </p:submenu>
+            <p:submenu label="Export" icon="ui-icon-transferthick-e-w"  > 
+                <p:menuitem value="Lattice" title="Export Layout" 
+                            url="/export/lattice.xhtml" icon="ui-icon-transfer-e-w" />              
+            </p:submenu>
+            <p:submenu label="Manage" icon="ui-icon-newwin"  > 
                 <p:menuitem value="Alignments" title="Edit Alignment Records" 
-                            url="/manage/slot/" icon="ui-icon-newwin" />
+                            url="/manage/alignment/" icon="ui-icon-newwin"  disabled="#{! loginManager.authorized}"/>
+                <p:menuitem value="Component Types" title="Edit Component Types" 
+                            url="/manage/comptype/" icon="ui-icon-newwin" disabled="#{! loginManager.authorized}"/> 
+                <p:menuitem value="Data Types" title="Edit Data Types" 
+                            url="/manage/property/" icon="ui-icon-newwin"  disabled="true"/>
+                <p:menuitem value="Devices" title="Device Assemblies" 
+                            url="/manage/device/" icon="ui-icon-newwin" disabled="#{! loginManager.authorized}"/> 
+                <p:menuitem value="Installations" title="Edit Installation Records" 
+                            url="/manage/installation/" icon="ui-icon-newwin" disabled="#{! loginManager.authorized}"/>
+                <p:menuitem value="Propeties" title="Edit Properties" 
+                            url="/manage/property/" icon="ui-icon-newwin" disabled="#{! loginManager.authorized}"/>                           
+                <p:menuitem value="Slots" title="Edit Layout Slots" 
+                            url="/manage/slot/" icon="ui-icon-newwin" disabled="#{! loginManager.authorized}"/>             
+                <p:menuitem value="Units" title="Edit Units" 
+                            url="/manage/property/" icon="ui-icon-newwin"  disabled="true"/>
             </p:submenu>
 
             <p:menuitem value="Reports" title="Reports"  icon="ui-icon-print" url="reports.xhtml" disabled="true" />
@@ -52,7 +75,7 @@
             </p:submenu>             
 
             <f:facet name="options">  
-
+                <fc:logincomp ajax="false" />
             </f:facet>
         </p:menubar>
         <p:dialog id="aboutPanel"  header="#{msgs.title}" widgetVar="aboutPanelWid">     

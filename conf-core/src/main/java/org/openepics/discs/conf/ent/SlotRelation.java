@@ -77,7 +77,7 @@ public class SlotRelation implements Serializable {
     @NotNull
     @Column(name = "version")
     private int version;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "slotRelation1")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "slotRelation")
     private List<SlotPair> slotPairList;
 
     public SlotRelation() {

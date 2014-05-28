@@ -1,0 +1,11 @@
+ReA Authorized Config
+    Need exports
+	uploads?
+
+CM03, FRIB Bending Segments
+
+Data Type: reading/writing
+Audit
+V4
+Reports
+Lattice

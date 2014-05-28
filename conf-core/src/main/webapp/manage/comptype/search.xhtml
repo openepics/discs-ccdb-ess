@@ -23,19 +23,20 @@
         <p:dataTable id="searchTable" var="ctype" value="#{componentTypeMananger.objects}" 
                      scrollRows="25" scrollable="true" liveScroll="true"   scrollHeight="200"                  
                      selectionMode="single" selection="#{componentTypeMananger.selectedObject}" 
+                     filteredValue="#{componentTypeMananger.filteredObjects}"
                      emptyMessage="No records found!" 
                      rowKey="#{ctype.componentTypeId}}" >
 
-            <p:ajax event="rowSelect" listener="#{componentTypeMananger.onCompTypeSelect}" update=":propertyForm :messages" />
+            <p:ajax event="rowSelect" listener="#{componentTypeMananger.onCompTypeSelect}" update=":detailsPanel :messages" />
 
-            <p:column id="id" headerText="ID" sortBy="#{ctype.componentTypeId}" filterBy="#{ctype.componentTypeId}">
-                <h:outputText value="#{ctype.componentTypeId}"/>
+            <p:column id="id" headerText="ID" sortBy="#{ctype.name}" filterBy="#{ctype.name}">
+                <h:outputText value="#{ctype.name}"/>
             </p:column>
             <p:column id="desc" headerText="Description" filterBy="#{ctype.description}" filterMatchMode="contains">
                 <h:outputText value="#{ctype.description}"/>
             </p:column>
-            <p:column id="units" headerText="Super Type" sortBy="#{ctype.superComponentType.componentTypeId}" filterBy="#{ctype.superComponentType.componentTypeId}" filterMatchMode="contains">
-                <h:outputText value="#{ctype.superComponentType.componentTypeId}"/>
+            <p:column id="units" headerText="Super Type" sortBy="#{ctype.superComponentType.name}" filterBy="#{ctype.superComponentType.name}" filterMatchMode="contains">
+                <h:outputText value="#{ctype.superComponentType.name}"/>
             </p:column>                  
             <p:column id="moddate" headerText="Date Modified" rendered="false" >
                 <h:outputText value="#{ctype.modifiedAt}">
@@ -59,7 +60,7 @@
             <p:panelGrid id="ctypeEditPanel" >
                 <p:row>
                     <p:column><h:outputLabel value="Component Type ID:" /></p:column>
-                    <p:column><h:inputText id="icode" value="#{componentTypeMananger.inputObject.componentTypeId}" 
+                    <p:column><h:inputText id="icode" value="#{componentTypeMananger.inputObject.name}" 
                                            required="true"  /> 
                     </p:column>
                 </p:row>
@@ -70,14 +71,15 @@
                 </p:row>
                 <p:row>
                     <p:column><h:outputLabel value="Super Component Type" /></p:column>
-                    <p:column><p:selectOneMenu id="parent" value="#{componentTypeMananger.inputObject.superComponentType}"   
+                    <p:column>
+                        <p:selectOneMenu id="parent" value="#{componentTypeMananger.inputObject.superComponentType}"   
                                                var="ct"  
                                                converter="#{componentTypeConverter}" rendered="true"
                                                filter="true" filterMatchMode="startsWith">  
                             <f:selectItem itemLabel="Select One"  itemValue="" />
-                            <f:selectItems value="#{componentTypeMananger.objects}" var="ctype" itemLabel="#{ctype.componentTypeId}" itemValue="#{ctype}"/>
+                            <f:selectItems value="#{componentTypeMananger.objects}" var="ctype" itemLabel="#{ctype.name}" itemValue="#{ctype}"/>
                             <p:column>  
-                                #{ct.componentTypeId}
+                                #{ct.name}
                             </p:column>                                                
                             <p:column >  
                                 <h:outputText value="#{ct.description}" />  

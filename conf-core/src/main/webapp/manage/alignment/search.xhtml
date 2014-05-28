@@ -9,10 +9,10 @@
     <h:form id="searchForm"  prependId="false">
         <p:contextMenu for="searchTable">  
             <p:menuitem value="Add" icon="ui-icon-plus"  update=":slotEditForm :messages" 
-                        actionListener="#{deviceManager.onSlotAdd}"
+                        actionListener="#{alignmentManager.onAlignRecAdd}"
                         process="@this"  oncomplete="PF('editSlotDialog').show()"/>  
             <p:menuitem value="Edit" icon="ui-icon-pencil" update=":slotEditForm :messages" 
-                        actionListener="#{deviceManager.onSlotEdit}"
+                        actionListener="#{alignmentManager.onAlignRecEdit}"
                         process="@this searchTable" oncomplete="PF('editDialog').show()"/>  
             <p:menuitem value="Delete" icon="ui-icon-trash"  
                         onclick="PF('deleteConfirm').show()"/>  
@@ -20,28 +20,53 @@
 
         <ui:remove> -------------------------- Search  ------------------- </ui:remove>    
 
-        <p:dataTable id="searchTable" var="item" value="#{deviceManager.objects}" 
+        <p:dataTable id="searchTable" var="item" value="#{alignmentManager.objects}" 
                      scrollRows="25" scrollable="true" liveScroll="true"   scrollHeight="200"                  
-                     selectionMode="single" selection="#{deviceManager.selectedObject}" 
+                     selectionMode="single" selection="#{alignmentManager.selectedObject}" 
+                     filteredValue="#{alignmentManager.filteredObjects}"
                      emptyMessage="No records found!" 
-                     rowKey="#{item.slotId}}" >
+                     rowKey="#{item.alignmentRecordId}}" >
 
             <f:facet name="footer">
-                <p:commandButton id="addBtn" value="Add" icon="ui-icon-plus" actionListener="#{deviceManager.onSlotAdd}"
+                <p:commandButton id="addBtn" value="Add" icon="ui-icon-plus" actionListener="#{alignmentManager.onAlignRecAdd}"
                                  process="@this" update=":slotEditForm :messages"  oncomplete="PF('editDialog').show()" />
             </f:facet>
-            <p:ajax event="rowSelect" listener="#{deviceManager.onSlotSelect}" update=":detailsPanel :messages" />
+            <p:ajax event="rowSelect" listener="#{alignmentManager.onAlignRecSelect}" update=":detailsPanel :messages" />  
 
-            <p:column id="id" headerText="Name" sortBy="#{item.name}" filterBy="#{item.name}">
-                <h:outputText value="#{item.name}"/>
+            <p:column headerText="Record Number" >
+                <h:outputText value="#{item.recordNumber}"/>
             </p:column>
-            <p:column id="desc" headerText="Description" filterBy="#{item.description}" filterMatchMode="contains">
-                <h:outputText value="#{item.description}"/>
+            <p:column id="id" headerText="Date" sortBy="#{item.alignmentDate}" >
+                <h:outputText value="#{item.alignmentDate}">
+                    <f:convertDateTime pattern="#{msgs.dateFormat}" />
+                </h:outputText>
             </p:column>
-            <p:column id="type" headerText="Type" sortBy="#{item.componentType.componentTypeId}" 
-                      filterBy="#{item.componentType.componentTypeId}" filterMatchMode="contains">
-                <h:outputText value="#{item.componentType.componentTypeId}"/>
-            </p:column>                  
+            <p:column  headerText="Slot" sortBy="#{item.slot.name}"  
+                       filterBy="#{item.slot.name}" filterMatchMode="contains">
+                <h:outputText value="#{item.slot.name}"/>
+            </p:column>
+            <p:column  headerText="Device" sortBy="#{item.device.serialNumber}"  
+                       filterBy="#{item.device.serialNumber}" filterMatchMode="contains">
+                <h:outputText value="#{item.device.serialNumber}"/>
+            </p:column>
+            <p:column headerText="Global X" >
+                <h:outputText value="#{item.globalX}"/>
+            </p:column>
+            <p:column id="desc" headerText="Global Y" >
+                <h:outputText value="#{item.globalY}"/>
+            </p:column> 
+            <p:column  headerText="Global Z" >
+                <h:outputText value="#{item.globalZ}"/>
+            </p:column>
+            <p:column headerText="Global Pitch" >
+                <h:outputText value="#{item.globalPitch}"/>
+            </p:column>
+            <p:column  headerText="Global Yaw" >
+                <h:outputText value="#{item.globalYaw}"/>
+            </p:column>
+            <p:column  headerText="Global Roll" >
+                <h:outputText value="#{item.globalRoll}"/>
+            </p:column>
             <p:column id="moddate" headerText="Date Modified" rendered="false" >
                 <h:outputText value="#{item.modifiedAt}">
                     <f:convertDateTime pattern="#{msgs.dateFormat}" />
@@ -54,83 +79,106 @@
 
     </h:form>
 
-    <p:dialog  header="Edit a Slot" appendTo="@(body)"   widgetVar="editDialog">
+    <ui:remove> -------------------------- Add/Edit ------------------- </ui:remove>
+    <p:dialog  header="Add/Edit a Device" widgetVar="editDialog">
         <h:form id="slotEditForm" prependId="false">
             <p:panelGrid id="itemEditPanel" >
+                <p:row>                       
+                    <p:column><h:outputLabel value="Record Number :" /></p:column>
+                    <p:column><p:inputText  value="#{alignmentManager.inputObject.recordNumber}"  /> </p:column>
+                </p:row>
                 <p:row>
-                    <p:column><h:outputLabel value="Slot Name:" /></p:column>
-                    <p:column><h:inputText id="icode" value="#{deviceManager.inputObject.name}" 
-                                           required="true"  /> 
+                    <p:column><h:outputLabel value="Alignment Date :" /></p:column>
+                    <p:column><p:calendar value="#{alignmentManager.inputObject.alignmentDate}" required="true"  /> 
                     </p:column>
                 </p:row>
-                <p:row>                       
-                    <p:column><h:outputLabel value="Description:" /></p:column>
-                    <p:column><p:inputTextarea id="desc" value="#{deviceManager.inputObject.description}" 
-                                               required="true"   rows="5" cols="50"  /> </p:column>
-                </p:row>
                 <p:row>
-                    <p:column><h:outputLabel value="Component Type:" /></p:column>
+                    <p:column><h:outputLabel value="Slot :" /></p:column>
                     <p:column>
-                        <p:selectOneMenu  value="#{deviceManager.inputObject.componentType}"   
-                                               var="ct" converter="#{componentTypeConverter}" 
-                                               filter="true" filterMatchMode="startsWith">  
+                        <p:selectOneMenu  value="#{alignmentManager.inputObject.slot}"   
+                                          var="slt" converter="#{slotConverter}" 
+                                          filter="true" filterMatchMode="startsWith" required="true">  
                             <f:selectItem itemLabel="Select One"  itemValue="" />
-                            <f:selectItems value="#{componentTypeMananger.objects}" var="ctype" itemLabel="#{ctype.componentTypeId}" itemValue="#{ctype}"/>
+                            <f:selectItems value="#{slotManager.objects}" var="s" itemLabel="#{s.name}" itemValue="#{s}"/>
                             <p:column>  
-                                #{ct.componentTypeId}
+                                #{slt.name}
                             </p:column>                                                
                             <p:column >  
-                                <h:outputText value="#{ct.description}" />  
+                                <h:outputText value="#{slt.description}" />  
+                            </p:column> 
+                        </p:selectOneMenu>
+                    </p:column>
+                </p:row>
+                <p:row>
+                    <p:column><h:outputLabel value="Device :" /></p:column>
+                    <p:column>
+                        <p:selectOneMenu  value="#{alignmentManager.inputObject.device}"   
+                                          var="dev" converter="#{deviceConverter}" 
+                                          filter="true" filterMatchMode="startsWith" required="true">  
+                            <f:selectItem itemLabel="Select One"  itemValue="" />
+                            <f:selectItems value="#{deviceManager.objects}" var="s" itemLabel="#{s.serialNumber}" itemValue="#{s}"/>
+                            <p:column>  
+                                #{dev.serialNumber}
+                            </p:column>                                                
+                            <p:column >  
+                                <h:outputText value="#{dev.description}" />  
                             </p:column> 
                         </p:selectOneMenu>
                     </p:column>
                 </p:row>
                 <p:row>                       
-                    <p:column><h:outputLabel value="Hosting Slot:" /></p:column>
-                    <p:column><p:selectBooleanCheckbox value="#{deviceManager.inputObject.isAbstract}"/> </p:column>
+                    <p:column><h:outputLabel value="Global X" /></p:column>
+                    <p:column><p:inputText  value="#{alignmentManager.inputObject.globalX}"  /> </p:column>
+                </p:row>  
+                <p:row>                       
+                    <p:column><h:outputLabel value="Global Y" /></p:column>
+                    <p:column><p:inputText  value="#{alignmentManager.inputObject.globalY}" /> </p:column>
                 </p:row>
                 <p:row>                       
-                    <p:column><h:outputLabel value="Location:" /></p:column>
-                    <p:column>
-                        <h:outputLabel value="X: " />
-                        <p:inputText value="#{deviceManager.inputObject.globalX}"/> 
-                        <h:outputLabel value="Y: " />
-                        <p:inputText value="#{deviceManager.inputObject.globalY}"/> 
-                        <h:outputLabel value="Z: " />
-                        <p:inputText value="#{deviceManager.inputObject.globalZ}"/>                         
-                    </p:column>
+                    <p:column><h:outputLabel value="Global Z" /></p:column>
+                    <p:column><p:inputText  value="#{alignmentManager.inputObject.globalZ}"  /> </p:column>
+                </p:row>
+                <p:row>                       
+                    <p:column><h:outputLabel value="Global Pitch" /></p:column>
+                    <p:column><p:inputText  value="#{alignmentManager.inputObject.globalPitch}"  /> </p:column>
+                </p:row>
+                <p:row>                       
+                    <p:column><h:outputLabel value="Global Yaw" /></p:column>
+                    <p:column><p:inputText value="#{alignmentManager.inputObject.globalYaw}"  /> </p:column>
+                </p:row>
+                <p:row>                       
+                    <p:column><h:outputLabel value="Global Roll" /></p:column>
+                    <p:column><p:inputText  value="#{alignmentManager.inputObject.globalRoll}"  /> </p:column>
                 </p:row>
             </p:panelGrid>
             <p:toolbar>
                 <p:toolbarGroup  align="right" >                      
-                    <p:commandButton value="Save" icon="ui-icon-disk" ajax="false"
+                    <p:commandButton value="Save" icon="ui-icon-disk" 
                                      update=":searchForm:searchTable :messages" 
-                                     process="@form" actionListener="#{deviceManager.onSlotSave}"
-                                     oncomplete="PF('editDialog').hide()"
-                                     /> 
+                                     process="@form" actionListener="#{alignmentManager.onAlignRecSave}"
+                                     oncomplete="if (!args.validationFailed &amp;&amp; args.success) PF('editDialog').hide()" /> 
                     <p:separator /> 
                     <p:commandButton value="Cancel" icon="ui-icon-close"                                         
-                                     process="@this"  onclick="PF('editDialog').hide()"
-                                     />
+                                     process="@this"  onclick="PF('editDialog').hide()" />
                 </p:toolbarGroup>
             </p:toolbar> 
         </h:form>  
     </p:dialog>
 
-    <ui:remove> -------------------------- Delete Component Type Confirm ------------------- </ui:remove>
+    <ui:remove> -------------------------- Delete Slot Confirm ------------------- </ui:remove>
     <p:dialog widgetVar="deleteConfirm">  
         <f:facet name="header">  
             <h:outputText value="Delete Property"/> 
         </f:facet>
         <h:form id="compTypeDelForm" prependId="false">
-            <h:outputText value="Do you really want to delete this record?" />
+            <h:outputText value="Do you really want to delete this slot?" />
 
             <p:separator /> 
             <p:commandButton value="Yes" style="float: left"  
                              icon="ui-icon-check"
-                             process="@this" update="@all"
+                             process="@this" update=":searchForm:searchTable"
                              oncomplete="PF('deleteConfirm').hide()"                                                                
-                             actionListener="#{deviceManager.onSlotDelete}"/> 
+                             actionListener="#{alignmentManager.onAlignRecDelete}"/> 
             <p:commandButton  type="cancel" value="No" style="float: right"
                               icon="ui-icon-close"
                               update=":messages" process="@this"                                  

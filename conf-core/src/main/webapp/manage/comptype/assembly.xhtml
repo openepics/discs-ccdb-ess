@@ -7,7 +7,7 @@
     xmlns:h="http://java.sun.com/jsf/html">              
 
     <ui:remove> -------------------------- Assembly ------------------- </ui:remove>
-    <h:form id="assemblyForm" prependId="false" >
+    <h:form id="assemblyForm" prependId="false" rendered="#{componentTypeMananger.selectedObject ne null}">
         <p:panel toggleable="true" >
             <f:facet name="header">                           
                 <h:outputText value="Type Assembly : " />
@@ -17,7 +17,7 @@
             <p:dataTable id="asmTable" var="asmp" value="#{componentTypeMananger.selectedParts}" 
                          scrollRows="25" scrollable="true" liveScroll="true"   scrollHeight="200"                               
                          emptyMessage="No artifacts found"  editMode="row" editable="true" 
-                         rowKey="#{asmp.compTypeAsmPK}}"  >                
+                         rowKey="#{asmp.comptypeAsmId}}"  >                
 
                 <p:ajax event="rowEdit" listener="#{componentTypeMananger.onAsmSave}" update="asmTable  :messages" />                  
                 <p:ajax event="rowEditInit" listener="#{componentTypeMananger.onAsmEdit}" update=":messages" />                  
@@ -30,23 +30,23 @@
                 </p:column>
                 <p:column headerText="Position">
                     <p:cellEditor>
-                        <f:facet name="output"><h:outputText value="#{asmp.compTypeAsmPK.childPosition}" /></f:facet>
-                        <f:facet name="input"><p:inputText id="inname" value="#{asmp.compTypeAsmPK.childPosition}" style="width:100%"/></f:facet>
+                        <f:facet name="output"><h:outputText value="#{asmp.childPosition}" /></f:facet>
+                        <f:facet name="input"><p:inputText id="inname" value="#{asmp.childPosition}" style="width:100%"/></f:facet>
                     </p:cellEditor> 
                     <p:watermark for="inname" value="Enter Position"/>
                 </p:column>
                 <p:column headerText="Comp Type">
                     <p:cellEditor>
-                        <f:facet name="output"><h:outputText value="#{asmp.childType.componentTypeId}" /></f:facet>
+                        <f:facet name="output"><h:outputText value="#{asmp.childType.name}" /></f:facet>
                         <f:facet name="input">
                             <p:selectOneMenu id="parent" value="#{asmp.childType}"   
                                              var="ct"  
                                              converter="#{componentTypeConverter}" rendered="true"
                                              filter="true" filterMatchMode="startsWith" style="width: 100%;">  
                                 <f:selectItem itemLabel="Select One"  itemValue="" />
-                                <f:selectItems value="#{componentTypeMananger.objects}" var="ctype" itemLabel="#{ctype.componentTypeId}" itemValue="#{ctype}"/>
+                                <f:selectItems value="#{componentTypeMananger.objects}" var="ctype" itemLabel="#{ctype.name}" itemValue="#{ctype}"/>
                                 <p:column>  
-                                    #{ct.componentTypeId}
+                                    #{ct.name}
                                 </p:column>                                                
                                 <p:column >  
                                     <h:outputText value="#{ct.description}" />  

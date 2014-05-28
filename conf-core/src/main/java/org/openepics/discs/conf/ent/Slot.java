@@ -41,7 +41,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Slot.findBySlotId", query = "SELECT s FROM Slot s WHERE s.slotId = :slotId"),
     @NamedQuery(name = "Slot.findByName", query = "SELECT s FROM Slot s WHERE s.name = :name"),
     @NamedQuery(name = "Slot.findByDescription", query = "SELECT s FROM Slot s WHERE s.description = :description"),
-    @NamedQuery(name = "Slot.findByIsAbstract", query = "SELECT s FROM Slot s WHERE s.isAbstract = :isAbstract"),
+    @NamedQuery(name = "Slot.findByIsHostingSlot", query = "SELECT s FROM Slot s WHERE s.isHostingSlot = :isHostingSlot"),
     @NamedQuery(name = "Slot.findByBeamlinePosition", query = "SELECT s FROM Slot s WHERE s.beamlinePosition = :beamlinePosition"),
     @NamedQuery(name = "Slot.findByGlobalX", query = "SELECT s FROM Slot s WHERE s.globalX = :globalX"),
     @NamedQuery(name = "Slot.findByGlobalY", query = "SELECT s FROM Slot s WHERE s.globalY = :globalY"),
@@ -72,8 +72,8 @@ public class Slot implements Serializable {
     private String description;
     @Basic(optional = false)
     @NotNull
-    @Column(name = "is_abstract")
-    private boolean isAbstract;
+    @Column(name = "is_hosting_slot")
+    private boolean isHostingSlot;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "beamline_position")
     private Double beamlinePosition;
@@ -113,26 +113,24 @@ public class Slot implements Serializable {
     @Column(name = "version")
     private int version;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "slot")
-    private List<AlignmentRecord> alignmentRecordList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "slot")
-    private List<InstallationRecord> installationRecordList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "slot")
-    private List<SlotLogRec> slotLogRecList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "slot")
-    private List<SlotPair> slotPairList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "slot1")
-    private List<SlotPair> slotPairList1;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "slot")
-    private List<LsArtifact> lsArtifactList;
+    private List<SlotArtifact> slotArtifactList;
+    @JoinColumn(name = "component_type", referencedColumnName = "component_type_id")
+    @ManyToOne(optional = false)
+    private ComponentType componentType;
     @OneToMany(mappedBy = "asmSlot")
     private List<Slot> slotList;
     @JoinColumn(name = "asm_slot", referencedColumnName = "slot_id")
     @ManyToOne
     private Slot asmSlot;
-    @JoinColumn(name = "component_type", referencedColumnName = "component_type_id")
-    @ManyToOne(optional = false)
-    private ComponentType componentType;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "slot1")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "slot")
+    private List<AlignmentRecord> alignmentRecordList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "slot")
+    private List<InstallationRecord> installationRecordList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "childSlot")
+    private List<SlotPair> slotPairList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "parentSlot")
+    private List<SlotPair> slotPairList1;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "slot")
     private List<SlotProperty> slotPropertyList;
 
     public Slot() {
@@ -142,10 +140,10 @@ public class Slot implements Serializable {
         this.slotId = slotId;
     }
 
-    public Slot(Integer slotId, String name, boolean isAbstract, Date modifiedAt, String modifiedBy, int version) {
+    public Slot(Integer slotId, String name, boolean isHostingSlot, Date modifiedAt, String modifiedBy, int version) {
         this.slotId = slotId;
         this.name = name;
-        this.isAbstract = isAbstract;
+        this.isHostingSlot = isHostingSlot;
         this.modifiedAt = modifiedAt;
         this.modifiedBy = modifiedBy;
         this.version = version;
@@ -175,12 +173,12 @@ public class Slot implements Serializable {
         this.description = description;
     }
 
-    public boolean getIsAbstract() {
-        return isAbstract;
+    public boolean getIsHostingSlot() {
+        return isHostingSlot;
     }
 
-    public void setIsAbstract(boolean isAbstract) {
-        this.isAbstract = isAbstract;
+    public void setIsHostingSlot(boolean isHostingSlot) {
+        this.isHostingSlot = isHostingSlot;
     }
 
     public Double getBeamlinePosition() {
@@ -288,57 +286,20 @@ public class Slot implements Serializable {
     }
 
     @XmlTransient
-    public List<AlignmentRecord> getAlignmentRecordList() {
-        return alignmentRecordList;
+    public List<SlotArtifact> getSlotArtifactList() {
+        return slotArtifactList;
     }
 
-    public void setAlignmentRecordList(List<AlignmentRecord> alignmentRecordList) {
-        this.alignmentRecordList = alignmentRecordList;
+    public void setSlotArtifactList(List<SlotArtifact> slotArtifactList) {
+        this.slotArtifactList = slotArtifactList;
     }
 
-    @XmlTransient
-    public List<InstallationRecord> getInstallationRecordList() {
-        return installationRecordList;
+    public ComponentType getComponentType() {
+        return componentType;
     }
 
-    public void setInstallationRecordList(List<InstallationRecord> installationRecordList) {
-        this.installationRecordList = installationRecordList;
-    }
-
-    @XmlTransient
-    public List<SlotLogRec> getSlotLogRecList() {
-        return slotLogRecList;
-    }
-
-    public void setSlotLogRecList(List<SlotLogRec> slotLogRecList) {
-        this.slotLogRecList = slotLogRecList;
-    }
-
-    @XmlTransient
-    public List<SlotPair> getSlotPairList() {
-        return slotPairList;
-    }
-
-    public void setSlotPairList(List<SlotPair> slotPairList) {
-        this.slotPairList = slotPairList;
-    }
-
-    @XmlTransient
-    public List<SlotPair> getSlotPairList1() {
-        return slotPairList1;
-    }
-
-    public void setSlotPairList1(List<SlotPair> slotPairList1) {
-        this.slotPairList1 = slotPairList1;
-    }
-
-    @XmlTransient
-    public List<LsArtifact> getLsArtifactList() {
-        return lsArtifactList;
-    }
-
-    public void setLsArtifactList(List<LsArtifact> lsArtifactList) {
-        this.lsArtifactList = lsArtifactList;
+    public void setComponentType(ComponentType componentType) {
+        this.componentType = componentType;
     }
 
     @XmlTransient
@@ -358,12 +319,40 @@ public class Slot implements Serializable {
         this.asmSlot = asmSlot;
     }
 
-    public ComponentType getComponentType() {
-        return componentType;
+    @XmlTransient
+    public List<AlignmentRecord> getAlignmentRecordList() {
+        return alignmentRecordList;
     }
 
-    public void setComponentType(ComponentType componentType) {
-        this.componentType = componentType;
+    public void setAlignmentRecordList(List<AlignmentRecord> alignmentRecordList) {
+        this.alignmentRecordList = alignmentRecordList;
+    }
+
+    @XmlTransient
+    public List<InstallationRecord> getInstallationRecordList() {
+        return installationRecordList;
+    }
+
+    public void setInstallationRecordList(List<InstallationRecord> installationRecordList) {
+        this.installationRecordList = installationRecordList;
+    }
+
+    @XmlTransient
+    public List<SlotPair> getSlotPairList() {
+        return slotPairList;
+    }
+
+    public void setSlotPairList(List<SlotPair> slotPairList) {
+        this.slotPairList = slotPairList;
+    }
+
+    @XmlTransient
+    public List<SlotPair> getSlotPairList1() {
+        return slotPairList1;
+    }
+
+    public void setSlotPairList1(List<SlotPair> slotPairList1) {
+        this.slotPairList1 = slotPairList1;
     }
 
     @XmlTransient

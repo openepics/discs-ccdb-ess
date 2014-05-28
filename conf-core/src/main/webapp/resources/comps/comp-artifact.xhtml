@@ -1,0 +1,83 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:cc="http://java.sun.com/jsf/composite">
+
+    <!-- INTERFACE -->
+    <cc:interface>
+        <cc:attribute name="selectedComponent" required="true"/>
+        <cc:attribute name="collapsed" required="false" default="false"/>       
+    </cc:interface>
+
+    <!-- IMPLEMENTATION -->
+    <cc:implementation>
+        <p:panel header="Artifacts" toggleable="true"  style="border: 0px;" collapsed="#{cc.attrs.collapsed}"> 
+            <p:dataTable  var="art" value="#{cc.attrs.selectedComponent.slotArtifactList}" 
+                          scrollRows="25" scrollable="true" liveScroll="true"   scrollHeight="100"                               
+                          emptyMessage="No artifacts found"  editMode="row" editable="false"                          
+                          rowKey="#{art.artifactId}}"  rendered="#{cc.attrs.selectedComponent.slotArtifactList ne null}">                
+
+                <f:facet name="header">
+                    Slot Artifacts
+                </f:facet>
+                <p:column  headerText="Name">                   
+                    <h:outputLink value="#{art.uri}"  styleClass="ui-icon ui-icon-extlink" 
+                                  style="display:inline-block;" target="_blank" rendered="#{! art.isInternal}"/>                  
+                    <p:commandLink  value="dl" ajax="false"                                  
+                                    styleClass="ui-icon ui-icon-arrowthickstop-1-s" style="display:inline-block;"
+                                    rendered="#{art.isInternal}">   
+                        <f:setPropertyActionListener target="#{slotManager.selectedArtifact}" value="#{art}" />
+                        <p:fileDownload value="#{slotManager.downloadedFile}" />  
+                    </p:commandLink>
+                    <h:outputText value="#{art.name}" />
+                </p:column>               
+                <p:column  headerText="Description">
+                    <h:outputText value="#{art.description}" />
+                </p:column>  
+                <p:column  headerText="Date">
+                    <h:outputText value="#{art.modifiedAt}" >
+                        <f:convertDateTime pattern="#{msgs.dateFormat}" />
+                    </h:outputText>
+                </p:column> 
+                <p:column  headerText="User">
+                    <h:outputText value="#{art.modifiedBy}" />
+                </p:column>
+            </p:dataTable>
+
+            <p:dataTable  var="art" value="#{cc.attrs.selectedComponent.componentType.comptypeArtifactList}" 
+                          scrollRows="25" scrollable="true" liveScroll="true"   scrollHeight="100"                               
+                          emptyMessage="No artifacts found"  editMode="row" editable="false"                          
+                          rowKey="#{art.artifactId}}"  rendered="#{cc.attrs.selectedComponent.componentType.comptypeArtifactList ne null}">                
+
+                <f:facet name="header">
+                    Component Type Artifacts
+                </f:facet>
+                <p:column  headerText="Name">                   
+                    <h:outputLink value="#{art.uri}"  styleClass="ui-icon ui-icon-extlink" 
+                                  style="display:inline-block;" target="_blank" rendered="#{! art.isInternal}"/>                  
+                    <p:commandLink  value="dl" ajax="false"                                  
+                                    styleClass="ui-icon ui-icon-arrowthickstop-1-s" style="display:inline-block;"
+                                    rendered="#{art.isInternal}">   
+                        <f:setPropertyActionListener target="#{componentTypeMananger.selectedArtifact}" value="#{art}" />
+                        <p:fileDownload value="#{componentTypeMananger.downloadedFile}" />  
+                    </p:commandLink>
+                    <h:outputText value="#{art.name}" />
+                </p:column>               
+                <p:column  headerText="Description">
+                    <h:outputText value="#{art.description}" />
+                </p:column>  
+                <p:column  headerText="Date">
+                    <h:outputText value="#{art.modifiedAt}" >
+                        <f:convertDateTime pattern="#{msgs.dateFormat}" />
+                    </h:outputText>
+                </p:column> 
+                <p:column  headerText="User">
+                    <h:outputText value="#{art.modifiedBy}" />
+                </p:column>
+            </p:dataTable>
+        </p:panel>
+    </cc:implementation>
+</html>

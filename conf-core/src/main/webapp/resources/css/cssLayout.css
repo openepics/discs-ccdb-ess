@@ -30,6 +30,10 @@
     width: 150px;
 }
 
+.alignRight, td.alignRight {
+    text-align: right;
+}
+
 .center_content {
     position: relative;
     /* background-color: #dddddd; */

@@ -1,0 +1,81 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:cc="http://java.sun.com/jsf/composite">
+
+    <!-- INTERFACE -->
+    <cc:interface>
+        <cc:attribute name="selectedComponent" required="true"/>
+        <cc:attribute name="collapsed" required="false" default="false"/>       
+    </cc:interface>
+
+    <!-- IMPLEMENTATION -->
+    <cc:implementation>
+        <p:panel header="Alignments" toggleable="true"  style="border: 0px;" collapsed="#{cc.attrs.collapsed}"> 
+            <p:dataTable id="alignTable" var="item" value="#{cc.attrs.selectedComponent.alignmentRecordList}" 
+                         scrollRows="25" scrollable="true" liveScroll="true"   scrollHeight="200"                  
+                         selectionMode="single" selection="#{alignmentManager.selectedObject}" 
+                         emptyMessage="No records found!" 
+                         rowKey="#{item.alignmentRecordId}}" >
+
+                <p:column headerText="Record Number" >
+                    <h:outputText value="#{item.recordNumber}"/>
+                </p:column>
+                <p:column id="id" headerText="Date" sortBy="#{item.alignmentDate}" >
+                    <h:outputText value="#{item.alignmentDate}">
+                        <f:convertDateTime pattern="#{msgs.dateFormat}" />
+                    </h:outputText>
+                </p:column>
+
+                <p:column  headerText="Device"  >
+                    <h:outputText value="#{item.device.serialNumber}"/>
+                </p:column>
+                <p:column headerText="Global X" >
+                    <h:outputText value="#{item.globalX}"/>
+                </p:column>
+                <p:column id="desc" headerText="Global Y" >
+                    <h:outputText value="#{item.globalY}"/>
+                </p:column> 
+                <p:column  headerText="Global Z" >
+                    <h:outputText value="#{item.globalZ}"/>
+                </p:column>
+                <p:column headerText="Global Pitch" >
+                    <h:outputText value="#{item.globalPitch}"/>
+                </p:column>
+                <p:column  headerText="Global Yaw" >
+                    <h:outputText value="#{item.globalYaw}"/>
+                </p:column>
+                <p:column  headerText="Global Roll" >
+                    <h:outputText value="#{item.globalRoll}"/>
+                </p:column>
+
+            </p:dataTable >
+            <p:panelGrid rendered="false">  
+                <f:facet name="header">  
+                    <p:row> <p:column colspan="6"><h:outputText value="Design Alignemnt"/></p:column> </p:row>
+                </f:facet> 
+                <p:row>  
+                    <p:column>Global X</p:column>  
+                    <p:column>Y</p:column>  
+                    <p:column>Z</p:column>  
+                    <p:column>Pitch</p:column> 
+                    <p:column>Yaw</p:column>  
+                    <p:column>Roll</p:column>                       
+                </p:row>  
+
+                <p:row>  
+                    <p:column>#{cc.attrs.selectedComponent.globalX}</p:column>  
+                    <p:column>#{cc.attrs.selectedComponent.globalY}</p:column>  
+                    <p:column>#{cc.attrs.selectedComponent.globalZ}</p:column>  
+                    <p:column>#{cc.attrs.selectedComponent.globalPitch}</p:column>  
+                    <p:column>#{cc.attrs.selectedComponent.globalYaw}</p:column>
+                    <p:column>#{cc.attrs.selectedComponent.globalRoll}</p:column>
+
+                </p:row> 					  
+            </p:panelGrid>
+        </p:panel>
+    </cc:implementation>
+</html>

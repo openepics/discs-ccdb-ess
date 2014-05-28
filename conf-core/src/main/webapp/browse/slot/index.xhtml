@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+    Displays a tree of logical components. Selecting one will display its details.
+
+    @author: 
+-->
+<ui:composition 
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    template="/template/ConfigManagerTemplate.xhtml"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:fc="http://java.sun.com/jsf/composite/comps"
+    xmlns:h="http://java.sun.com/jsf/html">              
+
+    <ui:define name="content">
+        <p:layout id="comptree-layout" style="min-width: 100%;min-height: 1024px;" >			
+            <p:layoutUnit position="west" resizable="true" size="" minSize="200" maxSize="300" header="Component Tree" collapsible="true">
+                <ui:include src="comptreenav.xhtml" />	
+            </p:layoutUnit>  
+
+            <p:layoutUnit  position="center" resizable="true" header="Slot">
+                <ui:include src="comptree.xhtml" />
+            </p:layoutUnit>	
+        </p:layout>
+    </ui:define>
+
+</ui:composition>

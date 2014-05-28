@@ -36,10 +36,10 @@ public class PropertyConverter implements Converter {
         Property prop;
 
         if (value == null || value.equals("")) {
-            logger.log(Level.INFO, "exp converter: empty experiemnt id");
+            logger.log(Level.INFO, "PropertyConverter: empty property id");
             return null;
         } else {
-            prop = configurationEJB.findProperty(value);
+            prop = configurationEJB.findProperty(Integer.parseInt(value));
             return prop;
         }
     }
@@ -47,11 +47,11 @@ public class PropertyConverter implements Converter {
     @Override
     public String getAsString(FacesContext context, UIComponent component, Object value) {
         if (value == null || value.equals("")) {
-            logger.log(Level.INFO, "Null object");
+            logger.log(Level.INFO, "PropertyConverter: empty property object");
             return "";
         } else {
             // logger.log(Level.INFO, "Exp number: " + ((Experiment) value).getId().toString());
-            return ((Property) value).getPropertyId();
+            return ((Property) value).getPropertyId().toString();
         }
     }
 }

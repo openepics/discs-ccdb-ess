@@ -37,6 +37,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "AlignmentArtifact.findAll", query = "SELECT a FROM AlignmentArtifact a"),
     @NamedQuery(name = "AlignmentArtifact.findByArtifactId", query = "SELECT a FROM AlignmentArtifact a WHERE a.artifactId = :artifactId"),
     @NamedQuery(name = "AlignmentArtifact.findByName", query = "SELECT a FROM AlignmentArtifact a WHERE a.name = :name"),
+    @NamedQuery(name = "AlignmentArtifact.findByIsInternal", query = "SELECT a FROM AlignmentArtifact a WHERE a.isInternal = :isInternal"),
     @NamedQuery(name = "AlignmentArtifact.findByDescription", query = "SELECT a FROM AlignmentArtifact a WHERE a.description = :description"),
     @NamedQuery(name = "AlignmentArtifact.findByModifiedBy", query = "SELECT a FROM AlignmentArtifact a WHERE a.modifiedBy = :modifiedBy"),
     @NamedQuery(name = "AlignmentArtifact.findByModifiedAt", query = "SELECT a FROM AlignmentArtifact a WHERE a.modifiedAt = :modifiedAt")})
@@ -52,6 +53,10 @@ public class AlignmentArtifact implements Serializable {
     @Size(min = 1, max = 128)
     @Column(name = "name")
     private String name;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "is_internal")
+    private boolean isInternal;
     @Size(max = 255)
     @Column(name = "description")
     private String description;
@@ -82,9 +87,10 @@ public class AlignmentArtifact implements Serializable {
         this.artifactId = artifactId;
     }
 
-    public AlignmentArtifact(Integer artifactId, String name, String uri, String modifiedBy, Date modifiedAt) {
+    public AlignmentArtifact(Integer artifactId, String name, boolean isInternal, String uri, String modifiedBy, Date modifiedAt) {
         this.artifactId = artifactId;
         this.name = name;
+        this.isInternal = isInternal;
         this.uri = uri;
         this.modifiedBy = modifiedBy;
         this.modifiedAt = modifiedAt;
@@ -104,6 +110,14 @@ public class AlignmentArtifact implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public boolean getIsInternal() {
+        return isInternal;
+    }
+
+    public void setIsInternal(boolean isInternal) {
+        this.isInternal = isInternal;
     }
 
     public String getDescription() {

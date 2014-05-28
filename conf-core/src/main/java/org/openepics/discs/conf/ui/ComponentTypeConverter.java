@@ -13,7 +13,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
-import org.openepics.discs.conf.ejb.ConfigurationEJBLocal;
+import org.openepics.discs.conf.ejb.ComptypeEJBLocal;
 import org.openepics.discs.conf.ent.ComponentType;
 
 /**
@@ -25,7 +25,7 @@ import org.openepics.discs.conf.ent.ComponentType;
 // @ViewScoped
 public class ComponentTypeConverter implements Converter {
     @EJB
-    private ConfigurationEJBLocal configurationEJB;
+    private ComptypeEJBLocal comptypeEJB;
     private static final Logger logger = Logger.getLogger("org.openepics.discs.conf");
     
     /**
@@ -42,7 +42,7 @@ public class ComponentTypeConverter implements Converter {
             logger.log(Level.INFO, "CompType converter: empty Component Type id");
             return null;
         } else {
-            ctype = configurationEJB.findComponentType(value);
+            ctype = comptypeEJB.findComponentType(Integer.parseInt(value));
             return ctype;
         }
     }
@@ -54,7 +54,7 @@ public class ComponentTypeConverter implements Converter {
             return "";
         } else {
             // logger.log(Level.INFO, "Exp number: " + ((Experiment) value).getId().toString());
-            return ((ComponentType) value).getComponentTypeId();
+            return ((ComponentType) value).getComponentTypeId().toString();
         }
     }
 }

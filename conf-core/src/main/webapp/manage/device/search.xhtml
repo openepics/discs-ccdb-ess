@@ -9,10 +9,10 @@
     <h:form id="searchForm"  prependId="false">
         <p:contextMenu for="searchTable">  
             <p:menuitem value="Add" icon="ui-icon-plus"  update=":slotEditForm :messages" 
-                        actionListener="#{deviceManager.onSlotAdd}"
+                        actionListener="#{deviceManager.onDeviceAdd}"
                         process="@this"  oncomplete="PF('editSlotDialog').show()"/>  
             <p:menuitem value="Edit" icon="ui-icon-pencil" update=":slotEditForm :messages" 
-                        actionListener="#{deviceManager.onSlotEdit}"
+                        actionListener="#{deviceManager.onDeviceEdit}"
                         process="@this searchTable" oncomplete="PF('editDialog').show()"/>  
             <p:menuitem value="Delete" icon="ui-icon-trash"  
                         onclick="PF('deleteConfirm').show()"/>  
@@ -23,25 +23,48 @@
         <p:dataTable id="searchTable" var="item" value="#{deviceManager.objects}" 
                      scrollRows="25" scrollable="true" liveScroll="true"   scrollHeight="200"                  
                      selectionMode="single" selection="#{deviceManager.selectedObject}" 
+                     filteredValue="#{deviceManager.filteredObjects}"
                      emptyMessage="No records found!" 
-                     rowKey="#{item.slotId}}" >
+                     rowKey="#{item.deviceId}}" >
 
             <f:facet name="footer">
-                <p:commandButton id="addBtn" value="Add" icon="ui-icon-plus" actionListener="#{deviceManager.onSlotAdd}"
+                <p:commandButton id="addBtn" value="Add" icon="ui-icon-plus" actionListener="#{deviceManager.onDeviceAdd}"
                                  process="@this" update=":slotEditForm :messages"  oncomplete="PF('editDialog').show()" />
             </f:facet>
-            <p:ajax event="rowSelect" listener="#{deviceManager.onSlotSelect}" update=":detailsPanel :messages" />
+            <p:ajax event="rowSelect" listener="#{deviceManager.onDeviceSelect}" update=":detailsPanel :messages" />
 
-            <p:column id="id" headerText="Name" sortBy="#{item.name}" filterBy="#{item.name}">
-                <h:outputText value="#{item.name}"/>
+            <p:column id="id" headerText="Name" sortBy="#{item.serialNumber}" filterBy="#{item.serialNumber}">
+                <h:outputText value="#{item.serialNumber}"/>
             </p:column>
             <p:column id="desc" headerText="Description" filterBy="#{item.description}" filterMatchMode="contains">
                 <h:outputText value="#{item.description}"/>
             </p:column>
-            <p:column id="type" headerText="Type" sortBy="#{item.componentType.componentTypeId}" 
-                      filterBy="#{item.componentType.componentTypeId}" filterMatchMode="contains">
-                <h:outputText value="#{item.componentType.componentTypeId}"/>
-            </p:column>                  
+            <p:column id="type" headerText="Type" sortBy="#{item.componentType.name}" 
+                      filterBy="#{item.componentType.name}" filterMatchMode="contains">
+                <h:outputText value="#{item.componentType.name}"/>
+            </p:column>
+            <p:column headerText="Part Of" sortBy="#{item.asmParent.serialNumber}" 
+                      filterBy="#{item.asmParent.serialNumber}" filterMatchMode="contains">
+                <h:outputText value="#{item.asmParent.serialNumber}"/>
+            </p:column>
+            <p:column  headerText="Asm Position" >
+                <h:outputText value="#{item.asmPosition}"/>
+            </p:column>
+            <p:column  headerText="Asm Comment" >
+                <h:outputText value="#{item.asmDescription}"/>
+            </p:column>
+            <p:column  headerText="Manfacturer">
+                <h:outputText value="#{item.manufacturer}"/>
+            </p:column>
+            <p:column  headerText="Manuf Model">
+                <h:outputText value="#{item.manufModel}"/>
+            </p:column>
+            <p:column headerText="PO#">
+                <h:outputText value="#{item.purchaseOrder}"/>
+            </p:column>
+            <p:column  headerText="Status">
+                <h:outputText value="#{item.status}"/>
+            </p:column>          
             <p:column id="moddate" headerText="Date Modified" rendered="false" >
                 <h:outputText value="#{item.modifiedAt}">
                     <f:convertDateTime pattern="#{msgs.dateFormat}" />
@@ -54,12 +77,13 @@
 
     </h:form>
 
-    <p:dialog  header="Edit a Slot" appendTo="@(body)"   widgetVar="editDialog">
+    <ui:remove> -------------------------- Add/Edit ------------------- </ui:remove>
+    <p:dialog  header="Add/Edit a Device" widgetVar="editDialog">
         <h:form id="slotEditForm" prependId="false">
             <p:panelGrid id="itemEditPanel" >
                 <p:row>
-                    <p:column><h:outputLabel value="Slot Name:" /></p:column>
-                    <p:column><h:inputText id="icode" value="#{deviceManager.inputObject.name}" 
+                    <p:column><h:outputLabel value="Serial Number:" /></p:column>
+                    <p:column><h:inputText id="icode" value="#{deviceManager.inputObject.serialNumber}" 
                                            required="true"  /> 
                     </p:column>
                 </p:row>
@@ -72,12 +96,12 @@
                     <p:column><h:outputLabel value="Component Type:" /></p:column>
                     <p:column>
                         <p:selectOneMenu  value="#{deviceManager.inputObject.componentType}"   
-                                               var="ct" converter="#{componentTypeConverter}" 
-                                               filter="true" filterMatchMode="startsWith">  
+                                          var="ct" converter="#{componentTypeConverter}" 
+                                          filter="true" filterMatchMode="startsWith" required="true">  
                             <f:selectItem itemLabel="Select One"  itemValue="" />
-                            <f:selectItems value="#{componentTypeMananger.objects}" var="ctype" itemLabel="#{ctype.componentTypeId}" itemValue="#{ctype}"/>
+                            <f:selectItems value="#{componentTypeMananger.objects}" var="ctype" itemLabel="#{ctype.name}" itemValue="#{ctype}"/>
                             <p:column>  
-                                #{ct.componentTypeId}
+                                #{ct.name}
                             </p:column>                                                
                             <p:column >  
                                 <h:outputText value="#{ct.description}" />  
@@ -85,52 +109,48 @@
                         </p:selectOneMenu>
                     </p:column>
                 </p:row>
-                <p:row>                       
-                    <p:column><h:outputLabel value="Hosting Slot:" /></p:column>
-                    <p:column><p:selectBooleanCheckbox value="#{deviceManager.inputObject.isAbstract}"/> </p:column>
+                <p:row>
+                    <p:column><h:outputLabel value="Manufacturer:" /></p:column>
+                    <p:column><h:inputText  value="#{deviceManager.inputObject.manufacturer}"/> </p:column>
                 </p:row>
-                <p:row>                       
-                    <p:column><h:outputLabel value="Location:" /></p:column>
-                    <p:column>
-                        <h:outputLabel value="X: " />
-                        <p:inputText value="#{deviceManager.inputObject.globalX}"/> 
-                        <h:outputLabel value="Y: " />
-                        <p:inputText value="#{deviceManager.inputObject.globalY}"/> 
-                        <h:outputLabel value="Z: " />
-                        <p:inputText value="#{deviceManager.inputObject.globalZ}"/>                         
-                    </p:column>
+                <p:row>
+                    <p:column><h:outputLabel value="Manuf Model:" /></p:column>
+                    <p:column><h:inputText value="#{deviceManager.inputObject.manufModel}"/> </p:column>
                 </p:row>
+                <p:row>
+                    <p:column><h:outputLabel value="PO:" /></p:column>
+                    <p:column><h:inputText  value="#{deviceManager.inputObject.purchaseOrder}"/> </p:column>
+                </p:row>
+                    
             </p:panelGrid>
             <p:toolbar>
                 <p:toolbarGroup  align="right" >                      
-                    <p:commandButton value="Save" icon="ui-icon-disk" ajax="false"
+                    <p:commandButton value="Save" icon="ui-icon-disk" 
                                      update=":searchForm:searchTable :messages" 
-                                     process="@form" actionListener="#{deviceManager.onSlotSave}"
-                                     oncomplete="PF('editDialog').hide()"
-                                     /> 
+                                     process="@form" actionListener="#{deviceManager.onDeviceSave}"
+                                     oncomplete="if (!args.validationFailed &amp;&amp; args.success) PF('editDialog').hide()" /> 
                     <p:separator /> 
                     <p:commandButton value="Cancel" icon="ui-icon-close"                                         
-                                     process="@this"  onclick="PF('editDialog').hide()"
-                                     />
+                                     process="@this"  onclick="PF('editDialog').hide()" />
                 </p:toolbarGroup>
             </p:toolbar> 
         </h:form>  
     </p:dialog>
 
-    <ui:remove> -------------------------- Delete Component Type Confirm ------------------- </ui:remove>
+    <ui:remove> -------------------------- Delete Confirm ------------------- </ui:remove>
     <p:dialog widgetVar="deleteConfirm">  
         <f:facet name="header">  
             <h:outputText value="Delete Property"/> 
         </f:facet>
         <h:form id="compTypeDelForm" prependId="false">
-            <h:outputText value="Do you really want to delete this record?" />
+            <h:outputText value="Do you really want to delete this slot?" />
 
             <p:separator /> 
             <p:commandButton value="Yes" style="float: left"  
                              icon="ui-icon-check"
-                             process="@this" update="@all"
+                             process="@this" update=":searchForm:searchTable :messages"
                              oncomplete="PF('deleteConfirm').hide()"                                                                
-                             actionListener="#{deviceManager.onSlotDelete}"/> 
+                             actionListener="#{deviceManager.onDeviceDelete}"/> 
             <p:commandButton  type="cancel" value="No" style="float: right"
                               icon="ui-icon-close"
                               update=":messages" process="@this"                                  

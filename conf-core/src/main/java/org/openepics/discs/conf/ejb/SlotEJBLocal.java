@@ -7,8 +7,9 @@ package org.openepics.discs.conf.ejb;
 
 import java.util.List;
 import javax.ejb.Local;
-import org.openepics.discs.conf.ent.LsArtifact;
+import org.openepics.discs.conf.ent.SlotArtifact;
 import org.openepics.discs.conf.ent.Slot;
+import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotProperty;
 
 /**
@@ -22,16 +23,25 @@ public interface SlotEJBLocal {
 
     void saveLayoutSlot(Slot slot) throws Exception;
 
-    void saveSlotProp(Slot slot, SlotProperty prop);
+    void saveSlotProp(SlotProperty prop, boolean create) throws Exception ;
 
-    void deleteSlotProp(Slot slot, SlotProperty key);
+    void deleteSlotProp(SlotProperty prop) throws Exception ;
 
     List<Slot> findLayoutSlot();
 
     Slot findLayoutSlot(int id);
-       
+
+    void saveSlotArtifact(SlotArtifact art, boolean create) throws Exception ;
+
+    void deleteSlotArtifact(SlotArtifact art) throws Exception ;
+
+    void deleteSlotPair(SlotPair pair) throws Exception ;
+
+    void saveSlotPair(SlotPair art, boolean create) throws Exception ;
+
+    List<Slot> getRootNodes(String relationName);
+
+    List<Slot> getRootNodes();
     
-    void saveSlotArtifact(Slot slot, LsArtifact art);
-    
-    void deleteSlotArtifact(Slot ctype, LsArtifact art);
+    List<Slot> relatedChildren(String compName);
 }

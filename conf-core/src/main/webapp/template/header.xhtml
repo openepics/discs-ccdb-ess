@@ -5,24 +5,15 @@
                 xmlns:h="http://java.sun.com/jsf/html"               
                 xmlns:f="http://java.sun.com/jsf/core">
    
-        <p:panelGrid columns="3" styleClass="titlebar ">
-            <p:panel  styleClass="noborders transparent">
-                <h:link outcome="home" >
-                    <h:outputText value="#{msgs.title}" styleClass="title"/>
+        <p:panelGrid columns="3" style="width: 100%" styleClass="titlebar">
+            <p:panel  styleClass="noborders transparent"  >
+                <h:link outcome="home" styleClass="title">
+                    <h:outputText value="#{msgs.title}" />
                 </h:link>
             </p:panel>
-            <p:panel styleClass="transparent" style="border: 1px;">
+            
+            
            
-            </p:panel>
-            <p:panel style="float: right; border: 0px" styleClass="transparent">
-                <p:panelGrid styleClass="noborders"  >          
-                    <p:row>                  
-                        <p:column> 
-                          
-                        </p:column>
-                    </p:row>                                                           
-                </p:panelGrid>
-            </p:panel>
         </p:panelGrid>
    
 </ui:composition>

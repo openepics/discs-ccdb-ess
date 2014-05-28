@@ -6,75 +6,99 @@
     xmlns:f="http://java.sun.com/jsf/core"   
     xmlns:h="http://java.sun.com/jsf/html">              
 
-    <ui:remove> -------------------------- Artifacts ------------------- </ui:remove>
-    <h:form id="artifactForm" prependId="false" >
-        <p:panel toggleable="true" >
+    <ui:remove> -------------------------- Search/Select ------------------- </ui:remove>
+    <h:form id="artifactForm" prependId="false" rendered="#{alignmentManager.selectedObject ne null}">
+        <p:panel toggleable="true" id="artifactPanel" >
             <f:facet name="header">                           
                 <h:outputText value="Artifact : " />
-                <p:commandButton  icon="ui-icon-plus"   value="Link" update="afTable :messages" 
-                                  process="@this" actionListener="#{slotManager.onArtifactAdd}" 
-                                  oncomplete="PF('artLinkDlg').show()"/>
-                <p:commandButton  icon="ui-icon-plus"   value="File" update="afTable :messages" 
-                                  process="@this" actionListener="#{slotManager.onArtifactAdd}" 
-                                  oncomplete="PF('artFileDlg').show()"/>
+                <p:commandButton  icon="ui-icon-plus"  update=":artifactInputForm :messages" 
+                                  process="@this" actionListener="#{alignmentManager.onArtifactAdd}" 
+                                  oncomplete="PF('artifactInputDlg').show()" rendered="false"/>   
+                <p:commandLink  styleClass="ui-icon ui-icon-circle-plus"  style="display:inline-block;" 
+                                update=":artifactInputForm :messages"  title="Add"
+                                  process="@this" actionListener="#{alignmentManager.onArtifactAdd}" 
+                                  oncomplete="PF('artifactInputDlg').show()"/> 
             </f:facet>
-            <p:dataTable id="afTable" var="art" value="#{slotManager.selectedArtifacts}" 
+            <p:dataTable id="afTable" var="art" value="#{alignmentManager.selectedArtifacts}" 
                          scrollRows="25" scrollable="true" liveScroll="true"   scrollHeight="200"                               
-                         emptyMessage="No artifacts found"  editMode="row" editable="false" 
+                         emptyMessage="No artifacts found"  editMode="row" editable="false"                          
                          rowKey="#{art.artifactId}}"  >                
-
-                <p:ajax event="rowEdit" listener="#{slotManager.onArtifactSave}" update="afTable  :messages" />                  
-                <p:ajax event="rowEditInit" listener="#{slotManager.onArtifactEdit}" update=":messages" />                  
-                <p:ajax event="rowEditCancel" listener="#{slotManager.onArtifactCancel}" update="afTable  :messages" />                  
-
+              
                 <p:column id="ops" width="10%">
-                    <p:commandLink  styleClass="ui-icon ui-icon-trash"  update="afTable  :messages" 
-                                    process="@this" action="#{slotManager.onArtifactDelete(art)}" />
+                    <p:commandLink  styleClass="ui-icon ui-icon-trash"  style="display:inline-block;"
+                                    update="afTable  :messages"  title="Delete"
+                                    process="@this" action="#{alignmentManager.onArtifactDelete(art)}" />                   
+                    <p:commandLink styleClass="ui-icon ui-icon-pencil"  style="display:inline-block;"
+                                  update=":artifactInputForm :messages" title="Edit"
+                                  process="@this"  action="#{alignmentManager.onArtifactEdit(art)}"
+                                  oncomplete="PF('artifactInputDlg').show()" />
                 </p:column>
-                <p:column id="artName" headerText="Name">                    
-                    <h:outputLink value="#{art.uri}"  target="_blank">
-                        <h:outputText value="#{art.name}" />
-                    </h:outputLink>                   
+                <p:column id="artName" headerText="Name">                   
+                    <h:outputLink value="#{art.uri}"  styleClass="ui-icon ui-icon-extlink" 
+                                  style="display:inline-block;" target="_blank" rendered="#{! art.isInternal}"/>                  
+                    <p:commandLink id="downloadLink" value="dl" ajax="false"                                  
+                                   styleClass="ui-icon ui-icon-arrowthickstop-1-s" style="display:inline-block;"
+                                   rendered="#{art.isInternal}">   
+                        <f:setPropertyActionListener target="#{alignmentManager.selectedArtifact}" value="#{art}" />
+                        <p:fileDownload value="#{alignmentManager.downloadedFile}" />  
+                    </p:commandLink>
+                    <h:outputText value="#{art.name}" />
                 </p:column>               
                 <p:column id="desc" headerText="Description">
                     <h:outputText value="#{art.description}" />
                 </p:column>  
-                <p:column  headerText="D">                                        
-                    <p:commandLink id="downloadLink" value="dl" ajax="false"                                  
-                                     styleClass="ui-icon ui-icon-arrowthickstop-1-s" 
-                                     actionListener="#{slotManager.downloadFile}" >   
-                        <f:setPropertyActionListener target="#{slotManager.downloadFileName}" value="#{art.uri}" />
-                        <p:fileDownload value="#{slotManager.downloadedFile}" />  
-                    </p:commandLink>
-                </p:column>
+               
             </p:dataTable>
-            
+
         </p:panel>
     </h:form>
 
-    <ui:remove> -------------------------- Add File ------------------- </ui:remove>
-    <p:dialog header="Attach a File" widgetVar="artFileDlg">
-        <h:form id="artifactFileForm" prependId="false" enctype="multipart/form-data">
-            <p:panelGrid id="artFilePanel" >
+    <ui:remove> -------------------------- Add/Edit ------------------- </ui:remove>
+    <p:dialog header="Attach an Artifact" widgetVar="artifactInputDlg">
+        <h:form id="artifactInputForm" prependId="false" enctype="multipart/form-data">
+            <p:panelGrid id="artifactInputPanel" >
+                <p:row>
+                    <p:column><h:outputLabel value="File :" /></p:column>
+                    <p:column>
+                        <p:selectBooleanCheckbox id="options" value="#{alignmentManager.internalArtifact}" disabled="#{alignmentManager.artifactOperation eq 'e'}">                           
+                            <p:ajax process="@this" update="artifactInputPanel :messages" listener="#{alignmentManager.onArtifactType}"/>
+                        </p:selectBooleanCheckbox>
+                    </p:column>
+                </p:row >
+
+                <p:row rendered="#{! alignmentManager.internalArtifact}" >
+                    <p:column><h:outputLabel value="URL :" /></p:column>
+                    <p:column>
+                        <h:inputText id="artfURI" value="#{alignmentManager.inputArtifact.uri}" 
+                                     size="64" readonly="#{alignmentManager.artifactOperation eq 'e'}"/>
+                        <p:message for="artfURI"  />
+                    </p:column>
+                    <p:watermark for="artfURI" value="Enter artifact's URI"/>
+                </p:row>
+                <p:row rendered="#{alignmentManager.internalArtifact}">     
+                    <p:column><h:outputLabel value="File :" /></p:column>
+                    <p:column  colspan="2">
+                        <h:outputText id="upFileName" value="Uploaded File: #{alignmentManager.uploadedFileName}" />
+                        <p:fileUpload id="artFile" fileUploadListener="#{alignmentManager.handleFileUpload}"
+                                      mode="advanced"  process="@this"  required="true"  disabled="#{alignmentManager.artifactOperation eq 'e'}"
+                                      dragDropSupport="true" update="upFileName artfName :messages" />                        
+                    </p:column>                  
+                </p:row>
                 <p:row>
                     <p:column><h:outputLabel value="Name:" /></p:column>
-                    <p:column><h:inputText id="artfName" value="#{slotManager.inputArtifact.name}" 
-                                           required="true"  /> 
+                    <p:column>
+                        <h:inputText id="artfName" value="#{alignmentManager.inputArtifact.name}" 
+                                     size="64" /> 
+                        <p:message for="artfName"  />
                     </p:column>
-
                 </p:row>
                 <p:row>                       
                     <p:column><h:outputLabel value="Description:" /></p:column>
-                    <p:column><p:inputTextarea id="artfDesc" value="#{slotManager.inputArtifact.description}" 
-                                               required="true"   rows="5" cols="50"  /> </p:column>                   
-                </p:row>
-                <p:row>                
-                    <p:column  colspan="2">
-                        <h:outputText id="upFileName" value="Uploaded File: #{slotManager.uploadedFileName}" />
-                        <p:fileUpload fileUploadListener="#{slotManager.handleFileUpload}"
-                                      mode="advanced"  process="@this" 
-                                      dragDropSupport="true" update="upFileName :messages"  required="true"/>                        
-                    </p:column>                  
+                    <p:column>
+                        <p:inputTextarea id="artfDesc" value="#{alignmentManager.inputArtifact.description}" 
+                                         rows="5" cols="64"  /> 
+                        <p:message for="artfDesc"  />
+                    </p:column>                   
                 </p:row>
 
                 <p:row>
@@ -82,56 +106,17 @@
                         <p:toolbar>
                             <p:toolbarGroup  align="right" >                      
                                 <p:commandButton value="Save" icon="ui-icon-disk" 
-                                                 update=":artifactForm :messages"
-                                                 process="@this artFilePanel" actionListener="#{slotManager.onArtifactCreate}"
-                                                 oncomplete="PF('artFileDlg').hide()" /> 
+                                                 update=":artifactForm:artifactPanel artifactInputPanel :messages"
+                                                 process="@form" actionListener="#{alignmentManager.onArtifactSave}"                                               
+                                                 oncomplete="if (!args.validationFailed &amp;&amp; args.success) PF('artifactInputDlg').hide()" /> 
                                 <p:separator /> 
                                 <p:commandButton value="Cancel" icon="ui-icon-close"                                         
-                                                 process="@this"  onclick="PF('artFileDlg').hide()" />
+                                                 onclick="PF('artifactInputDlg').hide()" />
                             </p:toolbarGroup>
                         </p:toolbar>
                     </p:column>
                 </p:row>
             </p:panelGrid>
-        </h:form>
-    </p:dialog>
-
-    <ui:remove> -------------------------- Add Link ------------------- </ui:remove>
-    <p:dialog header="Attach a Link" widgetVar="artLinkDlg">
-        <h:form id="artifactLinkForm" prependId="false" >
-            <p:panelGrid id="artAddPanel" >
-                <p:row>
-                    <p:column><h:outputLabel value="Name :" /></p:column>
-                    <p:column><h:inputText id="artName" value="#{slotManager.inputArtifact.name}" 
-                                           required="true"  /> 
-                    </p:column>
-                    <p:watermark for="artName" value="Enter a name for artifact"/>
-                </p:row>
-                <p:row>                       
-                    <p:column><h:outputLabel value="Description :" /></p:column>
-                    <p:column><p:inputTextarea id="artDesc" value="#{slotManager.inputArtifact.description}" 
-                                               required="true"   rows="5" cols="50"  /> </p:column>
-                    <p:watermark for="artDesc" value="Enter artifact's description"/>
-                </p:row>
-                <p:row>
-                    <p:column><h:outputLabel value="URI :" /></p:column>
-                    <p:column><h:inputText id="artURI" value="#{slotManager.inputArtifact.uri}" 
-                                           required="true"  />
-                    </p:column>
-                    <p:watermark for="artURI" value="Enter artifact's URI"/>
-                </p:row>
-            </p:panelGrid>
-            <p:toolbar>
-                <p:toolbarGroup  align="right" >                      
-                    <p:commandButton value="Save" icon="ui-icon-disk" 
-                                     update=":artifactForm :messages" 
-                                     process="@form" actionListener="#{slotManager.onArtifactCreate}"
-                                     oncomplete="PF('artLinkDlg').hide()" /> 
-                    <p:separator /> 
-                    <p:commandButton value="Cancel" icon="ui-icon-close"                                         
-                                     process="@this"  onclick="PF('artLinkDlg').hide()" />
-                </p:toolbarGroup>
-            </p:toolbar> 
         </h:form>
     </p:dialog>
 </ui:composition>

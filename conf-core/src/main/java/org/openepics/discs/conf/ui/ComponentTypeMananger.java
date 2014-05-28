@@ -5,12 +5,8 @@
  */
 package org.openepics.discs.conf.ui;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import org.openepics.discs.conf.util.Utility;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,16 +15,17 @@ import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.event.ActionEvent;
-import org.openepics.discs.conf.ejb.ConfigurationEJBLocal;
-import org.openepics.discs.conf.ent.CompTypeAsm;
-import org.openepics.discs.conf.ent.CompTypeAsmPK;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
+import org.openepics.discs.conf.ejb.ComptypeEJBLocal;
+import org.openepics.discs.conf.ent.ComptypeAsm;
 import org.openepics.discs.conf.ent.ComponentType;
-import org.openepics.discs.conf.ent.ComponentTypeProperty;
-import org.openepics.discs.conf.ent.ComponentTypePropertyPK;
-import org.openepics.discs.conf.ent.CtArtifact;
+import org.openepics.discs.conf.ent.ComptypeProperty;
+import org.openepics.discs.conf.ent.ComptypeArtifact;
+import org.openepics.discs.conf.util.BlobStore;
+import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.RowEditEvent;
 import org.primefaces.event.SelectEvent;
@@ -40,29 +37,43 @@ import org.primefaces.model.UploadedFile;
  *
  * @author vuppala
  */
-@ManagedBean
+@Named
 @ViewScoped
 public class ComponentTypeMananger implements Serializable {
 
     @EJB
-    private ConfigurationEJBLocal configurationEJB;
+    private ComptypeEJBLocal comptypeEJB;
     private static final Logger logger = Logger.getLogger("org.openepics.discs.conf");
-    private static String folderName = "/var/proteus/"; // ToDo: get it from configuration
+    // private static String folderName = "/var/proteus/"; // ToDo: get it from configuration
+
+    @Inject
+    private BlobStore blobStore;
     
     private List<ComponentType> objects;
     private List<ComponentType> sortedObjects;
     private List<ComponentType> filteredObjects;
     private ComponentType selectedObject;
     private ComponentType inputObject;
-    private List<ComponentTypeProperty> selectedCompProps;
-    private List<CtArtifact> selectedArtifacts;
-    private List<CompTypeAsm> selectedParts;
-    private ComponentTypeProperty selectedCTP;
-    private String uploadedFileName;
-    private String downloadFileName;
-    //private StreamedContent downloadedFile;
+    private List<ComptypeAsm> selectedParts;
 
-    CtArtifact inputArtifact;
+    // properties
+    private List<ComptypeProperty> selectedProperties;
+    private ComptypeProperty selectedProperty;
+    private ComptypeProperty inputProperty;
+    private boolean inRepository = false;
+    private char propertyOperation = 'n'; // selected operation on artifact: [a]dd, [e]dit, [d]elete, [n]one
+
+    // artifacts
+    private List<ComptypeArtifact> selectedArtifacts;
+    private ComptypeArtifact inputArtifact;
+    private boolean internalArtifact = true;
+    private ComptypeArtifact selectedArtifact;
+    private char artifactOperation = 'n'; // selected operation on artifact: [a]dd, [e]dit, [d]elete, [n]one
+
+    // File upload/download
+    private String uploadedFileName;
+    private boolean fileUploaded = false;
+    private String repoFileId; // identifier of the file stored in content repo 
 
     private boolean inTrans = false; // in the middle of an operations  
     private char selectedOp = 'n'; // selected operation: [a]dd, [e]dit, [d]elete, [n]one
@@ -76,7 +87,8 @@ public class ComponentTypeMananger implements Serializable {
     @PostConstruct
     public void init() {
         try {
-            objects = configurationEJB.findComponentType();
+            objects = comptypeEJB.findComponentType();
+            logger.log(Level.INFO, "Property org.openepics.discs.conf.prop.RepoPath {0}", blobStore.getBlobStoreRoot());
         } catch (Exception e) {
             System.err.println(e.getMessage());
             logger.log(Level.SEVERE, "Cannot retrieve component types");
@@ -88,9 +100,9 @@ public class ComponentTypeMananger implements Serializable {
     public void onCompTypeSelect(SelectEvent event) {
         inputObject = selectedObject;
 
-        selectedCompProps = selectedObject.getComponentTypePropertyList();
-        selectedArtifacts = selectedObject.getCtArtifactList();
-        selectedParts = selectedObject.getCompTypeAsmList();
+        selectedProperties = selectedObject.getComptypePropertyList();
+        selectedArtifacts = selectedObject.getComptypeArtifactList();
+        selectedParts = selectedObject.getComptypeAsmList();
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Selected", "");
     }
 
@@ -111,13 +123,13 @@ public class ComponentTypeMananger implements Serializable {
 
     public void onCompTypeDelete(ActionEvent event) {
         try {
-            configurationEJB.deleteComponentType(selectedObject);
+            comptypeEJB.deleteComponentType(selectedObject);
             objects.remove(selectedObject);
             selectedObject = null;
             inputObject = null;
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted", "");
         } catch (Exception e) {
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted", "");
+            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Deleted", e.getMessage());
         } finally {
 
         }
@@ -129,7 +141,7 @@ public class ComponentTypeMananger implements Serializable {
             inputObject.setModifiedBy("test-user");
             // inputObject.setSuperComponentType(null);
             // Utility.showMessage(FacesMessage.SEVERITY_INFO, "Saved 2", "");
-            configurationEJB.saveComponentType(inputObject);
+            comptypeEJB.saveComponentType(inputObject);
 
             if (selectedOp == 'a') {
                 selectedObject = inputObject;
@@ -138,127 +150,194 @@ public class ComponentTypeMananger implements Serializable {
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Saved", "");
         } catch (Exception e) {
             logger.severe(e.getMessage());
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Error", "");
+            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error", e.getMessage());
         } finally {
             inTrans = false;
             selectedOp = 'n';
-
         }
     }
 
     // --------------------------------- Property ------------------------------------------------
     public void onPropertyAdd(ActionEvent event) {
         try {
-            if (selectedCompProps == null) {
-                selectedCompProps = new ArrayList<>();
+            if (selectedProperties == null) {
+                selectedProperties = new ArrayList<>();
             }
+            propertyOperation = 'a';
 
-            ComponentTypePropertyPK CTPpk = new ComponentTypePropertyPK();
-            CTPpk.setComponentType(selectedObject.getComponentTypeId());
-            ComponentTypeProperty ctp = new ComponentTypeProperty(CTPpk);
-
-            // CTP.setComponentType1(inputObject);
-            selectedCompProps.add(ctp);
+            inputProperty = new ComptypeProperty();
+            inputProperty.setComponentType(selectedObject);
+            fileUploaded = false;
+            uploadedFileName = null;
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "New property", "");
         } catch (Exception e) {
-            Utility.showMessage(FacesMessage.SEVERITY_FATAL, "Error in adding property", "");
+            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error in adding property", e.getMessage());
             logger.severe(e.getMessage());
         }
 
     }
 
-    public void onPropertyDelete(ComponentTypeProperty ctp) {
+    public void onPropertyDelete(ComptypeProperty ctp) {
         try {
             if (ctp == null) {
                 Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "No property selected");
                 return;
             }
-            selectedCompProps.remove(ctp); // ToDo: should this be done before or after delete from db?
-            configurationEJB.deleteCompTypeProp(selectedObject, ctp);
-
+            comptypeEJB.deleteCompTypeProp(ctp);
+            selectedProperties.remove(ctp);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted property", "");
         } catch (Exception e) {
-            Utility.showMessage(FacesMessage.SEVERITY_FATAL, "Error in deleting property", "Refresh the page");
+            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error in deleting property", e.getMessage());
             logger.severe(e.getMessage());
         }
 
     }
 
-    public void onPropertyInit(RowEditEvent event) {
-        // ComponentTypeProperty prop = (ComponentTypeProperty) event.getObject();
-
+    public void onPropertyEdit(ComptypeProperty prop) {
         try {
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Property Edit", "");
-
+            if (prop == null) {
+                Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "No property selected");
+                return;
+            }
+            artifactOperation = 'e';
+            inputProperty = prop;
+            uploadedFileName = prop.getProperty().getName();
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Edit:", "Edit initiated " + inputProperty.getCtypePropId());
         } catch (Exception e) {
             // selectedCompProps.remove(prop);
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Error:", "Property not saved");
+            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error: Property can not be edited", e.getMessage());
         }
     }
 
-    public void onPropertySave(RowEditEvent event) {
-        ComponentTypeProperty ctp = (ComponentTypeProperty) event.getObject();
+    public void onPropertySave(ActionEvent event) {
+        // ComptypeProperty ctp = (ComptypeProperty) event.getObject();
+        try {
+
+            inputProperty.setInRepository(inRepository);
+            if (inRepository) { // internal artifact
+                if (!fileUploaded) {
+                    Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error:", "You must upload a file");
+                    RequestContext.getCurrentInstance().addCallbackParam("success", false);
+                    return;
+                }
+                inputProperty.setPropValue(repoFileId);
+            }
+
+            comptypeEJB.saveCompTypeProp(inputProperty, propertyOperation == 'a');
+            logger.log(Level.INFO, "returned artifact id is " + inputProperty.getCtypePropId());
+
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Property saved", "");
+            RequestContext.getCurrentInstance().addCallbackParam("success", true);
+        } catch (Exception e) {
+
+            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error: Property not saved", e.getMessage());
+            RequestContext.getCurrentInstance().addCallbackParam("success", false);
+        }
+    }
+
+    // -------------------------- File upload/download Property ---------------------------
+    // todo: merge with artifact file ops. finally put in blobStore
+    public void handlePropertyUpload(FileUploadEvent event) {
+        // String msg = event.getFile().getFileName() + " is uploaded.";
+        // Utility.showMessage(FacesMessage.SEVERITY_INFO, "Succesful", msg);
+        InputStream istream;
 
         try {
-            configurationEJB.saveCompTypeProp(selectedObject, ctp);
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Artifact saved", "");
+            UploadedFile uploadedFile = event.getFile();
+            uploadedFileName = uploadedFile.getFileName();
+            // inputArtifact.setName(uploadedFileName);
+            istream = uploadedFile.getInputstream();
 
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, "File ", "Name: " + uploadedFileName);
+            repoFileId = blobStore.storeFile(istream);
+            // inputArtifact.setUri(fileId);
+
+            istream.close();
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, "File uploaded", "Name: " + uploadedFileName);
+            fileUploaded = true;
         } catch (Exception e) {
-            selectedCompProps.remove(ctp);
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Error:", "Artifact not saved");
+            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error", "Uploading file");
+            logger.severe(e.getMessage());
+            fileUploaded = false;
+        } finally {
+
         }
     }
 
-    public void onPropertyCancel(RowEditEvent event) {
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Row Cancel", "");
+    public StreamedContent getDownloadedPropertyFile() {
+        StreamedContent file = null;
+
+        try {
+            // return downloadedFile;
+            logger.log(Level.INFO, "Opening stream from repository: " + selectedProperty.getPropValue());
+            // logger.log(Level.INFO, "download file name: 2 " + selectedProperty.getName());
+            InputStream istream = blobStore.retreiveFile(selectedProperty.getPropValue());
+            file = new DefaultStreamedContent(istream, "application/octet-stream", selectedProperty.getProperty().getName());
+
+            // InputStream stream = new FileInputStream(pathName);                       
+            // downloadedFile = new DefaultStreamedContent(stream, "application/octet-stream", "file.jpg"); //ToDo" replace with actual filename
+        } catch (Exception e) {
+            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error", "Downloading file");
+            logger.log(Level.SEVERE, "Error in downloading the file");
+            logger.log(Level.SEVERE, e.toString());
+        }
+
+        return file;
     }
 
     // --------------------------------- Artifact ------------------------------------------------
     public void onArtifactAdd(ActionEvent event) {
         try {
+            artifactOperation = 'a';
             if (selectedArtifacts == null) {
                 selectedArtifacts = new ArrayList<>();
             }
-            inputArtifact = new CtArtifact();
+            inputArtifact = new ComptypeArtifact();
+            inputArtifact.setComponentType(selectedObject);
+            fileUploaded = false;
+            uploadedFileName = null;
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "New artifact", "");
         } catch (Exception e) {
-            Utility.showMessage(FacesMessage.SEVERITY_FATAL, "Error in adding artifact", "");
+            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error in adding artifact",e.getMessage());
             logger.severe(e.getMessage());
         }
-
     }
 
-    public void onArtifactCancel(RowEditEvent event) {
+    public void onArtifactSave(ActionEvent event) {
         try {
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Edit:", "Edit cancelled");
+            if (artifactOperation == 'a') {
+                inputArtifact.setIsInternal(internalArtifact);
+                if (inputArtifact.getIsInternal()) { // internal artifact
+                    if (!fileUploaded) {
+                        Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error:", "You must upload a file");
+                        RequestContext.getCurrentInstance().addCallbackParam("success", false);
+                        return;
+                    }
+                }
+            }
+
+            // comptypeEJB.saveComponentTypeArtifact(selectedObject, inputArtifact);
+            comptypeEJB.saveCompTypeArtifact(inputArtifact, artifactOperation == 'a');
+            logger.log(Level.INFO, "returned artifact id is " + inputArtifact.getArtifactId());
+
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Artifact saved", "");
+            RequestContext.getCurrentInstance().addCallbackParam("success", true);
         } catch (Exception e) {
-            //selectedArtifacts.remove(art);
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Error:", "Artifact not saved");
+            // selectedArtifacts.remove(inputArtifact);
+            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error: Artifact not saved", e.getMessage());
+            RequestContext.getCurrentInstance().addCallbackParam("success", false);
         }
     }
 
-    public void onArtifactCreate(ActionEvent event) {
-        
-        try {
-            inputArtifact.setUri(folderName + uploadedFileName);
-            selectedArtifacts.add(inputArtifact);           
-            configurationEJB.saveCompTypeArtifact(selectedObject, inputArtifact);
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Artifact created", "");
-        } catch (Exception e) {
-            selectedArtifacts.remove(inputArtifact);
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Error:", "Artifact not created");
-        }
-    }
-
-    public void onArtifactDelete(CtArtifact art) {
+    public void onArtifactDelete(ComptypeArtifact art) {
         try {
             if (art == null) {
                 Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "No artifact selected");
                 return;
             }
-            selectedArtifacts.remove(art); // ToDo: should this be done before or after delete from db?
-            configurationEJB.deleteCompTypeArtifact(selectedObject, art);
 
+            comptypeEJB.deleteCompTypeArtifact(art);
+            selectedArtifacts.remove(art);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted Artifact", "");
         } catch (Exception e) {
             Utility.showMessage(FacesMessage.SEVERITY_FATAL, "Error in deleting artifact", "Refresh the page");
@@ -266,153 +345,116 @@ public class ComponentTypeMananger implements Serializable {
         }
     }
 
-    public void onArtifactEdit(RowEditEvent event) {
-        try {
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Edit:", "Edit initiated");
-        } catch (Exception e) {
-            //selectedArtifacts.remove(art);
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Error:", "Artifact not saved");
+    public void onArtifactEdit(ComptypeArtifact art) {
+        if (art == null) {
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "No artifact selected");
+            return;
         }
+        artifactOperation = 'e';
+        inputArtifact = art;
+        uploadedFileName = art.getName();
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Edit:", "Edit initiated " + inputArtifact.getArtifactId());
     }
 
-    private void copyFile(InputStream is, OutputStream os) throws IOException  {
-        int len;
-        byte[] buffer = new byte[1024];
-        
-        while ( (len = is.read(buffer)) > 0) {
-            os.write(buffer, 0 , len);
-        }
-    }
-    
-    public void onArtifactSave(RowEditEvent event) {
-        CtArtifact art = (CtArtifact) event.getObject();
-
-        try {
-            configurationEJB.saveCompTypeArtifact(selectedObject, art);
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Artifact saved", "");
-        } catch (Exception e) {
-            selectedArtifacts.remove(art);
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Error:", "Artifact not saved");
-        }
+    public void onArtifactType() {
+        // Toto: remove it
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Artifact type selected", "");
     }
 
-    // -------------------------- File upload/download ---------------------------
-    //ToDo: most of this should be done in EJB, as a transaction
+    // -------------------------- File upload/download Artifact ---------------------------
     public void handleFileUpload(FileUploadEvent event) {
         // String msg = event.getFile().getFileName() + " is uploaded.";
         // Utility.showMessage(FacesMessage.SEVERITY_INFO, "Succesful", msg);
         InputStream istream;
-        OutputStream ostream;
-                 
-        try {         
+
+        try {
             UploadedFile uploadedFile = event.getFile();
             uploadedFileName = uploadedFile.getFileName();
+            inputArtifact.setName(uploadedFileName);
             istream = uploadedFile.getInputstream();
-            
+
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "File ", "Name: " + uploadedFileName);
-            if (istream == null) {
-                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error", "istream is null");
-                return;
-            }
-            if (folderName == null || folderName.isEmpty()) {
-                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error", "Folder name not given.");
-                return;
-            }
-            File folder = new File(folderName);
-            if (! folder.exists() ) {
-                if ( !folder.mkdirs()) {
-                    logger.log(Level.SEVERE, "Could not create repository folder " + folderName);
-                }; 
-            }
-            File ofile = new File(folderName + uploadedFileName);
-            ostream = new FileOutputStream(ofile);
-            copyFile(istream,  ostream);                     
-            // repBean.putFile(folderName, fname, istream);           
-            ostream.close();
+            String fileId = blobStore.storeFile(istream);
+            inputArtifact.setUri(fileId);
+
             istream.close();
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "File uploaded", "Name: " + uploadedFileName);
+            fileUploaded = true;
         } catch (Exception e) {
-            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error", "Uploading file");
+            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error Uploading file", e.getMessage());
             logger.severe(e.getMessage());
+            fileUploaded = false;
         } finally {
-            
+
         }
     }
-    
-    // todo: parameter should be the file name not pathname
-    /*
-    public void downloadFile(String pathName) {
+
+    public StreamedContent getDownloadedFile() {
+        StreamedContent file = null;
+
         try {
-            logger.log(Level.INFO, "download file name: " + pathName); 
-            downloadFileName = pathName;
+            // return downloadedFile;
+            logger.log(Level.INFO, "Opening stream from repository: " + selectedArtifact.getUri());
+            logger.log(Level.INFO, "download file name: 2 " + selectedArtifact.getName());
+            InputStream istream = blobStore.retreiveFile(selectedArtifact.getUri());
+            file = new DefaultStreamedContent(istream, "application/octet-stream", selectedArtifact.getName());
+
             // InputStream stream = new FileInputStream(pathName);                       
             // downloadedFile = new DefaultStreamedContent(stream, "application/octet-stream", "file.jpg"); //ToDo" replace with actual filename
         } catch (Exception e) {
-            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error", "Downloading file");
+            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error Downloading file", e.getMessage());
             logger.log(Level.SEVERE, "Error in downloading the file");
             logger.log(Level.SEVERE, e.toString());
         }
+
+        return file;
     }
-    */
-    
-    public void downloadFile() {
-        try {
-            logger.log(Level.INFO, "download file name: 2 " + downloadFileName); 
-            
-            // InputStream stream = new FileInputStream(pathName);                       
-            // downloadedFile = new DefaultStreamedContent(stream, "application/octet-stream", "file.jpg"); //ToDo" replace with actual filename
-        } catch (Exception e) {
-            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error", "Downloading file");
-            logger.log(Level.SEVERE, "Error in downloading the file");
-            logger.log(Level.SEVERE, e.toString());
-        }
-    }
+
     // --------------------------------- Assembly ------------------------------------------------
     public void onAsmAdd(ActionEvent event) {
         try {
             if (selectedParts == null) {
                 selectedParts = new ArrayList<>();
             }
+          
+            ComptypeAsm prt = new ComptypeAsm();
 
-            CompTypeAsmPK Asmpk = new CompTypeAsmPK();
-            Asmpk.setParentType(selectedObject.getComponentTypeId());
-            CompTypeAsm prt = new CompTypeAsm(Asmpk);
-
+            prt.setParentType(selectedObject);
             // CTP.setComponentType1(inputObject);
             selectedParts.add(prt);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "New assembly element", "");
         } catch (Exception e) {
-            Utility.showMessage(FacesMessage.SEVERITY_FATAL, "Error in adding assembly element", "");
+            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error in adding assembly element", e.getMessage());
             logger.severe(e.getMessage());
         }
 
     }
 
-    public void onAsmDelete(CompTypeAsm prt) {
+    public void onAsmDelete(ComptypeAsm prt) {
         try {
             if (prt == null) {
                 Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "No assembly element selected");
                 return;
             }
             selectedParts.remove(prt); // ToDo: should this be done before or after delete from db?
-            configurationEJB.deleteCompTypeAsm(selectedObject, prt);
+            comptypeEJB.deleteComptypeAsm(selectedObject, prt);
 
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted assembly element", "");
         } catch (Exception e) {
-            Utility.showMessage(FacesMessage.SEVERITY_FATAL, "Error in deleting assembly element", "Refresh the page");
+            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error in deleting assembly element", e.getMessage());
             logger.severe(e.getMessage());
         }
 
     }
 
     public void onAsmEdit(RowEditEvent event) {
-        CompTypeAsm prt = (CompTypeAsm) event.getObject();
+        ComptypeAsm prt = (ComptypeAsm) event.getObject();
 
         try {
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Edit:", "Edit initiated");
         } catch (Exception e) {
             selectedParts.remove(prt);
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Error:", "Error");
+            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error:", e.getMessage());
         }
     }
 
@@ -421,15 +463,15 @@ public class ComponentTypeMananger implements Serializable {
     }
 
     public void onAsmSave(RowEditEvent event) {
-        CompTypeAsm prt = (CompTypeAsm) event.getObject();
+        ComptypeAsm prt = (ComptypeAsm) event.getObject();
 
         try {
-            configurationEJB.saveCompTypeAsm(selectedObject, prt);
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Artifact saved", "");
+            comptypeEJB.saveComptypeAsm(selectedObject, prt);
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Assembly item saved", "");
 
         } catch (Exception e) {
             selectedParts.remove(prt);
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Error:", "Artifact not saved");
+            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error: Assembly item not saved", e.getMessage());
         }
     }
 
@@ -474,31 +516,27 @@ public class ComponentTypeMananger implements Serializable {
         return inTrans;
     }
 
-    public List<ComponentTypeProperty> getSelectedCompProps() {
-        return selectedCompProps;
+    public ComptypeProperty getSelectedCTP() {
+        return selectedProperty;
     }
 
-    public ComponentTypeProperty getSelectedCTP() {
-        return selectedCTP;
+    public void setSelectedCTP(ComptypeProperty selectedCTP) {
+        this.selectedProperty = selectedCTP;
     }
 
-    public void setSelectedCTP(ComponentTypeProperty selectedCTP) {
-        this.selectedCTP = selectedCTP;
-    }
-
-    public List<CtArtifact> getSelectedArtifacts() {
+    public List<ComptypeArtifact> getSelectedArtifacts() {
         return selectedArtifacts;
     }
 
-    public List<CompTypeAsm> getSelectedParts() {
+    public List<ComptypeAsm> getSelectedParts() {
         return selectedParts;
     }
 
-    public CtArtifact getInputArtifact() {
+    public ComptypeArtifact getInputArtifact() {
         return inputArtifact;
     }
 
-    public void setInputArtifact(CtArtifact inputArtifact) {
+    public void setInputArtifact(ComptypeArtifact inputArtifact) {
         this.inputArtifact = inputArtifact;
     }
 
@@ -506,19 +544,56 @@ public class ComponentTypeMananger implements Serializable {
         return uploadedFileName;
     }
 
-    public StreamedContent getDownloadedFile() throws IOException {
-        // TODO: this should not be in getter but p:filedownload leaves no option.....
-        // return downloadedFile;
-        logger.log(Level.INFO, "Opening stream from repository: " + downloadFileName);
-        return new DefaultStreamedContent(new FileInputStream(downloadFileName), "application/octet-stream", downloadFileName); 
+    public char getArtifactOperation() {
+        return artifactOperation;
     }
 
-    public void setDownloadFileName(String downloadFileName) {
-        this.downloadFileName = downloadFileName;
+    public boolean isInternalArtifact() {
+        return internalArtifact;
     }
 
-    public String getDownloadFileName() {
-        return downloadFileName;
+    public void setInternalArtifact(boolean internalArtifact) {
+        this.internalArtifact = internalArtifact;
+    }
+
+    public ComptypeArtifact getSelectedArtifact() {
+        return selectedArtifact;
+    }
+
+    public void setSelectedArtifact(ComptypeArtifact selectedArtifact) {
+        this.selectedArtifact = selectedArtifact;
+    }
+
+    public List<ComptypeProperty> getSelectedProperties() {
+        return selectedProperties;
+    }
+
+    public char getPropertyOperation() {
+        return propertyOperation;
+    }
+
+    public ComptypeProperty getSelectedProperty() {
+        return selectedProperty;
+    }
+
+    public void setSelectedProperty(ComptypeProperty selectedProperty) {
+        this.selectedProperty = selectedProperty;
+    }
+
+    public ComptypeProperty getInputProperty() {
+        return inputProperty;
+    }
+
+    public void setInputProperty(ComptypeProperty inputProperty) {
+        this.inputProperty = inputProperty;
+    }
+
+    public boolean isInRepository() {
+        return inRepository;
+    }
+
+    public void setInRepository(boolean inRepository) {
+        this.inRepository = inRepository;
     }
 
 }

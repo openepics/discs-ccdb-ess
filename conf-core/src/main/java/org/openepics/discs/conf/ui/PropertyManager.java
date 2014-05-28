@@ -6,6 +6,7 @@
 
 package org.openepics.discs.conf.ui;
 
+import org.openepics.discs.conf.util.Utility;
 import java.io.Serializable;
 import java.util.List;
 import java.util.logging.Logger;
@@ -14,17 +15,16 @@ import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import org.openepics.discs.conf.ent.*;
 import org.openepics.discs.conf.ejb.*;
-
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.event.ActionEvent;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 import org.primefaces.event.SelectEvent;
 
 /**
  *
  * @author vuppala
  */
-@ManagedBean
+@Named
 @ViewScoped
 public class PropertyManager implements Serializable {
     @EJB

@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+    Displays a tree of logical components. Selecting one will update the s details.
+
+    @author: Vasu V
+-->
+<ui:composition 
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html">         
+
+    <h:form id="complistform">
+        <p:panel id="facilitytree" > 
+            <p:tree id="comptree" style="border: 0px; font-size: 9px" value="#{componentTreeMBean.root}" var="node"
+                    dynamic="true" cache="true" selectionMode="single" selection="#{componentTreeMBean.selectedNode}"> 
+
+                <p:treeNode type="component" expandedIcon="ui-icon-folder-open" collapsedIcon="ui-icon-folder-collapsed">  
+                    <h:outputText value="#{node.name}" />  
+                </p:treeNode>  
+
+                
+                
+                <p:ajax event="select" update=":comptree-detail" listener="#{componentTreeMBean.onNodeSelect}" />
+                <p:ajax event="expand" update="" listener="#{componentTreeMBean.onNodeExpand}" />
+                <p:ajax event="collapse" update="" listener="#{componentTreeMBean.onNodeCollapse}" />
+            </p:tree>                     
+        </p:panel>      
+    </h:form>
+</ui:composition>

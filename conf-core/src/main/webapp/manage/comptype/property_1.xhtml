@@ -7,7 +7,7 @@
     xmlns:h="http://java.sun.com/jsf/html">              
 
     <ui:remove> -------------------------- Properties ------------------- </ui:remove>
-    <h:form id="propertyForm" prependId="false" >
+    <h:form id="propertyForm" prependId="false" rendered="#{componentTypeMananger.selectedObject ne null}">
         <p:panel toggleable="true" >
             <f:facet name="header">
                 <h:outputText value="Properties : " /> 
@@ -24,7 +24,7 @@
             <p:dataTable id="propertyTable" var="ctp" value="#{componentTypeMananger.selectedCompProps}" 
                          scrollRows="25" scrollable="true" liveScroll="true"   scrollHeight="200"                               
                          emptyMessage="No properties."  editMode="row" editable="true" 
-                         rowKey="#{ctp.componentTypePropertyPK}}"  >                
+                         rowKey="#{ctp.ctypePropId}}"  >                
 
                 <p:ajax event="rowEdit" listener="#{componentTypeMananger.onPropertySave}" update="propertyTable  :messages" />                  
                 <p:ajax event="rowEditInit" listener="#{componentTypeMananger.onPropertyInit}" update=":messages" />                  
@@ -35,21 +35,28 @@
                                     process="@this" action="#{componentTypeMananger.onPropertyDelete(ctp)}" />
 
                 </p:column>
-                <p:column id="id" headerText="Name" sortBy="#{ctp.componentTypePropertyPK.property}">
+                <p:column id="id" headerText="Name">
                     <p:cellEditor>
-                        <f:facet name="output"><h:outputText value="#{ctp.componentTypePropertyPK.property}" /></f:facet>
+                        <f:facet name="output"><h:outputText value="#{ctp.property.name}" /></f:facet>
                         <f:facet name="input">
-                            <h:selectOneMenu value="#{ctp.componentTypePropertyPK.property}" style="width:100%">
+                            <p:selectOneMenu value="#{ctp.property}" style="width:100%"
+                                             var="p" filter="true"  converter="#{propertyConverter}">
                                 <f:selectItem itemLabel="Select One" itemValue="" />
-                                <f:selectItems value="#{propertyManager.objects}" var="prop" itemLabel="#{prop.propertyId}" itemValue="#{prop.propertyId}" />
-                            </h:selectOneMenu>
+                                <f:selectItems value="#{propertyManager.objects}" var="prop" itemLabel="#{prop.name}" itemValue="#{prop}" />
+                                <p:column>
+                                    #{p.name}
+                                </p:column>
+                                 <p:column>
+                                    #{p.description}
+                                </p:column>
+                            </p:selectOneMenu>
                         </f:facet>
                     </p:cellEditor>
                 </p:column>           
                 <p:column id="value" headerText="Value">
                     <p:cellEditor>
-                        <f:facet name="output"><h:outputText value="#{ctp.value}" /></f:facet>
-                        <f:facet name="input"><p:inputText id="invalue" value="#{ctp.value}" style="width:100%"/></f:facet>
+                        <f:facet name="output"><h:outputText value="#{ctp.propValue}" /></f:facet>
+                        <f:facet name="input"><p:inputText id="invalue" value="#{ctp.propValue}" style="width:100%"/></f:facet>
                         <p:watermark for="invalue" value="Enter value of property"/>
                     </p:cellEditor> 
                     <p:watermark for="invalue" value="Enter value of property"/>

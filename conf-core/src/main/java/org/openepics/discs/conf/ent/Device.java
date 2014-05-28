@@ -104,24 +104,22 @@ public class Device implements Serializable {
     @NotNull
     @Column(name = "version")
     private int version;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "physicalComponent")
-    private List<AlignmentRecord> alignmentRecordList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "physicalComponent")
-    private List<InstallationRecord> installationRecordList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "device")
-    private List<DeviceLogRec> deviceLogRecList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "device1")
     private List<DeviceProperty> devicePropertyList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "device")
-    private List<PcArtifact> pcArtifactList;
+    private List<AlignmentRecord> alignmentRecordList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "device")
+    private List<InstallationRecord> installationRecordList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "device")
+    private List<DeviceArtifact> deviceArtifactList;
+    @JoinColumn(name = "component_type", referencedColumnName = "component_type_id")
+    @ManyToOne(optional = false)
+    private ComponentType componentType;
     @OneToMany(mappedBy = "asmParent")
     private List<Device> deviceList;
     @JoinColumn(name = "asm_parent", referencedColumnName = "device_id")
     @ManyToOne
     private Device asmParent;
-    @JoinColumn(name = "component_type", referencedColumnName = "component_type_id")
-    @ManyToOne(optional = false)
-    private ComponentType componentType;
 
     public Device() {
     }
@@ -251,6 +249,15 @@ public class Device implements Serializable {
     }
 
     @XmlTransient
+    public List<DeviceProperty> getDevicePropertyList() {
+        return devicePropertyList;
+    }
+
+    public void setDevicePropertyList(List<DeviceProperty> devicePropertyList) {
+        this.devicePropertyList = devicePropertyList;
+    }
+
+    @XmlTransient
     public List<AlignmentRecord> getAlignmentRecordList() {
         return alignmentRecordList;
     }
@@ -269,30 +276,20 @@ public class Device implements Serializable {
     }
 
     @XmlTransient
-    public List<DeviceLogRec> getDeviceLogRecList() {
-        return deviceLogRecList;
+    public List<DeviceArtifact> getDeviceArtifactList() {
+        return deviceArtifactList;
     }
 
-    public void setDeviceLogRecList(List<DeviceLogRec> deviceLogRecList) {
-        this.deviceLogRecList = deviceLogRecList;
+    public void setDeviceArtifactList(List<DeviceArtifact> deviceArtifactList) {
+        this.deviceArtifactList = deviceArtifactList;
     }
 
-    @XmlTransient
-    public List<DeviceProperty> getDevicePropertyList() {
-        return devicePropertyList;
+    public ComponentType getComponentType() {
+        return componentType;
     }
 
-    public void setDevicePropertyList(List<DeviceProperty> devicePropertyList) {
-        this.devicePropertyList = devicePropertyList;
-    }
-
-    @XmlTransient
-    public List<PcArtifact> getPcArtifactList() {
-        return pcArtifactList;
-    }
-
-    public void setPcArtifactList(List<PcArtifact> pcArtifactList) {
-        this.pcArtifactList = pcArtifactList;
+    public void setComponentType(ComponentType componentType) {
+        this.componentType = componentType;
     }
 
     @XmlTransient
@@ -310,14 +307,6 @@ public class Device implements Serializable {
 
     public void setAsmParent(Device asmParent) {
         this.asmParent = asmParent;
-    }
-
-    public ComponentType getComponentType() {
-        return componentType;
-    }
-
-    public void setComponentType(ComponentType componentType) {
-        this.componentType = componentType;
     }
 
     @Override

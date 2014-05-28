@@ -7,7 +7,7 @@
     xmlns:h="http://java.sun.com/jsf/html">              
 
     <ui:remove> -------------------------- Properties ------------------- </ui:remove>
-    <h:form id="propertyForm" prependId="false" >
+    <h:form id="propertyForm" prependId="false" rendered="#{slotManager.selectedObject ne null}">
         <p:panel toggleable="true">
             <f:facet name="header">
                 <h:outputText value="Properties : " /> 
@@ -17,14 +17,13 @@
 
             <p:contextMenu for="propertyTable" widgetVar="propMenu">  
                 <p:menuitem value="Delete Property" icon="ui-icon-trash"  update="propertyTable  :messages" 
-                            actionListener="#{slotManager.onPropertyDelete}"
-                            />  
+                            actionListener="#{slotManager.onPropertyDelete}" />  
                 <p:menuitem value="Hide Menu" icon="ui-icon-close"  onclick="PF('propMenu').hide()"/>                  
             </p:contextMenu>
             <p:dataTable id="propertyTable" var="entProp" value="#{slotManager.selectedProperties}" 
                          scrollRows="25" scrollable="true" liveScroll="true"   scrollHeight="200"                               
                          emptyMessage="No properties."  editMode="row" editable="true" 
-                         rowKey="#{entProp.slotPropertyPK}}"  >                
+                         rowKey="#{entProp.slotPropId}}"  >                
 
                 <p:ajax event="rowEdit" listener="#{slotManager.onPropertySave}" update="propertyTable  :messages" />                  
                 <p:ajax event="rowEditInit" listener="#{slotManager.onPropertyInit}" update=":messages" />                  
@@ -32,24 +31,31 @@
 
                 <p:column id="ops" width="10%">
                     <p:commandLink  styleClass="ui-icon ui-icon-trash"  update="propertyTable  :messages" 
-                                    process="@this" action="#{slotManager.onPropertyDelete(prop)}" />
+                                    process="@this" action="#{slotManager.onPropertyDelete(entProp)}" />
 
                 </p:column>
-                <p:column id="id" headerText="Name" sortBy="#{entProp.slotPropertyPK.property}">
+                <p:column id="id" headerText="Name" sortBy="#{entProp.property.name}">
                     <p:cellEditor>
-                        <f:facet name="output"><h:outputText value="#{entProp.slotPropertyPK.property}" /></f:facet>
+                        <f:facet name="output"><h:outputText value="#{entProp.property.name}" /></f:facet>
                         <f:facet name="input">
-                            <h:selectOneMenu value="#{entProp.slotPropertyPK.property}" style="width:100%">
+                            <p:selectOneMenu value="#{entProp.property}" style="width:100%"
+                                             var="p" filter="true"  converter="#{propertyConverter}" >
                                 <f:selectItem itemLabel="Select One" itemValue="" />
-                                <f:selectItems value="#{propertyManager.objects}" var="prop" itemLabel="#{prop.propertyId}" itemValue="#{prop.propertyId}" />
-                            </h:selectOneMenu>
+                                <f:selectItems value="#{propertyManager.objects}" var="prop" itemLabel="#{prop.name}" itemValue="#{prop}" />
+                                <p:column>
+                                    #{p.name}
+                                </p:column>
+                                 <p:column>
+                                    #{p.description}
+                                </p:column>
+                            </p:selectOneMenu>
                         </f:facet>
                     </p:cellEditor>
                 </p:column>           
                 <p:column id="value" headerText="Value">
                     <p:cellEditor>
-                        <f:facet name="output"><h:outputText value="#{entProp.value}" /></f:facet>
-                        <f:facet name="input"><p:inputText id="invalue" value="#{entProp.value}" style="width:100%"/></f:facet>
+                        <f:facet name="output"><h:outputText value="#{entProp.propValue}" /></f:facet>
+                        <f:facet name="input"><p:inputText id="invalue" value="#{entProp.propValue}" style="width:100%"/></f:facet>
                         <p:watermark for="invalue" value="Enter value of property"/>
                     </p:cellEditor> 
                     <p:watermark for="invalue" value="Enter value of property"/>

@@ -13,6 +13,8 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -37,6 +39,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "ComponentType.findAll", query = "SELECT c FROM ComponentType c"),
     @NamedQuery(name = "ComponentType.findByComponentTypeId", query = "SELECT c FROM ComponentType c WHERE c.componentTypeId = :componentTypeId"),
+    @NamedQuery(name = "ComponentType.findByName", query = "SELECT c FROM ComponentType c WHERE c.name = :name"),
     @NamedQuery(name = "ComponentType.findByDescription", query = "SELECT c FROM ComponentType c WHERE c.description = :description"),
     @NamedQuery(name = "ComponentType.findByModifiedAt", query = "SELECT c FROM ComponentType c WHERE c.modifiedAt = :modifiedAt"),
     @NamedQuery(name = "ComponentType.findByModifiedBy", query = "SELECT c FROM ComponentType c WHERE c.modifiedBy = :modifiedBy"),
@@ -44,11 +47,15 @@ import javax.xml.bind.annotation.XmlTransient;
 public class ComponentType implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "component_type_id")
+    private Integer componentTypeId;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 8)
-    @Column(name = "component_type_id")
-    private String componentTypeId;
+    @Size(min = 1, max = 32)
+    @Column(name = "name")
+    private String name;
     @Size(max = 255)
     @Column(name = "description")
     private String description;
@@ -66,44 +73,53 @@ public class ComponentType implements Serializable {
     @NotNull
     @Column(name = "version")
     private int version;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentType1")
-    private List<ComponentTypeProperty> componentTypePropertyList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentType")
+    private List<ComptypeProperty> comptypePropertyList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentType")
+    private List<Slot> slotList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "childType")
+    private List<ComptypeAsm> comptypeAsmList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "parentType")
+    private List<ComptypeAsm> comptypeAsmList1;
     @OneToMany(mappedBy = "superComponentType")
     private List<ComponentType> componentTypeList;
     @JoinColumn(name = "super_component_type", referencedColumnName = "component_type_id")
     @ManyToOne
     private ComponentType superComponentType;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentType")
-    private List<CtArtifact> ctArtifactList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentType")
     private List<Device> deviceList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "childType")
-    private List<CompTypeAsm> compTypeAsmList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentType")
-    private List<CompTypeAsm> compTypeAsmList1;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentType")
-    private List<Slot> slotList;
+    private List<ComptypeArtifact> comptypeArtifactList;
 
     public ComponentType() {
     }
 
-    public ComponentType(String componentTypeId) {
+    public ComponentType(Integer componentTypeId) {
         this.componentTypeId = componentTypeId;
     }
 
-    public ComponentType(String componentTypeId, Date modifiedAt, String modifiedBy, int version) {
+    public ComponentType(Integer componentTypeId, String name, Date modifiedAt, String modifiedBy, int version) {
         this.componentTypeId = componentTypeId;
+        this.name = name;
         this.modifiedAt = modifiedAt;
         this.modifiedBy = modifiedBy;
         this.version = version;
     }
 
-    public String getComponentTypeId() {
+    public Integer getComponentTypeId() {
         return componentTypeId;
     }
 
-    public void setComponentTypeId(String componentTypeId) {
+    public void setComponentTypeId(Integer componentTypeId) {
         this.componentTypeId = componentTypeId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getDescription() {
@@ -139,12 +155,39 @@ public class ComponentType implements Serializable {
     }
 
     @XmlTransient
-    public List<ComponentTypeProperty> getComponentTypePropertyList() {
-        return componentTypePropertyList;
+    public List<ComptypeProperty> getComptypePropertyList() {
+        return comptypePropertyList;
     }
 
-    public void setComponentTypePropertyList(List<ComponentTypeProperty> componentTypePropertyList) {
-        this.componentTypePropertyList = componentTypePropertyList;
+    public void setComptypePropertyList(List<ComptypeProperty> comptypePropertyList) {
+        this.comptypePropertyList = comptypePropertyList;
+    }
+
+    @XmlTransient
+    public List<Slot> getSlotList() {
+        return slotList;
+    }
+
+    public void setSlotList(List<Slot> slotList) {
+        this.slotList = slotList;
+    }
+
+    @XmlTransient
+    public List<ComptypeAsm> getComptypeAsmList() {
+        return comptypeAsmList;
+    }
+
+    public void setComptypeAsmList(List<ComptypeAsm> comptypeAsmList) {
+        this.comptypeAsmList = comptypeAsmList;
+    }
+
+    @XmlTransient
+    public List<ComptypeAsm> getComptypeAsmList1() {
+        return comptypeAsmList1;
+    }
+
+    public void setComptypeAsmList1(List<ComptypeAsm> comptypeAsmList1) {
+        this.comptypeAsmList1 = comptypeAsmList1;
     }
 
     @XmlTransient
@@ -165,15 +208,6 @@ public class ComponentType implements Serializable {
     }
 
     @XmlTransient
-    public List<CtArtifact> getCtArtifactList() {
-        return ctArtifactList;
-    }
-
-    public void setCtArtifactList(List<CtArtifact> ctArtifactList) {
-        this.ctArtifactList = ctArtifactList;
-    }
-
-    @XmlTransient
     public List<Device> getDeviceList() {
         return deviceList;
     }
@@ -183,30 +217,12 @@ public class ComponentType implements Serializable {
     }
 
     @XmlTransient
-    public List<CompTypeAsm> getCompTypeAsmList() {
-        return compTypeAsmList;
+    public List<ComptypeArtifact> getComptypeArtifactList() {
+        return comptypeArtifactList;
     }
 
-    public void setCompTypeAsmList(List<CompTypeAsm> compTypeAsmList) {
-        this.compTypeAsmList = compTypeAsmList;
-    }
-
-    @XmlTransient
-    public List<CompTypeAsm> getCompTypeAsmList1() {
-        return compTypeAsmList1;
-    }
-
-    public void setCompTypeAsmList1(List<CompTypeAsm> compTypeAsmList1) {
-        this.compTypeAsmList1 = compTypeAsmList1;
-    }
-
-    @XmlTransient
-    public List<Slot> getSlotList() {
-        return slotList;
-    }
-
-    public void setSlotList(List<Slot> slotList) {
-        this.slotList = slotList;
+    public void setComptypeArtifactList(List<ComptypeArtifact> comptypeArtifactList) {
+        this.comptypeArtifactList = comptypeArtifactList;
     }
 
     @Override

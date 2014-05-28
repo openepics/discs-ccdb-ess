@@ -53,6 +53,8 @@ public class Role implements Serializable {
     private int version;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "role")
     private List<UserRole> userRoleList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "role")
+    private List<Privilege> privilegeList;
 
     public Role() {
     }
@@ -98,6 +100,15 @@ public class Role implements Serializable {
 
     public void setUserRoleList(List<UserRole> userRoleList) {
         this.userRoleList = userRoleList;
+    }
+
+    @XmlTransient
+    public List<Privilege> getPrivilegeList() {
+        return privilegeList;
+    }
+
+    public void setPrivilegeList(List<Privilege> privilegeList) {
+        this.privilegeList = privilegeList;
     }
 
     @Override

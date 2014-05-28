@@ -32,28 +32,14 @@ public interface ConfigurationEJBLocal {
 
     DataType findDataType(String id);
 
-    List<ComponentType> findComponentType();
+    Property findProperty(int id);
 
-    ComponentType findComponentType(String id);    
+    List<SlotRelation> findSlotRelation();
 
-   
-    void saveComponentType(ComponentType ctype) throws Exception;
+    SlotRelation findSlotRelation(int id);
 
-    void addComponentType(ComponentType ctype) throws Exception;
+    List<AuditRecord> findAuditRecord();
 
-    void deleteComponentType(ComponentType ctype) throws Exception;
-    
-    Property findProperty(String id);
+    AuditRecord findDAuditRecord(int id);
 
-    void saveCompTypeProp(ComponentType ctype, ComponentTypeProperty ctprop);
-
-    void deleteCompTypeProp(ComponentType ctype, ComponentTypeProperty ctp);
-
-    void saveCompTypeArtifact(ComponentType ctype, CtArtifact art);
-
-    void deleteCompTypeArtifact(ComponentType ctype, CtArtifact art);
-
-    void deleteCompTypeAsm(ComponentType ctype, CompTypeAsm prt);
-
-    void saveCompTypeAsm(ComponentType ctype, CompTypeAsm prt);   
 }

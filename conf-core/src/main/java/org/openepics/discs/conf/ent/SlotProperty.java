@@ -10,8 +10,10 @@ import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
@@ -33,19 +35,26 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "SlotProperty.findAll", query = "SELECT s FROM SlotProperty s"),
-    @NamedQuery(name = "SlotProperty.findBySlot", query = "SELECT s FROM SlotProperty s WHERE s.slotPropertyPK.slot = :slot"),
-    @NamedQuery(name = "SlotProperty.findByProperty", query = "SELECT s FROM SlotProperty s WHERE s.slotPropertyPK.property = :property"),
+    @NamedQuery(name = "SlotProperty.findBySlotPropId", query = "SELECT s FROM SlotProperty s WHERE s.slotPropId = :slotPropId"),
+    @NamedQuery(name = "SlotProperty.findByInRepository", query = "SELECT s FROM SlotProperty s WHERE s.inRepository = :inRepository"),
     @NamedQuery(name = "SlotProperty.findByModifiedAt", query = "SELECT s FROM SlotProperty s WHERE s.modifiedAt = :modifiedAt"),
     @NamedQuery(name = "SlotProperty.findByModifiedBy", query = "SELECT s FROM SlotProperty s WHERE s.modifiedBy = :modifiedBy"),
     @NamedQuery(name = "SlotProperty.findByVersion", query = "SELECT s FROM SlotProperty s WHERE s.version = :version")})
 public class SlotProperty implements Serializable {
     private static final long serialVersionUID = 1L;
-    @EmbeddedId
-    protected SlotPropertyPK slotPropertyPK;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "slot_prop_id")
+    private Integer slotPropId;
     @Lob
     @Size(max = 65535)
-    @Column(name = "value")
-    private String value;
+    @Column(name = "prop_value")
+    private String propValue;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "in_repository")
+    private boolean inRepository;
     @Basic(optional = false)
     @NotNull
     @Column(name = "modified_at")
@@ -60,45 +69,53 @@ public class SlotProperty implements Serializable {
     @NotNull
     @Column(name = "version")
     private int version;
-    @JoinColumn(name = "property", referencedColumnName = "property_id", insertable = false, updatable = false)
+    @JoinColumn(name = "unit", referencedColumnName = "unit_id")
+    @ManyToOne
+    private Unit unit;
+    @JoinColumn(name = "property", referencedColumnName = "property_id")
     @ManyToOne(optional = false)
-    private Property property1;
-    @JoinColumn(name = "slot", referencedColumnName = "slot_id", insertable = false, updatable = false)
+    private Property property;
+    @JoinColumn(name = "slot", referencedColumnName = "slot_id")
     @ManyToOne(optional = false)
-    private Slot slot1;
+    private Slot slot;
 
     public SlotProperty() {
     }
 
-    public SlotProperty(SlotPropertyPK slotPropertyPK) {
-        this.slotPropertyPK = slotPropertyPK;
+    public SlotProperty(Integer slotPropId) {
+        this.slotPropId = slotPropId;
     }
 
-    public SlotProperty(SlotPropertyPK slotPropertyPK, Date modifiedAt, String modifiedBy, int version) {
-        this.slotPropertyPK = slotPropertyPK;
+    public SlotProperty(Integer slotPropId, boolean inRepository, Date modifiedAt, String modifiedBy, int version) {
+        this.slotPropId = slotPropId;
+        this.inRepository = inRepository;
         this.modifiedAt = modifiedAt;
         this.modifiedBy = modifiedBy;
         this.version = version;
     }
 
-    public SlotProperty(int slot, String property) {
-        this.slotPropertyPK = new SlotPropertyPK(slot, property);
+    public Integer getSlotPropId() {
+        return slotPropId;
     }
 
-    public SlotPropertyPK getSlotPropertyPK() {
-        return slotPropertyPK;
+    public void setSlotPropId(Integer slotPropId) {
+        this.slotPropId = slotPropId;
     }
 
-    public void setSlotPropertyPK(SlotPropertyPK slotPropertyPK) {
-        this.slotPropertyPK = slotPropertyPK;
+    public String getPropValue() {
+        return propValue;
     }
 
-    public String getValue() {
-        return value;
+    public void setPropValue(String propValue) {
+        this.propValue = propValue;
     }
 
-    public void setValue(String value) {
-        this.value = value;
+    public boolean getInRepository() {
+        return inRepository;
+    }
+
+    public void setInRepository(boolean inRepository) {
+        this.inRepository = inRepository;
     }
 
     public Date getModifiedAt() {
@@ -125,26 +142,34 @@ public class SlotProperty implements Serializable {
         this.version = version;
     }
 
-    public Property getProperty1() {
-        return property1;
+    public Unit getUnit() {
+        return unit;
     }
 
-    public void setProperty1(Property property1) {
-        this.property1 = property1;
+    public void setUnit(Unit unit) {
+        this.unit = unit;
     }
 
-    public Slot getSlot1() {
-        return slot1;
+    public Property getProperty() {
+        return property;
     }
 
-    public void setSlot1(Slot slot1) {
-        this.slot1 = slot1;
+    public void setProperty(Property property) {
+        this.property = property;
+    }
+
+    public Slot getSlot() {
+        return slot;
+    }
+
+    public void setSlot(Slot slot) {
+        this.slot = slot;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (slotPropertyPK != null ? slotPropertyPK.hashCode() : 0);
+        hash += (slotPropId != null ? slotPropId.hashCode() : 0);
         return hash;
     }
 
@@ -155,7 +180,7 @@ public class SlotProperty implements Serializable {
             return false;
         }
         SlotProperty other = (SlotProperty) object;
-        if ((this.slotPropertyPK == null && other.slotPropertyPK != null) || (this.slotPropertyPK != null && !this.slotPropertyPK.equals(other.slotPropertyPK))) {
+        if ((this.slotPropId == null && other.slotPropId != null) || (this.slotPropId != null && !this.slotPropId.equals(other.slotPropId))) {
             return false;
         }
         return true;
@@ -163,7 +188,7 @@ public class SlotProperty implements Serializable {
 
     @Override
     public String toString() {
-        return "org.openepics.discs.conf.ent.SlotProperty[ slotPropertyPK=" + slotPropertyPK + " ]";
+        return "org.openepics.discs.conf.ent.SlotProperty[ slotPropId=" + slotPropId + " ]";
     }
     
 }

@@ -82,7 +82,13 @@ public class Unit implements Serializable {
     @Column(name = "version")
     private int version;
     @OneToMany(mappedBy = "unit")
+    private List<ComptypeProperty> comptypePropertyList;
+    @OneToMany(mappedBy = "unit")
+    private List<DeviceProperty> devicePropertyList;
+    @OneToMany(mappedBy = "unit")
     private List<Property> propertyList;
+    @OneToMany(mappedBy = "unit")
+    private List<SlotProperty> slotPropertyList;
 
     public Unit() {
     }
@@ -166,12 +172,39 @@ public class Unit implements Serializable {
     }
 
     @XmlTransient
+    public List<ComptypeProperty> getComptypePropertyList() {
+        return comptypePropertyList;
+    }
+
+    public void setComptypePropertyList(List<ComptypeProperty> comptypePropertyList) {
+        this.comptypePropertyList = comptypePropertyList;
+    }
+
+    @XmlTransient
+    public List<DeviceProperty> getDevicePropertyList() {
+        return devicePropertyList;
+    }
+
+    public void setDevicePropertyList(List<DeviceProperty> devicePropertyList) {
+        this.devicePropertyList = devicePropertyList;
+    }
+
+    @XmlTransient
     public List<Property> getPropertyList() {
         return propertyList;
     }
 
     public void setPropertyList(List<Property> propertyList) {
         this.propertyList = propertyList;
+    }
+
+    @XmlTransient
+    public List<SlotProperty> getSlotPropertyList() {
+        return slotPropertyList;
+    }
+
+    public void setSlotPropertyList(List<SlotProperty> slotPropertyList) {
+        this.slotPropertyList = slotPropertyList;
     }
 
     @Override

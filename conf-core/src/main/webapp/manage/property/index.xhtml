@@ -28,21 +28,26 @@
                 <p:dataTable id="searchTable" var="obj" value="#{propertyManager.objects}" 
                              scrollRows="25" scrollable="true" liveScroll="true"   scrollHeight="200"                  
                              selectionMode="single" selection="#{propertyManager.selectedObject}" 
+                             filteredValue="#{propertyManager.filteredObjects}"
                              emptyMessage="No records found!" 
                              rowKey="#{obj.propertyId}}" >
 
                     <p:ajax event="rowSelect" listener="#{propertyManager.onRowSelect}" update=":propsform:managePanel :propsform:messages" />
 
-                    <p:column id="id" headerText="ID" sortBy="#{obj.propertyId}" filterBy="#{obj.propertyId}">
-                        <h:outputText value="#{obj.propertyId}"/>
+                    <p:column id="id" headerText="Name" sortBy="#{obj.name}" 
+                              filterBy="#{obj.name}" filterMatchMode="contains">
+                        <h:outputText value="#{obj.name}"/>
                     </p:column>
-                    <p:column id="desc" headerText="Description" filterBy="#{obj.description}" filterMatchMode="contains">
+                    <p:column id="desc" headerText="Description" 
+                              filterBy="#{obj.description}" filterMatchMode="contains">
                         <h:outputText value="#{obj.description}"/>
                     </p:column>
-                    <p:column id="units" headerText="Units" sortBy="#{obj.unit.unitId}" filterBy="#{obj.unit.unitId}" filterMatchMode="contains">
+                    <p:column id="units" headerText="Units" sortBy="#{obj.unit.unitId}" 
+                              filterBy="#{obj.unit.unitId}" filterMatchMode="contains">
                         <h:outputText value="#{obj.unit.unitId}"/>
                     </p:column>
-                    <p:column id="dtype" headerText="Data Type" sortBy="#{obj.dataType.dataTypeId}" filterBy="#{obj.dataType.dataTypeId}" filterMatchMode="contains">
+                    <p:column id="dtype" headerText="Data Type" sortBy="#{obj.dataType.dataTypeId}" 
+                              filterBy="#{obj.dataType.dataTypeId}" filterMatchMode="contains">
                         <h:outputText value="#{obj.dataType.dataTypeId}"/>
                     </p:column>
                     <p:column id="moddate" headerText="Date Modified" rendered="false" >
@@ -61,8 +66,8 @@
             <p:panel id="managePanel" header="Manage Properties">
 
                 <p:panelGrid id="inputForm" columns="2" styleClass="centered">
-                    <h:outputLabel value="Property ID:" />
-                    <h:inputText id="icode" value="#{propertyManager.inputObject.propertyId}" 
+                    <h:outputLabel value="Property Name:" />
+                    <h:inputText id="icode" value="#{propertyManager.inputObject.name}" 
                                  required="true"  readonly="#{! propertyManager.inTrans}"/> 
 
                     <h:outputLabel value="Description:" />
@@ -71,9 +76,10 @@
 
                     <h:outputLabel value="Units:" />
                     <p:selectOneMenu id="sunit" value="#{propertyManager.inputObject.unit}"   
-                                     var="u"  
+                                     var="u" 
                                      converter="#{unitConverter}" rendered="true"
                                      filter="true" filterMatchMode="startsWith">  
+                        <f:selectItem itemLabel="Select One" itemValue="" />
                         <f:selectItems value="#{unitManager.units}" var="unit" itemLabel="#{unit.unitId}" itemValue="#{unit}"/>
                         <p:column>  
                             #{u.unitId}
@@ -88,7 +94,7 @@
                             <h:outputText value="#{u.description}" />  
                         </p:column> 
                     </p:selectOneMenu>
-                    
+
                     <h:outputLabel value="Data Type:" />                  
                     <p:selectOneMenu id="dtype" value="#{propertyManager.inputObject.dataType}"   
                                      var="d"  required="true"  
@@ -98,7 +104,7 @@
                         <p:column>  
                             #{d.dataTypeId}
                         </p:column>                        
-                      
+
                         <p:column >  
                             <h:outputText value="#{d.description}" />  
                         </p:column> 

@@ -10,8 +10,10 @@ import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
@@ -33,19 +35,26 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "DeviceProperty.findAll", query = "SELECT d FROM DeviceProperty d"),
-    @NamedQuery(name = "DeviceProperty.findByDevice", query = "SELECT d FROM DeviceProperty d WHERE d.devicePropertyPK.device = :device"),
-    @NamedQuery(name = "DeviceProperty.findByProperty", query = "SELECT d FROM DeviceProperty d WHERE d.devicePropertyPK.property = :property"),
+    @NamedQuery(name = "DeviceProperty.findByDevPropId", query = "SELECT d FROM DeviceProperty d WHERE d.devPropId = :devPropId"),
+    @NamedQuery(name = "DeviceProperty.findByInRepository", query = "SELECT d FROM DeviceProperty d WHERE d.inRepository = :inRepository"),
     @NamedQuery(name = "DeviceProperty.findByModifiedAt", query = "SELECT d FROM DeviceProperty d WHERE d.modifiedAt = :modifiedAt"),
     @NamedQuery(name = "DeviceProperty.findByModifiedBy", query = "SELECT d FROM DeviceProperty d WHERE d.modifiedBy = :modifiedBy"),
     @NamedQuery(name = "DeviceProperty.findByVersion", query = "SELECT d FROM DeviceProperty d WHERE d.version = :version")})
 public class DeviceProperty implements Serializable {
     private static final long serialVersionUID = 1L;
-    @EmbeddedId
-    protected DevicePropertyPK devicePropertyPK;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "dev_prop_id")
+    private Integer devPropId;
     @Lob
     @Size(max = 65535)
-    @Column(name = "value")
-    private String value;
+    @Column(name = "prop_value")
+    private String propValue;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "in_repository")
+    private boolean inRepository;
     @Basic(optional = false)
     @NotNull
     @Column(name = "modified_at")
@@ -60,45 +69,53 @@ public class DeviceProperty implements Serializable {
     @NotNull
     @Column(name = "version")
     private int version;
-    @JoinColumn(name = "property", referencedColumnName = "property_id", insertable = false, updatable = false)
+    @JoinColumn(name = "property", referencedColumnName = "property_id")
     @ManyToOne(optional = false)
-    private Property property1;
-    @JoinColumn(name = "device", referencedColumnName = "device_id", insertable = false, updatable = false)
+    private Property property;
+    @JoinColumn(name = "unit", referencedColumnName = "unit_id")
+    @ManyToOne
+    private Unit unit;
+    @JoinColumn(name = "device", referencedColumnName = "device_id")
     @ManyToOne(optional = false)
-    private Device device1;
+    private Device device;
 
     public DeviceProperty() {
     }
 
-    public DeviceProperty(DevicePropertyPK devicePropertyPK) {
-        this.devicePropertyPK = devicePropertyPK;
+    public DeviceProperty(Integer devPropId) {
+        this.devPropId = devPropId;
     }
 
-    public DeviceProperty(DevicePropertyPK devicePropertyPK, Date modifiedAt, String modifiedBy, int version) {
-        this.devicePropertyPK = devicePropertyPK;
+    public DeviceProperty(Integer devPropId, boolean inRepository, Date modifiedAt, String modifiedBy, int version) {
+        this.devPropId = devPropId;
+        this.inRepository = inRepository;
         this.modifiedAt = modifiedAt;
         this.modifiedBy = modifiedBy;
         this.version = version;
     }
 
-    public DeviceProperty(int device, String property) {
-        this.devicePropertyPK = new DevicePropertyPK(device, property);
+    public Integer getDevPropId() {
+        return devPropId;
     }
 
-    public DevicePropertyPK getDevicePropertyPK() {
-        return devicePropertyPK;
+    public void setDevPropId(Integer devPropId) {
+        this.devPropId = devPropId;
     }
 
-    public void setDevicePropertyPK(DevicePropertyPK devicePropertyPK) {
-        this.devicePropertyPK = devicePropertyPK;
+    public String getPropValue() {
+        return propValue;
     }
 
-    public String getValue() {
-        return value;
+    public void setPropValue(String propValue) {
+        this.propValue = propValue;
     }
 
-    public void setValue(String value) {
-        this.value = value;
+    public boolean getInRepository() {
+        return inRepository;
+    }
+
+    public void setInRepository(boolean inRepository) {
+        this.inRepository = inRepository;
     }
 
     public Date getModifiedAt() {
@@ -125,26 +142,34 @@ public class DeviceProperty implements Serializable {
         this.version = version;
     }
 
-    public Property getProperty1() {
-        return property1;
+    public Property getProperty() {
+        return property;
     }
 
-    public void setProperty1(Property property1) {
-        this.property1 = property1;
+    public void setProperty(Property property) {
+        this.property = property;
     }
 
-    public Device getDevice1() {
-        return device1;
+    public Unit getUnit() {
+        return unit;
     }
 
-    public void setDevice1(Device device1) {
-        this.device1 = device1;
+    public void setUnit(Unit unit) {
+        this.unit = unit;
+    }
+
+    public Device getDevice() {
+        return device;
+    }
+
+    public void setDevice(Device device) {
+        this.device = device;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (devicePropertyPK != null ? devicePropertyPK.hashCode() : 0);
+        hash += (devPropId != null ? devPropId.hashCode() : 0);
         return hash;
     }
 
@@ -155,7 +180,7 @@ public class DeviceProperty implements Serializable {
             return false;
         }
         DeviceProperty other = (DeviceProperty) object;
-        if ((this.devicePropertyPK == null && other.devicePropertyPK != null) || (this.devicePropertyPK != null && !this.devicePropertyPK.equals(other.devicePropertyPK))) {
+        if ((this.devPropId == null && other.devPropId != null) || (this.devPropId != null && !this.devPropId.equals(other.devPropId))) {
             return false;
         }
         return true;
@@ -163,7 +188,7 @@ public class DeviceProperty implements Serializable {
 
     @Override
     public String toString() {
-        return "org.openepics.discs.conf.ent.DeviceProperty[ devicePropertyPK=" + devicePropertyPK + " ]";
+        return "org.openepics.discs.conf.ent.DeviceProperty[ devPropId=" + devPropId + " ]";
     }
     
 }

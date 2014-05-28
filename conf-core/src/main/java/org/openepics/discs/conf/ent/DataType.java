@@ -36,6 +36,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "DataType.findAll", query = "SELECT d FROM DataType d"),
     @NamedQuery(name = "DataType.findByDataTypeId", query = "SELECT d FROM DataType d WHERE d.dataTypeId = :dataTypeId"),
     @NamedQuery(name = "DataType.findByDescription", query = "SELECT d FROM DataType d WHERE d.description = :description"),
+    @NamedQuery(name = "DataType.findByScalar", query = "SELECT d FROM DataType d WHERE d.scalar = :scalar"),
     @NamedQuery(name = "DataType.findByModifiedAt", query = "SELECT d FROM DataType d WHERE d.modifiedAt = :modifiedAt"),
     @NamedQuery(name = "DataType.findByModifiedBy", query = "SELECT d FROM DataType d WHERE d.modifiedBy = :modifiedBy"),
     @NamedQuery(name = "DataType.findByVersion", query = "SELECT d FROM DataType d WHERE d.version = :version")})
@@ -52,6 +53,10 @@ public class DataType implements Serializable {
     @Size(min = 1, max = 255)
     @Column(name = "description")
     private String description;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "scalar")
+    private boolean scalar;
     @Basic(optional = false)
     @NotNull
     @Column(name = "modified_at")
@@ -76,9 +81,10 @@ public class DataType implements Serializable {
         this.dataTypeId = dataTypeId;
     }
 
-    public DataType(String dataTypeId, String description, Date modifiedAt, String modifiedBy, int version) {
+    public DataType(String dataTypeId, String description, boolean scalar, Date modifiedAt, String modifiedBy, int version) {
         this.dataTypeId = dataTypeId;
         this.description = description;
+        this.scalar = scalar;
         this.modifiedAt = modifiedAt;
         this.modifiedBy = modifiedBy;
         this.version = version;
@@ -98,6 +104,14 @@ public class DataType implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public boolean getScalar() {
+        return scalar;
+    }
+
+    public void setScalar(boolean scalar) {
+        this.scalar = scalar;
     }
 
     public Date getModifiedAt() {
