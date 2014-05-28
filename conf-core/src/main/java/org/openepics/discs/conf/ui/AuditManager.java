@@ -45,8 +45,8 @@ public class AuditManager {
             objects = configurationEJB.findAuditRecord();          
         } catch (Exception e) {
             System.err.println(e.getMessage());
-            logger.log(Level.SEVERE, "Cannot retrieve component types");
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Error in getting component types", " ");
+            logger.log(Level.SEVERE, "Cannot retrieve audit records");
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Error in getting audit records", " ");
         }
     }
 
