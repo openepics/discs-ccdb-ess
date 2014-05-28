@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition 
     xmlns:ui="http://java.sun.com/jsf/facelets"   
     xmlns:p="http://primefaces.org/ui"
@@ -10,45 +10,37 @@
     <ui:define name="content">
 
         <h:form id="searchForm"  prependId="false"> 
-            <p:dataTable id="searchTable" var="item" value="#{deviceManager.objects}" 
-                         scrollRows="25" scrollable="true" liveScroll="true"   scrollHeight="500"                  
-                         selectionMode="single" selection="#{deviceManager.selectedObject}" 
-                         filteredValue="#{deviceManager.filteredObjects}"
-                         emptyMessage="No devices found!" 
-                         rowKey="#{item.deviceId}}" >
-
-                <p:column id="id" headerText="Name" sortBy="#{item.serialNumber}" filterBy="#{item.serialNumber}">
-                    <h:outputText value="#{item.serialNumber}"/>
-                </p:column>
-                <p:column id="desc" headerText="Description" filterBy="#{item.description}" filterMatchMode="contains">
-                    <h:outputText value="#{item.description}"/>
-                </p:column>
-                <p:column id="type" headerText="Type" sortBy="#{item.componentType.name}" 
-                          filterBy="#{item.componentType.name}" filterMatchMode="contains">
-                    <h:outputText value="#{item.componentType.name}"/>
-                </p:column>
-                <p:column headerText="Part Of" sortBy="#{item.asmParent.serialNumber}" 
-                          filterBy="#{item.asmParent.serialNumber}" filterMatchMode="contains">
-                    <h:outputText value="#{item.asmParent.serialNumber}"/>
-                </p:column>
-                <p:column  headerText="Asm Position" >
-                    <h:outputText value="#{item.asmPosition}"/>
-                </p:column>
-                <p:column  headerText="Asm Comment" >
-                    <h:outputText value="#{item.asmDescription}"/>
-                </p:column>
-
-                <p:column id="moddate" headerText="Date Modified" rendered="false" >
-                    <h:outputText value="#{item.modifiedAt}">
-                        <f:convertDateTime pattern="#{msgs.dateFormat}" />
+            <p:dataTable id="searchTable" var="item" value="#{auditManager.objects}" 
+                         scrollRows="25" scrollable="true" liveScroll="true"   scrollHeight="500"                                         
+                         filteredValue="#{auditManager.filteredObjects}"
+                         emptyMessage="No audit records found!" 
+                         rowKey="#{item.auditRecordId}}" >
+                <f:facet name="header">
+                    <h:outputText value="Audit Records"/>
+                </f:facet> 
+                <p:column id="id" headerText="Date" sortBy="#{item.logTime}">
+                    <h:outputText value="#{item.logTime}">
+                        <f:convertDateTime pattern="#{msgs.dateFormat}"/>
                     </h:outputText>
                 </p:column>
-                <p:column id="modby" headerText="Modified By"  rendered="false">
-                    <h:outputText value="#{item.modifiedBy}" />                      
+                <p:column id="desc" headerText="Description" filterBy="#{item.user}" filterMatchMode="contains">
+                    <h:outputText value="#{item.user}"/>
+                </p:column>              
+                <p:column  headerText="Operation" >
+                    <h:outputText value="#{item.oper}"/>
+                </p:column>
+                <p:column  headerText="Entity" sortBy="#{item.entityType}">
+                    <h:outputText value="#{item.entityType}"/>
+                </p:column>
+                <p:column  headerText="Key" sortBy="#{item.entityKey}">
+                    <h:outputText value="#{item.entityKey}"/>
+                </p:column>
+                <p:column  headerText="Description" >
+                    <h:outputText value="#{item.entry}"/>
                 </p:column>
             </p:dataTable>
         </h:form>
-        
+
     </ui:define>
 </ui:composition>
 

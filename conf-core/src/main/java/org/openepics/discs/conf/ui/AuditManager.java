@@ -49,4 +49,17 @@ public class AuditManager {
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Error in getting component types", " ");
         }
     }
+
+    public List<AuditRecord> getObjects() {
+        return objects;
+    }
+
+    public List<AuditRecord> getFilteredObjects() {
+        return filteredObjects;
+    }
+
+    public void setFilteredObjects(List<AuditRecord> filteredObjects) {
+        this.filteredObjects = filteredObjects;
+    }
+      
 }

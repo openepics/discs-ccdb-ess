@@ -72,7 +72,9 @@ body {
     font-weight: normal;
 }
 
-
+.link {
+    text-decoration: underline;
+}
 
 .boxf {
     margin: 0px; 

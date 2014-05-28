@@ -31,6 +31,7 @@ public class UnitManager implements Serializable {
     private static final Logger logger = Logger.getLogger("org.openepics.discs.conf");
     
     private List<Unit> units;
+    private List<Unit> filteredUnits;
     
     /**
      * Creates a new instance of UnitManager
@@ -50,6 +51,14 @@ public class UnitManager implements Serializable {
 
     public List<Unit> getUnits() {
         return units;
+    }
+
+    public List<Unit> getFilteredUnits() {
+        return filteredUnits;
+    }
+
+    public void setFilteredUnits(List<Unit> filteredUnits) {
+        this.filteredUnits = filteredUnits;
     }
     
     

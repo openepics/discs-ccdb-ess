@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition 
+    xmlns:ui="http://java.sun.com/jsf/facelets"   
+    xmlns:p="http://primefaces.org/ui"
+    template="/template/ConfigManagerTemplate.xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"   
+    xmlns:h="http://java.sun.com/jsf/html">              
+
+    <ui:define name="content">
+        <h:form id="searchForm"  prependId="false"> 
+            <p:dataTable id="searchTable" var="item" value="#{installationManager.objects}" 
+                         scrollRows="25" scrollable="true" liveScroll="true"   scrollHeight="500"                                         
+                         filteredValue="#{installationManager.filteredObjects}"
+                         emptyMessage="No installation records found!" 
+                         rowKey="#{item.installationRecordId}}" >
+                 <f:facet name="header">
+                    <h:outputText value="Installation Records"/>
+                </f:facet> 
+                <p:column id="desc" headerText="ID" filterBy="#{item.installationRecordId}" filterMatchMode="contains">
+                    <h:outputText value="#{item.installationRecordId}"/>
+                </p:column>              
+                <p:column  headerText="Date" sortBy="#{item.installDate}">
+                    <h:outputText value="#{item.installDate}">
+                        <f:convertDateTime pattern="#{msgs.dateFormat}"/>
+                    </h:outputText>
+                </p:column>
+                <p:column  headerText="Slot" sortBy="#{item.slot.name}">
+                    <h:outputText value="#{item.slot.name}"/>
+                </p:column>   
+                <p:column  headerText="Device" sortBy="#{item.device.serialNumber}">
+                     <h:link value="/browse/device/details" >
+                        <h:outputText value="#{item.device.serialNumber}"/>
+                        <f:param name="id" value="#{item.device.deviceId}"/>.
+                    </h:link>                   
+                </p:column> 
+                <p:column  headerText="Notes" sortBy="#{item.notes}">
+                    <h:outputText value="#{item.notes}"/>
+                </p:column> 
+            </p:dataTable>
+        </h:form>      
+    </ui:define>
+</ui:composition>
+

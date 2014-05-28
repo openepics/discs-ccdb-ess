@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition 
+    xmlns:ui="http://java.sun.com/jsf/facelets"   
+    xmlns:p="http://primefaces.org/ui"
+    template="/template/ConfigManagerTemplate.xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"   
+    xmlns:h="http://java.sun.com/jsf/html">              
+
+    <ui:define name="content">
+
+        <h:form id="searchForm"  prependId="false"> 
+            <p:dataTable id="searchTable" var="item" value="#{dataTypeManager.dataTypes}" 
+                         scrollRows="25" scrollable="true" liveScroll="true"   scrollHeight="500"                                         
+                         filteredValue="#{dataTypeManager.fileteredDataTypes}"
+                         emptyMessage="No audit records found!" 
+                         rowKey="#{item.dataTypeId}}" >
+                <f:facet name="header">
+                    <h:outputText value="Data Types"/>
+                </f:facet> 
+                <p:column id="desc" headerText="ID" filterBy="#{item.dataTypeId}" filterMatchMode="contains">
+                    <h:outputText value="#{item.dataTypeId}"/>
+                </p:column>              
+                <p:column  headerText="Description" >
+                    <h:outputText value="#{item.description}"/>
+                </p:column>
+                <p:column  headerText="Scalar" sortBy="#{item.scalar}">
+                    <h:outputText value="#{item.scalar}"/>
+                </p:column>               
+            </p:dataTable>
+        </h:form>
+
+    </ui:define>
+</ui:composition>
+

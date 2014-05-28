@@ -40,8 +40,7 @@ public class DeviceDetail implements Serializable {
             selectedObject = deviceEJB.findDevice(id);
             if ( selectedObject == null ) {
                 Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Device with given ID not found"," Device ID: " + id);
-            }
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "finding device"," " + id);
+            }           
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Cannot retrieve device", e.getMessage());
             Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error in finding device", e.getMessage());
@@ -55,7 +54,6 @@ public class DeviceDetail implements Serializable {
     public void setId(int id) {
         this.id = id;
     }
-
     
     public Device getSelectedObject() {
         return selectedObject;

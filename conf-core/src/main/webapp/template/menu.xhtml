@@ -16,21 +16,21 @@
             
             <p:submenu label="Browse" icon="ui-icon-note" rendered="true"> 
                 <p:menuitem value="Alignments" title="Browse Alignment Records" 
-                            url="/browse/alignment/" icon="ui-icon-note" disabled="true"/>
-                <p:menuitem value="Data Types" title="Browse Data Types" 
-                            url="/browse/alignment/" icon="ui-icon-note" disabled="true"/>
+                            url="/browse/alignment/" icon="ui-icon-note" />
+                <p:menuitem value="Audit Records" title="Browse Audit Records" 
+                            url="/browse/audit/" icon="ui-icon-note" />
                 <p:menuitem value="Component Types" title="Browse Component Types" 
-                            url="/browse/alignment/" icon="ui-icon-note" disabled="true"/>
-                
+                            url="/browse/comptype/" icon="ui-icon-note" />
+                <p:menuitem value="Data Types" title="Browse Data Types" 
+                            url="/browse/datatype/" icon="ui-icon-note" />                           
                 <p:menuitem value="Devices" icon="ui-icon-note" title="Browse Devices" url="/browse/device/"/>
                 <p:menuitem value="Installations" title="Browse Installations" 
-                            url="/browse/alignment/" icon="ui-icon-note" disabled="true"/>
-                
+                            url="/browse/installation/" icon="ui-icon-note"/>              
                 <p:menuitem value="Properties" title="Browse Properties" 
-                            url="/browse/alignment/" icon="ui-icon-note" disabled="true"/>
+                            url="/browse/property/" icon="ui-icon-note"/>
                 <p:menuitem value="Slots" icon="ui-icon-note" title="Browse Slots" url="/browse/slot/"/>
-                <p:menuitem value="Units" title="Browse Installations" 
-                            url="/browse/alignment/" icon="ui-icon-note" disabled="true"/>
+                <p:menuitem value="Units" title="Browse Units" 
+                            url="/browse/unit/" icon="ui-icon-note"/>
             </p:submenu>
             <p:submenu label="Export" icon="ui-icon-transferthick-e-w"  > 
                 <p:menuitem value="Lattice" title="Export Layout" 
@@ -68,7 +68,7 @@
                             url="api-manual.xhtml" disabled="true"/>
                 <p:menuitem value=" Report Problems" title="Report Problems/Suggestions" 
                             icon="ui-icon-alert" target="_blank"
-                            url="https://controls.frib.msu.edu/controlshelp/" 
+                            url="#{msgs.bugReportSite}" 
                             rendered="true"/>              
                 <p:menuitem value=" About" id="aboutMenu" icon="ui-icon-info" 
                             title="About #{msgs.title}"  onclick="aboutPanelWid.show()"/>    

@@ -10,44 +10,48 @@
     <ui:define name="content">
 
         <h:form id="searchForm"  prependId="false"> 
-            <p:dataTable id="searchTable" var="item" value="#{deviceManager.objects}" 
-                         scrollRows="25" scrollable="true" liveScroll="true"   scrollHeight="500"                  
-                         selectionMode="single" selection="#{deviceManager.selectedObject}" 
+            <p:dataTable id="searchTable" var="dev" value="#{deviceManager.objects}" 
+                         scrollRows="25" scrollable="true" liveScroll="true"   scrollHeight="500"
                          filteredValue="#{deviceManager.filteredObjects}"
                          emptyMessage="No devices found!" 
-                         rowKey="#{item.deviceId}}" >
-
-                <p:column id="id" headerText="Name" sortBy="#{item.serialNumber}" filterBy="#{item.serialNumber}">
-                    <h:outputText value="#{item.serialNumber}"/>
+                         rowKey="#{dev.deviceId}}" >
+                <f:facet name="header">
+                    <h:outputText value="Devices"/>
+                </f:facet> 
+                <p:column id="id" headerText="ID" sortBy="#{dev.serialNumber}" filterBy="#{dev.serialNumber}">
+                    <h:link outcome="details" target="_blank" >
+                        <h:outputText value="#{dev.serialNumber}" styleClass="link"/>
+                        <f:param name="id" value="#{dev.deviceId}"/>
+                    </h:link>
                 </p:column>
-                <p:column id="desc" headerText="Description" filterBy="#{item.description}" filterMatchMode="contains">
-                    <h:outputText value="#{item.description}"/>
+                <p:column id="desc" headerText="Description" filterBy="#{dev.description}" filterMatchMode="contains">
+                    <h:outputText value="#{dev.description}"/>
                 </p:column>
-                <p:column id="type" headerText="Type" sortBy="#{item.componentType.name}" 
-                          filterBy="#{item.componentType.name}" filterMatchMode="contains">
-                    <h:outputText value="#{item.componentType.name}"/>
+                <p:column id="type" headerText="Type" sortBy="#{dev.componentType.name}" 
+                          filterBy="#{dev.componentType.name}" filterMatchMode="contains">
+                    <h:outputText value="#{dev.componentType.name}"/>
                 </p:column>
-                <p:column headerText="Part Of" sortBy="#{item.asmParent.serialNumber}" 
-                          filterBy="#{item.asmParent.serialNumber}" filterMatchMode="contains">
-                    <h:outputText value="#{item.asmParent.serialNumber}"/>
+                <p:column headerText="Part Of" sortBy="#{dev.asmParent.serialNumber}" 
+                          filterBy="#{dev.asmParent.serialNumber}" filterMatchMode="contains">
+                    <h:outputText value="#{dev.asmParent.serialNumber}"/>
                 </p:column>
                 <p:column  headerText="Asm Position" >
-                    <h:outputText value="#{item.asmPosition}"/>
+                    <h:outputText value="#{dev.asmPosition}"/>
                 </p:column>
                 <p:column  headerText="Asm Comment" >
-                    <h:outputText value="#{item.asmDescription}"/>
+                    <h:outputText value="#{dev.asmDescription}"/>
                 </p:column>
 
                 <p:column id="moddate" headerText="Date Modified" rendered="false" >
-                    <h:outputText value="#{item.modifiedAt}">
+                    <h:outputText value="#{dev.modifiedAt}">
                         <f:convertDateTime pattern="#{msgs.dateFormat}" />
                     </h:outputText>
                 </p:column>
                 <p:column id="modby" headerText="Modified By"  rendered="false">
-                    <h:outputText value="#{item.modifiedBy}" />                      
+                    <h:outputText value="#{dev.modifiedBy}" />                      
                 </p:column>
             </p:dataTable>
         </h:form>
-        
+
     </ui:define>
 </ui:composition>

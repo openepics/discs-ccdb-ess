@@ -13,28 +13,32 @@
     xmlns:h="http://java.sun.com/jsf/html">
 
     <p:panelGrid>            
-            <p:row>  
-                <p:column>Version</p:column>  
-                <p:column>#{msgs.version}</p:column>    
-            </p:row> 
-            <p:row>  
-                <p:column>Schema Version</p:column>  
-                <p:column>#{msgs.dbversion}</p:column>    
-            </p:row>
-            <p:row>  
-                <p:column>API Version</p:column>  
-                <p:column>#{msgs.apiversion}</p:column>    
-            </p:row>
-            <p:row>  
-                <p:column>Team</p:column>  
-                <p:column>#{msgs.devTeam}</p:column>    
-            </p:row>                      
-            <p:row>  
-                <p:column>Support </p:column>  
-                <p:column>Send Email to <a href="mailto:#{msgs.supportEmail}?Subject=Proteus-Calibration-System">Support Team</a></p:column>    
-            </p:row>
-            <p:row>
-                <p:column colspan="2" style="text-align: center; font-weight: bold">#{msgs.tagline}</p:column>
-            </p:row>
-        </p:panelGrid>
+        <p:row>  
+            <p:column>Version</p:column>  
+            <p:column>#{msgs.version}</p:column>    
+        </p:row> 
+        <p:row>  
+            <p:column>Schema Version</p:column>  
+            <p:column>#{msgs.dbversion}</p:column>    
+        </p:row>
+        <p:row>  
+            <p:column>API Version</p:column>  
+            <p:column>#{msgs.apiversion}</p:column>    
+        </p:row>
+        <p:row>  
+            <p:column>Team</p:column>  
+            <p:column>#{msgs.devTeam}</p:column>    
+        </p:row>
+        <p:row>  
+            <p:column>Domain Experts</p:column>  
+            <p:column>#{msgs.domainExperts}</p:column>    
+        </p:row>
+        <p:row>  
+            <p:column>Support </p:column>  
+            <p:column>Send Email to <a href="mailto:#{msgs.supportEmail}?Subject=Proteus-Calibration-System">Support Team</a></p:column>    
+        </p:row>
+        <p:row>
+            <p:column colspan="2" style="text-align: center; font-weight: bold">#{msgs.tagline}</p:column>
+        </p:row>
+    </p:panelGrid>
 </ui:composition>

@@ -31,6 +31,7 @@ public class DataTypeManager implements Serializable {
     private static final Logger logger = Logger.getLogger("org.openepics.discs.conf");
     
     private List<DataType> dataTypes;
+    private List<DataType> fileteredDataTypes;
     /**
      * Creates a new instance of DataTypeManager
      */
@@ -50,5 +51,15 @@ public class DataTypeManager implements Serializable {
     public List<DataType> getDataTypes() {
         return dataTypes;
     }
+
+    public List<DataType> getFileteredDataTypes() {
+        return fileteredDataTypes;
+    }
+
+    public void setFileteredDataTypes(List<DataType> fileteredDataTypes) {
+        this.fileteredDataTypes = fileteredDataTypes;
+    }
+    
+    
         
 }
