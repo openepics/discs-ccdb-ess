@@ -25,8 +25,13 @@
                     <p:column>#{cc.attrs.selectedComponent.description}</p:column>                               
                 </p:row>
                 <p:row>  
-                    <p:column>Type</p:column>  
-                    <p:column>#{cc.attrs.selectedComponent.componentType.name}</p:column>                               
+                    <p:column>Type</p:column>                    
+                    <p:column>
+                        <h:outputLink value="../comptype/details.xhtml" target="_blank" >                       
+                            <h:outputText value="#{cc.attrs.selectedComponent.componentType.name}" styleClass="link"/>
+                            <f:param name="id" value="#{cc.attrs.selectedComponent.componentType.componentTypeId}"/>
+                        </h:outputLink>                        
+                    </p:column>                               
                 </p:row>                 
             </p:panelGrid>       
         </p:panel> 

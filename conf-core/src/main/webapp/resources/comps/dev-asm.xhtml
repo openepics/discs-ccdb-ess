@@ -8,6 +8,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:p="http://primefaces.org/ui"
       xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
       xmlns:cc="http://java.sun.com/jsf/composite">
 
     <!-- INTERFACE -->
@@ -19,22 +20,25 @@
     <!-- IMPLEMENTATION -->
     <cc:implementation>
         <p:panel header="Device Assembly" toggleable="true" style="border: 0px;" collapsed="#{cc.attrs.collapsed}">  
-            <p:dataTable id="proptable" var="item" value="#{cc.attrs.selectedComponent.deviceList}" >
-                <p:column  headerText="Position" >
-                    <h:outputText value="#{item.asmPosition}"/>
+            <p:dataTable id="proptable" var="dev" value="#{cc.attrs.selectedComponent.deviceList}" >
+                <p:column  headerText="Position" sortBy="#{dev.asmPosition}" >
+                    <h:outputText value="#{dev.asmPosition}"/>
                 </p:column>
-                <p:column id="id" headerText="ID" sortBy="#{item.serialNumber}" >
-                    <h:outputText value="#{item.serialNumber}"/>
+                <p:column id="id" headerText="ID" sortBy="#{dev.serialNumber}" >                   
+                    <h:link outcome="details" target="_blank" >
+                        <h:outputText value="#{dev.serialNumber}" styleClass="link"/>
+                        <f:param name="id" value="#{dev.deviceId}"/>
+                    </h:link>
                 </p:column>
                 <p:column id="desc" headerText="Description"  >
-                    <h:outputText value="#{item.description}"/>
+                    <h:outputText value="#{dev.description}"/>
                 </p:column>
-                <p:column id="type" headerText="Type" sortBy="#{item.componentType.name}">
-                    <h:outputText value="#{item.componentType.name}"/>
+                <p:column id="type" headerText="Type" sortBy="#{dev.componentType.name}">
+                    <h:outputText value="#{dev.componentType.name}"/>
                 </p:column>
                 
                 <p:column  headerText="Comment" >
-                    <h:outputText value="#{item.asmDescription}"/>
+                    <h:outputText value="#{dev.asmDescription}"/>
                 </p:column>              
             </p:dataTable>  					  
         </p:panel>

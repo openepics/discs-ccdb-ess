@@ -20,7 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.openepics.discs.conf.ejb.AuthEJBLocal;
 
 /**
- *
+ *  todo: integrate with RBAC
  * @author Vasu V <vuppala@frib.msu.org>
  */
 @Named

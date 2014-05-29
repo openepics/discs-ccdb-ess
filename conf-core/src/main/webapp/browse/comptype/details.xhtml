@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+    Displays details of a a give device.
+
+    @author: 
+-->
+<ui:composition 
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    template="/template/ConfigManagerTemplate.xhtml"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:fc="http://java.sun.com/jsf/composite/comps"
+    xmlns:h="http://java.sun.com/jsf/html">              
+
+    <ui:define name="content">      
+        <p:growl id="messages" showDetail="true"/>
+        <f:metadata>
+            <f:viewParam name="id" value="#{comptypeDetail.id}" />
+            <f:viewAction action="#{comptypeDetail.init}" />
+        </f:metadata>
+
+        <fc:ctype-details componentType="#{comptypeDetail.selectedObject}" />
+        <fc:ctype-props componentType="#{comptypeDetail.selectedObject}" />       
+        <fc:ctype-asm componentType="#{comptypeDetail.selectedObject}" />
+        <fc:ctype-artifact componentType="#{comptypeDetail.selectedObject}" />
+    </ui:define>
+</ui:composition>

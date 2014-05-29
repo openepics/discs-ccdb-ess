@@ -144,13 +144,6 @@ public class DeviceManager implements Serializable {
         logger.info("Saving device");
         
         try {   
-            /*
-            if ( ! authManager.userHasAuth("device:save") ) {
-                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "You are not authorized for this operation", "device:save " + token);
-                return;
-            } 
-                    */
-            // inputObject.setModifiedBy(user);
             deviceEJB.saveDevice(token, inputObject);
 
             if (selectedOp == 'a') {
@@ -224,7 +217,7 @@ public class DeviceManager implements Serializable {
                 Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "No property selected");
                 return;
             }
-            artifactOperation = 'e';
+            propertyOperation = 'e';
             inputProperty = prop;
             uploadedFileName = prop.getProperty().getName();
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Edit:", "Edit initiated " + inputProperty.getDevPropId());

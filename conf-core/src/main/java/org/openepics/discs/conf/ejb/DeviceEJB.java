@@ -126,7 +126,7 @@ public class DeviceEJB implements DeviceEJBLocal {
         }
         prop.setModifiedAt(new Date());
         // ctprop.setType("a");
-        prop.setModifiedBy("user");
+        prop.setModifiedBy(user);
         DeviceProperty newProp = em.merge(prop);
 
         if (create) { // create instead of update

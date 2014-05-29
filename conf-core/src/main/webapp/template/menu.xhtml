@@ -16,9 +16,7 @@
             
             <p:submenu label="Browse" icon="ui-icon-note" rendered="true"> 
                 <p:menuitem value="Alignments" title="Browse Alignment Records" 
-                            url="/browse/alignment/" icon="ui-icon-note" />
-                <p:menuitem value="Audit Records" title="Browse Audit Records" 
-                            url="/browse/audit/" icon="ui-icon-note" />
+                            url="/browse/alignment/" icon="ui-icon-note" />             
                 <p:menuitem value="Component Types" title="Browse Component Types" 
                             url="/browse/comptype/" icon="ui-icon-note" />
                 <p:menuitem value="Data Types" title="Browse Data Types" 
@@ -58,7 +56,14 @@
             <p:menuitem value="Reports" title="Reports"  icon="ui-icon-print" url="reports.xhtml" disabled="true" />
 
             <p:menuitem value="Preferences" title="Preferences"  icon="ui-icon-gear" url="preferences.xhtml"  disabled="true"/>
-
+            <p:submenu label="Admin" icon="ui-icon-note" rendered="true"> 
+                
+                <p:menuitem value="Audit Records" title="Browse Audit Records" 
+                            url="/browse/audit/" icon="ui-icon-note" />
+                <p:menuitem value="Authorization" title="Manage Authorizations" 
+                            url="/browse/audit/" icon="ui-icon-note"  disabled="true"/>
+            </p:submenu>
+            
             <p:submenu label="Help" icon="ui-icon-help">
                 <p:menuitem value=" Online Help" title="Online Help" 
                             icon="ui-icon-help" 

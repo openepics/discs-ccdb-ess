@@ -12,7 +12,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import org.openepics.discs.conf.ent.Privilege;
-import org.openepics.discs.conf.ent.UserRole;
 
 /**
  *
@@ -21,13 +20,11 @@ import org.openepics.discs.conf.ent.UserRole;
 @Stateless
 public class AuthEJB implements AuthEJBLocal {
 
-    private static final Logger logger = Logger.getLogger("org.openepics.discs.conf");
+    private static final Logger logger = Logger.getLogger(AuthEJB.class.getName());
     @PersistenceContext(unitName = "org.openepics.discs.conf.data")
-    private EntityManager em;
-    // Add business logic below. (Right-click in editor and choose
-    // "Insert Code > Add Business Method")
+    private EntityManager em;  
 
-    // todo: need to implement autorization. this is just a dummy   
+    // todo: implement autorization using RBAC.    
     @Override
     public boolean userHasAuth(String principal, String resource, char operation) {
         boolean auth = false;

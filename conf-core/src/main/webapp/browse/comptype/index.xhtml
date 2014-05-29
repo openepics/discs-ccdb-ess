@@ -8,7 +8,6 @@
     xmlns:h="http://java.sun.com/jsf/html">              
 
     <ui:define name="content">
-
         <h:form id="searchForm"  prependId="false"> 
             <p:dataTable id="searchTable" var="item" value="#{componentTypeMananger.objects}" 
                          scrollRows="25" scrollable="true" liveScroll="true"   scrollHeight="500"                                         
@@ -18,18 +17,22 @@
                 <f:facet name="header">
                     <h:outputText value="Component Types"/>
                 </f:facet> 
-                <p:column id="desc" headerText="Name" filterBy="#{item.name}" filterMatchMode="contains">
-                    <h:outputText value="#{item.name}"/>
+                <p:column headerText="Name" filterBy="#{item.name}" filterMatchMode="contains">
+                    <h:link outcome="details" target="_blank"  >                       
+                        <h:outputText value="#{item.name}" styleClass="link"/>
+                        <f:param name="id" value="#{item.componentTypeId}"/>
+                    </h:link>                  
                 </p:column>              
                 <p:column  headerText="Description" >
                     <h:outputText value="#{item.description}"/>
                 </p:column>
-                <p:column  headerText="Parent Type" sortBy="#{item.superComponentType}">
-                    <h:outputText value="#{item.superComponentType}"/>
+                <p:column  headerText="Parent Type" sortBy="#{item.superComponentType.name}">
+                    <h:link outcome="details" target="_blank"  >                       
+                        <h:outputText value="#{item.superComponentType.name}" styleClass="link"/>
+                        <f:param name="id" value="#{item.superComponentType.componentTypeId}"/>
+                    </h:link>                  
                 </p:column>               
             </p:dataTable>
         </h:form>
-
     </ui:define>
 </ui:composition>
-
