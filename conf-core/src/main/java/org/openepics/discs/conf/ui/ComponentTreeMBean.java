@@ -23,7 +23,7 @@ import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
-import org.openepics.discs.conf.ejb.SlotEJBLocal;
+import org.openepics.discs.conf.ejb.SlotEJB;
 import org.primefaces.event.NodeCollapseEvent;
 import org.primefaces.event.NodeExpandEvent;
 import org.primefaces.event.NodeSelectEvent;
@@ -41,7 +41,7 @@ import org.primefaces.model.TreeNode;
 public class ComponentTreeMBean implements Serializable {
 
     @EJB
-    private SlotEJBLocal slotBean;
+    private SlotEJB slotBean;
     private TreeNode root;
     private TreeNode selectedNode;
     private Slot selectedComponent;

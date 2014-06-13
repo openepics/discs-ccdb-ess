@@ -13,7 +13,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
-import org.openepics.discs.conf.ejb.ConfigurationEJBLocal;
+import org.openepics.discs.conf.ejb.ConfigurationEJB;
 import org.openepics.discs.conf.ent.Unit;
 
 /**
@@ -26,7 +26,7 @@ import org.openepics.discs.conf.ent.Unit;
 public class UnitConverter implements Converter{
 
     @EJB
-    private ConfigurationEJBLocal configurationEJB;
+    private ConfigurationEJB configurationEJB;
     private static final Logger logger = Logger.getLogger("org.openepics.discs.conf");
     /**
      * Creates a new instance of UnitConverter

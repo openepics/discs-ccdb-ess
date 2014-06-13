@@ -19,7 +19,7 @@ import javax.faces.application.FacesMessage;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
 
-import org.openepics.discs.conf.ejb.ConfigurationEJBLocal;
+import org.openepics.discs.conf.ejb.ConfigurationEJB;
 import org.openepics.discs.conf.ent.AuditRecord;
 
 /**
@@ -30,7 +30,7 @@ import org.openepics.discs.conf.ent.AuditRecord;
 @ViewScoped
 public class AuditManager implements Serializable {
     @EJB
-    private ConfigurationEJBLocal configurationEJB;
+    private ConfigurationEJB configurationEJB;
     private static final Logger logger = Logger.getLogger("org.openepics.discs.conf");
     
     private List<AuditRecord> objects;

@@ -23,7 +23,7 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.openepics.discs.conf.ejb.InstallationEJBLocal;
+import org.openepics.discs.conf.ejb.InstallationEJB;
 import org.openepics.discs.conf.ent.InstallationArtifact;
 import org.openepics.discs.conf.ent.InstallationRecord;
 import org.openepics.discs.conf.util.BlobStore;
@@ -42,7 +42,7 @@ import org.primefaces.model.UploadedFile;
 @ViewScoped
 public class InstallationManager implements Serializable {
     @EJB
-    private InstallationEJBLocal installationEJB;
+    private InstallationEJB installationEJB;
 
     @Inject
     private BlobStore blobStore;

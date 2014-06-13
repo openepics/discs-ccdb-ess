@@ -36,9 +36,9 @@ import org.openepics.discs.conf.util.AppProperties;
  * @author vuppala
  */
 @Stateless
-public class SlotEJB implements SlotEJBLocal {
+public class SlotEJB {
     @EJB
-    private AuthEJBLocal authEJB;
+    private AuthEJB authEJB;
     
     @Inject 
     private LoginManager loginManager;
@@ -57,7 +57,7 @@ public class SlotEJB implements SlotEJBLocal {
     }
     
      // ----------------  Layout Slot  -------------------------
-    @Override
+    
     public List<Slot> findLayoutSlot() {
         List<Slot> comps;
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -71,12 +71,12 @@ public class SlotEJB implements SlotEJBLocal {
         return comps;        
     }
     
-    @Override
+    
     public Slot findLayoutSlot(int id) {
         return em.find(Slot.class, id);
     }
     
-    @Override
+    
     public void saveLayoutSlot(Slot slot) throws Exception  {
         if (slot == null ) {
             logger.log(Level.SEVERE, "Property is null!");
@@ -95,7 +95,7 @@ public class SlotEJB implements SlotEJBLocal {
         makeAuditEntry(EntityTypeOperation.UPDATE,slot.getName(),"Modified slot");
     }
     
-    @Override
+    
     public void deleteLayoutSlot(Slot slot) throws Exception {
         if (slot == null ) {
             logger.log(Level.SEVERE, "Property is null!");
@@ -112,7 +112,7 @@ public class SlotEJB implements SlotEJBLocal {
     }
     
     // ------------------ Slot Property ---------------
-    @Override
+    
     public void saveSlotProp(SlotProperty prop, boolean create) throws Exception {
         if (prop == null) {
             logger.log(Level.SEVERE, "saveSlotProp: property is null");
@@ -137,7 +137,7 @@ public class SlotEJB implements SlotEJBLocal {
         logger.log(Level.INFO, "Comp Type Property: id " + newProp.getSlotPropId() + " name " + newProp.getProperty().getName());
     }
     
-    @Override
+    
     public void deleteSlotProp(SlotProperty prop) throws Exception {
         if (prop == null) {
             logger.log(Level.SEVERE, "deleteDeviceArtifact: dev-artifact is null");
@@ -158,7 +158,7 @@ public class SlotEJB implements SlotEJBLocal {
     
     // ---------------- Slot Artifact ---------------------
     
-    @Override
+    
     public void saveSlotArtifact(SlotArtifact art, boolean create) throws Exception  {
         if (art == null) {
             logger.log(Level.SEVERE, "saveSlotArtifact: artifact is null");
@@ -181,7 +181,7 @@ public class SlotEJB implements SlotEJBLocal {
         logger.log(Level.INFO, "slot Artifact: name " + art.getName() + " description " + art.getDescription() + " uri " + art.getUri());
     }
     
-    @Override
+    
     public void deleteSlotArtifact(SlotArtifact art) throws Exception {
         if (art == null) {     
             logger.log(Level.SEVERE, "deleteAlignmentArtifact: alignment artifact is null");
@@ -202,7 +202,7 @@ public class SlotEJB implements SlotEJBLocal {
     
     // ---------------- Related Slots ---------------------
     
-    @Override
+    
     public void saveSlotPair(SlotPair spair, boolean create) throws Exception {
         if (spair == null) {
             logger.log(Level.SEVERE, "saveSlotPair: slot pair is null");
@@ -224,7 +224,7 @@ public class SlotEJB implements SlotEJBLocal {
         logger.log(Level.INFO, "saved slot pair: child " + spair.getChildSlot().getName() + " parent " + spair.getParentSlot().getName() + " relation " );
     }
     
-    @Override
+    
     public void deleteSlotPair(SlotPair spair)  throws Exception {
         if (spair == null) {     
             logger.log(Level.SEVERE, "deleteSlotPair: SlotPair is null");
@@ -248,7 +248,7 @@ public class SlotEJB implements SlotEJBLocal {
     
     private final String ROOT_COMPONENT_TYPE = "_ROOT"; // ToDo: Get the root type from configuration (JNDI, config table etc)
     
-    @Override
+    
     public List<Slot> getRootNodes(String relationName) {
         List<Slot> components;
         TypedQuery<Slot> queryComp;
@@ -262,12 +262,12 @@ public class SlotEJB implements SlotEJBLocal {
         return components;
     }
     
-    @Override
+    
     public List<Slot> getRootNodes() {
         return getRootNodes("contains"); // ToDo: get the relation name from configuration
     }
     
-    @Override
+    
     public List<Slot> relatedChildren(String compName) {
         List<Slot> components;
         TypedQuery<Slot> queryComp;

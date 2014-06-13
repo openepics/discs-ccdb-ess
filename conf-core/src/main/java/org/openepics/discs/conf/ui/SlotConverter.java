@@ -13,7 +13,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
-import org.openepics.discs.conf.ejb.SlotEJBLocal;
+import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.Slot;
 
 /**
@@ -25,7 +25,7 @@ import org.openepics.discs.conf.ent.Slot;
 public class SlotConverter implements Converter{
 
     @EJB
-    private SlotEJBLocal slotEJB;
+    private SlotEJB slotEJB;
     private static final Logger logger = Logger.getLogger("org.openepics.discs.conf");
     /**
      * Creates a new instance of SlotConverter

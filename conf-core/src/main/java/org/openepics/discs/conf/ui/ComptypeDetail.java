@@ -12,7 +12,7 @@ import javax.ejb.EJB;
 import javax.inject.Named;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.application.FacesMessage;
-import org.openepics.discs.conf.ejb.ComptypeEJBLocal;
+import org.openepics.discs.conf.ejb.ComptypeEJB;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.util.Utility;
 
@@ -24,7 +24,7 @@ import org.openepics.discs.conf.util.Utility;
 @RequestScoped
 public class ComptypeDetail {
     @EJB
-    private ComptypeEJBLocal comptypeEJB;
+    private ComptypeEJB comptypeEJB;
     private static final Logger logger = Logger.getLogger(DeviceDetail.class.getName());
     private ComponentType selectedObject;
     private int id = 0; // given identifier

@@ -20,7 +20,7 @@ import javax.faces.event.ActionEvent;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.openepics.discs.conf.ejb.DeviceEJBLocal;
+import org.openepics.discs.conf.ejb.DeviceEJB;
 import org.openepics.discs.conf.ent.DeviceArtifact;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.DeviceProperty;
@@ -41,7 +41,7 @@ import org.primefaces.model.UploadedFile;
 @ViewScoped
 public class DeviceManager implements Serializable {
     @EJB
-    private DeviceEJBLocal deviceEJB;
+    private DeviceEJB deviceEJB;
     private static final Logger logger = Logger.getLogger("org.openepics.discs.conf");
     
     @Inject

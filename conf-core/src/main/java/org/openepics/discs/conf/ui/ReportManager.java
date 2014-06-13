@@ -16,7 +16,7 @@ import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
-import org.openepics.discs.conf.ejb.SlotEJBLocal;
+import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotProperty;
 
@@ -48,7 +48,7 @@ public class ReportManager implements Serializable {
     }
 
     @EJB
-    private SlotEJBLocal slotEJB;
+    private SlotEJB slotEJB;
     private static final Logger logger = Logger.getLogger("org.openepics.discs.conf");
 
     private List<Slot> layoutSlots;   

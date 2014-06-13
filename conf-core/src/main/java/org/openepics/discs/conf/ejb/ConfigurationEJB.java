@@ -24,14 +24,14 @@ import javax.persistence.criteria.Root;
  * @author vuppala
  */
 @Stateless
-public class ConfigurationEJB implements ConfigurationEJBLocal {
+public class ConfigurationEJB {
 
     private static final Logger logger = Logger.getLogger("org.openepics.discs.conf");
     @PersistenceContext(unitName = "org.openepics.discs.conf.data")
     private EntityManager em;
 
     // --------------------  Property  ---------------------
-    @Override
+    
     public List<Property> findProperties() {
         List<Property> props;
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -46,12 +46,12 @@ public class ConfigurationEJB implements ConfigurationEJBLocal {
         return props;
     }
 
-    @Override
+    
     public Property findProperty(int id) {
         return em.find(Property.class, id);
     }
 
-    @Override
+    
     public void saveProperty(Property property) throws Exception {
         if (property == null) {
             logger.log(Level.SEVERE, "Property is null!");
@@ -61,7 +61,7 @@ public class ConfigurationEJB implements ConfigurationEJBLocal {
         em.merge(property);
     }
 
-    @Override
+    
     public void addProperty(Property property) throws Exception {
         if (property == null) {
             logger.log(Level.SEVERE, "Property is null!");
@@ -71,7 +71,7 @@ public class ConfigurationEJB implements ConfigurationEJBLocal {
         em.persist(property);
     }
 
-    @Override
+    
     public void deleteProperty(Property property) throws Exception {
         if (property == null) {
             logger.log(Level.SEVERE, "Property is null!");
@@ -82,7 +82,7 @@ public class ConfigurationEJB implements ConfigurationEJBLocal {
     }
 
     // --------------------  Unit ---------------------
-    @Override
+    
     public List<Unit> findUnits() {
         List<Unit> units;
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -96,13 +96,13 @@ public class ConfigurationEJB implements ConfigurationEJBLocal {
         return units;
     }
 
-    @Override
+    
     public Unit findUnit(String id) {
         return em.find(Unit.class, id);
     }
 
     // ----------------  Data Type -------------------------
-    @Override
+    
     public List<DataType> findDataType() {
         List<DataType> datatypes;
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -116,13 +116,13 @@ public class ConfigurationEJB implements ConfigurationEJBLocal {
         return datatypes;
     }
 
-    @Override
+    
     public DataType findDataType(String id) {
         return em.find(DataType.class, id);
     }
 
     // ----------------  Slot Relations -------------------------
-    @Override
+    
     public List<SlotRelation> findSlotRelation() {
         List<SlotRelation> slotrels;
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -136,13 +136,13 @@ public class ConfigurationEJB implements ConfigurationEJBLocal {
         return slotrels;
     }
 
-    @Override
+    
     public SlotRelation findSlotRelation(int id) {
         return em.find(SlotRelation.class, id);
     }
 
     // ---------------- Audit Records -------------------------
-    @Override
+    
     public List<AuditRecord> findAuditRecord() {
         List<AuditRecord> auditRec;
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -156,7 +156,7 @@ public class ConfigurationEJB implements ConfigurationEJBLocal {
         return auditRec;
     }
 
-    @Override
+    
     public AuditRecord findDAuditRecord(int id) {
         return em.find(AuditRecord.class, id);
     }

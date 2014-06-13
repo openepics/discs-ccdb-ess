@@ -19,7 +19,7 @@ import javax.faces.event.ActionEvent;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.openepics.discs.conf.ejb.SlotEJBLocal;
+import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.SlotArtifact;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotPair;
@@ -41,7 +41,7 @@ import org.primefaces.model.UploadedFile;
 public class SlotManager implements Serializable {
 
     @EJB
-    private SlotEJBLocal slotEJB;
+    private SlotEJB slotEJB;
     private static final Logger logger = Logger.getLogger("org.openepics.discs.conf");
     @Inject
     private BlobStore blobStore;

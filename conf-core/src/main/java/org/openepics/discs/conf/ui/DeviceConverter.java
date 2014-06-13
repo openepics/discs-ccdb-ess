@@ -13,7 +13,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
-import org.openepics.discs.conf.ejb.DeviceEJBLocal;
+import org.openepics.discs.conf.ejb.DeviceEJB;
 import org.openepics.discs.conf.ent.Device;
 
 /**
@@ -24,7 +24,7 @@ import org.openepics.discs.conf.ent.Device;
 // @RequestScoped
 public class DeviceConverter implements Converter {
     @EJB
-    private DeviceEJBLocal deviceEJB;
+    private DeviceEJB deviceEJB;
     private static final Logger logger = Logger.getLogger("org.openepics.discs.conf");
     
     /**

@@ -13,7 +13,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
-import org.openepics.discs.conf.ejb.ComptypeEJBLocal;
+import org.openepics.discs.conf.ejb.ComptypeEJB;
 import org.openepics.discs.conf.ent.ComponentType;
 
 /**
@@ -25,7 +25,7 @@ import org.openepics.discs.conf.ent.ComponentType;
 // @ViewScoped
 public class ComponentTypeConverter implements Converter {
     @EJB
-    private ComptypeEJBLocal comptypeEJB;
+    private ComptypeEJB comptypeEJB;
     private static final Logger logger = Logger.getLogger("org.openepics.discs.conf");
     
     /**

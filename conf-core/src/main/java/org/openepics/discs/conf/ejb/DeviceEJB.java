@@ -35,9 +35,9 @@ import org.openepics.discs.conf.util.AppProperties;
  * @author vuppala
  */
 @Stateless
-public class DeviceEJB implements DeviceEJBLocal {
+public class DeviceEJB {
     @EJB
-    private AuthEJBLocal authEJB;
+    private AuthEJB authEJB;
     
     @Inject 
     private LoginManager loginManager;
@@ -59,7 +59,7 @@ public class DeviceEJB implements DeviceEJBLocal {
     }
     
     // ----------------  Physical Component  -------------------------
-    @Override
+    
     public List<Device> findDevice() {
         List<Device> comps;
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -73,12 +73,12 @@ public class DeviceEJB implements DeviceEJBLocal {
         return comps;   
     }
     
-    @Override
+    
     public Device findDevice(int id) {
         return em.find(Device.class, id);
     }
     
-    @Override
+    
     public void saveDevice(String token, Device device) throws Exception {
         String user = token; // todo: convert token to user
         
@@ -99,7 +99,7 @@ public class DeviceEJB implements DeviceEJBLocal {
         makeAuditEntry(EntityTypeOperation.UPDATE,device.getSerialNumber(),"Modified device");
     }
     
-    @Override
+    
     public void deleteDevice(Device device) throws Exception {
         
         if (device == null ) {
@@ -117,7 +117,7 @@ public class DeviceEJB implements DeviceEJBLocal {
     }
     
     // ------------------ Property ---------------
-    @Override
+    
     public void saveDeviceProp(DeviceProperty prop, boolean create) throws Exception {
         if (prop == null) {
             logger.log(Level.SEVERE, "saveDeviceProp: property is null");
@@ -142,7 +142,7 @@ public class DeviceEJB implements DeviceEJBLocal {
         makeAuditEntry(EntityTypeOperation.UPDATE, prop.getDevice().getSerialNumber(),"Modified property " + prop.getProperty().getName());
     }
     
-    @Override
+    
     public void deleteDeviceProp(DeviceProperty prop) throws Exception {
         if (prop == null) {
             logger.log(Level.SEVERE, "deleteDeviceArtifact: dev-artifact is null");
@@ -162,7 +162,7 @@ public class DeviceEJB implements DeviceEJBLocal {
     
     // ---------------- Artifact ---------------------
     
-    @Override
+    
     public void saveDeviceArtifact(DeviceArtifact art, boolean create) throws Exception {
         if (art == null) {
             logger.log(Level.SEVERE, "deleteDeviceArtifact: Device is null");
@@ -186,7 +186,7 @@ public class DeviceEJB implements DeviceEJBLocal {
        makeAuditEntry(EntityTypeOperation.UPDATE, art.getDevice().getSerialNumber(),"Modified artifact " + art.getName());
     }
     
-    @Override
+    
     public void deleteDeviceArtifact(DeviceArtifact art) throws Exception {
         if (art == null) {
             logger.log(Level.SEVERE, "deleteDeviceArtifact: dev-artifact is null");

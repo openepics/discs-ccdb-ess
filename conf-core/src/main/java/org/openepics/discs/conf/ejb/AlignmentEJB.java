@@ -35,14 +35,14 @@ import org.openepics.discs.conf.util.AppProperties;
  * @author vuppala
  */
 @Stateless
-public class AlignmentEJB implements AlignmentEJBLocal {
+public class AlignmentEJB {
 private static final Logger logger = Logger.getLogger("org.openepics.discs.conf");   
     @PersistenceContext(unitName = "org.openepics.discs.conf.data")
     private EntityManager em;
     // Add business logic below. (Right-click in editor and choose
     // "Insert Code > Add Business Method")
     @EJB
-    private AuthEJBLocal authEJB;
+    private AuthEJB authEJB;
     
     @Inject 
     private LoginManager loginManager;
@@ -56,7 +56,7 @@ private static final Logger logger = Logger.getLogger("org.openepics.discs.conf"
     }
     
     // ----------------  Alignment Record -------------------------
-    @Override
+    
     public List<AlignmentRecord> findAlignmentRec() {
         List<AlignmentRecord> comps;
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -70,13 +70,13 @@ private static final Logger logger = Logger.getLogger("org.openepics.discs.conf"
         return comps;        
     }
     
-    @Override
+    
     public AlignmentRecord findAlignmentRec(int id) {
         return em.find(AlignmentRecord.class, id);
     }
     
     
-    @Override
+    
     public void saveAlignment(AlignmentRecord arec) throws Exception  {
         if (arec == null ) {
             logger.log(Level.SEVERE, "Property is null!");
@@ -94,7 +94,7 @@ private static final Logger logger = Logger.getLogger("org.openepics.discs.conf"
         makeAuditEntry(EntityTypeOperation.UPDATE,arec.getRecordNumber(),"updated alignment record");
     }
     
-    @Override
+    
     public void deleteAlignment(AlignmentRecord arec) throws Exception  {
         if (arec == null ) {
             logger.log(Level.SEVERE, "Property is null!");
@@ -111,7 +111,7 @@ private static final Logger logger = Logger.getLogger("org.openepics.discs.conf"
     }
     
     // ------------------ Property ---------------
-    @Override
+    
     public void saveAlignmentProp(AlignmentProperty prop, boolean create) throws Exception  {
         if (prop == null) {
             logger.log(Level.SEVERE, "saveDeviceProp: property is null");
@@ -136,7 +136,7 @@ private static final Logger logger = Logger.getLogger("org.openepics.discs.conf"
         logger.log(Level.INFO, "Comp Type Property: id " + newProp.getAlignPropId() + " name " + newProp.getProperty().getName());
     }
     
-    @Override
+    
     public void deleteAlignmentProp(AlignmentProperty prop) throws Exception  {
         if (prop == null) {
             logger.log(Level.SEVERE, "deleteAlignmentArtifact: dev-artifact is null");
@@ -156,7 +156,7 @@ private static final Logger logger = Logger.getLogger("org.openepics.discs.conf"
     
     // ---------------- Artifact ---------------------
     
-    @Override
+    
     public void saveAlignmentArtifact(AlignmentArtifact art, boolean create) throws Exception {
         if (art == null) {
             logger.log(Level.SEVERE, "saveAlignmentArtifact: artifact is null");
@@ -182,7 +182,7 @@ private static final Logger logger = Logger.getLogger("org.openepics.discs.conf"
         // logger.log(Level.INFO, "device serial " + device.getSerialNumber());       
     }
     
-    @Override
+    
     public void deleteAlignmentArtifact(AlignmentArtifact art) throws Exception {
         if (art == null) {
             logger.log(Level.SEVERE, "deleteAlignmentArtifact: alignment artifact is null");

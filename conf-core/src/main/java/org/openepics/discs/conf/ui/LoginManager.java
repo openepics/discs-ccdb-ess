@@ -18,7 +18,7 @@ import javax.inject.Named;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
-import org.openepics.discs.conf.ejb.AuthEJBLocal;
+import org.openepics.discs.conf.ejb.AuthEJB;
 import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
 
@@ -30,7 +30,7 @@ import org.openepics.discs.conf.ent.EntityTypeOperation;
 @SessionScoped
 public class LoginManager implements Serializable {
     @EJB
-    private AuthEJBLocal authEJB;
+    private AuthEJB authEJB;
 
     private static final Logger logger = Logger.getLogger("org.openepics.discs.login");
     private String userid;

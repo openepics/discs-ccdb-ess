@@ -22,14 +22,13 @@ import org.openepics.discs.conf.ent.Privilege;
  * @author vuppala
  */
 @Stateless
-public class AuthEJB implements AuthEJBLocal {
+public class AuthEJB {
 
     private static final Logger logger = Logger.getLogger(AuthEJB.class.getName());
     @PersistenceContext(unitName = "org.openepics.discs.conf.data")
     private EntityManager em;  
 
     // todo: implement autorization using RBAC.    
-    @Override
     public boolean userHasAuth(String principal, EntityType resource, EntityTypeOperation operation) {
         boolean auth = false;
 

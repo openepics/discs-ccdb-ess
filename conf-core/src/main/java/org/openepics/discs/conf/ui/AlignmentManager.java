@@ -23,7 +23,7 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.openepics.discs.conf.ejb.AlignmentEJBLocal;
+import org.openepics.discs.conf.ejb.AlignmentEJB;
 import org.openepics.discs.conf.ent.AlignmentRecord;
 import org.openepics.discs.conf.ent.AlignmentProperty;
 import org.openepics.discs.conf.ent.AlignmentArtifact;
@@ -45,7 +45,7 @@ import org.primefaces.model.UploadedFile;
 public class AlignmentManager implements Serializable{
     
     @EJB
-    private AlignmentEJBLocal alignmentEJB;
+    private AlignmentEJB alignmentEJB;
     private static final Logger logger = Logger.getLogger(AlignmentManager.class.getName());
     @Inject
     private BlobStore blobStore;

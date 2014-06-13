@@ -15,7 +15,7 @@ import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
-import org.openepics.discs.conf.ejb.ConfigurationEJBLocal;
+import org.openepics.discs.conf.ejb.ConfigurationEJB;
 import org.openepics.discs.conf.ent.DataType;
 
 /**
@@ -27,7 +27,7 @@ import org.openepics.discs.conf.ent.DataType;
 public class DataTypeManager implements Serializable {
 
     @EJB
-    private ConfigurationEJBLocal configurationEJB;
+    private ConfigurationEJB configurationEJB;
     private static final Logger logger = Logger.getLogger("org.openepics.discs.conf");
     
     private List<DataType> dataTypes;

@@ -28,7 +28,7 @@ import org.primefaces.event.SelectEvent;
 @ViewScoped
 public class PropertyManager implements Serializable {
     @EJB
-    private ConfigurationEJBLocal configurationEJB;
+    private ConfigurationEJB configurationEJB;
     private static final Logger logger = Logger.getLogger("org.openepics.discs.conf");
     
     private List<Property> objects;

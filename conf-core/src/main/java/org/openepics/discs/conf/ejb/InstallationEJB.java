@@ -35,7 +35,7 @@ import org.openepics.discs.conf.util.AppProperties;
  * @author vuppala
  */
 @Stateless
-public class InstallationEJB implements InstallationEJBLocal {
+public class InstallationEJB {
 
     private static final Logger logger = Logger.getLogger("org.openepics.discs.conf");   
     @PersistenceContext(unitName = "org.openepics.discs.conf.data")
@@ -43,7 +43,7 @@ public class InstallationEJB implements InstallationEJBLocal {
     // Add business logic below. (Right-click in editor and choose
     // "Insert Code > Add Business Method")
     @EJB
-    private AuthEJBLocal authEJB;
+    private AuthEJB authEJB;
     
     @Inject 
     private LoginManager loginManager;
@@ -57,7 +57,7 @@ public class InstallationEJB implements InstallationEJBLocal {
     }
     
     // ----- Installation 
-    @Override
+    
     public List<InstallationRecord> findInstallationRec() {
         List<InstallationRecord> irecs;
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -71,7 +71,7 @@ public class InstallationEJB implements InstallationEJBLocal {
         return irecs;        
     }
     
-    @Override
+    
     public void saveIRecord(InstallationRecord irec, boolean create) throws Exception  {
         if (irec == null) {
             logger.log(Level.SEVERE, "Installation Record is null!");
@@ -99,7 +99,7 @@ public class InstallationEJB implements InstallationEJBLocal {
         makeAuditEntry(EntityTypeOperation.UPDATE,irec.getRecordNumber(),"updated installation record ");
     }
     
-    @Override
+    
     public void deleteIRecord(InstallationRecord irec) throws Exception {
         if (irec == null ) {
             logger.log(Level.SEVERE, "Installation Record is null!");
@@ -117,7 +117,7 @@ public class InstallationEJB implements InstallationEJBLocal {
     
     // ---------------- Artifact ---------------------
     
-    @Override
+    
     public void saveInstallationArtifact(InstallationArtifact art, boolean create) throws Exception {
         if (art == null) {
             logger.log(Level.SEVERE, "deleteInstallationArtifact: Installation Record is null");
@@ -141,7 +141,7 @@ public class InstallationEJB implements InstallationEJBLocal {
         // logger.log(Level.INFO, "device serial " + device.getSerialNumber());
     }
     
-    @Override
+    
     public void deleteInstallationArtifact(InstallationArtifact art) throws Exception {
         if (art == null) {
             logger.log(Level.SEVERE, "deleteInstallationArtifact: irec-artifact is null");

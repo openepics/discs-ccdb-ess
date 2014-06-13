@@ -19,7 +19,7 @@ import javax.faces.event.ActionEvent;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.openepics.discs.conf.ejb.ComptypeEJBLocal;
+import org.openepics.discs.conf.ejb.ComptypeEJB;
 import org.openepics.discs.conf.ent.ComptypeAsm;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypeProperty;
@@ -42,7 +42,7 @@ import org.primefaces.model.UploadedFile;
 public class ComponentTypeMananger implements Serializable {
 
     @EJB
-    private ComptypeEJBLocal comptypeEJB;
+    private ComptypeEJB comptypeEJB;
     private static final Logger logger = Logger.getLogger("org.openepics.discs.conf");
     // private static String folderName = "/var/proteus/"; // ToDo: get it from configuration
 

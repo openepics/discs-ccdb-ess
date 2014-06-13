@@ -22,7 +22,7 @@ import javax.ejb.EJB;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
-import org.openepics.discs.conf.ejb.AuthEJBLocal;
+import org.openepics.discs.conf.ejb.AuthEJB;
 
 /**
  *
@@ -34,7 +34,7 @@ import org.openepics.discs.conf.ejb.AuthEJBLocal;
 public class AuthManager implements Serializable {
 
     @EJB
-    private AuthEJBLocal authEJB;
+    private AuthEJB authEJB;
     private static final Logger logger = Logger.getLogger("org.openepics.names");
     private String userID;
     private String token;

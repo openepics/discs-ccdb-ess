@@ -12,7 +12,7 @@ import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
-import org.openepics.discs.conf.ejb.DeviceEJBLocal;
+import org.openepics.discs.conf.ejb.DeviceEJB;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.util.Utility;
 
@@ -25,7 +25,7 @@ import org.openepics.discs.conf.util.Utility;
 public class DeviceDetail implements Serializable {
 
     @EJB
-    private DeviceEJBLocal deviceEJB;
+    private DeviceEJB deviceEJB;
     private static final Logger logger = Logger.getLogger(DeviceDetail.class.getName());
     private Device selectedObject;
     private int id = 0; // given identifier
