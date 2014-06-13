@@ -64,9 +64,7 @@ public class ComptypeArtifact implements Serializable {
     private String description;
     @Basic(optional = false)
     @NotNull
-    @Lob
-    @Size(min = 1, max = 65535)
-    @Column(name = "uri")
+    @Column(name = "uri", columnDefinition="TEXT")
     private String uri;
     @Basic(optional = false)
     @NotNull

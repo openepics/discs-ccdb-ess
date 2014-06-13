@@ -76,7 +76,7 @@ public class UserRole implements Serializable {
     @JoinColumn(name = "role", referencedColumnName = "role_id")
     @ManyToOne(optional = false)
     private Role role;
-    @JoinColumn(name = "user", referencedColumnName = "user_id")
+    @JoinColumn(name = "`user`", referencedColumnName = "user_id")
     @ManyToOne(optional = false)
     private User user;
 

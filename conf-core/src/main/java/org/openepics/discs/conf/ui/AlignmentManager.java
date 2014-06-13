@@ -7,11 +7,14 @@
 package org.openepics.discs.conf.ui;
 
 import org.openepics.discs.conf.util.Utility;
+
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
@@ -19,6 +22,7 @@ import javax.faces.event.ActionEvent;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+
 import org.openepics.discs.conf.ejb.AlignmentEJBLocal;
 import org.openepics.discs.conf.ent.AlignmentRecord;
 import org.openepics.discs.conf.ent.AlignmentProperty;
@@ -38,7 +42,7 @@ import org.primefaces.model.UploadedFile;
  */
 @Named
 @ViewScoped
-public class AlignmentManager {
+public class AlignmentManager implements Serializable{
     
     @EJB
     private AlignmentEJBLocal alignmentEJB;

@@ -7,13 +7,17 @@
 package org.openepics.discs.conf.ui;
 
 import org.openepics.discs.conf.util.Utility;
+
+import java.io.Serializable;
 import java.util.List;
 import java.util.logging.Logger;
+
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
+
 import org.openepics.discs.conf.ejb.ConfigurationEJBLocal;
 import org.openepics.discs.conf.ent.SlotRelation;
 
@@ -23,7 +27,7 @@ import org.openepics.discs.conf.ent.SlotRelation;
  */
 @Named
 @ViewScoped
-public class RelationManager {
+public class RelationManager implements Serializable {
     @EJB
     private ConfigurationEJBLocal configurationEJB;
     private static final Logger logger = Logger.getLogger("org.openepics.discs.conf");

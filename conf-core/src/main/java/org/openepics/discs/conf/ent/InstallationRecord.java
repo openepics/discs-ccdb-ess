@@ -66,9 +66,7 @@ public class InstallationRecord implements Serializable {
     @Column(name = "uninstall_date")
     @Temporal(TemporalType.DATE)
     private Date uninstallDate;
-    @Lob
-    @Size(max = 65535)
-    @Column(name = "notes")
+    @Column(name = "notes", columnDefinition="TEXT")
     private String notes;
     @Basic(optional = false)
     @NotNull

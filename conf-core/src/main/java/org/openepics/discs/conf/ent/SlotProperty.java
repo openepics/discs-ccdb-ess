@@ -47,9 +47,7 @@ public class SlotProperty implements Serializable {
     @Basic(optional = false)
     @Column(name = "slot_prop_id")
     private Integer slotPropId;
-    @Lob
-    @Size(max = 65535)
-    @Column(name = "prop_value")
+    @Column(name = "prop_value", columnDefinition="TEXT")
     private String propValue;
     @Basic(optional = false)
     @NotNull

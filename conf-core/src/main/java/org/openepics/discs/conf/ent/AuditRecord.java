@@ -58,7 +58,7 @@ public class AuditRecord implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)
-    @Column(name = "user")
+    @Column(name = "`user`")
     private String user;
     @Size(max = 16)
     @Column(name = "entity_type")
@@ -68,9 +68,7 @@ public class AuditRecord implements Serializable {
     private String entityKey;
     @Basic(optional = false)
     @NotNull
-    @Lob
-    @Size(min = 1, max = 65535)
-    @Column(name = "entry")
+    @Column(name = "entry", columnDefinition="TEXT")
     private String entry;
 
     public AuditRecord() {

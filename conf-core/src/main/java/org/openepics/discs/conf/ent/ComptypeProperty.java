@@ -51,9 +51,7 @@ public class ComptypeProperty implements Serializable {
     @Size(max = 4)
     @Column(name = "type")
     private String type;
-    @Lob
-    @Size(max = 65535)
-    @Column(name = "prop_value")
+    @Column(name = "prop_value", columnDefinition="TEXT")
     private String propValue;
     @Basic(optional = false)
     @NotNull

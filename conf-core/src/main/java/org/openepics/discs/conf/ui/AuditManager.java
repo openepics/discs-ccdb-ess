@@ -7,14 +7,18 @@
 package org.openepics.discs.conf.ui;
 
 import org.openepics.discs.conf.util.Utility;
+
+import java.io.Serializable;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
+
 import org.openepics.discs.conf.ejb.ConfigurationEJBLocal;
 import org.openepics.discs.conf.ent.AuditRecord;
 
@@ -24,7 +28,7 @@ import org.openepics.discs.conf.ent.AuditRecord;
  */
 @Named(value = "auditManager")
 @ViewScoped
-public class AuditManager {
+public class AuditManager implements Serializable {
     @EJB
     private ConfigurationEJBLocal configurationEJB;
     private static final Logger logger = Logger.getLogger("org.openepics.discs.conf");

@@ -47,9 +47,7 @@ public class DeviceProperty implements Serializable {
     @Basic(optional = false)
     @Column(name = "dev_prop_id")
     private Integer devPropId;
-    @Lob
-    @Size(max = 65535)
-    @Column(name = "prop_value")
+    @Column(name = "prop_value", columnDefinition="TEXT")
     private String propValue;
     @Basic(optional = false)
     @NotNull
