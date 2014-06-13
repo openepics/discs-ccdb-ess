@@ -87,7 +87,7 @@ public class InstallationEJB implements InstallationEJBLocal {
             em.persist(irec);
             Slot slot = irec.getSlot();
             slot.getInstallationRecordList().add(irec);
-            em.merge(slot);
+            // em.merge(slot);
             // todo: add to the list for the device
         } else {
             em.merge(irec);

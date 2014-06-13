@@ -26,8 +26,8 @@
                 <p:column  headerText="Description" >
                     <h:outputText value="#{item.description}"/>
                 </p:column>
-                <p:column  headerText="Parent Type" sortBy="#{item.superComponentType.name}">
-                    <h:link outcome="details" target="_blank"  >                       
+                 <p:column  headerText="Parent Type">
+                   <h:link outcome="details" target="_blank" rendered="#{not empty item.superComponentType}">                
                         <h:outputText value="#{item.superComponentType.name}" styleClass="link"/>
                         <f:param name="id" value="#{item.superComponentType.componentTypeId}"/>
                     </h:link>                  

@@ -36,7 +36,8 @@ public class ConfigurationEJB implements ConfigurationEJBLocal {
         List<Property> props;
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Property> cq = cb.createQuery(Property.class);
-        // Root<Property> prop = cq.from(Property.class);       
+        Root<Property> prop = cq.from(Property.class);
+        cq.select(prop);
 
         TypedQuery<Property> query = em.createQuery(cq);
         props = query.getResultList();
