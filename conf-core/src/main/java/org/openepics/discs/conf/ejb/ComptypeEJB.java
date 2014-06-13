@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -18,11 +19,14 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+
 import org.openepics.discs.conf.ent.AuditRecord;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypeArtifact;
 import org.openepics.discs.conf.ent.ComptypeAsm;
 import org.openepics.discs.conf.ent.ComptypeProperty;
+import org.openepics.discs.conf.ent.EntityType;
+import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ui.LoginManager;
 import org.openepics.discs.conf.util.AppProperties;
 
@@ -43,9 +47,9 @@ public class ComptypeEJB implements ComptypeEJBLocal {
     private LoginManager loginManager;
     
     // ----------- Audit record ---------------------------------------
-    private void makeAuditEntry(char oper, String key, String entry) {
+    private void makeAuditEntry(EntityTypeOperation oper, String key, String entry) {
         AuditRecord arec = new AuditRecord(null, new Date(), oper, loginManager.getUserid(), entry);
-        arec.setEntityType(AppProperties.EN_COMPTYPE);
+        arec.setEntityType(EntityType.COMPONENT_TYPE);
         arec.setEntityKey(key);
         em.persist(arec);
     }
@@ -77,14 +81,14 @@ public class ComptypeEJB implements ComptypeEJBLocal {
             throw new Exception("Comp Type is null");
         }
         String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, AppProperties.EN_COMPTYPE, AppProperties.OPER_UPDATE)) {
+        if (! authEJB.userHasAuth(user, EntityType.COMPONENT_TYPE, EntityTypeOperation.UPDATE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
         ctype.setModifiedAt(new Date());
 
         em.merge(ctype);
-        makeAuditEntry(AppProperties.OPER_UPDATE,ctype.getName(),"Updated component type");
+        makeAuditEntry(EntityTypeOperation.UPDATE,ctype.getName(),"Updated component type");
     }
 
     @Override
@@ -94,13 +98,13 @@ public class ComptypeEJB implements ComptypeEJBLocal {
             throw new Exception("property is null");
         }
         String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, AppProperties.EN_COMPTYPE, AppProperties.OPER_CREATE)) {
+        if (! authEJB.userHasAuth(user, EntityType.COMPONENT_TYPE, EntityTypeOperation.CREATE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
         ctype.setModifiedAt(new Date());
         em.persist(ctype);
-        makeAuditEntry(AppProperties.OPER_CREATE,ctype.getName(),"Created component type");
+        makeAuditEntry(EntityTypeOperation.CREATE,ctype.getName(),"Created component type");
     }
 
     @Override
@@ -110,13 +114,13 @@ public class ComptypeEJB implements ComptypeEJBLocal {
             throw new Exception("property is null");
         }
         String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, AppProperties.EN_COMPTYPE, AppProperties.OPER_DELETE)) {
+        if (! authEJB.userHasAuth(user, EntityType.COMPONENT_TYPE, EntityTypeOperation.DELETE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
         ComponentType ct = em.find(ComponentType.class, ctype.getComponentTypeId());
         em.remove(ct);
-        makeAuditEntry(AppProperties.OPER_DELETE,ctype.getName(),"Deleted component type");
+        makeAuditEntry(EntityTypeOperation.DELETE,ctype.getName(),"Deleted component type");
     }
 
     // ---------------- Component Type Property ---------------------
@@ -127,7 +131,7 @@ public class ComptypeEJB implements ComptypeEJBLocal {
             return;
         }
         String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, AppProperties.EN_COMPTYPE, AppProperties.OPER_UPDATE)) {
+        if (! authEJB.userHasAuth(user, EntityType.COMPONENT_TYPE, EntityTypeOperation.UPDATE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
@@ -141,7 +145,7 @@ public class ComptypeEJB implements ComptypeEJBLocal {
             ctype.getComptypePropertyList().add(newProp);
             em.merge(ctype);
         }
-        makeAuditEntry(AppProperties.OPER_UPDATE,ctprop.getComponentType().getName(),"Updated property " + ctprop.getProperty().getName());
+        makeAuditEntry(EntityTypeOperation.UPDATE,ctprop.getComponentType().getName(),"Updated property " + ctprop.getProperty().getName());
         logger.log(Level.INFO, "Comp Type Property: id " + newProp.getCtypePropId() + " name " + newProp.getProperty().getName());
     }
 
@@ -152,7 +156,7 @@ public class ComptypeEJB implements ComptypeEJBLocal {
             return;
         }
         String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, AppProperties.EN_COMPTYPE, AppProperties.OPER_UPDATE)) {
+        if (! authEJB.userHasAuth(user, EntityType.COMPONENT_TYPE, EntityTypeOperation.UPDATE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
@@ -161,7 +165,7 @@ public class ComptypeEJB implements ComptypeEJBLocal {
         ComponentType arec = property.getComponentType();
         arec.getComptypePropertyList().remove(property);
         em.remove(property);
-        makeAuditEntry(AppProperties.OPER_UPDATE,ctp.getComponentType().getName(),"Deleted property " + ctp.getProperty().getName());
+        makeAuditEntry(EntityTypeOperation.UPDATE,ctp.getComponentType().getName(),"Deleted property " + ctp.getProperty().getName());
     }
 
     // ---------------- Component Type Artifact ---------------------
@@ -172,7 +176,7 @@ public class ComptypeEJB implements ComptypeEJBLocal {
             return;
         }
         String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, AppProperties.EN_COMPTYPE, AppProperties.OPER_UPDATE)) {
+        if (! authEJB.userHasAuth(user, EntityType.COMPONENT_TYPE, EntityTypeOperation.UPDATE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
@@ -186,7 +190,7 @@ public class ComptypeEJB implements ComptypeEJBLocal {
             ctype.getComptypeArtifactList().add(newArt);
             em.merge(ctype);
         }
-        makeAuditEntry(AppProperties.OPER_UPDATE,art.getComponentType().getName(),"Updated artifact " + art.getName());
+        makeAuditEntry(EntityTypeOperation.UPDATE,art.getComponentType().getName(),"Updated artifact " + art.getName());
         logger.log(Level.INFO, "Artifact: name " + newArt.getName() + " description " + newArt.getDescription() + " uri " + newArt.getUri() + "is int " + newArt.getIsInternal());
         // logger.log(Level.INFO, "device serial " + device.getSerialNumber());
         // return newArt;
@@ -200,7 +204,7 @@ public class ComptypeEJB implements ComptypeEJBLocal {
             return;
         }
         String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, AppProperties.EN_COMPTYPE, AppProperties.OPER_UPDATE)) {
+        if (! authEJB.userHasAuth(user, EntityType.COMPONENT_TYPE, EntityTypeOperation.UPDATE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
@@ -209,14 +213,14 @@ public class ComptypeEJB implements ComptypeEJBLocal {
         ComponentType arec = artifact.getComponentType();
         arec.getComptypeArtifactList().remove(artifact);
         em.remove(artifact);
-        makeAuditEntry(AppProperties.OPER_UPDATE,art.getComponentType().getName(),"Deleted artifact " + art.getName());
+        makeAuditEntry(EntityTypeOperation.UPDATE,art.getComponentType().getName(),"Deleted artifact " + art.getName());
     }
 
     // ---------------- Component Type Assmebly ---------------------
     @Override
     public void saveComptypeAsm(ComponentType ctype, ComptypeAsm prt) throws Exception {
         String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, AppProperties.EN_COMPTYPE, AppProperties.OPER_UPDATE)) {
+        if (! authEJB.userHasAuth(user, EntityType.COMPONENT_TYPE, EntityTypeOperation.UPDATE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
@@ -230,14 +234,14 @@ public class ComptypeEJB implements ComptypeEJBLocal {
             prt.setParentType(ctype);
             em.merge(prt);
             em.merge(ctype);
-            makeAuditEntry(AppProperties.OPER_UPDATE,ctype.getName(),"Updated component type. Added an assembly part");
+            makeAuditEntry(EntityTypeOperation.UPDATE,ctype.getName(),"Updated component type. Added an assembly part");
         }
     }
 
     @Override
     public void deleteComptypeAsm(ComponentType ctype, ComptypeAsm prt) throws Exception {
         String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, AppProperties.EN_COMPTYPE, AppProperties.OPER_UPDATE)) {
+        if (! authEJB.userHasAuth(user, EntityType.COMPONENT_TYPE, EntityTypeOperation.UPDATE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
@@ -245,7 +249,7 @@ public class ComptypeEJB implements ComptypeEJBLocal {
             ComptypeAsm entity = em.find(ComptypeAsm.class, prt.getComptypeAsmId());
             em.remove(entity);
             em.merge(ctype);
-            makeAuditEntry(AppProperties.OPER_UPDATE,ctype.getName(),"Updated component type. Deleted a part from assembly.");
+            makeAuditEntry(EntityTypeOperation.UPDATE,ctype.getName(),"Updated component type. Deleted a part from assembly.");
         }
     }
 

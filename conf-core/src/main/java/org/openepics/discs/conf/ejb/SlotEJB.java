@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -19,7 +20,10 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+
 import org.openepics.discs.conf.ent.AuditRecord;
+import org.openepics.discs.conf.ent.EntityType;
+import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.SlotArtifact;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotPair;
@@ -45,9 +49,9 @@ public class SlotEJB implements SlotEJBLocal {
     private EntityManager em;
     
     // ----------- Audit record ---------------------------------------
-    private void makeAuditEntry(char oper, String key, String entry) {
+    private void makeAuditEntry(EntityTypeOperation oper, String key, String entry) {
         AuditRecord arec = new AuditRecord(null, new Date(), oper, loginManager.getUserid(), entry);
-        arec.setEntityType(AppProperties.EN_SLOT);
+        arec.setEntityType(EntityType.SLOT);
         arec.setEntityKey(key);
         em.persist(arec);
     }
@@ -80,7 +84,7 @@ public class SlotEJB implements SlotEJBLocal {
             // throw new Exception("property is null");        
         }
         String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, AppProperties.EN_SLOT, AppProperties.OPER_UPDATE)) {
+        if (! authEJB.userHasAuth(user, EntityType.SLOT, EntityTypeOperation.UPDATE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
@@ -88,7 +92,7 @@ public class SlotEJB implements SlotEJBLocal {
         slot.setModifiedBy("user");
         logger.log(Level.INFO, "Preparing to save slot");
         em.merge(slot);      
-        makeAuditEntry(AppProperties.OPER_UPDATE,slot.getName(),"Modified slot");
+        makeAuditEntry(EntityTypeOperation.UPDATE,slot.getName(),"Modified slot");
     }
     
     @Override
@@ -98,13 +102,13 @@ public class SlotEJB implements SlotEJBLocal {
             throw new Exception("property is null");        
         }
         String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, AppProperties.EN_SLOT, AppProperties.OPER_DELETE)) {
+        if (! authEJB.userHasAuth(user, EntityType.SLOT, EntityTypeOperation.DELETE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
         Slot ct = em.find(Slot.class,slot.getSlotId());
         em.remove(ct);    
-        makeAuditEntry(AppProperties.OPER_DELETE,slot.getName(),"Deleted slot");
+        makeAuditEntry(EntityTypeOperation.DELETE,slot.getName(),"Deleted slot");
     }
     
     // ------------------ Slot Property ---------------
@@ -115,7 +119,7 @@ public class SlotEJB implements SlotEJBLocal {
             return;
         }
         String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, AppProperties.EN_SLOT, AppProperties.OPER_UPDATE) ) {
+        if (! authEJB.userHasAuth(user, EntityType.SLOT, EntityTypeOperation.UPDATE) ) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
@@ -129,7 +133,7 @@ public class SlotEJB implements SlotEJBLocal {
             slot.getSlotPropertyList().add(newProp);
             em.merge(slot);
         }
-        makeAuditEntry(AppProperties.OPER_UPDATE,prop.getSlot().getName(),"Modified slot property " + prop.getProperty().getName());
+        makeAuditEntry(EntityTypeOperation.UPDATE,prop.getSlot().getName(),"Modified slot property " + prop.getProperty().getName());
         logger.log(Level.INFO, "Comp Type Property: id " + newProp.getSlotPropId() + " name " + newProp.getProperty().getName());
     }
     
@@ -140,7 +144,7 @@ public class SlotEJB implements SlotEJBLocal {
             return;
         }
         String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, AppProperties.EN_SLOT, AppProperties.OPER_UPDATE) ) {
+        if (! authEJB.userHasAuth(user, EntityType.SLOT, EntityTypeOperation.UPDATE) ) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
@@ -149,7 +153,7 @@ public class SlotEJB implements SlotEJBLocal {
         Slot slot = property.getSlot();
         slot.getSlotPropertyList().remove(property);
         em.remove(property);
-         makeAuditEntry(AppProperties.OPER_DELETE,prop.getSlot().getName(),"Deleted slot property " + prop.getProperty().getName());
+         makeAuditEntry(EntityTypeOperation.DELETE,prop.getSlot().getName(),"Deleted slot property " + prop.getProperty().getName());
     } 
     
     // ---------------- Slot Artifact ---------------------
@@ -161,7 +165,7 @@ public class SlotEJB implements SlotEJBLocal {
             return;
         }
         String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, AppProperties.EN_SLOT, AppProperties.OPER_UPDATE)) {
+        if (! authEJB.userHasAuth(user, EntityType.SLOT, EntityTypeOperation.UPDATE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
@@ -173,7 +177,7 @@ public class SlotEJB implements SlotEJBLocal {
             slot.getSlotArtifactList().add(newArt);
             em.merge(slot);
         }
-         makeAuditEntry(AppProperties.OPER_UPDATE,art.getSlot().getName(),"Modified slot artifact " + art.getName());
+         makeAuditEntry(EntityTypeOperation.UPDATE,art.getSlot().getName(),"Modified slot artifact " + art.getName());
         logger.log(Level.INFO, "slot Artifact: name " + art.getName() + " description " + art.getDescription() + " uri " + art.getUri());
     }
     
@@ -184,7 +188,7 @@ public class SlotEJB implements SlotEJBLocal {
             return;
         }
         String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, AppProperties.EN_SLOT, AppProperties.OPER_UPDATE)) {
+        if (! authEJB.userHasAuth(user, EntityType.SLOT, EntityTypeOperation.UPDATE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
@@ -193,7 +197,7 @@ public class SlotEJB implements SlotEJBLocal {
         Slot slot = artifact.getSlot();
         slot.getSlotArtifactList().remove(artifact);
         em.remove(artifact);
-        makeAuditEntry(AppProperties.OPER_UPDATE,art.getSlot().getName(),"Deleted slot artifact " + art.getName());
+        makeAuditEntry(EntityTypeOperation.UPDATE,art.getSlot().getName(),"Deleted slot artifact " + art.getName());
     }
     
     // ---------------- Related Slots ---------------------
@@ -205,7 +209,7 @@ public class SlotEJB implements SlotEJBLocal {
             return;
         }
         String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, AppProperties.EN_SLOT, AppProperties.OPER_UPDATE)) {
+        if (! authEJB.userHasAuth(user, EntityType.SLOT, EntityTypeOperation.UPDATE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
@@ -215,8 +219,8 @@ public class SlotEJB implements SlotEJBLocal {
             pslot.getSlotPairList1().add(newArt);
             em.merge(pslot);
         }
-        makeAuditEntry(AppProperties.OPER_UPDATE,spair.getChildSlot().getName(),"Modified child slot");
-        makeAuditEntry(AppProperties.OPER_UPDATE,spair.getParentSlot().getName(),"Modified parent slot");
+        makeAuditEntry(EntityTypeOperation.UPDATE,spair.getChildSlot().getName(),"Modified child slot");
+        makeAuditEntry(EntityTypeOperation.UPDATE,spair.getParentSlot().getName(),"Modified parent slot");
         logger.log(Level.INFO, "saved slot pair: child " + spair.getChildSlot().getName() + " parent " + spair.getParentSlot().getName() + " relation " );
     }
     
@@ -227,7 +231,7 @@ public class SlotEJB implements SlotEJBLocal {
             return;
         }
         String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, AppProperties.EN_SLOT, AppProperties.OPER_UPDATE)) {
+        if (! authEJB.userHasAuth(user, EntityType.SLOT, EntityTypeOperation.UPDATE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
@@ -236,8 +240,8 @@ public class SlotEJB implements SlotEJBLocal {
         Slot pslot = slotPair.getParentSlot();
         pslot.getSlotPairList().remove(slotPair);
         em.remove(slotPair);
-        makeAuditEntry(AppProperties.OPER_UPDATE,spair.getChildSlot().getName(),"Deleted parent slot relationship");
-        makeAuditEntry(AppProperties.OPER_UPDATE,spair.getParentSlot().getName(),"Deleted child slot relationship");
+        makeAuditEntry(EntityTypeOperation.UPDATE,spair.getChildSlot().getName(),"Deleted parent slot relationship");
+        makeAuditEntry(EntityTypeOperation.UPDATE,spair.getParentSlot().getName(),"Deleted child slot relationship");
     }
     
     // -----------------

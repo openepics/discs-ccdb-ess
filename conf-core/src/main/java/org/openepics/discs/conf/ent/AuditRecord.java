@@ -8,9 +8,12 @@ package org.openepics.discs.conf.ent;
 
 import java.io.Serializable;
 import java.util.Date;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -53,16 +56,17 @@ public class AuditRecord implements Serializable {
     private Date logTime;
     @Basic(optional = false)
     @NotNull
+    @Enumerated(EnumType.STRING)
     @Column(name = "oper")
-    private char oper;
+    private EntityTypeOperation oper;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)
     @Column(name = "`user`")
     private String user;
-    @Size(max = 16)
+    @Enumerated(EnumType.STRING)
     @Column(name = "entity_type")
-    private String entityType;
+    private EntityType entityType;
     @Size(max = 64)
     @Column(name = "entity_key")
     private String entityKey;
@@ -78,7 +82,7 @@ public class AuditRecord implements Serializable {
         this.auditRecordId = auditRecordId;
     }
 
-    public AuditRecord(Integer auditRecordId, Date logTime, char oper, String user, String entry) {
+    public AuditRecord(Integer auditRecordId, Date logTime, EntityTypeOperation oper, String user, String entry) {
         this.auditRecordId = auditRecordId;
         this.logTime = logTime;
         this.oper = oper;
@@ -102,11 +106,11 @@ public class AuditRecord implements Serializable {
         this.logTime = logTime;
     }
 
-    public char getOper() {
+    public EntityTypeOperation getOper() {
         return oper;
     }
 
-    public void setOper(char oper) {
+    public void setOper(EntityTypeOperation oper) {
         this.oper = oper;
     }
 
@@ -118,11 +122,11 @@ public class AuditRecord implements Serializable {
         this.user = user;
     }
 
-    public String getEntityType() {
+    public EntityType getEntityType() {
         return entityType;
     }
 
-    public void setEntityType(String entityType) {
+    public void setEntityType(EntityType entityType) {
         this.entityType = entityType;
     }
 

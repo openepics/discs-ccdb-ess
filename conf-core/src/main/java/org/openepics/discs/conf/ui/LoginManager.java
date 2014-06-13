@@ -8,16 +8,19 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
-
 import javax.faces.context.FacesContext;
 import javax.inject.Named;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+
 import org.openepics.discs.conf.ejb.AuthEJBLocal;
+import org.openepics.discs.conf.ent.EntityType;
+import org.openepics.discs.conf.ent.EntityTypeOperation;
 
 /**
  *  todo: integrate with RBAC
@@ -63,7 +66,7 @@ public class LoginManager implements Serializable {
                 // }
                 loggedin = true;
                 token = userid;
-                authorized = authEJB.userHasAuth(userid, "Menu", 'a'); // todo: need to improve
+                authorized = authEJB.userHasAuth(userid, EntityType.MENU, EntityTypeOperation.AUTHORIZED);// todo: need to improve
                 logger.log(Level.INFO, "Login successful for " + userid);
                 showMessage(FacesMessage.SEVERITY_INFO, "You are logged in. Welcome!", userid);
             } else {

@@ -8,11 +8,14 @@ package org.openepics.discs.conf.ejb;
 
 import javax.ejb.Local;
 
+import org.openepics.discs.conf.ent.EntityType;
+import org.openepics.discs.conf.ent.EntityTypeOperation;
+
 /**
  *
  * @author vuppala
  */
 @Local
 public interface AuthEJBLocal {
-    boolean userHasAuth(String principal, String resource, char operation);
+    boolean userHasAuth(String principal, EntityType resource, EntityTypeOperation operation);
 }

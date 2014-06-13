@@ -7,10 +7,14 @@ package org.openepics.discs.conf.ejb;
 
 import java.util.List;
 import java.util.logging.Logger;
+
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
+
+import org.openepics.discs.conf.ent.EntityType;
+import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.Privilege;
 
 /**
@@ -26,7 +30,7 @@ public class AuthEJB implements AuthEJBLocal {
 
     // todo: implement autorization using RBAC.    
     @Override
-    public boolean userHasAuth(String principal, String resource, char operation) {
+    public boolean userHasAuth(String principal, EntityType resource, EntityTypeOperation operation) {
         boolean auth = false;
 
         if (principal == null || principal.isEmpty()) {
@@ -43,9 +47,9 @@ public class AuthEJB implements AuthEJBLocal {
         logger.info("AuthEJB: found privileges: " + privs.size());
 
         for (Privilege p : privs) {
-            if (resource.matches(p.getResource())) {
+            if (resource.equals(p.getResource())) {
                 logger.info("AuthEJB: matched privileges: " + p);
-                if (p.getOper() == '.' || p.getOper() == operation) {
+                if (p.getOper().equals(operation)) {
                     auth = true;
                     break;
                 }

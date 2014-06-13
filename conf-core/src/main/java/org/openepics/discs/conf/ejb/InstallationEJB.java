@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -19,7 +20,10 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+
 import org.openepics.discs.conf.ent.AuditRecord;
+import org.openepics.discs.conf.ent.EntityType;
+import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.InstallationArtifact;
 import org.openepics.discs.conf.ent.InstallationRecord;
 import org.openepics.discs.conf.ent.Slot;
@@ -45,9 +49,9 @@ public class InstallationEJB implements InstallationEJBLocal {
     private LoginManager loginManager;
     
     // ----------- Audit record ---------------------------------------
-    private void makeAuditEntry(char oper, String key, String entry) {
+    private void makeAuditEntry(EntityTypeOperation oper, String key, String entry) {
         AuditRecord arec = new AuditRecord(null, new Date(), oper, loginManager.getUserid(), entry);
-        arec.setEntityType(AppProperties.EN_INSTALLREC);
+        arec.setEntityType(EntityType.INSTALLATION_RECORD);
         arec.setEntityKey(key);
         em.persist(arec);
     }
@@ -75,7 +79,7 @@ public class InstallationEJB implements InstallationEJBLocal {
             // throw new Exception("property is null");        
         }
         String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, AppProperties.EN_INSTALLREC, AppProperties.OPER_UPDATE)) {
+        if (! authEJB.userHasAuth(user, EntityType.INSTALLATION_RECORD, EntityTypeOperation.UPDATE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
@@ -92,7 +96,7 @@ public class InstallationEJB implements InstallationEJBLocal {
         } else {
             em.merge(irec);
         }
-        makeAuditEntry(AppProperties.OPER_UPDATE,irec.getRecordNumber(),"updated installation record ");
+        makeAuditEntry(EntityTypeOperation.UPDATE,irec.getRecordNumber(),"updated installation record ");
     }
     
     @Override
@@ -102,13 +106,13 @@ public class InstallationEJB implements InstallationEJBLocal {
             throw new Exception("Installation Record is null");        
         }
         String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, AppProperties.EN_INSTALLREC, AppProperties.OPER_DELETE)) {
+        if (! authEJB.userHasAuth(user, EntityType.INSTALLATION_RECORD, EntityTypeOperation.DELETE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
         InstallationRecord ct = em.find(InstallationRecord.class,irec.getInstallationRecordId());
         em.remove(ct);
-        makeAuditEntry(AppProperties.OPER_DELETE,irec.getRecordNumber(),"deleted installation record ");
+        makeAuditEntry(EntityTypeOperation.DELETE,irec.getRecordNumber(),"deleted installation record ");
     }
     
     // ---------------- Artifact ---------------------
@@ -120,7 +124,7 @@ public class InstallationEJB implements InstallationEJBLocal {
             return;
         }
         String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, AppProperties.EN_INSTALLREC, AppProperties.OPER_UPDATE)) {
+        if (! authEJB.userHasAuth(user, EntityType.INSTALLATION_RECORD, EntityTypeOperation.UPDATE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
@@ -132,7 +136,7 @@ public class InstallationEJB implements InstallationEJBLocal {
             arec.getInstallationArtifactList().add(newArt);
             em.merge(arec);
         }
-        makeAuditEntry(AppProperties.OPER_UPDATE,art.getInstallationRecord().getRecordNumber(),"updated installation artifact " + art.getName());
+        makeAuditEntry(EntityTypeOperation.UPDATE,art.getInstallationRecord().getRecordNumber(),"updated installation artifact " + art.getName());
         logger.log(Level.INFO, "Artifact: name " + art.getName() + " description " + art.getDescription() + " uri " + art.getUri() + "is int " + art.getIsInternal());
         // logger.log(Level.INFO, "device serial " + device.getSerialNumber());
     }
@@ -144,7 +148,7 @@ public class InstallationEJB implements InstallationEJBLocal {
             return;
         }
         String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, AppProperties.EN_INSTALLREC, AppProperties.OPER_UPDATE)) {
+        if (! authEJB.userHasAuth(user, EntityType.INSTALLATION_RECORD, EntityTypeOperation.UPDATE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
@@ -154,6 +158,6 @@ public class InstallationEJB implements InstallationEJBLocal {
         
         em.remove(artifact);
         irec.getInstallationArtifactList().remove(artifact);
-        makeAuditEntry(AppProperties.OPER_UPDATE,art.getInstallationRecord().getRecordNumber(),"deleted installation artifact " + art.getName());
+        makeAuditEntry(EntityTypeOperation.UPDATE,art.getInstallationRecord().getRecordNumber(),"deleted installation artifact " + art.getName());
     }
 }

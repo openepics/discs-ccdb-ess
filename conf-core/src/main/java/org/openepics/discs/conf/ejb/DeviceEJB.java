@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -19,10 +20,13 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+
 import org.openepics.discs.conf.ent.AuditRecord;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.DeviceArtifact;
 import org.openepics.discs.conf.ent.DeviceProperty;
+import org.openepics.discs.conf.ent.EntityType;
+import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ui.LoginManager;
 import org.openepics.discs.conf.util.AppProperties;
 
@@ -47,9 +51,9 @@ public class DeviceEJB implements DeviceEJBLocal {
     // "Insert Code > Add Business Method")
     
     // ----------- Audit record ---------------------------------------
-    private void makeAuditEntry(char oper, String key, String entry) {
+    private void makeAuditEntry(EntityTypeOperation oper, String key, String entry) {
         AuditRecord arec = new AuditRecord(null, new Date(), oper, loginManager.getUserid(), entry);
-        arec.setEntityType(AppProperties.EN_DEVICE);
+        arec.setEntityType(EntityType.DEVICE);
         arec.setEntityKey(key);
         em.persist(arec);
     }
@@ -83,7 +87,7 @@ public class DeviceEJB implements DeviceEJBLocal {
             return;
             // throw new Exception("property is null");        
         }
-        if (! authEJB.userHasAuth(user, AppProperties.EN_DEVICE, AppProperties.OPER_CREATE)) {
+        if (! authEJB.userHasAuth(user, EntityType.DEVICE, EntityTypeOperation.CREATE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
@@ -92,7 +96,7 @@ public class DeviceEJB implements DeviceEJBLocal {
         device.setModifiedBy(user);
         logger.log(Level.INFO, "Preparing to save device");
         em.merge(device);
-        makeAuditEntry(AppProperties.OPER_UPDATE,device.getSerialNumber(),"Modified device");
+        makeAuditEntry(EntityTypeOperation.UPDATE,device.getSerialNumber(),"Modified device");
     }
     
     @Override
@@ -103,13 +107,13 @@ public class DeviceEJB implements DeviceEJBLocal {
             throw new Exception("property is null");        
         }
         String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, AppProperties.EN_DEVICE, AppProperties.OPER_DELETE)) {
+        if (! authEJB.userHasAuth(user, EntityType.DEVICE, EntityTypeOperation.DELETE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
         Device ct = em.find(Device.class,device.getDeviceId());
         em.remove(ct);     
-        makeAuditEntry(AppProperties.OPER_DELETE,device.getSerialNumber(),"Deleted device");
+        makeAuditEntry(EntityTypeOperation.DELETE,device.getSerialNumber(),"Deleted device");
     }
     
     // ------------------ Property ---------------
@@ -120,7 +124,7 @@ public class DeviceEJB implements DeviceEJBLocal {
             return;
         }
         String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, AppProperties.EN_DEVICE, AppProperties.OPER_UPDATE)) {
+        if (! authEJB.userHasAuth(user, EntityType.DEVICE, EntityTypeOperation.UPDATE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
@@ -135,7 +139,7 @@ public class DeviceEJB implements DeviceEJBLocal {
             em.merge(device);
         }       
         logger.log(Level.INFO, "Comp Type Property: id " + newProp.getDevPropId() + " name " + newProp.getProperty().getName());
-        makeAuditEntry(AppProperties.OPER_UPDATE, prop.getDevice().getSerialNumber(),"Modified property " + prop.getProperty().getName());
+        makeAuditEntry(EntityTypeOperation.UPDATE, prop.getDevice().getSerialNumber(),"Modified property " + prop.getProperty().getName());
     }
     
     @Override
@@ -145,7 +149,7 @@ public class DeviceEJB implements DeviceEJBLocal {
             return;
         }
         String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, AppProperties.EN_DEVICE, AppProperties.OPER_UPDATE)) {
+        if (! authEJB.userHasAuth(user, EntityType.DEVICE, EntityTypeOperation.UPDATE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
@@ -153,7 +157,7 @@ public class DeviceEJB implements DeviceEJBLocal {
         Device device = property.getDevice();
         device.getDevicePropertyList().remove(property);
         em.remove(property);
-        makeAuditEntry(AppProperties.OPER_UPDATE, prop.getDevice().getSerialNumber(),"Deleted property " + prop.getProperty().getName());
+        makeAuditEntry(EntityTypeOperation.UPDATE, prop.getDevice().getSerialNumber(),"Deleted property " + prop.getProperty().getName());
     } 
     
     // ---------------- Artifact ---------------------
@@ -165,7 +169,7 @@ public class DeviceEJB implements DeviceEJBLocal {
             return;
         }
         String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, AppProperties.EN_DEVICE, AppProperties.OPER_UPDATE)) {
+        if (! authEJB.userHasAuth(user, EntityType.DEVICE, EntityTypeOperation.UPDATE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
@@ -179,7 +183,7 @@ public class DeviceEJB implements DeviceEJBLocal {
         }
         // logger.log(Level.INFO, "Artifact: name " + art.getName() + " description " + art.getDescription() + " uri " + art.getUri() + "is int " + art.getIsInternal());
         // logger.log(Level.INFO, "device serial " + device.getSerialNumber());
-       makeAuditEntry(AppProperties.OPER_UPDATE, art.getDevice().getSerialNumber(),"Modified artifact " + art.getName());
+       makeAuditEntry(EntityTypeOperation.UPDATE, art.getDevice().getSerialNumber(),"Modified artifact " + art.getName());
     }
     
     @Override
@@ -189,7 +193,7 @@ public class DeviceEJB implements DeviceEJBLocal {
             return;
         }
         String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, AppProperties.EN_DEVICE, AppProperties.OPER_UPDATE)) {
+        if (! authEJB.userHasAuth(user, EntityType.DEVICE, EntityTypeOperation.UPDATE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
@@ -198,6 +202,6 @@ public class DeviceEJB implements DeviceEJBLocal {
         Device device = artifact.getDevice();
         device.getDeviceArtifactList().remove(artifact);
         em.remove(artifact); 
-        makeAuditEntry(AppProperties.OPER_UPDATE, art.getDevice().getSerialNumber(),"Deleted artifact " + art.getName());
+        makeAuditEntry(EntityTypeOperation.UPDATE, art.getDevice().getSerialNumber(),"Deleted artifact " + art.getName());
     }
 }

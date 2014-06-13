@@ -7,9 +7,12 @@
 package org.openepics.discs.conf.ent;
 
 import java.io.Serializable;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -43,13 +46,14 @@ public class Privilege implements Serializable {
     private Integer privilegeId;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 128)
+    @Enumerated(EnumType.STRING)
     @Column(name = "resource")
-    private String resource;
+    private EntityType resource;
     @Basic(optional = false)
     @NotNull
+    @Enumerated(EnumType.STRING)
     @Column(name = "oper")
-    private char oper;
+    private EntityTypeOperation oper;
     @JoinColumn(name = "role", referencedColumnName = "role_id")
     @ManyToOne(optional = false)
     private Role role;
@@ -61,7 +65,7 @@ public class Privilege implements Serializable {
         this.privilegeId = privilegeId;
     }
 
-    public Privilege(Integer privilegeId, String resource, char oper) {
+    public Privilege(Integer privilegeId, EntityType resource, EntityTypeOperation oper) {
         this.privilegeId = privilegeId;
         this.resource = resource;
         this.oper = oper;
@@ -75,19 +79,19 @@ public class Privilege implements Serializable {
         this.privilegeId = privilegeId;
     }
 
-    public String getResource() {
+    public EntityType getResource() {
         return resource;
     }
 
-    public void setResource(String resource) {
+    public void setResource(EntityType resource) {
         this.resource = resource;
     }
 
-    public char getOper() {
+    public EntityTypeOperation getOper() {
         return oper;
     }
 
-    public void setOper(char oper) {
+    public void setOper(EntityTypeOperation oper) {
         this.oper = oper;
     }
 

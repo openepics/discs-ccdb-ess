@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -19,10 +20,13 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+
 import org.openepics.discs.conf.ent.AlignmentRecord;
 import org.openepics.discs.conf.ent.AlignmentArtifact;
 import org.openepics.discs.conf.ent.AlignmentProperty;
 import org.openepics.discs.conf.ent.AuditRecord;
+import org.openepics.discs.conf.ent.EntityType;
+import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ui.LoginManager;
 import org.openepics.discs.conf.util.AppProperties;
 
@@ -44,9 +48,9 @@ private static final Logger logger = Logger.getLogger("org.openepics.discs.conf"
     private LoginManager loginManager;
     
     // ----------- Audit record ---------------------------------------
-    private void makeAuditEntry(char oper, String key, String entry) {
+    private void makeAuditEntry(EntityTypeOperation oper, String key, String entry) {
         AuditRecord arec = new AuditRecord(null, new Date(), oper, loginManager.getUserid(), entry);
-        arec.setEntityType(AppProperties.EN_ALIGNREC);
+        arec.setEntityType(EntityType.ALIGNMENT_RECORD);
         arec.setEntityKey(key);
         em.persist(arec);
     }
@@ -80,14 +84,14 @@ private static final Logger logger = Logger.getLogger("org.openepics.discs.conf"
             // throw new Exception("property is null");        
         }
         String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, AppProperties.EN_ALIGNREC, AppProperties.OPER_UPDATE)) {
+        if (! authEJB.userHasAuth(user, EntityType.ALIGNMENT_RECORD, EntityTypeOperation.UPDATE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
         arec.setModifiedAt(new Date());   
         logger.log(Level.INFO, "Preparing to save device");
         em.persist(arec);   
-        makeAuditEntry(AppProperties.OPER_UPDATE,arec.getRecordNumber(),"updated alignment record");
+        makeAuditEntry(EntityTypeOperation.UPDATE,arec.getRecordNumber(),"updated alignment record");
     }
     
     @Override
@@ -97,13 +101,13 @@ private static final Logger logger = Logger.getLogger("org.openepics.discs.conf"
             return;        
         }
         String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, AppProperties.EN_ALIGNREC, AppProperties.OPER_DELETE)) {
+        if (! authEJB.userHasAuth(user, EntityType.ALIGNMENT_RECORD, EntityTypeOperation.DELETE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
         AlignmentRecord ct = em.find(AlignmentRecord.class,arec.getAlignmentRecordId());
         em.remove(ct);       
-        makeAuditEntry(AppProperties.OPER_DELETE,arec.getRecordNumber(),"deleted alignment record");
+        makeAuditEntry(EntityTypeOperation.DELETE,arec.getRecordNumber(),"deleted alignment record");
     }
     
     // ------------------ Property ---------------
@@ -114,7 +118,7 @@ private static final Logger logger = Logger.getLogger("org.openepics.discs.conf"
             return;
         }
         String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, AppProperties.EN_ALIGNREC, AppProperties.OPER_UPDATE)) {
+        if (! authEJB.userHasAuth(user, EntityType.ALIGNMENT_RECORD, EntityTypeOperation.UPDATE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
@@ -128,7 +132,7 @@ private static final Logger logger = Logger.getLogger("org.openepics.discs.conf"
             slot.getAlignmentPropertyList().add(newProp);
             em.merge(slot);
         }
-        makeAuditEntry(AppProperties.OPER_UPDATE,prop.getAlignmentRecord().getRecordNumber(),"updated alignment property " + prop.getProperty().getName());
+        makeAuditEntry(EntityTypeOperation.UPDATE,prop.getAlignmentRecord().getRecordNumber(),"updated alignment property " + prop.getProperty().getName());
         logger.log(Level.INFO, "Comp Type Property: id " + newProp.getAlignPropId() + " name " + newProp.getProperty().getName());
     }
     
@@ -139,7 +143,7 @@ private static final Logger logger = Logger.getLogger("org.openepics.discs.conf"
             return;
         }
         String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, AppProperties.EN_ALIGNREC, AppProperties.OPER_UPDATE)) {
+        if (! authEJB.userHasAuth(user, EntityType.ALIGNMENT_RECORD, EntityTypeOperation.UPDATE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
@@ -147,7 +151,7 @@ private static final Logger logger = Logger.getLogger("org.openepics.discs.conf"
         AlignmentRecord arec = property.getAlignmentRecord();
         arec.getAlignmentPropertyList().remove(property);
         em.remove(property);
-        makeAuditEntry(AppProperties.OPER_DELETE,prop.getAlignmentRecord().getRecordNumber(),"deleted alignment property " + prop.getProperty().getName());
+        makeAuditEntry(EntityTypeOperation.DELETE,prop.getAlignmentRecord().getRecordNumber(),"deleted alignment property " + prop.getProperty().getName());
     } 
     
     // ---------------- Artifact ---------------------
@@ -159,7 +163,7 @@ private static final Logger logger = Logger.getLogger("org.openepics.discs.conf"
             return;
         }
         String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, AppProperties.EN_ALIGNREC, AppProperties.OPER_UPDATE)) {
+        if (! authEJB.userHasAuth(user, EntityType.ALIGNMENT_RECORD, EntityTypeOperation.UPDATE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
@@ -172,7 +176,7 @@ private static final Logger logger = Logger.getLogger("org.openepics.discs.conf"
             arec.getAlignmentArtifactList().add(newArt);
             em.merge(arec);
         }
-        makeAuditEntry(AppProperties.OPER_UPDATE,art.getAlignmentRecord().getRecordNumber(),"updated alignment artifact " + art.getName());
+        makeAuditEntry(EntityTypeOperation.UPDATE,art.getAlignmentRecord().getRecordNumber(),"updated alignment artifact " + art.getName());
         // art.setAlignmentRecord(em.merge(arec)); // todo: improve this code. this is not the right way.
         logger.log(Level.INFO, "Artifact: name " + newArt.getName() + " description " + newArt.getDescription() + " uri " + newArt.getUri() + "is int " + newArt.getIsInternal());
         // logger.log(Level.INFO, "device serial " + device.getSerialNumber());       
@@ -185,7 +189,7 @@ private static final Logger logger = Logger.getLogger("org.openepics.discs.conf"
             return;
         }
         String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, AppProperties.EN_ALIGNREC, AppProperties.OPER_UPDATE)) {
+        if (! authEJB.userHasAuth(user, EntityType.ALIGNMENT_RECORD, EntityTypeOperation.UPDATE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
@@ -194,6 +198,6 @@ private static final Logger logger = Logger.getLogger("org.openepics.discs.conf"
         AlignmentRecord arec = artifact.getAlignmentRecord();
         arec.getAlignmentArtifactList().remove(artifact);
         em.remove(artifact);   
-        makeAuditEntry(AppProperties.OPER_UPDATE,art.getAlignmentRecord().getRecordNumber(),"deleted alignment artifact " + art.getName());
+        makeAuditEntry(EntityTypeOperation.UPDATE,art.getAlignmentRecord().getRecordNumber(),"deleted alignment artifact " + art.getName());
     }
 }
