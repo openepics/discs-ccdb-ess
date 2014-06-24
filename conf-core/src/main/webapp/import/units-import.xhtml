@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html">
+	<h:form id="#{formId}" enctype="multipart/form-data">
+		<p:dialog widgetVar="#{widgetName}" modal="true"
+			resizable="false" width="35%">
+			<f:facet name="header">
+				<h:outputText value="#{dialogTitle}" />
+			</f:facet>
+			<h:panelGroup id="grp" layout="block">
+				<h:panelGroup
+					layout="block" style="padding: 0 0 7px 0">Please choose an Excel file (*.xlsx) to import device names from.</h:panelGroup>
+				<p:fileUpload
+					fileUploadListener="#{unitManager.handleFileUpload}"
+					update="grp" mode="advanced" auto="true" fileLimit="1"
+					dragDropSupport="true" allowTypes="/(\.|\/)(xlsx)$/"
+					rendered="#{unitManager.importFileName == null}" />
+				<h:outputText value="#{unitManager.importFileName}" />
+				<p:separator />
+				<p:commandButton value="Cancel" style="float: right"
+					onclick="#{widgetName}.hide();" />
+				<p:commandButton value="Import" style="float: right"
+					
+					oncomplete="#{widgetName}..hide(); resizePanel()"
+					action="#{unitManager.importUnits()}"
+					disabled="#{unitManager.importFileName == null}" />
+			</h:panelGroup>
+		</p:dialog>
+	</h:form>
+</ui:composition>
+<!-- update=":ManageNameForm :ManageNameForm:ncReqMenu" -->
