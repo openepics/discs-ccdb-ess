@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.openepics.discs.conf.dl;
 
@@ -8,7 +8,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -16,42 +15,64 @@ import org.openepics.discs.conf.util.ExcelCell;
 import org.openepics.discs.conf.util.IllegalImportFileFormatException;
 
 import com.google.common.base.Objects;
+import com.google.common.base.Strings;
 
 /**
+ * This class returns the excell spreadsheet as a list of rows. The first
+ * element in each row is a row number, followed by the values of all columns.
+ *
  * @author Andraz Pozar <andraz.pozar@cosylab.com>
- * 
+ *
  */
 public class ExcelImportFileReader {
 
-    public static List<List<String>> importExcelFile(InputStream inputStream) throws IllegalImportFileFormatException {
-        boolean headerRowFound = false;
-        final List<List<String>> allRows = new ArrayList<>();
+	/**
+	 * This method returns the contents of the first worksheet found in the
+	 * Excel workbook file.
+	 *
+	 * @param inputStream
+	 *            the Excel file to parse. Only Excel file version >=12.0
+	 *            supported (.xslx).
+	 * @return Only the lines from the first worksheet that contain a string
+	 *         value. Lines with the empty first cell are not part of the return
+	 *         set. The first element of each row is a string representation of
+	 *         its index (starting with 1).
+	 * @throws IllegalImportFileFormatException
+	 */
+	public static List<List<String>> importExcelFile(InputStream inputStream) throws IllegalImportFileFormatException {
+		boolean headerRowFound = false;
+		final List<List<String>> allRows = new ArrayList<>();
 
-        try {
-            final XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
-            final XSSFSheet sheet = workbook.getSheetAt(0);
+		try {
+			final XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
+			final XSSFSheet sheet = workbook.getSheetAt(0);
 
-            for (Row row : sheet) {
-                if (!headerRowFound && Objects.equal(ExcelCell.asStringOrNull(row.getCell(0)), "HEADER")) {
-                    headerRowFound = true;
-                }
+			int headerRowLength = 0;
 
-                if (headerRowFound && ExcelCell.asStringOrNull(row.getCell(0)) != null) {
-                    final List<String> oneRow = new ArrayList<>();
-                    oneRow.add(String.valueOf(row.getRowNum() + 1));
-                    for (int i = 0; i < row.getLastCellNum(); i++) {
-                        oneRow.add(ExcelCell.asStringOrNull(row.getCell(i)));
-                    }
-                    allRows.add(oneRow);
-                }
-            }
-            
-            if (!headerRowFound) {
-                throw new IllegalImportFileFormatException("Header row was not found!", "anywhere");
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return allRows;
-    }
+			for (Row row : sheet) {
+				if (Objects.equal(ExcelCell.asStringOrNull(row.getCell(0)), DataLoader.CMD_HEADER)) {
+					headerRowFound = true;
+					headerRowLength = row.getLastCellNum();
+				}
+
+				final String firstColumnValue = Strings.emptyToNull(ExcelCell.asStringOrNull(row.getCell(0)));
+				if (headerRowFound && firstColumnValue != null && !firstColumnValue.trim().isEmpty()) {
+					final List<String> oneRow = new ArrayList<>();
+					oneRow.add(String.valueOf(row.getRowNum() + 1));
+					final int lastCellIndex = headerRowLength > row.getLastCellNum() ? headerRowLength : row.getLastCellNum();
+					for (int i = 0; i < lastCellIndex; i++) {
+						oneRow.add(ExcelCell.asStringOrNull(row.getCell(i)));
+					}
+					allRows.add(oneRow);
+				}
+			}
+
+			if (!headerRowFound) {
+				throw new IllegalImportFileFormatException("Header row was not found!", "anywhere");
+			}
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		return allRows;
+	}
 }

@@ -25,7 +25,7 @@
 					onclick="#{widgetName}.hide();" />
 				<p:commandButton value="Import" style="float: right"
 					
-					oncomplete="#{widgetName}..hide(); resizePanel()"
+					oncomplete="#{widgetName}.hide(); resizePanel()"
 					action="#{unitManager.importUnits()}"
 					disabled="#{unitManager.importFileName == null}" />
 			</h:panelGroup>
