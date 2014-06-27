@@ -34,7 +34,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>16.0</version>
+            <version>17.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.poi</groupId>
@@ -111,7 +111,7 @@
                         <executions>
                             <execution>
                                 <id>Add beans.xml and glassfish-web.xml for GlassFish</id>
-                                <phase>validate</phase>
+                                <phase>process-resources</phase>
                                 <goals>
                                     <goal>copy-resources</goal>
                                 </goals>
@@ -131,7 +131,7 @@
                             </execution>
                             <execution>
                                 <id>Add persistence.xml for GlassFish</id>
-                                <phase>validate</phase>
+                                <phase>process-resources</phase>
                                 <goals>
                                     <goal>copy-resources</goal>
                                 </goals>
@@ -202,7 +202,7 @@
                         <executions>
                             <execution>
                                 <id>Add beans.xml and jboss-web.xml for Jboss</id>
-                                <phase>validate</phase>
+                                <phase>process-resources</phase>
                                 <goals>
                                     <goal>copy-resources</goal>
                                 </goals>
@@ -222,7 +222,7 @@
                             </execution>
                             <execution>
                                 <id>Add peristence.xml for Jboss</id>
-                                <phase>validate</phase>
+                                <phase>process-resources</phase>
                                 <goals>
                                     <goal>copy-resources</goal>
                                 </goals>
