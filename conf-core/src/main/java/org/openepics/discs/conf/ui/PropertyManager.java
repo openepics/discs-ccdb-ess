@@ -14,6 +14,7 @@ import org.openepics.discs.conf.util.Utility;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
 import java.io.Serializable;
 import java.util.List;
 import java.util.logging.Logger;
@@ -23,6 +24,7 @@ import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 
 import org.openepics.discs.conf.dl.PropertiesDataLoader;
+
 import org.openepics.discs.conf.ent.*;
 import org.openepics.discs.conf.ejb.*;
 
@@ -87,8 +89,7 @@ public class PropertyManager implements Serializable {
     
     public void onAdd(ActionEvent event) {
         selectedOp = 'a';
-        inTrans = true;
-        
+        inTrans = true;        
         inputObject = new Property();
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Add", "");
     }
@@ -118,11 +119,14 @@ public class PropertyManager implements Serializable {
         try {
             inputObject.setAssociation("T");
             inputObject.setModifiedBy("test-user");
-            configurationEJB.saveProperty(inputObject);
+            
             if (selectedOp == 'a') {
+                configurationEJB.addProperty(inputObject);
                 selectedObject = inputObject;
                 objects.add(selectedObject);
-            }                       
+            } else if (selectedOp == 'e') {
+                configurationEJB.saveProperty(inputObject);
+            }
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Saved", "");
         } catch (Exception e) {
             logger.severe(e.getMessage());
