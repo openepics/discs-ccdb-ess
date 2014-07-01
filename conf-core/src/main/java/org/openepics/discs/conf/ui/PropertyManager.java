@@ -7,17 +7,23 @@
 package org.openepics.discs.conf.ui;
 
 import org.openepics.discs.conf.util.Utility;
+
 import java.io.Serializable;
 import java.util.List;
 import java.util.logging.Logger;
+
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
+
 import org.openepics.discs.conf.ent.*;
 import org.openepics.discs.conf.ejb.*;
+
 import javax.faces.event.ActionEvent;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
+
+import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
 
 /**
@@ -65,8 +71,7 @@ public class PropertyManager implements Serializable {
     
     public void onAdd(ActionEvent event) {
         selectedOp = 'a';
-        inTrans = true;
-        
+        inTrans = true;        
         inputObject = new Property();
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Add", "");
     }
@@ -96,11 +101,14 @@ public class PropertyManager implements Serializable {
         try {
             inputObject.setAssociation("T");
             inputObject.setModifiedBy("test-user");
-            configurationEJB.saveProperty(inputObject);
+            
             if (selectedOp == 'a') {
+                configurationEJB.addProperty(inputObject);
                 selectedObject = inputObject;
                 objects.add(selectedObject);
-            }                       
+            } else if (selectedOp == 'e') {
+                configurationEJB.saveProperty(inputObject);
+            }
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Saved", "");
         } catch (Exception e) {
             logger.severe(e.getMessage());

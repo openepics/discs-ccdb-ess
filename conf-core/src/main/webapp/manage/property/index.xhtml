@@ -131,7 +131,7 @@
                     <p:toolbarGroup  align="right" >  
                         <p:separator /> 
                         <p:commandButton value="Save" icon="ui-icon-disk" 
-                                         update="searchTable managePanel messages" 
+                                         update=":propsform searchTable managePanel messages" 
                                          process="@this managePanel" actionListener="#{propertyManager.onSave}"
                                          disabled="#{! propertyManager.inTrans}"/>  
                         <p:commandButton value="Cancel" icon="ui-icon-close" 

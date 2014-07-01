@@ -116,6 +116,10 @@ public class Unit implements Serializable {
         this.version = version;
     }
 
+    public int getUnitId() {
+        return unitId;
+    }
+    
     public String getUnitName() {
         return unitName;
     }

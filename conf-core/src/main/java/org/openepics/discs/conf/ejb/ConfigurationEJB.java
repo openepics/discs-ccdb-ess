@@ -97,7 +97,7 @@ public class ConfigurationEJB {
     }
 
     
-    public Unit findUnit(String id) {
+    public Unit findUnit(int id) {
         return em.find(Unit.class, id);
     }
 
