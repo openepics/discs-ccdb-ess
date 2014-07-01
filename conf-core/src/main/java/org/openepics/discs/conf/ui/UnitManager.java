@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.annotation.ManagedBean;
 import javax.annotation.PostConstruct;

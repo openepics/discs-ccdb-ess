@@ -14,12 +14,12 @@
                          scrollRows="25" scrollable="true" liveScroll="true"   scrollHeight="500"                                         
                          filteredValue="#{unitManager.filteredUnits}"
                          emptyMessage="No audit records found!" 
-                         rowKey="#{item.unitId}}" >
+                         rowKey="#{item.unitName}}" >
                 <f:facet name="header">
                     <h:outputText value="Units"/>
                 </f:facet> 
-                <p:column id="desc" headerText="ID" filterBy="#{item.unitId}" filterMatchMode="contains">
-                    <h:outputText value="#{item.unitId}"/>
+                <p:column id="desc" headerText="ID" filterBy="#{item.unitName}" filterMatchMode="contains">
+                    <h:outputText value="#{item.unitName}"/>
                 </p:column>              
                 <p:column  headerText="Description" >
                     <h:outputText value="#{item.description}"/>

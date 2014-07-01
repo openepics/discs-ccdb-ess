@@ -42,9 +42,9 @@
                               filterBy="#{obj.description}" filterMatchMode="contains">
                         <h:outputText value="#{obj.description}"/>
                     </p:column>
-                    <p:column id="units" headerText="Units" sortBy="#{obj.unit.unitId}" 
-                              filterBy="#{obj.unit.unitId}" filterMatchMode="contains">
-                        <h:outputText value="#{obj.unit.unitId}"/>
+                    <p:column id="units" headerText="Units" sortBy="#{obj.unit.unitName}" 
+                              filterBy="#{obj.unit.unitName}" filterMatchMode="contains">
+                        <h:outputText value="#{obj.unit.unitName}"/>
                     </p:column>
                     <p:column id="dtype" headerText="Data Type" sortBy="#{obj.dataType.dataTypeId}" 
                               filterBy="#{obj.dataType.dataTypeId}" filterMatchMode="contains">
@@ -80,9 +80,9 @@
                                      converter="#{unitConverter}" rendered="true"
                                      filter="true" filterMatchMode="startsWith">  
                         <f:selectItem itemLabel="Select One" itemValue="" />
-                        <f:selectItems value="#{unitManager.units}" var="unit" itemLabel="#{unit.unitId}" itemValue="#{unit}"/>
+                        <f:selectItems value="#{unitManager.units}" var="unit" itemLabel="#{unit.unitName}" itemValue="#{unit}"/>
                         <p:column>  
-                            #{u.unitId}
+                            #{u.unitName}
                         </p:column>                        
                         <p:column>  
                             #{u.symbol}

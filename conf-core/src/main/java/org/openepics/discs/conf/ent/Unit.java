@@ -9,9 +9,12 @@ package org.openepics.discs.conf.ent;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -19,6 +22,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -33,7 +37,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Unit.findAll", query = "SELECT u FROM Unit u"),
-    @NamedQuery(name = "Unit.findByUnitId", query = "SELECT u FROM Unit u WHERE u.unitId = :unitId"),
+    @NamedQuery(name = "Unit.findByUnitName", query = "SELECT u FROM Unit u WHERE u.unitName = :unitName"),
     @NamedQuery(name = "Unit.findByQuantity", query = "SELECT u FROM Unit u WHERE u.quantity = :quantity"),
     @NamedQuery(name = "Unit.findBySymbol", query = "SELECT u FROM Unit u WHERE u.symbol = :symbol"),
     @NamedQuery(name = "Unit.findByDescription", query = "SELECT u FROM Unit u WHERE u.description = :description"),
@@ -44,11 +48,15 @@ import javax.xml.bind.annotation.XmlTransient;
 public class Unit implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "unit_id")
+    private Integer unitId;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 32)
-    @Column(name = "unit_id")
-    private String unitId;
+    @Column(name = "unit_name", unique=true)
+    private String unitName;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)
@@ -93,12 +101,12 @@ public class Unit implements Serializable {
     public Unit() {
     }
 
-    public Unit(String unitId) {
-        this.unitId = unitId;
+    public Unit(String unitName) {
+        this.unitName = unitName;
     }
 
-    public Unit(String unitId, String quantity, String symbol, String baseUnitExpr, String description, Date modifiedAt, String modifiedBy, int version) {
-        this.unitId = unitId;
+    public Unit(String unitName, String quantity, String symbol, String baseUnitExpr, String description, Date modifiedAt, String modifiedBy, int version) {
+        this.unitName = unitName;
         this.quantity = quantity;
         this.symbol = symbol;
         this.baseUnitExpr = baseUnitExpr;
@@ -108,12 +116,12 @@ public class Unit implements Serializable {
         this.version = version;
     }
 
-    public String getUnitId() {
-        return unitId;
+    public String getUnitName() {
+        return unitName;
     }
 
-    public void setUnitId(String unitId) {
-        this.unitId = unitId;
+    public void setUnitName(String unitName) {
+        this.unitName = unitName;
     }
 
     public String getQuantity() {
@@ -211,7 +219,7 @@ public class Unit implements Serializable {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (unitId != null ? unitId.hashCode() : 0);
+        hash += (unitName != null ? unitName.hashCode() : 0);
         return hash;
     }
 
@@ -222,7 +230,7 @@ public class Unit implements Serializable {
             return false;
         }
         Unit other = (Unit) object;
-        if ((this.unitId == null && other.unitId != null) || (this.unitId != null && !this.unitId.equals(other.unitId))) {
+        if ((this.unitName == null && other.unitName != null) || (this.unitName != null && !this.unitName.equals(other.unitName))) {
             return false;
         }
         return true;
@@ -230,7 +238,7 @@ public class Unit implements Serializable {
 
     @Override
     public String toString() {
-        return "org.openepics.discs.conf.ent.Unit[ unitId=" + unitId + " ]";
+        return "org.openepics.discs.conf.ent.Unit[ unitId=" + unitName + " ]";
     }
     
 }

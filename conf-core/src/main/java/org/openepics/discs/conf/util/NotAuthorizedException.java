@@ -17,7 +17,7 @@ public class NotAuthorizedException extends Exception {
     
     @Override
     public String getMessage() {
-        return "You do not have permissions to perform operation " + operation.toString() + " on resouce " + entityType.toString();
+        return "You do not have permissions to perform operation " + operation.toString() + " on resource " + entityType.toString();
     }
 
 }

@@ -8,7 +8,7 @@
 	xmlns:h="http://java.sun.com/jsf/html">
 
 	<h:form id="menuform">
-		<p:growl id="menumsgs" />
+		<p:growl id="menumsgs" showDetail="true"/>
 
 		<p:menubar id="mainMenu" styleClass="menubar">
 			<p:menuitem value="Home" icon="ui-icon-home" title="Home" url="/" />
@@ -74,11 +74,11 @@
 			</p:submenu>
 
 			<p:submenu label="Import" icon="ui-icon-folder-open" rendered="true">
-				<p:menuitem value="Import Units" update=":importUnitsForm"
-					oncomplete="importUnits.show()" title="Import Units"
-					actionListener="#{unitManager.prepareImportPopup()}"
-					disabled="#{!unitManager.canImportUnits()}" />
-			</p:submenu>
+                <p:menuitem value="Import Units" update=":importUnitsForm"
+                    oncomplete="importUnits.show()" title="Import Units"
+                    actionListener="#{unitManager.prepareImportPopup()}"
+                    disabled="#{!unitManager.canImportUnits()}" />
+            </p:submenu>
 
 			<p:submenu label="Help" icon="ui-icon-help">
 				<p:menuitem value=" Online Help" title="Online Help"
@@ -100,11 +100,24 @@
 			widgetVar="aboutPanelWid">
 			<ui:include src="about.xhtml" />
 		</p:dialog>
+		
 	</h:form>
-	<ui:include src="/import/units-import.xhtml">
-		<ui:param name="formId" value="importUnitsForm" />
-		<ui:param name="dialogTitle" value="Import Units" />
-		<ui:param name="widgetName" value="importUnits" />
-		<ui:param name="submitHandler" value="onUnitsImport" />
-	</ui:include>
+
+	
+
+	<h:form id="importUnitsForm" enctype="multipart/form-data">            
+            <p:dialog id="importUnits" widgetVar="importUnits" modal="true" resizable="false" width="35%">              
+                <f:facet name="header">
+                    <h:outputText value="Units Import" />
+                </f:facet>
+                <h:panelGroup id="grp" layout="block">
+                    <h:panelGroup rendered="#{unitManager.importFileName == null}" layout="block" style="padding: 0 0 7px 0">Please choose an Excel file (*.xlsx) to import units from.</h:panelGroup>
+                    <p:fileUpload fileUploadListener="#{unitManager.handleFileUpload}" update="grp" mode="advanced" auto="true" fileLimit="1" dragDropSupport="true" allowTypes="/(\.|\/)(xlsx)$/" rendered="#{unitManager.importFileName == null}" />
+                    <h:outputText value="#{unitManager.importFileName}"/>
+                    <p:separator />
+                    <p:commandButton value="Cancel" style="float: right" onclick="importUnits.hide();"/>
+                    <p:commandButton value="Import" style="float: right" update=":menuform" oncomplete="importUnits.hide()" action="#{unitManager.importUnits()}" disabled="#{unitManager.importFileName == null}"/>
+                </h:panelGroup>
+            </p:dialog>
+        </h:form>
 </ui:composition>

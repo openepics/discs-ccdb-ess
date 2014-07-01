@@ -54,7 +54,7 @@ public class UnitConverter implements Converter{
             return "";
         } else {
             // logger.log(Level.INFO, "Exp number: " + ((Experiment) value).getId().toString());
-            return ((Unit) value).getUnitId();
+            return ((Unit) value).getUnitName();
         }
     }
 }

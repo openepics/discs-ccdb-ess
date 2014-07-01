@@ -18,7 +18,7 @@ import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 
 /**
- * This class returns the excell spreadsheet as a list of rows. The first
+ * This class returns the excel spreadsheet as a list of rows. The first
  * element in each row is a row number, followed by the values of all columns.
  *
  * @author Andraz Pozar <andraz.pozar@cosylab.com>

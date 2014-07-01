@@ -4,7 +4,9 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -20,119 +22,164 @@ import org.openepics.discs.conf.ui.LoginManager;
 import org.openepics.discs.conf.util.IllegalImportFileFormatException;
 import org.openepics.discs.conf.util.NotAuthorizedException;
 
-@Stateless
-public class UnitsDataLoader extends DataLoader {
+/**
+ * Data loader for units.
+ * 
+ * @author Andraz Pozar <andraz.pozar@cosylab.com>
+ * 
+ */
+@Stateless public class UnitsDataLoader extends DataLoader {
 
-	@Inject	private LoginManager loginManager;
-	@Inject	private AuthEJB authEJB;
-	@Inject	private ConfigurationEJB configurationEJB;
-	@PersistenceContext	private EntityManager em;
-	private HashMap<String, Unit> unitById;
-	private List<String> headerFields;
-	private int idIndex, quantityIndex, symbolIndex, baseUnitExprIndex, descriptionIndex;
-	private List<Unit> units;
+    @Inject private LoginManager loginManager;
+    @Inject private AuthEJB authEJB;
+    @Inject private ConfigurationEJB configurationEJB;
+    @PersistenceContext private EntityManager em;
+    private Map<String, Unit> unitByName;
+    private List<Unit> unitsToAddOrUpdate;
+    private List<Unit> unitsToDelete;
+    private Map<Unit, String> unitsToRename;
+    private int nameIndex, quantityIndex, symbolIndex, baseUnitExprIndex, descriptionIndex;
+    private List<Unit> units;
 
-	public void loadData(InputStream stream) throws IllegalImportFileFormatException, NotAuthorizedException {
-		init();
+    @Override public void loadData(InputStream stream) throws IllegalImportFileFormatException, NotAuthorizedException {
+        init();
 
-		final List<List<String>> inputRows = ExcelImportFileReader.importExcelFile(stream);
+        final List<List<String>> inputRows = ExcelImportFileReader.importExcelFile(stream);
 
-		if (inputRows != null && inputRows.size() > 0) {
-			/*
-			 * List does not contain any rows that do not have a value (command)
-			 * in the first column. There should be no commands before "HEADER".
-			 */
-			List<String> headerRow = inputRows.get(0);
-			setUpIndexesForFields(headerRow);
-			CommandProcessing: for (List<String> row : inputRows.subList(1, inputRows.size())) {
-				final String rowNumber = row.get(0);
-				if (row.get(1).equals(CMD_HEADER)) {
-					headerRow = row;
-					setUpIndexesForFields(headerRow);
-					continue; // skip the rest of the processing for HEADER row
-				}
-				// TODO correctly notify the user, that one of the required
-				// entity fields is missing a value
+        if (inputRows != null && inputRows.size() > 0) {
+            /*
+             * List does not contain any rows that do not have a value (command)
+             * in the first column. There should be no commands before "HEADER".
+             */
+            List<String> headerRow = inputRows.get(0);
+            
+            unitsToAddOrUpdate = new ArrayList<>();
+            unitsToDelete = new ArrayList<>();
+            unitsToRename = new HashMap<>();
+            setUpIndexesForFields(headerRow);
+            
+            CommandProcessing: for (List<String> row : inputRows.subList(1, inputRows.size())) {
+                final String rowNumber = row.get(0);
+                if (row.get(1).equals(CMD_HEADER)) {
+                    headerRow = row;
+                    setUpIndexesForFields(headerRow);
+                    continue; // skip the rest of the processing for HEADER row
+                }
 
-				final String command = row.get(1).toUpperCase();
-				final String id = row.get(idIndex);
-				final String quantity = row.get(quantityIndex);
-				final String symbol = row.get(symbolIndex);
-				final String description = row.get(descriptionIndex);
-				final String baseUnitExpr = row.get(baseUnitExprIndex);
-				final Date modifiedAt = new Date();
-				final String modifiedBy = loginManager.getUserid();
+                final String command = row.get(1).toUpperCase();
+                final String name = row.get(nameIndex);
+                final String quantity = row.get(quantityIndex);
+                final String symbol = row.get(symbolIndex);
+                final String description = row.get(descriptionIndex);
+                final String baseUnitExpr = row.get(baseUnitExprIndex);
+                final Date modifiedAt = new Date();
+                final String modifiedBy = loginManager.getUserid();
 
-				switch (command) {
-				case CMD_UPDATE:
-					if (unitById.containsKey(id)) {
-						if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.UNIT, EntityTypeOperation.UPDATE)) {
-							final Unit unitToUpdate = unitById.get(id);
-							unitToUpdate.setBaseUnitExpr(baseUnitExpr);
-							unitToUpdate.setDescription(description);
-							unitToUpdate.setModifiedAt(modifiedAt);
-							unitToUpdate.setQuantity(quantity);
-							unitToUpdate.setSymbol(symbol);
-							unitToUpdate.setModifiedBy(modifiedBy);
-						} else {
-							throw new NotAuthorizedException(EntityTypeOperation.UPDATE, EntityType.UNIT);
-						}
-					} else {
-						if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.UNIT, EntityTypeOperation.CREATE)) {
-							em.persist(new Unit(id, quantity, symbol, baseUnitExpr, description, modifiedAt, loginManager
-									.getUserid(), 0));
-						} else {
-							throw new NotAuthorizedException(EntityTypeOperation.CREATE, EntityType.UNIT);
-						}
-					}
-					break;
-				case CMD_DELETE:
-					if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.UNIT, EntityTypeOperation.DELETE)) {
-						final Unit unitToDelete = unitById.get(id);
-						if (unitToDelete == null) {
-							throw new IllegalImportFileFormatException("Unit to be deleted does not exist!", rowNumber);
-						} else {
-							em.remove(em.contains(unitToDelete) ? unitToDelete : em.merge(unitToDelete));
-						}
-					} else {
-						throw new NotAuthorizedException(EntityTypeOperation.DELETE, EntityType.UNIT);
-					}
-					break;
-				case CMD_END:
-					break CommandProcessing;
-				case CMD_RENAME:
-				default:
-					throw new IllegalImportFileFormatException(command + " is not a valid command!", rowNumber);
-				}
-			}
-		}
-	}
+                switch (command) {
+                case CMD_UPDATE:
+                    if (unitByName.containsKey(name)) {
+                        if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.UNIT, EntityTypeOperation.UPDATE)) {
+                            unitsToAddOrUpdate.add(new Unit(name, quantity, symbol, baseUnitExpr, description, modifiedAt, modifiedBy, 0));
+                        } else {
+                            throw new NotAuthorizedException(EntityTypeOperation.UPDATE, EntityType.UNIT);
+                        }
+                    } else {
+                        if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.UNIT, EntityTypeOperation.CREATE)) {
+                            final Unit unitToAdd = new Unit(name, quantity, symbol, baseUnitExpr, description, modifiedAt, modifiedBy, 0);
+                            unitsToAddOrUpdate.add(unitToAdd);
+                            unitByName.put(unitToAdd.getUnitName(), unitToAdd);
+                        } else {
+                            throw new NotAuthorizedException(EntityTypeOperation.CREATE, EntityType.UNIT);
+                        }
+                    }
+                    break;
+                case CMD_DELETE:
+                    if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.UNIT, EntityTypeOperation.DELETE)) {
+                        final Unit unitToDelete = unitByName.get(name);
+                        if (unitToDelete == null) {
+                            throw new IllegalImportFileFormatException("Unit to be deleted does not exist!", rowNumber);
+                        } else {
+                            unitsToDelete.add(unitToDelete);
+                            unitByName.remove(unitToDelete);
+                        }
+                    } else {
+                        throw new NotAuthorizedException(EntityTypeOperation.DELETE, EntityType.UNIT);
+                    }
+                    break;
+                case CMD_RENAME:
+                    if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.UNIT, EntityTypeOperation.RENAME)) {
+                        final int startOldNameMarkerIndex = name.indexOf("[");
+                        final int endOldNameMarkerIndex = name.indexOf("]");
+                        if (startOldNameMarkerIndex == -1 || endOldNameMarkerIndex == -1) {
+                            throw new IllegalImportFileFormatException("RENAME command must have unit name which is to be renamed, defined between [] \nfollowed by new name. Example: [old name] new name.", rowNumber);
+                        } else if (unitByName.containsKey(name.substring(startOldNameMarkerIndex + 1, endOldNameMarkerIndex))) {
+                            if (unitByName.containsKey(name.substring(endOldNameMarkerIndex + 2).trim())) {
+                                throw new IllegalImportFileFormatException("Cannot rename unit to \"" + name.substring(endOldNameMarkerIndex + 2).trim() + "\" since unit with this name already exists.", rowNumber);
+                            } else {
+                                unitsToRename.put(unitByName.get(name.substring(startOldNameMarkerIndex + 1, endOldNameMarkerIndex)), name.substring(endOldNameMarkerIndex + 2).trim());
+                            }
+                        } else {
+                            throw new IllegalImportFileFormatException("Unit to be renamed does not exist!", rowNumber);
+                        }
+                    } else {
+                        throw new NotAuthorizedException(EntityTypeOperation.RENAME, EntityType.UNIT);
+                    }
+                    break;
+                case CMD_END:
+                    break CommandProcessing;
+                default:
+                    throw new IllegalImportFileFormatException(command + " is not a valid command!", rowNumber);
+                }
+            }
 
-	private void init() {
-		units = configurationEJB.findUnits();
-		unitById = new HashMap<>();
-		for (Unit unit : units) {
-			unitById.put(unit.getUnitId(), unit);
-		}
+            doImport();
+        }
+    }
 
-		headerFields = new ArrayList<>();
-		headerFields.add("ID");
-		headerFields.add("QUANTITY");
-		headerFields.add("SYMBOL");
-		headerFields.add("EXPR");
-		headerFields.add("DESCRIPTION");
-	}
+    @Override protected void doImport() {
+        for (Unit unit : unitsToAddOrUpdate) {
+            if (unitByName.containsKey(unit.getUnitName())) {
+                final Unit unitToUpdate = unitByName.get(unit.getUnitName());
+                unitToUpdate.setBaseUnitExpr(unit.getBaseUnitExpr());
+                unitToUpdate.setDescription(unit.getDescription());
+                unitToUpdate.setModifiedAt(unit.getModifiedAt());
+                unitToUpdate.setQuantity(unit.getQuantity());
+                unitToUpdate.setSymbol(unit.getSymbol());
+                unitToUpdate.setModifiedBy(unit.getModifiedBy());
+            } else {
+                em.persist(unit);
+            }
+        }
 
-	@Override
-	protected void setUpIndexesForFields(List<String> header) throws IllegalImportFileFormatException {
-		idIndex = header.indexOf("ID");
-		quantityIndex = header.indexOf("QUANTITY");
-		symbolIndex = header.indexOf("SYMBOL");
-		baseUnitExprIndex = header.indexOf("EXPR");
-		descriptionIndex = header.indexOf("DESCRIPTION");
+        for (Unit unit : unitsToDelete) {
+            final Unit unitToDelete = unitByName.get(unit.getUnitName());
+            em.remove(em.contains(unitToDelete) ? unitToDelete : em.merge(unitToDelete));
+        }
 
-		if (idIndex == -1 || quantityIndex == -1 || symbolIndex == -1 || baseUnitExprIndex == -1 || descriptionIndex == -1) {
-			throw new IllegalImportFileFormatException("Header row does not contain required fields!", header.get(0));
-		}
-	}
+        final Iterator<Unit> unitRenameIterator = unitsToRename.keySet().iterator();
+        while (unitRenameIterator.hasNext()) {
+            final Unit unitToRename = unitRenameIterator.next();
+            unitToRename.setUnitName(unitsToRename.get(unitToRename));
+        }
+    }
+
+    private void init() {
+        units = configurationEJB.findUnits();
+        unitByName = new HashMap<>();
+        for (Unit unit : units) {
+            unitByName.put(unit.getUnitName(), unit);
+        }
+    }
+
+    @Override protected void setUpIndexesForFields(List<String> header) throws IllegalImportFileFormatException {
+        nameIndex = header.indexOf("NAME");
+        quantityIndex = header.indexOf("QUANTITY");
+        symbolIndex = header.indexOf("SYMBOL");
+        baseUnitExprIndex = header.indexOf("EXPR");
+        descriptionIndex = header.indexOf("DESCRIPTION");
+
+        if (nameIndex == -1 || quantityIndex == -1 || symbolIndex == -1 || baseUnitExprIndex == -1 || descriptionIndex == -1) {
+            throw new IllegalImportFileFormatException("Header row does not contain required fields!", header.get(0));
+        }
+    }
 }
