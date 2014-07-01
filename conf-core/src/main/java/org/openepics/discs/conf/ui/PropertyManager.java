@@ -6,19 +6,35 @@
 
 package org.openepics.discs.conf.ui;
 
+import org.apache.commons.io.FilenameUtils;
+import org.openepics.discs.conf.util.IllegalImportFileFormatException;
+import org.openepics.discs.conf.util.NotAuthorizedException;
 import org.openepics.discs.conf.util.Utility;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.List;
 import java.util.logging.Logger;
+
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
+
+import org.openepics.discs.conf.dl.PropertiesDataLoader;
 import org.openepics.discs.conf.ent.*;
 import org.openepics.discs.conf.ejb.*;
+
 import javax.faces.event.ActionEvent;
 import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
+
+import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.SelectEvent;
+
+import com.google.common.io.ByteStreams;
 
 /**
  *
@@ -29,6 +45,9 @@ import org.primefaces.event.SelectEvent;
 public class PropertyManager implements Serializable {
     @EJB
     private ConfigurationEJB configurationEJB;
+    @Inject private LoginManager loginManager;
+    @Inject private AuthEJB authEJB;
+    @Inject private PropertiesDataLoader propertiesDataLoader;
     private static final Logger logger = Logger.getLogger("org.openepics.discs.conf");
     
     private List<Property> objects;
@@ -36,6 +55,9 @@ public class PropertyManager implements Serializable {
     private List<Property> filteredObjects;
     private Property selectedObject;
     private Property inputObject;
+
+    private byte[] importData;
+    private String importFileName;
     // private Property newProperty = new Property();
 
     // 
@@ -157,6 +179,38 @@ public class PropertyManager implements Serializable {
 
     public boolean isInTrans() {
         return inTrans;
+    }
+    
+    public boolean canImportUnits() {
+        return authEJB.userHasAuth(loginManager.getUserid(), EntityType.UNIT, EntityTypeOperation.CREATE) || 
+                authEJB.userHasAuth(loginManager.getUserid(), EntityType.UNIT, EntityTypeOperation.DELETE) ||
+                authEJB.userHasAuth(loginManager.getUserid(), EntityType.UNIT, EntityTypeOperation.UPDATE);
+    }
+    
+    public String getImportFileName() { return importFileName; }
+    
+    public void importUnits() {      
+        InputStream inputStream = new ByteArrayInputStream(importData);
+        try {
+            propertiesDataLoader.loadData(inputStream);
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Import Success", "Units were successfully imported");
+        } catch (IllegalImportFileFormatException | NotAuthorizedException e) {
+            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Import Fail", e.getMessage());
+        }         
+    }
+    
+    public void prepareImportPopup() {
+        importData = null;
+        importFileName = null;
+    }
+    
+    public void handleFileUpload(FileUploadEvent event) {
+        try (InputStream inputStream = event.getFile().getInputstream()) {
+            this.importData = ByteStreams.toByteArray(inputStream);
+            this.importFileName = FilenameUtils.getName(event.getFile().getFileName());
+        } catch (IOException e) {
+            throw new RuntimeException();           
+        }
     }
     
     
