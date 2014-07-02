@@ -6,13 +6,16 @@
 package org.openepics.discs.conf.ejb;
 
 import java.util.Date;
+
 import org.openepics.discs.conf.ent.*;
 
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -52,31 +55,19 @@ public class ConfigurationEJB {
     }
 
     
-    public void saveProperty(Property property) throws Exception {
-        if (property == null) {
-            logger.log(Level.SEVERE, "Property is null!");
-            throw new Exception("property is null");
-        }
+    public void saveProperty(Property property) {
         property.setModifiedAt(new Date());
         em.merge(property);
     }
 
     
-    public void addProperty(Property property) throws Exception {
-        if (property == null) {
-            logger.log(Level.SEVERE, "Property is null!");
-            throw new Exception("property is null");
-        }
+    public void addProperty(Property property) {
         property.setModifiedAt(new Date());
         em.persist(property);
     }
 
     
-    public void deleteProperty(Property property) throws Exception {
-        if (property == null) {
-            logger.log(Level.SEVERE, "Property is null!");
-            throw new Exception("property is null");
-        }
+    public void deleteProperty(Property property) {
         Property prop = em.find(Property.class, property.getPropertyId());
         em.remove(prop);
     }
@@ -99,6 +90,31 @@ public class ConfigurationEJB {
     
     public Unit findUnit(int id) {
         return em.find(Unit.class, id);
+    }
+    
+    public Unit findUnitByName(String name) {
+        Unit unit;
+        try {
+            unit = em.createNamedQuery("Unit.findByUnitName", Unit.class).setParameter("unitName", name).getSingleResult();
+        } catch (NoResultException e) {
+            unit = null;
+        }
+        return unit;
+    }
+    
+    public void addUnit(Unit unit) {
+        unit.setModifiedAt(new Date());
+        em.persist(unit);
+    }
+    
+    public void saveUnit(Unit unit) {
+        unit.setModifiedAt(new Date());
+        em.merge(unit);
+    }
+    
+    public void deleteUnit(Unit unit) {
+        final Unit unitToDelete = findUnit(unit.getUnitId());
+        em.remove(unitToDelete);
     }
 
     // ----------------  Data Type -------------------------
