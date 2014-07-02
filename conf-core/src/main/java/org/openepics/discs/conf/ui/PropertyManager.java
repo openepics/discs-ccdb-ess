@@ -185,19 +185,20 @@ public class PropertyManager implements Serializable {
         return inTrans;
     }
     
-    public boolean canImportUnits() {
-        return authEJB.userHasAuth(loginManager.getUserid(), EntityType.UNIT, EntityTypeOperation.CREATE) || 
-                authEJB.userHasAuth(loginManager.getUserid(), EntityType.UNIT, EntityTypeOperation.DELETE) ||
-                authEJB.userHasAuth(loginManager.getUserid(), EntityType.UNIT, EntityTypeOperation.UPDATE);
+    public boolean canImportProperties() {
+        return authEJB.userHasAuth(loginManager.getUserid(), EntityType.PROPERTY, EntityTypeOperation.CREATE) || 
+                authEJB.userHasAuth(loginManager.getUserid(), EntityType.PROPERTY, EntityTypeOperation.DELETE) ||
+                authEJB.userHasAuth(loginManager.getUserid(), EntityType.PROPERTY, EntityTypeOperation.UPDATE) ||
+                authEJB.userHasAuth(loginManager.getUserid(), EntityType.PROPERTY, EntityTypeOperation.RENAME);
     }
     
     public String getImportFileName() { return importFileName; }
     
-    public void importUnits() {      
+    public void importProperties() {      
         InputStream inputStream = new ByteArrayInputStream(importData);
         try {
             propertiesDataLoader.loadData(inputStream);
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Import Success", "Units were successfully imported");
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Import Success", "Properties were successfully imported");
         } catch (IllegalImportFileFormatException | NotAuthorizedException e) {
             Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Import Fail", e.getMessage());
         }         
