@@ -8,6 +8,7 @@ package org.openepics.discs.conf.ent;
 
 import java.io.Serializable;
 import java.util.Date;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,13 +16,13 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -63,10 +64,8 @@ public class AlignmentProperty implements Serializable {
     @Size(min = 1, max = 64)
     @Column(name = "modified_by")
     private String modifiedBy;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "version")
-    private int version;
+    @Version
+    private Long version;
     @JoinColumn(name = "alignment_record", referencedColumnName = "alignment_record_id")
     @ManyToOne(optional = false)
     private AlignmentRecord alignmentRecord;
@@ -81,12 +80,11 @@ public class AlignmentProperty implements Serializable {
         this.alignPropId = alignPropId;
     }
 
-    public AlignmentProperty(Integer alignPropId, boolean inRepository, Date modifiedAt, String modifiedBy, int version) {
+    public AlignmentProperty(Integer alignPropId, boolean inRepository, Date modifiedAt, String modifiedBy) {
         this.alignPropId = alignPropId;
         this.inRepository = inRepository;
         this.modifiedAt = modifiedAt;
         this.modifiedBy = modifiedBy;
-        this.version = version;
     }
 
     public Integer getAlignPropId() {
@@ -129,11 +127,11 @@ public class AlignmentProperty implements Serializable {
         this.modifiedBy = modifiedBy;
     }
 
-    public int getVersion() {
+    protected long getVersion() {
         return version;
     }
 
-    public void setVersion(int version) {
+    protected void setVersion(long version) {
         this.version = version;
     }
 
@@ -177,5 +175,5 @@ public class AlignmentProperty implements Serializable {
     public String toString() {
         return "org.openepics.discs.conf.ent.AlignmentProperty[ alignPropId=" + alignPropId + " ]";
     }
-    
+
 }

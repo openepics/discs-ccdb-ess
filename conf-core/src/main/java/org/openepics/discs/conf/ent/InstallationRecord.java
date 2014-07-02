@@ -9,6 +9,7 @@ package org.openepics.discs.conf.ent;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -17,7 +18,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -25,6 +25,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -78,10 +79,8 @@ public class InstallationRecord implements Serializable {
     @Size(min = 1, max = 64)
     @Column(name = "modified_by")
     private String modifiedBy;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "version")
-    private int version;
+    @Version
+    private Long version;
     @JoinColumn(name = "slot", referencedColumnName = "slot_id")
     @ManyToOne(optional = false)
     private Slot slot;
@@ -98,13 +97,12 @@ public class InstallationRecord implements Serializable {
         this.installationRecordId = installationRecordId;
     }
 
-    public InstallationRecord(Integer installationRecordId, String recordNumber, Date installDate, Date modifiedAt, String modifiedBy, int version) {
+    public InstallationRecord(Integer installationRecordId, String recordNumber, Date installDate, Date modifiedAt, String modifiedBy) {
         this.installationRecordId = installationRecordId;
         this.recordNumber = recordNumber;
         this.installDate = installDate;
         this.modifiedAt = modifiedAt;
         this.modifiedBy = modifiedBy;
-        this.version = version;
     }
 
     public Integer getInstallationRecordId() {
@@ -163,11 +161,11 @@ public class InstallationRecord implements Serializable {
         this.modifiedBy = modifiedBy;
     }
 
-    public int getVersion() {
+    protected long getVersion() {
         return version;
     }
 
-    public void setVersion(int version) {
+    protected void setVersion(long version) {
         this.version = version;
     }
 
@@ -220,5 +218,5 @@ public class InstallationRecord implements Serializable {
     public String toString() {
         return "org.openepics.discs.conf.ent.InstallationRecord[ installationRecordId=" + installationRecordId + " ]";
     }
-    
+
 }

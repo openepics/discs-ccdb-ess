@@ -24,9 +24,9 @@ import org.openepics.discs.conf.util.NotAuthorizedException;
 
 /**
  * Data loader for units.
- * 
+ *
  * @author Andraz Pozar <andraz.pozar@cosylab.com>
- * 
+ *
  */
 @Stateless public class UnitsDataLoader extends DataLoader {
 
@@ -52,12 +52,12 @@ import org.openepics.discs.conf.util.NotAuthorizedException;
              * in the first column. There should be no commands before "HEADER".
              */
             List<String> headerRow = inputRows.get(0);
-            
+
             unitsToAddOrUpdate = new ArrayList<>();
             unitsToDelete = new ArrayList<>();
             unitsToRename = new HashMap<>();
             setUpIndexesForFields(headerRow);
-            
+
             CommandProcessing: for (List<String> row : inputRows.subList(1, inputRows.size())) {
                 final String rowNumber = row.get(0);
                 if (row.get(1).equals(CMD_HEADER)) {
@@ -79,13 +79,13 @@ import org.openepics.discs.conf.util.NotAuthorizedException;
                 case CMD_UPDATE:
                     if (unitByName.containsKey(name)) {
                         if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.UNIT, EntityTypeOperation.UPDATE)) {
-                            unitsToAddOrUpdate.add(new Unit(name, quantity, symbol, baseUnitExpr, description, modifiedAt, modifiedBy, 0));
+                            unitsToAddOrUpdate.add(new Unit(name, quantity, symbol, baseUnitExpr, description, modifiedAt, modifiedBy));
                         } else {
                             throw new NotAuthorizedException(EntityTypeOperation.UPDATE, EntityType.UNIT);
                         }
                     } else {
                         if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.UNIT, EntityTypeOperation.CREATE)) {
-                            final Unit unitToAdd = new Unit(name, quantity, symbol, baseUnitExpr, description, modifiedAt, modifiedBy, 0);
+                            final Unit unitToAdd = new Unit(name, quantity, symbol, baseUnitExpr, description, modifiedAt, modifiedBy);
                             unitsToAddOrUpdate.add(unitToAdd);
                             unitByName.put(unitToAdd.getUnitName(), unitToAdd);
                         } else {

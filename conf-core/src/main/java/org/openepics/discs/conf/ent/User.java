@@ -8,6 +8,7 @@ package org.openepics.discs.conf.ent;
 
 import java.io.Serializable;
 import java.util.List;
+
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -17,6 +18,7 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -56,10 +58,8 @@ public class User implements Serializable {
     @Size(max = 255)
     @Column(name = "comment")
     private String comment;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "version")
-    private int version;
+    @Version
+    private Long version;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
     private List<UserRole> userRoleList;
 
@@ -70,10 +70,9 @@ public class User implements Serializable {
         this.userId = userId;
     }
 
-    public User(String userId, String name, int version) {
+    public User(String userId, String name) {
         this.userId = userId;
         this.name = name;
-        this.version = version;
     }
 
     public String getUserId() {
@@ -108,11 +107,11 @@ public class User implements Serializable {
         this.comment = comment;
     }
 
-    public int getVersion() {
+    protected long getVersion() {
         return version;
     }
 
-    public void setVersion(int version) {
+    protected void setVersion(long version) {
         this.version = version;
     }
 
@@ -149,5 +148,5 @@ public class User implements Serializable {
     public String toString() {
         return "org.openepics.discs.conf.ent.User[ userId=" + userId + " ]";
     }
-    
+
 }
