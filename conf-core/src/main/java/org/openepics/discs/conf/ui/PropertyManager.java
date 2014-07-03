@@ -20,6 +20,7 @@ import javax.inject.Named;
 
 import org.openepics.discs.conf.ejb.ConfigurationEJB;
 import org.openepics.discs.conf.ent.Property;
+import org.openepics.discs.conf.ent.PropertyAssociation;
 import org.openepics.discs.conf.util.Utility;
 import org.primefaces.event.SelectEvent;
 
@@ -71,7 +72,7 @@ public class PropertyManager implements Serializable {
         selectedOp = 'a';
         inTrans = true;
         // TODO replaced void constructor (now protected) with default values. Check!
-        inputObject = new Property("", "", "", loginManager.getUserid());
+        inputObject = new Property("", "", PropertyAssociation.ALL, loginManager.getUserid());
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Add", "");
     }
 
@@ -98,7 +99,7 @@ public class PropertyManager implements Serializable {
 
     public void onSave(ActionEvent event) {
         try {
-            inputObject.setAssociation("T");
+            inputObject.setAssociation(PropertyAssociation.TYPE);
             inputObject.setModifiedBy("test-user");
 
             if (selectedOp == 'a') {

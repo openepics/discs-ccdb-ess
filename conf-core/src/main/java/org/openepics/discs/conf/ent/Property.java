@@ -14,6 +14,8 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -66,9 +68,9 @@ public class Property implements Serializable {
     private String description;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 3)
+    @Enumerated(EnumType.STRING)
     @Column(name = "association")
-    private String association;
+    private PropertyAssociation association;
     @Basic(optional = false)
     @NotNull
     @Column(name = "modified_at")
@@ -99,7 +101,7 @@ public class Property implements Serializable {
     protected Property() {
     }
 
-    public Property(String name, String description, String association, String modifiedBy) {
+    public Property(String name, String description, PropertyAssociation association, String modifiedBy) {
         this.name = name;
         this.description = description;
         this.association = association;
@@ -127,11 +129,11 @@ public class Property implements Serializable {
         this.description = description;
     }
 
-    public String getAssociation() {
+    public PropertyAssociation getAssociation() {
         return association;
     }
 
-    public void setAssociation(String association) {
+    public void setAssociation(PropertyAssociation association) {
         this.association = association;
     }
 
