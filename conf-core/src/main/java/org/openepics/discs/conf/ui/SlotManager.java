@@ -8,7 +8,6 @@ package org.openepics.discs.conf.ui;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -121,7 +120,7 @@ public class SlotManager implements Serializable {
     public void onSlotAdd(ActionEvent event) {
         selectedOp = 'a';
         // TODO replaced void constructor (now protected) with default values. Check!
-        inputObject = new Slot("", false, new Date(), loginManager.getUserid());
+        inputObject = new Slot("", false, loginManager.getUserid());
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Add", "");
     }
 
@@ -178,7 +177,7 @@ public class SlotManager implements Serializable {
             propertyOperation = 'a';
 
             // TODO replaced void constructor (now protected) with default values. Check!
-            inputProperty = new SlotProperty(false, new Date(), loginManager.getUserid());
+            inputProperty = new SlotProperty(false, loginManager.getUserid());
             inputProperty.setSlot(selectedObject);
             fileUploaded = false;
             uploadedFileName = null;
@@ -306,7 +305,7 @@ public class SlotManager implements Serializable {
                 selectedArtifacts = new ArrayList<>();
             }
             // TODO replaced void constructor (now protected) with default values. Check!
-            inputArtifact = new SlotArtifact("", false, "", "", loginManager.getUserid(), new Date());
+            inputArtifact = new SlotArtifact("", false, "", "", loginManager.getUserid());
             inputArtifact.setSlot(selectedObject);
             fileUploaded = false;
             uploadedFileName = null;

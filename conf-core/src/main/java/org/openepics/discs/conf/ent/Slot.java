@@ -136,11 +136,11 @@ public class Slot implements Serializable {
     protected Slot() {
     }
 
-    public Slot(String name, boolean isHostingSlot, Date modifiedAt, String modifiedBy) {
+    public Slot(String name, boolean isHostingSlot, String modifiedBy) {
         this.name = name;
         this.isHostingSlot = isHostingSlot;
-        this.modifiedAt = modifiedAt;
         this.modifiedBy = modifiedBy;
+        this.modifiedAt = new Date();
     }
 
     public Integer getSlotId() {

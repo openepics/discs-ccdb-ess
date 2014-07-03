@@ -94,10 +94,10 @@ public class ComponentType implements Serializable {
     public ComponentType() {
     }
 
-    public ComponentType(String name, Date modifiedAt, String modifiedBy) {
+    public ComponentType(String name, String modifiedBy) {
         this.name = name;
-        this.modifiedAt = modifiedAt;
         this.modifiedBy = modifiedBy;
+        this.modifiedAt = new Date();
     }
 
     public Integer getComponentTypeId() {

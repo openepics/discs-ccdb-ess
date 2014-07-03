@@ -78,15 +78,15 @@ public class InstallationArtifact implements Serializable {
     @ManyToOne(optional = false)
     private InstallationRecord installationRecord;
 
-    public InstallationArtifact() {
+    protected InstallationArtifact() {
     }
 
-    public InstallationArtifact(String name, boolean isInternal, String uri, String modifiedBy, Date modifiedAt) {
+    public InstallationArtifact(String name, boolean isInternal, String uri, String modifiedBy) {
         this.name = name;
         this.isInternal = isInternal;
         this.uri = uri;
         this.modifiedBy = modifiedBy;
-        this.modifiedAt = modifiedAt;
+        this.modifiedAt = new Date();
     }
 
     public Integer getArtifactId() {

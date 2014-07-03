@@ -7,7 +7,6 @@
 package org.openepics.discs.conf.ui;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -72,7 +71,7 @@ public class PropertyManager implements Serializable {
         selectedOp = 'a';
         inTrans = true;
         // TODO replaced void constructor (now protected) with default values. Check!
-        inputObject = new Property("", "", "", new Date(), loginManager.getUserid());
+        inputObject = new Property("", "", "", loginManager.getUserid());
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Add", "");
     }
 

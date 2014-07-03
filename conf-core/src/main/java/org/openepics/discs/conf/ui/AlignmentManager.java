@@ -108,7 +108,7 @@ public class AlignmentManager implements Serializable{
     public void onAlignRecAdd(ActionEvent event) {
         selectedOp = 'a';
         // TODO replaced void constructor (now protected) with default values. Check.
-        inputObject = new AlignmentRecord(UUID.randomUUID().toString(), new Date(), new Date(), loginManager.getUserid());
+        inputObject = new AlignmentRecord(UUID.randomUUID().toString(), new Date(), loginManager.getUserid());
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Add", "");
     }
 
@@ -165,7 +165,7 @@ public class AlignmentManager implements Serializable{
             propertyOperation = 'a';
 
             // TODO replaced void constructor (now protected) with default values. Check.
-            inputProperty = new AlignmentProperty(false, new Date(), loginManager.getUserid());
+            inputProperty = new AlignmentProperty(false, loginManager.getUserid());
             inputProperty.setAlignmentRecord(selectedObject);
             fileUploaded = false;
             uploadedFileName = null;
@@ -299,7 +299,7 @@ public class AlignmentManager implements Serializable{
                 selectedArtifacts = new ArrayList<>();
             }
             // TODO replaced void constructor (now protected) with default values. Check.
-            inputArtifact = new AlignmentArtifact("", false, "", loginManager.getUserid(), new Date());
+            inputArtifact = new AlignmentArtifact("", false, "", loginManager.getUserid());
             inputArtifact.setAlignmentRecord(selectedObject);
             fileUploaded = false;
             uploadedFileName = null;

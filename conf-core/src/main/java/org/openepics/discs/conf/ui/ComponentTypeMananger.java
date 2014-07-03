@@ -8,7 +8,6 @@ package org.openepics.discs.conf.ui;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -170,7 +169,7 @@ public class ComponentTypeMananger implements Serializable {
             propertyOperation = 'a';
 
             // TODO replaced void constructor (now protected) with default values. Check.
-            inputProperty = new ComptypeProperty(false, new Date(), loginManager.getUserid());
+            inputProperty = new ComptypeProperty(false, loginManager.getUserid());
             inputProperty.setComponentType(selectedObject);
             fileUploaded = false;
             uploadedFileName = null;
@@ -422,7 +421,7 @@ public class ComponentTypeMananger implements Serializable {
                 selectedParts = new ArrayList<>();
             }
             // TODO replaced void constructor (now protected) with default values. Check!
-            ComptypeAsm prt = new ComptypeAsm("", new Date(), loginManager.getUserid());
+            ComptypeAsm prt = new ComptypeAsm("", loginManager.getUserid());
 
             prt.setParentType(selectedObject);
             // CTP.setComponentType1(inputObject);

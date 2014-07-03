@@ -76,10 +76,10 @@ public class AlignmentProperty implements Serializable {
     protected AlignmentProperty() {
     }
 
-    public AlignmentProperty(boolean inRepository, Date modifiedAt, String modifiedBy) {
+    public AlignmentProperty(boolean inRepository, String modifiedBy) {
         this.inRepository = inRepository;
-        this.modifiedAt = modifiedAt;
         this.modifiedBy = modifiedBy;
+        this.modifiedAt = new Date();
     }
 
     public Integer getAlignPropId() {

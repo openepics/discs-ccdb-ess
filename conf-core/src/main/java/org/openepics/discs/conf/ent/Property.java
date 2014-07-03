@@ -99,12 +99,12 @@ public class Property implements Serializable {
     protected Property() {
     }
 
-    public Property(String name, String description, String association, Date modifiedAt, String modifiedBy) {
+    public Property(String name, String description, String association, String modifiedBy) {
         this.name = name;
         this.description = description;
         this.association = association;
-        this.modifiedAt = modifiedAt;
         this.modifiedBy = modifiedBy;
+        this.modifiedAt = new Date();
     }
 
     public Integer getPropertyId() {

@@ -74,27 +74,19 @@ public class DataType implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "dataType")
     private List<Property> propertyList;
 
-    public DataType() {
+    protected DataType() {
     }
 
-    public DataType(String dataTypeId) {
-        this.dataTypeId = dataTypeId;
-    }
-
-    public DataType(String dataTypeId, String description, boolean scalar, Date modifiedAt, String modifiedBy) {
+    public DataType(String dataTypeId, String description, boolean scalar, String modifiedBy) {
         this.dataTypeId = dataTypeId;
         this.description = description;
         this.scalar = scalar;
-        this.modifiedAt = modifiedAt;
         this.modifiedBy = modifiedBy;
+        this.modifiedAt = new Date();
     }
 
     public String getDataTypeId() {
         return dataTypeId;
-    }
-
-    public void setDataTypeId(String dataTypeId) {
-        this.dataTypeId = dataTypeId;
     }
 
     public String getDescription() {

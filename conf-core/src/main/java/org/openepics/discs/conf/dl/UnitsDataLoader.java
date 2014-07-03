@@ -2,7 +2,6 @@ package org.openepics.discs.conf.dl;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -76,7 +75,6 @@ import org.openepics.discs.conf.util.NotAuthorizedException;
                 @Nullable final String symbol = row.get(symbolIndex);
                 @Nullable final String description = row.get(descriptionIndex);
                 @Nullable final String baseUnitExpr = row.get(baseUnitExprIndex);
-                final Date modifiedAt = new Date();
                 final String modifiedBy = loginManager.getUserid();
 
                 if (name == null || quantity == null || symbol == null || description == null) {
@@ -87,13 +85,13 @@ import org.openepics.discs.conf.util.NotAuthorizedException;
                 case CMD_UPDATE:
                     if (unitByName.containsKey(name)) {
                         if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.UNIT, EntityTypeOperation.UPDATE)) {
-                            unitsToAddOrUpdate.add(new Unit(name, quantity, symbol, baseUnitExpr, description, modifiedAt, modifiedBy));
+                            unitsToAddOrUpdate.add(new Unit(name, quantity, symbol, baseUnitExpr, description, modifiedBy));
                         } else {
                             throw new NotAuthorizedException(EntityTypeOperation.UPDATE, EntityType.UNIT);
                         }
                     } else {
                         if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.UNIT, EntityTypeOperation.CREATE)) {
-                            final Unit unitToAdd = new Unit(name, quantity, symbol, baseUnitExpr, description, modifiedAt, modifiedBy);
+                            final Unit unitToAdd = new Unit(name, quantity, symbol, baseUnitExpr, description, modifiedBy);
                             unitsToAddOrUpdate.add(unitToAdd);
                         } else {
                             throw new NotAuthorizedException(EntityTypeOperation.CREATE, EntityType.UNIT);

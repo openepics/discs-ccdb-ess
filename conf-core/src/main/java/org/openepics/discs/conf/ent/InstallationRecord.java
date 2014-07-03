@@ -90,14 +90,14 @@ public class InstallationRecord implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "installationRecord")
     private List<InstallationArtifact> installationArtifactList;
 
-    public InstallationRecord() {
+    protected InstallationRecord() {
     }
 
-    public InstallationRecord(String recordNumber, Date installDate, Date modifiedAt, String modifiedBy) {
+    public InstallationRecord(String recordNumber, Date installDate, String modifiedBy) {
         this.recordNumber = recordNumber;
         this.installDate = installDate;
-        this.modifiedAt = modifiedAt;
         this.modifiedBy = modifiedBy;
+        this.modifiedAt = new Date();
     }
 
     public Integer getInstallationRecordId() {

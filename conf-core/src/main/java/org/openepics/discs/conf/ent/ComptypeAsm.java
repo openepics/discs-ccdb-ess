@@ -79,10 +79,10 @@ public class ComptypeAsm implements Serializable {
     protected ComptypeAsm() {
     }
 
-    public ComptypeAsm(String childPosition, Date modifiedAt, String modifiedBy) {
+    public ComptypeAsm(String childPosition, String modifiedBy) {
         this.childPosition = childPosition;
-        this.modifiedAt = modifiedAt;
         this.modifiedBy = modifiedBy;
+        this.modifiedAt = new Date();
     }
 
     public Integer getComptypeAsmId() {

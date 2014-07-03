@@ -124,10 +124,10 @@ public class Device implements Serializable {
     protected Device() {
     }
 
-    public Device(String serialNumber, Date modifiedAt, String modifiedBy) {
+    public Device(String serialNumber, String modifiedBy) {
         this.serialNumber = serialNumber;
-        this.modifiedAt = modifiedAt;
         this.modifiedBy = modifiedBy;
+        this.modifiedAt = new Date();
     }
 
     public Integer getDeviceId() {

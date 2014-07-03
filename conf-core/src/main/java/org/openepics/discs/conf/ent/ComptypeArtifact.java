@@ -83,13 +83,13 @@ public class ComptypeArtifact implements Serializable {
     public ComptypeArtifact() {
     }
 
-    public ComptypeArtifact(String name, boolean isInternal, String description, String uri, String modifiedBy, Date modifiedAt) {
+    public ComptypeArtifact(String name, boolean isInternal, String description, String uri, String modifiedBy) {
         this.name = name;
         this.isInternal = isInternal;
         this.description = description;
         this.uri = uri;
         this.modifiedBy = modifiedBy;
-        this.modifiedAt = modifiedAt;
+        this.modifiedAt = new Date();
     }
 
     public Integer getArtifactId() {

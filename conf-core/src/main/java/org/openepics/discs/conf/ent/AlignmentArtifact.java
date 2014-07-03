@@ -81,12 +81,12 @@ public class AlignmentArtifact implements Serializable {
     protected AlignmentArtifact() {
     }
 
-    public AlignmentArtifact(String name, boolean isInternal, String uri, String modifiedBy, Date modifiedAt) {
+    public AlignmentArtifact(String name, boolean isInternal, String uri, String modifiedBy) {
         this.name = name;
         this.isInternal = isInternal;
         this.uri = uri;
         this.modifiedBy = modifiedBy;
-        this.modifiedAt = modifiedAt;
+        this.modifiedAt = new Date();
     }
 
     public Integer getArtifactId() {

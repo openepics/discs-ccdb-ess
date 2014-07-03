@@ -9,7 +9,6 @@ package org.openepics.discs.conf.ui;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -119,7 +118,7 @@ public class DeviceManager implements Serializable {
     public void onDeviceAdd(ActionEvent event) {
         selectedOp = 'a';
         // TODO replaced void constructor (now protected) with default values. Check!
-        inputObject = new Device("1", new Date(), loginManager.getUserid());
+        inputObject = new Device("1", loginManager.getUserid());
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Add", "");
     }
 
@@ -175,7 +174,8 @@ public class DeviceManager implements Serializable {
             }
             propertyOperation = 'a';
 
-            inputProperty = new DeviceProperty();
+            // TODO replaced void constructor (now protected) with default values. Check!
+            inputProperty = new DeviceProperty(false, loginManager.getUserid());
             inputProperty.setDevice(selectedObject);
             fileUploaded = false;
             uploadedFileName = null;
@@ -310,7 +310,7 @@ public class DeviceManager implements Serializable {
                 selectedArtifacts = new ArrayList<>();
             }
             // TODO replaced void constructor (now protected) with default values. Check!
-            inputArtifact = new DeviceArtifact("", false, "", "", loginManager.getUserid(), new Date());
+            inputArtifact = new DeviceArtifact("", false, "", "", loginManager.getUserid());
             inputArtifact.setDevice(selectedObject);
             fileUploaded = false;
             uploadedFileName = null;

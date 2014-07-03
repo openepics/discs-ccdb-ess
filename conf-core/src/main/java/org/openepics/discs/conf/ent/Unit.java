@@ -99,14 +99,14 @@ public class Unit implements Serializable {
     protected Unit() {
     }
 
-    public Unit(String unitName, String quantity, String symbol, String baseUnitExpr, String description, Date modifiedAt, String modifiedBy) {
+    public Unit(String unitName, String quantity, String symbol, String baseUnitExpr, String description, String modifiedBy) {
         this.unitName = unitName;
         this.quantity = quantity;
         this.symbol = symbol;
         this.baseUnitExpr = baseUnitExpr;
         this.description = description;
-        this.modifiedAt = modifiedAt;
         this.modifiedBy = modifiedBy;
+        this.modifiedAt = new Date();
     }
 
     public Integer getUnitId() {

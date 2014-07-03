@@ -83,11 +83,11 @@ public class SlotRelation implements Serializable {
     protected SlotRelation() {
     }
 
-    public SlotRelation(String name, String iname, Date modifiedAt, String modifiedBy) {
+    public SlotRelation(String name, String iname, String modifiedBy) {
         this.name = name;
         this.iname = iname;
-        this.modifiedAt = modifiedAt;
         this.modifiedBy = modifiedBy;
+        this.modifiedAt = new Date();
     }
 
     public Integer getSlotRelationId() {

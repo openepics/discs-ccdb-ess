@@ -76,13 +76,13 @@ public class DeviceProperty implements Serializable {
     @ManyToOne(optional = false)
     private Device device;
 
-    public DeviceProperty() {
+    protected DeviceProperty() {
     }
 
-    public DeviceProperty(boolean inRepository, Date modifiedAt, String modifiedBy) {
+    public DeviceProperty(boolean inRepository, String modifiedBy) {
         this.inRepository = inRepository;
-        this.modifiedAt = modifiedAt;
         this.modifiedBy = modifiedBy;
+        this.modifiedAt = new Date();
     }
 
     public Integer getDevPropId() {

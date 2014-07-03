@@ -83,10 +83,10 @@ public class ComptypeProperty implements Serializable {
     protected ComptypeProperty() {
     }
 
-    public ComptypeProperty(boolean inRepository, Date modifiedAt, String modifiedBy) {
+    public ComptypeProperty(boolean inRepository, String modifiedBy) {
         this.inRepository = inRepository;
-        this.modifiedAt = modifiedAt;
         this.modifiedBy = modifiedBy;
+        this.modifiedAt = new Date();
     }
 
     public Integer getCtypePropId() {

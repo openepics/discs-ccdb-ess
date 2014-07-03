@@ -108,11 +108,11 @@ public class AlignmentRecord implements Serializable {
     protected AlignmentRecord() {
     }
 
-    public AlignmentRecord(String recordNumber, Date alignmentDate, Date modifiedAt, String modifiedBy) {
+    public AlignmentRecord(String recordNumber, Date alignmentDate, String modifiedBy) {
         this.recordNumber = recordNumber;
         this.alignmentDate = alignmentDate;
-        this.modifiedAt = modifiedAt;
         this.modifiedBy = modifiedBy;
+        this.modifiedAt = new Date();
     }
 
     public Integer getAlignmentRecordId() {

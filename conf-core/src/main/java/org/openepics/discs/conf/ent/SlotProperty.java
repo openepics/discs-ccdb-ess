@@ -79,10 +79,10 @@ public class SlotProperty implements Serializable {
     protected SlotProperty() {
     }
 
-    public SlotProperty(boolean inRepository, Date modifiedAt, String modifiedBy) {
+    public SlotProperty(boolean inRepository, String modifiedBy) {
         this.inRepository = inRepository;
-        this.modifiedAt = modifiedAt;
         this.modifiedBy = modifiedBy;
+        this.modifiedAt = new Date();
     }
 
     public Integer getSlotPropId() {
