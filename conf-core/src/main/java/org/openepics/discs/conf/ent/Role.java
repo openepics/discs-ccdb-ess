@@ -84,11 +84,11 @@ public class Role implements Serializable {
         this.description = description;
     }
 
-    protected long getVersion() {
+    protected Long getVersion() {
         return version;
     }
 
-    protected void setVersion(long version) {
+    protected void setVersion(Long version) {
         this.version = version;
     }
 

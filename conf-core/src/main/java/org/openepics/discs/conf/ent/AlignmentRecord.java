@@ -199,11 +199,11 @@ public class AlignmentRecord implements Serializable {
         this.modifiedBy = modifiedBy;
     }
 
-    protected long getVersion() {
+    protected Long getVersion() {
         return version;
     }
 
-    protected void setVersion(long version) {
+    protected void setVersion(Long version) {
         this.version = version;
     }
 
