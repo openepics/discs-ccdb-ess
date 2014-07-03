@@ -76,15 +76,10 @@ public class SlotProperty implements Serializable {
     @ManyToOne(optional = false)
     private Slot slot;
 
-    public SlotProperty() {
+    protected SlotProperty() {
     }
 
-    public SlotProperty(Integer slotPropId) {
-        this.slotPropId = slotPropId;
-    }
-
-    public SlotProperty(Integer slotPropId, boolean inRepository, Date modifiedAt, String modifiedBy) {
-        this.slotPropId = slotPropId;
+    public SlotProperty(boolean inRepository, Date modifiedAt, String modifiedBy) {
         this.inRepository = inRepository;
         this.modifiedAt = modifiedAt;
         this.modifiedBy = modifiedBy;
@@ -92,10 +87,6 @@ public class SlotProperty implements Serializable {
 
     public Integer getSlotPropId() {
         return slotPropId;
-    }
-
-    public void setSlotPropId(Integer slotPropId) {
-        this.slotPropId = slotPropId;
     }
 
     public String getPropValue() {

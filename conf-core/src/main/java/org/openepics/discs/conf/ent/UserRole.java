@@ -80,15 +80,10 @@ public class UserRole implements Serializable {
     @ManyToOne(optional = false)
     private User user;
 
-    public UserRole() {
+    protected UserRole() {
     }
 
-    public UserRole(Integer userRoleId) {
-        this.userRoleId = userRoleId;
-    }
-
-    public UserRole(Integer userRoleId, boolean canDelegate, boolean isRoleManager, Date startTime, Date endTime) {
-        this.userRoleId = userRoleId;
+    public UserRole(boolean canDelegate, boolean isRoleManager, Date startTime, Date endTime) {
         this.canDelegate = canDelegate;
         this.isRoleManager = isRoleManager;
         this.startTime = startTime;
@@ -97,10 +92,6 @@ public class UserRole implements Serializable {
 
     public Integer getUserRoleId() {
         return userRoleId;
-    }
-
-    public void setUserRoleId(Integer userRoleId) {
-        this.userRoleId = userRoleId;
     }
 
     public boolean getCanDelegate() {

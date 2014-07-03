@@ -56,7 +56,7 @@ public class Role implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "role")
     private List<Privilege> privilegeList;
 
-    public Role() {
+    protected Role() {
     }
 
     public Role(String roleId) {

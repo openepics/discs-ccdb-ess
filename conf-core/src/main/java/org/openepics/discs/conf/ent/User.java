@@ -63,7 +63,7 @@ public class User implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
     private List<UserRole> userRoleList;
 
-    public User() {
+    protected User() {
     }
 
     public User(String userId) {

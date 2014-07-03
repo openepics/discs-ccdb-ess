@@ -55,16 +55,8 @@ public class SlotPair implements Serializable {
     public SlotPair() {
     }
 
-    public SlotPair(Integer slotPairId) {
-        this.slotPairId = slotPairId;
-    }
-
     public Integer getSlotPairId() {
         return slotPairId;
-    }
-
-    public void setSlotPairId(Integer slotPairId) {
-        this.slotPairId = slotPairId;
     }
 
     protected long getVersion() {

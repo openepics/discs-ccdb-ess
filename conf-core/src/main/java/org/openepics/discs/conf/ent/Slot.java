@@ -133,15 +133,10 @@ public class Slot implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "slot")
     private List<SlotProperty> slotPropertyList;
 
-    public Slot() {
+    protected Slot() {
     }
 
-    public Slot(Integer slotId) {
-        this.slotId = slotId;
-    }
-
-    public Slot(Integer slotId, String name, boolean isHostingSlot, Date modifiedAt, String modifiedBy) {
-        this.slotId = slotId;
+    public Slot(String name, boolean isHostingSlot, Date modifiedAt, String modifiedBy) {
         this.name = name;
         this.isHostingSlot = isHostingSlot;
         this.modifiedAt = modifiedAt;
@@ -150,10 +145,6 @@ public class Slot implements Serializable {
 
     public Integer getSlotId() {
         return slotId;
-    }
-
-    public void setSlotId(Integer slotId) {
-        this.slotId = slotId;
     }
 
     public String getName() {

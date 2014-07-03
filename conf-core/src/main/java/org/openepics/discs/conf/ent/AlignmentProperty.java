@@ -73,15 +73,10 @@ public class AlignmentProperty implements Serializable {
     @ManyToOne(optional = false)
     private Property property;
 
-    public AlignmentProperty() {
+    protected AlignmentProperty() {
     }
 
-    public AlignmentProperty(Integer alignPropId) {
-        this.alignPropId = alignPropId;
-    }
-
-    public AlignmentProperty(Integer alignPropId, boolean inRepository, Date modifiedAt, String modifiedBy) {
-        this.alignPropId = alignPropId;
+    public AlignmentProperty(boolean inRepository, Date modifiedAt, String modifiedBy) {
         this.inRepository = inRepository;
         this.modifiedAt = modifiedAt;
         this.modifiedBy = modifiedBy;
@@ -89,10 +84,6 @@ public class AlignmentProperty implements Serializable {
 
     public Integer getAlignPropId() {
         return alignPropId;
-    }
-
-    public void setAlignPropId(Integer alignPropId) {
-        this.alignPropId = alignPropId;
     }
 
     public String getPropValue() {

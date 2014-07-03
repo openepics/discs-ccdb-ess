@@ -5,13 +5,14 @@
  */
 package org.openepics.discs.conf.ui;
 
-import org.openepics.discs.conf.util.Utility;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
@@ -19,12 +20,14 @@ import javax.faces.event.ActionEvent;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+
 import org.openepics.discs.conf.ejb.SlotEJB;
-import org.openepics.discs.conf.ent.SlotArtifact;
 import org.openepics.discs.conf.ent.Slot;
+import org.openepics.discs.conf.ent.SlotArtifact;
 import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotProperty;
 import org.openepics.discs.conf.util.BlobStore;
+import org.openepics.discs.conf.util.Utility;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.SelectEvent;
@@ -45,44 +48,45 @@ public class SlotManager implements Serializable {
     private static final Logger logger = Logger.getLogger("org.openepics.discs.conf");
     @Inject
     private BlobStore blobStore;
-    
+    @Inject private LoginManager loginManager;
+
     private List<Slot> objects;
     private List<Slot> sortedObjects;
     private List<Slot> filteredObjects;
     private Slot selectedObject;
     private Slot inputObject;
     private char selectedOp = 'n'; // selected operation: [a]dd, [e]dit, [d]elete, [n]one
-    
+
     // Property
     private List<SlotProperty> selectedProperties;
     private SlotProperty selectedProperty;
     private SlotProperty inputProperty;
     private boolean inRepository = false;
     private char propertyOperation = 'n'; // selected operation on artifact: [a]dd, [e]dit, [d]elete, [n]one
-    
+
     // Artifact
     private List<SlotArtifact> selectedArtifacts;
     private SlotArtifact inputArtifact;
     private boolean internalArtifact = true;
     private SlotArtifact selectedArtifact;
     private char artifactOperation = 'n'; // selected operation on artifact: [a]dd, [e]dit, [d]elete, [n]one
-    
+
     // File upload/download
     private String uploadedFileName;
     private boolean fileUploaded = false;
-    private String repoFileId; // identifier of the file stored in content repo 
-    
+    private String repoFileId; // identifier of the file stored in content repo
+
     // Relationships
     private List<SlotPair> relatedSlots;
     private SlotPair inputSlotPair;
     private char relationOperation = 'n'; // selected operation on artifact: [a]dd, [e]dit, [d]elete, [n]one
-    
+
     // Assembly
     private List<Slot> asmSlots; // parts of this slot
     private Slot inputAsmSlot;
     private String inputAsmComment;
     private String inputAsmPosition;
-    
+
     /**
      * Creates a new instance of SlotManager
      */
@@ -93,7 +97,7 @@ public class SlotManager implements Serializable {
     private void init() {
         try {
             objects = slotEJB.findLayoutSlot();
-            // inputPartSlot = new Slot(); 
+            // inputPartSlot = new Slot();
         } catch (Exception e) {
             System.err.println(e.getMessage());
             logger.log(Level.SEVERE, "Cannot retrieve component types");
@@ -109,14 +113,15 @@ public class SlotManager implements Serializable {
         selectedArtifacts = selectedObject.getSlotArtifactList();
         relatedSlots = selectedObject.getSlotPairList1();
         asmSlots = selectedObject.getSlotList();
-        
-        
+
+
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Selected", "");
     }
 
     public void onSlotAdd(ActionEvent event) {
         selectedOp = 'a';
-        inputObject = new Slot();
+        // TODO replaced void constructor (now protected) with default values. Check!
+        inputObject = new Slot("", false, new Date(), loginManager.getUserid());
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Add", "");
     }
 
@@ -144,7 +149,7 @@ public class SlotManager implements Serializable {
         logger.info("Saving slot");
         try {
             // inputObject.setAssociation("T");
-            // inputObject.setModifiedBy("test-user"); 
+            // inputObject.setModifiedBy("test-user");
             slotEJB.saveLayoutSlot(inputObject);
 
             if (selectedOp == 'a') {
@@ -172,7 +177,8 @@ public class SlotManager implements Serializable {
             }
             propertyOperation = 'a';
 
-            inputProperty = new SlotProperty();
+            // TODO replaced void constructor (now protected) with default values. Check!
+            inputProperty = new SlotProperty(false, new Date(), loginManager.getUserid());
             inputProperty.setSlot(selectedObject);
             fileUploaded = false;
             uploadedFileName = null;
@@ -280,7 +286,7 @@ public class SlotManager implements Serializable {
             InputStream istream = blobStore.retreiveFile(selectedProperty.getPropValue());
             file = new DefaultStreamedContent(istream, "application/octet-stream", selectedProperty.getProperty().getName());
 
-            // InputStream stream = new FileInputStream(pathName);                       
+            // InputStream stream = new FileInputStream(pathName);
             // downloadedFile = new DefaultStreamedContent(stream, "application/octet-stream", "file.jpg"); //ToDo" replace with actual filename
         } catch (Exception e) {
             Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error", "Downloading file");
@@ -299,7 +305,8 @@ public class SlotManager implements Serializable {
             if (selectedArtifacts == null) {
                 selectedArtifacts = new ArrayList<>();
             }
-            inputArtifact = new SlotArtifact();
+            // TODO replaced void constructor (now protected) with default values. Check!
+            inputArtifact = new SlotArtifact("", false, "", "", loginManager.getUserid(), new Date());
             inputArtifact.setSlot(selectedObject);
             fileUploaded = false;
             uploadedFileName = null;
@@ -319,10 +326,10 @@ public class SlotManager implements Serializable {
                         Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error:", "You must upload a file");
                         RequestContext.getCurrentInstance().addCallbackParam("success", false);
                         return;
-                    }                 
-                }               
+                    }
+                }
             }
-            
+
             slotEJB.saveSlotArtifact(inputArtifact, artifactOperation == 'a');
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Artifact saved", "");
             RequestContext.getCurrentInstance().addCallbackParam("success", true);
@@ -358,12 +365,12 @@ public class SlotManager implements Serializable {
         uploadedFileName = art.getName();
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Edit:", "Edit initiated ");
     }
-    
-    public void onArtifactType() {     
+
+    public void onArtifactType() {
         // Toto: remove it
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Artifact type selected","");
     }
-    
+
     // --------------------------------- Related Slots ------------------------------------------------
     public void onRelSlotAdd(ActionEvent event) {
         try {
@@ -372,7 +379,7 @@ public class SlotManager implements Serializable {
                 relatedSlots = new ArrayList<>();
             }
             inputSlotPair = new SlotPair();
-            inputSlotPair.setParentSlot(selectedObject);         
+            inputSlotPair.setParentSlot(selectedObject);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "New related slot", "");
         } catch (Exception e) {
             Utility.showMessage(FacesMessage.SEVERITY_FATAL, "Error in adding related slot", e.getMessage());
@@ -381,7 +388,7 @@ public class SlotManager implements Serializable {
     }
 
     public void onRelSlotSave(ActionEvent event) {
-        try {          
+        try {
             slotEJB.saveSlotPair(inputSlotPair, relationOperation == 'a');
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Related slot saved", "");
             RequestContext.getCurrentInstance().addCallbackParam("success", true);
@@ -398,9 +405,9 @@ public class SlotManager implements Serializable {
                 Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "No slot pair selected");
                 return;
             }
-            
+
             slotEJB.deleteSlotPair(art);
-            relatedSlots.remove(art); 
+            relatedSlots.remove(art);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted Artifact", "");
         } catch (Exception e) {
             Utility.showMessage(FacesMessage.SEVERITY_FATAL, "Error in deleting related slot", e.getMessage());
@@ -414,10 +421,10 @@ public class SlotManager implements Serializable {
             return;
         }
         artifactOperation = 'e';
-        inputSlotPair = art;       
+        inputSlotPair = art;
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Edit:", "Edit initiated " );
     }
-    
+
     // --------------------------------- Part Slots (assembly)------------------------------------------------
     public void onPartSlotAdd(ActionEvent event) {
         try {
@@ -426,7 +433,7 @@ public class SlotManager implements Serializable {
                 asmSlots = new ArrayList<>();
             }
             // inputPartSlot = new Slot();
-            // inputPartSlot.setParentSlot(selectedObject);         
+            // inputPartSlot.setParentSlot(selectedObject);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "New part ", "");
         } catch (Exception e) {
             Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error in adding part", e.getMessage());
@@ -457,13 +464,13 @@ public class SlotManager implements Serializable {
                 Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "Null slot selected");
                 return;
             }
-            
+
             slot.setAsmPosition(null);
             slot.setAsmComment(null);
             slot.setAsmSlot(null);
             slotEJB.saveLayoutSlot(slot);
             selectedObject.getSlotList().remove(slot);
-            slotEJB.saveLayoutSlot(selectedObject); 
+            slotEJB.saveLayoutSlot(selectedObject);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted Artifact", "");
         } catch (Exception e) {
             Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error in deleting artifact", e.getMessage());
@@ -477,17 +484,17 @@ public class SlotManager implements Serializable {
             return;
         }
         // artifactOperation = 'e';
-        inputAsmSlot = slot;       
+        inputAsmSlot = slot;
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Edit:", "Edit initiated " );
     }
-    
-    
+
+
     // -------------------------- File upload/download ---------------------------
-    
+
     public void handleFileUpload(FileUploadEvent event) {
         // String msg = event.getFile().getFileName() + " is uploaded.";
         // Utility.showMessage(FacesMessage.SEVERITY_INFO, "Succesful", msg);
-        InputStream istream;       
+        InputStream istream;
 
         try {
             UploadedFile uploadedFile = event.getFile();
@@ -498,7 +505,7 @@ public class SlotManager implements Serializable {
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "File ", "Name: " + uploadedFileName);
             String fileId = blobStore.storeFile(istream);
             inputArtifact.setUri(fileId);
-            
+
             istream.close();
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "File uploaded", "Name: " + uploadedFileName);
             fileUploaded = true;
@@ -513,7 +520,7 @@ public class SlotManager implements Serializable {
 
     public StreamedContent getDownloadedFile() {
         StreamedContent file = null;
-        
+
         try {
             // return downloadedFile;
             logger.log(Level.INFO, "Opening stream from repository: " + selectedArtifact.getUri());
@@ -521,14 +528,14 @@ public class SlotManager implements Serializable {
             InputStream istream = blobStore.retreiveFile(selectedArtifact.getUri());
             file = new DefaultStreamedContent(istream, "application/octet-stream", selectedArtifact.getName());
 
-            // InputStream stream = new FileInputStream(pathName);                       
+            // InputStream stream = new FileInputStream(pathName);
             // downloadedFile = new DefaultStreamedContent(stream, "application/octet-stream", "file.jpg"); //ToDo" replace with actual filename
         } catch (Exception e) {
             Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error", "Downloading file");
             logger.log(Level.SEVERE, "Error in downloading the file");
             logger.log(Level.SEVERE, e.toString());
         }
-        
+
         return file;
     }
 
@@ -581,7 +588,7 @@ public class SlotManager implements Serializable {
         this.uploadedFileName = uploadedFileName;
     }
 
-    
+
     public SlotArtifact getInputArtifact() {
         return inputArtifact;
     }

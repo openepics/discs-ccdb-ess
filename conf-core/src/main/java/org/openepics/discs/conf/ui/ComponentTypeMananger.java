@@ -5,13 +5,14 @@
  */
 package org.openepics.discs.conf.ui;
 
-import org.openepics.discs.conf.util.Utility;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
@@ -19,12 +20,14 @@ import javax.faces.event.ActionEvent;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+
 import org.openepics.discs.conf.ejb.ComptypeEJB;
-import org.openepics.discs.conf.ent.ComptypeAsm;
 import org.openepics.discs.conf.ent.ComponentType;
-import org.openepics.discs.conf.ent.ComptypeProperty;
 import org.openepics.discs.conf.ent.ComptypeArtifact;
+import org.openepics.discs.conf.ent.ComptypeAsm;
+import org.openepics.discs.conf.ent.ComptypeProperty;
 import org.openepics.discs.conf.util.BlobStore;
+import org.openepics.discs.conf.util.Utility;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.RowEditEvent;
@@ -48,7 +51,8 @@ public class ComponentTypeMananger implements Serializable {
 
     @Inject
     private BlobStore blobStore;
-    
+    @Inject LoginManager loginManager;
+
     private List<ComponentType> objects;
     private List<ComponentType> sortedObjects;
     private List<ComponentType> filteredObjects;
@@ -73,9 +77,9 @@ public class ComponentTypeMananger implements Serializable {
     // File upload/download
     private String uploadedFileName;
     private boolean fileUploaded = false;
-    private String repoFileId; // identifier of the file stored in content repo 
+    private String repoFileId; // identifier of the file stored in content repo
 
-    private boolean inTrans = false; // in the middle of an operations  
+    private boolean inTrans = false; // in the middle of an operations
     private char selectedOp = 'n'; // selected operation: [a]dd, [e]dit, [d]elete, [n]one
 
     /**
@@ -165,7 +169,8 @@ public class ComponentTypeMananger implements Serializable {
             }
             propertyOperation = 'a';
 
-            inputProperty = new ComptypeProperty();
+            // TODO replaced void constructor (now protected) with default values. Check.
+            inputProperty = new ComptypeProperty(false, new Date(), loginManager.getUserid());
             inputProperty.setComponentType(selectedObject);
             fileUploaded = false;
             uploadedFileName = null;
@@ -274,7 +279,7 @@ public class ComponentTypeMananger implements Serializable {
             InputStream istream = blobStore.retreiveFile(selectedProperty.getPropValue());
             file = new DefaultStreamedContent(istream, "application/octet-stream", selectedProperty.getProperty().getName());
 
-            // InputStream stream = new FileInputStream(pathName);                       
+            // InputStream stream = new FileInputStream(pathName);
             // downloadedFile = new DefaultStreamedContent(stream, "application/octet-stream", "file.jpg"); //ToDo" replace with actual filename
         } catch (Exception e) {
             Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error", "Downloading file");
@@ -399,7 +404,7 @@ public class ComponentTypeMananger implements Serializable {
             InputStream istream = blobStore.retreiveFile(selectedArtifact.getUri());
             file = new DefaultStreamedContent(istream, "application/octet-stream", selectedArtifact.getName());
 
-            // InputStream stream = new FileInputStream(pathName);                       
+            // InputStream stream = new FileInputStream(pathName);
             // downloadedFile = new DefaultStreamedContent(stream, "application/octet-stream", "file.jpg"); //ToDo" replace with actual filename
         } catch (Exception e) {
             Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error Downloading file", e.getMessage());
@@ -416,8 +421,8 @@ public class ComponentTypeMananger implements Serializable {
             if (selectedParts == null) {
                 selectedParts = new ArrayList<>();
             }
-          
-            ComptypeAsm prt = new ComptypeAsm();
+            // TODO replaced void constructor (now protected) with default values. Check!
+            ComptypeAsm prt = new ComptypeAsm("", new Date(), loginManager.getUserid());
 
             prt.setParentType(selectedObject);
             // CTP.setComponentType1(inputObject);

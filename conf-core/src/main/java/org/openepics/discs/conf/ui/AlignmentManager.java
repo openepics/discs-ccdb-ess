@@ -6,12 +6,12 @@
 
 package org.openepics.discs.conf.ui;
 
-import org.openepics.discs.conf.util.Utility;
-
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -24,10 +24,11 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.openepics.discs.conf.ejb.AlignmentEJB;
-import org.openepics.discs.conf.ent.AlignmentRecord;
-import org.openepics.discs.conf.ent.AlignmentProperty;
 import org.openepics.discs.conf.ent.AlignmentArtifact;
+import org.openepics.discs.conf.ent.AlignmentProperty;
+import org.openepics.discs.conf.ent.AlignmentRecord;
 import org.openepics.discs.conf.util.BlobStore;
+import org.openepics.discs.conf.util.Utility;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.RowEditEvent;
@@ -43,45 +44,46 @@ import org.primefaces.model.UploadedFile;
 @Named
 @ViewScoped
 public class AlignmentManager implements Serializable{
-    
+
     @EJB
     private AlignmentEJB alignmentEJB;
     private static final Logger logger = Logger.getLogger(AlignmentManager.class.getName());
     @Inject
     private BlobStore blobStore;
-    
+    @Inject private LoginManager loginManager;
+
     private List<AlignmentRecord> objects;
     private List<AlignmentRecord> sortedObjects;
     private List<AlignmentRecord> filteredObjects;
     private AlignmentRecord selectedObject;
     private AlignmentRecord inputObject;
     private char selectedOp = 'n'; // selected operation: [a]dd, [e]dit, [d]elete, [n]one
-    
+
     // Property
     private List<AlignmentProperty> selectedProperties;
     private AlignmentProperty selectedProperty;
     private AlignmentProperty inputProperty;
     private boolean inRepository = false;
     private char propertyOperation = 'n'; // selected operation on artifact: [a]dd, [e]dit, [d]elete, [n]one
-       
+
     // Artifacts
     private List<AlignmentArtifact> selectedArtifacts;
     private AlignmentArtifact inputArtifact;
     private boolean internalArtifact = true;
     private AlignmentArtifact selectedArtifact;
     private char artifactOperation = 'n'; // selected operation on artifact: [a]dd, [e]dit, [d]elete, [n]one
-    
+
     // File upload/download
     private String uploadedFileName;
     private boolean fileUploaded = false;
-    private String repoFileId; // identifier of the file stored in content repo 
-    
+    private String repoFileId; // identifier of the file stored in content repo
+
     /**
      * Creates a new instance of AlignmentManager
      */
     public AlignmentManager() {
     }
-    
+
     @PostConstruct
     public void init() {
         try {
@@ -92,7 +94,7 @@ public class AlignmentManager implements Serializable{
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Error in getting alignment records", " ");
         }
     }
-    
+
     // ----------------- Alignment Record  ------------------------------
     public void onAlignRecSelect(SelectEvent event) {
         inputObject = selectedObject;
@@ -105,7 +107,8 @@ public class AlignmentManager implements Serializable{
 
     public void onAlignRecAdd(ActionEvent event) {
         selectedOp = 'a';
-        inputObject = new AlignmentRecord();
+        // TODO replaced void constructor (now protected) with default values. Check.
+        inputObject = new AlignmentRecord(UUID.randomUUID().toString(), new Date(), new Date(), loginManager.getUserid());
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Add", "");
     }
 
@@ -152,7 +155,7 @@ public class AlignmentManager implements Serializable{
             selectedOp = 'n';
         }
     }
-    
+
     // --------------------------------- Property ------------------------------------------------
     public void onPropertyAdd(ActionEvent event) {
         try {
@@ -161,7 +164,8 @@ public class AlignmentManager implements Serializable{
             }
             propertyOperation = 'a';
 
-            inputProperty = new AlignmentProperty();
+            // TODO replaced void constructor (now protected) with default values. Check.
+            inputProperty = new AlignmentProperty(false, new Date(), loginManager.getUserid());
             inputProperty.setAlignmentRecord(selectedObject);
             fileUploaded = false;
             uploadedFileName = null;
@@ -178,9 +182,9 @@ public class AlignmentManager implements Serializable{
             if (prop == null) {
                 Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "No property selected");
                 return;
-            }          
+            }
             alignmentEJB.deleteAlignmentProp(prop);
-            selectedProperties.remove(prop); 
+            selectedProperties.remove(prop);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted property", "");
         } catch (Exception e) {
             Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error in deleting property", e.getMessage());
@@ -237,7 +241,7 @@ public class AlignmentManager implements Serializable{
             RequestContext.getCurrentInstance().addCallbackParam("success", false);
         }
     }
-    
+
     // -------------------------- File upload/download Property ---------------------------
     // todo: merge with artifact file ops. finally put in blobStore
     public void handlePropertyUpload(FileUploadEvent event) {
@@ -277,7 +281,7 @@ public class AlignmentManager implements Serializable{
             InputStream istream = blobStore.retreiveFile(selectedProperty.getPropValue());
             file = new DefaultStreamedContent(istream, "application/octet-stream", selectedProperty.getProperty().getName());
 
-            // InputStream stream = new FileInputStream(pathName);                       
+            // InputStream stream = new FileInputStream(pathName);
             // downloadedFile = new DefaultStreamedContent(stream, "application/octet-stream", "file.jpg"); //ToDo" replace with actual filename
         } catch (Exception e) {
             Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error: Downloading file", e.getMessage());
@@ -294,7 +298,8 @@ public class AlignmentManager implements Serializable{
             if (selectedArtifacts == null) {
                 selectedArtifacts = new ArrayList<>();
             }
-            inputArtifact = new AlignmentArtifact();
+            // TODO replaced void constructor (now protected) with default values. Check.
+            inputArtifact = new AlignmentArtifact("", false, "", loginManager.getUserid(), new Date());
             inputArtifact.setAlignmentRecord(selectedObject);
             fileUploaded = false;
             uploadedFileName = null;
@@ -315,13 +320,13 @@ public class AlignmentManager implements Serializable{
                         RequestContext.getCurrentInstance().addCallbackParam("success", false);
                         return;
                     }
-                }               
+                }
             }
-            
+
             // alignmentEJB.saveAlignmentArtifact(selectedObject, inputArtifact);
             alignmentEJB.saveAlignmentArtifact(inputArtifact, artifactOperation == 'a');
             logger.log(Level.INFO,"returned artifact id is " + inputArtifact.getArtifactId());
-            
+
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Artifact saved", "");
             RequestContext.getCurrentInstance().addCallbackParam("success", true);
         } catch (Exception e) {
@@ -337,9 +342,9 @@ public class AlignmentManager implements Serializable{
                 Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "No artifact selected");
                 return;
             }
-            
+
             alignmentEJB.deleteAlignmentArtifact(art);
-            selectedArtifacts.remove(art); 
+            selectedArtifacts.remove(art);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted Artifact", "");
         } catch (Exception e) {
             Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error in deleting artifact", e.getMessage());
@@ -357,8 +362,8 @@ public class AlignmentManager implements Serializable{
         uploadedFileName = art.getName();
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Edit:", "Edit initiated " + inputArtifact.getArtifactId());
     }
-    
-    public void onArtifactType() {     
+
+    public void onArtifactType() {
         // Toto: remove it
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Artifact type selected","");
     }
@@ -367,7 +372,7 @@ public class AlignmentManager implements Serializable{
     public void handleFileUpload(FileUploadEvent event) {
         // String msg = event.getFile().getFileName() + " is uploaded.";
         // Utility.showMessage(FacesMessage.SEVERITY_INFO, "Succesful", msg);
-        InputStream istream;       
+        InputStream istream;
 
         try {
             UploadedFile uploadedFile = event.getFile();
@@ -378,7 +383,7 @@ public class AlignmentManager implements Serializable{
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "File ", "Name: " + uploadedFileName);
             String fileId = blobStore.storeFile(istream);
             inputArtifact.setUri(fileId);
-            
+
             istream.close();
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "File uploaded", "Name: " + uploadedFileName);
             fileUploaded = true;
@@ -393,7 +398,7 @@ public class AlignmentManager implements Serializable{
 
     public StreamedContent getDownloadedFile() {
         StreamedContent file = null;
-        
+
         try {
             // return downloadedFile;
             logger.log(Level.INFO, "Opening stream from repository: " + selectedArtifact.getUri());
@@ -401,19 +406,19 @@ public class AlignmentManager implements Serializable{
             InputStream istream = blobStore.retreiveFile(selectedArtifact.getUri());
             file = new DefaultStreamedContent(istream, "application/octet-stream", selectedArtifact.getName());
 
-            // InputStream stream = new FileInputStream(pathName);                       
+            // InputStream stream = new FileInputStream(pathName);
             // downloadedFile = new DefaultStreamedContent(stream, "application/octet-stream", "file.jpg"); //ToDo" replace with actual filename
         } catch (Exception e) {
             Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error: Downloading file", e.getMessage());
             logger.log(Level.SEVERE, "Error in downloading the file");
             logger.log(Level.SEVERE, e.toString());
         }
-        
+
         return file;
     }
-    
+
     // ------------------------ Getters/Setters -----------------------------
-    
+
     public List<AlignmentRecord> getSortedObjects() {
         return sortedObjects;
     }
@@ -525,5 +530,5 @@ public class AlignmentManager implements Serializable{
     public char getPropertyOperation() {
         return propertyOperation;
     }
-    
+
 }

@@ -94,12 +94,7 @@ public class ComponentType implements Serializable {
     public ComponentType() {
     }
 
-    public ComponentType(Integer componentTypeId) {
-        this.componentTypeId = componentTypeId;
-    }
-
-    public ComponentType(Integer componentTypeId, String name, Date modifiedAt, String modifiedBy) {
-        this.componentTypeId = componentTypeId;
+    public ComponentType(String name, Date modifiedAt, String modifiedBy) {
         this.name = name;
         this.modifiedAt = modifiedAt;
         this.modifiedBy = modifiedBy;
@@ -107,10 +102,6 @@ public class ComponentType implements Serializable {
 
     public Integer getComponentTypeId() {
         return componentTypeId;
-    }
-
-    public void setComponentTypeId(Integer componentTypeId) {
-        this.componentTypeId = componentTypeId;
     }
 
     public String getName() {

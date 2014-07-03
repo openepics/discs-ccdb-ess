@@ -93,12 +93,7 @@ public class InstallationRecord implements Serializable {
     public InstallationRecord() {
     }
 
-    public InstallationRecord(Integer installationRecordId) {
-        this.installationRecordId = installationRecordId;
-    }
-
-    public InstallationRecord(Integer installationRecordId, String recordNumber, Date installDate, Date modifiedAt, String modifiedBy) {
-        this.installationRecordId = installationRecordId;
+    public InstallationRecord(String recordNumber, Date installDate, Date modifiedAt, String modifiedBy) {
         this.recordNumber = recordNumber;
         this.installDate = installDate;
         this.modifiedAt = modifiedAt;
@@ -107,10 +102,6 @@ public class InstallationRecord implements Serializable {
 
     public Integer getInstallationRecordId() {
         return installationRecordId;
-    }
-
-    public void setInstallationRecordId(Integer installationRecordId) {
-        this.installationRecordId = installationRecordId;
     }
 
     public String getRecordNumber() {

@@ -105,15 +105,10 @@ public class AlignmentRecord implements Serializable {
     @ManyToOne(optional = false)
     private Device device;
 
-    public AlignmentRecord() {
+    protected AlignmentRecord() {
     }
 
-    public AlignmentRecord(Integer alignmentRecordId) {
-        this.alignmentRecordId = alignmentRecordId;
-    }
-
-    public AlignmentRecord(Integer alignmentRecordId, String recordNumber, Date alignmentDate, Date modifiedAt, String modifiedBy) {
-        this.alignmentRecordId = alignmentRecordId;
+    public AlignmentRecord(String recordNumber, Date alignmentDate, Date modifiedAt, String modifiedBy) {
         this.recordNumber = recordNumber;
         this.alignmentDate = alignmentDate;
         this.modifiedAt = modifiedAt;
@@ -122,10 +117,6 @@ public class AlignmentRecord implements Serializable {
 
     public Integer getAlignmentRecordId() {
         return alignmentRecordId;
-    }
-
-    public void setAlignmentRecordId(Integer alignmentRecordId) {
-        this.alignmentRecordId = alignmentRecordId;
     }
 
     public String getRecordNumber() {

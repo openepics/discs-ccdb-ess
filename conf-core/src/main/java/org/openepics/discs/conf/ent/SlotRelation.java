@@ -80,15 +80,10 @@ public class SlotRelation implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "slotRelation")
     private List<SlotPair> slotPairList;
 
-    public SlotRelation() {
+    protected SlotRelation() {
     }
 
-    public SlotRelation(Integer slotRelationId) {
-        this.slotRelationId = slotRelationId;
-    }
-
-    public SlotRelation(Integer slotRelationId, String name, String iname, Date modifiedAt, String modifiedBy) {
-        this.slotRelationId = slotRelationId;
+    public SlotRelation(String name, String iname, Date modifiedAt, String modifiedBy) {
         this.name = name;
         this.iname = iname;
         this.modifiedAt = modifiedAt;
@@ -97,10 +92,6 @@ public class SlotRelation implements Serializable {
 
     public Integer getSlotRelationId() {
         return slotRelationId;
-    }
-
-    public void setSlotRelationId(Integer slotRelationId) {
-        this.slotRelationId = slotRelationId;
     }
 
     public String getName() {

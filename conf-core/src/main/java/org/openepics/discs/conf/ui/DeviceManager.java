@@ -6,13 +6,14 @@
 
 package org.openepics.discs.conf.ui;
 
-import org.openepics.discs.conf.util.Utility;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
@@ -20,11 +21,13 @@ import javax.faces.event.ActionEvent;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+
 import org.openepics.discs.conf.ejb.DeviceEJB;
-import org.openepics.discs.conf.ent.DeviceArtifact;
 import org.openepics.discs.conf.ent.Device;
+import org.openepics.discs.conf.ent.DeviceArtifact;
 import org.openepics.discs.conf.ent.DeviceProperty;
 import org.openepics.discs.conf.util.BlobStore;
+import org.openepics.discs.conf.util.Utility;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.RowEditEvent;
@@ -43,57 +46,57 @@ public class DeviceManager implements Serializable {
     @EJB
     private DeviceEJB deviceEJB;
     private static final Logger logger = Logger.getLogger("org.openepics.discs.conf");
-    
+
     @Inject
     private BlobStore blobStore;
     // ToDo: Remove the injection. Not a good way to authorize.
     @Inject
     private LoginManager loginManager;
     // private String loggedInUser; // logged in user
-    
+
     private List<Device> objects;
     private List<Device> sortedObjects;
     private List<Device> filteredObjects;
     private Device selectedObject;
     private Device inputObject;
     private char selectedOp = 'n'; // selected operation: [a]dd, [e]dit, [d]elete, [n]one
-    
+
     // Property
     private List<DeviceProperty> selectedProperties;
     private DeviceProperty selectedProperty;
     private DeviceProperty inputProperty;
     private boolean inRepository = false;
     private char propertyOperation = 'n'; // selected operation on artifact: [a]dd, [e]dit, [d]elete, [n]one
-    
+
     // Artifacts
     private List<DeviceArtifact> selectedArtifacts;
     private DeviceArtifact inputArtifact;
     private boolean internalArtifact = true;
     private DeviceArtifact selectedArtifact;
     private char artifactOperation = 'n'; // selected operation on artifact: [a]dd, [e]dit, [d]elete, [n]one
-    
-    
+
+
     // File upload/download
     private String uploadedFileName;
     private boolean fileUploaded = false;
-    private String repoFileId; // identifier of the file stored in content repo 
-    
+    private String repoFileId; // identifier of the file stored in content repo
+
     // Assembly
     private List<Device> asmDevices; // parts of this slot
     private Device inputAsmDevice;
     private String inputAsmComment;
     private String inputAsmPosition;
-    
+
     /**
      * Creates a new instance of DeviceManager
      */
     public DeviceManager() {
     }
-    
+
     @PostConstruct
     public void init() {
         try {
-            objects = deviceEJB.findDevice();          
+            objects = deviceEJB.findDevice();
         } catch (Exception e) {
             System.err.println(e.getMessage());
             logger.log(Level.SEVERE, "Cannot retrieve component types");
@@ -101,7 +104,7 @@ public class DeviceManager implements Serializable {
         }
     }
 
-    
+
     // ----------------- Device  ------------------------------
     public void onDeviceSelect(SelectEvent event) {
         inputObject = selectedObject;
@@ -115,7 +118,8 @@ public class DeviceManager implements Serializable {
 
     public void onDeviceAdd(ActionEvent event) {
         selectedOp = 'a';
-        inputObject = new Device();
+        // TODO replaced void constructor (now protected) with default values. Check!
+        inputObject = new Device("1", new Date(), loginManager.getUserid());
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Add", "");
     }
 
@@ -142,16 +146,16 @@ public class DeviceManager implements Serializable {
     public void onDeviceSave(ActionEvent event) {
         String token = loginManager.getToken();
         logger.info("Saving device");
-        
-        try {   
+
+        try {
             deviceEJB.saveDevice(token, inputObject);
 
             if (selectedOp == 'a') {
                 selectedObject = inputObject;
                 objects.add(selectedObject);
-            }          
+            }
             // tell the client if the operation was a success so that it can hide
-            RequestContext.getCurrentInstance().addCallbackParam("success", true);                  
+            RequestContext.getCurrentInstance().addCallbackParam("success", true);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Saved", "");
         } catch (Exception e) {
             logger.severe(e.getMessage());
@@ -188,9 +192,9 @@ public class DeviceManager implements Serializable {
             if (ctp == null) {
                 Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "No property selected");
                 return;
-            }          
+            }
             deviceEJB.deleteDeviceProp(ctp);
-            selectedProperties.remove(ctp); 
+            selectedProperties.remove(ctp);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted property", "");
         } catch (Exception e) {
             Utility.showMessage(FacesMessage.SEVERITY_FATAL, "Error in deleting property", "Refresh the page");
@@ -247,7 +251,7 @@ public class DeviceManager implements Serializable {
             RequestContext.getCurrentInstance().addCallbackParam("success", false);
         }
     }
-    
+
     // -------------------------- File upload/download Property ---------------------------
     // todo: merge with artifact file ops. finally put in blobStore
     public void handlePropertyUpload(FileUploadEvent event) {
@@ -287,7 +291,7 @@ public class DeviceManager implements Serializable {
             InputStream istream = blobStore.retreiveFile(selectedProperty.getPropValue());
             file = new DefaultStreamedContent(istream, "application/octet-stream", selectedProperty.getProperty().getName());
 
-            // InputStream stream = new FileInputStream(pathName);                       
+            // InputStream stream = new FileInputStream(pathName);
             // downloadedFile = new DefaultStreamedContent(stream, "application/octet-stream", "file.jpg"); //ToDo" replace with actual filename
         } catch (Exception e) {
             Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error", "Downloading file");
@@ -305,7 +309,8 @@ public class DeviceManager implements Serializable {
             if (selectedArtifacts == null) {
                 selectedArtifacts = new ArrayList<>();
             }
-            inputArtifact = new DeviceArtifact();
+            // TODO replaced void constructor (now protected) with default values. Check!
+            inputArtifact = new DeviceArtifact("", false, "", "", loginManager.getUserid(), new Date());
             inputArtifact.setDevice(selectedObject);
             fileUploaded = false;
             uploadedFileName = null;
@@ -326,13 +331,13 @@ public class DeviceManager implements Serializable {
                         RequestContext.getCurrentInstance().addCallbackParam("success", false);
                         return;
                     }
-                }               
+                }
             }
-            
+
             // deviceEJB.saveDeviceArtifact(selectedObject, inputArtifact);
             deviceEJB.saveDeviceArtifact(inputArtifact, artifactOperation == 'a');
             logger.log(Level.INFO,"returned artifact id is " + inputArtifact.getArtifactId());
-            
+
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Artifact saved", "");
             RequestContext.getCurrentInstance().addCallbackParam("success", true);
         } catch (Exception e) {
@@ -348,9 +353,9 @@ public class DeviceManager implements Serializable {
                 Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "No artifact selected");
                 return;
             }
-            
+
             deviceEJB.deleteDeviceArtifact(art);
-            selectedArtifacts.remove(art); 
+            selectedArtifacts.remove(art);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted Artifact", "");
         } catch (Exception e) {
             Utility.showMessage(FacesMessage.SEVERITY_FATAL, "Error in deleting artifact", "Refresh the page");
@@ -368,17 +373,17 @@ public class DeviceManager implements Serializable {
         uploadedFileName = art.getName();
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Edit:", "Edit initiated " + inputArtifact.getArtifactId());
     }
-    
-    public void onArtifactType() {     
+
+    public void onArtifactType() {
         // Toto: remove it
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Artifact type selected","");
     }
     // -------------------------- File upload/download ---------------------------
-     
+
     public void handleFileUpload(FileUploadEvent event) {
         // String msg = event.getFile().getFileName() + " is uploaded.";
         // Utility.showMessage(FacesMessage.SEVERITY_INFO, "Succesful", msg);
-        InputStream istream;       
+        InputStream istream;
 
         try {
             UploadedFile uploadedFile = event.getFile();
@@ -389,7 +394,7 @@ public class DeviceManager implements Serializable {
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "File ", "Name: " + uploadedFileName);
             String fileId = blobStore.storeFile(istream);
             inputArtifact.setUri(fileId);
-            
+
             istream.close();
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "File uploaded", "Name: " + uploadedFileName);
             fileUploaded = true;
@@ -404,7 +409,7 @@ public class DeviceManager implements Serializable {
 
     public StreamedContent getDownloadedFile() {
         StreamedContent file = null;
-        
+
         try {
             // return downloadedFile;
             logger.log(Level.INFO, "Opening stream from repository: " + selectedArtifact.getUri());
@@ -412,17 +417,17 @@ public class DeviceManager implements Serializable {
             InputStream istream = blobStore.retreiveFile(selectedArtifact.getUri());
             file = new DefaultStreamedContent(istream, "application/octet-stream", selectedArtifact.getName());
 
-            // InputStream stream = new FileInputStream(pathName);                       
+            // InputStream stream = new FileInputStream(pathName);
             // downloadedFile = new DefaultStreamedContent(stream, "application/octet-stream", "file.jpg"); //ToDo" replace with actual filename
         } catch (Exception e) {
             Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error", "Downloading file");
             logger.log(Level.SEVERE, "Error in downloading the file");
             logger.log(Level.SEVERE, e.toString());
         }
-        
+
         return file;
     }
-    
+
     // --------------------------------- Part Slots (assembly)------------------------------------------------
     public void onPartDeviceAdd(ActionEvent event) {
         try {
@@ -431,7 +436,7 @@ public class DeviceManager implements Serializable {
                 asmDevices = new ArrayList<>();
             }
             // inputPartDevice = new Slot();
-            // inputPartDevice.setParentSlot(selectedObject);         
+            // inputPartDevice.setParentSlot(selectedObject);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "New part ", "");
         } catch (Exception e) {
             Utility.showMessage(FacesMessage.SEVERITY_FATAL, "Error in adding part", "");
@@ -447,7 +452,7 @@ public class DeviceManager implements Serializable {
             inputAsmDevice.setAsmParent(selectedObject);
             deviceEJB.saveDevice(token,inputAsmDevice);
             selectedObject.getDeviceList().add(inputAsmDevice);
-                    
+
             deviceEJB.saveDevice(token, selectedObject);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Part saved", "");
             RequestContext.getCurrentInstance().addCallbackParam("success", true);
@@ -465,13 +470,13 @@ public class DeviceManager implements Serializable {
                 Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "Null slot selected");
                 return;
             }
-            
+
             device.setAsmPosition(null);
             device.setAsmDescription(null);
             device.setAsmParent(null);
             deviceEJB.saveDevice(token, device);
             selectedObject.getDeviceList().remove(device);
-            deviceEJB.saveDevice(token, selectedObject); 
+            deviceEJB.saveDevice(token, selectedObject);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted Artifact", "");
         } catch (Exception e) {
             Utility.showMessage(FacesMessage.SEVERITY_FATAL, "Error in deleting artifact", "Refresh the page");
@@ -485,12 +490,12 @@ public class DeviceManager implements Serializable {
             return;
         }
         artifactOperation = 'e';
-        inputAsmDevice = device;       
+        inputAsmDevice = device;
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Edit:", "Edit initiated " );
     }
-    
+
     // ------------Getters/Setters -------------
-    
+
     public List<Device> getSortedObjects() {
         return sortedObjects;
     }
@@ -573,7 +578,7 @@ public class DeviceManager implements Serializable {
 
     public void setSelectedArtifact(DeviceArtifact selectedArtifact) {
         this.selectedArtifact = selectedArtifact;
-    }   
+    }
 
     public Device getInputAsmDevice() {
         return inputAsmDevice;
@@ -630,5 +635,5 @@ public class DeviceManager implements Serializable {
     public char getPropertyOperation() {
         return propertyOperation;
     }
-    
+
 }

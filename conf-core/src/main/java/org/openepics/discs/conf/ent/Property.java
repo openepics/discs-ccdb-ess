@@ -96,15 +96,10 @@ public class Property implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "property")
     private List<SlotProperty> slotPropertyList;
 
-    public Property() {
+    protected Property() {
     }
 
-    public Property(Integer propertyId) {
-        this.propertyId = propertyId;
-    }
-
-    public Property(Integer propertyId, String name, String description, String association, Date modifiedAt, String modifiedBy) {
-        this.propertyId = propertyId;
+    public Property(String name, String description, String association, Date modifiedAt, String modifiedBy) {
         this.name = name;
         this.description = description;
         this.association = association;
@@ -114,10 +109,6 @@ public class Property implements Serializable {
 
     public Integer getPropertyId() {
         return propertyId;
-    }
-
-    public void setPropertyId(Integer propertyId) {
-        this.propertyId = propertyId;
     }
 
     public String getName() {

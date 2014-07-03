@@ -96,11 +96,7 @@ public class Unit implements Serializable {
     @OneToMany(mappedBy = "unit")
     private List<SlotProperty> slotPropertyList;
 
-    public Unit() {
-    }
-
-    public Unit(String unitName) {
-        this.unitName = unitName;
+    protected Unit() {
     }
 
     public Unit(String unitName, String quantity, String symbol, String baseUnitExpr, String description, Date modifiedAt, String modifiedBy) {
@@ -113,7 +109,7 @@ public class Unit implements Serializable {
         this.modifiedBy = modifiedBy;
     }
 
-    public int getUnitId() {
+    public Integer getUnitId() {
         return unitId;
     }
 

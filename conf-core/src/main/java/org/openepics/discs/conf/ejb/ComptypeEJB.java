@@ -28,7 +28,6 @@ import org.openepics.discs.conf.ent.ComptypeProperty;
 import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ui.LoginManager;
-import org.openepics.discs.conf.util.AppProperties;
 
 /**
  *
@@ -45,17 +44,17 @@ public class ComptypeEJB {
     private EntityManager em;
     @Inject
     private LoginManager loginManager;
-    
+
     // ----------- Audit record ---------------------------------------
     private void makeAuditEntry(EntityTypeOperation oper, String key, String entry) {
-        AuditRecord arec = new AuditRecord(null, new Date(), oper, loginManager.getUserid(), entry);
+        AuditRecord arec = new AuditRecord(new Date(), oper, loginManager.getUserid(), entry);
         arec.setEntityType(EntityType.COMPONENT_TYPE);
         arec.setEntityKey(key);
         em.persist(arec);
     }
-    
+
     // ----------------  Component Type -------------------------
-    
+
     public List<ComponentType> findComponentType() {
         List<ComponentType> comptypes;
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -69,12 +68,12 @@ public class ComptypeEJB {
         return comptypes;
     }
 
-    
+
     public ComponentType findComponentType(int id) {
         return em.find(ComponentType.class, id);
     }
 
-    
+
     public void saveComponentType(ComponentType ctype) throws Exception {
         if (ctype == null) {
             logger.log(Level.SEVERE, "Comp Type is null!");
@@ -91,7 +90,7 @@ public class ComptypeEJB {
         makeAuditEntry(EntityTypeOperation.UPDATE,ctype.getName(),"Updated component type");
     }
 
-    
+
     public void addComponentType(ComponentType ctype) throws Exception {
         if (ctype == null) {
             logger.log(Level.SEVERE, "Property is null!");
@@ -107,7 +106,7 @@ public class ComptypeEJB {
         makeAuditEntry(EntityTypeOperation.CREATE,ctype.getName(),"Created component type");
     }
 
-    
+
     public void deleteComponentType(ComponentType ctype) throws Exception {
         if (ctype == null) {
             logger.log(Level.SEVERE, "Property is null!");
@@ -124,7 +123,7 @@ public class ComptypeEJB {
     }
 
     // ---------------- Component Type Property ---------------------
-    
+
     public void saveCompTypeProp(ComptypeProperty ctprop, boolean create) throws Exception {
         if (ctprop == null) {
             logger.log(Level.SEVERE, "saveCompTypeProp: property is null");
@@ -149,7 +148,7 @@ public class ComptypeEJB {
         logger.log(Level.INFO, "Comp Type Property: id " + newProp.getCtypePropId() + " name " + newProp.getProperty().getName());
     }
 
-    
+
     public void deleteCompTypeProp(ComptypeProperty ctp) throws Exception {
         if (ctp == null) {
             logger.log(Level.SEVERE, "deleteCompTypeProp: property is null");
@@ -169,7 +168,7 @@ public class ComptypeEJB {
     }
 
     // ---------------- Component Type Artifact ---------------------
-    
+
     public void saveCompTypeArtifact(ComptypeArtifact art, boolean create) throws Exception {
         if (art == null) {
             logger.log(Level.SEVERE, "saveCompTypeArtifact: artifact is null");
@@ -197,7 +196,7 @@ public class ComptypeEJB {
 
     }
 
-    
+
     public void deleteCompTypeArtifact(ComptypeArtifact art) throws Exception {
         if (art == null) {
             logger.log(Level.SEVERE, "deleteCompTypeArtifact: alignment artifact is null");
@@ -217,7 +216,7 @@ public class ComptypeEJB {
     }
 
     // ---------------- Component Type Assmebly ---------------------
-    
+
     public void saveComptypeAsm(ComponentType ctype, ComptypeAsm prt) throws Exception {
         String user = loginManager.getUserid();
         if (! authEJB.userHasAuth(user, EntityType.COMPONENT_TYPE, EntityTypeOperation.UPDATE)) {
@@ -238,7 +237,7 @@ public class ComptypeEJB {
         }
     }
 
-    
+
     public void deleteComptypeAsm(ComponentType ctype, ComptypeAsm prt) throws Exception {
         String user = loginManager.getUserid();
         if (! authEJB.userHasAuth(user, EntityType.COMPONENT_TYPE, EntityTypeOperation.UPDATE)) {

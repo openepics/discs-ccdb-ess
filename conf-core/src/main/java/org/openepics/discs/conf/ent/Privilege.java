@@ -22,7 +22,6 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -58,25 +57,16 @@ public class Privilege implements Serializable {
     @ManyToOne(optional = false)
     private Role role;
 
-    public Privilege() {
+    protected Privilege() {
     }
 
-    public Privilege(Integer privilegeId) {
-        this.privilegeId = privilegeId;
-    }
-
-    public Privilege(Integer privilegeId, EntityType resource, EntityTypeOperation oper) {
-        this.privilegeId = privilegeId;
+    public Privilege(EntityType resource, EntityTypeOperation oper) {
         this.resource = resource;
         this.oper = oper;
     }
 
     public Integer getPrivilegeId() {
         return privilegeId;
-    }
-
-    public void setPrivilegeId(Integer privilegeId) {
-        this.privilegeId = privilegeId;
     }
 
     public EntityType getResource() {
@@ -127,5 +117,5 @@ public class Privilege implements Serializable {
     public String toString() {
         return "org.openepics.discs.conf.ent.Privilege[ privilegeId=" + privilegeId + " ]";
     }
-    
+
 }

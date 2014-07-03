@@ -79,12 +79,7 @@ public class DeviceProperty implements Serializable {
     public DeviceProperty() {
     }
 
-    public DeviceProperty(Integer devPropId) {
-        this.devPropId = devPropId;
-    }
-
-    public DeviceProperty(Integer devPropId, boolean inRepository, Date modifiedAt, String modifiedBy) {
-        this.devPropId = devPropId;
+    public DeviceProperty(boolean inRepository, Date modifiedAt, String modifiedBy) {
         this.inRepository = inRepository;
         this.modifiedAt = modifiedAt;
         this.modifiedBy = modifiedBy;
@@ -92,10 +87,6 @@ public class DeviceProperty implements Serializable {
 
     public Integer getDevPropId() {
         return devPropId;
-    }
-
-    public void setDevPropId(Integer devPropId) {
-        this.devPropId = devPropId;
     }
 
     public String getPropValue() {

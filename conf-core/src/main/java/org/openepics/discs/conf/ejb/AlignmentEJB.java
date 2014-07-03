@@ -21,14 +21,13 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
-import org.openepics.discs.conf.ent.AlignmentRecord;
 import org.openepics.discs.conf.ent.AlignmentArtifact;
 import org.openepics.discs.conf.ent.AlignmentProperty;
+import org.openepics.discs.conf.ent.AlignmentRecord;
 import org.openepics.discs.conf.ent.AuditRecord;
 import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ui.LoginManager;
-import org.openepics.discs.conf.util.AppProperties;
 
 /**
  *
@@ -36,69 +35,69 @@ import org.openepics.discs.conf.util.AppProperties;
  */
 @Stateless
 public class AlignmentEJB {
-private static final Logger logger = Logger.getLogger("org.openepics.discs.conf");   
+private static final Logger logger = Logger.getLogger("org.openepics.discs.conf");
     @PersistenceContext(unitName = "org.openepics.discs.conf.data")
     private EntityManager em;
     // Add business logic below. (Right-click in editor and choose
     // "Insert Code > Add Business Method")
     @EJB
     private AuthEJB authEJB;
-    
-    @Inject 
+
+    @Inject
     private LoginManager loginManager;
-    
+
     // ----------- Audit record ---------------------------------------
     private void makeAuditEntry(EntityTypeOperation oper, String key, String entry) {
-        AuditRecord arec = new AuditRecord(null, new Date(), oper, loginManager.getUserid(), entry);
+        AuditRecord arec = new AuditRecord(new Date(), oper, loginManager.getUserid(), entry);
         arec.setEntityType(EntityType.ALIGNMENT_RECORD);
         arec.setEntityKey(key);
         em.persist(arec);
     }
-    
+
     // ----------------  Alignment Record -------------------------
-    
+
     public List<AlignmentRecord> findAlignmentRec() {
         List<AlignmentRecord> comps;
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<AlignmentRecord> cq = cb.createQuery(AlignmentRecord.class);
-        Root<AlignmentRecord> prop = cq.from(AlignmentRecord.class);       
-        
+        Root<AlignmentRecord> prop = cq.from(AlignmentRecord.class);
+
         TypedQuery<AlignmentRecord> query = em.createQuery(cq);
         comps = query.getResultList();
         logger.log(Level.INFO, "Number of physical components: {0}", comps.size());
-        
-        return comps;        
+
+        return comps;
     }
-    
-    
+
+
     public AlignmentRecord findAlignmentRec(int id) {
         return em.find(AlignmentRecord.class, id);
     }
-    
-    
-    
+
+
+
     public void saveAlignment(AlignmentRecord arec) throws Exception  {
         if (arec == null ) {
             logger.log(Level.SEVERE, "Property is null!");
             return;
-            // throw new Exception("property is null");        
+            // throw new Exception("property is null");
         }
         String user = loginManager.getUserid();
         if (! authEJB.userHasAuth(user, EntityType.ALIGNMENT_RECORD, EntityTypeOperation.UPDATE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
-        arec.setModifiedAt(new Date());   
+        arec.setModifiedAt(new Date());
         logger.log(Level.INFO, "Preparing to save device");
-        em.persist(arec);   
+        em.persist(arec);
         makeAuditEntry(EntityTypeOperation.UPDATE,arec.getRecordNumber(),"updated alignment record");
     }
-    
-    
+
+
     public void deleteAlignment(AlignmentRecord arec) throws Exception  {
         if (arec == null ) {
             logger.log(Level.SEVERE, "Property is null!");
-            return;        
+            return;
         }
         String user = loginManager.getUserid();
         if (! authEJB.userHasAuth(user, EntityType.ALIGNMENT_RECORD, EntityTypeOperation.DELETE)) {
@@ -106,12 +105,12 @@ private static final Logger logger = Logger.getLogger("org.openepics.discs.conf"
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
         AlignmentRecord ct = em.find(AlignmentRecord.class,arec.getAlignmentRecordId());
-        em.remove(ct);       
+        em.remove(ct);
         makeAuditEntry(EntityTypeOperation.DELETE,arec.getRecordNumber(),"deleted alignment record");
     }
-    
+
     // ------------------ Property ---------------
-    
+
     public void saveAlignmentProp(AlignmentProperty prop, boolean create) throws Exception  {
         if (prop == null) {
             logger.log(Level.SEVERE, "saveDeviceProp: property is null");
@@ -135,8 +134,8 @@ private static final Logger logger = Logger.getLogger("org.openepics.discs.conf"
         makeAuditEntry(EntityTypeOperation.UPDATE,prop.getAlignmentRecord().getRecordNumber(),"updated alignment property " + prop.getProperty().getName());
         logger.log(Level.INFO, "Comp Type Property: id " + newProp.getAlignPropId() + " name " + newProp.getProperty().getName());
     }
-    
-    
+
+
     public void deleteAlignmentProp(AlignmentProperty prop) throws Exception  {
         if (prop == null) {
             logger.log(Level.SEVERE, "deleteAlignmentArtifact: dev-artifact is null");
@@ -152,11 +151,11 @@ private static final Logger logger = Logger.getLogger("org.openepics.discs.conf"
         arec.getAlignmentPropertyList().remove(property);
         em.remove(property);
         makeAuditEntry(EntityTypeOperation.DELETE,prop.getAlignmentRecord().getRecordNumber(),"deleted alignment property " + prop.getProperty().getName());
-    } 
-    
+    }
+
     // ---------------- Artifact ---------------------
-    
-    
+
+
     public void saveAlignmentArtifact(AlignmentArtifact art, boolean create) throws Exception {
         if (art == null) {
             logger.log(Level.SEVERE, "saveAlignmentArtifact: artifact is null");
@@ -170,19 +169,19 @@ private static final Logger logger = Logger.getLogger("org.openepics.discs.conf"
         art.setModifiedAt(new Date());
         art.setModifiedBy("user");
         AlignmentArtifact newArt = em.merge(art);
-        
+
         if (create) { // create instead of update
-            AlignmentRecord arec = art.getAlignmentRecord();           
+            AlignmentRecord arec = art.getAlignmentRecord();
             arec.getAlignmentArtifactList().add(newArt);
             em.merge(arec);
         }
         makeAuditEntry(EntityTypeOperation.UPDATE,art.getAlignmentRecord().getRecordNumber(),"updated alignment artifact " + art.getName());
         // art.setAlignmentRecord(em.merge(arec)); // todo: improve this code. this is not the right way.
         logger.log(Level.INFO, "Artifact: name " + newArt.getName() + " description " + newArt.getDescription() + " uri " + newArt.getUri() + "is int " + newArt.getIsInternal());
-        // logger.log(Level.INFO, "device serial " + device.getSerialNumber());       
+        // logger.log(Level.INFO, "device serial " + device.getSerialNumber());
     }
-    
-    
+
+
     public void deleteAlignmentArtifact(AlignmentArtifact art) throws Exception {
         if (art == null) {
             logger.log(Level.SEVERE, "deleteAlignmentArtifact: alignment artifact is null");
@@ -197,7 +196,7 @@ private static final Logger logger = Logger.getLogger("org.openepics.discs.conf"
         AlignmentArtifact artifact = em.find(AlignmentArtifact.class, art.getArtifactId());
         AlignmentRecord arec = artifact.getAlignmentRecord();
         arec.getAlignmentArtifactList().remove(artifact);
-        em.remove(artifact);   
+        em.remove(artifact);
         makeAuditEntry(EntityTypeOperation.UPDATE,art.getAlignmentRecord().getRecordNumber(),"deleted alignment artifact " + art.getName());
     }
 }

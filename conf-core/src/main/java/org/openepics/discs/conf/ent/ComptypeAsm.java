@@ -76,15 +76,10 @@ public class ComptypeAsm implements Serializable {
     @ManyToOne(optional = false)
     private ComponentType parentType;
 
-    public ComptypeAsm() {
+    protected ComptypeAsm() {
     }
 
-    public ComptypeAsm(Integer comptypeAsmId) {
-        this.comptypeAsmId = comptypeAsmId;
-    }
-
-    public ComptypeAsm(Integer comptypeAsmId, String childPosition, Date modifiedAt, String modifiedBy) {
-        this.comptypeAsmId = comptypeAsmId;
+    public ComptypeAsm(String childPosition, Date modifiedAt, String modifiedBy) {
         this.childPosition = childPosition;
         this.modifiedAt = modifiedAt;
         this.modifiedBy = modifiedBy;
@@ -92,10 +87,6 @@ public class ComptypeAsm implements Serializable {
 
     public Integer getComptypeAsmId() {
         return comptypeAsmId;
-    }
-
-    public void setComptypeAsmId(Integer comptypeAsmId) {
-        this.comptypeAsmId = comptypeAsmId;
     }
 
     public String getChildPosition() {

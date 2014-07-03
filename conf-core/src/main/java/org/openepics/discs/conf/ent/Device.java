@@ -121,15 +121,10 @@ public class Device implements Serializable {
     @ManyToOne
     private Device asmParent;
 
-    public Device() {
+    protected Device() {
     }
 
-    public Device(Integer deviceId) {
-        this.deviceId = deviceId;
-    }
-
-    public Device(Integer deviceId, String serialNumber, Date modifiedAt, String modifiedBy) {
-        this.deviceId = deviceId;
+    public Device(String serialNumber, Date modifiedAt, String modifiedBy) {
         this.serialNumber = serialNumber;
         this.modifiedAt = modifiedAt;
         this.modifiedBy = modifiedBy;
@@ -137,10 +132,6 @@ public class Device implements Serializable {
 
     public Integer getDeviceId() {
         return deviceId;
-    }
-
-    public void setDeviceId(Integer deviceId) {
-        this.deviceId = deviceId;
     }
 
     public String getSerialNumber() {
