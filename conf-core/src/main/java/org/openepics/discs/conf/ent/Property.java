@@ -69,7 +69,7 @@ public class Property implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Enumerated(EnumType.STRING)
-    @Column(name = "association")
+    @Column(name = "association", length = 12)
     private PropertyAssociation association;
     @Basic(optional = false)
     @NotNull
