@@ -33,11 +33,10 @@ import com.google.common.base.Objects;
 
 /**
  * @author Andraz Pozar <andraz.pozar@cosylab.com>
- *
+ * 
  */
-@Stateless
-public class PropertiesDataLoader extends DataLoader {
-    
+@Stateless public class PropertiesDataLoader extends DataLoader {
+
     @Inject private LoginManager loginManager;
     @Inject private AuthEJB authEJB;
     @Inject private ConfigurationEJB configurationEJB;
@@ -51,24 +50,24 @@ public class PropertiesDataLoader extends DataLoader {
 
     @Override public void loadData(InputStream stream) throws IllegalImportFileFormatException, NotAuthorizedException {
         init();
-        
+
         final List<List<String>> inputRows = ExcelImportFileReader.importExcelFile(stream);
-        
+
         if (inputRows != null && inputRows.size() > 0) {
             /*
              * List does not contain any rows that do not have a value (command)
              * in the first column. There should be no commands before "HEADER".
              */
             List<String> headerRow = inputRows.get(0);
-            
+
             propertiesToAddOrUpdate = new ArrayList<>();
             propertiesToDelete = new ArrayList<>();
             propertiesToRename = new HashMap<>();
             setUpIndexesForFields(headerRow);
-            
+
             CommandProcessing: for (List<String> row : inputRows.subList(1, inputRows.size())) {
                 final String rowNumber = row.get(0);
-                if (Objects.equal(row.get(1),CMD_HEADER)) {
+                if (Objects.equal(row.get(1), CMD_HEADER)) {
                     headerRow = row;
                     setUpIndexesForFields(headerRow);
                     continue; // skip the rest of the processing for HEADER row
@@ -78,11 +77,11 @@ public class PropertiesDataLoader extends DataLoader {
                 @Nullable final String name = row.get(nameIndex);
                 @Nullable final String unit = row.get(unitIndex);
                 @Nullable final String dataType = row.get(dataTypeIndex);
-                @Nullable final String description =row.get(descriptionIndex);
+                @Nullable final String description = row.get(descriptionIndex);
                 @Nullable final String association = row.get(associationIndex);
                 final Date modifiedAt = new Date();
                 final String modifiedBy = loginManager.getUserid();
-                
+
                 if (name == null || unit == null || dataType == null || description == null || association == null) {
                     throw new IllegalImportFileFormatException("Required fields should not be empty.", rowNumber);
                 }
@@ -92,8 +91,8 @@ public class PropertiesDataLoader extends DataLoader {
                     if (propertyByName.containsKey(name)) {
                         if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.PROPERTY, EntityTypeOperation.UPDATE)) {
                             final Property propertyToUpdate = new Property(null, name, description, association, modifiedAt, modifiedBy, 0);
-                            setPropertyFields(propertyToUpdate, unit, dataType, rowNumber);                            
-                            propertiesToAddOrUpdate.add(propertyToUpdate);                            
+                            setPropertyFields(propertyToUpdate, unit, dataType, rowNumber);
+                            propertiesToAddOrUpdate.add(propertyToUpdate);
                         } else {
                             throw new NotAuthorizedException(EntityTypeOperation.UPDATE, EntityType.PROPERTY);
                         }
@@ -101,7 +100,7 @@ public class PropertiesDataLoader extends DataLoader {
                         if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.PROPERTY, EntityTypeOperation.CREATE)) {
                             final Property propertyToAdd = new Property(null, name, description, association, modifiedAt, modifiedBy, 0);
                             setPropertyFields(propertyToAdd, unit, dataType, rowNumber);
-                            
+
                             propertiesToAddOrUpdate.add(propertyToAdd);
                         } else {
                             throw new NotAuthorizedException(EntityTypeOperation.CREATE, EntityType.PROPERTY);
@@ -127,11 +126,16 @@ public class PropertiesDataLoader extends DataLoader {
                         final int endOldNameMarkerIndex = name.indexOf("]");
                         if (startOldNameMarkerIndex == -1 || endOldNameMarkerIndex == -1) {
                             throw new IllegalImportFileFormatException("RENAME command must have property name which is to be renamed, defined between [] \nfollowed by new name. Example: [old name] new name.", rowNumber);
-                        } else if (propertyByName.containsKey(name.substring(startOldNameMarkerIndex + 1, endOldNameMarkerIndex))) {
-                            if (propertyByName.containsKey(name.substring(endOldNameMarkerIndex + 2).trim())) {
-                                throw new IllegalImportFileFormatException("Cannot rename unit to \"" + name.substring(endOldNameMarkerIndex + 2).trim() + "\" since unit with this name already exists.", rowNumber);
+                        }
+
+                        final String oldName = name.substring(startOldNameMarkerIndex + 1, endOldNameMarkerIndex).trim();
+                        final String newName = name.substring(endOldNameMarkerIndex + 1).trim();
+                        
+                        if (propertyByName.containsKey(oldName)) {
+                            if (propertyByName.containsKey(newName)) {
+                                throw new IllegalImportFileFormatException("Cannot rename unit to \"" + newName + "\" since unit with this name already exists.", rowNumber);
                             } else {
-                                propertiesToRename.put(propertyByName.get(name.substring(startOldNameMarkerIndex + 1, endOldNameMarkerIndex)), name.substring(endOldNameMarkerIndex + 2).trim());
+                                propertiesToRename.put(propertyByName.get(oldName), newName);
                             }
                         } else {
                             throw new IllegalImportFileFormatException("Property to be renamed does not exist!", rowNumber);
@@ -149,11 +153,11 @@ public class PropertiesDataLoader extends DataLoader {
 
             doImport();
         }
-        
+
     }
 
     @Override protected void doImport() {
-       for (Property property : propertiesToAddOrUpdate) {
+        for (Property property : propertiesToAddOrUpdate) {
             if (propertyByName.containsKey(property.getName())) {
                 final Property propertyToUpdate = propertyByName.get(property.getName());
                 propertyToUpdate.setDescription(property.getDescription());
@@ -169,7 +173,7 @@ public class PropertiesDataLoader extends DataLoader {
         }
 
         for (Property property : propertiesToDelete) {
-            configurationEJB.deleteProperty(propertyByName.get(property.getName()));           
+            configurationEJB.deleteProperty(propertyByName.get(property.getName()));
         }
 
         final Iterator<Property> propertyRenameIterator = propertiesToRename.keySet().iterator();
@@ -191,7 +195,7 @@ public class PropertiesDataLoader extends DataLoader {
             throw new IllegalImportFileFormatException("Header row does not contain required fields!", header.get(0));
         }
     }
-    
+
     private void init() {
         properties = configurationEJB.findProperties();
         propertyByName = new HashMap<>();
@@ -199,15 +203,15 @@ public class PropertiesDataLoader extends DataLoader {
             propertyByName.put(property.getName(), property);
         }
     }
-    
-    private void setPropertyFields(Property property, String unit, String dataType, String rowNumber) throws IllegalImportFileFormatException{
+
+    private void setPropertyFields(Property property, String unit, String dataType, String rowNumber) throws IllegalImportFileFormatException {
         final Unit newUnit = configurationEJB.findUnitByName(unit);
         if (newUnit != null) {
             property.setUnit(newUnit);
         } else {
             throw new IllegalImportFileFormatException("Unit could not be found.", rowNumber);
         }
-        
+
         final DataType newDataType = configurationEJB.findDataType(dataType);
         if (newDataType != null) {
             property.setDataType(newDataType);
