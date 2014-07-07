@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.openepics.discs.conf.dl;
 
@@ -33,7 +33,7 @@ import com.google.common.base.Objects;
 
 /**
  * @author Andraz Pozar <andraz.pozar@cosylab.com>
- * 
+ *
  */
 @Stateless public class PropertiesDataLoader extends DataLoader {
 
@@ -130,7 +130,7 @@ import com.google.common.base.Objects;
 
                         final String oldName = name.substring(startOldNameMarkerIndex + 1, endOldNameMarkerIndex).trim();
                         final String newName = name.substring(endOldNameMarkerIndex + 1).trim();
-                        
+
                         if (propertyByName.containsKey(oldName)) {
                             if (propertyByName.containsKey(newName)) {
                                 throw new IllegalImportFileFormatException("Cannot rename unit to \"" + newName + "\" since unit with this name already exists.", rowNumber);

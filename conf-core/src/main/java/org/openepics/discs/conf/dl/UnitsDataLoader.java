@@ -26,9 +26,9 @@ import org.openepics.discs.conf.util.NotAuthorizedException;
 
 /**
  * Data loader for units.
- * 
+ *
  * @author Andraz Pozar <andraz.pozar@cosylab.com>
- * 
+ *
  */
 @Stateless public class UnitsDataLoader extends DataLoader {
 
@@ -54,12 +54,12 @@ import org.openepics.discs.conf.util.NotAuthorizedException;
              * in the first column. There should be no commands before "HEADER".
              */
             List<String> headerRow = inputRows.get(0);
-            
+
             unitsToAddOrUpdate = new ArrayList<>();
             unitsToDelete = new ArrayList<>();
             unitsToRename = new HashMap<>();
             setUpIndexesForFields(headerRow);
-            
+
             for (List<String> row : inputRows.subList(1, inputRows.size())) {
                 final String rowNumber = row.get(0);
                 if (row.get(1).equals(CMD_HEADER)) {
@@ -78,7 +78,7 @@ import org.openepics.discs.conf.util.NotAuthorizedException;
                 @Nullable final String baseUnitExpr = row.get(baseUnitExprIndex);
                 final Date modifiedAt = new Date();
                 final String modifiedBy = loginManager.getUserid();
-                
+
                 if (name == null || quantity == null || symbol == null || description == null) {
                     throw new IllegalImportFileFormatException("Required fields should not be empty.", rowNumber);
                 }
@@ -161,7 +161,7 @@ import org.openepics.discs.conf.util.NotAuthorizedException;
 
         for (Unit unit : unitsToDelete) {
             configurationEJB.deleteUnit(unitByName.get(unit.getUnitName()));
-            
+
         }
 
         final Iterator<Unit> unitRenameIterator = unitsToRename.keySet().iterator();
