@@ -4,5 +4,11 @@
     <jta-data-source>org.openepics.discs.conf.data</jta-data-source>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
     <properties/>
+    <!-- Standard JPA 2.1 properties     
+    <properties>
+	  <property name="javax.persistence.schema-generation-action" value="create"/>
+	  <property name="javax.persistence.schema-generation-target" value="database"/>           
+    </properties>
+    -->
   </persistence-unit>
 </persistence>
