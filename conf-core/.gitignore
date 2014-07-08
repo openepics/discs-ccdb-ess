@@ -1,1 +1,11 @@
 /target
+
+# Eclipse specific files
+.project
+.classpath
+.settings
+.metadata
+*.jsfdia
+
+# Eclipse EE specific
+src/main/java/resources
