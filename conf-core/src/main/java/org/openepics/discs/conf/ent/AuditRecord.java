@@ -17,7 +17,6 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Lob;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
@@ -75,15 +74,10 @@ public class AuditRecord implements Serializable {
     @Column(name = "entry", columnDefinition="TEXT")
     private String entry;
 
-    public AuditRecord() {
+    protected AuditRecord() {
     }
 
-    public AuditRecord(Integer auditRecordId) {
-        this.auditRecordId = auditRecordId;
-    }
-
-    public AuditRecord(Integer auditRecordId, Date logTime, EntityTypeOperation oper, String user, String entry) {
-        this.auditRecordId = auditRecordId;
+    public AuditRecord(Date logTime, EntityTypeOperation oper, String user, String entry) {
         this.logTime = logTime;
         this.oper = oper;
         this.user = user;
@@ -92,10 +86,6 @@ public class AuditRecord implements Serializable {
 
     public Integer getAuditRecordId() {
         return auditRecordId;
-    }
-
-    public void setAuditRecordId(Integer auditRecordId) {
-        this.auditRecordId = auditRecordId;
     }
 
     public Date getLogTime() {
@@ -170,5 +160,5 @@ public class AuditRecord implements Serializable {
     public String toString() {
         return "org.openepics.discs.conf.ent.AuditRecord[ auditRecordId=" + auditRecordId + " ]";
     }
-    
+
 }

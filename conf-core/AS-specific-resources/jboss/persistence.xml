@@ -6,7 +6,9 @@
         <jta-data-source>org.openepics.discs.conf.data</jta-data-source>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>
-            <!-- <property name="hibernate.hbm2ddl.auto" value="update"/>  -->  
+            <property name="javax.persistence.schema-generation-action" value="create"/>
+            <property name="javax.persistence.schema-generation-target" value="database"/>           
+            <!-- <property name="hibernate.hbm2ddl.auto" value="update"/> -->  
             <property name="hibernate.enable_lazy_load_no_trans" value="true"/>
         </properties>
     </persistence-unit>

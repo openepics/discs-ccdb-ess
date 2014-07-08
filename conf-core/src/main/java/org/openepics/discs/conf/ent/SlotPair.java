@@ -7,6 +7,7 @@
 package org.openepics.discs.conf.ent;
 
 import java.io.Serializable;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -18,7 +19,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
+import javax.persistence.Version;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -39,10 +40,8 @@ public class SlotPair implements Serializable {
     @Basic(optional = false)
     @Column(name = "slot_pair_id")
     private Integer slotPairId;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "version")
-    private int version;
+    @Version
+    private Long version;
     @JoinColumn(name = "child_slot", referencedColumnName = "slot_id")
     @ManyToOne(optional = false)
     private Slot childSlot;
@@ -56,28 +55,15 @@ public class SlotPair implements Serializable {
     public SlotPair() {
     }
 
-    public SlotPair(Integer slotPairId) {
-        this.slotPairId = slotPairId;
-    }
-
-    public SlotPair(Integer slotPairId, int version) {
-        this.slotPairId = slotPairId;
-        this.version = version;
-    }
-
     public Integer getSlotPairId() {
         return slotPairId;
     }
 
-    public void setSlotPairId(Integer slotPairId) {
-        this.slotPairId = slotPairId;
-    }
-
-    public int getVersion() {
+    protected Long getVersion() {
         return version;
     }
 
-    public void setVersion(int version) {
+    protected void setVersion(Long version) {
         this.version = version;
     }
 
@@ -129,5 +115,5 @@ public class SlotPair implements Serializable {
     public String toString() {
         return "org.openepics.discs.conf.ent.SlotPair[ slotPairId=" + slotPairId + " ]";
     }
-    
+
 }

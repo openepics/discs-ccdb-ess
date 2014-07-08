@@ -9,10 +9,13 @@ package org.openepics.discs.conf.ent;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -24,6 +27,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -64,9 +68,9 @@ public class Property implements Serializable {
     private String description;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 3)
-    @Column(name = "association")
-    private String association;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "association", length = 12)
+    private PropertyAssociation association;
     @Basic(optional = false)
     @NotNull
     @Column(name = "modified_at")
@@ -77,10 +81,8 @@ public class Property implements Serializable {
     @Size(min = 1, max = 64)
     @Column(name = "modified_by")
     private String modifiedBy;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "version")
-    private int version;
+    @Version
+    private Long version;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "property")
     private List<ComptypeProperty> comptypePropertyList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "property")
@@ -96,29 +98,19 @@ public class Property implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "property")
     private List<SlotProperty> slotPropertyList;
 
-    public Property() {
+    protected Property() {
     }
 
-    public Property(Integer propertyId) {
-        this.propertyId = propertyId;
-    }
-
-    public Property(Integer propertyId, String name, String description, String association, Date modifiedAt, String modifiedBy, int version) {
-        this.propertyId = propertyId;
+    public Property(String name, String description, PropertyAssociation association, String modifiedBy) {
         this.name = name;
         this.description = description;
         this.association = association;
-        this.modifiedAt = modifiedAt;
         this.modifiedBy = modifiedBy;
-        this.version = version;
+        this.modifiedAt = new Date();
     }
 
     public Integer getPropertyId() {
         return propertyId;
-    }
-
-    public void setPropertyId(Integer propertyId) {
-        this.propertyId = propertyId;
     }
 
     public String getName() {
@@ -137,11 +129,11 @@ public class Property implements Serializable {
         this.description = description;
     }
 
-    public String getAssociation() {
+    public PropertyAssociation getAssociation() {
         return association;
     }
 
-    public void setAssociation(String association) {
+    public void setAssociation(PropertyAssociation association) {
         this.association = association;
     }
 
@@ -161,11 +153,11 @@ public class Property implements Serializable {
         this.modifiedBy = modifiedBy;
     }
 
-    public int getVersion() {
+    protected Long getVersion() {
         return version;
     }
 
-    public void setVersion(int version) {
+    protected void setVersion(Long version) {
         this.version = version;
     }
 
@@ -245,5 +237,5 @@ public class Property implements Serializable {
     public String toString() {
         return "org.openepics.discs.conf.ent.Property[ propertyId=" + propertyId + " ]";
     }
-    
+
 }

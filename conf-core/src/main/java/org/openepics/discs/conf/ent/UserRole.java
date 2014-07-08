@@ -8,6 +8,7 @@ package org.openepics.discs.conf.ent;
 
 import java.io.Serializable;
 import java.util.Date;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -21,6 +22,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -69,10 +71,8 @@ public class UserRole implements Serializable {
     @Size(max = 255)
     @Column(name = "comment")
     private String comment;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "version")
-    private int version;
+    @Version
+    private Long version;
     @JoinColumn(name = "role", referencedColumnName = "role_id")
     @ManyToOne(optional = false)
     private Role role;
@@ -80,28 +80,18 @@ public class UserRole implements Serializable {
     @ManyToOne(optional = false)
     private User user;
 
-    public UserRole() {
+    protected UserRole() {
     }
 
-    public UserRole(Integer userRoleId) {
-        this.userRoleId = userRoleId;
-    }
-
-    public UserRole(Integer userRoleId, boolean canDelegate, boolean isRoleManager, Date startTime, Date endTime, int version) {
-        this.userRoleId = userRoleId;
+    public UserRole(boolean canDelegate, boolean isRoleManager, Date startTime, Date endTime) {
         this.canDelegate = canDelegate;
         this.isRoleManager = isRoleManager;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.version = version;
     }
 
     public Integer getUserRoleId() {
         return userRoleId;
-    }
-
-    public void setUserRoleId(Integer userRoleId) {
-        this.userRoleId = userRoleId;
     }
 
     public boolean getCanDelegate() {
@@ -144,11 +134,11 @@ public class UserRole implements Serializable {
         this.comment = comment;
     }
 
-    public int getVersion() {
+    protected Long getVersion() {
         return version;
     }
 
-    public void setVersion(int version) {
+    protected void setVersion(Long version) {
         this.version = version;
     }
 
@@ -192,5 +182,5 @@ public class UserRole implements Serializable {
     public String toString() {
         return "org.openepics.discs.conf.ent.UserRole[ userRoleId=" + userRoleId + " ]";
     }
-    
+
 }

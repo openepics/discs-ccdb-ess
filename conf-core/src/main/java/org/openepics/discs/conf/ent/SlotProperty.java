@@ -8,6 +8,7 @@ package org.openepics.discs.conf.ent;
 
 import java.io.Serializable;
 import java.util.Date;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,13 +16,13 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -63,10 +64,8 @@ public class SlotProperty implements Serializable {
     @Size(min = 1, max = 64)
     @Column(name = "modified_by")
     private String modifiedBy;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "version")
-    private int version;
+    @Version
+    private Long version;
     @JoinColumn(name = "unit", referencedColumnName = "unit_id")
     @ManyToOne
     private Unit unit;
@@ -77,27 +76,17 @@ public class SlotProperty implements Serializable {
     @ManyToOne(optional = false)
     private Slot slot;
 
-    public SlotProperty() {
+    protected SlotProperty() {
     }
 
-    public SlotProperty(Integer slotPropId) {
-        this.slotPropId = slotPropId;
-    }
-
-    public SlotProperty(Integer slotPropId, boolean inRepository, Date modifiedAt, String modifiedBy, int version) {
-        this.slotPropId = slotPropId;
+    public SlotProperty(boolean inRepository, String modifiedBy) {
         this.inRepository = inRepository;
-        this.modifiedAt = modifiedAt;
         this.modifiedBy = modifiedBy;
-        this.version = version;
+        this.modifiedAt = new Date();
     }
 
     public Integer getSlotPropId() {
         return slotPropId;
-    }
-
-    public void setSlotPropId(Integer slotPropId) {
-        this.slotPropId = slotPropId;
     }
 
     public String getPropValue() {
@@ -132,11 +121,11 @@ public class SlotProperty implements Serializable {
         this.modifiedBy = modifiedBy;
     }
 
-    public int getVersion() {
+    protected Long getVersion() {
         return version;
     }
 
-    public void setVersion(int version) {
+    protected void setVersion(Long version) {
         this.version = version;
     }
 
@@ -188,5 +177,5 @@ public class SlotProperty implements Serializable {
     public String toString() {
         return "org.openepics.discs.conf.ent.SlotProperty[ slotPropId=" + slotPropId + " ]";
     }
-    
+
 }

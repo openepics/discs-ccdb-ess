@@ -6,11 +6,10 @@
 
 package org.openepics.discs.conf.ui;
 
-import org.openepics.discs.conf.util.Utility;
-
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,6 +26,7 @@ import org.openepics.discs.conf.ejb.InstallationEJB;
 import org.openepics.discs.conf.ent.InstallationArtifact;
 import org.openepics.discs.conf.ent.InstallationRecord;
 import org.openepics.discs.conf.util.BlobStore;
+import org.openepics.discs.conf.util.Utility;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.SelectEvent;
@@ -46,16 +46,18 @@ public class InstallationManager implements Serializable {
 
     @Inject
     private BlobStore blobStore;
-    
+
+    @Inject LoginManager loginManager;
+
     private static final Logger logger = Logger.getLogger("org.openepics.discs.conf");
-    
+
     private List<InstallationRecord> objects;
     private List<InstallationRecord> sortedObjects;
     private List<InstallationRecord> filteredObjects;
     private InstallationRecord selectedObject;
     private InstallationRecord inputObject;
     private char selectedOp = 'n'; // selected operation: [a]dd, [e]dit, [d]elete, [n]one
-    
+
     private List<InstallationArtifact> selectedArtifacts;
     private InstallationArtifact inputArtifact;
     private boolean internalArtifact = true;
@@ -68,7 +70,7 @@ public class InstallationManager implements Serializable {
      */
     public InstallationManager() {
     }
-    
+
     @PostConstruct
     public void init() {
         try {
@@ -92,7 +94,8 @@ public class InstallationManager implements Serializable {
 
     public void onIRecAdd(ActionEvent event) {
         selectedOp = 'a';
-        inputObject = new InstallationRecord();
+        // TODO replaced void constructor (now protected) with default values. Check!
+        inputObject = new InstallationRecord("1", new Date(), loginManager.getUserid());
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Add", "");
     }
 
@@ -139,7 +142,7 @@ public class InstallationManager implements Serializable {
             selectedOp = 'n';
         }
     }
-    
+
     // --------------------------------- Artifact ------------------------------------------------
     public void onArtifactAdd(ActionEvent event) {
         try {
@@ -147,7 +150,8 @@ public class InstallationManager implements Serializable {
             if (selectedArtifacts == null) {
                 selectedArtifacts = new ArrayList<>();
             }
-            inputArtifact = new InstallationArtifact();
+            // TODO replaced void constructor (now protected) with default values. Check!
+            inputArtifact = new InstallationArtifact("", false, "", loginManager.getUserid());
             inputArtifact.setInstallationRecord(selectedObject);
             fileUploaded = false;
             uploadedFileName = null;
@@ -168,12 +172,12 @@ public class InstallationManager implements Serializable {
                         RequestContext.getCurrentInstance().addCallbackParam("success", false);
                         return;
                     }
-                }               
+                }
             }
-            
+
             // deviceEJB.saveInstallationArtifact(selectedObject, inputArtifact);
             installationEJB.saveInstallationArtifact(inputArtifact, artifactOperation == 'a');
-            logger.log(Level.INFO,"returned artifact id is " + inputArtifact.getArtifactId());           
+            logger.log(Level.INFO,"returned artifact id is " + inputArtifact.getArtifactId());
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Artifact saved", "");
             RequestContext.getCurrentInstance().addCallbackParam("success", true);
         } catch (Exception e) {
@@ -189,9 +193,9 @@ public class InstallationManager implements Serializable {
                 Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "No artifact selected");
                 return;
             }
-            
+
             installationEJB.deleteInstallationArtifact(art);
-            selectedArtifacts.remove(art); 
+            selectedArtifacts.remove(art);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted Artifact", "");
         } catch (Exception e) {
             Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error in deleting artifact", e.getMessage());
@@ -209,17 +213,17 @@ public class InstallationManager implements Serializable {
         uploadedFileName = art.getName();
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Edit:", "Edit initiated " + inputArtifact.getArtifactId());
     }
-    
-    public void onArtifactType() {     
-        // Toto: remove it
+
+    public void onArtifactType() {
+        // TODO remove it
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Artifact type selected","");
     }
     // -------------------------- File upload/download ---------------------------
-     
+
     public void handleFileUpload(FileUploadEvent event) {
         // String msg = event.getFile().getFileName() + " is uploaded.";
         // Utility.showMessage(FacesMessage.SEVERITY_INFO, "Succesful", msg);
-        InputStream istream;       
+        InputStream istream;
 
         try {
             UploadedFile uploadedFile = event.getFile();
@@ -230,7 +234,7 @@ public class InstallationManager implements Serializable {
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "File ", "Name: " + uploadedFileName);
             String fileId = blobStore.storeFile(istream);
             inputArtifact.setUri(fileId);
-            
+
             istream.close();
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "File uploaded", "Name: " + uploadedFileName);
             fileUploaded = true;
@@ -245,7 +249,7 @@ public class InstallationManager implements Serializable {
 
     public StreamedContent getDownloadedFile() {
         StreamedContent file = null;
-        
+
         try {
             // return downloadedFile;
             logger.log(Level.INFO, "Opening stream from repository: " + selectedArtifact.getUri());
@@ -253,19 +257,19 @@ public class InstallationManager implements Serializable {
             InputStream istream = blobStore.retreiveFile(selectedArtifact.getUri());
             file = new DefaultStreamedContent(istream, "application/octet-stream", selectedArtifact.getName());
 
-            // InputStream stream = new FileInputStream(pathName);                       
+            // InputStream stream = new FileInputStream(pathName);
             // downloadedFile = new DefaultStreamedContent(stream, "application/octet-stream", "file.jpg"); //ToDo" replace with actual filename
         } catch (Exception e) {
             Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error: Downloading file", e.getMessage());
             logger.log(Level.SEVERE, "Error in downloading the file");
             logger.log(Level.SEVERE, e.toString());
         }
-        
+
         return file;
     }
-    
+
     // -------------------------- Getter/Setters -----------------------
-    
+
     public List<InstallationRecord> getObjects() {
         return objects;
     }

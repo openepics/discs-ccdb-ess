@@ -9,6 +9,7 @@ package org.openepics.discs.conf.ent;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -20,6 +21,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -67,35 +69,24 @@ public class DataType implements Serializable {
     @Size(min = 1, max = 64)
     @Column(name = "modified_by")
     private String modifiedBy;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "version")
-    private int version;
+    @Version
+    private Long version;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "dataType")
     private List<Property> propertyList;
 
-    public DataType() {
+    protected DataType() {
     }
 
-    public DataType(String dataTypeId) {
-        this.dataTypeId = dataTypeId;
-    }
-
-    public DataType(String dataTypeId, String description, boolean scalar, Date modifiedAt, String modifiedBy, int version) {
+    public DataType(String dataTypeId, String description, boolean scalar, String modifiedBy) {
         this.dataTypeId = dataTypeId;
         this.description = description;
         this.scalar = scalar;
-        this.modifiedAt = modifiedAt;
         this.modifiedBy = modifiedBy;
-        this.version = version;
+        this.modifiedAt = new Date();
     }
 
     public String getDataTypeId() {
         return dataTypeId;
-    }
-
-    public void setDataTypeId(String dataTypeId) {
-        this.dataTypeId = dataTypeId;
     }
 
     public String getDescription() {
@@ -130,11 +121,11 @@ public class DataType implements Serializable {
         this.modifiedBy = modifiedBy;
     }
 
-    public int getVersion() {
+    protected Long getVersion() {
         return version;
     }
 
-    public void setVersion(int version) {
+    protected void setVersion(Long version) {
         this.version = version;
     }
 
@@ -171,5 +162,5 @@ public class DataType implements Serializable {
     public String toString() {
         return "org.openepics.discs.conf.ent.DataType[ dataTypeId=" + dataTypeId + " ]";
     }
-    
+
 }

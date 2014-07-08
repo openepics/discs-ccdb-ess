@@ -8,6 +8,7 @@ package org.openepics.discs.conf.ent;
 
 import java.io.Serializable;
 import java.util.List;
+
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -17,6 +18,7 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -47,26 +49,23 @@ public class Role implements Serializable {
     @Size(min = 1, max = 255)
     @Column(name = "description")
     private String description;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "version")
-    private int version;
+    @Version
+    private Long version;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "role")
     private List<UserRole> userRoleList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "role")
     private List<Privilege> privilegeList;
 
-    public Role() {
+    protected Role() {
     }
 
     public Role(String roleId) {
         this.roleId = roleId;
     }
 
-    public Role(String roleId, String description, int version) {
+    public Role(String roleId, String description) {
         this.roleId = roleId;
         this.description = description;
-        this.version = version;
     }
 
     public String getRoleId() {
@@ -85,11 +84,11 @@ public class Role implements Serializable {
         this.description = description;
     }
 
-    public int getVersion() {
+    protected Long getVersion() {
         return version;
     }
 
-    public void setVersion(int version) {
+    protected void setVersion(Long version) {
         this.version = version;
     }
 
@@ -135,5 +134,5 @@ public class Role implements Serializable {
     public String toString() {
         return "org.openepics.discs.conf.ent.Role[ roleId=" + roleId + " ]";
     }
-    
+
 }

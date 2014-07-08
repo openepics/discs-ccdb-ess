@@ -22,7 +22,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.persistence.UniqueConstraint;
+import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -85,10 +85,8 @@ public class Unit implements Serializable {
     @Size(min = 1, max = 64)
     @Column(name = "modified_by")
     private String modifiedBy;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "version")
-    private int version;
+    @Version
+    private Long version;
     @OneToMany(mappedBy = "unit")
     private List<ComptypeProperty> comptypePropertyList;
     @OneToMany(mappedBy = "unit")
@@ -98,28 +96,23 @@ public class Unit implements Serializable {
     @OneToMany(mappedBy = "unit")
     private List<SlotProperty> slotPropertyList;
 
-    public Unit() {
+    protected Unit() {
     }
 
-    public Unit(String unitName) {
-        this.unitName = unitName;
-    }
-
-    public Unit(String unitName, String quantity, String symbol, String baseUnitExpr, String description, Date modifiedAt, String modifiedBy, int version) {
+    public Unit(String unitName, String quantity, String symbol, String baseUnitExpr, String description, String modifiedBy) {
         this.unitName = unitName;
         this.quantity = quantity;
         this.symbol = symbol;
         this.baseUnitExpr = baseUnitExpr;
         this.description = description;
-        this.modifiedAt = modifiedAt;
         this.modifiedBy = modifiedBy;
-        this.version = version;
+        this.modifiedAt = new Date();
     }
 
-    public int getUnitId() {
+    public Integer getUnitId() {
         return unitId;
     }
-    
+
     public String getUnitName() {
         return unitName;
     }
@@ -176,11 +169,11 @@ public class Unit implements Serializable {
         this.modifiedBy = modifiedBy;
     }
 
-    public int getVersion() {
+    protected Long getVersion() {
         return version;
     }
 
-    public void setVersion(int version) {
+    protected void setVersion(Long version) {
         this.version = version;
     }
 
@@ -244,5 +237,5 @@ public class Unit implements Serializable {
     public String toString() {
         return "org.openepics.discs.conf.ent.Unit[ unitId=" + unitName + " ]";
     }
-    
+
 }

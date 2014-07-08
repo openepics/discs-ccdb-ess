@@ -28,7 +28,6 @@ import org.openepics.discs.conf.ent.InstallationArtifact;
 import org.openepics.discs.conf.ent.InstallationRecord;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ui.LoginManager;
-import org.openepics.discs.conf.util.AppProperties;
 
 /**
  *
@@ -37,46 +36,46 @@ import org.openepics.discs.conf.util.AppProperties;
 @Stateless
 public class InstallationEJB {
 
-    private static final Logger logger = Logger.getLogger("org.openepics.discs.conf");   
+    private static final Logger logger = Logger.getLogger("org.openepics.discs.conf");
     @PersistenceContext(unitName = "org.openepics.discs.conf.data")
     private EntityManager em;
     // Add business logic below. (Right-click in editor and choose
     // "Insert Code > Add Business Method")
     @EJB
     private AuthEJB authEJB;
-    
-    @Inject 
+
+    @Inject
     private LoginManager loginManager;
-    
+
     // ----------- Audit record ---------------------------------------
     private void makeAuditEntry(EntityTypeOperation oper, String key, String entry) {
-        AuditRecord arec = new AuditRecord(null, new Date(), oper, loginManager.getUserid(), entry);
+        AuditRecord arec = new AuditRecord(new Date(), oper, loginManager.getUserid(), entry);
         arec.setEntityType(EntityType.INSTALLATION_RECORD);
         arec.setEntityKey(key);
         em.persist(arec);
     }
-    
-    // ----- Installation 
-    
+
+    // ----- Installation
+
     public List<InstallationRecord> findInstallationRec() {
         List<InstallationRecord> irecs;
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<InstallationRecord> cq = cb.createQuery(InstallationRecord.class);
-        Root<InstallationRecord> prop = cq.from(InstallationRecord.class);       
-        
+        Root<InstallationRecord> prop = cq.from(InstallationRecord.class);
+
         TypedQuery<InstallationRecord> query = em.createQuery(cq);
         irecs = query.getResultList();
         logger.log(Level.INFO, "Number of physical components: {0}", irecs.size());
-        
-        return irecs;        
+
+        return irecs;
     }
-    
-    
+
+
     public void saveIRecord(InstallationRecord irec, boolean create) throws Exception  {
         if (irec == null) {
             logger.log(Level.SEVERE, "Installation Record is null!");
             return;
-            // throw new Exception("property is null");        
+            // throw new Exception("property is null");
         }
         String user = loginManager.getUserid();
         if (! authEJB.userHasAuth(user, EntityType.INSTALLATION_RECORD, EntityTypeOperation.UPDATE)) {
@@ -86,7 +85,7 @@ public class InstallationEJB {
         irec.setModifiedAt(new Date());
 
         logger.log(Level.INFO, "Preparing to save installation record");
-        
+
         if ( irec.getInstallationRecordId() == null ) { // new record
             em.persist(irec);
             Slot slot = irec.getSlot();
@@ -98,12 +97,12 @@ public class InstallationEJB {
         }
         makeAuditEntry(EntityTypeOperation.UPDATE,irec.getRecordNumber(),"updated installation record ");
     }
-    
-    
+
+
     public void deleteIRecord(InstallationRecord irec) throws Exception {
         if (irec == null ) {
             logger.log(Level.SEVERE, "Installation Record is null!");
-            throw new Exception("Installation Record is null");        
+            throw new Exception("Installation Record is null");
         }
         String user = loginManager.getUserid();
         if (! authEJB.userHasAuth(user, EntityType.INSTALLATION_RECORD, EntityTypeOperation.DELETE)) {
@@ -114,10 +113,10 @@ public class InstallationEJB {
         em.remove(ct);
         makeAuditEntry(EntityTypeOperation.DELETE,irec.getRecordNumber(),"deleted installation record ");
     }
-    
+
     // ---------------- Artifact ---------------------
-    
-    
+
+
     public void saveInstallationArtifact(InstallationArtifact art, boolean create) throws Exception {
         if (art == null) {
             logger.log(Level.SEVERE, "deleteInstallationArtifact: Installation Record is null");
@@ -132,7 +131,7 @@ public class InstallationEJB {
         art.setModifiedBy("user");
         InstallationArtifact newArt = em.merge(art);
         if (create) { // create instead of update
-            InstallationRecord arec = art.getInstallationRecord();           
+            InstallationRecord arec = art.getInstallationRecord();
             arec.getInstallationArtifactList().add(newArt);
             em.merge(arec);
         }
@@ -140,8 +139,8 @@ public class InstallationEJB {
         logger.log(Level.INFO, "Artifact: name " + art.getName() + " description " + art.getDescription() + " uri " + art.getUri() + "is int " + art.getIsInternal());
         // logger.log(Level.INFO, "device serial " + device.getSerialNumber());
     }
-    
-    
+
+
     public void deleteInstallationArtifact(InstallationArtifact art) throws Exception {
         if (art == null) {
             logger.log(Level.SEVERE, "deleteInstallationArtifact: irec-artifact is null");
@@ -155,7 +154,7 @@ public class InstallationEJB {
         logger.log(Level.INFO, "deleting " + art.getName() + " id " + art.getArtifactId() + " des " + art.getDescription());
         InstallationArtifact artifact = em.find(InstallationArtifact.class, art.getArtifactId());
         InstallationRecord irec = artifact.getInstallationRecord();
-        
+
         em.remove(artifact);
         irec.getInstallationArtifactList().remove(artifact);
         makeAuditEntry(EntityTypeOperation.UPDATE,art.getInstallationRecord().getRecordNumber(),"deleted installation artifact " + art.getName());

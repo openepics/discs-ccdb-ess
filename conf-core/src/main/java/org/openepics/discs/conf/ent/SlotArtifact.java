@@ -8,6 +8,7 @@ package org.openepics.discs.conf.ent;
 
 import java.io.Serializable;
 import java.util.Date;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,7 +16,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -80,29 +80,20 @@ public class SlotArtifact implements Serializable {
     @ManyToOne(optional = false)
     private Slot slot;
 
-    public SlotArtifact() {
+    protected SlotArtifact() {
     }
 
-    public SlotArtifact(Integer artifactId) {
-        this.artifactId = artifactId;
-    }
-
-    public SlotArtifact(Integer artifactId, String name, boolean isInternal, String description, String uri, String modifiedBy, Date modifiedAt) {
-        this.artifactId = artifactId;
+    public SlotArtifact(String name, boolean isInternal, String description, String uri, String modifiedBy) {
         this.name = name;
         this.isInternal = isInternal;
         this.description = description;
         this.uri = uri;
         this.modifiedBy = modifiedBy;
-        this.modifiedAt = modifiedAt;
+        this.modifiedAt = new Date();
     }
 
     public Integer getArtifactId() {
         return artifactId;
-    }
-
-    public void setArtifactId(Integer artifactId) {
-        this.artifactId = artifactId;
     }
 
     public String getName() {
@@ -185,5 +176,5 @@ public class SlotArtifact implements Serializable {
     public String toString() {
         return "org.openepics.discs.conf.ent.SlotArtifact[ artifactId=" + artifactId + " ]";
     }
-    
+
 }

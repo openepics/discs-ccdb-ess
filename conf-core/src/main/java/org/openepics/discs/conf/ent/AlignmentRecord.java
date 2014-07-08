@@ -9,6 +9,7 @@ package org.openepics.discs.conf.ent;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -24,6 +25,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -90,10 +92,8 @@ public class AlignmentRecord implements Serializable {
     @Size(min = 1, max = 64)
     @Column(name = "modified_by")
     private String modifiedBy;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "version")
-    private int version;
+    @Version
+    private Long version;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "alignmentRecord")
     private List<AlignmentArtifact> alignmentArtifactList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "alignmentRecord")
@@ -105,28 +105,18 @@ public class AlignmentRecord implements Serializable {
     @ManyToOne(optional = false)
     private Device device;
 
-    public AlignmentRecord() {
+    protected AlignmentRecord() {
     }
 
-    public AlignmentRecord(Integer alignmentRecordId) {
-        this.alignmentRecordId = alignmentRecordId;
-    }
-
-    public AlignmentRecord(Integer alignmentRecordId, String recordNumber, Date alignmentDate, Date modifiedAt, String modifiedBy, int version) {
-        this.alignmentRecordId = alignmentRecordId;
+    public AlignmentRecord(String recordNumber, Date alignmentDate, String modifiedBy) {
         this.recordNumber = recordNumber;
         this.alignmentDate = alignmentDate;
-        this.modifiedAt = modifiedAt;
         this.modifiedBy = modifiedBy;
-        this.version = version;
+        this.modifiedAt = new Date();
     }
 
     public Integer getAlignmentRecordId() {
         return alignmentRecordId;
-    }
-
-    public void setAlignmentRecordId(Integer alignmentRecordId) {
-        this.alignmentRecordId = alignmentRecordId;
     }
 
     public String getRecordNumber() {
@@ -209,11 +199,11 @@ public class AlignmentRecord implements Serializable {
         this.modifiedBy = modifiedBy;
     }
 
-    public int getVersion() {
+    protected Long getVersion() {
         return version;
     }
 
-    public void setVersion(int version) {
+    protected void setVersion(Long version) {
         this.version = version;
     }
 
@@ -275,5 +265,5 @@ public class AlignmentRecord implements Serializable {
     public String toString() {
         return "org.openepics.discs.conf.ent.AlignmentRecord[ alignmentRecordId=" + alignmentRecordId + " ]";
     }
-    
+
 }

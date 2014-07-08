@@ -2,12 +2,12 @@ package org.openepics.discs.conf.dl;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nullable;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -19,14 +19,15 @@ import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.Unit;
 import org.openepics.discs.conf.ui.LoginManager;
+import org.openepics.discs.conf.util.As;
 import org.openepics.discs.conf.util.IllegalImportFileFormatException;
 import org.openepics.discs.conf.util.NotAuthorizedException;
 
 /**
  * Data loader for units.
- * 
+ *
  * @author Andraz Pozar <andraz.pozar@cosylab.com>
- * 
+ *
  */
 @Stateless public class UnitsDataLoader extends DataLoader {
 
@@ -52,42 +53,46 @@ import org.openepics.discs.conf.util.NotAuthorizedException;
              * in the first column. There should be no commands before "HEADER".
              */
             List<String> headerRow = inputRows.get(0);
-            
+
             unitsToAddOrUpdate = new ArrayList<>();
             unitsToDelete = new ArrayList<>();
             unitsToRename = new HashMap<>();
             setUpIndexesForFields(headerRow);
-            
-            CommandProcessing: for (List<String> row : inputRows.subList(1, inputRows.size())) {
+
+            for (List<String> row : inputRows.subList(1, inputRows.size())) {
                 final String rowNumber = row.get(0);
                 if (row.get(1).equals(CMD_HEADER)) {
                     headerRow = row;
                     setUpIndexesForFields(headerRow);
                     continue; // skip the rest of the processing for HEADER row
+                } else if (row.get(1).equals(CMD_END)) {
+                    break;
                 }
 
-                final String command = row.get(1).toUpperCase();
-                final String name = row.get(nameIndex);
-                final String quantity = row.get(quantityIndex);
-                final String symbol = row.get(symbolIndex);
-                final String description = row.get(descriptionIndex);
-                final String baseUnitExpr = row.get(baseUnitExprIndex);
-                final Date modifiedAt = new Date();
+                final String command = As.notNull(row.get(1).toUpperCase());
+                @Nullable final String name = row.get(nameIndex);
+                @Nullable final String quantity = row.get(quantityIndex);
+                @Nullable final String symbol = row.get(symbolIndex);
+                @Nullable final String description = row.get(descriptionIndex);
+                @Nullable final String baseUnitExpr = row.get(baseUnitExprIndex);
                 final String modifiedBy = loginManager.getUserid();
+
+                if (name == null || quantity == null || symbol == null || description == null) {
+                    throw new IllegalImportFileFormatException("Required fields should not be empty.", rowNumber);
+                }
 
                 switch (command) {
                 case CMD_UPDATE:
                     if (unitByName.containsKey(name)) {
                         if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.UNIT, EntityTypeOperation.UPDATE)) {
-                            unitsToAddOrUpdate.add(new Unit(name, quantity, symbol, baseUnitExpr, description, modifiedAt, modifiedBy, 0));
+                            unitsToAddOrUpdate.add(new Unit(name, quantity, symbol, baseUnitExpr, description, modifiedBy));
                         } else {
                             throw new NotAuthorizedException(EntityTypeOperation.UPDATE, EntityType.UNIT);
                         }
                     } else {
                         if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.UNIT, EntityTypeOperation.CREATE)) {
-                            final Unit unitToAdd = new Unit(name, quantity, symbol, baseUnitExpr, description, modifiedAt, modifiedBy, 0);
+                            final Unit unitToAdd = new Unit(name, quantity, symbol, baseUnitExpr, description, modifiedBy);
                             unitsToAddOrUpdate.add(unitToAdd);
-                            unitByName.put(unitToAdd.getUnitName(), unitToAdd);
                         } else {
                             throw new NotAuthorizedException(EntityTypeOperation.CREATE, EntityType.UNIT);
                         }
@@ -125,8 +130,6 @@ import org.openepics.discs.conf.util.NotAuthorizedException;
                         throw new NotAuthorizedException(EntityTypeOperation.RENAME, EntityType.UNIT);
                     }
                     break;
-                case CMD_END:
-                    break CommandProcessing;
                 default:
                     throw new IllegalImportFileFormatException(command + " is not a valid command!", rowNumber);
                 }
@@ -146,20 +149,23 @@ import org.openepics.discs.conf.util.NotAuthorizedException;
                 unitToUpdate.setQuantity(unit.getQuantity());
                 unitToUpdate.setSymbol(unit.getSymbol());
                 unitToUpdate.setModifiedBy(unit.getModifiedBy());
+                unitToUpdate.setModifiedAt(unit.getModifiedAt());
+                configurationEJB.saveUnit(unitToUpdate);
             } else {
-                em.persist(unit);
+                configurationEJB.addUnit(unit);
+                unitByName.put(unit.getUnitName(), unit);
             }
         }
 
         for (Unit unit : unitsToDelete) {
-            final Unit unitToDelete = unitByName.get(unit.getUnitName());
-            em.remove(em.contains(unitToDelete) ? unitToDelete : em.merge(unitToDelete));
+            configurationEJB.deleteUnit(unitByName.get(unit.getUnitName()));
         }
 
         final Iterator<Unit> unitRenameIterator = unitsToRename.keySet().iterator();
         while (unitRenameIterator.hasNext()) {
             final Unit unitToRename = unitRenameIterator.next();
             unitToRename.setUnitName(unitsToRename.get(unitToRename));
+            configurationEJB.saveUnit(unitToRename);
         }
     }
 
