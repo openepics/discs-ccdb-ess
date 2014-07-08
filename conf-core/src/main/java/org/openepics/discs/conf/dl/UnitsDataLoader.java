@@ -26,11 +26,7 @@ import org.openepics.discs.conf.ui.LoginManager;
 import org.openepics.discs.conf.util.As;
 
 /**
-<<<<<<< HEAD
  * Implementation of loader for units.
-=======
- * Data loader for units.
->>>>>>> 5c12a32f832faf16fc5c44e08bd1751ea15f2a79
  *
  * @author Andraz Pozar <andraz.pozar@cosylab.com>
  *
