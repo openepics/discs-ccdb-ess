@@ -38,7 +38,7 @@ public abstract class AbstractDataLoader {
 	protected HashMap<String, Integer> indexByPropertyName(List<String> fields, List<String> header) {
 		final HashMap<String, Integer> indexByPropertyName = new HashMap<>();
 		for (String headerEntry : header) {
-			if (!fields.contains(headerEntry)) {
+			if (!fields.contains(headerEntry) && headerEntry != null && headerEntry.length() > 0) {
 				indexByPropertyName.put(headerEntry, header.indexOf(headerEntry));
 			}
 		}
