@@ -3,7 +3,7 @@
  * easily expanded to other import formats.
  * 
  */
-package org.openepics.discs.conf.dl;
+package org.openepics.discs.conf.dl.common;
 
 import java.io.InputStream;
 import java.util.List;

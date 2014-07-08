@@ -6,23 +6,35 @@
 
 package org.openepics.discs.conf.ui;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.List;
 import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
-import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.faces.event.ActionEvent;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.commons.io.FilenameUtils;
+import org.openepics.discs.conf.dl.PropertiesLoaderQualifier;
+import org.openepics.discs.conf.dl.common.DataLoader;
+import org.openepics.discs.conf.ejb.AuthEJB;
 import org.openepics.discs.conf.ejb.ConfigurationEJB;
+import org.openepics.discs.conf.ent.EntityType;
+import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyAssociation;
+import org.openepics.discs.conf.ui.common.DataLoaderHandler;
 import org.openepics.discs.conf.util.Utility;
+import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.SelectEvent;
+
+import com.google.common.io.ByteStreams;
 
 /**
  *
@@ -31,16 +43,21 @@ import org.primefaces.event.SelectEvent;
 @Named
 @ViewScoped
 public class PropertyManager implements Serializable {
-    @EJB
-    private ConfigurationEJB configurationEJB;
-    private static final Logger logger = Logger.getLogger("org.openepics.discs.conf");
+    @Inject private ConfigurationEJB configurationEJB;
     @Inject private LoginManager loginManager;
+    @Inject private AuthEJB authEJB;
+    @Inject private DataLoaderHandler dataLoaderHandler;
+    @Inject @PropertiesLoaderQualifier private DataLoader propertiesDataLoader;
+    private static final Logger logger = Logger.getLogger("org.openepics.discs.conf");
 
     private List<Property> objects;
     private List<Property> sortedObjects;
     private List<Property> filteredObjects;
     private Property selectedObject;
     private Property inputObject;
+
+    private byte[] importData;
+    private String importFileName;
     // private Property newProperty = new Property();
 
     //
@@ -167,5 +184,31 @@ public class PropertyManager implements Serializable {
         return inTrans;
     }
 
+    public boolean canImportProperties() {
+        return authEJB.userHasAuth(loginManager.getUserid(), EntityType.PROPERTY, EntityTypeOperation.CREATE) ||
+                authEJB.userHasAuth(loginManager.getUserid(), EntityType.PROPERTY, EntityTypeOperation.DELETE) ||
+                authEJB.userHasAuth(loginManager.getUserid(), EntityType.PROPERTY, EntityTypeOperation.UPDATE) ||
+                authEJB.userHasAuth(loginManager.getUserid(), EntityType.PROPERTY, EntityTypeOperation.RENAME);
+    }
 
+    public String getImportFileName() { return importFileName; }
+
+    public void importProperties() {
+        final InputStream inputStream = new ByteArrayInputStream(importData);
+        dataLoaderHandler.loadData(inputStream, propertiesDataLoader);
+    }
+
+    public void prepareImportPopup() {
+        importData = null;
+        importFileName = null;
+    }
+
+    public void handleFileUpload(FileUploadEvent event) {
+        try (InputStream inputStream = event.getFile().getInputstream()) {
+            this.importData = ByteStreams.toByteArray(inputStream);
+            this.importFileName = FilenameUtils.getName(event.getFile().getFileName());
+        } catch (IOException e) {
+            throw new RuntimeException();
+        }
+    }
 }

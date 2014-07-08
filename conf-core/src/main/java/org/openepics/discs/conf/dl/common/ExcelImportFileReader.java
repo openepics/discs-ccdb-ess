@@ -1,7 +1,7 @@
 /**
  *
  */
-package org.openepics.discs.conf.dl;
+package org.openepics.discs.conf.dl.common;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,7 +12,6 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.openepics.discs.conf.util.ExcelCell;
-import org.openepics.discs.conf.util.IllegalImportFileFormatException;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Strings;
@@ -39,7 +38,7 @@ public class ExcelImportFileReader {
 	 *         its index (starting with 1).
 	 * @throws IllegalImportFileFormatException
 	 */
-	public static List<List<String>> importExcelFile(InputStream inputStream) throws IllegalImportFileFormatException {
+	public static List<List<String>> importExcelFile(InputStream inputStream) {
 		boolean headerRowFound = false;
 		final List<List<String>> allRows = new ArrayList<>();
 
@@ -50,7 +49,7 @@ public class ExcelImportFileReader {
 			int headerRowLength = 0;
 
 			for (Row row : sheet) {
-				if (Objects.equal(ExcelCell.asStringOrNull(row.getCell(0)), DataLoader.CMD_HEADER)) {
+				if (Objects.equal(ExcelCell.asStringOrNull(row.getCell(0)), AbstractDataLoader.CMD_HEADER)) {
 					headerRowFound = true;
 					headerRowLength = row.getLastCellNum();
 				}
@@ -68,7 +67,7 @@ public class ExcelImportFileReader {
 			}
 
 			if (!headerRowFound) {
-				throw new IllegalImportFileFormatException("Header row was not found!", "anywhere");
+				return null;
 			}
 		} catch (IOException e) {
 			throw new RuntimeException(e);

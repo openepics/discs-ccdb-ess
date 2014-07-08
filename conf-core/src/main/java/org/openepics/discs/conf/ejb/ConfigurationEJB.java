@@ -6,9 +6,6 @@
 package org.openepics.discs.conf.ejb;
 
 import java.util.Date;
-
-import org.openepics.discs.conf.ent.*;
-
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,19 +19,23 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
+import org.openepics.discs.conf.ent.AuditRecord;
+import org.openepics.discs.conf.ent.DataType;
+import org.openepics.discs.conf.ent.Property;
+import org.openepics.discs.conf.ent.SlotRelation;
+import org.openepics.discs.conf.ent.Unit;
+
 /**
  *
  * @author vuppala
  */
-@Stateless
-public class ConfigurationEJB {
+@Stateless public class ConfigurationEJB {
 
     private static final Logger logger = Logger.getLogger("org.openepics.discs.conf");
-    @PersistenceContext(unitName = "org.openepics.discs.conf.data")
-    private EntityManager em;
+    @PersistenceContext(unitName = "org.openepics.discs.conf.data") private EntityManager em;
 
-    // --------------------  Property  ---------------------
-    
+    // -------------------- Property ---------------------
+
     public List<Property> findProperties() {
         List<Property> props;
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -49,31 +50,27 @@ public class ConfigurationEJB {
         return props;
     }
 
-    
     public Property findProperty(int id) {
         return em.find(Property.class, id);
     }
 
-    
     public void saveProperty(Property property) {
         property.setModifiedAt(new Date());
         em.merge(property);
     }
 
-    
     public void addProperty(Property property) {
         property.setModifiedAt(new Date());
         em.persist(property);
     }
 
-    
     public void deleteProperty(Property property) {
         Property prop = em.find(Property.class, property.getPropertyId());
         em.remove(prop);
     }
 
-    // --------------------  Unit ---------------------
-    
+    // -------------------- Unit ---------------------
+
     public List<Unit> findUnits() {
         List<Unit> units;
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -87,11 +84,10 @@ public class ConfigurationEJB {
         return units;
     }
 
-    
     public Unit findUnit(int id) {
         return em.find(Unit.class, id);
     }
-    
+
     public Unit findUnitByName(String name) {
         Unit unit;
         try {
@@ -101,24 +97,24 @@ public class ConfigurationEJB {
         }
         return unit;
     }
-    
+
     public void addUnit(Unit unit) {
         unit.setModifiedAt(new Date());
         em.persist(unit);
     }
-    
+
     public void saveUnit(Unit unit) {
         unit.setModifiedAt(new Date());
         em.merge(unit);
     }
-    
+
     public void deleteUnit(Unit unit) {
         final Unit unitToDelete = findUnit(unit.getUnitId());
         em.remove(unitToDelete);
     }
 
-    // ----------------  Data Type -------------------------
-    
+    // ---------------- Data Type -------------------------
+
     public List<DataType> findDataType() {
         List<DataType> datatypes;
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -132,13 +128,12 @@ public class ConfigurationEJB {
         return datatypes;
     }
 
-    
     public DataType findDataType(String id) {
         return em.find(DataType.class, id);
     }
 
-    // ----------------  Slot Relations -------------------------
-    
+    // ---------------- Slot Relations -------------------------
+
     public List<SlotRelation> findSlotRelation() {
         List<SlotRelation> slotrels;
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -152,13 +147,12 @@ public class ConfigurationEJB {
         return slotrels;
     }
 
-    
     public SlotRelation findSlotRelation(int id) {
         return em.find(SlotRelation.class, id);
     }
 
     // ---------------- Audit Records -------------------------
-    
+
     public List<AuditRecord> findAuditRecord() {
         List<AuditRecord> auditRec;
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -172,21 +166,16 @@ public class ConfigurationEJB {
         return auditRec;
     }
 
-    
     public AuditRecord findDAuditRecord(int id) {
         return em.find(AuditRecord.class, id);
     }
-    
+
     /*
-    public void logAuditEntry(String key, String oper, String entry) {
-        AuditRecord arec = new AuditRecord();
-        arec.setEntry(entry);
-        arec.setLogTime(new Date());
-        arec.setOperation(oper);
-        arec.setUser(key);
-        
-        em.persist(arec);
-    }
-    */
-    
+     * public void logAuditEntry(String key, String oper, String entry) {
+     * AuditRecord arec = new AuditRecord(); arec.setEntry(entry);
+     * arec.setLogTime(new Date()); arec.setOperation(oper); arec.setUser(key);
+     *
+     * em.persist(arec); }
+     */
+
 }
