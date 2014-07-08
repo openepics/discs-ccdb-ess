@@ -1,19 +1,22 @@
 package org.openepics.discs.conf.dl;
 
-import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nullable;
+import javax.annotation.Resource;
+import javax.ejb.EJBContext;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import org.openepics.discs.conf.dl.common.AbstractDataLoader;
+import org.openepics.discs.conf.dl.common.DataLoader;
+import org.openepics.discs.conf.dl.common.DataLoaderResult;
+import org.openepics.discs.conf.dl.common.DataLoaderResult.RowFormatFailureReason;
 import org.openepics.discs.conf.ejb.AuthEJB;
 import org.openepics.discs.conf.ejb.ConfigurationEJB;
 import org.openepics.discs.conf.ent.EntityType;
@@ -21,82 +24,88 @@ import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.Unit;
 import org.openepics.discs.conf.ui.LoginManager;
 import org.openepics.discs.conf.util.As;
-import org.openepics.discs.conf.util.IllegalImportFileFormatException;
-import org.openepics.discs.conf.util.NotAuthorizedException;
 
 /**
- * Data loader for units.
- * 
+ * Implementation of loader for units.
+ *
  * @author Andraz Pozar <andraz.pozar@cosylab.com>
- * 
+ *
  */
-@Stateless public class UnitsDataLoader extends DataLoader {
+@Stateless
+@UnitLoaderQualifier
+public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
 
     @Inject private LoginManager loginManager;
     @Inject private AuthEJB authEJB;
     @Inject private ConfigurationEJB configurationEJB;
     @PersistenceContext private EntityManager em;
-    private Map<String, Unit> unitByName;
-    private List<Unit> unitsToAddOrUpdate;
-    private List<Unit> unitsToDelete;
-    private Map<Unit, String> unitsToRename;
-    private int nameIndex, quantityIndex, symbolIndex, baseUnitExprIndex, descriptionIndex;
-    private List<Unit> units;
+    @Resource private EJBContext context;
 
-    @Override public void loadData(InputStream stream) throws IllegalImportFileFormatException, NotAuthorizedException {
+    private Map<String, Unit> unitByName;
+    private int nameIndex, quantityIndex, symbolIndex, baseUnitExprIndex, descriptionIndex;
+
+    @Override public DataLoaderResult loadDataToDatabase(List<List<String>> inputRows) {
         init();
 
-        final List<List<String>> inputRows = ExcelImportFileReader.importExcelFile(stream);
+        /*
+         * List does not contain any rows that do not have a value (command)
+         * in the first column. There should be no commands before "HEADER".
+         */
+        List<String> headerRow = inputRows.get(0);
+        DataLoaderResult fieldsIndexSetupResult = setUpIndexesForFields(headerRow);
 
-        if (inputRows != null && inputRows.size() > 0) {
-            /*
-             * List does not contain any rows that do not have a value (command)
-             * in the first column. There should be no commands before "HEADER".
-             */
-            List<String> headerRow = inputRows.get(0);
-            
-            unitsToAddOrUpdate = new ArrayList<>();
-            unitsToDelete = new ArrayList<>();
-            unitsToRename = new HashMap<>();
-            setUpIndexesForFields(headerRow);
-            
+        if (fieldsIndexSetupResult instanceof DataLoaderResult.FailureDataLoaderResult) {
+            return fieldsIndexSetupResult;
+        } else {
             for (List<String> row : inputRows.subList(1, inputRows.size())) {
                 final String rowNumber = row.get(0);
                 if (row.get(1).equals(CMD_HEADER)) {
                     headerRow = row;
-                    setUpIndexesForFields(headerRow);
-                    continue; // skip the rest of the processing for HEADER row
+                    fieldsIndexSetupResult = setUpIndexesForFields(headerRow);
+                    if (fieldsIndexSetupResult instanceof DataLoaderResult.FailureDataLoaderResult) {
+                        return fieldsIndexSetupResult;
+                    } else {
+                        continue; // skip the rest of the processing for HEADER row
+                    }
                 } else if (row.get(1).equals(CMD_END)) {
                     break;
                 }
 
                 final String command = As.notNull(row.get(1).toUpperCase());
-                @Nullable final String name = row.get(nameIndex);
-                @Nullable final String quantity = row.get(quantityIndex);
-                @Nullable final String symbol = row.get(symbolIndex);
-                @Nullable final String description = row.get(descriptionIndex);
-                @Nullable final String baseUnitExpr = row.get(baseUnitExprIndex);
+                final @Nullable String name = row.get(nameIndex);
+                final @Nullable String quantity = row.get(quantityIndex);
+                final @Nullable String symbol = row.get(symbolIndex);
+                final @Nullable String description = row.get(descriptionIndex);
+                final @Nullable String baseUnitExpr = row.get(baseUnitExprIndex);
                 final Date modifiedAt = new Date();
                 final String modifiedBy = loginManager.getUserid();
-                
+
                 if (name == null || quantity == null || symbol == null || description == null) {
-                    throw new IllegalImportFileFormatException("Required fields should not be empty.", rowNumber);
+                    return new DataLoaderResult.RowFormatFailureDataLoaderResult(rowNumber, RowFormatFailureReason.REQUIRED_FIELD_MISSING);
                 }
 
                 switch (command) {
                 case CMD_UPDATE:
                     if (unitByName.containsKey(name)) {
                         if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.UNIT, EntityTypeOperation.UPDATE)) {
-                            unitsToAddOrUpdate.add(new Unit(name, quantity, symbol, baseUnitExpr, description, modifiedAt, modifiedBy, 0));
+                            final Unit unitToUpdate = unitByName.get(name);
+                            unitToUpdate.setBaseUnitExpr(baseUnitExpr);
+                            unitToUpdate.setDescription(description);
+                            unitToUpdate.setQuantity(quantity);
+                            unitToUpdate.setSymbol(symbol);
+                            unitToUpdate.setModifiedBy(modifiedBy);
+                            unitToUpdate.setModifiedAt(modifiedAt);
+                            configurationEJB.saveUnit(unitToUpdate);
                         } else {
-                            throw new NotAuthorizedException(EntityTypeOperation.UPDATE, EntityType.UNIT);
+                            return new DataLoaderResult.NotAuthorizedFailureDataLoaderResult(EntityTypeOperation.UPDATE);
                         }
                     } else {
                         if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.UNIT, EntityTypeOperation.CREATE)) {
                             final Unit unitToAdd = new Unit(name, quantity, symbol, baseUnitExpr, description, modifiedAt, modifiedBy, 0);
-                            unitsToAddOrUpdate.add(unitToAdd);
+                            configurationEJB.addUnit(unitToAdd);
+                            unitByName.put(unitToAdd.getUnitName(), unitToAdd);
                         } else {
-                            throw new NotAuthorizedException(EntityTypeOperation.CREATE, EntityType.UNIT);
+                            return new DataLoaderResult.NotAuthorizedFailureDataLoaderResult(EntityTypeOperation.CREATE);
                         }
                     }
                     break;
@@ -104,13 +113,13 @@ import org.openepics.discs.conf.util.NotAuthorizedException;
                     if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.UNIT, EntityTypeOperation.DELETE)) {
                         final Unit unitToDelete = unitByName.get(name);
                         if (unitToDelete == null) {
-                            throw new IllegalImportFileFormatException("Unit to be deleted does not exist!", rowNumber);
+                           return new DataLoaderResult.EntityNotFoundFailureDataLoaderResult(rowNumber, EntityType.UNIT);
                         } else {
-                            unitsToDelete.add(unitToDelete);
-                            unitByName.remove(unitToDelete);
+                            configurationEJB.deleteUnit(unitToDelete);
+                            unitByName.remove(unitToDelete.getUnitName());
                         }
                     } else {
-                        throw new NotAuthorizedException(EntityTypeOperation.DELETE, EntityType.UNIT);
+                        return new DataLoaderResult.NotAuthorizedFailureDataLoaderResult(EntityTypeOperation.DELETE);
                     }
                     break;
                 case CMD_RENAME:
@@ -118,69 +127,50 @@ import org.openepics.discs.conf.util.NotAuthorizedException;
                         final int startOldNameMarkerIndex = name.indexOf("[");
                         final int endOldNameMarkerIndex = name.indexOf("]");
                         if (startOldNameMarkerIndex == -1 || endOldNameMarkerIndex == -1) {
-                            throw new IllegalImportFileFormatException("RENAME command must have unit name which is to be renamed, defined between [] \nfollowed by new name. Example: [old name] new name.", rowNumber);
-                        } else if (unitByName.containsKey(name.substring(startOldNameMarkerIndex + 1, endOldNameMarkerIndex))) {
-                            if (unitByName.containsKey(name.substring(endOldNameMarkerIndex + 2).trim())) {
-                                throw new IllegalImportFileFormatException("Cannot rename unit to \"" + name.substring(endOldNameMarkerIndex + 2).trim() + "\" since unit with this name already exists.", rowNumber);
+                            return new DataLoaderResult.RowFormatFailureDataLoaderResult(rowNumber, RowFormatFailureReason.RENAME_MISFORMAT);
+                        }
+
+                        final String oldName = name.substring(startOldNameMarkerIndex + 1, endOldNameMarkerIndex).trim();
+                        final String newName = name.substring(endOldNameMarkerIndex + 1).trim();
+
+                        if (unitByName.containsKey(oldName)) {
+                            if (unitByName.containsKey(newName)) {
+                                return new DataLoaderResult.RowFormatFailureDataLoaderResult(rowNumber, RowFormatFailureReason.DUPLICATE_ENTITY);
                             } else {
-                                unitsToRename.put(unitByName.get(name.substring(startOldNameMarkerIndex + 1, endOldNameMarkerIndex)), name.substring(endOldNameMarkerIndex + 2).trim());
+                                final Unit unitToRename = unitByName.get(oldName);
+                                unitToRename.setUnitName(newName);
+                                configurationEJB.saveUnit(unitToRename);
+                                unitByName.remove(oldName);
+                                unitByName.put(newName, unitToRename);
                             }
                         } else {
-                            throw new IllegalImportFileFormatException("Unit to be renamed does not exist!", rowNumber);
+                            return new DataLoaderResult.EntityNotFoundFailureDataLoaderResult(rowNumber, EntityType.UNIT);
                         }
                     } else {
-                        throw new NotAuthorizedException(EntityTypeOperation.RENAME, EntityType.UNIT);
+                        return new DataLoaderResult.NotAuthorizedFailureDataLoaderResult(EntityTypeOperation.RENAME);
                     }
                     break;
                 default:
-                    throw new IllegalImportFileFormatException(command + " is not a valid command!", rowNumber);
+                    return new DataLoaderResult.RowFormatFailureDataLoaderResult(rowNumber, RowFormatFailureReason.COMMAND_NOT_VALID);
                 }
             }
-
-            doImport();
         }
+
+        return new DataLoaderResult.SuccessDataLoaderResult();
     }
 
-    @Override protected void doImport() {
-        for (Unit unit : unitsToAddOrUpdate) {
-            if (unitByName.containsKey(unit.getUnitName())) {
-                final Unit unitToUpdate = unitByName.get(unit.getUnitName());
-                unitToUpdate.setBaseUnitExpr(unit.getBaseUnitExpr());
-                unitToUpdate.setDescription(unit.getDescription());
-                unitToUpdate.setModifiedAt(unit.getModifiedAt());
-                unitToUpdate.setQuantity(unit.getQuantity());
-                unitToUpdate.setSymbol(unit.getSymbol());
-                unitToUpdate.setModifiedBy(unit.getModifiedBy());
-                unitToUpdate.setModifiedAt(unit.getModifiedAt());
-                configurationEJB.saveUnit(unitToUpdate);
-            } else {
-                configurationEJB.addUnit(unit);
-                unitByName.put(unit.getUnitName(), unit);
-            }
-        }
-
-        for (Unit unit : unitsToDelete) {
-            configurationEJB.deleteUnit(unitByName.get(unit.getUnitName()));
-            
-        }
-
-        final Iterator<Unit> unitRenameIterator = unitsToRename.keySet().iterator();
-        while (unitRenameIterator.hasNext()) {
-            final Unit unitToRename = unitRenameIterator.next();
-            unitToRename.setUnitName(unitsToRename.get(unitToRename));
-            configurationEJB.saveUnit(unitToRename);
-        }
-    }
-
+    /**
+     * Local cache of all units by their names to speed up operations.
+     */
     private void init() {
-        units = configurationEJB.findUnits();
         unitByName = new HashMap<>();
-        for (Unit unit : units) {
+        for (Unit unit : configurationEJB.findUnits()) {
             unitByName.put(unit.getUnitName(), unit);
         }
     }
 
-    @Override protected void setUpIndexesForFields(List<String> header) throws IllegalImportFileFormatException {
+    @Override protected DataLoaderResult setUpIndexesForFields(List<String> header) {
+        final String rowNumber = header.get(0);
         nameIndex = header.indexOf("NAME");
         quantityIndex = header.indexOf("QUANTITY");
         symbolIndex = header.indexOf("SYMBOL");
@@ -188,7 +178,9 @@ import org.openepics.discs.conf.util.NotAuthorizedException;
         descriptionIndex = header.indexOf("DESCRIPTION");
 
         if (nameIndex == -1 || quantityIndex == -1 || symbolIndex == -1 || baseUnitExprIndex == -1 || descriptionIndex == -1) {
-            throw new IllegalImportFileFormatException("Header row does not contain required fields!", header.get(0));
+            return new DataLoaderResult.RowFormatFailureDataLoaderResult(rowNumber, RowFormatFailureReason.HEADER_FIELD_MISSING);
+        } else {
+            return new DataLoaderResult.SuccessDataLoaderResult();
         }
     }
 }

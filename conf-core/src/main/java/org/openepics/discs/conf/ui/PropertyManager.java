@@ -6,33 +6,30 @@
 
 package org.openepics.discs.conf.ui;
 
-import org.apache.commons.io.FilenameUtils;
-import org.openepics.discs.conf.util.IllegalImportFileFormatException;
-import org.openepics.discs.conf.util.NotAuthorizedException;
-import org.openepics.discs.conf.util.Utility;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
 import java.io.Serializable;
 import java.util.List;
 import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
-import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
-
-import org.openepics.discs.conf.dl.PropertiesDataLoader;
-
-import org.openepics.discs.conf.ent.*;
-import org.openepics.discs.conf.ejb.*;
-
 import javax.faces.event.ActionEvent;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.commons.io.FilenameUtils;
+import org.openepics.discs.conf.dl.PropertiesLoaderQualifier;
+import org.openepics.discs.conf.dl.common.DataLoader;
+import org.openepics.discs.conf.ejb.AuthEJB;
+import org.openepics.discs.conf.ejb.ConfigurationEJB;
+import org.openepics.discs.conf.ent.EntityType;
+import org.openepics.discs.conf.ent.EntityTypeOperation;
+import org.openepics.discs.conf.ent.Property;
+import org.openepics.discs.conf.ui.common.DataLoaderHandler;
+import org.openepics.discs.conf.util.Utility;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.SelectEvent;
 
@@ -45,13 +42,13 @@ import com.google.common.io.ByteStreams;
 @Named
 @ViewScoped
 public class PropertyManager implements Serializable {
-    @EJB
-    private ConfigurationEJB configurationEJB;
+    @Inject private ConfigurationEJB configurationEJB;
     @Inject private LoginManager loginManager;
     @Inject private AuthEJB authEJB;
-    @Inject private PropertiesDataLoader propertiesDataLoader;
+    @Inject private DataLoaderHandler dataLoaderHandler;
+    @Inject @PropertiesLoaderQualifier private DataLoader propertiesDataLoader;
     private static final Logger logger = Logger.getLogger("org.openepics.discs.conf");
-    
+
     private List<Property> objects;
     private List<Property> sortedObjects;
     private List<Property> filteredObjects;
@@ -62,16 +59,16 @@ public class PropertyManager implements Serializable {
     private String importFileName;
     // private Property newProperty = new Property();
 
-    // 
-    private boolean inTrans = false; // in the middle of an operations  
+    //
+    private boolean inTrans = false; // in the middle of an operations
     private char selectedOp = 'n'; // selected operation: [a]dd, [e]dit, [d]elete, [n]one
-    
+
     /**
      * Creates a new instance of PropertyManager
      */
     public PropertyManager() {
     }
-    
+
     @PostConstruct
     public void init() {
         try {
@@ -81,27 +78,27 @@ public class PropertyManager implements Serializable {
             System.err.println(e.getMessage());
         }
     }
-    
+
     public void onRowSelect(SelectEvent event) {
         inputObject = selectedObject;
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Selected", "");
     }
-    
+
     public void onAdd(ActionEvent event) {
         selectedOp = 'a';
-        inTrans = true;        
+        inTrans = true;
         inputObject = new Property();
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Add", "");
     }
-    
+
     public void onEdit(ActionEvent event) {
         selectedOp = 'e';
         inTrans = true;
         inputObject = selectedObject;
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Edit", "");
     }
-    
-    public void onDelete(ActionEvent event) {        
+
+    public void onDelete(ActionEvent event) {
         try {
             configurationEJB.deleteProperty(selectedObject);
             objects.remove(selectedObject);
@@ -110,16 +107,16 @@ public class PropertyManager implements Serializable {
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted", "");
         } catch (Exception e) {
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted", "");
-        } finally {           
-            
-        }       
+        } finally {
+
+        }
     }
-    
+
     public void onSave(ActionEvent event) {
         try {
             inputObject.setAssociation("T");
             inputObject.setModifiedBy("test-user");
-            
+
             if (selectedOp == 'a') {
                 configurationEJB.addProperty(inputObject);
                 selectedObject = inputObject;
@@ -135,8 +132,8 @@ public class PropertyManager implements Serializable {
             inTrans = false;
             selectedOp = 'n';
         }
-    }  
-    
+    }
+
     public void onCancel(ActionEvent event) {
         selectedOp = 'n';
         inputObject = selectedObject;
@@ -184,39 +181,34 @@ public class PropertyManager implements Serializable {
     public boolean isInTrans() {
         return inTrans;
     }
-    
+
     public boolean canImportProperties() {
-        return authEJB.userHasAuth(loginManager.getUserid(), EntityType.PROPERTY, EntityTypeOperation.CREATE) || 
+        return authEJB.userHasAuth(loginManager.getUserid(), EntityType.PROPERTY, EntityTypeOperation.CREATE) ||
                 authEJB.userHasAuth(loginManager.getUserid(), EntityType.PROPERTY, EntityTypeOperation.DELETE) ||
                 authEJB.userHasAuth(loginManager.getUserid(), EntityType.PROPERTY, EntityTypeOperation.UPDATE) ||
                 authEJB.userHasAuth(loginManager.getUserid(), EntityType.PROPERTY, EntityTypeOperation.RENAME);
     }
-    
+
     public String getImportFileName() { return importFileName; }
-    
-    public void importProperties() {      
-        InputStream inputStream = new ByteArrayInputStream(importData);
-        try {
-            propertiesDataLoader.loadData(inputStream);
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Import Success", "Properties were successfully imported");
-        } catch (IllegalImportFileFormatException | NotAuthorizedException e) {
-            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Import Fail", e.getMessage());
-        }         
+
+    public void importProperties() {
+        final InputStream inputStream = new ByteArrayInputStream(importData);
+        dataLoaderHandler.loadData(inputStream, propertiesDataLoader);
     }
-    
+
     public void prepareImportPopup() {
         importData = null;
         importFileName = null;
     }
-    
+
     public void handleFileUpload(FileUploadEvent event) {
         try (InputStream inputStream = event.getFile().getInputstream()) {
             this.importData = ByteStreams.toByteArray(inputStream);
             this.importFileName = FilenameUtils.getName(event.getFile().getFileName());
         } catch (IOException e) {
-            throw new RuntimeException();           
+            throw new RuntimeException();
         }
     }
-    
-    
+
+
 }
