@@ -99,26 +99,15 @@ public class ComptypeEJB {
 
 
     public void deleteComponentType(ComponentType ctype) {
-        ctype.setModifiedAt(new Date());
+        em.merge(ctype);
         em.remove(ctype);
         makeAuditEntry(EntityTypeOperation.DELETE,ctype.getName(),"Deleted component type");
     }
 
     // ---------------- Component Type Property ---------------------
 
-    public void saveCompTypeProp(ComptypeProperty ctprop, boolean create) throws Exception {
-        if (ctprop == null) {
-            logger.log(Level.SEVERE, "saveCompTypeProp: property is null");
-            return;
-        }
-        String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, EntityType.COMPONENT_TYPE, EntityTypeOperation.UPDATE)) {
-            logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
-            throw new Exception("User " + user + " is not authorized to perform this operation");
-        }
+    public void saveCompTypeProp(ComptypeProperty ctprop, boolean create) {
         ctprop.setModifiedAt(new Date());
-        // ctprop.setType("a");
-        ctprop.setModifiedBy("user");
         ComptypeProperty newProp = em.merge(ctprop);
 
         if (create) { // create instead of update

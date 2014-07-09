@@ -88,7 +88,11 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
                         final ComponentType componentTypeToUpdate = comptypeEJB.findComponentTypeByName(name);
                         if (componentTypeToUpdate != null) {
                             if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.COMPONENT_TYPE, EntityTypeOperation.UPDATE)) {
-                                //TODO Update
+                                componentTypeToUpdate.setDescription(description);
+                                final DataLoaderResult updatePropertiesResult = addOrUpdateProperties(componentTypeToUpdate, indexByPropertyName, row, rowNumber, modifiedBy);
+                                if (updatePropertiesResult instanceof DataLoaderResult.FailureDataLoaderResult) {
+                                    return updatePropertiesResult;
+                                }
                             } else {
                                 return new DataLoaderResult.NotAuthorizedFailureDataLoaderResult(EntityTypeOperation.UPDATE);
                             }
@@ -97,7 +101,7 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
                                 final ComponentType compTypeToAdd = new ComponentType(name, modifiedBy);
                                 compTypeToAdd.setDescription(description);
                                 comptypeEJB.addComponentType(compTypeToAdd);
-                                DataLoaderResult addPropertiesResult = addProperties(compTypeToAdd, indexByPropertyName, row, rowNumber, modifiedBy);
+                                final DataLoaderResult addPropertiesResult = addOrUpdateProperties(compTypeToAdd, indexByPropertyName, row, rowNumber, modifiedBy);
                                 if (addPropertiesResult instanceof DataLoaderResult.FailureDataLoaderResult) {
                                     return addPropertiesResult;
                                 }
@@ -166,8 +170,18 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
         }
     }
 
-    private DataLoaderResult addProperties(ComponentType compType, Map<String,Integer> properties, List<String> row, String rowNumber, String modifiedBy) {
+    private DataLoaderResult addOrUpdateProperties(ComponentType compType, Map<String, Integer> properties, List<String> row, String rowNumber, String modifiedBy) {
         final Iterator<String> propertiesIterator = properties.keySet().iterator();
+        final List<ComptypeProperty> compTypeProperties = new ArrayList<>();
+        if (compType.getComptypePropertyList() != null) {
+            compTypeProperties.addAll(compType.getComptypePropertyList());
+        }
+        final Map<Property, ComptypeProperty> compTypePropertyByProperty = new HashMap<>();
+
+        for (ComptypeProperty compProperty : compTypeProperties) {
+            compTypePropertyByProperty.put(compProperty.getProperty(), compProperty);
+        }
+
         while (propertiesIterator.hasNext()) {
             final String propertyName = propertiesIterator.next();
             final int propertyIndex = properties.get(propertyName);
@@ -175,10 +189,19 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
             final @Nullable String propertyValue = row.get(propertyIndex);
             if (property == null) {
                 return new DataLoaderResult.EntityNotFoundFailureDataLoaderResult(rowNumber, EntityType.PROPERTY);
+            } else if (compTypePropertyByProperty.containsKey(property)){
+                final ComptypeProperty compTypePropertyToUpdate = compTypePropertyByProperty.get(property);
+                if (propertyValue == null) {
+                    comptypeEJB.deleteCompTypeProp(compTypePropertyToUpdate);
+                } else {
+                    compTypePropertyToUpdate.setPropValue(propertyValue);
+                    compTypePropertyToUpdate.setModifiedBy(modifiedBy);
+                    comptypeEJB.saveCompTypeProp(compTypePropertyToUpdate, false);
+                }
+
             } else if (propertyValue != null) {
-                if (property.getAssociation().equals(PropertyAssociation.ALL) || property.getAssociation().equals(PropertyAssociation.TYPE) ||
-                        property.getAssociation().equals(PropertyAssociation.TYPE_DEVICE) || property.getAssociation().equals(PropertyAssociation.TYPE_SLOT)) {
-                    ComptypeProperty comptypePropertyToAdd = new ComptypeProperty(false, modifiedBy);
+                if (property.getAssociation().equals(PropertyAssociation.ALL) || property.getAssociation().equals(PropertyAssociation.TYPE) || property.getAssociation().equals(PropertyAssociation.TYPE_DEVICE) || property.getAssociation().equals(PropertyAssociation.TYPE_SLOT)) {
+                    final ComptypeProperty comptypePropertyToAdd = new ComptypeProperty(false, modifiedBy);
                     comptypePropertyToAdd.setProperty(property);
                     comptypePropertyToAdd.setPropValue(propertyValue);
                     comptypePropertyToAdd.setComponentType(compType);
@@ -187,10 +210,8 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
                     return new DataLoaderResult.RowFormatFailureDataLoaderResult(rowNumber, RowFormatFailureReason.WRONG_VALUE);
                 }
             }
-
         }
 
         return new DataLoaderResult.SuccessDataLoaderResult();
     }
-
 }
