@@ -31,7 +31,7 @@ import org.openepics.discs.conf.ent.Unit;
  */
 @Stateless public class ConfigurationEJB {
 
-    private static final Logger logger = Logger.getLogger("org.openepics.discs.conf");
+    private static final Logger logger = Logger.getLogger(ConfigurationEJB.class.getCanonicalName());
     @PersistenceContext(unitName = "org.openepics.discs.conf.data") private EntityManager em;
 
     // -------------------- Property ---------------------

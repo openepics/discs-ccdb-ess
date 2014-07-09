@@ -8,11 +8,13 @@ package org.openepics.discs.conf.ui;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
+
 import org.openepics.discs.conf.ejb.DeviceEJB;
 import org.openepics.discs.conf.ent.Device;
 
@@ -25,14 +27,14 @@ import org.openepics.discs.conf.ent.Device;
 public class DeviceConverter implements Converter {
     @EJB
     private DeviceEJB deviceEJB;
-    private static final Logger logger = Logger.getLogger("org.openepics.discs.conf");
-    
+    private static final Logger logger = Logger.getLogger(DeviceConverter.class.getCanonicalName());
+
     /**
      * Creates a new instance of DeviceConverter
      */
     public DeviceConverter() {
     }
-    
+
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
         Device dev;

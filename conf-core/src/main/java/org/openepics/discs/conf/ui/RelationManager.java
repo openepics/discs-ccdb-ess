@@ -6,8 +6,6 @@
 
 package org.openepics.discs.conf.ui;
 
-import org.openepics.discs.conf.util.Utility;
-
 import java.io.Serializable;
 import java.util.List;
 import java.util.logging.Logger;
@@ -20,6 +18,7 @@ import javax.inject.Named;
 
 import org.openepics.discs.conf.ejb.ConfigurationEJB;
 import org.openepics.discs.conf.ent.SlotRelation;
+import org.openepics.discs.conf.util.Utility;
 
 /**
  *
@@ -30,19 +29,19 @@ import org.openepics.discs.conf.ent.SlotRelation;
 public class RelationManager implements Serializable {
     @EJB
     private ConfigurationEJB configurationEJB;
-    private static final Logger logger = Logger.getLogger("org.openepics.discs.conf");
-    
+    private static final Logger logger = Logger.getLogger(RelationManager.class.getCanonicalName());
+
     private List<SlotRelation> objects;
     /**
      * Creates a new instance of RelationManager
      */
     public RelationManager() {
     }
-    
+
     @PostConstruct
     public void init() {
         try {
-            objects = configurationEJB.findSlotRelation();           
+            objects = configurationEJB.findSlotRelation();
         } catch (Exception e) {
             System.err.println(e.getMessage());
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Error in getting slot relationships", " ");
@@ -52,6 +51,6 @@ public class RelationManager implements Serializable {
     public List<SlotRelation> getObjects() {
         return objects;
     }
-    
-    
+
+
 }

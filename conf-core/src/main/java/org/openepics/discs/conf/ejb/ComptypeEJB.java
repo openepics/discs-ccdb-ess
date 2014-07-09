@@ -39,7 +39,7 @@ public class ComptypeEJB {
     private AuthEJB authEJB;
     // Add business logic below. (Right-click in editor and choose
     // "Insert Code > Add Business Method")
-    private static final Logger logger = Logger.getLogger("org.openepics.discs.conf");
+    private static final Logger logger = Logger.getLogger(ComptypeEJB.class.getCanonicalName());
     @PersistenceContext(unitName = "org.openepics.discs.conf.data")
     private EntityManager em;
     @Inject

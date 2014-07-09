@@ -48,7 +48,7 @@ public class PropertyManager implements Serializable {
     @Inject private AuthEJB authEJB;
     @Inject private DataLoaderHandler dataLoaderHandler;
     @Inject @PropertiesLoaderQualifier private DataLoader propertiesDataLoader;
-    private static final Logger logger = Logger.getLogger("org.openepics.discs.conf");
+    private static final Logger logger = Logger.getLogger(PropertyManager.class.getCanonicalName());
 
     private List<Property> objects;
     private List<Property> sortedObjects;

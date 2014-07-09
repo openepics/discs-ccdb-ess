@@ -49,7 +49,7 @@ public class InstallationManager implements Serializable {
 
     @Inject LoginManager loginManager;
 
-    private static final Logger logger = Logger.getLogger("org.openepics.discs.conf");
+    private static final Logger logger = Logger.getLogger(InstallationManager.class.getCanonicalName());
 
     private List<InstallationRecord> objects;
     private List<InstallationRecord> sortedObjects;

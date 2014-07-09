@@ -41,7 +41,7 @@ public class DeviceEJB {
     @Inject
     private LoginManager loginManager;
 
-    private static final Logger logger = Logger.getLogger("org.openepics.discs.conf");
+    private static final Logger logger = Logger.getLogger(DeviceEJB.class.getCanonicalName());
     @PersistenceContext(unitName = "org.openepics.discs.conf.data")
     private EntityManager em;
 

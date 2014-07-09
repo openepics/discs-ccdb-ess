@@ -32,7 +32,7 @@ public class LoginManager implements Serializable {
     @EJB
     private AuthEJB authEJB;
 
-    private static final Logger logger = Logger.getLogger("org.openepics.discs.login");
+    private static final Logger logger = Logger.getLogger(LoginManager.class.getCanonicalName());
     private String userid;
     private String password;
     private String token;
@@ -58,9 +58,9 @@ public class LoginManager implements Serializable {
 
         try {
             if (request.getUserPrincipal() == null) {
-                request.login(userid, password);              
+                request.login(userid, password);
                 // RequestContext.getCurrentInstance().addCallbackParam("loginSuccess", true); // For login view
-                // context.getExternalContext().getSessionMap().put("user", inputUserID);             
+                // context.getExternalContext().getSessionMap().put("user", inputUserID);
                 // if (originalURL != null) {
                 //      context.getExternalContext().redirect(originalURL);
                 // }
@@ -78,7 +78,7 @@ public class LoginManager implements Serializable {
             logger.log(Level.INFO, "Login failed for " + userid);
             loggedin = false;
         } finally {
-            password = "xxxxxx"; // ToDo implement a better way destroy the password (from JVM)            
+            password = "xxxxxx"; // ToDo implement a better way destroy the password (from JVM)
         }
         return null;
         // return originalURL;
@@ -97,7 +97,7 @@ public class LoginManager implements Serializable {
         } catch (Exception e) {
             showMessage(FacesMessage.SEVERITY_ERROR, "Strangely, logout has failed", "That's odd!");
         } finally {
-            
+
         }
 
         return "logout"; // ToDo: replace with null

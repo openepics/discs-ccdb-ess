@@ -5,20 +5,22 @@
  */
 package org.openepics.discs.conf.ui;
 
-import org.openepics.discs.conf.util.Utility;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
-import javax.inject.Named;
 import javax.faces.view.ViewScoped;
+import javax.inject.Named;
+
 import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotProperty;
+import org.openepics.discs.conf.util.Utility;
 
 /**
  *
@@ -49,9 +51,9 @@ public class ReportManager implements Serializable {
 
     @EJB
     private SlotEJB slotEJB;
-    private static final Logger logger = Logger.getLogger("org.openepics.discs.conf");
+    private static final Logger logger = Logger.getLogger(ReportManager.class.getCanonicalName());
 
-    private List<Slot> layoutSlots;   
+    private List<Slot> layoutSlots;
     private List<Slot> filteredObjects;
     private List<ColumnModel> columns = new ArrayList<>();
 

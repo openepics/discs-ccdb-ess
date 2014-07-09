@@ -8,11 +8,13 @@ package org.openepics.discs.conf.ui;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
+
 import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.Slot;
 
@@ -26,13 +28,13 @@ public class SlotConverter implements Converter{
 
     @EJB
     private SlotEJB slotEJB;
-    private static final Logger logger = Logger.getLogger("org.openepics.discs.conf");
+    private static final Logger logger = Logger.getLogger(SlotConverter.class.getCanonicalName());
     /**
      * Creates a new instance of SlotConverter
      */
     public SlotConverter() {
     }
-    
+
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
         Slot slot;

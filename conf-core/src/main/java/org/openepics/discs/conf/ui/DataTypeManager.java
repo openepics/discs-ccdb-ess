@@ -6,17 +6,19 @@
 
 package org.openepics.discs.conf.ui;
 
-import org.openepics.discs.conf.util.Utility;
 import java.io.Serializable;
 import java.util.List;
 import java.util.logging.Logger;
+
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
+
 import org.openepics.discs.conf.ejb.ConfigurationEJB;
 import org.openepics.discs.conf.ent.DataType;
+import org.openepics.discs.conf.util.Utility;
 
 /**
  *
@@ -28,8 +30,8 @@ public class DataTypeManager implements Serializable {
 
     @EJB
     private ConfigurationEJB configurationEJB;
-    private static final Logger logger = Logger.getLogger("org.openepics.discs.conf");
-    
+    private static final Logger logger = Logger.getLogger(DataTypeManager.class.getCanonicalName());
+
     private List<DataType> dataTypes;
     private List<DataType> fileteredDataTypes;
     /**
@@ -37,11 +39,11 @@ public class DataTypeManager implements Serializable {
      */
     public DataTypeManager() {
     }
-    
+
     @PostConstruct
     public void init() {
         try {
-            dataTypes = configurationEJB.findDataType();           
+            dataTypes = configurationEJB.findDataType();
         } catch (Exception e) {
             System.err.println(e.getMessage());
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Error in getting data types", " ");
@@ -59,7 +61,7 @@ public class DataTypeManager implements Serializable {
     public void setFileteredDataTypes(List<DataType> fileteredDataTypes) {
         this.fileteredDataTypes = fileteredDataTypes;
     }
-    
-    
-        
+
+
+
 }

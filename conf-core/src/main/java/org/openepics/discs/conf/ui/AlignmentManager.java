@@ -47,7 +47,7 @@ public class AlignmentManager implements Serializable{
 
     @EJB
     private AlignmentEJB alignmentEJB;
-    private static final Logger logger = Logger.getLogger(AlignmentManager.class.getName());
+    private static final Logger logger = Logger.getLogger(AlignmentManager.class.getCanonicalName());
     @Inject
     private BlobStore blobStore;
     @Inject private LoginManager loginManager;

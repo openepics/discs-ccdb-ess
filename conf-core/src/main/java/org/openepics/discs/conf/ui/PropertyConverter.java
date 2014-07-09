@@ -8,11 +8,13 @@ package org.openepics.discs.conf.ui;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
+
 import org.openepics.discs.conf.ejb.ConfigurationEJB;
 import org.openepics.discs.conf.ent.Property;
 
@@ -26,11 +28,11 @@ import org.openepics.discs.conf.ent.Property;
 public class PropertyConverter implements Converter {
     @EJB
     private ConfigurationEJB configurationEJB;
-    private static final Logger logger = Logger.getLogger("org.openepics.discs.conf");
-    
-    public PropertyConverter() {        
+    private static final Logger logger = Logger.getLogger(PropertyConverter.class.getCanonicalName());
+
+    public PropertyConverter() {
     }
-    
+
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
         Property prop;

@@ -24,11 +24,11 @@ import org.openepics.discs.conf.ent.Privilege;
 @Stateless
 public class AuthEJB {
 
-    private static final Logger logger = Logger.getLogger(AuthEJB.class.getName());
+    private static final Logger logger = Logger.getLogger(AuthEJB.class.getCanonicalName());
     @PersistenceContext(unitName = "org.openepics.discs.conf.data")
-    private EntityManager em;  
+    private EntityManager em;
 
-    // todo: implement autorization using RBAC.    
+    // todo: implement autorization using RBAC.
     public boolean userHasAuth(String principal, EntityType resource, EntityTypeOperation operation) {
         boolean auth = false;
 

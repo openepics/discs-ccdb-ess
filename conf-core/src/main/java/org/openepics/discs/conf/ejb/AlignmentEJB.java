@@ -35,7 +35,7 @@ import org.openepics.discs.conf.ui.LoginManager;
  */
 @Stateless
 public class AlignmentEJB {
-private static final Logger logger = Logger.getLogger("org.openepics.discs.conf");
+private static final Logger logger = Logger.getLogger(AlignmentEJB.class.getCanonicalName());
     @PersistenceContext(unitName = "org.openepics.discs.conf.data")
     private EntityManager em;
     // Add business logic below. (Right-click in editor and choose

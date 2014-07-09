@@ -44,7 +44,7 @@ import org.primefaces.model.UploadedFile;
 public class DeviceManager implements Serializable {
     @EJB
     private DeviceEJB deviceEJB;
-    private static final Logger logger = Logger.getLogger("org.openepics.discs.conf");
+    private static final Logger logger = Logger.getLogger(DeviceManager.class.getCanonicalName());
 
     @Inject
     private BlobStore blobStore;

@@ -16,6 +16,7 @@ import java.util.Calendar;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
@@ -25,7 +26,7 @@ import javax.inject.Inject;
  */
 public class BlobStore implements Serializable {
 
-    private static final Logger logger = Logger.getLogger(BlobStore.class.getName());
+    private static final Logger logger = Logger.getLogger(BlobStore.class.getCanonicalName());
     private static String blobStoreRoot = "/var/confmgr";
     private boolean validStore = true; // is the blob store valid?
 
@@ -88,7 +89,7 @@ public class BlobStore implements Serializable {
             logger.log(Level.SEVERE, "Blob already exists! Name collision {0}", fullPath);
             return null;
         }
-        
+
         logger.log(Level.INFO, "New Blob Id {0}", blobId);
 
         return blobId;
@@ -105,7 +106,7 @@ public class BlobStore implements Serializable {
         File ofile = new File(blobStoreRoot + File.separator + fileId);
         ostream = new FileOutputStream(ofile);
         copyFile(istream, ostream);
-        // repBean.putFile(folderName, fname, istream);           
+        // repBean.putFile(folderName, fname, istream);
         ostream.close();
 
         return fileId;

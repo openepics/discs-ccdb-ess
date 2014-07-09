@@ -6,8 +6,6 @@
 
 package org.openepics.discs.conf.ui;
 
-import org.openepics.discs.conf.util.Utility;
-
 import java.io.Serializable;
 import java.util.List;
 import java.util.logging.Level;
@@ -16,11 +14,12 @@ import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
-import javax.inject.Named;
 import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 
 import org.openepics.discs.conf.ejb.ConfigurationEJB;
 import org.openepics.discs.conf.ent.AuditRecord;
+import org.openepics.discs.conf.util.Utility;
 
 /**
  *
@@ -31,8 +30,8 @@ import org.openepics.discs.conf.ent.AuditRecord;
 public class AuditManager implements Serializable {
     @EJB
     private ConfigurationEJB configurationEJB;
-    private static final Logger logger = Logger.getLogger("org.openepics.discs.conf");
-    
+    private static final Logger logger = Logger.getLogger(AuditManager.class.getCanonicalName());
+
     private List<AuditRecord> objects;
     private List<AuditRecord> sortedObjects;
     private List<AuditRecord> filteredObjects;
@@ -42,11 +41,11 @@ public class AuditManager implements Serializable {
      */
     public AuditManager() {
     }
-    
+
     @PostConstruct
     public void init() {
         try {
-            objects = configurationEJB.findAuditRecord();          
+            objects = configurationEJB.findAuditRecord();
         } catch (Exception e) {
             System.err.println(e.getMessage());
             logger.log(Level.SEVERE, "Cannot retrieve audit records");
@@ -65,5 +64,5 @@ public class AuditManager implements Serializable {
     public void setFilteredObjects(List<AuditRecord> filteredObjects) {
         this.filteredObjects = filteredObjects;
     }
-      
+
 }

@@ -45,7 +45,7 @@ public class ComponentTypeMananger implements Serializable {
 
     @EJB
     private ComptypeEJB comptypeEJB;
-    private static final Logger logger = Logger.getLogger("org.openepics.discs.conf");
+    private static final Logger logger = Logger.getLogger(ComponentTypeMananger.class.getCanonicalName());
     // private static String folderName = "/var/proteus/"; // ToDo: get it from configuration
 
     @Inject

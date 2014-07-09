@@ -44,7 +44,7 @@ public class SlotManager implements Serializable {
 
     @EJB
     private SlotEJB slotEJB;
-    private static final Logger logger = Logger.getLogger("org.openepics.discs.conf");
+    private static final Logger logger = Logger.getLogger(SlotManager.class.getCanonicalName());
     @Inject
     private BlobStore blobStore;
     @Inject private LoginManager loginManager;

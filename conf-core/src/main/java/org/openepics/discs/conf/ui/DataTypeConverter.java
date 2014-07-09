@@ -8,11 +8,13 @@ package org.openepics.discs.conf.ui;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
+
 import org.openepics.discs.conf.ejb.ConfigurationEJB;
 import org.openepics.discs.conf.ent.DataType;
 
@@ -27,13 +29,13 @@ public class DataTypeConverter implements Converter {
 
     @EJB
     private ConfigurationEJB configurationEJB;
-    private static final Logger logger = Logger.getLogger("org.openepics.discs.conf");
+    private static final Logger logger = Logger.getLogger(DataTypeConverter.class.getCanonicalName());
     /**
      * Creates a new instance of DataTypeConverter
      */
     public DataTypeConverter() {
     }
-    
+
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
         DataType dtype;
