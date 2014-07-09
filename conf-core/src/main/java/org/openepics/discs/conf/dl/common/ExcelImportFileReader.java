@@ -49,18 +49,18 @@ public class ExcelImportFileReader {
 			int headerRowLength = 0;
 
 			for (Row row : sheet) {
-				if (Objects.equal(ExcelCell.asStringOrNull(row.getCell(0)), AbstractDataLoader.CMD_HEADER)) {
+				if (Objects.equal(ExcelCell.asStringOrNull(row.getCell(0), workbook), AbstractDataLoader.CMD_HEADER)) {
 					headerRowFound = true;
 					headerRowLength = row.getLastCellNum();
 				}
 
-				final String firstColumnValue = Strings.emptyToNull(ExcelCell.asStringOrNull(row.getCell(0)));
+				final String firstColumnValue = Strings.emptyToNull(ExcelCell.asStringOrNull(row.getCell(0), workbook));
 				if (headerRowFound && firstColumnValue != null && !firstColumnValue.trim().isEmpty()) {
 					final List<String> oneRow = new ArrayList<>();
 					oneRow.add(String.valueOf(row.getRowNum() + 1));
 					final int lastCellIndex = headerRowLength > row.getLastCellNum() ? headerRowLength : row.getLastCellNum();
 					for (int i = 0; i < lastCellIndex; i++) {
-						oneRow.add(ExcelCell.asStringOrNull(row.getCell(i)));
+						oneRow.add(ExcelCell.asStringOrNull(row.getCell(i), workbook));
 					}
 					allRows.add(oneRow);
 				}

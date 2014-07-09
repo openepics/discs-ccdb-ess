@@ -14,6 +14,7 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -73,52 +74,33 @@ public class ComptypeEJB {
         return em.find(ComponentType.class, id);
     }
 
+    public ComponentType findComponentTypeByName(String name) {
+        ComponentType componentType;
+        try {
+            componentType = em.createNamedQuery("ComponentType.findByName", ComponentType.class).setParameter("name", name).getSingleResult();
+        } catch (NoResultException e) {
+            componentType = null;
+        }
+        return componentType;
+    }
 
-    public void saveComponentType(ComponentType ctype) throws Exception {
-        if (ctype == null) {
-            logger.log(Level.SEVERE, "Comp Type is null!");
-            throw new Exception("Comp Type is null");
-        }
-        String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, EntityType.COMPONENT_TYPE, EntityTypeOperation.UPDATE)) {
-            logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
-            throw new Exception("User " + user + " is not authorized to perform this operation");
-        }
+
+    public void saveComponentType(ComponentType ctype) {
         ctype.setModifiedAt(new Date());
-
         em.merge(ctype);
         makeAuditEntry(EntityTypeOperation.UPDATE,ctype.getName(),"Updated component type");
     }
 
 
-    public void addComponentType(ComponentType ctype) throws Exception {
-        if (ctype == null) {
-            logger.log(Level.SEVERE, "Property is null!");
-            throw new Exception("property is null");
-        }
-        String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, EntityType.COMPONENT_TYPE, EntityTypeOperation.CREATE)) {
-            logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
-            throw new Exception("User " + user + " is not authorized to perform this operation");
-        }
-        ctype.setModifiedAt(new Date());
+    public void addComponentType(ComponentType ctype) {
         em.persist(ctype);
         makeAuditEntry(EntityTypeOperation.CREATE,ctype.getName(),"Created component type");
     }
 
 
-    public void deleteComponentType(ComponentType ctype) throws Exception {
-        if (ctype == null) {
-            logger.log(Level.SEVERE, "Property is null!");
-            throw new Exception("property is null");
-        }
-        String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, EntityType.COMPONENT_TYPE, EntityTypeOperation.DELETE)) {
-            logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
-            throw new Exception("User " + user + " is not authorized to perform this operation");
-        }
-        ComponentType ct = em.find(ComponentType.class, ctype.getComponentTypeId());
-        em.remove(ct);
+    public void deleteComponentType(ComponentType ctype) {
+        ctype.setModifiedAt(new Date());
+        em.remove(ctype);
         makeAuditEntry(EntityTypeOperation.DELETE,ctype.getName(),"Deleted component type");
     }
 
@@ -149,22 +131,17 @@ public class ComptypeEJB {
     }
 
 
-    public void deleteCompTypeProp(ComptypeProperty ctp) throws Exception {
-        if (ctp == null) {
-            logger.log(Level.SEVERE, "deleteCompTypeProp: property is null");
-            return;
-        }
-        String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, EntityType.COMPONENT_TYPE, EntityTypeOperation.UPDATE)) {
-            logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
-            throw new Exception("User " + user + " is not authorized to perform this operation");
-        }
+    public void deleteCompTypeProp(ComptypeProperty ctp) {
         logger.log(Level.INFO, "deleting comp type property id " + ctp.getCtypePropId() + " name " + ctp.getProperty().getName());
         ComptypeProperty property = em.find(ComptypeProperty.class, ctp.getCtypePropId());
         ComponentType arec = property.getComponentType();
         arec.getComptypePropertyList().remove(property);
         em.remove(property);
         makeAuditEntry(EntityTypeOperation.UPDATE,ctp.getComponentType().getName(),"Deleted property " + ctp.getProperty().getName());
+    }
+
+    public void addCompTypeProp(ComptypeProperty ctp) {
+        em.persist(ctp);
     }
 
     // ---------------- Component Type Artifact ---------------------

@@ -12,10 +12,10 @@ import javax.faces.application.FacesMessage.Severity;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.dl.common.DataLoaderResult.EntityNotFoundFailureDataLoaderResult;
-import org.openepics.discs.conf.dl.common.DataLoaderResult.RowFormatFailureReason;
 import org.openepics.discs.conf.dl.common.DataLoaderResult.MissingHeaderFailureDataLoaderResult;
 import org.openepics.discs.conf.dl.common.DataLoaderResult.NotAuthorizedFailureDataLoaderResult;
 import org.openepics.discs.conf.dl.common.DataLoaderResult.RowFormatFailureDataLoaderResult;
+import org.openepics.discs.conf.dl.common.DataLoaderResult.RowFormatFailureReason;
 import org.openepics.discs.conf.dl.common.DataLoaderResult.SuccessDataLoaderResult;
 import org.openepics.discs.conf.dl.common.ExcelImportFileReader;
 import org.openepics.discs.conf.util.UnhandledCaseException;
@@ -75,6 +75,8 @@ public class DataLoaderHandler {
                     resultMessage = "Rename command misformat. Old name should be defined within [] followed by new name. Example [old name] new name. In row " + rowFormatFaliureResult.getRowNumber();
                 } else if (rowFormatFaliureResult.getReason() == RowFormatFailureReason.REQUIRED_FIELD_MISSING) {
                     resultMessage = "Required field should not be empty. In row " + rowFormatFaliureResult.getRowNumber();
+                } else if (rowFormatFaliureResult.getReason() == RowFormatFailureReason.WRONG_VALUE) {
+                    resultMessage = "Wrong value. In row " + rowFormatFaliureResult.getRowNumber();
                 } else {
                     throw new UnhandledCaseException();
                 }

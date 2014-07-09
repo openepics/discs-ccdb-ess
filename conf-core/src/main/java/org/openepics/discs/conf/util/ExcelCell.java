@@ -4,6 +4,9 @@ package org.openepics.discs.conf.util;
 import javax.annotation.Nullable;
 
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellValue;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
+import org.apache.poi.ss.usermodel.Workbook;
 
 /**
  * A static utility class for reading single Excel file cell
@@ -11,12 +14,12 @@ import org.apache.poi.ss.usermodel.Cell;
  * @author Andraz Pozar <andraz.pozar@cosylab.com>
  */
 public class ExcelCell {
-    
+
     /**
      * Creating a String from Excel file cell. If cell contains numeric value, this value is cast to String. If there is no
      * value for this cell, null is returned.
      */
-    public static String asStringOrNull(@Nullable Cell cell) {
+    public static String asStringOrNull(@Nullable Cell cell, Workbook workbook) {
         if (cell != null) {
             if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
                 return String.valueOf(cell.getNumericCellValue());
@@ -24,6 +27,19 @@ public class ExcelCell {
                 return cell.getStringCellValue() != null ? cell.getStringCellValue() : null;
             } else if (cell.getCellType() == Cell.CELL_TYPE_BLANK) {
                 return null;
+            } else if (cell.getCellType() == Cell.CELL_TYPE_FORMULA) {
+                final FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
+                final CellValue cellValue = evaluator.evaluate(cell);
+                if (cellValue != null) {
+                    final String columnValue = cellValue.getStringValue();
+                    if (columnValue == null) {
+                        return Double.toString(cellValue.getNumberValue());
+                    } else {
+                        return columnValue;
+                    }
+                } else {
+                    return null;
+                }
             } else {
                 throw new UnhandledCaseException();
             }
@@ -31,8 +47,8 @@ public class ExcelCell {
             return null;
         }
     }
-    
-   
+
+
     /**
      * Reading Excel file cell with numeric value and returning its value
      */
