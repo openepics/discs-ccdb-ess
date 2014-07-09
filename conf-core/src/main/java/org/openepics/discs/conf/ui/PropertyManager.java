@@ -184,7 +184,7 @@ public class PropertyManager implements Serializable {
         return inTrans;
     }
 
-    public boolean isPropertiesImportAuthorized() {
+    public boolean canImportProperties() {
         return authEJB.userHasAuth(loginManager.getUserid(), EntityType.PROPERTY, EntityTypeOperation.CREATE) ||
                 authEJB.userHasAuth(loginManager.getUserid(), EntityType.PROPERTY, EntityTypeOperation.DELETE) ||
                 authEJB.userHasAuth(loginManager.getUserid(), EntityType.PROPERTY, EntityTypeOperation.UPDATE) ||
