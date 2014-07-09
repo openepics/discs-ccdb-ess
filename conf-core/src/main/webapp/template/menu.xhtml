@@ -77,12 +77,12 @@
 				<p:menuitem value="Import Units" update=":importUnitsForm"
 					oncomplete="importUnits.show()" title="Import Units"
 					actionListener="#{unitManager.prepareImportPopup()}"
-					disabled="#{!unitManager.canImportUnits()}" />
+					disabled="#{!unitManager.unitsImportAuthorized}" />
 
 				<p:menuitem value="Import Properties" update=":importPropertiesForm"
 					oncomplete="importProperties.show()" title="Import Properties"
 					actionListener="#{propertyManager.prepareImportPopup()}"
-					disabled="#{!propertyManager.canImportProperties()}" />
+					disabled="#{!propertyManager.propertiesImportAuthorized}" />
 			</p:submenu>
 
 			<p:submenu label="Help" icon="ui-icon-help">

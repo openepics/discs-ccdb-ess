@@ -80,7 +80,7 @@ public class UnitManager implements Serializable {
         return filteredUnits;
     }
 
-    public boolean canImportUnits() {
+    public boolean isUnitsImportAuthorized() {
         return authEJB.userHasAuth(loginManager.getUserid(), EntityType.UNIT, EntityTypeOperation.CREATE) ||
                 authEJB.userHasAuth(loginManager.getUserid(), EntityType.UNIT, EntityTypeOperation.DELETE) ||
                 authEJB.userHasAuth(loginManager.getUserid(), EntityType.UNIT, EntityTypeOperation.UPDATE) ||
