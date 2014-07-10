@@ -54,6 +54,16 @@ import org.openepics.discs.conf.ent.Unit;
         return em.find(Property.class, id);
     }
 
+    public Property findPropertyByName(String name) {
+        Property property;
+        try {
+            property = em.createNamedQuery("Property.findByName", Property.class).setParameter("name", name).getSingleResult();
+        } catch (NoResultException e) {
+            property = null;
+        }
+        return property;
+    }
+
     public void saveProperty(Property property) {
         property.setModifiedAt(new Date());
         em.merge(property);

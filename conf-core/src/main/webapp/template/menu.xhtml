@@ -83,6 +83,11 @@
 					oncomplete="importProperties.show()" title="Import Properties"
 					actionListener="#{propertyManager.prepareImportPopup()}"
 					disabled="#{!propertyManager.canImportProperties()}" />
+					
+			     <p:menuitem value="Import Component Types" update=":importCompTypesForm"
+                    oncomplete="importCompTypes.show()" title="Import Component Types"
+                    actionListener="#{componentTypeMananger.prepareImportPopup()}"
+                    disabled="#{!componentTypeMananger.canImportCompTypes()}" />
 			</p:submenu>
 
 			<p:submenu label="Help" icon="ui-icon-help">
@@ -156,6 +161,31 @@
                     update=":menuform" oncomplete="importProperties.hide()"
                     action="#{propertyManager.importProperties()}"
                     disabled="#{propertyManager.importFileName == null}" />
+            </h:panelGroup>
+        </p:dialog>
+    </h:form>
+    
+    <h:form id="importCompTypesForm" enctype="multipart/form-data">
+        <p:dialog id="importCompTypes" widgetVar="importCompTypes" modal="true"
+            resizable="false" width="35%">
+            <f:facet name="header">
+                <h:outputText value="Component Types Import" />
+            </f:facet>
+            <h:panelGroup id="grp" layout="block">
+                <h:panelGroup rendered="#{componentTypeMananger.importFileName == null}"
+                    layout="block" style="padding: 0 0 7px 0">Please choose an Excel file (*.xlsx) to import component types from.</h:panelGroup>
+                <p:fileUpload fileUploadListener="#{componentTypeMananger.handleImportFileUpload}"
+                    update="grp" mode="advanced" auto="true" fileLimit="1"
+                    dragDropSupport="true" allowTypes="/(\.|\/)(xlsx)$/"
+                    rendered="#{componentTypeMananger.importFileName == null}" />
+                <h:outputText value="#{componentTypeMananger.importFileName}" />
+                <p:separator />
+                <p:commandButton value="Cancel" style="float: right"
+                    onclick="importCompTypes.hide();" />
+                <p:commandButton value="Import" style="float: right"
+                    update=":menuform" oncomplete="importCompTypes.hide()"
+                    action="#{componentTypeMananger.importCompTypes()}"
+                    disabled="#{componentTypeMananger.importFileName == null}" />
             </h:panelGroup>
         </p:dialog>
     </h:form>

@@ -56,7 +56,7 @@ public class ComponentType implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 32)
-    @Column(name = "name")
+    @Column(name = "name", unique = true)
     private String name;
     @Size(max = 255)
     @Column(name = "description")

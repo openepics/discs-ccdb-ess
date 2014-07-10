@@ -13,7 +13,6 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.ws.rs.NotAuthorizedException;
 
 import org.openepics.discs.conf.dl.common.AbstractDataLoader;
 import org.openepics.discs.conf.dl.common.DataLoader;
@@ -68,7 +67,7 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
                     final String rowNumber = row.get(0);
                     if (Objects.equal(row.get(1), CMD_HEADER)) {
                         headerRow = row;
-                        setUpIndexesForFields(headerRow);
+                        fieldsIndexSetupResult = setUpIndexesForFields(headerRow);
                         if (fieldsIndexSetupResult instanceof DataLoaderResult.FailureDataLoaderResult) {
                             return fieldsIndexSetupResult;
                         } else {
@@ -87,7 +86,7 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
                     final Date modifiedAt = new Date();
                     final String modifiedBy = loginManager.getUserid();
 
-                    if (name == null || unit == null || dataType == null || description == null || association == null) {
+                    if (name == null || dataType == null || description == null || association == null) {
                         return new DataLoaderResult.RowFormatFailureDataLoaderResult(rowNumber, RowFormatFailureReason.REQUIRED_FIELD_MISSING);
                     }
 
@@ -134,7 +133,7 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
                                 propertyByName.remove(propertyToDelete.getName());
                             }
                         } else {
-                            throw new NotAuthorizedException(EntityTypeOperation.DELETE, EntityType.PROPERTY);
+                            return new DataLoaderResult.NotAuthorizedFailureDataLoaderResult(EntityTypeOperation.DELETE);
                         }
                         break;
                     case CMD_RENAME:
@@ -201,12 +200,16 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
         }
     }
 
-    private DataLoaderResult setPropertyFields(Property property, String unit, String dataType, String rowNumber) {
-        final Unit newUnit = configurationEJB.findUnitByName(unit);
-        if (newUnit != null) {
-            property.setUnit(newUnit);
+    private DataLoaderResult setPropertyFields(Property property, @Nullable String unit, String dataType, String rowNumber) {
+        if (unit != null) {
+            final Unit newUnit = configurationEJB.findUnitByName(unit);
+            if (newUnit != null) {
+                property.setUnit(newUnit);
+            } else {
+                return new DataLoaderResult.EntityNotFoundFailureDataLoaderResult(rowNumber, EntityType.UNIT);
+            }
         } else {
-            return new DataLoaderResult.EntityNotFoundFailureDataLoaderResult(rowNumber, EntityType.UNIT);
+            property.setUnit(null);
         }
 
         final DataType newDataType = configurationEJB.findDataType(dataType);

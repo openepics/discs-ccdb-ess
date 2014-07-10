@@ -24,11 +24,11 @@
                 <p:column  headerText="Description" >
                     <h:outputText value="#{item.description}"/>
                 </p:column>
-                <p:column  headerText="Scalar" sortBy="#{item.dataType.dataTypeId}">
+                <p:column  headerText="Data type" sortBy="#{item.dataType.dataTypeId}">
                     <h:outputText value="#{item.dataType.dataTypeId}"/>
                 </p:column>   
-                <p:column  headerText="Scalar">
-                    <h:outputText value="#{item.unit}"/>
+                <p:column  headerText="Unit">
+                    <h:outputText value="#{item.unit.unitName}"/>
                 </p:column> 
             </p:dataTable>
         </h:form>
