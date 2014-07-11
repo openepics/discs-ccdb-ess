@@ -161,15 +161,13 @@ public class ComptypeArtifact implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof ComptypeArtifact)) {
-            return false;
-        }
+        if (!(object instanceof ComptypeArtifact)) return false;
+
         ComptypeArtifact other = (ComptypeArtifact) object;
-        if ((this.artifactId == null && other.artifactId != null) || (this.artifactId != null && !this.artifactId.equals(other.artifactId))) {
-            return false;
-        }
-        return true;
+        if (this.artifactId == null && other.artifactId != null) return false;
+        if (this.artifactId != null) return this.artifactId.equals(other.artifactId); // return true for same DB entity
+
+        return this==object;
     }
 
     @Override

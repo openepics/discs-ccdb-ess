@@ -102,15 +102,13 @@ public class Privilege implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Privilege)) {
-            return false;
-        }
+        if (!(object instanceof Privilege)) return false;
+
         Privilege other = (Privilege) object;
-        if ((this.privilegeId == null && other.privilegeId != null) || (this.privilegeId != null && !this.privilegeId.equals(other.privilegeId))) {
-            return false;
-        }
-        return true;
+        if (this.privilegeId == null && other.privilegeId != null) return false;
+        if (this.privilegeId != null) return this.privilegeId.equals(other.privilegeId); // return true for same DB entity
+
+        return this==object;
     }
 
     @Override

@@ -147,15 +147,13 @@ public class DataType implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof DataType)) {
-            return false;
-        }
+        if (!(object instanceof DataType)) return false;
+
         DataType other = (DataType) object;
-        if ((this.dataTypeId == null && other.dataTypeId != null) || (this.dataTypeId != null && !this.dataTypeId.equals(other.dataTypeId))) {
-            return false;
-        }
-        return true;
+        if (this.dataTypeId == null && other.dataTypeId != null) return false;
+        if (this.dataTypeId != null) return this.dataTypeId.equals(other.dataTypeId); // return true for same DB entity
+
+        return this==object;
     }
 
     @Override

@@ -162,15 +162,13 @@ public class DeviceProperty implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof DeviceProperty)) {
-            return false;
-        }
+        if (!(object instanceof DeviceProperty)) return false;
+
         DeviceProperty other = (DeviceProperty) object;
-        if ((this.devPropId == null && other.devPropId != null) || (this.devPropId != null && !this.devPropId.equals(other.devPropId))) {
-            return false;
-        }
-        return true;
+        if (this.devPropId == null && other.devPropId != null) return false;
+        if (this.devPropId != null) return this.devPropId.equals(other.devPropId); // return true for same DB entity
+
+        return this==object;
     }
 
     @Override

@@ -7,6 +7,7 @@
 package org.openepics.discs.conf.ent;
 
 import java.io.Serializable;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -73,20 +74,18 @@ public class Config implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Config)) {
-            return false;
-        }
+        if (!(object instanceof Config)) return false;
+
         Config other = (Config) object;
-        if ((this.name == null && other.name != null) || (this.name != null && !this.name.equals(other.name))) {
-            return false;
-        }
-        return true;
+        if (this.name == null && other.name != null) return false;
+        if (this.name != null) return this.name.equals(other.name); // return true for same DB entity
+
+        return this==object;
     }
 
     @Override
     public String toString() {
         return "org.openepics.discs.conf.ent.Config[ name=" + name + " ]";
     }
-    
+
 }

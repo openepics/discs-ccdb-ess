@@ -363,15 +363,13 @@ public class Slot implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Slot)) {
-            return false;
-        }
+        if (!(object instanceof Slot)) return false;
+
         Slot other = (Slot) object;
-        if ((this.slotId == null && other.slotId != null) || (this.slotId != null && !this.slotId.equals(other.slotId))) {
-            return false;
-        }
-        return true;
+        if (this.slotId == null && other.slotId != null)return false;
+        if (this.slotId != null) return this.slotId.equals(other.slotId); // return true for same DB entity
+
+        return this==object;
     }
 
     @Override

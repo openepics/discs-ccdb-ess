@@ -151,15 +151,13 @@ public class AlignmentProperty implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof AlignmentProperty)) {
-            return false;
-        }
+        if (!(object instanceof AlignmentProperty)) return false;
+
         AlignmentProperty other = (AlignmentProperty) object;
-        if ((this.alignPropId == null && other.alignPropId != null) || (this.alignPropId != null && !this.alignPropId.equals(other.alignPropId))) {
-            return false;
-        }
-        return true;
+        if (this.alignPropId == null && other.alignPropId != null) return false;
+        if (this.alignPropId != null) return this.alignPropId.equals(other.alignPropId); // return true for same DB entity
+
+        return this==object;
     }
 
     @Override

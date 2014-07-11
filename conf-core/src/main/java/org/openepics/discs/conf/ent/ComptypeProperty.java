@@ -174,15 +174,13 @@ public class ComptypeProperty implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof ComptypeProperty)) {
-            return false;
-        }
+        if (!(object instanceof ComptypeProperty)) return false;
+
         ComptypeProperty other = (ComptypeProperty) object;
-        if ((this.ctypePropId == null && other.ctypePropId != null) || (this.ctypePropId != null && !this.ctypePropId.equals(other.ctypePropId))) {
-            return false;
-        }
-        return true;
+        if (this.ctypePropId == null && other.ctypePropId != null) return false;
+        if (this.ctypePropId != null) return this.ctypePropId.equals(other.ctypePropId); // return true for same DB entity
+
+        return this==object;
     }
 
     @Override

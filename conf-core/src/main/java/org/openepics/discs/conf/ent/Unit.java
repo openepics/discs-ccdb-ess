@@ -222,15 +222,13 @@ public class Unit implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Unit)) {
-            return false;
-        }
+        if (!(object instanceof Unit)) return false;
+
         Unit other = (Unit) object;
-        if ((this.unitName == null && other.unitName != null) || (this.unitName != null && !this.unitName.equals(other.unitName))) {
-            return false;
-        }
-        return true;
+        if (this.unitName == null && other.unitName != null) return false;
+        if (this.unitName != null) return this.unitName.equals(other.unitName); // return true for same DB entity
+
+        return this==object;
     }
 
     @Override

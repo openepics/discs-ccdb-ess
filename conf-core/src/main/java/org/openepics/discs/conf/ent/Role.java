@@ -119,15 +119,13 @@ public class Role implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Role)) {
-            return false;
-        }
+        if (!(object instanceof Role)) return false;
+
         Role other = (Role) object;
-        if ((this.roleId == null && other.roleId != null) || (this.roleId != null && !this.roleId.equals(other.roleId))) {
-            return false;
-        }
-        return true;
+        if (this.roleId == null && other.roleId != null) return false;
+        if (this.roleId != null) return this.roleId.equals(other.roleId); // return true for same DB entity
+
+        return this==object;
     }
 
     @Override

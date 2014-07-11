@@ -250,15 +250,13 @@ public class AlignmentRecord implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof AlignmentRecord)) {
-            return false;
-        }
+        if (!(object instanceof AlignmentRecord)) return false;
+
         AlignmentRecord other = (AlignmentRecord) object;
-        if ((this.alignmentRecordId == null && other.alignmentRecordId != null) || (this.alignmentRecordId != null && !this.alignmentRecordId.equals(other.alignmentRecordId))) {
-            return false;
-        }
-        return true;
+        if (this.alignmentRecordId == null && other.alignmentRecordId != null) return false;
+        if (this.alignmentRecordId != null) return this.alignmentRecordId.equals(other.alignmentRecordId); // return true for same DB entity
+
+        return this==object;
     }
 
     @Override

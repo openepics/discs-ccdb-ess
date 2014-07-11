@@ -162,15 +162,13 @@ public class SlotProperty implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof SlotProperty)) {
-            return false;
-        }
+        if (!(object instanceof SlotProperty)) return false;
+
         SlotProperty other = (SlotProperty) object;
-        if ((this.slotPropId == null && other.slotPropId != null) || (this.slotPropId != null && !this.slotPropId.equals(other.slotPropId))) {
-            return false;
-        }
-        return true;
+        if (this.slotPropId == null && other.slotPropId != null) return false;
+        if (this.slotPropId != null) return this.slotPropId.equals(other.slotPropId); // return true for same DB entity
+
+        return this==object;
     }
 
     @Override

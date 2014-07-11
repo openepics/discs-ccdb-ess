@@ -194,15 +194,13 @@ public class InstallationRecord implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof InstallationRecord)) {
-            return false;
-        }
+        if (!(object instanceof InstallationRecord)) return false;
+
         InstallationRecord other = (InstallationRecord) object;
-        if ((this.installationRecordId == null && other.installationRecordId != null) || (this.installationRecordId != null && !this.installationRecordId.equals(other.installationRecordId))) {
-            return false;
-        }
-        return true;
+        if (this.installationRecordId == null && other.installationRecordId != null) return false;
+        if (this.installationRecordId != null) return this.installationRecordId.equals(other.installationRecordId); // return true for same DB entity
+
+        return this==object;
     }
 
     @Override

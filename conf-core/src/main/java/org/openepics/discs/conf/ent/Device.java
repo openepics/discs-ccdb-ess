@@ -308,15 +308,13 @@ public class Device implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Device)) {
-            return false;
-        }
+        if (!(object instanceof Device)) return false;
+
         Device other = (Device) object;
-        if ((this.deviceId == null && other.deviceId != null) || (this.deviceId != null && !this.deviceId.equals(other.deviceId))) {
-            return false;
-        }
-        return true;
+        if (this.deviceId == null && other.deviceId != null) return false;
+        if (this.deviceId != null) return this.deviceId.equals(other.deviceId); // return true for same DB entity
+
+        return this==object;
     }
 
     @Override

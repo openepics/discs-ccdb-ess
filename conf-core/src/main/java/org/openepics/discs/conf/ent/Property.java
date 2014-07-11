@@ -222,15 +222,13 @@ public class Property implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Property)) {
-            return false;
-        }
+        if (!(object instanceof Property)) return false;
+
         Property other = (Property) object;
-        if ((this.propertyId == null && other.propertyId != null) || (this.propertyId != null && !this.propertyId.equals(other.propertyId))) {
-            return false;
-        }
-        return true;
+        if (this.propertyId == null && other.propertyId != null) return false;
+        if (this.propertyId != null) return this.propertyId.equals(other.propertyId); // return true for same DB entity
+
+        return this==object;
     }
 
     @Override

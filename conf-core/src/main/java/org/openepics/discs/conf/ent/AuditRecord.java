@@ -145,15 +145,13 @@ public class AuditRecord implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof AuditRecord)) {
-            return false;
-        }
+        if (!(object instanceof AuditRecord)) return false;
+
         AuditRecord other = (AuditRecord) object;
-        if ((this.auditRecordId == null && other.auditRecordId != null) || (this.auditRecordId != null && !this.auditRecordId.equals(other.auditRecordId))) {
-            return false;
-        }
-        return true;
+        if (this.auditRecordId == null && other.auditRecordId != null) return false;
+        if (this.auditRecordId != null) return this.auditRecordId.equals(other.auditRecordId);
+
+        return this==object;
     }
 
     @Override

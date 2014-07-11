@@ -160,15 +160,13 @@ public class SlotRelation implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof SlotRelation)) {
-            return false;
-        }
+        if (!(object instanceof SlotRelation)) return false;
+
         SlotRelation other = (SlotRelation) object;
-        if ((this.slotRelationId == null && other.slotRelationId != null) || (this.slotRelationId != null && !this.slotRelationId.equals(other.slotRelationId))) {
-            return false;
-        }
-        return true;
+        if (this.slotRelationId == null && other.slotRelationId != null) return false;
+        if (this.slotRelationId != null) return this.slotRelationId.equals(other.slotRelationId); // return true for same DB entity
+
+        return this==object;
     }
 
     @Override

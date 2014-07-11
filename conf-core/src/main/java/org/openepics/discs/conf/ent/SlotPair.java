@@ -100,15 +100,13 @@ public class SlotPair implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof SlotPair)) {
-            return false;
-        }
+        if (!(object instanceof SlotPair)) return false;
+
         SlotPair other = (SlotPair) object;
-        if ((this.slotPairId == null && other.slotPairId != null) || (this.slotPairId != null && !this.slotPairId.equals(other.slotPairId))) {
-            return false;
-        }
-        return true;
+        if (this.slotPairId == null && other.slotPairId != null) return false;
+        if (this.slotPairId != null) return this.slotPairId.equals(other.slotPairId); // return true for same DB entity
+
+        return this==object;
     }
 
     @Override

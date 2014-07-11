@@ -224,15 +224,13 @@ public class ComponentType implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof ComponentType)) {
-            return false;
-        }
+        if (!(object instanceof ComponentType)) return false;
+
         ComponentType other = (ComponentType) object;
-        if ((this.componentTypeId == null && other.componentTypeId != null) || (this.componentTypeId != null && !this.componentTypeId.equals(other.componentTypeId))) {
-            return false;
-        }
-        return true;
+        if (this.componentTypeId == null && other.componentTypeId != null) return false;
+        if (this.componentTypeId != null) return this.componentTypeId.equals(other.componentTypeId);// return true for same DB entity
+
+        return this==object;
     }
 
     @Override

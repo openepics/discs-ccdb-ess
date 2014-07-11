@@ -154,15 +154,13 @@ public class ComptypeAsm implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof ComptypeAsm)) {
-            return false;
-        }
+        if (!(object instanceof ComptypeAsm)) return false;
+
         ComptypeAsm other = (ComptypeAsm) object;
-        if ((this.comptypeAsmId == null && other.comptypeAsmId != null) || (this.comptypeAsmId != null && !this.comptypeAsmId.equals(other.comptypeAsmId))) {
-            return false;
-        }
-        return true;
+        if (this.comptypeAsmId == null && other.comptypeAsmId != null) return false;
+        if (this.comptypeAsmId != null) return this.comptypeAsmId.equals(other.comptypeAsmId); // return true for same DB entity
+
+        return this==object;
     }
 
     @Override

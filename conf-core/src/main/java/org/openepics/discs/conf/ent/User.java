@@ -133,15 +133,13 @@ public class User implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof User)) {
-            return false;
-        }
+        if (!(object instanceof User)) return false;
+
         User other = (User) object;
-        if ((this.userId == null && other.userId != null) || (this.userId != null && !this.userId.equals(other.userId))) {
-            return false;
-        }
-        return true;
+        if (this.userId == null && other.userId != null) return false;
+        if (this.userId != null) return this.userId.equals(other.userId); // return true for same DB entity
+
+        return this==object;
     }
 
     @Override
