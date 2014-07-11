@@ -18,16 +18,16 @@
                 <f:facet name="header">
                     <h:outputText value="Units"/>
                 </f:facet> 
-                <p:column id="desc" headerText="ID" filterBy="#{item.unitName}" filterMatchMode="contains">
+                <p:column id="desc" headerText="Unit name" filterBy="#{item.unitName}" filterMatchMode="contains">
                     <h:outputText value="#{item.unitName}"/>
                 </p:column>              
                 <p:column  headerText="Description" >
                     <h:outputText value="#{item.description}"/>
                 </p:column>
-                <p:column  headerText="Scalar" sortBy="#{item.symbol}">
+                <p:column  headerText="Symbol" sortBy="#{item.symbol}">
                     <h:outputText value="#{item.symbol}"/>
                 </p:column>   
-                <p:column  headerText="Scalar" sortBy="#{item.quantity}">
+                <p:column  headerText="Quantity" sortBy="#{item.quantity}">
                     <h:outputText value="#{item.quantity}"/>
                 </p:column> 
             </p:dataTable>
