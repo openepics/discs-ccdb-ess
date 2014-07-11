@@ -38,21 +38,25 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Role.findByVersion", query = "SELECT r FROM Role r WHERE r.version = :version")})
 public class Role implements Serializable {
     private static final long serialVersionUID = 1L;
+
     @Id
-    @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)
     @Column(name = "role_id")
     private String roleId;
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 255)
     @Column(name = "description")
     private String description;
+
     @Version
     private Long version;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "role")
     private List<UserRole> userRoleList;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "role")
     private List<Privilege> privilegeList;
 

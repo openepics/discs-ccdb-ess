@@ -38,21 +38,24 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Privilege.findByOper", query = "SELECT p FROM Privilege p WHERE p.oper = :oper")})
 public class Privilege implements Serializable {
     private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
     @Column(name = "privilege_id")
     private Integer privilegeId;
+
     @Basic(optional = false)
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "resource")
     private EntityType resource;
+
     @Basic(optional = false)
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "oper")
     private EntityTypeOperation oper;
+
     @JoinColumn(name = "role", referencedColumnName = "role_id")
     @ManyToOne(optional = false)
     private Role role;

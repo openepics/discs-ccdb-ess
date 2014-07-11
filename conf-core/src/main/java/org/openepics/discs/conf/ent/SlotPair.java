@@ -8,7 +8,6 @@ package org.openepics.discs.conf.ent;
 
 import java.io.Serializable;
 
-import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -35,19 +34,23 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "SlotPair.findByVersion", query = "SELECT s FROM SlotPair s WHERE s.version = :version")})
 public class SlotPair implements Serializable {
     private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
     @Column(name = "slot_pair_id")
     private Integer slotPairId;
+
     @Version
     private Long version;
+
     @JoinColumn(name = "child_slot", referencedColumnName = "slot_id")
     @ManyToOne(optional = false)
     private Slot childSlot;
+
     @JoinColumn(name = "slot_relation", referencedColumnName = "slot_relation_id")
     @ManyToOne(optional = false)
     private SlotRelation slotRelation;
+
     @JoinColumn(name = "parent_slot", referencedColumnName = "slot_id")
     @ManyToOne(optional = false)
     private Slot parentSlot;

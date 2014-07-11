@@ -44,33 +44,39 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "DataType.findByVersion", query = "SELECT d FROM DataType d WHERE d.version = :version")})
 public class DataType implements Serializable {
     private static final long serialVersionUID = 1L;
+
     @Id
-    @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 32)
     @Column(name = "data_type_id")
     private String dataTypeId;
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 255)
     @Column(name = "description")
     private String description;
+
     @Basic(optional = false)
     @NotNull
     @Column(name = "scalar")
     private boolean scalar;
+
     @Basic(optional = false)
     @NotNull
     @Column(name = "modified_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date modifiedAt;
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)
     @Column(name = "modified_by")
     private String modifiedBy;
+
     @Version
     private Long version;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "dataType")
     private List<Property> propertyList;
 

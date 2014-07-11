@@ -54,53 +54,68 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "AlignmentRecord.findByVersion", query = "SELECT a FROM AlignmentRecord a WHERE a.version = :version")})
 public class AlignmentRecord implements Serializable {
     private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
     @Column(name = "alignment_record_id")
     private Integer alignmentRecordId;
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)
     @Column(name = "record_number")
     private String recordNumber;
+
     @Basic(optional = false)
     @NotNull
     @Column(name = "alignment_date")
     @Temporal(TemporalType.TIMESTAMP)
     private Date alignmentDate;
+
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "global_x")
     private Double globalX;
+
     @Column(name = "global_y")
     private Double globalY;
+
     @Column(name = "global_z")
     private Double globalZ;
+
     @Column(name = "global_pitch")
     private Double globalPitch;
+
     @Column(name = "global_yaw")
     private Double globalYaw;
+
     @Column(name = "global_roll")
     private Double globalRoll;
+
     @Basic(optional = false)
     @NotNull
     @Column(name = "modified_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date modifiedAt;
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)
     @Column(name = "modified_by")
     private String modifiedBy;
+
     @Version
     private Long version;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "alignmentRecord")
     private List<AlignmentArtifact> alignmentArtifactList;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "alignmentRecord")
     private List<AlignmentProperty> alignmentPropertyList;
+
     @JoinColumn(name = "slot", referencedColumnName = "slot_id")
     @ManyToOne(optional = false)
     private Slot slot;
+
     @JoinColumn(name = "device", referencedColumnName = "device_id")
     @ManyToOne(optional = false)
     private Device device;

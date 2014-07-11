@@ -51,50 +51,62 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Property.findByVersion", query = "SELECT p FROM Property p WHERE p.version = :version")})
 public class Property implements Serializable {
     private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
     @Column(name = "property_id")
     private Integer propertyId;
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)
     @Column(name = "name")
     private String name;
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 255)
     @Column(name = "description")
     private String description;
+
     @Basic(optional = false)
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "association", length = 12)
     private PropertyAssociation association;
+
     @Basic(optional = false)
     @NotNull
     @Column(name = "modified_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date modifiedAt;
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)
     @Column(name = "modified_by")
     private String modifiedBy;
+
     @Version
     private Long version;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "property")
     private List<ComptypeProperty> comptypePropertyList;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "property")
     private List<DeviceProperty> devicePropertyList;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "property")
     private List<AlignmentProperty> alignmentPropertyList;
+
     @JoinColumn(name = "data_type", referencedColumnName = "data_type_id")
     @ManyToOne(optional = false)
     private DataType dataType;
+
     @JoinColumn(name = "unit", referencedColumnName = "unit_id")
     @ManyToOne
     private Unit unit;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "property")
     private List<SlotProperty> slotPropertyList;
 

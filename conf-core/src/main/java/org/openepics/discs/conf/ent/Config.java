@@ -8,13 +8,13 @@ package org.openepics.discs.conf.ent;
 
 import java.io.Serializable;
 
-import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -32,15 +32,19 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Config.findByPropValue", query = "SELECT c FROM Config c WHERE c.propValue = :propValue")})
 public class Config implements Serializable {
     private static final long serialVersionUID = 1L;
+
     @Id
-    @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)
     @Column(name = "name")
     private String name;
+
     @Size(max = 128)
     @Column(name = "prop_value")
     private String propValue;
+
+    @Version
+    private Long version;
 
     public Config() {
     }
@@ -63,6 +67,14 @@ public class Config implements Serializable {
 
     public void setPropValue(String propValue) {
         this.propValue = propValue;
+    }
+
+    protected Long getVersion() {
+        return version;
+    }
+
+    protected void setVersion(Long version) {
+        this.version = version;
     }
 
     @Override

@@ -56,67 +56,87 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Device.findByVersion", query = "SELECT d FROM Device d WHERE d.version = :version")})
 public class Device implements Serializable {
     private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
     @Column(name = "device_id")
     private Integer deviceId;
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)
     @Column(name = "serial_number")
     private String serialNumber;
+
     @Size(max = 255)
     @Column(name = "description")
     private String description;
+
     @Column(name = "status")
     private Character status;
+
     @Size(max = 64)
     @Column(name = "manufacturer")
     private String manufacturer;
+
     @Size(max = 64)
     @Column(name = "manuf_model")
     private String manufModel;
+
     @Size(max = 64)
     @Column(name = "manuf_serial_number")
     private String manufSerialNumber;
+
     @Size(max = 64)
     @Column(name = "location")
     private String location;
+
     @Size(max = 64)
     @Column(name = "purchase_order")
     private String purchaseOrder;
+
     @Size(max = 16)
     @Column(name = "asm_position")
     private String asmPosition;
+
     @Size(max = 255)
     @Column(name = "asm_description")
     private String asmDescription;
+
     @Basic(optional = false)
     @NotNull
     @Column(name = "modified_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date modifiedAt;
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)
     @Column(name = "modified_by")
     private String modifiedBy;
+
     @Version
     private Long version;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "device")
     private List<DeviceProperty> devicePropertyList;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "device")
     private List<AlignmentRecord> alignmentRecordList;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "device")
     private List<InstallationRecord> installationRecordList;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "device")
     private List<DeviceArtifact> deviceArtifactList;
+
     @JoinColumn(name = "component_type", referencedColumnName = "component_type_id")
     @ManyToOne(optional = false)
     private ComponentType componentType;
+
     @OneToMany(mappedBy = "asmParent")
     private List<Device> deviceList;
+
     @JoinColumn(name = "asm_parent", referencedColumnName = "device_id")
     @ManyToOne
     private Device asmParent;

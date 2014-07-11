@@ -59,77 +59,102 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Slot.findByVersion", query = "SELECT s FROM Slot s WHERE s.version = :version")})
 public class Slot implements Serializable {
     private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
     @Column(name = "slot_id")
     private Integer slotId;
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 128)
     @Column(name = "name")
     private String name;
+
     @Size(max = 255)
     @Column(name = "description")
     private String description;
+
     @Basic(optional = false)
     @NotNull
     @Column(name = "is_hosting_slot")
     private boolean isHostingSlot;
+
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "beamline_position")
     private Double beamlinePosition;
+
     @Column(name = "global_x")
     private Double globalX;
+
     @Column(name = "global_y")
     private Double globalY;
+
     @Column(name = "global_z")
     private Double globalZ;
+
     @Column(name = "global_roll")
     private Double globalRoll;
+
     @Column(name = "global_yaw")
     private Double globalYaw;
+
     @Column(name = "global_pitch")
     private Double globalPitch;
+
     @Size(max = 255)
     @Column(name = "asm_comment")
     private String asmComment;
+
     @Size(max = 16)
     @Column(name = "asm_position")
     private String asmPosition;
+
     @Size(max = 255)
     @Column(name = "comment")
     private String comment;
+
     @Basic(optional = false)
     @NotNull
     @Column(name = "modified_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date modifiedAt;
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)
     @Column(name = "modified_by")
     private String modifiedBy;
+
     @Version
     private Long version;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "slot")
     private List<SlotArtifact> slotArtifactList;
+
     @JoinColumn(name = "component_type", referencedColumnName = "component_type_id")
     @ManyToOne(optional = false)
     private ComponentType componentType;
+
     @OneToMany(mappedBy = "asmSlot")
     private List<Slot> slotList;
+
     @JoinColumn(name = "asm_slot", referencedColumnName = "slot_id")
     @ManyToOne
     private Slot asmSlot;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "slot")
     private List<AlignmentRecord> alignmentRecordList;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "slot")
     private List<InstallationRecord> installationRecordList;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "childSlot")
     private List<SlotPair> slotPairList;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "parentSlot")
     private List<SlotPair> slotPairList1;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "slot")
     private List<SlotProperty> slotPropertyList;
 

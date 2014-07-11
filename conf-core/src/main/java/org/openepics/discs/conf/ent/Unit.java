@@ -47,52 +47,64 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Unit.findByVersion", query = "SELECT u FROM Unit u WHERE u.version = :version")})
 public class Unit implements Serializable {
     private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
     @Column(name = "unit_id")
     private Integer unitId;
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 32)
     @Column(name = "unit_name", unique=true)
     private String unitName;
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)
     @Column(name = "quantity")
     private String quantity;
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 128)
     @Column(name = "symbol")
     private String symbol;
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 255)
     @Column(name = "description")
     private String description;
+
     @Size(max = 255)
     @Column(name = "base_unit_expr")
     private String baseUnitExpr;
+
     @Basic(optional = false)
     @NotNull
     @Column(name = "modified_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date modifiedAt;
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)
     @Column(name = "modified_by")
     private String modifiedBy;
+
     @Version
     private Long version;
+
     @OneToMany(mappedBy = "unit")
     private List<ComptypeProperty> comptypePropertyList;
+
     @OneToMany(mappedBy = "unit")
     private List<DeviceProperty> devicePropertyList;
+
     @OneToMany(mappedBy = "unit")
     private List<Property> propertyList;
+
     @OneToMany(mappedBy = "unit")
     private List<SlotProperty> slotPropertyList;
 

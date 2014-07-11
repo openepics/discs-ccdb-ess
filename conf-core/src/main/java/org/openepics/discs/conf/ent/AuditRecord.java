@@ -22,6 +22,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -43,36 +44,45 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "AuditRecord.findByEntityKey", query = "SELECT a FROM AuditRecord a WHERE a.entityKey = :entityKey")})
 public class AuditRecord implements Serializable {
     private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
     @Column(name = "audit_record_id")
     private Integer auditRecordId;
+
     @Basic(optional = false)
     @NotNull
     @Column(name = "log_time")
     @Temporal(TemporalType.TIMESTAMP)
     private Date logTime;
+
     @Basic(optional = false)
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "oper")
     private EntityTypeOperation oper;
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)
     @Column(name = "`user`")
     private String user;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "entity_type")
     private EntityType entityType;
+
     @Size(max = 64)
     @Column(name = "entity_key")
     private String entityKey;
+
     @Basic(optional = false)
     @NotNull
     @Column(name = "entry", columnDefinition="TEXT")
     private String entry;
+
+    @Version
+    private Long version;
 
     protected AuditRecord() {
     }
@@ -134,6 +144,14 @@ public class AuditRecord implements Serializable {
 
     public void setEntry(String entry) {
         this.entry = entry;
+    }
+
+    protected Long getVersion() {
+        return version;
+    }
+
+    protected void setVersion(Long version) {
+        this.version = version;
     }
 
     @Override
