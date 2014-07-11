@@ -200,7 +200,8 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
                 }
 
             } else if (propertyValue != null) {
-                if (property.getAssociation().equals(PropertyAssociation.ALL) || property.getAssociation().equals(PropertyAssociation.TYPE) || property.getAssociation().equals(PropertyAssociation.TYPE_DEVICE) || property.getAssociation().equals(PropertyAssociation.TYPE_SLOT)) {
+            	final PropertyAssociation propAss = property.getAssociation();
+                if (propAss == PropertyAssociation.ALL || propAss == PropertyAssociation.TYPE || propAss == PropertyAssociation.TYPE_DEVICE || propAss == PropertyAssociation.TYPE_SLOT) {
                     final ComptypeProperty comptypePropertyToAdd = new ComptypeProperty(false, modifiedBy);
                     comptypePropertyToAdd.setProperty(property);
                     comptypePropertyToAdd.setPropValue(propertyValue);
