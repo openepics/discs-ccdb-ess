@@ -49,6 +49,7 @@
         </web-resource-collection>
         <auth-constraint>
             <role-name>USER</role-name>
+            <role-name>user</role-name> <!-- Added for easy testing on WildFly -->
         </auth-constraint>
         <user-data-constraint>
             <transport-guarantee>NONE</transport-guarantee>
@@ -65,5 +66,9 @@
     <security-role>
         <description>Users</description>
         <role-name>USER</role-name>
+    </security-role>
+    <security-role>
+        <description>WildFly default role</description>
+        <role-name>user</role-name>
     </security-role>
 </web-app>
