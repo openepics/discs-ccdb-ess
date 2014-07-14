@@ -1,9 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package org.openepics.discs.conf.ent;
 
 import java.io.Serializable;
@@ -11,6 +5,8 @@ import java.io.Serializable;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -33,6 +29,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class Config implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "config_id")
+    private Integer configId;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)
@@ -47,6 +47,10 @@ public class Config implements Serializable {
 
     public Config(String name) {
         this.name = name;
+    }
+
+    public int getCofingId() {
+        return configId;
     }
 
     public String getName() {
@@ -68,7 +72,7 @@ public class Config implements Serializable {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (name != null ? name.hashCode() : 0);
+        hash += (configId != null ? configId.hashCode() : 0);
         return hash;
     }
 
@@ -77,15 +81,15 @@ public class Config implements Serializable {
         if (!(object instanceof Config)) return false;
 
         Config other = (Config) object;
-        if (this.name == null && other.name != null) return false;
-        if (this.name != null) return this.name.equals(other.name); // return true for same DB entity
+        if (this.configId == null && other.configId != null) return false;
+        if (this.configId != null) return this.configId.equals(other.configId); // return true for same DB entity
 
         return this==object;
     }
 
     @Override
     public String toString() {
-        return "org.openepics.discs.conf.ent.Config[ name=" + name + " ]";
+        return "Config[ configId=" + configId + " ]";
     }
 
 }

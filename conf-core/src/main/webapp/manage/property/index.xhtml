@@ -46,9 +46,9 @@
                               filterBy="#{obj.unit.unitName}" filterMatchMode="contains">
                         <h:outputText value="#{obj.unit.unitName}"/>
                     </p:column>
-                    <p:column id="dtype" headerText="Data Type" sortBy="#{obj.dataType.dataTypeId}" 
-                              filterBy="#{obj.dataType.dataTypeId}" filterMatchMode="contains">
-                        <h:outputText value="#{obj.dataType.dataTypeId}"/>
+                    <p:column id="dtype" headerText="Data Type" sortBy="#{obj.dataType.name}" 
+                              filterBy="#{obj.dataType.name}" filterMatchMode="contains">
+                        <h:outputText value="#{obj.dataType.name}"/>
                     </p:column>
                     <p:column id="moddate" headerText="Date Modified" rendered="false" >
                         <h:outputText value="#{obj.modifiedAt}">
@@ -100,9 +100,9 @@
                                      var="d"  required="true"  
                                      converter="#{dataTypeConverter}" rendered="true"
                                      filter="true" filterMatchMode="startsWith">  
-                        <f:selectItems value="#{dataTypeManager.dataTypes}" var="dtype" itemLabel="#{dtype.dataTypeId}" itemValue="#{dtype}" />
+                        <f:selectItems value="#{dataTypeManager.dataTypes}" var="dtype" itemLabel="#{dtype.name}" itemValue="#{dtype}" />
                         <p:column>  
-                            #{d.dataTypeId}
+                            #{d.name}
                         </p:column>                        
 
                         <p:column >  

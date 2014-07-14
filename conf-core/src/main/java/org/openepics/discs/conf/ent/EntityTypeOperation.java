@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.openepics.discs.conf.ent;
 
 /**

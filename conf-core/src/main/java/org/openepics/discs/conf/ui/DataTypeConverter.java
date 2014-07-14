@@ -44,7 +44,7 @@ public class DataTypeConverter implements Converter {
             logger.log(Level.INFO, "exp converter: empty experiemnt id");
             return null;
         } else {
-            dtype = configurationEJB.findDataType(value);
+            dtype = configurationEJB.findDataType(Integer.valueOf(value));
             return dtype;
         }
     }
@@ -56,7 +56,7 @@ public class DataTypeConverter implements Converter {
             return "";
         } else {
             // logger.log(Level.INFO, "Exp number: " + ((Experiment) value).getId().toString());
-            return ((DataType) value).getDataTypeId();
+            return String.valueOf(((DataType) value).getDataTypeId());
         }
     }
 }

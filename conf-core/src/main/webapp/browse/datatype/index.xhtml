@@ -14,12 +14,12 @@
                          scrollRows="25" scrollable="true" liveScroll="true"   scrollHeight="500"                                         
                          filteredValue="#{dataTypeManager.fileteredDataTypes}"
                          emptyMessage="No data types found!" 
-                         rowKey="#{item.dataTypeId}}" >
+                         rowKey="#{item.name}}" >
                 <f:facet name="header">
                     <h:outputText value="Data Types"/>
                 </f:facet> 
-                <p:column id="desc" headerText="ID" filterBy="#{item.dataTypeId}" filterMatchMode="contains">
-                    <h:outputText value="#{item.dataTypeId}"/>
+                <p:column id="desc" headerText="ID" filterBy="#{item.name}" filterMatchMode="contains">
+                    <h:outputText value="#{item.name}"/>
                 </p:column>              
                 <p:column  headerText="Description" >
                     <h:outputText value="#{item.description}"/>

@@ -138,8 +138,18 @@ import org.openepics.discs.conf.ent.Unit;
         return datatypes;
     }
 
-    public DataType findDataType(String id) {
+    public DataType findDataType(int id) {
         return em.find(DataType.class, id);
+    }
+
+    public DataType findDataTypeByName(String name) {
+        DataType dataType;
+        try {
+            dataType = em.createNamedQuery("DataType.findByName", DataType.class).setParameter("name", name).getSingleResult();
+        } catch (NoResultException e) {
+            dataType = null;
+        }
+        return dataType;
     }
 
     // ---------------- Slot Relations -------------------------

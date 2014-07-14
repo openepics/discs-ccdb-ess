@@ -212,7 +212,7 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
             property.setUnit(null);
         }
 
-        final DataType newDataType = configurationEJB.findDataType(dataType);
+        final DataType newDataType = configurationEJB.findDataTypeByName(dataType);
         if (newDataType != null) {
             property.setDataType(newDataType);
         } else {

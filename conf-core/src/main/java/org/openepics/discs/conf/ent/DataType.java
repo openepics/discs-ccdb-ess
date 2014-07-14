@@ -1,9 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package org.openepics.discs.conf.ent;
 
 import java.io.Serializable;
@@ -14,6 +8,8 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -36,6 +32,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "DataType.findAll", query = "SELECT d FROM DataType d"),
+    @NamedQuery(name = "DataType.findByName", query = "SELECT d FROM DataType d WHERE d.name = :name"),
     @NamedQuery(name = "DataType.findByDataTypeId", query = "SELECT d FROM DataType d WHERE d.dataTypeId = :dataTypeId"),
     @NamedQuery(name = "DataType.findByDescription", query = "SELECT d FROM DataType d WHERE d.description = :description"),
     @NamedQuery(name = "DataType.findByScalar", query = "SELECT d FROM DataType d WHERE d.scalar = :scalar"),
@@ -46,10 +43,14 @@ public class DataType implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 32)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "data_type_id")
-    private String dataTypeId;
+    private Integer dataTypeId;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 64)
+    @Column(name = "name")
+    private String name;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 255)
@@ -77,16 +78,24 @@ public class DataType implements Serializable {
     protected DataType() {
     }
 
-    public DataType(String dataTypeId, String description, boolean scalar, String modifiedBy) {
-        this.dataTypeId = dataTypeId;
+    public DataType(String name, String description, boolean scalar, String modifiedBy) {
+        this.name = name;
         this.description = description;
         this.scalar = scalar;
         this.modifiedBy = modifiedBy;
         this.modifiedAt = new Date();
     }
 
-    public String getDataTypeId() {
+    public int getDataTypeId() {
         return dataTypeId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getDescription() {
@@ -158,7 +167,7 @@ public class DataType implements Serializable {
 
     @Override
     public String toString() {
-        return "org.openepics.discs.conf.ent.DataType[ dataTypeId=" + dataTypeId + " ]";
+        return "DataType[ dataTypeId=" + dataTypeId + " ]";
     }
 
 }

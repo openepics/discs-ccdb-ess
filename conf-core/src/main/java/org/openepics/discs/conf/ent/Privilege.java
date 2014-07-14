@@ -1,9 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package org.openepics.discs.conf.ent;
 
 import java.io.Serializable;
@@ -113,7 +107,7 @@ public class Privilege implements Serializable {
 
     @Override
     public String toString() {
-        return "org.openepics.discs.conf.ent.Privilege[ privilegeId=" + privilegeId + " ]";
+        return "Privilege[ privilegeId=" + privilegeId + " ]";
     }
 
 }
