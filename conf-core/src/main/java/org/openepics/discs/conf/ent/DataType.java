@@ -26,7 +26,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "DataType.findAll", query = "SELECT d FROM DataType d"),
     @NamedQuery(name = "DataType.findByName", query = "SELECT d FROM DataType d WHERE d.name = :name"),
-    @NamedQuery(name = "DataType.findByDataTypeId", query = "SELECT d FROM DataType d WHERE d.dataTypeId = :dataTypeId"),
+    @NamedQuery(name = "DataType.findByDataTypeId", query = "SELECT d FROM DataType d WHERE d.id = :id"),
     @NamedQuery(name = "DataType.findByDescription", query = "SELECT d FROM DataType d WHERE d.description = :description"),
     @NamedQuery(name = "DataType.findByScalar", query = "SELECT d FROM DataType d WHERE d.scalar = :scalar"),
     @NamedQuery(name = "DataType.findByModifiedAt", query = "SELECT d FROM DataType d WHERE d.modifiedAt = :modifiedAt"),

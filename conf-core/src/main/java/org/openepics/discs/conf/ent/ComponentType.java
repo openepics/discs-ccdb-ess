@@ -27,7 +27,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "ComponentType.findAll", query = "SELECT c FROM ComponentType c"),
-    @NamedQuery(name = "ComponentType.findByComponentTypeId", query = "SELECT c FROM ComponentType c WHERE c.componentTypeId = :componentTypeId"),
+    @NamedQuery(name = "ComponentType.findByComponentTypeId", query = "SELECT c FROM ComponentType c WHERE c.id = :id"),
     @NamedQuery(name = "ComponentType.findByName", query = "SELECT c FROM ComponentType c WHERE c.name = :name"),
     @NamedQuery(name = "ComponentType.findByDescription", query = "SELECT c FROM ComponentType c WHERE c.description = :description"),
     @NamedQuery(name = "ComponentType.findByModifiedAt", query = "SELECT c FROM ComponentType c WHERE c.modifiedAt = :modifiedAt"),

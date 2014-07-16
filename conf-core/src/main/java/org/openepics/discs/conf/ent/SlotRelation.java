@@ -25,7 +25,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "SlotRelation.findAll", query = "SELECT s FROM SlotRelation s"),
-    @NamedQuery(name = "SlotRelation.findBySlotRelationId", query = "SELECT s FROM SlotRelation s WHERE s.slotRelationId = :slotRelationId"),
+    @NamedQuery(name = "SlotRelation.findBySlotRelationId", query = "SELECT s FROM SlotRelation s WHERE s.id = :id"),
     @NamedQuery(name = "SlotRelation.findByName", query = "SELECT s FROM SlotRelation s WHERE s.name = :name"),
     @NamedQuery(name = "SlotRelation.findByIname", query = "SELECT s FROM SlotRelation s WHERE s.iname = :iname"),
     @NamedQuery(name = "SlotRelation.findByDescription", query = "SELECT s FROM SlotRelation s WHERE s.description = :description"),

@@ -23,7 +23,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "ComptypeAsm.findAll", query = "SELECT c FROM ComptypeAsm c"),
-    @NamedQuery(name = "ComptypeAsm.findByComptypeAsmId", query = "SELECT c FROM ComptypeAsm c WHERE c.comptypeAsmId = :comptypeAsmId"),
+    @NamedQuery(name = "ComptypeAsm.findByComptypeAsmId", query = "SELECT c FROM ComptypeAsm c WHERE c.id = :id"),
     @NamedQuery(name = "ComptypeAsm.findByChildPosition", query = "SELECT c FROM ComptypeAsm c WHERE c.childPosition = :childPosition"),
     @NamedQuery(name = "ComptypeAsm.findByDescription", query = "SELECT c FROM ComptypeAsm c WHERE c.description = :description"),
     @NamedQuery(name = "ComptypeAsm.findByModifiedAt", query = "SELECT c FROM ComptypeAsm c WHERE c.modifiedAt = :modifiedAt"),

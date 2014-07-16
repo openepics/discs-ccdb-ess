@@ -23,7 +23,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "SlotArtifact.findAll", query = "SELECT s FROM SlotArtifact s"),
-    @NamedQuery(name = "SlotArtifact.findByArtifactId", query = "SELECT s FROM SlotArtifact s WHERE s.artifactId = :artifactId"),
+    @NamedQuery(name = "SlotArtifact.findByArtifactId", query = "SELECT s FROM SlotArtifact s WHERE s.id = :id"),
     @NamedQuery(name = "SlotArtifact.findByName", query = "SELECT s FROM SlotArtifact s WHERE s.name = :name"),
     @NamedQuery(name = "SlotArtifact.findByIsInternal", query = "SELECT s FROM SlotArtifact s WHERE s.isInternal = :isInternal"),
     @NamedQuery(name = "SlotArtifact.findByDescription", query = "SELECT s FROM SlotArtifact s WHERE s.description = :description"),
