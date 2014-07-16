@@ -38,8 +38,8 @@ public class ComptypeProperty extends ConfigurationEntity {
 
     @Column(name = "prop_value", columnDefinition="TEXT")
     private String propValue;
-    @Basic(optional = false)
 
+    @Basic(optional = false)
     @NotNull
     @Column(name = "in_repository")
     private boolean inRepository;
