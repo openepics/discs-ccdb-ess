@@ -38,11 +38,11 @@ public class AlignmentProperty extends ConfigurationEntity {
     @Column(name = "in_repository")
     private boolean inRepository;
 
-    @JoinColumn(name = "alignment_record", referencedColumnName = "alignment_record_id")
+    @JoinColumn(name = "alignment_record", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private AlignmentRecord alignmentRecord;
 
-    @JoinColumn(name = "property", referencedColumnName = "property_id")
+    @JoinColumn(name = "property", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Property property;
 

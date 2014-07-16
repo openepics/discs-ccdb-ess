@@ -38,15 +38,15 @@ public class SlotProperty extends ConfigurationEntity {
     @Column(name = "in_repository")
     private boolean inRepository;
 
-    @JoinColumn(name = "unit", referencedColumnName = "unit_id")
+    @JoinColumn(name = "unit", referencedColumnName = "id")
     @ManyToOne
     private Unit unit;
 
-    @JoinColumn(name = "property", referencedColumnName = "property_id")
+    @JoinColumn(name = "property", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Property property;
 
-    @JoinColumn(name = "slot", referencedColumnName = "slot_id")
+    @JoinColumn(name = "slot", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Slot slot;
 

@@ -54,7 +54,7 @@ public class SlotArtifact extends ConfigurationEntity {
     @Column(name = "uri", columnDefinition="TEXT")
     private String uri;
 
-    @JoinColumn(name = "slot", referencedColumnName = "slot_id")
+    @JoinColumn(name = "slot", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Slot slot;
 

@@ -54,7 +54,7 @@ public class ComptypeArtifact extends ConfigurationEntity {
     @Column(name = "uri", columnDefinition="TEXT")
     private String uri;
 
-    @JoinColumn(name = "component_type", referencedColumnName = "component_type_id")
+    @JoinColumn(name = "component_type", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private ComponentType componentType;
 

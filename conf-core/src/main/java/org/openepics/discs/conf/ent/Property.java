@@ -66,11 +66,11 @@ public class Property extends ConfigurationEntity {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "property")
     private List<AlignmentProperty> alignmentPropertyList;
 
-    @JoinColumn(name = "data_type", referencedColumnName = "data_type_id")
+    @JoinColumn(name = "data_type", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private DataType dataType;
 
-    @JoinColumn(name = "unit", referencedColumnName = "unit_id")
+    @JoinColumn(name = "unit", referencedColumnName = "id")
     @ManyToOne
     private Unit unit;
 

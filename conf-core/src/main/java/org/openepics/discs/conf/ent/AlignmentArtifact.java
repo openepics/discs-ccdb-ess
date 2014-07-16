@@ -52,7 +52,7 @@ public class AlignmentArtifact extends ConfigurationEntity {
     @Column(name = "uri", columnDefinition="TEXT")
     private String uri;
 
-    @JoinColumn(name = "alignment_record", referencedColumnName = "alignment_record_id")
+    @JoinColumn(name = "alignment_record", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private AlignmentRecord alignmentRecord;
 

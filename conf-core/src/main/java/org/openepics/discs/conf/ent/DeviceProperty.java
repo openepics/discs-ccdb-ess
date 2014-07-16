@@ -38,15 +38,15 @@ public class DeviceProperty extends ConfigurationEntity {
     @Column(name = "in_repository")
     private boolean inRepository;
 
-    @JoinColumn(name = "property", referencedColumnName = "property_id")
+    @JoinColumn(name = "property", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Property property;
 
-    @JoinColumn(name = "unit", referencedColumnName = "unit_id")
+    @JoinColumn(name = "unit", referencedColumnName = "id")
     @ManyToOne
     private Unit unit;
 
-    @JoinColumn(name = "device", referencedColumnName = "device_id")
+    @JoinColumn(name = "device", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Device device;
 

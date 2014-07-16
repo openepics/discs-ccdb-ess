@@ -59,7 +59,7 @@ public class User implements Serializable {
     @Version
     private Long version;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "ccdb_user")
     private List<UserRole> userRoleList;
 
     protected User() {

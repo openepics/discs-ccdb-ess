@@ -78,9 +78,9 @@ public class UserRole implements Serializable {
     @ManyToOne(optional = false)
     private Role role;
 
-    @JoinColumn(name = "`user`", referencedColumnName = "user_id")
+    @JoinColumn(name = "ccdb_user", referencedColumnName = "user_id")
     @ManyToOne(optional = false)
-    private User user;
+    private User ccdb_user;
 
     protected UserRole() {
     }
@@ -145,11 +145,11 @@ public class UserRole implements Serializable {
     }
 
     public User getUser() {
-        return user;
+        return ccdb_user;
     }
 
     public void setUser(User user) {
-        this.user = user;
+        this.ccdb_user = user;
     }
 
     @Override

@@ -42,11 +42,11 @@ public class ComptypeAsm extends ConfigurationEntity {
     @Column(name = "description")
     private String description;
 
-    @JoinColumn(name = "child_type", referencedColumnName = "component_type_id")
+    @JoinColumn(name = "child_type", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private ComponentType childType;
 
-    @JoinColumn(name = "parent_type", referencedColumnName = "component_type_id")
+    @JoinColumn(name = "parent_type", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private ComponentType parentType;
 

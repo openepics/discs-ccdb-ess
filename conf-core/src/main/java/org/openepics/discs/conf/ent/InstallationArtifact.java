@@ -52,7 +52,7 @@ public class InstallationArtifact extends ConfigurationEntity {
     @Column(name = "uri", columnDefinition="TEXT")
     private String uri;
 
-    @JoinColumn(name = "installation_record", referencedColumnName = "installation_record_id")
+    @JoinColumn(name = "installation_record", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private InstallationRecord installationRecord;
 

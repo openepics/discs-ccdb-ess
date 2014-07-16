@@ -99,14 +99,14 @@ public class Slot extends ConfigurationEntity {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "slot")
     private List<SlotArtifact> slotArtifactList;
 
-    @JoinColumn(name = "component_type", referencedColumnName = "component_type_id")
+    @JoinColumn(name = "component_type", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private ComponentType componentType;
 
     @OneToMany(mappedBy = "asmSlot")
     private List<Slot> slotList;
 
-    @JoinColumn(name = "asm_slot", referencedColumnName = "slot_id")
+    @JoinColumn(name = "asm_slot", referencedColumnName = "id")
     @ManyToOne
     private Slot asmSlot;
 

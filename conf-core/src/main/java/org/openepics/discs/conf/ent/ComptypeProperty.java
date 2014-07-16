@@ -44,15 +44,15 @@ public class ComptypeProperty extends ConfigurationEntity {
     @Column(name = "in_repository")
     private boolean inRepository;
 
-    @JoinColumn(name = "unit", referencedColumnName = "unit_id")
+    @JoinColumn(name = "unit", referencedColumnName = "id")
     @ManyToOne
     private Unit unit;
 
-    @JoinColumn(name = "component_type", referencedColumnName = "component_type_id")
+    @JoinColumn(name = "component_type", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private ComponentType componentType;
 
-    @JoinColumn(name = "property", referencedColumnName = "property_id")
+    @JoinColumn(name = "property", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Property property;
 

@@ -54,7 +54,7 @@ public class DeviceArtifact extends ConfigurationEntity {
     @Column(name = "uri", columnDefinition="TEXT")
     private String uri;
 
-    @JoinColumn(name = "device", referencedColumnName = "device_id")
+    @JoinColumn(name = "device", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Device device;
 

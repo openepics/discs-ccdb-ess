@@ -58,11 +58,11 @@ public class InstallationRecord extends ConfigurationEntity {
     @Column(name = "notes", columnDefinition="TEXT")
     private String notes;
 
-    @JoinColumn(name = "slot", referencedColumnName = "slot_id")
+    @JoinColumn(name = "slot", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Slot slot;
 
-    @JoinColumn(name = "device", referencedColumnName = "device_id")
+    @JoinColumn(name = "device", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Device device;
 

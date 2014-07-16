@@ -37,15 +37,15 @@ public class SlotPair implements Serializable {
     @Version
     private Long version;
 
-    @JoinColumn(name = "child_slot", referencedColumnName = "slot_id")
+    @JoinColumn(name = "child_slot", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Slot childSlot;
 
-    @JoinColumn(name = "slot_relation", referencedColumnName = "slot_relation_id")
+    @JoinColumn(name = "slot_relation", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private SlotRelation slotRelation;
 
-    @JoinColumn(name = "parent_slot", referencedColumnName = "slot_id")
+    @JoinColumn(name = "parent_slot", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Slot parentSlot;
 

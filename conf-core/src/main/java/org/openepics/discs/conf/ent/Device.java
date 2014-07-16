@@ -97,14 +97,14 @@ public class Device extends ConfigurationEntity {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "device")
     private List<DeviceArtifact> deviceArtifactList;
 
-    @JoinColumn(name = "component_type", referencedColumnName = "component_type_id")
+    @JoinColumn(name = "component_type", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private ComponentType componentType;
 
     @OneToMany(mappedBy = "asmParent")
     private List<Device> deviceList;
 
-    @JoinColumn(name = "asm_parent", referencedColumnName = "device_id")
+    @JoinColumn(name = "asm_parent", referencedColumnName = "id")
     @ManyToOne
     private Device asmParent;
 

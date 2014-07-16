@@ -61,7 +61,7 @@ public class ComponentType extends ConfigurationEntity {
     @OneToMany(mappedBy = "superComponentType")
     private List<ComponentType> componentTypeList;
 
-    @JoinColumn(name = "super_component_type", referencedColumnName = "component_type_id")
+    @JoinColumn(name = "super_component_type", referencedColumnName = "id")
     @ManyToOne
     private ComponentType superComponentType;
 
