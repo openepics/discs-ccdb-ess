@@ -1,5 +1,7 @@
 package org.openepics.discs.conf.dl;
 
+import static org.junit.Assert.assertEquals;
+
 import javax.inject.Inject;
 
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -9,20 +11,19 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openepics.discs.conf.ejb.ConfigurationEJB;
-import static org.junit.Assert.*;
 
 @RunWith(Arquillian.class)
 public class DiscsDataLoaderIT {
-    
-    @Inject ConfigurationEJB confEJB;
-    
+
     @Deployment
     public static WebArchive createDeployment() {
         return CCDBPackager.createWebArchive();
     }
-    
+
+    @Inject ConfigurationEJB confEJB;
+
     @Test
-    @UsingDataSet({"units.yml"})
+    @UsingDataSet("units.yml")
     public void getCablesTest() {
         assertEquals(1, confEJB.findUnits().size());
     }

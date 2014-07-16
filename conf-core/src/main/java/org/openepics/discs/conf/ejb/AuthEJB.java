@@ -25,7 +25,7 @@ import org.openepics.discs.conf.ent.Privilege;
 public class AuthEJB {
 
     private static final Logger logger = Logger.getLogger(AuthEJB.class.getName());
-    @PersistenceContext(unitName = "org.openepics.discs.conf.data")
+    @PersistenceContext
     private EntityManager em;  
 
     // todo: implement autorization using RBAC.    

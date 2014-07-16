@@ -27,7 +27,7 @@ import javax.persistence.criteria.Root;
 public class ConfigurationEJB {
 
     private static final Logger logger = Logger.getLogger("org.openepics.discs.conf");
-    @PersistenceContext(unitName = "org.openepics.discs.conf.data")
+    @PersistenceContext
     private EntityManager em;
 
     // --------------------  Property  ---------------------

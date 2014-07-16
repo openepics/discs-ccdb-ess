@@ -1,10 +1,9 @@
 unit:
- - unit_id: 1
-   base_unit_expr: ""
-   description: "test description"
-   modified_at: 2015-01-01
-   modified_by: "test-user"
-   quantity: "test"
-   symbol: "T"
-   unit_name: "test unit"
-   version: 0
+  - base_unit_expr: ""
+    description: "test description"
+    modified_at: 2015-01-01
+    modified_by: "test-user"
+    quantity: "test"
+    symbol: "T"
+    unit_name: "test unit"
+    version: 0

@@ -1,15 +1,9 @@
 <arquillian xmlns="http://jboss.org/schema/arquillian"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://jboss.org/schema/arquillian http://jboss.org/schema/arquillian/arquillian_1_0.xsd">
- 
-    <defaultProtocol type="Servlet 3.0"/>
-    <container qualifier="jboss" default="true">
-        <configuration>
-            <property name="javaVmArguments">-Djboss.socket.binding.port-offset=100 -Djboss.management.native.port=9054</property>
-            <property name="managementPort">9154</property>
-        </configuration>
-    </container>
+    <defaultProtocol type="Servlet 3.0" />
+    <container qualifier="jboss" default="true" />
     <extension qualifier="persistence-dbunit">
-	    <property name="defaultDataSetFormat">YAML</property>
-	</extension>
+        <property name="defaultDataSetFormat">YAML</property>
+    </extension>
 </arquillian>

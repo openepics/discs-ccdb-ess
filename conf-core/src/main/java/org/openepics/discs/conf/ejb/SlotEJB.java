@@ -45,7 +45,7 @@ public class SlotEJB {
     // Add business logic below. (Right-click in editor and choose
     // "Insert Code > Add Business Method")
     private static final Logger logger = Logger.getLogger("org.openepics.discs.conf");   
-    @PersistenceContext(unitName = "org.openepics.discs.conf.data")
+    @PersistenceContext
     private EntityManager em;
     
     // ----------- Audit record ---------------------------------------
