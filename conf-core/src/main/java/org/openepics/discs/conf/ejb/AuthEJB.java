@@ -39,7 +39,7 @@ public class AuthEJB {
         List<Privilege> privs;
         TypedQuery<Privilege> query;
         //query = em.createQuery("SELECT p FROM UserRole ur JOIN ur.role r JOIN r.privilegeList p WHERE ur.user.userId = :user AND LOCATE(:resource,p.resource) = 1", Privilege.class)
-        query = em.createQuery("SELECT p FROM UserRole ur JOIN ur.role r JOIN r.privilegeList p WHERE ur.user.userId = :user", Privilege.class)
+        query = em.createQuery("SELECT p FROM UserRole ur JOIN ur.role r JOIN r.privilegeList p WHERE ur.ccdb_user.userId = :user", Privilege.class)
                 .setParameter("user", principal);
 
         privs = query.getResultList();

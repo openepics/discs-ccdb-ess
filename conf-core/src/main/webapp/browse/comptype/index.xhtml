@@ -20,7 +20,7 @@
                 <p:column headerText="Name" filterBy="#{item.name}" filterMatchMode="contains">
                     <h:link outcome="details" target="_blank"  >                       
                         <h:outputText value="#{item.name}" styleClass="link"/>
-                        <f:param name="id" value="#{item.componentTypeId}"/>
+                        <f:param name="id" value="#{item.id}"/>
                     </h:link>                  
                 </p:column>              
                 <p:column  headerText="Description" >

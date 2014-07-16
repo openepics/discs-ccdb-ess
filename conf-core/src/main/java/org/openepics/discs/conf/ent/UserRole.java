@@ -35,8 +35,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "UserRole.findByIsRoleManager", query = "SELECT u FROM UserRole u WHERE u.isRoleManager = :isRoleManager"),
     @NamedQuery(name = "UserRole.findByStartTime", query = "SELECT u FROM UserRole u WHERE u.startTime = :startTime"),
     @NamedQuery(name = "UserRole.findByEndTime", query = "SELECT u FROM UserRole u WHERE u.endTime = :endTime"),
-    @NamedQuery(name = "UserRole.findByComment", query = "SELECT u FROM UserRole u WHERE u.comment = :comment"),
-    @NamedQuery(name = "UserRole.findByVersion", query = "SELECT u FROM UserRole u WHERE u.version = :version")})
+    @NamedQuery(name = "UserRole.findByComment", query = "SELECT u FROM UserRole u WHERE u.comment = :comment")})
 public class UserRole implements Serializable {
     private static final long serialVersionUID = 1L;
 
