@@ -37,35 +37,43 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "DeviceProperty.findByVersion", query = "SELECT d FROM DeviceProperty d WHERE d.version = :version")})
 public class DeviceProperty implements Serializable {
     private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
     @Column(name = "dev_prop_id")
     private Integer devPropId;
+
     @Column(name = "prop_value", columnDefinition="TEXT")
     private String propValue;
+
     @Basic(optional = false)
     @NotNull
     @Column(name = "in_repository")
     private boolean inRepository;
+
     @Basic(optional = false)
     @NotNull
     @Column(name = "modified_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date modifiedAt;
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)
     @Column(name = "modified_by")
     private String modifiedBy;
+
     @Version
     private Long version;
+
     @JoinColumn(name = "property", referencedColumnName = "property_id")
     @ManyToOne(optional = false)
     private Property property;
+
     @JoinColumn(name = "unit", referencedColumnName = "unit_id")
     @ManyToOne
     private Unit unit;
+
     @JoinColumn(name = "device", referencedColumnName = "device_id")
     @ManyToOne(optional = false)
     private Device device;

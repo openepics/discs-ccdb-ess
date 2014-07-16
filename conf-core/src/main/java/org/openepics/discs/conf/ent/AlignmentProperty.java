@@ -37,32 +37,39 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "AlignmentProperty.findByVersion", query = "SELECT a FROM AlignmentProperty a WHERE a.version = :version")})
 public class AlignmentProperty implements Serializable {
     private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
     @Column(name = "align_prop_id")
     private Integer alignPropId;
+
     @Column(name = "prop_value", columnDefinition="TEXT")
     private String propValue;
+
     @Basic(optional = false)
     @NotNull
     @Column(name = "in_repository")
     private boolean inRepository;
+
     @Basic(optional = false)
     @NotNull
     @Column(name = "modified_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date modifiedAt;
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)
     @Column(name = "modified_by")
     private String modifiedBy;
+
     @Version
     private Long version;
+
     @JoinColumn(name = "alignment_record", referencedColumnName = "alignment_record_id")
     @ManyToOne(optional = false)
     private AlignmentRecord alignmentRecord;
+
     @JoinColumn(name = "property", referencedColumnName = "property_id")
     @ManyToOne(optional = false)
     private Property property;

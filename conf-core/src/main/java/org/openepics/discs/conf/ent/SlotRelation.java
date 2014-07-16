@@ -41,36 +41,43 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "SlotRelation.findByVersion", query = "SELECT s FROM SlotRelation s WHERE s.version = :version")})
 public class SlotRelation implements Serializable {
     private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
     @Column(name = "slot_relation_id")
     private Integer slotRelationId;
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 32)
     @Column(name = "name")
     private String name;
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 32)
     @Column(name = "iname")
     private String iname;
+
     @Size(max = 255)
     @Column(name = "description")
     private String description;
+
     @Basic(optional = false)
     @NotNull
     @Column(name = "modified_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date modifiedAt;
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)
     @Column(name = "modified_by")
     private String modifiedBy;
+
     @Version
     private Long version;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "slotRelation")
     private List<SlotPair> slotPairList;
 

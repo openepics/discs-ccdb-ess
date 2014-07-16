@@ -37,35 +37,43 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "SlotProperty.findByVersion", query = "SELECT s FROM SlotProperty s WHERE s.version = :version")})
 public class SlotProperty implements Serializable {
     private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
     @Column(name = "slot_prop_id")
     private Integer slotPropId;
+
     @Column(name = "prop_value", columnDefinition="TEXT")
     private String propValue;
+
     @Basic(optional = false)
     @NotNull
     @Column(name = "in_repository")
     private boolean inRepository;
+
     @Basic(optional = false)
     @NotNull
     @Column(name = "modified_at")
     @Temporal(TemporalType.DATE)
     private Date modifiedAt;
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)
     @Column(name = "modified_by")
     private String modifiedBy;
+
     @Version
     private Long version;
+
     @JoinColumn(name = "unit", referencedColumnName = "unit_id")
     @ManyToOne
     private Unit unit;
+
     @JoinColumn(name = "property", referencedColumnName = "property_id")
     @ManyToOne(optional = false)
     private Property property;
+
     @JoinColumn(name = "slot", referencedColumnName = "slot_id")
     @ManyToOne(optional = false)
     private Slot slot;

@@ -16,6 +16,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -37,37 +38,47 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "AlignmentArtifact.findByModifiedAt", query = "SELECT a FROM AlignmentArtifact a WHERE a.modifiedAt = :modifiedAt")})
 public class AlignmentArtifact implements Serializable {
     private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
     @Column(name = "artifact_id")
     private Integer artifactId;
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 128)
     @Column(name = "name")
     private String name;
+
     @Basic(optional = false)
     @NotNull
     @Column(name = "is_internal")
     private boolean isInternal;
+
     @Size(max = 255)
     @Column(name = "description")
     private String description;
+
     @Basic(optional = false)
     @NotNull
     @Column(name = "uri", columnDefinition="TEXT")
     private String uri;
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)
     @Column(name = "modified_by")
     private String modifiedBy;
+
     @Basic(optional = false)
     @NotNull
     @Column(name = "modified_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date modifiedAt;
+
+    @Version
+    private Long version;
+
     @JoinColumn(name = "alignment_record", referencedColumnName = "alignment_record_id")
     @ManyToOne(optional = false)
     private AlignmentRecord alignmentRecord;
@@ -133,6 +144,14 @@ public class AlignmentArtifact implements Serializable {
 
     public void setModifiedAt(Date modifiedAt) {
         this.modifiedAt = modifiedAt;
+    }
+
+    protected Long getVersion() {
+        return version;
+    }
+
+    protected void setVersion(Long version) {
+        this.version = version;
     }
 
     public AlignmentRecord getAlignmentRecord() {

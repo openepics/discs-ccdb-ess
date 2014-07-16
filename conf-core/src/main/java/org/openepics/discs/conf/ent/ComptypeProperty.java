@@ -38,38 +38,47 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "ComptypeProperty.findByVersion", query = "SELECT c FROM ComptypeProperty c WHERE c.version = :version")})
 public class ComptypeProperty implements Serializable {
     private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
     @Column(name = "ctype_prop_id")
     private Integer ctypePropId;
+
     @Size(max = 4)
     @Column(name = "type")
     private String type;
+
     @Column(name = "prop_value", columnDefinition="TEXT")
     private String propValue;
     @Basic(optional = false)
+
     @NotNull
     @Column(name = "in_repository")
     private boolean inRepository;
+
     @Basic(optional = false)
     @NotNull
     @Column(name = "modified_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date modifiedAt;
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)
     @Column(name = "modified_by")
     private String modifiedBy;
+
     @Version
     private Long version;
+
     @JoinColumn(name = "unit", referencedColumnName = "unit_id")
     @ManyToOne
     private Unit unit;
+
     @JoinColumn(name = "component_type", referencedColumnName = "component_type_id")
     @ManyToOne(optional = false)
     private ComponentType componentType;
+
     @JoinColumn(name = "property", referencedColumnName = "property_id")
     @ManyToOne(optional = false)
     private Property property;

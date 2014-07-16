@@ -39,37 +39,45 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "UserRole.findByVersion", query = "SELECT u FROM UserRole u WHERE u.version = :version")})
 public class UserRole implements Serializable {
     private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
     @Column(name = "user_role_id")
     private Integer userRoleId;
+
     @Basic(optional = false)
     @NotNull
     @Column(name = "canDelegate")
     private boolean canDelegate;
+
     @Basic(optional = false)
     @NotNull
     @Column(name = "isRoleManager")
     private boolean isRoleManager;
+
     @Basic(optional = false)
     @NotNull
     @Column(name = "startTime")
     @Temporal(TemporalType.TIMESTAMP)
     private Date startTime;
+
     @Basic(optional = false)
     @NotNull
     @Column(name = "endTime")
     @Temporal(TemporalType.TIMESTAMP)
     private Date endTime;
+
     @Size(max = 255)
     @Column(name = "comment")
     private String comment;
+
     @Version
     private Long version;
+
     @JoinColumn(name = "role", referencedColumnName = "role_id")
     @ManyToOne(optional = false)
     private Role role;
+
     @JoinColumn(name = "`user`", referencedColumnName = "user_id")
     @ManyToOne(optional = false)
     private User user;

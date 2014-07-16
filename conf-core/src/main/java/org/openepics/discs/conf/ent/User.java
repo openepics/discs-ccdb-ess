@@ -34,26 +34,31 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "User.findByVersion", query = "SELECT u FROM User u WHERE u.version = :version")})
 public class User implements Serializable {
     private static final long serialVersionUID = 1L;
+
     @Id
-    @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)
     @Column(name = "user_id")
     private String userId;
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 128)
     @Column(name = "name")
     private String name;
+
     // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")//if the field contains email address consider using this annotation to enforce field validation
     @Size(max = 64)
     @Column(name = "email")
     private String email;
+
     @Size(max = 255)
     @Column(name = "comment")
     private String comment;
+
     @Version
     private Long version;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
     private List<UserRole> userRoleList;
 

@@ -38,34 +38,41 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "ComptypeAsm.findByVersion", query = "SELECT c FROM ComptypeAsm c WHERE c.version = :version")})
 public class ComptypeAsm implements Serializable {
     private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
     @Column(name = "comptype_asm_id")
     private Integer comptypeAsmId;
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 16)
     @Column(name = "child_position")
     private String childPosition;
+
     @Size(max = 255)
     @Column(name = "description")
     private String description;
+
     @Basic(optional = false)
     @NotNull
     @Column(name = "modified_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date modifiedAt;
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)
     @Column(name = "modified_by")
     private String modifiedBy;
+
     @Version
     private Long version;
+
     @JoinColumn(name = "child_type", referencedColumnName = "component_type_id")
     @ManyToOne(optional = false)
     private ComponentType childType;
+
     @JoinColumn(name = "parent_type", referencedColumnName = "component_type_id")
     @ManyToOne(optional = false)
     private ComponentType parentType;

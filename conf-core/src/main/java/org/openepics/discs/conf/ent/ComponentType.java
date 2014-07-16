@@ -42,46 +42,59 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "ComponentType.findByVersion", query = "SELECT c FROM ComponentType c WHERE c.version = :version")})
 public class ComponentType implements Serializable {
     private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
     @Column(name = "component_type_id")
     private Integer componentTypeId;
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 32)
     @Column(name = "name", unique = true)
     private String name;
+
     @Size(max = 255)
     @Column(name = "description")
     private String description;
+
     @Basic(optional = false)
     @NotNull
     @Column(name = "modified_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date modifiedAt;
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)
     @Column(name = "modified_by")
     private String modifiedBy;
+
     @Version
     private Long version;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentType")
     private List<ComptypeProperty> comptypePropertyList;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentType")
     private List<Slot> slotList;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "childType")
     private List<ComptypeAsm> comptypeAsmList;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "parentType")
     private List<ComptypeAsm> comptypeAsmList1;
+
     @OneToMany(mappedBy = "superComponentType")
     private List<ComponentType> componentTypeList;
+
     @JoinColumn(name = "super_component_type", referencedColumnName = "component_type_id")
     @ManyToOne
     private ComponentType superComponentType;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentType")
     private List<Device> deviceList;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentType")
     private List<ComptypeArtifact> comptypeArtifactList;
 

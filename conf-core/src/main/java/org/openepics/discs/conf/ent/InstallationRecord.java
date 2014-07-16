@@ -43,44 +43,54 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "InstallationRecord.findByVersion", query = "SELECT i FROM InstallationRecord i WHERE i.version = :version")})
 public class InstallationRecord implements Serializable {
     private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
     @Column(name = "installation_record_id")
     private Integer installationRecordId;
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)
     @Column(name = "record_number")
     private String recordNumber;
+
     @Basic(optional = false)
     @NotNull
     @Column(name = "install_date")
     @Temporal(TemporalType.DATE)
     private Date installDate;
+
     @Column(name = "uninstall_date")
     @Temporal(TemporalType.DATE)
     private Date uninstallDate;
+
     @Column(name = "notes", columnDefinition="TEXT")
     private String notes;
+
     @Basic(optional = false)
     @NotNull
     @Column(name = "modified_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date modifiedAt;
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)
     @Column(name = "modified_by")
     private String modifiedBy;
+
     @Version
     private Long version;
+
     @JoinColumn(name = "slot", referencedColumnName = "slot_id")
     @ManyToOne(optional = false)
     private Slot slot;
+
     @JoinColumn(name = "device", referencedColumnName = "device_id")
     @ManyToOne(optional = false)
     private Device device;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "installationRecord")
     private List<InstallationArtifact> installationArtifactList;
 
