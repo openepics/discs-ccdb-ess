@@ -82,14 +82,6 @@ public class Role implements Serializable {
         this.description = description;
     }
 
-    protected Long getVersion() {
-        return version;
-    }
-
-    protected void setVersion(Long version) {
-        this.version = version;
-    }
-
     @XmlTransient
     public List<UserRole> getUserRoleList() {
         return userRoleList;

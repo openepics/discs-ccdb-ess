@@ -1,22 +1,15 @@
 package org.openepics.discs.conf.ent;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -39,13 +32,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Unit.findByModifiedAt", query = "SELECT u FROM Unit u WHERE u.modifiedAt = :modifiedAt"),
     @NamedQuery(name = "Unit.findByModifiedBy", query = "SELECT u FROM Unit u WHERE u.modifiedBy = :modifiedBy"),
     @NamedQuery(name = "Unit.findByVersion", query = "SELECT u FROM Unit u WHERE u.version = :version")})
-public class Unit implements Serializable {
+public class Unit extends ConfigurationEntity {
     private static final long serialVersionUID = 1L;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "unit_id")
-    private Integer unitId;
 
     @Basic(optional = false)
     @NotNull
@@ -75,21 +63,6 @@ public class Unit implements Serializable {
     @Column(name = "base_unit_expr")
     private String baseUnitExpr;
 
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "modified_at")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date modifiedAt;
-
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 64)
-    @Column(name = "modified_by")
-    private String modifiedBy;
-
-    @Version
-    private Long version;
-
     @OneToMany(mappedBy = "unit")
     private List<ComptypeProperty> comptypePropertyList;
 
@@ -113,10 +86,6 @@ public class Unit implements Serializable {
         this.description = description;
         this.modifiedBy = modifiedBy;
         this.modifiedAt = new Date();
-    }
-
-    public Integer getUnitId() {
-        return unitId;
     }
 
     public String getUnitName() {
@@ -159,30 +128,6 @@ public class Unit implements Serializable {
         this.baseUnitExpr = baseUnitExpr;
     }
 
-    public Date getModifiedAt() {
-        return modifiedAt;
-    }
-
-    public void setModifiedAt(Date modifiedAt) {
-        this.modifiedAt = modifiedAt;
-    }
-
-    public String getModifiedBy() {
-        return modifiedBy;
-    }
-
-    public void setModifiedBy(String modifiedBy) {
-        this.modifiedBy = modifiedBy;
-    }
-
-    protected Long getVersion() {
-        return version;
-    }
-
-    protected void setVersion(Long version) {
-        this.version = version;
-    }
-
     @XmlTransient
     public List<ComptypeProperty> getComptypePropertyList() {
         return comptypePropertyList;
@@ -220,26 +165,8 @@ public class Unit implements Serializable {
     }
 
     @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (unitName != null ? unitName.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        if (!(object instanceof Unit)) return false;
-
-        Unit other = (Unit) object;
-        if (this.unitName == null && other.unitName != null) return false;
-        if (this.unitName != null) return this.unitName.equals(other.unitName); // return true for same DB entity
-
-        return this==object;
-    }
-
-    @Override
     public String toString() {
-        return "Unit[ unitId=" + unitName + " ]";
+        return "Unit[ unitId=" + id + " ]";
     }
 
 }

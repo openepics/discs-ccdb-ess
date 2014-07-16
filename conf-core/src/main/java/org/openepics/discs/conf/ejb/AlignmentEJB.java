@@ -104,7 +104,7 @@ private static final Logger logger = Logger.getLogger(AlignmentEJB.class.getCano
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
-        AlignmentRecord ct = em.find(AlignmentRecord.class,arec.getAlignmentRecordId());
+        AlignmentRecord ct = em.find(AlignmentRecord.class,arec.getId());
         em.remove(ct);
         makeAuditEntry(EntityTypeOperation.DELETE,arec.getRecordNumber(),"deleted alignment record");
     }
@@ -132,7 +132,7 @@ private static final Logger logger = Logger.getLogger(AlignmentEJB.class.getCano
             em.merge(slot);
         }
         makeAuditEntry(EntityTypeOperation.UPDATE,prop.getAlignmentRecord().getRecordNumber(),"updated alignment property " + prop.getProperty().getName());
-        logger.log(Level.INFO, "Comp Type Property: id " + newProp.getAlignPropId() + " name " + newProp.getProperty().getName());
+        logger.log(Level.INFO, "Comp Type Property: id " + newProp.getId() + " name " + newProp.getProperty().getName());
     }
 
 
@@ -146,7 +146,7 @@ private static final Logger logger = Logger.getLogger(AlignmentEJB.class.getCano
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
-        AlignmentProperty property = em.find(AlignmentProperty.class, prop.getAlignPropId());
+        AlignmentProperty property = em.find(AlignmentProperty.class, prop.getId());
         AlignmentRecord arec = property.getAlignmentRecord();
         arec.getAlignmentPropertyList().remove(property);
         em.remove(property);
@@ -192,8 +192,8 @@ private static final Logger logger = Logger.getLogger(AlignmentEJB.class.getCano
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
-        logger.log(Level.INFO, "deleting " + art.getName() + " id " + art.getArtifactId() + " des " + art.getDescription());
-        AlignmentArtifact artifact = em.find(AlignmentArtifact.class, art.getArtifactId());
+        logger.log(Level.INFO, "deleting " + art.getName() + " id " + art.getId() + " des " + art.getDescription());
+        AlignmentArtifact artifact = em.find(AlignmentArtifact.class, art.getId());
         AlignmentRecord arec = artifact.getAlignmentRecord();
         arec.getAlignmentArtifactList().remove(artifact);
         em.remove(artifact);

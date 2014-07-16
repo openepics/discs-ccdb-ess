@@ -106,14 +106,6 @@ public class User implements Serializable {
         this.comment = comment;
     }
 
-    protected Long getVersion() {
-        return version;
-    }
-
-    protected void setVersion(Long version) {
-        this.version = version;
-    }
-
     @XmlTransient
     public List<UserRole> getUserRoleList() {
         return userRoleList;

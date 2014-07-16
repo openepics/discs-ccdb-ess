@@ -1,22 +1,15 @@
 package org.openepics.discs.conf.ent;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -36,13 +29,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "ComptypeArtifact.findByDescription", query = "SELECT c FROM ComptypeArtifact c WHERE c.description = :description"),
     @NamedQuery(name = "ComptypeArtifact.findByModifiedBy", query = "SELECT c FROM ComptypeArtifact c WHERE c.modifiedBy = :modifiedBy"),
     @NamedQuery(name = "ComptypeArtifact.findByModifiedAt", query = "SELECT c FROM ComptypeArtifact c WHERE c.modifiedAt = :modifiedAt")})
-public class ComptypeArtifact implements Serializable {
+public class ComptypeArtifact extends ConfigurationEntity {
     private static final long serialVersionUID = 1L;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "artifact_id")
-    private Integer artifactId;
 
     @Basic(optional = false)
     @NotNull
@@ -66,21 +54,6 @@ public class ComptypeArtifact implements Serializable {
     @Column(name = "uri", columnDefinition="TEXT")
     private String uri;
 
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 64)
-    @Column(name = "modified_by")
-    private String modifiedBy;
-
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "modified_at")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date modifiedAt;
-
-    @Version
-    private Long version;
-
     @JoinColumn(name = "component_type", referencedColumnName = "component_type_id")
     @ManyToOne(optional = false)
     private ComponentType componentType;
@@ -95,10 +68,6 @@ public class ComptypeArtifact implements Serializable {
         this.uri = uri;
         this.modifiedBy = modifiedBy;
         this.modifiedAt = new Date();
-    }
-
-    public Integer getArtifactId() {
-        return artifactId;
     }
 
     public String getName() {
@@ -133,30 +102,6 @@ public class ComptypeArtifact implements Serializable {
         this.uri = uri;
     }
 
-    public String getModifiedBy() {
-        return modifiedBy;
-    }
-
-    public void setModifiedBy(String modifiedBy) {
-        this.modifiedBy = modifiedBy;
-    }
-
-    public Date getModifiedAt() {
-        return modifiedAt;
-    }
-
-    public void setModifiedAt(Date modifiedAt) {
-        this.modifiedAt = modifiedAt;
-    }
-
-    protected Long getVersion() {
-        return version;
-    }
-
-    protected void setVersion(Long version) {
-        this.version = version;
-    }
-
     public ComponentType getComponentType() {
         return componentType;
     }
@@ -166,26 +111,8 @@ public class ComptypeArtifact implements Serializable {
     }
 
     @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (artifactId != null ? artifactId.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        if (!(object instanceof ComptypeArtifact)) return false;
-
-        ComptypeArtifact other = (ComptypeArtifact) object;
-        if (this.artifactId == null && other.artifactId != null) return false;
-        if (this.artifactId != null) return this.artifactId.equals(other.artifactId); // return true for same DB entity
-
-        return this==object;
-    }
-
-    @Override
     public String toString() {
-        return "ComptypeArtifact[ artifactId=" + artifactId + " ]";
+        return "ComptypeArtifact[ artifactId=" + id + " ]";
     }
 
 }

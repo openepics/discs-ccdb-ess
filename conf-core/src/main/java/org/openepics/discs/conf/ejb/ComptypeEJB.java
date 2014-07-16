@@ -116,13 +116,13 @@ public class ComptypeEJB {
             em.merge(ctype);
         }
         makeAuditEntry(EntityTypeOperation.UPDATE,ctprop.getComponentType().getName(),"Updated property " + ctprop.getProperty().getName());
-        logger.log(Level.INFO, "Comp Type Property: id " + newProp.getCtypePropId() + " name " + newProp.getProperty().getName());
+        logger.log(Level.INFO, "Comp Type Property: id " + newProp.getId() + " name " + newProp.getProperty().getName());
     }
 
 
     public void deleteCompTypeProp(ComptypeProperty ctp) {
-        logger.log(Level.INFO, "deleting comp type property id " + ctp.getCtypePropId() + " name " + ctp.getProperty().getName());
-        ComptypeProperty property = em.find(ComptypeProperty.class, ctp.getCtypePropId());
+        logger.log(Level.INFO, "deleting comp type property id " + ctp.getId() + " name " + ctp.getProperty().getName());
+        ComptypeProperty property = em.find(ComptypeProperty.class, ctp.getId());
         ComponentType arec = property.getComponentType();
         arec.getComptypePropertyList().remove(property);
         em.remove(property);
@@ -173,8 +173,8 @@ public class ComptypeEJB {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
-        logger.log(Level.INFO, "deleting " + art.getName() + " id " + art.getArtifactId() + " des " + art.getDescription());
-        ComptypeArtifact artifact = em.find(ComptypeArtifact.class, art.getArtifactId());
+        logger.log(Level.INFO, "deleting " + art.getName() + " id " + art.getId() + " des " + art.getDescription());
+        ComptypeArtifact artifact = em.find(ComptypeArtifact.class, art.getId());
         ComponentType arec = artifact.getComponentType();
         arec.getComptypeArtifactList().remove(artifact);
         em.remove(artifact);
@@ -211,7 +211,7 @@ public class ComptypeEJB {
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
         if (prt != null) {
-            ComptypeAsm entity = em.find(ComptypeAsm.class, prt.getComptypeAsmId());
+            ComptypeAsm entity = em.find(ComptypeAsm.class, prt.getId());
             em.remove(entity);
             em.merge(ctype);
             makeAuditEntry(EntityTypeOperation.UPDATE,ctype.getName(),"Updated component type. Deleted a part from assembly.");

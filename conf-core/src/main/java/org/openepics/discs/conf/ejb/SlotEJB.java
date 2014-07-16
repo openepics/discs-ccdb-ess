@@ -71,7 +71,7 @@ public class SlotEJB {
     }
 
 
-    public Slot findLayoutSlot(int id) {
+    public Slot findLayoutSlot(Long id) {
         return em.find(Slot.class, id);
     }
 
@@ -105,7 +105,7 @@ public class SlotEJB {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
-        Slot ct = em.find(Slot.class,slot.getSlotId());
+        Slot ct = em.find(Slot.class,slot.getId());
         em.remove(ct);
         makeAuditEntry(EntityTypeOperation.DELETE,slot.getName(),"Deleted slot");
     }
@@ -133,7 +133,7 @@ public class SlotEJB {
             em.merge(slot);
         }
         makeAuditEntry(EntityTypeOperation.UPDATE,prop.getSlot().getName(),"Modified slot property " + prop.getProperty().getName());
-        logger.log(Level.INFO, "Comp Type Property: id " + newProp.getSlotPropId() + " name " + newProp.getProperty().getName());
+        logger.log(Level.INFO, "Comp Type Property: id " + newProp.getId() + " name " + newProp.getProperty().getName());
     }
 
 
@@ -148,7 +148,7 @@ public class SlotEJB {
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
 
-        SlotProperty property = em.find(SlotProperty.class, prop.getSlotPropId());
+        SlotProperty property = em.find(SlotProperty.class, prop.getId());
         Slot slot = property.getSlot();
         slot.getSlotPropertyList().remove(property);
         em.remove(property);
@@ -191,8 +191,8 @@ public class SlotEJB {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
-        logger.log(Level.INFO, "deleting " + art.getName() + " id " + art.getArtifactId() + " des " + art.getDescription());
-        SlotArtifact artifact = em.find(SlotArtifact.class, art.getArtifactId());
+        logger.log(Level.INFO, "deleting " + art.getName() + " id " + art.getId() + " des " + art.getDescription());
+        SlotArtifact artifact = em.find(SlotArtifact.class, art.getId());
         Slot slot = artifact.getSlot();
         slot.getSlotArtifactList().remove(artifact);
         em.remove(artifact);

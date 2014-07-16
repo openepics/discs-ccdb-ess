@@ -177,7 +177,7 @@ public class InstallationManager implements Serializable {
 
             // deviceEJB.saveInstallationArtifact(selectedObject, inputArtifact);
             installationEJB.saveInstallationArtifact(inputArtifact, artifactOperation == 'a');
-            logger.log(Level.INFO,"returned artifact id is " + inputArtifact.getArtifactId());
+            logger.log(Level.INFO,"returned artifact id is " + inputArtifact.getId());
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Artifact saved", "");
             RequestContext.getCurrentInstance().addCallbackParam("success", true);
         } catch (Exception e) {
@@ -211,7 +211,7 @@ public class InstallationManager implements Serializable {
         artifactOperation = 'e';
         inputArtifact = art;
         uploadedFileName = art.getName();
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Edit:", "Edit initiated " + inputArtifact.getArtifactId());
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Edit:", "Edit initiated " + inputArtifact.getId());
     }
 
     public void onArtifactType() {

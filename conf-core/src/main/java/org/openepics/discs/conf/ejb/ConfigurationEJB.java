@@ -75,7 +75,7 @@ import org.openepics.discs.conf.ent.Unit;
     }
 
     public void deleteProperty(Property property) {
-        Property prop = em.find(Property.class, property.getPropertyId());
+        Property prop = em.find(Property.class, property.getId());
         em.remove(prop);
     }
 
@@ -94,7 +94,7 @@ import org.openepics.discs.conf.ent.Unit;
         return units;
     }
 
-    public Unit findUnit(int id) {
+    public Unit findUnit(Long id) {
         return em.find(Unit.class, id);
     }
 
@@ -119,7 +119,7 @@ import org.openepics.discs.conf.ent.Unit;
     }
 
     public void deleteUnit(Unit unit) {
-        final Unit unitToDelete = findUnit(unit.getUnitId());
+        final Unit unitToDelete = findUnit(unit.getId());
         em.remove(unitToDelete);
     }
 
@@ -167,7 +167,7 @@ import org.openepics.discs.conf.ent.Unit;
         return slotrels;
     }
 
-    public SlotRelation findSlotRelation(int id) {
+    public SlotRelation findSlotRelation(Long id) {
         return em.find(SlotRelation.class, id);
     }
 

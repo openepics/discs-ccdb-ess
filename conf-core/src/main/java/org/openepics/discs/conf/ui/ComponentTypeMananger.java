@@ -223,7 +223,7 @@ public class ComponentTypeMananger implements Serializable {
             artifactOperation = 'e';
             inputProperty = prop;
             uploadedFileName = prop.getProperty().getName();
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Edit:", "Edit initiated " + inputProperty.getCtypePropId());
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Edit:", "Edit initiated " + inputProperty.getId());
         } catch (Exception e) {
             // selectedCompProps.remove(prop);
             Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error: Property can not be edited", e.getMessage());
@@ -245,7 +245,7 @@ public class ComponentTypeMananger implements Serializable {
             }
 
             comptypeEJB.saveCompTypeProp(inputProperty, propertyOperation == 'a');
-            logger.log(Level.INFO, "returned artifact id is " + inputProperty.getCtypePropId());
+            logger.log(Level.INFO, "returned artifact id is " + inputProperty.getId());
 
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Property saved", "");
             RequestContext.getCurrentInstance().addCallbackParam("success", true);
@@ -339,7 +339,7 @@ public class ComponentTypeMananger implements Serializable {
 
             // comptypeEJB.saveComponentTypeArtifact(selectedObject, inputArtifact);
             comptypeEJB.saveCompTypeArtifact(inputArtifact, artifactOperation == 'a');
-            logger.log(Level.INFO, "returned artifact id is " + inputArtifact.getArtifactId());
+            logger.log(Level.INFO, "returned artifact id is " + inputArtifact.getId());
 
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Artifact saved", "");
             RequestContext.getCurrentInstance().addCallbackParam("success", true);
@@ -374,7 +374,7 @@ public class ComponentTypeMananger implements Serializable {
         artifactOperation = 'e';
         inputArtifact = art;
         uploadedFileName = art.getName();
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Edit:", "Edit initiated " + inputArtifact.getArtifactId());
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Edit:", "Edit initiated " + inputArtifact.getId());
     }
 
     public void onArtifactType() {

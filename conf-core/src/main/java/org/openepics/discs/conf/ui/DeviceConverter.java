@@ -55,7 +55,7 @@ public class DeviceConverter implements Converter {
             return "";
         } else {
             // logger.log(Level.INFO, "Exp number: " + ((Experiment) value).getId().toString());
-            return ((Device) value).getDeviceId().toString();
+            return ((Device) value).getId().toString();
         }
     }
 }

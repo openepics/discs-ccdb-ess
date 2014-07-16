@@ -1,24 +1,16 @@
 package org.openepics.discs.conf.ent;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -35,13 +27,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "DeviceProperty.findByModifiedAt", query = "SELECT d FROM DeviceProperty d WHERE d.modifiedAt = :modifiedAt"),
     @NamedQuery(name = "DeviceProperty.findByModifiedBy", query = "SELECT d FROM DeviceProperty d WHERE d.modifiedBy = :modifiedBy"),
     @NamedQuery(name = "DeviceProperty.findByVersion", query = "SELECT d FROM DeviceProperty d WHERE d.version = :version")})
-public class DeviceProperty implements Serializable {
+public class DeviceProperty extends ConfigurationEntity {
     private static final long serialVersionUID = 1L;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "dev_prop_id")
-    private Integer devPropId;
 
     @Column(name = "prop_value", columnDefinition="TEXT")
     private String propValue;
@@ -50,21 +37,6 @@ public class DeviceProperty implements Serializable {
     @NotNull
     @Column(name = "in_repository")
     private boolean inRepository;
-
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "modified_at")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date modifiedAt;
-
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 64)
-    @Column(name = "modified_by")
-    private String modifiedBy;
-
-    @Version
-    private Long version;
 
     @JoinColumn(name = "property", referencedColumnName = "property_id")
     @ManyToOne(optional = false)
@@ -87,10 +59,6 @@ public class DeviceProperty implements Serializable {
         this.modifiedAt = new Date();
     }
 
-    public Integer getDevPropId() {
-        return devPropId;
-    }
-
     public String getPropValue() {
         return propValue;
     }
@@ -105,30 +73,6 @@ public class DeviceProperty implements Serializable {
 
     public void setInRepository(boolean inRepository) {
         this.inRepository = inRepository;
-    }
-
-    public Date getModifiedAt() {
-        return modifiedAt;
-    }
-
-    public void setModifiedAt(Date modifiedAt) {
-        this.modifiedAt = modifiedAt;
-    }
-
-    public String getModifiedBy() {
-        return modifiedBy;
-    }
-
-    public void setModifiedBy(String modifiedBy) {
-        this.modifiedBy = modifiedBy;
-    }
-
-    protected Long getVersion() {
-        return version;
-    }
-
-    protected void setVersion(Long version) {
-        this.version = version;
     }
 
     public Property getProperty() {
@@ -156,26 +100,8 @@ public class DeviceProperty implements Serializable {
     }
 
     @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (devPropId != null ? devPropId.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        if (!(object instanceof DeviceProperty)) return false;
-
-        DeviceProperty other = (DeviceProperty) object;
-        if (this.devPropId == null && other.devPropId != null) return false;
-        if (this.devPropId != null) return this.devPropId.equals(other.devPropId); // return true for same DB entity
-
-        return this==object;
-    }
-
-    @Override
     public String toString() {
-        return "DeviceProperty[ devPropId=" + devPropId + " ]";
+        return "DeviceProperty[ devPropId=" + id + " ]";
     }
 
 }

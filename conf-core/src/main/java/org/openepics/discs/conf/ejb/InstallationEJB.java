@@ -86,7 +86,7 @@ public class InstallationEJB {
 
         logger.log(Level.INFO, "Preparing to save installation record");
 
-        if ( irec.getInstallationRecordId() == null ) { // new record
+        if ( irec.getId() == null ) { // new record
             em.persist(irec);
             Slot slot = irec.getSlot();
             slot.getInstallationRecordList().add(irec);
@@ -109,7 +109,7 @@ public class InstallationEJB {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
-        InstallationRecord ct = em.find(InstallationRecord.class,irec.getInstallationRecordId());
+        InstallationRecord ct = em.find(InstallationRecord.class,irec.getId());
         em.remove(ct);
         makeAuditEntry(EntityTypeOperation.DELETE,irec.getRecordNumber(),"deleted installation record ");
     }
@@ -151,8 +151,8 @@ public class InstallationEJB {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
-        logger.log(Level.INFO, "deleting " + art.getName() + " id " + art.getArtifactId() + " des " + art.getDescription());
-        InstallationArtifact artifact = em.find(InstallationArtifact.class, art.getArtifactId());
+        logger.log(Level.INFO, "deleting " + art.getName() + " id " + art.getId() + " des " + art.getDescription());
+        InstallationArtifact artifact = em.find(InstallationArtifact.class, art.getId());
         InstallationRecord irec = artifact.getInstallationRecord();
 
         em.remove(artifact);

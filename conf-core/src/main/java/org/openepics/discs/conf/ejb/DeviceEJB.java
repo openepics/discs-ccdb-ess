@@ -110,7 +110,7 @@ public class DeviceEJB {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
-        Device ct = em.find(Device.class,device.getDeviceId());
+        Device ct = em.find(Device.class,device.getId());
         em.remove(ct);
         makeAuditEntry(EntityTypeOperation.DELETE,device.getSerialNumber(),"Deleted device");
     }
@@ -137,7 +137,7 @@ public class DeviceEJB {
             device.getDevicePropertyList().add(newProp);
             em.merge(device);
         }
-        logger.log(Level.INFO, "Comp Type Property: id " + newProp.getDevPropId() + " name " + newProp.getProperty().getName());
+        logger.log(Level.INFO, "Comp Type Property: id " + newProp.getId() + " name " + newProp.getProperty().getName());
         makeAuditEntry(EntityTypeOperation.UPDATE, prop.getDevice().getSerialNumber(),"Modified property " + prop.getProperty().getName());
     }
 
@@ -152,7 +152,7 @@ public class DeviceEJB {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
-        DeviceProperty property = em.find(DeviceProperty.class, prop.getDevPropId());
+        DeviceProperty property = em.find(DeviceProperty.class, prop.getId());
         Device device = property.getDevice();
         device.getDevicePropertyList().remove(property);
         em.remove(property);
@@ -196,8 +196,8 @@ public class DeviceEJB {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
-        logger.log(Level.INFO, "deleting " + art.getName() + " id " + art.getArtifactId() + " des " + art.getDescription());
-        DeviceArtifact artifact = em.find(DeviceArtifact.class, art.getArtifactId());
+        logger.log(Level.INFO, "deleting " + art.getName() + " id " + art.getId() + " des " + art.getDescription());
+        DeviceArtifact artifact = em.find(DeviceArtifact.class, art.getId());
         Device device = artifact.getDevice();
         device.getDeviceArtifactList().remove(artifact);
         em.remove(artifact);

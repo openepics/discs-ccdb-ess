@@ -1,6 +1,5 @@
 package org.openepics.discs.conf.ent;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -8,18 +7,12 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -51,13 +44,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Slot.findByModifiedAt", query = "SELECT s FROM Slot s WHERE s.modifiedAt = :modifiedAt"),
     @NamedQuery(name = "Slot.findByModifiedBy", query = "SELECT s FROM Slot s WHERE s.modifiedBy = :modifiedBy"),
     @NamedQuery(name = "Slot.findByVersion", query = "SELECT s FROM Slot s WHERE s.version = :version")})
-public class Slot implements Serializable {
+public class Slot extends ConfigurationEntity {
     private static final long serialVersionUID = 1L;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "slot_id")
-    private Integer slotId;
 
     @Basic(optional = false)
     @NotNull
@@ -108,21 +96,6 @@ public class Slot implements Serializable {
     @Column(name = "comment")
     private String comment;
 
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "modified_at")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date modifiedAt;
-
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 64)
-    @Column(name = "modified_by")
-    private String modifiedBy;
-
-    @Version
-    private Long version;
-
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "slot")
     private List<SlotArtifact> slotArtifactList;
 
@@ -160,10 +133,6 @@ public class Slot implements Serializable {
         this.isHostingSlot = isHostingSlot;
         this.modifiedBy = modifiedBy;
         this.modifiedAt = new Date();
-    }
-
-    public Integer getSlotId() {
-        return slotId;
     }
 
     public String getName() {
@@ -270,30 +239,6 @@ public class Slot implements Serializable {
         this.comment = comment;
     }
 
-    public Date getModifiedAt() {
-        return modifiedAt;
-    }
-
-    public void setModifiedAt(Date modifiedAt) {
-        this.modifiedAt = modifiedAt;
-    }
-
-    public String getModifiedBy() {
-        return modifiedBy;
-    }
-
-    public void setModifiedBy(String modifiedBy) {
-        this.modifiedBy = modifiedBy;
-    }
-
-    protected Long getVersion() {
-        return version;
-    }
-
-    protected void setVersion(Long version) {
-        this.version = version;
-    }
-
     @XmlTransient
     public List<SlotArtifact> getSlotArtifactList() {
         return slotArtifactList;
@@ -374,26 +319,8 @@ public class Slot implements Serializable {
     }
 
     @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (slotId != null ? slotId.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        if (!(object instanceof Slot)) return false;
-
-        Slot other = (Slot) object;
-        if (this.slotId == null && other.slotId != null)return false;
-        if (this.slotId != null) return this.slotId.equals(other.slotId); // return true for same DB entity
-
-        return this==object;
-    }
-
-    @Override
     public String toString() {
-        return "Slot[ slotId=" + slotId + " ]";
+        return "Slot[ slotId=" + id + " ]";
     }
 
 }

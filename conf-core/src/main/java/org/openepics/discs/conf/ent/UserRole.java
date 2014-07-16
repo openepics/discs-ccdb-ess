@@ -136,14 +136,6 @@ public class UserRole implements Serializable {
         this.comment = comment;
     }
 
-    protected Long getVersion() {
-        return version;
-    }
-
-    protected void setVersion(Long version) {
-        this.version = version;
-    }
-
     public Role getRole() {
         return role;
     }

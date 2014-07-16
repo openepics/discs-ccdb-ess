@@ -56,14 +56,6 @@ public class SlotPair implements Serializable {
         return slotPairId;
     }
 
-    protected Long getVersion() {
-        return version;
-    }
-
-    protected void setVersion(Long version) {
-        this.version = version;
-    }
-
     public Slot getChildSlot() {
         return childSlot;
     }

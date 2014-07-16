@@ -214,7 +214,7 @@ public class SlotManager implements Serializable {
             artifactOperation = 'e';
             inputProperty = prop;
             uploadedFileName = prop.getProperty().getName();
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Edit:", "Edit initiated " + inputProperty.getSlotPropId());
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Edit:", "Edit initiated " + inputProperty.getId());
         } catch (Exception e) {
             // selectedCompProps.remove(prop);
             Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error:", e.getMessage());
@@ -236,7 +236,7 @@ public class SlotManager implements Serializable {
             }
 
             slotEJB.saveSlotProp(inputProperty, propertyOperation == 'a');
-            logger.log(Level.INFO, "returned artifact id is " + inputProperty.getSlotPropId());
+            logger.log(Level.INFO, "returned artifact id is " + inputProperty.getId());
 
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Property saved", "");
             RequestContext.getCurrentInstance().addCallbackParam("success", true);

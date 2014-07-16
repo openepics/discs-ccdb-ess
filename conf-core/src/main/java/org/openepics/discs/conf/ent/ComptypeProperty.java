@@ -1,22 +1,15 @@
 package org.openepics.discs.conf.ent;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -36,13 +29,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "ComptypeProperty.findByModifiedAt", query = "SELECT c FROM ComptypeProperty c WHERE c.modifiedAt = :modifiedAt"),
     @NamedQuery(name = "ComptypeProperty.findByModifiedBy", query = "SELECT c FROM ComptypeProperty c WHERE c.modifiedBy = :modifiedBy"),
     @NamedQuery(name = "ComptypeProperty.findByVersion", query = "SELECT c FROM ComptypeProperty c WHERE c.version = :version")})
-public class ComptypeProperty implements Serializable {
+public class ComptypeProperty extends ConfigurationEntity {
     private static final long serialVersionUID = 1L;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ctype_prop_id")
-    private Integer ctypePropId;
 
     @Size(max = 4)
     @Column(name = "type")
@@ -55,21 +43,6 @@ public class ComptypeProperty implements Serializable {
     @NotNull
     @Column(name = "in_repository")
     private boolean inRepository;
-
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "modified_at")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date modifiedAt;
-
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 64)
-    @Column(name = "modified_by")
-    private String modifiedBy;
-
-    @Version
-    private Long version;
 
     @JoinColumn(name = "unit", referencedColumnName = "unit_id")
     @ManyToOne
@@ -90,10 +63,6 @@ public class ComptypeProperty implements Serializable {
         this.inRepository = inRepository;
         this.modifiedBy = modifiedBy;
         this.modifiedAt = new Date();
-    }
-
-    public Integer getCtypePropId() {
-        return ctypePropId;
     }
 
     public String getType() {
@@ -118,30 +87,6 @@ public class ComptypeProperty implements Serializable {
 
     public void setInRepository(boolean inRepository) {
         this.inRepository = inRepository;
-    }
-
-    public Date getModifiedAt() {
-        return modifiedAt;
-    }
-
-    public void setModifiedAt(Date modifiedAt) {
-        this.modifiedAt = modifiedAt;
-    }
-
-    public String getModifiedBy() {
-        return modifiedBy;
-    }
-
-    public void setModifiedBy(String modifiedBy) {
-        this.modifiedBy = modifiedBy;
-    }
-
-    protected Long getVersion() {
-        return version;
-    }
-
-    protected void setVersion(Long version) {
-        this.version = version;
     }
 
     public Unit getUnit() {
@@ -169,26 +114,8 @@ public class ComptypeProperty implements Serializable {
     }
 
     @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (ctypePropId != null ? ctypePropId.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        if (!(object instanceof ComptypeProperty)) return false;
-
-        ComptypeProperty other = (ComptypeProperty) object;
-        if (this.ctypePropId == null && other.ctypePropId != null) return false;
-        if (this.ctypePropId != null) return this.ctypePropId.equals(other.ctypePropId); // return true for same DB entity
-
-        return this==object;
-    }
-
-    @Override
     public String toString() {
-        return "ComptypeProperty[ ctypePropId=" + ctypePropId + " ]";
+        return "ComptypeProperty[ ctypePropId=" + id + " ]";
     }
 
 }

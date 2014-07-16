@@ -1,24 +1,16 @@
 package org.openepics.discs.conf.ent;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -35,13 +27,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "AlignmentProperty.findByModifiedAt", query = "SELECT a FROM AlignmentProperty a WHERE a.modifiedAt = :modifiedAt"),
     @NamedQuery(name = "AlignmentProperty.findByModifiedBy", query = "SELECT a FROM AlignmentProperty a WHERE a.modifiedBy = :modifiedBy"),
     @NamedQuery(name = "AlignmentProperty.findByVersion", query = "SELECT a FROM AlignmentProperty a WHERE a.version = :version")})
-public class AlignmentProperty implements Serializable {
+public class AlignmentProperty extends ConfigurationEntity {
     private static final long serialVersionUID = 1L;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "align_prop_id")
-    private Integer alignPropId;
 
     @Column(name = "prop_value", columnDefinition="TEXT")
     private String propValue;
@@ -50,21 +37,6 @@ public class AlignmentProperty implements Serializable {
     @NotNull
     @Column(name = "in_repository")
     private boolean inRepository;
-
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "modified_at")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date modifiedAt;
-
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 64)
-    @Column(name = "modified_by")
-    private String modifiedBy;
-
-    @Version
-    private Long version;
 
     @JoinColumn(name = "alignment_record", referencedColumnName = "alignment_record_id")
     @ManyToOne(optional = false)
@@ -83,10 +55,6 @@ public class AlignmentProperty implements Serializable {
         this.modifiedAt = new Date();
     }
 
-    public Integer getAlignPropId() {
-        return alignPropId;
-    }
-
     public String getPropValue() {
         return propValue;
     }
@@ -101,30 +69,6 @@ public class AlignmentProperty implements Serializable {
 
     public void setInRepository(boolean inRepository) {
         this.inRepository = inRepository;
-    }
-
-    public Date getModifiedAt() {
-        return modifiedAt;
-    }
-
-    public void setModifiedAt(Date modifiedAt) {
-        this.modifiedAt = modifiedAt;
-    }
-
-    public String getModifiedBy() {
-        return modifiedBy;
-    }
-
-    public void setModifiedBy(String modifiedBy) {
-        this.modifiedBy = modifiedBy;
-    }
-
-    protected Long getVersion() {
-        return version;
-    }
-
-    protected void setVersion(Long version) {
-        this.version = version;
     }
 
     public AlignmentRecord getAlignmentRecord() {
@@ -144,26 +88,8 @@ public class AlignmentProperty implements Serializable {
     }
 
     @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (alignPropId != null ? alignPropId.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        if (!(object instanceof AlignmentProperty)) return false;
-
-        AlignmentProperty other = (AlignmentProperty) object;
-        if (this.alignPropId == null && other.alignPropId != null) return false;
-        if (this.alignPropId != null) return this.alignPropId.equals(other.alignPropId); // return true for same DB entity
-
-        return this==object;
-    }
-
-    @Override
     public String toString() {
-        return "AlignmentProperty[ alignPropId=" + alignPropId + " ]";
+        return "AlignmentProperty[ alignPropId=" + id + " ]";
     }
 
 }

@@ -1,6 +1,5 @@
 package org.openepics.discs.conf.ent;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -8,9 +7,6 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
@@ -19,7 +15,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -46,13 +41,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "AlignmentRecord.findByModifiedAt", query = "SELECT a FROM AlignmentRecord a WHERE a.modifiedAt = :modifiedAt"),
     @NamedQuery(name = "AlignmentRecord.findByModifiedBy", query = "SELECT a FROM AlignmentRecord a WHERE a.modifiedBy = :modifiedBy"),
     @NamedQuery(name = "AlignmentRecord.findByVersion", query = "SELECT a FROM AlignmentRecord a WHERE a.version = :version")})
-public class AlignmentRecord implements Serializable {
+public class AlignmentRecord extends ConfigurationEntity {
     private static final long serialVersionUID = 1L;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "alignment_record_id")
-    private Integer alignmentRecordId;
 
     @Basic(optional = false)
     @NotNull
@@ -85,21 +75,6 @@ public class AlignmentRecord implements Serializable {
     @Column(name = "global_roll")
     private Double globalRoll;
 
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "modified_at")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date modifiedAt;
-
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 64)
-    @Column(name = "modified_by")
-    private String modifiedBy;
-
-    @Version
-    private Long version;
-
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "alignmentRecord")
     private List<AlignmentArtifact> alignmentArtifactList;
 
@@ -122,10 +97,6 @@ public class AlignmentRecord implements Serializable {
         this.alignmentDate = alignmentDate;
         this.modifiedBy = modifiedBy;
         this.modifiedAt = new Date();
-    }
-
-    public Integer getAlignmentRecordId() {
-        return alignmentRecordId;
     }
 
     public String getRecordNumber() {
@@ -192,30 +163,6 @@ public class AlignmentRecord implements Serializable {
         this.globalRoll = globalRoll;
     }
 
-    public Date getModifiedAt() {
-        return modifiedAt;
-    }
-
-    public void setModifiedAt(Date modifiedAt) {
-        this.modifiedAt = modifiedAt;
-    }
-
-    public String getModifiedBy() {
-        return modifiedBy;
-    }
-
-    public void setModifiedBy(String modifiedBy) {
-        this.modifiedBy = modifiedBy;
-    }
-
-    protected Long getVersion() {
-        return version;
-    }
-
-    protected void setVersion(Long version) {
-        this.version = version;
-    }
-
     @XmlTransient
     public List<AlignmentArtifact> getAlignmentArtifactList() {
         return alignmentArtifactList;
@@ -251,26 +198,8 @@ public class AlignmentRecord implements Serializable {
     }
 
     @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (alignmentRecordId != null ? alignmentRecordId.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        if (!(object instanceof AlignmentRecord)) return false;
-
-        AlignmentRecord other = (AlignmentRecord) object;
-        if (this.alignmentRecordId == null && other.alignmentRecordId != null) return false;
-        if (this.alignmentRecordId != null) return this.alignmentRecordId.equals(other.alignmentRecordId); // return true for same DB entity
-
-        return this==object;
-    }
-
-    @Override
     public String toString() {
-        return "AlignmentRecord[ alignmentRecordId=" + alignmentRecordId + " ]";
+        return "AlignmentRecord[ alignmentRecordId=" + id + " ]";
     }
 
 }

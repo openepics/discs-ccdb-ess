@@ -43,7 +43,7 @@ public class SlotConverter implements Converter{
             logger.log(Level.INFO, "Slot converter: empty slot id");
             return null;
         } else {
-            slot = slotEJB.findLayoutSlot(Integer.parseInt(value));
+            slot = slotEJB.findLayoutSlot(Long.valueOf(value));
             return slot;
         }
     }
@@ -55,7 +55,7 @@ public class SlotConverter implements Converter{
             return "";
         } else {
             // logger.log(Level.INFO, "Exp number: " + ((Experiment) value).getId().toString());
-            return ((Slot) value).getSlotId().toString();
+            return ((Slot) value).getId().toString();
         }
     }
 }

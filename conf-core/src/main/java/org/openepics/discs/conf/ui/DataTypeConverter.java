@@ -56,7 +56,7 @@ public class DataTypeConverter implements Converter {
             return "";
         } else {
             // logger.log(Level.INFO, "Exp number: " + ((Experiment) value).getId().toString());
-            return String.valueOf(((DataType) value).getDataTypeId());
+            return String.valueOf(((DataType) value).getId());
         }
     }
 }

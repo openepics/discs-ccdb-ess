@@ -1,24 +1,16 @@
 package org.openepics.discs.conf.ent;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -35,13 +27,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "SlotProperty.findByModifiedAt", query = "SELECT s FROM SlotProperty s WHERE s.modifiedAt = :modifiedAt"),
     @NamedQuery(name = "SlotProperty.findByModifiedBy", query = "SELECT s FROM SlotProperty s WHERE s.modifiedBy = :modifiedBy"),
     @NamedQuery(name = "SlotProperty.findByVersion", query = "SELECT s FROM SlotProperty s WHERE s.version = :version")})
-public class SlotProperty implements Serializable {
+public class SlotProperty extends ConfigurationEntity {
     private static final long serialVersionUID = 1L;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "slot_prop_id")
-    private Integer slotPropId;
 
     @Column(name = "prop_value", columnDefinition="TEXT")
     private String propValue;
@@ -50,21 +37,6 @@ public class SlotProperty implements Serializable {
     @NotNull
     @Column(name = "in_repository")
     private boolean inRepository;
-
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "modified_at")
-    @Temporal(TemporalType.DATE)
-    private Date modifiedAt;
-
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 64)
-    @Column(name = "modified_by")
-    private String modifiedBy;
-
-    @Version
-    private Long version;
 
     @JoinColumn(name = "unit", referencedColumnName = "unit_id")
     @ManyToOne
@@ -87,10 +59,6 @@ public class SlotProperty implements Serializable {
         this.modifiedAt = new Date();
     }
 
-    public Integer getSlotPropId() {
-        return slotPropId;
-    }
-
     public String getPropValue() {
         return propValue;
     }
@@ -105,30 +73,6 @@ public class SlotProperty implements Serializable {
 
     public void setInRepository(boolean inRepository) {
         this.inRepository = inRepository;
-    }
-
-    public Date getModifiedAt() {
-        return modifiedAt;
-    }
-
-    public void setModifiedAt(Date modifiedAt) {
-        this.modifiedAt = modifiedAt;
-    }
-
-    public String getModifiedBy() {
-        return modifiedBy;
-    }
-
-    public void setModifiedBy(String modifiedBy) {
-        this.modifiedBy = modifiedBy;
-    }
-
-    protected Long getVersion() {
-        return version;
-    }
-
-    protected void setVersion(Long version) {
-        this.version = version;
     }
 
     public Unit getUnit() {
@@ -156,26 +100,8 @@ public class SlotProperty implements Serializable {
     }
 
     @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (slotPropId != null ? slotPropId.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        if (!(object instanceof SlotProperty)) return false;
-
-        SlotProperty other = (SlotProperty) object;
-        if (this.slotPropId == null && other.slotPropId != null) return false;
-        if (this.slotPropId != null) return this.slotPropId.equals(other.slotPropId); // return true for same DB entity
-
-        return this==object;
-    }
-
-    @Override
     public String toString() {
-        return "SlotProperty[ slotPropId=" + slotPropId + " ]";
+        return "SlotProperty[ slotPropId=" + id + " ]";
     }
 
 }

@@ -53,7 +53,7 @@ public class PropertyConverter implements Converter {
             return "";
         } else {
             // logger.log(Level.INFO, "Exp number: " + ((Experiment) value).getId().toString());
-            return ((Property) value).getPropertyId().toString();
+            return ((Property) value).getId().toString();
         }
     }
 }

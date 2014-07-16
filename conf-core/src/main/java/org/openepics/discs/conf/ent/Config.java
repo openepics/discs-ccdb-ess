@@ -34,7 +34,7 @@ public class Config implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "config_id")
     private Integer configId;
-    
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)
@@ -73,14 +73,6 @@ public class Config implements Serializable {
 
     public void setPropValue(String propValue) {
         this.propValue = propValue;
-    }
-
-    protected Long getVersion() {
-        return version;
-    }
-
-    protected void setVersion(Long version) {
-        this.version = version;
     }
 
     @Override

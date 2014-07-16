@@ -43,7 +43,7 @@ public class RelationConverter implements Converter  {
             logger.log(Level.INFO, "relation converter: empty key");
             return null;
         } else {
-            dtype = configurationEJB.findSlotRelation(Integer.parseInt(value));
+            dtype = configurationEJB.findSlotRelation(Long.valueOf(value));
             return dtype;
         }
     }
@@ -55,7 +55,7 @@ public class RelationConverter implements Converter  {
             return "";
         } else {
             // logger.log(Level.INFO, "Exp number: " + ((Experiment) value).getId().toString());
-            return ((SlotRelation) value).getSlotRelationId().toString();
+            return ((SlotRelation) value).getId().toString();
         }
     }
 }

@@ -1,6 +1,5 @@
 package org.openepics.discs.conf.ent;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -8,16 +7,10 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -39,13 +32,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "SlotRelation.findByModifiedAt", query = "SELECT s FROM SlotRelation s WHERE s.modifiedAt = :modifiedAt"),
     @NamedQuery(name = "SlotRelation.findByModifiedBy", query = "SELECT s FROM SlotRelation s WHERE s.modifiedBy = :modifiedBy"),
     @NamedQuery(name = "SlotRelation.findByVersion", query = "SELECT s FROM SlotRelation s WHERE s.version = :version")})
-public class SlotRelation implements Serializable {
+public class SlotRelation extends ConfigurationEntity {
     private static final long serialVersionUID = 1L;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "slot_relation_id")
-    private Integer slotRelationId;
 
     @Basic(optional = false)
     @NotNull
@@ -63,21 +51,6 @@ public class SlotRelation implements Serializable {
     @Column(name = "description")
     private String description;
 
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "modified_at")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date modifiedAt;
-
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 64)
-    @Column(name = "modified_by")
-    private String modifiedBy;
-
-    @Version
-    private Long version;
-
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "slotRelation")
     private List<SlotPair> slotPairList;
 
@@ -89,10 +62,6 @@ public class SlotRelation implements Serializable {
         this.iname = iname;
         this.modifiedBy = modifiedBy;
         this.modifiedAt = new Date();
-    }
-
-    public Integer getSlotRelationId() {
-        return slotRelationId;
     }
 
     public String getName() {
@@ -119,30 +88,6 @@ public class SlotRelation implements Serializable {
         this.description = description;
     }
 
-    public Date getModifiedAt() {
-        return modifiedAt;
-    }
-
-    public void setModifiedAt(Date modifiedAt) {
-        this.modifiedAt = modifiedAt;
-    }
-
-    public String getModifiedBy() {
-        return modifiedBy;
-    }
-
-    public void setModifiedBy(String modifiedBy) {
-        this.modifiedBy = modifiedBy;
-    }
-
-    protected Long getVersion() {
-        return version;
-    }
-
-    protected void setVersion(Long version) {
-        this.version = version;
-    }
-
     @XmlTransient
     public List<SlotPair> getSlotPairList() {
         return slotPairList;
@@ -153,26 +98,8 @@ public class SlotRelation implements Serializable {
     }
 
     @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (slotRelationId != null ? slotRelationId.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        if (!(object instanceof SlotRelation)) return false;
-
-        SlotRelation other = (SlotRelation) object;
-        if (this.slotRelationId == null && other.slotRelationId != null) return false;
-        if (this.slotRelationId != null) return this.slotRelationId.equals(other.slotRelationId); // return true for same DB entity
-
-        return this==object;
-    }
-
-    @Override
     public String toString() {
-        return "SlotRelation[ slotRelationId=" + slotRelationId + " ]";
+        return "SlotRelation[ slotRelationId=" + id + " ]";
     }
 
 }

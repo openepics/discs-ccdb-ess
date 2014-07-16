@@ -1,39 +1,40 @@
 /*
  * This software is Copyright by the Board of Trustees of Michigan
  * State University (c) Copyright 2012.
- * 
+ *
  * You may use this software under the terms of the GNU public license
  *  (GPL). The terms of this license are described at:
  *       http://www.gnu.org/licenses/gpl.txt
- * 
+ *
  * Contact Information:
  *   Facilitty for Rare Isotope Beam
  *   Michigan State University
  *   East Lansing, MI 48824-1321
  *   http://frib.msu.edu
- * 
+ *
  */
 
 package org.openepics.discs.conf.ui;
 
-import org.openepics.discs.conf.ent.*;
 import java.io.Serializable;
 import java.util.List;
+
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
+
 import org.openepics.discs.conf.ejb.SlotEJB;
+import org.openepics.discs.conf.ent.Slot;
 import org.primefaces.event.NodeCollapseEvent;
 import org.primefaces.event.NodeExpandEvent;
 import org.primefaces.event.NodeSelectEvent;
-
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 
 /**
  * Stores the state of the Configuration Tree view
- * 
+ *
  * @author vuppala
  */
 @Named
@@ -45,7 +46,7 @@ public class ComponentTreeMBean implements Serializable {
     private TreeNode root;
     private TreeNode selectedNode;
     private Slot selectedComponent;
-    
+
     /**
      *
      */
@@ -53,15 +54,15 @@ public class ComponentTreeMBean implements Serializable {
 
         private char type; // l - logical component, r - relation, i - inverse relation
         private String name; // name of logical component or relationship
-        private int id; // id of the logical component or relationship
-        
+        private long id; // id of the logical component or relationship
+
         /**
          *
          * @param t
          * @param n
          * @param i
          */
-        public NodeData(char t, String n, int i) {
+        public NodeData(char t, String n, long i) {
             type = t;
             name = n;
             id = i;
@@ -74,9 +75,9 @@ public class ComponentTreeMBean implements Serializable {
         public String getName() {
             return name;
         }
-        
+
     }
-    
+
     /**
      *
      */
@@ -90,12 +91,12 @@ public class ComponentTreeMBean implements Serializable {
     public void init() {
         root = new DefaultTreeNode("Root", null);
         List<Slot> rnodes = slotBean.getRootNodes();
-        
+
         for(Slot lc: rnodes) {
-            TreeNode node0 = new DefaultTreeNode("component", new NodeData('l', lc.getName(), lc.getSlotId()), root);
+            TreeNode node0 = new DefaultTreeNode("component", new NodeData('l', lc.getName(), lc.getId()), root);
             this.expandNode(node0);
         }
-    
+
     }
 
     /**
@@ -130,7 +131,7 @@ public class ComponentTreeMBean implements Serializable {
             components = slotBean.relatedChildren(((NodeData) node.getData()).getName());
             for (Slot lc : components) {
                 // node types ("component") are not useful now but may be needed in future.
-                new DefaultTreeNode("component", new NodeData('l',lc.getName(), lc.getSlotId()), node);
+                new DefaultTreeNode("component", new NodeData('l',lc.getName(), lc.getId()), node);
             }
         }
     }
@@ -142,13 +143,13 @@ public class ComponentTreeMBean implements Serializable {
     public void onNodeExpand(NodeExpandEvent event) {
         TreeNode node = event.getTreeNode();
 
-        for (TreeNode tn : node.getChildren()) { // ToDo: inefficient. figure out how to not expand to the second level 
+        for (TreeNode tn : node.getChildren()) { // ToDo: inefficient. figure out how to not expand to the second level
             if (tn.getChildCount() == 0) { // not expanded
                 expandNode(tn);
             }
         }
     }
-    
+
     /**
      *
      * @param event
@@ -157,16 +158,16 @@ public class ComponentTreeMBean implements Serializable {
         DefaultTreeNode tn = (DefaultTreeNode)event.getTreeNode();
         tn.setExpanded(false);
     }
-    
+
      /**
      *
      * @param event
      */
-    public void onNodeSelect(NodeSelectEvent event) {       
-                NodeData ndata = (NodeData) selectedNode.getData();
-                selectedComponent = slotBean.findLayoutSlot(ndata.id);
+    public void onNodeSelect(NodeSelectEvent event) {
+        NodeData ndata = (NodeData) selectedNode.getData();
+        selectedComponent = slotBean.findLayoutSlot(ndata.id);
     }
-     
+
     public void setSelectedComponent(Slot selectedComponent) {
         this.selectedComponent = selectedComponent;
     }
@@ -178,5 +179,5 @@ public class ComponentTreeMBean implements Serializable {
     public Slot getSelectedComponent() {
         return selectedComponent;
     }
-    
+
 }

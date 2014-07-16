@@ -140,14 +140,6 @@ public class AuditRecord implements Serializable {
         this.entry = entry;
     }
 
-    protected Long getVersion() {
-        return version;
-    }
-
-    protected void setVersion(Long version) {
-        this.version = version;
-    }
-
     @Override
     public int hashCode() {
         int hash = 0;

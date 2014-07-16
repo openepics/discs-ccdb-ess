@@ -44,7 +44,7 @@ public class UnitConverter implements Converter{
             logger.log(Level.INFO, "exp converter: empty experiemnt id");
             return null;
         } else {
-            unit = configurationEJB.findUnit(Integer.valueOf(value));
+            unit = configurationEJB.findUnit(Long.valueOf(value));
             return unit;
         }
     }
@@ -56,7 +56,7 @@ public class UnitConverter implements Converter{
             return "";
         } else {
             // logger.log(Level.INFO, "Exp number: " + ((Experiment) value).getId().toString());
-            return String.valueOf(((Unit) value).getUnitId());
+            return String.valueOf(((Unit) value).getId());
         }
     }
 }

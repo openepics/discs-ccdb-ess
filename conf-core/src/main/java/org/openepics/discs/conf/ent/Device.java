@@ -1,6 +1,5 @@
 package org.openepics.discs.conf.ent;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -8,18 +7,12 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -48,13 +41,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Device.findByModifiedAt", query = "SELECT d FROM Device d WHERE d.modifiedAt = :modifiedAt"),
     @NamedQuery(name = "Device.findByModifiedBy", query = "SELECT d FROM Device d WHERE d.modifiedBy = :modifiedBy"),
     @NamedQuery(name = "Device.findByVersion", query = "SELECT d FROM Device d WHERE d.version = :version")})
-public class Device implements Serializable {
+public class Device extends ConfigurationEntity {
     private static final long serialVersionUID = 1L;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "device_id")
-    private Integer deviceId;
 
     @Basic(optional = false)
     @NotNull
@@ -97,21 +85,6 @@ public class Device implements Serializable {
     @Column(name = "asm_description")
     private String asmDescription;
 
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "modified_at")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date modifiedAt;
-
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 64)
-    @Column(name = "modified_by")
-    private String modifiedBy;
-
-    @Version
-    private Long version;
-
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "device")
     private List<DeviceProperty> devicePropertyList;
 
@@ -142,10 +115,6 @@ public class Device implements Serializable {
         this.serialNumber = serialNumber;
         this.modifiedBy = modifiedBy;
         this.modifiedAt = new Date();
-    }
-
-    public Integer getDeviceId() {
-        return deviceId;
     }
 
     public String getSerialNumber() {
@@ -228,30 +197,6 @@ public class Device implements Serializable {
         this.asmDescription = asmDescription;
     }
 
-    public Date getModifiedAt() {
-        return modifiedAt;
-    }
-
-    public void setModifiedAt(Date modifiedAt) {
-        this.modifiedAt = modifiedAt;
-    }
-
-    public String getModifiedBy() {
-        return modifiedBy;
-    }
-
-    public void setModifiedBy(String modifiedBy) {
-        this.modifiedBy = modifiedBy;
-    }
-
-    protected Long getVersion() {
-        return version;
-    }
-
-    protected void setVersion(Long version) {
-        this.version = version;
-    }
-
     @XmlTransient
     public List<DeviceProperty> getDevicePropertyList() {
         return devicePropertyList;
@@ -314,26 +259,8 @@ public class Device implements Serializable {
     }
 
     @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (deviceId != null ? deviceId.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        if (!(object instanceof Device)) return false;
-
-        Device other = (Device) object;
-        if (this.deviceId == null && other.deviceId != null) return false;
-        if (this.deviceId != null) return this.deviceId.equals(other.deviceId); // return true for same DB entity
-
-        return this==object;
-    }
-
-    @Override
     public String toString() {
-        return "Device[ deviceId=" + deviceId + " ]";
+        return "Device[ deviceId=" + id + " ]";
     }
 
 }

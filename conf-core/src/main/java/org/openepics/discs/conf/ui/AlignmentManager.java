@@ -214,7 +214,7 @@ public class AlignmentManager implements Serializable{
             artifactOperation = 'e';
             inputProperty = prop;
             uploadedFileName = prop.getProperty().getName();
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Edit:", "Edit initiated " + inputProperty.getAlignPropId());
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Edit:", "Edit initiated " + inputProperty.getId());
         } catch (Exception e) {
             // selectedCompProps.remove(prop);
             Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error: Property can not be edited", e.getMessage());
@@ -233,7 +233,7 @@ public class AlignmentManager implements Serializable{
                 inputProperty.setPropValue(repoFileId);
             }
             alignmentEJB.saveAlignmentProp(inputProperty, propertyOperation == 'a');
-            logger.log(Level.INFO, "returned artifact id is " + inputProperty.getAlignPropId());
+            logger.log(Level.INFO, "returned artifact id is " + inputProperty.getId());
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Property saved", "");
             RequestContext.getCurrentInstance().addCallbackParam("success", true);
         } catch (Exception e) {
@@ -325,7 +325,7 @@ public class AlignmentManager implements Serializable{
 
             // alignmentEJB.saveAlignmentArtifact(selectedObject, inputArtifact);
             alignmentEJB.saveAlignmentArtifact(inputArtifact, artifactOperation == 'a');
-            logger.log(Level.INFO,"returned artifact id is " + inputArtifact.getArtifactId());
+            logger.log(Level.INFO,"returned artifact id is " + inputArtifact.getId());
 
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Artifact saved", "");
             RequestContext.getCurrentInstance().addCallbackParam("success", true);
@@ -360,7 +360,7 @@ public class AlignmentManager implements Serializable{
         artifactOperation = 'e';
         inputArtifact = art;
         uploadedFileName = art.getName();
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Edit:", "Edit initiated " + inputArtifact.getArtifactId());
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Edit:", "Edit initiated " + inputArtifact.getId());
     }
 
     public void onArtifactType() {
