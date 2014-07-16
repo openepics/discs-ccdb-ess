@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.openepics.discs.conf.ejb;
 
 import java.util.List;
@@ -21,12 +16,10 @@ import org.openepics.discs.conf.ent.Privilege;
  *
  * @author vuppala
  */
-@Stateless
-public class AuthEJB {
+@Stateless public class AuthEJB {
 
     private static final Logger logger = Logger.getLogger(AuthEJB.class.getCanonicalName());
-    @PersistenceContext(unitName = "org.openepics.discs.conf.data")
-    private EntityManager em;
+    @PersistenceContext private EntityManager em;
 
     // TODO: implement authorization using RBAC.
     public boolean userHasAuth(String principal, EntityType resource, EntityTypeOperation operation) {
@@ -38,9 +31,10 @@ public class AuthEJB {
 
         List<Privilege> privs;
         TypedQuery<Privilege> query;
-        //query = em.createQuery("SELECT p FROM UserRole ur JOIN ur.role r JOIN r.privilegeList p WHERE ur.user.userId = :user AND LOCATE(:resource,p.resource) = 1", Privilege.class)
-        query = em.createQuery("SELECT p FROM UserRole ur JOIN ur.role r JOIN r.privilegeList p WHERE ur.ccdb_user.userId = :user", Privilege.class)
-                .setParameter("user", principal);
+        // query =
+        // em.createQuery("SELECT p FROM UserRole ur JOIN ur.role r JOIN r.privilegeList p WHERE ur.user.userId = :user AND LOCATE(:resource,p.resource) = 1",
+        // Privilege.class)
+        query = em.createQuery("SELECT p FROM UserRole ur JOIN ur.role r JOIN r.privilegeList p WHERE ur.ccdb_user.userId = :user", Privilege.class).setParameter("user", principal);
 
         privs = query.getResultList();
         logger.finer("found privileges: " + privs.size());

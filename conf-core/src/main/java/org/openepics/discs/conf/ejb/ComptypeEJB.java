@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.openepics.discs.conf.ejb;
 
 import java.util.Date;
@@ -34,17 +29,12 @@ import org.openepics.discs.conf.ui.LoginManager;
  *
  * @author vuppala
  */
-@Stateless
-public class ComptypeEJB {
-    @EJB
-    private AuthEJB authEJB;
-    // Add business logic below. (Right-click in editor and choose
-    // "Insert Code > Add Business Method")
+@Stateless public class ComptypeEJB {
+
+    @EJB private AuthEJB authEJB;
     private static final Logger logger = Logger.getLogger(ComptypeEJB.class.getCanonicalName());
-    @PersistenceContext(unitName = "org.openepics.discs.conf.data")
-    private EntityManager em;
-    @Inject
-    private LoginManager loginManager;
+    @PersistenceContext private EntityManager em;
+    @Inject private LoginManager loginManager;
 
     // ----------- Audit record ---------------------------------------
     private void makeAuditEntry(EntityTypeOperation oper, String key, String entry) {
@@ -54,7 +44,7 @@ public class ComptypeEJB {
         em.persist(arec);
     }
 
-    // ----------------  Component Type -------------------------
+    // ---------------- Component Type -------------------------
 
     public List<ComponentType> findComponentType() {
         List<ComponentType> comptypes;
@@ -68,7 +58,6 @@ public class ComptypeEJB {
 
         return comptypes;
     }
-
 
     public ComponentType findComponentType(int id) {
         return em.find(ComponentType.class, id);
@@ -84,24 +73,21 @@ public class ComptypeEJB {
         return componentType;
     }
 
-
     public void saveComponentType(ComponentType ctype) {
         ctype.setModifiedAt(new Date());
         em.merge(ctype);
-        makeAuditEntry(EntityTypeOperation.UPDATE,ctype.getName(),"Updated component type");
+        makeAuditEntry(EntityTypeOperation.UPDATE, ctype.getName(), "Updated component type");
     }
-
 
     public void addComponentType(ComponentType ctype) {
         em.persist(ctype);
-        makeAuditEntry(EntityTypeOperation.CREATE,ctype.getName(),"Created component type");
+        makeAuditEntry(EntityTypeOperation.CREATE, ctype.getName(), "Created component type");
     }
-
 
     public void deleteComponentType(ComponentType ctype) {
         em.merge(ctype);
         em.remove(ctype);
-        makeAuditEntry(EntityTypeOperation.DELETE,ctype.getName(),"Deleted component type");
+        makeAuditEntry(EntityTypeOperation.DELETE, ctype.getName(), "Deleted component type");
     }
 
     // ---------------- Component Type Property ---------------------
@@ -115,10 +101,9 @@ public class ComptypeEJB {
             ctype.getComptypePropertyList().add(newProp);
             em.merge(ctype);
         }
-        makeAuditEntry(EntityTypeOperation.UPDATE,ctprop.getComponentType().getName(),"Updated property " + ctprop.getProperty().getName());
+        makeAuditEntry(EntityTypeOperation.UPDATE, ctprop.getComponentType().getName(), "Updated property " + ctprop.getProperty().getName());
         logger.log(Level.INFO, "Comp Type Property: id " + newProp.getId() + " name " + newProp.getProperty().getName());
     }
-
 
     public void deleteCompTypeProp(ComptypeProperty ctp) {
         logger.log(Level.INFO, "deleting comp type property id " + ctp.getId() + " name " + ctp.getProperty().getName());
@@ -126,7 +111,7 @@ public class ComptypeEJB {
         ComponentType arec = property.getComponentType();
         arec.getComptypePropertyList().remove(property);
         em.remove(property);
-        makeAuditEntry(EntityTypeOperation.UPDATE,ctp.getComponentType().getName(),"Deleted property " + ctp.getProperty().getName());
+        makeAuditEntry(EntityTypeOperation.UPDATE, ctp.getComponentType().getName(), "Deleted property " + ctp.getProperty().getName());
     }
 
     public void addCompTypeProp(ComptypeProperty ctp) {
@@ -141,7 +126,7 @@ public class ComptypeEJB {
             return;
         }
         String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, EntityType.COMPONENT_TYPE, EntityTypeOperation.UPDATE)) {
+        if (!authEJB.userHasAuth(user, EntityType.COMPONENT_TYPE, EntityTypeOperation.UPDATE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
@@ -155,13 +140,12 @@ public class ComptypeEJB {
             ctype.getComptypeArtifactList().add(newArt);
             em.merge(ctype);
         }
-        makeAuditEntry(EntityTypeOperation.UPDATE,art.getComponentType().getName(),"Updated artifact " + art.getName());
+        makeAuditEntry(EntityTypeOperation.UPDATE, art.getComponentType().getName(), "Updated artifact " + art.getName());
         logger.log(Level.INFO, "Artifact: name " + newArt.getName() + " description " + newArt.getDescription() + " uri " + newArt.getUri() + "is int " + newArt.getIsInternal());
         // logger.log(Level.INFO, "device serial " + device.getSerialNumber());
         // return newArt;
 
     }
-
 
     public void deleteCompTypeArtifact(ComptypeArtifact art) throws Exception {
         if (art == null) {
@@ -169,7 +153,7 @@ public class ComptypeEJB {
             return;
         }
         String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, EntityType.COMPONENT_TYPE, EntityTypeOperation.UPDATE)) {
+        if (!authEJB.userHasAuth(user, EntityType.COMPONENT_TYPE, EntityTypeOperation.UPDATE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
@@ -178,14 +162,14 @@ public class ComptypeEJB {
         ComponentType arec = artifact.getComponentType();
         arec.getComptypeArtifactList().remove(artifact);
         em.remove(artifact);
-        makeAuditEntry(EntityTypeOperation.UPDATE,art.getComponentType().getName(),"Deleted artifact " + art.getName());
+        makeAuditEntry(EntityTypeOperation.UPDATE, art.getComponentType().getName(), "Deleted artifact " + art.getName());
     }
 
     // ---------------- Component Type Assmebly ---------------------
 
     public void saveComptypeAsm(ComponentType ctype, ComptypeAsm prt) throws Exception {
         String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, EntityType.COMPONENT_TYPE, EntityTypeOperation.UPDATE)) {
+        if (!authEJB.userHasAuth(user, EntityType.COMPONENT_TYPE, EntityTypeOperation.UPDATE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
@@ -195,18 +179,19 @@ public class ComptypeEJB {
             prt.setModifiedBy("user");
             // ctprop.setComponentType1(findComponentType(ctprop.getDevicePropertyPK().getComponentType()));
             // ctprop.setProperty1(findProperty(ctprop.getDevicePropertyPK().getProperty()));
-            // logger.info("save ctp: {0} {1} {2}", ctprop.getDevicePropertyPK().getComponentType(), ctprop.getDevicePropertyPK().getProperty(), ctprop.getType());
+            // logger.info("save ctp: {0} {1} {2}",
+            // ctprop.getDevicePropertyPK().getComponentType(),
+            // ctprop.getDevicePropertyPK().getProperty(), ctprop.getType());
             prt.setParentType(ctype);
             em.merge(prt);
             em.merge(ctype);
-            makeAuditEntry(EntityTypeOperation.UPDATE,ctype.getName(),"Updated component type. Added an assembly part");
+            makeAuditEntry(EntityTypeOperation.UPDATE, ctype.getName(), "Updated component type. Added an assembly part");
         }
     }
 
-
     public void deleteComptypeAsm(ComponentType ctype, ComptypeAsm prt) throws Exception {
         String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, EntityType.COMPONENT_TYPE, EntityTypeOperation.UPDATE)) {
+        if (!authEJB.userHasAuth(user, EntityType.COMPONENT_TYPE, EntityTypeOperation.UPDATE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
@@ -214,7 +199,7 @@ public class ComptypeEJB {
             ComptypeAsm entity = em.find(ComptypeAsm.class, prt.getId());
             em.remove(entity);
             em.merge(ctype);
-            makeAuditEntry(EntityTypeOperation.UPDATE,ctype.getName(),"Updated component type. Deleted a part from assembly.");
+            makeAuditEntry(EntityTypeOperation.UPDATE, ctype.getName(), "Updated component type. Deleted a part from assembly.");
         }
     }
 

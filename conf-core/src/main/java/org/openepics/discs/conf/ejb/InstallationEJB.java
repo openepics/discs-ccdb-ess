@@ -1,9 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package org.openepics.discs.conf.ejb;
 
 import java.util.Date;
@@ -33,19 +27,13 @@ import org.openepics.discs.conf.ui.LoginManager;
  *
  * @author vuppala
  */
-@Stateless
-public class InstallationEJB {
+@Stateless public class InstallationEJB {
 
     private static final Logger logger = Logger.getLogger(InstallationEJB.class.getCanonicalName());
-    @PersistenceContext(unitName = "org.openepics.discs.conf.data")
-    private EntityManager em;
-    // Add business logic below. (Right-click in editor and choose
-    // "Insert Code > Add Business Method")
-    @EJB
-    private AuthEJB authEJB;
+    @PersistenceContext private EntityManager em;
+    @EJB private AuthEJB authEJB;
 
-    @Inject
-    private LoginManager loginManager;
+    @Inject private LoginManager loginManager;
 
     // ----------- Audit record ---------------------------------------
     private void makeAuditEntry(EntityTypeOperation oper, String key, String entry) {
@@ -70,15 +58,14 @@ public class InstallationEJB {
         return irecs;
     }
 
-
-    public void saveIRecord(InstallationRecord irec, boolean create) throws Exception  {
+    public void saveIRecord(InstallationRecord irec, boolean create) throws Exception {
         if (irec == null) {
             logger.log(Level.SEVERE, "Installation Record is null!");
             return;
             // throw new Exception("property is null");
         }
         String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, EntityType.INSTALLATION_RECORD, EntityTypeOperation.UPDATE)) {
+        if (!authEJB.userHasAuth(user, EntityType.INSTALLATION_RECORD, EntityTypeOperation.UPDATE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
@@ -86,7 +73,7 @@ public class InstallationEJB {
 
         logger.log(Level.INFO, "Preparing to save installation record");
 
-        if ( irec.getId() == null ) { // new record
+        if (irec.getId() == null) { // new record
             em.persist(irec);
             Slot slot = irec.getSlot();
             slot.getInstallationRecordList().add(irec);
@@ -95,27 +82,25 @@ public class InstallationEJB {
         } else {
             em.merge(irec);
         }
-        makeAuditEntry(EntityTypeOperation.UPDATE,irec.getRecordNumber(),"updated installation record ");
+        makeAuditEntry(EntityTypeOperation.UPDATE, irec.getRecordNumber(), "updated installation record ");
     }
 
-
     public void deleteIRecord(InstallationRecord irec) throws Exception {
-        if (irec == null ) {
+        if (irec == null) {
             logger.log(Level.SEVERE, "Installation Record is null!");
             throw new Exception("Installation Record is null");
         }
         String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, EntityType.INSTALLATION_RECORD, EntityTypeOperation.DELETE)) {
+        if (!authEJB.userHasAuth(user, EntityType.INSTALLATION_RECORD, EntityTypeOperation.DELETE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
-        InstallationRecord ct = em.find(InstallationRecord.class,irec.getId());
+        InstallationRecord ct = em.find(InstallationRecord.class, irec.getId());
         em.remove(ct);
-        makeAuditEntry(EntityTypeOperation.DELETE,irec.getRecordNumber(),"deleted installation record ");
+        makeAuditEntry(EntityTypeOperation.DELETE, irec.getRecordNumber(), "deleted installation record ");
     }
 
     // ---------------- Artifact ---------------------
-
 
     public void saveInstallationArtifact(InstallationArtifact art, boolean create) throws Exception {
         if (art == null) {
@@ -123,7 +108,7 @@ public class InstallationEJB {
             return;
         }
         String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, EntityType.INSTALLATION_RECORD, EntityTypeOperation.UPDATE)) {
+        if (!authEJB.userHasAuth(user, EntityType.INSTALLATION_RECORD, EntityTypeOperation.UPDATE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
@@ -135,11 +120,10 @@ public class InstallationEJB {
             arec.getInstallationArtifactList().add(newArt);
             em.merge(arec);
         }
-        makeAuditEntry(EntityTypeOperation.UPDATE,art.getInstallationRecord().getRecordNumber(),"updated installation artifact " + art.getName());
+        makeAuditEntry(EntityTypeOperation.UPDATE, art.getInstallationRecord().getRecordNumber(), "updated installation artifact " + art.getName());
         logger.log(Level.INFO, "Artifact: name " + art.getName() + " description " + art.getDescription() + " uri " + art.getUri() + "is int " + art.getIsInternal());
         // logger.log(Level.INFO, "device serial " + device.getSerialNumber());
     }
-
 
     public void deleteInstallationArtifact(InstallationArtifact art) throws Exception {
         if (art == null) {
@@ -147,7 +131,7 @@ public class InstallationEJB {
             return;
         }
         String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, EntityType.INSTALLATION_RECORD, EntityTypeOperation.UPDATE)) {
+        if (!authEJB.userHasAuth(user, EntityType.INSTALLATION_RECORD, EntityTypeOperation.UPDATE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
@@ -157,6 +141,6 @@ public class InstallationEJB {
 
         em.remove(artifact);
         irec.getInstallationArtifactList().remove(artifact);
-        makeAuditEntry(EntityTypeOperation.UPDATE,art.getInstallationRecord().getRecordNumber(),"deleted installation artifact " + art.getName());
+        makeAuditEntry(EntityTypeOperation.UPDATE, art.getInstallationRecord().getRecordNumber(), "deleted installation artifact " + art.getName());
     }
 }

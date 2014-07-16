@@ -59,7 +59,7 @@ public class AuditRecord implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)
-    @Column(name = "`user`")
+    @Column(name = "\"user\"")
     private String user;
 
     @Enumerated(EnumType.STRING)

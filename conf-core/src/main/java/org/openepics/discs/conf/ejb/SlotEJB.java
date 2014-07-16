@@ -1,9 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package org.openepics.discs.conf.ejb;
 
 import java.util.Date;
@@ -34,18 +28,12 @@ import org.openepics.discs.conf.ui.LoginManager;
  *
  * @author vuppala
  */
-@Stateless
-public class SlotEJB {
-    @EJB
-    private AuthEJB authEJB;
+@Stateless public class SlotEJB {
+    @EJB private AuthEJB authEJB;
 
-    @Inject
-    private LoginManager loginManager;
-    // Add business logic below. (Right-click in editor and choose
-    // "Insert Code > Add Business Method")
+    @Inject private LoginManager loginManager;
     private static final Logger logger = Logger.getLogger(SlotEJB.class.getCanonicalName());
-    @PersistenceContext(unitName = "org.openepics.discs.conf.data")
-    private EntityManager em;
+    @PersistenceContext private EntityManager em;
 
     // ----------- Audit record ---------------------------------------
     private void makeAuditEntry(EntityTypeOperation oper, String key, String entry) {
@@ -55,7 +43,7 @@ public class SlotEJB {
         em.persist(arec);
     }
 
-     // ----------------  Layout Slot  -------------------------
+    // ---------------- Layout Slot -------------------------
 
     public List<Slot> findLayoutSlot() {
         List<Slot> comps;
@@ -70,20 +58,18 @@ public class SlotEJB {
         return comps;
     }
 
-
     public Slot findLayoutSlot(Long id) {
         return em.find(Slot.class, id);
     }
 
-
-    public void saveLayoutSlot(Slot slot) throws Exception  {
-        if (slot == null ) {
+    public void saveLayoutSlot(Slot slot) throws Exception {
+        if (slot == null) {
             logger.log(Level.SEVERE, "Property is null!");
             return;
             // throw new Exception("property is null");
         }
         String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, EntityType.SLOT, EntityTypeOperation.UPDATE)) {
+        if (!authEJB.userHasAuth(user, EntityType.SLOT, EntityTypeOperation.UPDATE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
@@ -91,23 +77,22 @@ public class SlotEJB {
         slot.setModifiedBy("user");
         logger.log(Level.INFO, "Preparing to save slot");
         em.merge(slot);
-        makeAuditEntry(EntityTypeOperation.UPDATE,slot.getName(),"Modified slot");
+        makeAuditEntry(EntityTypeOperation.UPDATE, slot.getName(), "Modified slot");
     }
 
-
     public void deleteLayoutSlot(Slot slot) throws Exception {
-        if (slot == null ) {
+        if (slot == null) {
             logger.log(Level.SEVERE, "Property is null!");
             throw new Exception("property is null");
         }
         String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, EntityType.SLOT, EntityTypeOperation.DELETE)) {
+        if (!authEJB.userHasAuth(user, EntityType.SLOT, EntityTypeOperation.DELETE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
-        Slot ct = em.find(Slot.class,slot.getId());
+        Slot ct = em.find(Slot.class, slot.getId());
         em.remove(ct);
-        makeAuditEntry(EntityTypeOperation.DELETE,slot.getName(),"Deleted slot");
+        makeAuditEntry(EntityTypeOperation.DELETE, slot.getName(), "Deleted slot");
     }
 
     // ------------------ Slot Property ---------------
@@ -118,7 +103,7 @@ public class SlotEJB {
             return;
         }
         String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, EntityType.SLOT, EntityTypeOperation.UPDATE) ) {
+        if (!authEJB.userHasAuth(user, EntityType.SLOT, EntityTypeOperation.UPDATE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
@@ -132,10 +117,9 @@ public class SlotEJB {
             slot.getSlotPropertyList().add(newProp);
             em.merge(slot);
         }
-        makeAuditEntry(EntityTypeOperation.UPDATE,prop.getSlot().getName(),"Modified slot property " + prop.getProperty().getName());
+        makeAuditEntry(EntityTypeOperation.UPDATE, prop.getSlot().getName(), "Modified slot property " + prop.getProperty().getName());
         logger.log(Level.INFO, "Comp Type Property: id " + newProp.getId() + " name " + newProp.getProperty().getName());
     }
-
 
     public void deleteSlotProp(SlotProperty prop) throws Exception {
         if (prop == null) {
@@ -143,7 +127,7 @@ public class SlotEJB {
             return;
         }
         String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, EntityType.SLOT, EntityTypeOperation.UPDATE) ) {
+        if (!authEJB.userHasAuth(user, EntityType.SLOT, EntityTypeOperation.UPDATE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
@@ -152,19 +136,18 @@ public class SlotEJB {
         Slot slot = property.getSlot();
         slot.getSlotPropertyList().remove(property);
         em.remove(property);
-         makeAuditEntry(EntityTypeOperation.DELETE,prop.getSlot().getName(),"Deleted slot property " + prop.getProperty().getName());
+        makeAuditEntry(EntityTypeOperation.DELETE, prop.getSlot().getName(), "Deleted slot property " + prop.getProperty().getName());
     }
 
     // ---------------- Slot Artifact ---------------------
 
-
-    public void saveSlotArtifact(SlotArtifact art, boolean create) throws Exception  {
+    public void saveSlotArtifact(SlotArtifact art, boolean create) throws Exception {
         if (art == null) {
             logger.log(Level.SEVERE, "saveSlotArtifact: artifact is null");
             return;
         }
         String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, EntityType.SLOT, EntityTypeOperation.UPDATE)) {
+        if (!authEJB.userHasAuth(user, EntityType.SLOT, EntityTypeOperation.UPDATE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
@@ -176,10 +159,9 @@ public class SlotEJB {
             slot.getSlotArtifactList().add(newArt);
             em.merge(slot);
         }
-         makeAuditEntry(EntityTypeOperation.UPDATE,art.getSlot().getName(),"Modified slot artifact " + art.getName());
+        makeAuditEntry(EntityTypeOperation.UPDATE, art.getSlot().getName(), "Modified slot artifact " + art.getName());
         logger.log(Level.INFO, "slot Artifact: name " + art.getName() + " description " + art.getDescription() + " uri " + art.getUri());
     }
-
 
     public void deleteSlotArtifact(SlotArtifact art) throws Exception {
         if (art == null) {
@@ -187,7 +169,7 @@ public class SlotEJB {
             return;
         }
         String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, EntityType.SLOT, EntityTypeOperation.UPDATE)) {
+        if (!authEJB.userHasAuth(user, EntityType.SLOT, EntityTypeOperation.UPDATE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
@@ -196,11 +178,10 @@ public class SlotEJB {
         Slot slot = artifact.getSlot();
         slot.getSlotArtifactList().remove(artifact);
         em.remove(artifact);
-        makeAuditEntry(EntityTypeOperation.UPDATE,art.getSlot().getName(),"Deleted slot artifact " + art.getName());
+        makeAuditEntry(EntityTypeOperation.UPDATE, art.getSlot().getName(), "Deleted slot artifact " + art.getName());
     }
 
     // ---------------- Related Slots ---------------------
-
 
     public void saveSlotPair(SlotPair spair, boolean create) throws Exception {
         if (spair == null) {
@@ -208,64 +189,66 @@ public class SlotEJB {
             return;
         }
         String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, EntityType.SLOT, EntityTypeOperation.UPDATE)) {
+        if (!authEJB.userHasAuth(user, EntityType.SLOT, EntityTypeOperation.UPDATE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
         SlotPair newArt = em.merge(spair);
         if (create) { // create instead of update
-            Slot pslot = spair.getParentSlot();   // get the parent. Todo: update the child too
+            Slot pslot = spair.getParentSlot(); // get the parent. Todo: update
+                                                // the child too
             pslot.getSlotPairList1().add(newArt);
             em.merge(pslot);
         }
-        makeAuditEntry(EntityTypeOperation.UPDATE,spair.getChildSlot().getName(),"Modified child slot");
-        makeAuditEntry(EntityTypeOperation.UPDATE,spair.getParentSlot().getName(),"Modified parent slot");
-        logger.log(Level.INFO, "saved slot pair: child " + spair.getChildSlot().getName() + " parent " + spair.getParentSlot().getName() + " relation " );
+        makeAuditEntry(EntityTypeOperation.UPDATE, spair.getChildSlot().getName(), "Modified child slot");
+        makeAuditEntry(EntityTypeOperation.UPDATE, spair.getParentSlot().getName(), "Modified parent slot");
+        logger.log(Level.INFO, "saved slot pair: child " + spair.getChildSlot().getName() + " parent " + spair.getParentSlot().getName() + " relation ");
     }
 
-
-    public void deleteSlotPair(SlotPair spair)  throws Exception {
+    public void deleteSlotPair(SlotPair spair) throws Exception {
         if (spair == null) {
             logger.log(Level.SEVERE, "deleteSlotPair: SlotPair is null");
             return;
         }
         String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, EntityType.SLOT, EntityTypeOperation.UPDATE)) {
+        if (!authEJB.userHasAuth(user, EntityType.SLOT, EntityTypeOperation.UPDATE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
-        logger.log(Level.INFO, "deleting " + spair.getChildSlot().getName() + " parent " + spair.getParentSlot().getName() + " des " );
+        logger.log(Level.INFO, "deleting " + spair.getChildSlot().getName() + " parent " + spair.getParentSlot().getName() + " des ");
         SlotPair slotPair = em.find(SlotPair.class, spair.getSlotPairId());
         Slot pslot = slotPair.getParentSlot();
         pslot.getSlotPairList().remove(slotPair);
         em.remove(slotPair);
-        makeAuditEntry(EntityTypeOperation.UPDATE,spair.getChildSlot().getName(),"Deleted parent slot relationship");
-        makeAuditEntry(EntityTypeOperation.UPDATE,spair.getParentSlot().getName(),"Deleted child slot relationship");
+        makeAuditEntry(EntityTypeOperation.UPDATE, spair.getChildSlot().getName(), "Deleted parent slot relationship");
+        makeAuditEntry(EntityTypeOperation.UPDATE, spair.getParentSlot().getName(), "Deleted child slot relationship");
     }
 
     // -----------------
 
-    private final String ROOT_COMPONENT_TYPE = "_ROOT"; // ToDo: Get the root type from configuration (JNDI, config table etc)
-
+    private final String ROOT_COMPONENT_TYPE = "_ROOT"; // ToDo: Get the root
+                                                        // type from
+                                                        // configuration (JNDI,
+                                                        // config table etc)
 
     public List<Slot> getRootNodes(String relationName) {
         List<Slot> components;
         TypedQuery<Slot> queryComp;
 
-        //queryComp = em.createQuery("SELECT cp.childLogicalComponent FROM ComponentPair cp WHERE cp.componentPairPK.parentLogicalComponentId = :compid AND cp.componentRelation.name = :relname ORDER BY cp.childLogicalComponent.name", LogicalComponent.class).setParameter("compid", ROOTID).setParameter("relname", relationName);
-        queryComp = em.createQuery("SELECT cp.childSlot FROM SlotPair cp WHERE cp.parentSlot.componentType.name = :ctype AND cp.slotRelation.name = :relname ORDER BY cp.childSlot.name", Slot.class)
-                .setParameter("ctype", ROOT_COMPONENT_TYPE)
-                .setParameter("relname", relationName);
+        // queryComp =
+        // em.createQuery("SELECT cp.childLogicalComponent FROM ComponentPair cp WHERE cp.componentPairPK.parentLogicalComponentId = :compid AND cp.componentRelation.name = :relname ORDER BY cp.childLogicalComponent.name",
+        // LogicalComponent.class).setParameter("compid",
+        // ROOTID).setParameter("relname", relationName);
+        queryComp = em.createQuery("SELECT cp.childSlot FROM SlotPair cp WHERE cp.parentSlot.componentType.name = :ctype AND cp.slotRelation.name = :relname ORDER BY cp.childSlot.name", Slot.class).setParameter("ctype", ROOT_COMPONENT_TYPE).setParameter("relname", relationName);
         components = queryComp.getResultList();
 
         return components;
     }
 
-
     public List<Slot> getRootNodes() {
-        return getRootNodes("contains"); // ToDo: get the relation name from configuration
+        return getRootNodes("contains"); // ToDo: get the relation name from
+                                         // configuration
     }
-
 
     public List<Slot> relatedChildren(String compName) {
         List<Slot> components;
@@ -273,7 +256,10 @@ public class SlotEJB {
 
         // ToDO; remove 'contains' and move it to configuration
         queryComp = em.createQuery("SELECT cp.childSlot FROM SlotPair cp WHERE cp.parentSlot.name = :compname AND cp.slotRelation.name = :relname", Slot.class).setParameter("compname", compName).setParameter("relname", "contains");
-        //queryComp = em.createQuery("SELECT l FROM LogicalComponent l, IN (l.childList) c WHERE c.parentLogicalComponent.name = :compname AND c.componentRelation.name = :relname ORDER BY l.name", LogicalComponent.class).setParameter("compname", compName).setParameter("relname", "contains");
+        // queryComp =
+        // em.createQuery("SELECT l FROM LogicalComponent l, IN (l.childList) c WHERE c.parentLogicalComponent.name = :compname AND c.componentRelation.name = :relname ORDER BY l.name",
+        // LogicalComponent.class).setParameter("compname",
+        // compName).setParameter("relname", "contains");
         components = queryComp.getResultList();
 
         return components;

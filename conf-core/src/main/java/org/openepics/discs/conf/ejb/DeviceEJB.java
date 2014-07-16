@@ -1,9 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package org.openepics.discs.conf.ejb;
 
 import java.util.Date;
@@ -33,21 +27,12 @@ import org.openepics.discs.conf.ui.LoginManager;
  *
  * @author vuppala
  */
-@Stateless
-public class DeviceEJB {
-    @EJB
-    private AuthEJB authEJB;
+@Stateless public class DeviceEJB {
 
-    @Inject
-    private LoginManager loginManager;
-
+    @EJB private AuthEJB authEJB;
+    @Inject private LoginManager loginManager;
     private static final Logger logger = Logger.getLogger(DeviceEJB.class.getCanonicalName());
-    @PersistenceContext(unitName = "org.openepics.discs.conf.data")
-    private EntityManager em;
-
-
-    // Add business logic below. (Right-click in editor and choose
-    // "Insert Code > Add Business Method")
+    @PersistenceContext private EntityManager em;
 
     // ----------- Audit record ---------------------------------------
     private void makeAuditEntry(EntityTypeOperation oper, String key, String entry) {
@@ -57,7 +42,7 @@ public class DeviceEJB {
         em.persist(arec);
     }
 
-    // ----------------  Physical Component  -------------------------
+    // ---------------- Physical Component -------------------------
 
     public List<Device> findDevice() {
         List<Device> comps;
@@ -72,21 +57,19 @@ public class DeviceEJB {
         return comps;
     }
 
-
     public Device findDevice(int id) {
         return em.find(Device.class, id);
     }
 
-
     public void saveDevice(String token, Device device) throws Exception {
         String user = token; // todo: convert token to user
 
-        if (device == null ) {
+        if (device == null) {
             logger.log(Level.SEVERE, "Device is null!");
             return;
             // throw new Exception("property is null");
         }
-        if (! authEJB.userHasAuth(user, EntityType.DEVICE, EntityTypeOperation.CREATE)) {
+        if (!authEJB.userHasAuth(user, EntityType.DEVICE, EntityTypeOperation.CREATE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
@@ -95,24 +78,23 @@ public class DeviceEJB {
         device.setModifiedBy(user);
         logger.log(Level.INFO, "Preparing to save device");
         em.merge(device);
-        makeAuditEntry(EntityTypeOperation.UPDATE,device.getSerialNumber(),"Modified device");
+        makeAuditEntry(EntityTypeOperation.UPDATE, device.getSerialNumber(), "Modified device");
     }
-
 
     public void deleteDevice(Device device) throws Exception {
 
-        if (device == null ) {
+        if (device == null) {
             logger.log(Level.SEVERE, "Property is null!");
             throw new Exception("property is null");
         }
         String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, EntityType.DEVICE, EntityTypeOperation.DELETE)) {
+        if (!authEJB.userHasAuth(user, EntityType.DEVICE, EntityTypeOperation.DELETE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
-        Device ct = em.find(Device.class,device.getId());
+        Device ct = em.find(Device.class, device.getId());
         em.remove(ct);
-        makeAuditEntry(EntityTypeOperation.DELETE,device.getSerialNumber(),"Deleted device");
+        makeAuditEntry(EntityTypeOperation.DELETE, device.getSerialNumber(), "Deleted device");
     }
 
     // ------------------ Property ---------------
@@ -123,7 +105,7 @@ public class DeviceEJB {
             return;
         }
         String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, EntityType.DEVICE, EntityTypeOperation.UPDATE)) {
+        if (!authEJB.userHasAuth(user, EntityType.DEVICE, EntityTypeOperation.UPDATE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
@@ -138,9 +120,8 @@ public class DeviceEJB {
             em.merge(device);
         }
         logger.log(Level.INFO, "Comp Type Property: id " + newProp.getId() + " name " + newProp.getProperty().getName());
-        makeAuditEntry(EntityTypeOperation.UPDATE, prop.getDevice().getSerialNumber(),"Modified property " + prop.getProperty().getName());
+        makeAuditEntry(EntityTypeOperation.UPDATE, prop.getDevice().getSerialNumber(), "Modified property " + prop.getProperty().getName());
     }
-
 
     public void deleteDeviceProp(DeviceProperty prop) throws Exception {
         if (prop == null) {
@@ -148,7 +129,7 @@ public class DeviceEJB {
             return;
         }
         String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, EntityType.DEVICE, EntityTypeOperation.UPDATE)) {
+        if (!authEJB.userHasAuth(user, EntityType.DEVICE, EntityTypeOperation.UPDATE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
@@ -156,11 +137,10 @@ public class DeviceEJB {
         Device device = property.getDevice();
         device.getDevicePropertyList().remove(property);
         em.remove(property);
-        makeAuditEntry(EntityTypeOperation.UPDATE, prop.getDevice().getSerialNumber(),"Deleted property " + prop.getProperty().getName());
+        makeAuditEntry(EntityTypeOperation.UPDATE, prop.getDevice().getSerialNumber(), "Deleted property " + prop.getProperty().getName());
     }
 
     // ---------------- Artifact ---------------------
-
 
     public void saveDeviceArtifact(DeviceArtifact art, boolean create) throws Exception {
         if (art == null) {
@@ -168,7 +148,7 @@ public class DeviceEJB {
             return;
         }
         String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, EntityType.DEVICE, EntityTypeOperation.UPDATE)) {
+        if (!authEJB.userHasAuth(user, EntityType.DEVICE, EntityTypeOperation.UPDATE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
@@ -180,11 +160,12 @@ public class DeviceEJB {
             dev.getDeviceArtifactList().add(newArt);
             em.merge(dev);
         }
-        // logger.log(Level.INFO, "Artifact: name " + art.getName() + " description " + art.getDescription() + " uri " + art.getUri() + "is int " + art.getIsInternal());
+        // logger.log(Level.INFO, "Artifact: name " + art.getName() +
+        // " description " + art.getDescription() + " uri " + art.getUri() +
+        // "is int " + art.getIsInternal());
         // logger.log(Level.INFO, "device serial " + device.getSerialNumber());
-       makeAuditEntry(EntityTypeOperation.UPDATE, art.getDevice().getSerialNumber(),"Modified artifact " + art.getName());
+        makeAuditEntry(EntityTypeOperation.UPDATE, art.getDevice().getSerialNumber(), "Modified artifact " + art.getName());
     }
-
 
     public void deleteDeviceArtifact(DeviceArtifact art) throws Exception {
         if (art == null) {
@@ -192,7 +173,7 @@ public class DeviceEJB {
             return;
         }
         String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, EntityType.DEVICE, EntityTypeOperation.UPDATE)) {
+        if (!authEJB.userHasAuth(user, EntityType.DEVICE, EntityTypeOperation.UPDATE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
@@ -201,6 +182,6 @@ public class DeviceEJB {
         Device device = artifact.getDevice();
         device.getDeviceArtifactList().remove(artifact);
         em.remove(artifact);
-        makeAuditEntry(EntityTypeOperation.UPDATE, art.getDevice().getSerialNumber(),"Deleted artifact " + art.getName());
+        makeAuditEntry(EntityTypeOperation.UPDATE, art.getDevice().getSerialNumber(), "Deleted artifact " + art.getName());
     }
 }

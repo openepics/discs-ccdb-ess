@@ -1,9 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package org.openepics.discs.conf.ejb;
 
 import java.util.Date;
@@ -33,18 +27,13 @@ import org.openepics.discs.conf.ui.LoginManager;
  *
  * @author vuppala
  */
-@Stateless
-public class AlignmentEJB {
-private static final Logger logger = Logger.getLogger(AlignmentEJB.class.getCanonicalName());
-    @PersistenceContext(unitName = "org.openepics.discs.conf.data")
-    private EntityManager em;
-    // Add business logic below. (Right-click in editor and choose
-    // "Insert Code > Add Business Method")
-    @EJB
-    private AuthEJB authEJB;
+@Stateless public class AlignmentEJB {
 
-    @Inject
-    private LoginManager loginManager;
+    private static final Logger logger = Logger.getLogger(AlignmentEJB.class.getCanonicalName());
+    @PersistenceContext private EntityManager em;
+    @EJB private AuthEJB authEJB;
+
+    @Inject private LoginManager loginManager;
 
     // ----------- Audit record ---------------------------------------
     private void makeAuditEntry(EntityTypeOperation oper, String key, String entry) {
@@ -54,7 +43,7 @@ private static final Logger logger = Logger.getLogger(AlignmentEJB.class.getCano
         em.persist(arec);
     }
 
-    // ----------------  Alignment Record -------------------------
+    // ---------------- Alignment Record -------------------------
 
     public List<AlignmentRecord> findAlignmentRec() {
         List<AlignmentRecord> comps;
@@ -69,55 +58,51 @@ private static final Logger logger = Logger.getLogger(AlignmentEJB.class.getCano
         return comps;
     }
 
-
     public AlignmentRecord findAlignmentRec(int id) {
         return em.find(AlignmentRecord.class, id);
     }
 
-
-
-    public void saveAlignment(AlignmentRecord arec) throws Exception  {
-        if (arec == null ) {
+    public void saveAlignment(AlignmentRecord arec) throws Exception {
+        if (arec == null) {
             logger.log(Level.SEVERE, "Property is null!");
             return;
             // throw new Exception("property is null");
         }
         String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, EntityType.ALIGNMENT_RECORD, EntityTypeOperation.UPDATE)) {
+        if (!authEJB.userHasAuth(user, EntityType.ALIGNMENT_RECORD, EntityTypeOperation.UPDATE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
         arec.setModifiedAt(new Date());
         logger.log(Level.INFO, "Preparing to save device");
         em.persist(arec);
-        makeAuditEntry(EntityTypeOperation.UPDATE,arec.getRecordNumber(),"updated alignment record");
+        makeAuditEntry(EntityTypeOperation.UPDATE, arec.getRecordNumber(), "updated alignment record");
     }
 
-
-    public void deleteAlignment(AlignmentRecord arec) throws Exception  {
-        if (arec == null ) {
+    public void deleteAlignment(AlignmentRecord arec) throws Exception {
+        if (arec == null) {
             logger.log(Level.SEVERE, "Property is null!");
             return;
         }
         String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, EntityType.ALIGNMENT_RECORD, EntityTypeOperation.DELETE)) {
+        if (!authEJB.userHasAuth(user, EntityType.ALIGNMENT_RECORD, EntityTypeOperation.DELETE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
-        AlignmentRecord ct = em.find(AlignmentRecord.class,arec.getId());
+        AlignmentRecord ct = em.find(AlignmentRecord.class, arec.getId());
         em.remove(ct);
-        makeAuditEntry(EntityTypeOperation.DELETE,arec.getRecordNumber(),"deleted alignment record");
+        makeAuditEntry(EntityTypeOperation.DELETE, arec.getRecordNumber(), "deleted alignment record");
     }
 
     // ------------------ Property ---------------
 
-    public void saveAlignmentProp(AlignmentProperty prop, boolean create) throws Exception  {
+    public void saveAlignmentProp(AlignmentProperty prop, boolean create) throws Exception {
         if (prop == null) {
             logger.log(Level.SEVERE, "saveDeviceProp: property is null");
             return;
         }
         String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, EntityType.ALIGNMENT_RECORD, EntityTypeOperation.UPDATE)) {
+        if (!authEJB.userHasAuth(user, EntityType.ALIGNMENT_RECORD, EntityTypeOperation.UPDATE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
@@ -131,18 +116,17 @@ private static final Logger logger = Logger.getLogger(AlignmentEJB.class.getCano
             slot.getAlignmentPropertyList().add(newProp);
             em.merge(slot);
         }
-        makeAuditEntry(EntityTypeOperation.UPDATE,prop.getAlignmentRecord().getRecordNumber(),"updated alignment property " + prop.getProperty().getName());
+        makeAuditEntry(EntityTypeOperation.UPDATE, prop.getAlignmentRecord().getRecordNumber(), "updated alignment property " + prop.getProperty().getName());
         logger.log(Level.INFO, "Comp Type Property: id " + newProp.getId() + " name " + newProp.getProperty().getName());
     }
 
-
-    public void deleteAlignmentProp(AlignmentProperty prop) throws Exception  {
+    public void deleteAlignmentProp(AlignmentProperty prop) throws Exception {
         if (prop == null) {
             logger.log(Level.SEVERE, "deleteAlignmentArtifact: dev-artifact is null");
             return;
         }
         String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, EntityType.ALIGNMENT_RECORD, EntityTypeOperation.UPDATE)) {
+        if (!authEJB.userHasAuth(user, EntityType.ALIGNMENT_RECORD, EntityTypeOperation.UPDATE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
@@ -150,11 +134,10 @@ private static final Logger logger = Logger.getLogger(AlignmentEJB.class.getCano
         AlignmentRecord arec = property.getAlignmentRecord();
         arec.getAlignmentPropertyList().remove(property);
         em.remove(property);
-        makeAuditEntry(EntityTypeOperation.DELETE,prop.getAlignmentRecord().getRecordNumber(),"deleted alignment property " + prop.getProperty().getName());
+        makeAuditEntry(EntityTypeOperation.DELETE, prop.getAlignmentRecord().getRecordNumber(), "deleted alignment property " + prop.getProperty().getName());
     }
 
     // ---------------- Artifact ---------------------
-
 
     public void saveAlignmentArtifact(AlignmentArtifact art, boolean create) throws Exception {
         if (art == null) {
@@ -162,7 +145,7 @@ private static final Logger logger = Logger.getLogger(AlignmentEJB.class.getCano
             return;
         }
         String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, EntityType.ALIGNMENT_RECORD, EntityTypeOperation.UPDATE)) {
+        if (!authEJB.userHasAuth(user, EntityType.ALIGNMENT_RECORD, EntityTypeOperation.UPDATE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
@@ -175,12 +158,12 @@ private static final Logger logger = Logger.getLogger(AlignmentEJB.class.getCano
             arec.getAlignmentArtifactList().add(newArt);
             em.merge(arec);
         }
-        makeAuditEntry(EntityTypeOperation.UPDATE,art.getAlignmentRecord().getRecordNumber(),"updated alignment artifact " + art.getName());
-        // art.setAlignmentRecord(em.merge(arec)); // todo: improve this code. this is not the right way.
+        makeAuditEntry(EntityTypeOperation.UPDATE, art.getAlignmentRecord().getRecordNumber(), "updated alignment artifact " + art.getName());
+        // art.setAlignmentRecord(em.merge(arec)); // todo: improve this code.
+        // this is not the right way.
         logger.log(Level.INFO, "Artifact: name " + newArt.getName() + " description " + newArt.getDescription() + " uri " + newArt.getUri() + "is int " + newArt.getIsInternal());
         // logger.log(Level.INFO, "device serial " + device.getSerialNumber());
     }
-
 
     public void deleteAlignmentArtifact(AlignmentArtifact art) throws Exception {
         if (art == null) {
@@ -188,7 +171,7 @@ private static final Logger logger = Logger.getLogger(AlignmentEJB.class.getCano
             return;
         }
         String user = loginManager.getUserid();
-        if (! authEJB.userHasAuth(user, EntityType.ALIGNMENT_RECORD, EntityTypeOperation.UPDATE)) {
+        if (!authEJB.userHasAuth(user, EntityType.ALIGNMENT_RECORD, EntityTypeOperation.UPDATE)) {
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
@@ -197,6 +180,6 @@ private static final Logger logger = Logger.getLogger(AlignmentEJB.class.getCano
         AlignmentRecord arec = artifact.getAlignmentRecord();
         arec.getAlignmentArtifactList().remove(artifact);
         em.remove(artifact);
-        makeAuditEntry(EntityTypeOperation.UPDATE,art.getAlignmentRecord().getRecordNumber(),"deleted alignment artifact " + art.getName());
+        makeAuditEntry(EntityTypeOperation.UPDATE, art.getAlignmentRecord().getRecordNumber(), "deleted alignment artifact " + art.getName());
     }
 }
