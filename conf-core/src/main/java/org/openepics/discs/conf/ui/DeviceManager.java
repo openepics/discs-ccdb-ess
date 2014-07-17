@@ -447,9 +447,9 @@ public class DeviceManager implements Serializable {
     public void onPartDeviceSave(ActionEvent event) {
         String token = loginManager.getToken();
         try {
-            inputAsmDevice.setAsmPosition(inputAsmPosition);
-            inputAsmDevice.setAsmDescription(inputAsmComment);
-            inputAsmDevice.setAsmParent(selectedObject);
+            inputAsmDevice.setAssemblyPosition(inputAsmPosition);
+            inputAsmDevice.setAssemblyDescription(inputAsmComment);
+            inputAsmDevice.setAssemblyParent(selectedObject);
             deviceEJB.saveDevice(token,inputAsmDevice);
             selectedObject.getDeviceList().add(inputAsmDevice);
 
@@ -471,9 +471,9 @@ public class DeviceManager implements Serializable {
                 return;
             }
 
-            device.setAsmPosition(null);
-            device.setAsmDescription(null);
-            device.setAsmParent(null);
+            device.setAssemblyPosition(null);
+            device.setAssemblyDescription(null);
+            device.setAssemblyParent(null);
             deviceEJB.saveDevice(token, device);
             selectedObject.getDeviceList().remove(device);
             deviceEJB.saveDevice(token, selectedObject);

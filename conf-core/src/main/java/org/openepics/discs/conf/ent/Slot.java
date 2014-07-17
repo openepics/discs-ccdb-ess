@@ -2,12 +2,15 @@ package org.openepics.discs.conf.ent;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -29,7 +32,6 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Slot.findAll", query = "SELECT s FROM Slot s"),
     @NamedQuery(name = "Slot.findBySlotId", query = "SELECT s FROM Slot s WHERE s.id = :id"),
     @NamedQuery(name = "Slot.findByName", query = "SELECT s FROM Slot s WHERE s.name = :name"),
-    @NamedQuery(name = "Slot.findByDescription", query = "SELECT s FROM Slot s WHERE s.description = :description"),
     @NamedQuery(name = "Slot.findByIsHostingSlot", query = "SELECT s FROM Slot s WHERE s.isHostingSlot = :isHostingSlot"),
     @NamedQuery(name = "Slot.findByBeamlinePosition", query = "SELECT s FROM Slot s WHERE s.beamlinePosition = :beamlinePosition"),
     @NamedQuery(name = "Slot.findByGlobalX", query = "SELECT s FROM Slot s WHERE s.globalX = :globalX"),
@@ -38,12 +40,9 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Slot.findByGlobalRoll", query = "SELECT s FROM Slot s WHERE s.globalRoll = :globalRoll"),
     @NamedQuery(name = "Slot.findByGlobalYaw", query = "SELECT s FROM Slot s WHERE s.globalYaw = :globalYaw"),
     @NamedQuery(name = "Slot.findByGlobalPitch", query = "SELECT s FROM Slot s WHERE s.globalPitch = :globalPitch"),
-    @NamedQuery(name = "Slot.findByAsmComment", query = "SELECT s FROM Slot s WHERE s.asmComment = :asmComment"),
     @NamedQuery(name = "Slot.findByAsmPosition", query = "SELECT s FROM Slot s WHERE s.asmPosition = :asmPosition"),
     @NamedQuery(name = "Slot.findByComment", query = "SELECT s FROM Slot s WHERE s.comment = :comment"),
-    @NamedQuery(name = "Slot.findByModifiedAt", query = "SELECT s FROM Slot s WHERE s.modifiedAt = :modifiedAt"),
-    @NamedQuery(name = "Slot.findByModifiedBy", query = "SELECT s FROM Slot s WHERE s.modifiedBy = :modifiedBy"),
-    @NamedQuery(name = "Slot.findByVersion", query = "SELECT s FROM Slot s WHERE s.version = :version")})
+    @NamedQuery(name = "Slot.findByModifiedBy", query = "SELECT s FROM Slot s WHERE s.modifiedBy = :modifiedBy")})
 public class Slot extends ConfigurationEntity {
     private static final long serialVersionUID = 1L;
 
@@ -125,6 +124,12 @@ public class Slot extends ConfigurationEntity {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "slot")
     private List<SlotProperty> slotPropertyList;
 
+    @ManyToMany
+    @JoinTable(name = "slot_tags",
+        joinColumns = { @JoinColumn(name = "slot_id") }, inverseJoinColumns = { @JoinColumn(name = "tag_id") })
+    private Set<Tag> tags;
+
+
     protected Slot() {
     }
 
@@ -135,192 +140,84 @@ public class Slot extends ConfigurationEntity {
         this.modifiedAt = new Date();
     }
 
-    public String getName() {
-        return name;
-    }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    public String getDescription() { return description;    }
+    public void setDescription(String description) { this.description = description; }
 
-    public String getDescription() {
-        return description;
-    }
+    public boolean getIsHostingSlot() { return isHostingSlot; }
+    public void setIsHostingSlot(boolean isHostingSlot) { this.isHostingSlot = isHostingSlot; }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+    public Double getBeamlinePosition() { return beamlinePosition; }
+    public void setBeamlinePosition(Double beamlinePosition) { this.beamlinePosition = beamlinePosition; }
 
-    public boolean getIsHostingSlot() {
-        return isHostingSlot;
-    }
+    public Double getGlobalX() { return globalX; }
+    public void setGlobalX(Double globalX) { this.globalX = globalX; }
 
-    public void setIsHostingSlot(boolean isHostingSlot) {
-        this.isHostingSlot = isHostingSlot;
-    }
+    public Double getGlobalY() { return globalY; }
+    public void setGlobalY(Double globalY) { this.globalY = globalY; }
 
-    public Double getBeamlinePosition() {
-        return beamlinePosition;
-    }
+    public Double getGlobalZ() { return globalZ; }
+    public void setGlobalZ(Double globalZ) { this.globalZ = globalZ; }
 
-    public void setBeamlinePosition(Double beamlinePosition) {
-        this.beamlinePosition = beamlinePosition;
-    }
+    public Double getGlobalRoll() { return globalRoll; }
+    public void setGlobalRoll(Double globalRoll) { this.globalRoll = globalRoll; }
 
-    public Double getGlobalX() {
-        return globalX;
-    }
+    public Double getGlobalYaw() { return globalYaw; }
+    public void setGlobalYaw(Double globalYaw) { this.globalYaw = globalYaw; }
 
-    public void setGlobalX(Double globalX) {
-        this.globalX = globalX;
-    }
+    public Double getGlobalPitch() { return globalPitch; }
+    public void setGlobalPitch(Double globalPitch) { this.globalPitch = globalPitch; }
 
-    public Double getGlobalY() {
-        return globalY;
-    }
+    public String getAssemblyComment() { return asmComment; }
+    public void setAssemblyComment(String asmComment) { this.asmComment = asmComment; }
 
-    public void setGlobalY(Double globalY) {
-        this.globalY = globalY;
-    }
+    public String getAssemblyPosition() { return asmPosition; }
+    public void setAssemblyPosition(String asmPosition) { this.asmPosition = asmPosition; }
 
-    public Double getGlobalZ() {
-        return globalZ;
-    }
-
-    public void setGlobalZ(Double globalZ) {
-        this.globalZ = globalZ;
-    }
-
-    public Double getGlobalRoll() {
-        return globalRoll;
-    }
-
-    public void setGlobalRoll(Double globalRoll) {
-        this.globalRoll = globalRoll;
-    }
-
-    public Double getGlobalYaw() {
-        return globalYaw;
-    }
-
-    public void setGlobalYaw(Double globalYaw) {
-        this.globalYaw = globalYaw;
-    }
-
-    public Double getGlobalPitch() {
-        return globalPitch;
-    }
-
-    public void setGlobalPitch(Double globalPitch) {
-        this.globalPitch = globalPitch;
-    }
-
-    public String getAsmComment() {
-        return asmComment;
-    }
-
-    public void setAsmComment(String asmComment) {
-        this.asmComment = asmComment;
-    }
-
-    public String getAsmPosition() {
-        return asmPosition;
-    }
-
-    public void setAsmPosition(String asmPosition) {
-        this.asmPosition = asmPosition;
-    }
-
-    public String getComment() {
-        return comment;
-    }
-
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
+    public String getComment() { return comment; }
+    public void setComment(String comment) { this.comment = comment; }
 
     @XmlTransient
-    public List<SlotArtifact> getSlotArtifactList() {
-        return slotArtifactList;
-    }
+    public List<SlotArtifact> getSlotArtifactList() { return slotArtifactList; }
+    public void setSlotArtifactList(List<SlotArtifact> slotArtifactList) { this.slotArtifactList = slotArtifactList; }
 
-    public void setSlotArtifactList(List<SlotArtifact> slotArtifactList) {
-        this.slotArtifactList = slotArtifactList;
-    }
-
-    public ComponentType getComponentType() {
-        return componentType;
-    }
-
-    public void setComponentType(ComponentType componentType) {
-        this.componentType = componentType;
-    }
+    public ComponentType getComponentType() { return componentType; }
+    public void setComponentType(ComponentType componentType) { this.componentType = componentType; }
 
     @XmlTransient
-    public List<Slot> getSlotList() {
-        return slotList;
-    }
+    public List<Slot> getSlotList() { return slotList; }
+    public void setSlotList(List<Slot> slotList) { this.slotList = slotList; }
 
-    public void setSlotList(List<Slot> slotList) {
-        this.slotList = slotList;
-    }
-
-    public Slot getAsmSlot() {
-        return asmSlot;
-    }
-
-    public void setAsmSlot(Slot asmSlot) {
-        this.asmSlot = asmSlot;
-    }
+    public Slot getAssemblySlot() { return asmSlot; }
+    public void setAssemblySlot(Slot asmSlot) { this.asmSlot = asmSlot; }
 
     @XmlTransient
-    public List<AlignmentRecord> getAlignmentRecordList() {
-        return alignmentRecordList;
-    }
-
-    public void setAlignmentRecordList(List<AlignmentRecord> alignmentRecordList) {
-        this.alignmentRecordList = alignmentRecordList;
-    }
+    public List<AlignmentRecord> getAlignmentRecordList() { return alignmentRecordList; }
+    public void setAlignmentRecordList(List<AlignmentRecord> alignmentRecordList) { this.alignmentRecordList = alignmentRecordList; }
 
     @XmlTransient
-    public List<InstallationRecord> getInstallationRecordList() {
-        return installationRecordList;
-    }
-
-    public void setInstallationRecordList(List<InstallationRecord> installationRecordList) {
-        this.installationRecordList = installationRecordList;
-    }
+    public List<InstallationRecord> getInstallationRecordList() { return installationRecordList; }
+    public void setInstallationRecordList(List<InstallationRecord> installationRecordList) { this.installationRecordList = installationRecordList; }
 
     @XmlTransient
-    public List<SlotPair> getSlotPairList() {
-        return slotPairList;
-    }
-
-    public void setSlotPairList(List<SlotPair> slotPairList) {
-        this.slotPairList = slotPairList;
-    }
+    public List<SlotPair> getSlotPairList() { return slotPairList; }
+    public void setSlotPairList(List<SlotPair> slotPairList) { this.slotPairList = slotPairList; }
 
     @XmlTransient
-    public List<SlotPair> getSlotPairList1() {
-        return slotPairList1;
-    }
-
-    public void setSlotPairList1(List<SlotPair> slotPairList1) {
-        this.slotPairList1 = slotPairList1;
-    }
+    public List<SlotPair> getSlotPairList1() { return slotPairList1; }
+    public void setSlotPairList1(List<SlotPair> slotPairList1) { this.slotPairList1 = slotPairList1; }
 
     @XmlTransient
-    public List<SlotProperty> getSlotPropertyList() {
-        return slotPropertyList;
-    }
+    public List<SlotProperty> getSlotPropertyList() { return slotPropertyList; }
+    public void setSlotPropertyList(List<SlotProperty> slotPropertyList) { this.slotPropertyList = slotPropertyList; }
 
-    public void setSlotPropertyList(List<SlotProperty> slotPropertyList) {
-        this.slotPropertyList = slotPropertyList;
-    }
+    @XmlTransient
+    public Set<Tag> getTags() { return tags; }
+    public void setTags(Set<Tag> tags) { this.tags = tags; }
 
     @Override
-    public String toString() {
-        return "Slot[ slotId=" + id + " ]";
-    }
+    public String toString() { return "Slot[ slotId=" + id + " ]"; }
 
 }

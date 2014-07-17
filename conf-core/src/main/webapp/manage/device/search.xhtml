@@ -43,21 +43,21 @@
                       filterBy="#{item.componentType.name}" filterMatchMode="contains">
                 <h:outputText value="#{item.componentType.name}"/>
             </p:column>
-            <p:column headerText="Part Of" sortBy="#{item.asmParent.serialNumber}" 
-                      filterBy="#{item.asmParent.serialNumber}" filterMatchMode="contains">
-                <h:outputText value="#{item.asmParent.serialNumber}"/>
+            <p:column headerText="Part Of" sortBy="#{item.assemblyParent.serialNumber}" 
+                      filterBy="#{item.assemblyParent.serialNumber}" filterMatchMode="contains">
+                <h:outputText value="#{item.assemblyParent.serialNumber}"/>
             </p:column>
             <p:column  headerText="Asm Position" >
-                <h:outputText value="#{item.asmPosition}"/>
+                <h:outputText value="#{item.assemblyPosition}"/>
             </p:column>
             <p:column  headerText="Asm Comment" >
-                <h:outputText value="#{item.asmDescription}"/>
+                <h:outputText value="#{item.assemblyDescription}"/>
             </p:column>
             <p:column  headerText="Manfacturer">
                 <h:outputText value="#{item.manufacturer}"/>
             </p:column>
             <p:column  headerText="Manuf Model">
-                <h:outputText value="#{item.manufModel}"/>
+                <h:outputText value="#{item.manufacturerModel}"/>
             </p:column>
             <p:column headerText="PO#">
                 <h:outputText value="#{item.purchaseOrder}"/>
@@ -115,7 +115,7 @@
                 </p:row>
                 <p:row>
                     <p:column><h:outputLabel value="Manuf Model:" /></p:column>
-                    <p:column><h:inputText value="#{deviceManager.inputObject.manufModel}"/> </p:column>
+                    <p:column><h:inputText value="#{deviceManager.inputObject.manufacturerModel}"/> </p:column>
                 </p:row>
                 <p:row>
                     <p:column><h:outputLabel value="PO:" /></p:column>
