@@ -57,7 +57,7 @@ import org.openepics.discs.conf.ui.LoginManager;
         return comps;
     }
 
-    public Device findDevice(int id) {
+    public Device findDevice(Long id) {
         return em.find(Device.class, id);
     }
 
@@ -79,6 +79,10 @@ import org.openepics.discs.conf.ui.LoginManager;
         logger.log(Level.INFO, "Preparing to save device");
         em.merge(device);
         makeAuditEntry(EntityTypeOperation.UPDATE, device.getSerialNumber(), "Modified device");
+    }
+
+    public void addDevice(Device device) {
+        em.persist(device);
     }
 
     public void deleteDevice(Device device) throws Exception {

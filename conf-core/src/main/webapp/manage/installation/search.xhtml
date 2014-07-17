@@ -24,7 +24,7 @@
                      scrollRows="25" scrollable="true" liveScroll="true"   scrollHeight="200"                  
                      selectionMode="single" selection="#{installationManager.selectedObject}" 
                      emptyMessage="No records found!"  filteredValue="#{installationManager.filteredObjects}"
-                     rowKey="#{item.installationRecordId}" >
+                     rowKey="#{item.id}" >
 
             <f:facet name="footer">
                 <p:commandButton id="addBtn" value="Add" icon="ui-icon-plus" actionListener="#{installationManager.onIRecAdd}"

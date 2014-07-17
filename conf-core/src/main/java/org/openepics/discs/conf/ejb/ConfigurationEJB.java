@@ -45,7 +45,7 @@ import org.openepics.discs.conf.ent.Unit;
         return props;
     }
 
-    public Property findProperty(int id) {
+    public Property findProperty(Long id) {
         return em.find(Property.class, id);
     }
 
@@ -133,7 +133,7 @@ import org.openepics.discs.conf.ent.Unit;
         return datatypes;
     }
 
-    public DataType findDataType(int id) {
+    public DataType findDataType(Long id) {
         return em.find(DataType.class, id);
     }
 

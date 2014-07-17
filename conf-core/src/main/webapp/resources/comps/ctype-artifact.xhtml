@@ -19,7 +19,7 @@
                 <p:dataTable  var="art" value="#{cc.attrs.componentType.comptypeArtifactList}" 
                               scrollRows="25" scrollable="true" liveScroll="true"   scrollHeight="100"                               
                               emptyMessage="No artifacts found"  editMode="row" editable="false"                          
-                              rowKey="#{art.artifactId}}"  rendered="#{cc.attrs.componentType.comptypeArtifactList ne null}">                
+                              rowKey="#{art.id}"  rendered="#{cc.attrs.componentType.comptypeArtifactList ne null}">                
                    
                     <p:column  headerText="Name">                   
                         <h:outputLink value="#{art.uri}"  styleClass="ui-icon ui-icon-extlink" 

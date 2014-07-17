@@ -161,7 +161,11 @@ public class ComponentTypeMananger implements Serializable {
             inputObject.setModifiedBy("test-user");
             // inputObject.setSuperComponentType(null);
             // Utility.showMessage(FacesMessage.SEVERITY_INFO, "Saved 2", "");
-            comptypeEJB.saveComponentType(inputObject);
+            if (selectedOp == 'a') {
+                comptypeEJB.addComponentType(inputObject);
+            } else {
+                comptypeEJB.saveComponentType(inputObject);
+            }
 
             if (selectedOp == 'a') {
                 selectedObject = inputObject;

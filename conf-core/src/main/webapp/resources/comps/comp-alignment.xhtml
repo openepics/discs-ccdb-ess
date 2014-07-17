@@ -19,7 +19,7 @@
                          scrollRows="25" scrollable="true" liveScroll="true"   scrollHeight="200"                  
                          selectionMode="single" selection="#{alignmentManager.selectedObject}" 
                          emptyMessage="No records found!" 
-                         rowKey="#{item.alignmentRecordId}}" >
+                         rowKey="#{item.id}" >
 
                 <p:column headerText="Record Number" >
                     <h:outputText value="#{item.recordNumber}"/>

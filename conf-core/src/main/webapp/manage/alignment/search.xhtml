@@ -25,7 +25,7 @@
                      selectionMode="single" selection="#{alignmentManager.selectedObject}" 
                      filteredValue="#{alignmentManager.filteredObjects}"
                      emptyMessage="No records found!" 
-                     rowKey="#{item.alignmentRecordId}}" >
+                     rowKey="#{item.id}}" >
 
             <f:facet name="footer">
                 <p:commandButton id="addBtn" value="Add" icon="ui-icon-plus" actionListener="#{alignmentManager.onAlignRecAdd}"

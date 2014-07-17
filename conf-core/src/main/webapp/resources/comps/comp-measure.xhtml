@@ -19,8 +19,8 @@
         <p:panel id="panel1" header="Measurement" toggleable="true"  style="border: 0px;" collapsed="#{cc.attrs.collapsed}">  
             <p:dataTable id="physproptable" var="prop" emptyMessage="No measurements taken yet."
                          value="#{measurementBean.PhysicalProperties(cc.attrs.selectedComponent)}" >				
-                <p:column id="name" headerText="Name" sortBy="#{prop.property.propertyId}" >
-                    <h:outputText value="#{prop.property.propertyId}" title="#{prop.property.description}" />
+                <p:column id="name" headerText="Name" sortBy="#{prop.property.id}" >
+                    <h:outputText value="#{prop.property.id}" title="#{prop.property.description}" />
                 </p:column>
                  <p:column id="desc" headerText="Description" >
                     <h:outputText value="#{prop.property.description}" />
@@ -33,24 +33,24 @@
                         <p:commandLink id="fgbutton" styleClass="ui-icon ui-icon-image" title="mesurement graph"
                                        oncomplete="fieldGraph.show()" update=":#{p:component('fieldGraph')} :#{p:component('growlmm')}"
                                        action="${measurementBean.createGraph()}"                                         
-                                       rendered="#{prop.property.propertyId == 'FIELDMEASURE'}" >  
+                                       rendered="#{prop.property.name == 'FIELDMEASURE'}" >  
                             <f:setPropertyActionListener value="#{prop}" target="#{measurementBean.selectedPprop}" />
                         </p:commandLink>
                         <h:outputLink id="fielddl" value="resources/data/#{prop.value}" 
                                       styleClass="ui-icon ui-icon-arrowthickstop-1-s"
                                       title="download data" 
-                                      target="_blank" rendered="#{prop.property.propertyId == 'FIELDMEASURE'}" >
+                                      target="_blank" rendered="#{prop.property.name == 'FIELDMEASURE'}" >
                         </h:outputLink>
                     </p:panelGrid>
 
                     <h:outputLink value="resources/data/#{prop.value}" title="download file"
                                   styleClass="ui-icon ui-icon-arrowthickstop-1-s"
-                                  target="_blank" rendered="#{prop.property.propertyId == 'FIELDMRAW'}" >                          
+                                  target="_blank" rendered="#{prop.property.name == 'FIELDMRAW'}" >                          
                     </h:outputLink>
                     <p:commandLink id="poly" styleClass="ui-icon ui-icon-script" title="polynomial"
                                    oncomplete="polynotes.show()"    
                                    update=":#{p:component('polynotes')}"
-                                   rendered="#{prop.property.propertyId == 'FIELDPOLY'}" >   
+                                   rendered="#{prop.property.name == 'FIELDPOLY'}" >   
                         <f:setPropertyActionListener value="#{prop}" target="#{measurementBean.selectedPprop}" />
                     </p:commandLink>
                     <h:outputLink value="#{prop.value}" title="Ext Link"

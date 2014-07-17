@@ -14,12 +14,12 @@
                          scrollRows="25" scrollable="true" liveScroll="true"   scrollHeight="500"                                         
                          filteredValue="#{alignmentManager.filteredObjects}"
                          emptyMessage="No alignment records found!" 
-                         rowKey="#{item.alignmentRecordId}}" >
+                         rowKey="#{item.id}}" >
                 <f:facet name="header">
                     <h:outputText value="Alignment Records"/>
                 </f:facet> 
-                <p:column id="desc" headerText="ID" filterBy="#{item.alignmentRecordId}" filterMatchMode="contains">
-                    <h:outputText value="#{item.alignmentRecordId}"/>
+                <p:column id="desc" headerText="ID" filterBy="#{item.id}" filterMatchMode="contains">
+                    <h:outputText value="#{item.id}"/>
                 </p:column>              
                 <p:column  headerText="Date" sortBy="#{item.alignmentDate}">
                     <h:outputText value="#{item.alignmentDate}">
@@ -32,7 +32,7 @@
                 <p:column  headerText="Device" sortBy="#{item.device.serialNumber}">
                     <h:link value="/browse/device/details" >
                         <h:outputText value="#{item.device.serialNumber}"/>
-                        <f:param name="id" value="#{item.device.deviceId}"/>.
+                        <f:param name="id" value="#{item.device.id}"/>.
                     </h:link>                   
                 </p:column> 
                 <p:column  headerText="X" >

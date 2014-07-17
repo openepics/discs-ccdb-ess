@@ -27,7 +27,7 @@
                 <p:column id="id" headerText="ID" sortBy="#{dev.serialNumber}" >                   
                     <h:link outcome="details" target="_blank" >
                         <h:outputText value="#{dev.serialNumber}" styleClass="link"/>
-                        <f:param name="id" value="#{dev.deviceId}"/>
+                        <f:param name="id" value="#{dev.id}"/>
                     </h:link>
                 </p:column>
                 <p:column id="desc" headerText="Description"  >

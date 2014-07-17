@@ -22,7 +22,7 @@
             <p:dataTable id="afTable" var="art" value="#{deviceManager.selectedArtifacts}" 
                          scrollRows="25" scrollable="true" liveScroll="true"   scrollHeight="200"                               
                          emptyMessage="No artifacts found"  editMode="row" editable="false"                          
-                         rowKey="#{art.artifactId}}"  >                
+                         rowKey="#{art.id}"  >                
               
                 <p:column id="ops" width="10%">
                     <p:commandLink  styleClass="ui-icon ui-icon-trash"  style="display:inline-block;"

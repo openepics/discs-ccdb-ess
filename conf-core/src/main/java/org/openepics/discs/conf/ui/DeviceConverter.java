@@ -43,7 +43,7 @@ public class DeviceConverter implements Converter {
             logger.log(Level.INFO, "Device converter: empty device id");
             return null;
         } else {
-            dev = deviceEJB.findDevice(Integer.parseInt(value));
+            dev = deviceEJB.findDevice(Long.parseLong(value));
             return dev;
         }
     }

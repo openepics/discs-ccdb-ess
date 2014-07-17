@@ -17,7 +17,7 @@
             <p:dataTable id="asmTable" var="asmp" value="#{componentTypeMananger.selectedParts}" 
                          scrollRows="25" scrollable="true" liveScroll="true"   scrollHeight="200"                               
                          emptyMessage="No artifacts found"  editMode="row" editable="true" 
-                         rowKey="#{asmp.comptypeAsmId}}"  >                
+                         rowKey="#{asmp.id}}"  >                
 
                 <p:ajax event="rowEdit" listener="#{componentTypeMananger.onAsmSave}" update="asmTable  :messages" />                  
                 <p:ajax event="rowEditInit" listener="#{componentTypeMananger.onAsmEdit}" update=":messages" />                  

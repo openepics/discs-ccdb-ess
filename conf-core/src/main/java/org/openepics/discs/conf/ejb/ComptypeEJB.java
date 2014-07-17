@@ -59,7 +59,7 @@ import org.openepics.discs.conf.ui.LoginManager;
         return comptypes;
     }
 
-    public ComponentType findComponentType(int id) {
+    public ComponentType findComponentType(Long id) {
         return em.find(ComponentType.class, id);
     }
 
@@ -85,8 +85,8 @@ import org.openepics.discs.conf.ui.LoginManager;
     }
 
     public void deleteComponentType(ComponentType ctype) {
-        em.merge(ctype);
-        em.remove(ctype);
+        final ComponentType merged = em.merge(ctype);
+        em.remove(merged);
         makeAuditEntry(EntityTypeOperation.DELETE, ctype.getName(), "Deleted component type");
     }
 

@@ -44,7 +44,7 @@ public class DataTypeConverter implements Converter {
             logger.log(Level.INFO, "exp converter: empty experiemnt id");
             return null;
         } else {
-            dtype = configurationEJB.findDataType(Integer.valueOf(value));
+            dtype = configurationEJB.findDataType(Long.valueOf(value));
             return dtype;
         }
     }

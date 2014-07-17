@@ -13,7 +13,7 @@
                          scrollRows="25" scrollable="true" liveScroll="true"   scrollHeight="500"                                         
                          filteredValue="#{componentTypeMananger.filteredObjects}"
                          emptyMessage="No component types found!" 
-                         rowKey="#{item.componentTypeId}}" >
+                         rowKey="#{item.id}}" >
                 <f:facet name="header">
                     <h:outputText value="Component Types"/>
                 </f:facet> 
@@ -29,7 +29,7 @@
                  <p:column  headerText="Parent Type">
                    <h:link outcome="details" target="_blank" rendered="#{not empty item.superComponentType}">                
                         <h:outputText value="#{item.superComponentType.name}" styleClass="link"/>
-                        <f:param name="id" value="#{item.superComponentType.componentTypeId}"/>
+                        <f:param name="id" value="#{item.superComponentType.id}"/>
                     </h:link>                  
                 </p:column>               
             </p:dataTable>

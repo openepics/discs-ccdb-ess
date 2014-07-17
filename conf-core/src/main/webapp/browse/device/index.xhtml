@@ -14,14 +14,14 @@
                          scrollRows="25" scrollable="true" liveScroll="true"   scrollHeight="500"
                          filteredValue="#{deviceManager.filteredObjects}"
                          emptyMessage="No devices found!" 
-                         rowKey="#{dev.deviceId}}" >
+                         rowKey="#{dev.id}}" >
                 <f:facet name="header">
                     <h:outputText value="Devices"/>
                 </f:facet> 
                 <p:column id="id" headerText="ID" sortBy="#{dev.serialNumber}" filterBy="#{dev.serialNumber}">
                     <h:link outcome="details" target="_blank" >
                         <h:outputText value="#{dev.serialNumber}" styleClass="link"/>
-                        <f:param name="id" value="#{dev.deviceId}"/>
+                        <f:param name="id" value="#{dev.id}"/>
                     </h:link>
                 </p:column>
                 <p:column id="desc" headerText="Description" filterBy="#{dev.description}" filterMatchMode="contains">

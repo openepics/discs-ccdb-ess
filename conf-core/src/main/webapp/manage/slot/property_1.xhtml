@@ -23,7 +23,7 @@
             <p:dataTable id="propertyTable" var="entProp" value="#{slotManager.selectedProperties}" 
                          scrollRows="25" scrollable="true" liveScroll="true"   scrollHeight="200"                               
                          emptyMessage="No properties."  editMode="row" editable="true" 
-                         rowKey="#{entProp.slotPropId}}"  >                
+                         rowKey="#{entProp.id}"  >                
 
                 <p:ajax event="rowEdit" listener="#{slotManager.onPropertySave}" update="propertyTable  :messages" />                  
                 <p:ajax event="rowEditInit" listener="#{slotManager.onPropertyInit}" update=":messages" />                  

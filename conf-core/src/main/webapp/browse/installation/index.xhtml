@@ -13,12 +13,12 @@
                          scrollRows="25" scrollable="true" liveScroll="true"   scrollHeight="500"                                         
                          filteredValue="#{installationManager.filteredObjects}"
                          emptyMessage="No installation records found!" 
-                         rowKey="#{item.installationRecordId}}" >
+                         rowKey="#{item.id}}" >
                  <f:facet name="header">
                     <h:outputText value="Installation Records"/>
                 </f:facet> 
-                <p:column id="desc" headerText="ID" filterBy="#{item.installationRecordId}" filterMatchMode="contains">
-                    <h:outputText value="#{item.installationRecordId}"/>
+                <p:column id="desc" headerText="ID" filterBy="#{item.id}" filterMatchMode="contains">
+                    <h:outputText value="#{item.id}"/>
                 </p:column>              
                 <p:column  headerText="Date" sortBy="#{item.installDate}">
                     <h:outputText value="#{item.installDate}">
@@ -31,7 +31,7 @@
                 <p:column  headerText="Device" sortBy="#{item.device.serialNumber}">
                      <h:link value="/browse/device/details" >
                         <h:outputText value="#{item.device.serialNumber}"/>
-                        <f:param name="id" value="#{item.device.deviceId}"/>.
+                        <f:param name="id" value="#{item.device.id}"/>.
                     </h:link>                   
                 </p:column> 
                 <p:column  headerText="Notes" sortBy="#{item.notes}">

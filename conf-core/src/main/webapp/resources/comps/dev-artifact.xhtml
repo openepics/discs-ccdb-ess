@@ -19,7 +19,7 @@
                 <p:dataTable  var="art" value="#{cc.attrs.selectedComponent.deviceArtifactList}" 
                               scrollRows="25" scrollable="true" liveScroll="true"   scrollHeight="100"                               
                               emptyMessage="No artifacts found"  editMode="row" editable="false"                          
-                              rowKey="#{art.artifactId}}"  rendered="#{cc.attrs.selectedComponent.deviceArtifactList ne null}">                
+                              rowKey="#{art.id}"  rendered="#{cc.attrs.selectedComponent.deviceArtifactList ne null}">                
 
                     <p:column  headerText="Name">                   
                         <h:outputLink value="#{art.uri}"  styleClass="ui-icon ui-icon-extlink" 
@@ -49,7 +49,7 @@
                 <p:dataTable  var="art" value="#{cc.attrs.selectedComponent.componentType.comptypeArtifactList}" 
                               scrollRows="25" scrollable="true" liveScroll="true"   scrollHeight="100"                               
                               emptyMessage="No artifacts found"  editMode="row" editable="false"                          
-                              rowKey="#{art.artifactId}}"  rendered="#{cc.attrs.selectedComponent.componentType.comptypeArtifactList ne null}">                
+                              rowKey="#{art.id}"  rendered="#{cc.attrs.selectedComponent.componentType.comptypeArtifactList ne null}">                
 
                     <f:facet name="header">
                         Component Type Artifacts

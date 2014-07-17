@@ -24,7 +24,7 @@
             <p:dataTable id="propertyTable" var="ctp" value="#{componentTypeMananger.selectedCompProps}" 
                          scrollRows="25" scrollable="true" liveScroll="true"   scrollHeight="200"                               
                          emptyMessage="No properties."  editMode="row" editable="true" 
-                         rowKey="#{ctp.ctypePropId}}"  >                
+                         rowKey="#{ctp.id}"  >                
 
                 <p:ajax event="rowEdit" listener="#{componentTypeMananger.onPropertySave}" update="propertyTable  :messages" />                  
                 <p:ajax event="rowEditInit" listener="#{componentTypeMananger.onPropertyInit}" update=":messages" />                  

@@ -147,11 +147,12 @@ public class DeviceManager implements Serializable {
         logger.info("Saving device");
 
         try {
-            deviceEJB.saveDevice(token, inputObject);
-
             if (selectedOp == 'a') {
+                deviceEJB.addDevice(inputObject);
                 selectedObject = inputObject;
                 objects.add(selectedObject);
+            } else {
+                deviceEJB.saveDevice(token, inputObject);
             }
             // tell the client if the operation was a success so that it can hide
             RequestContext.getCurrentInstance().addCallbackParam("success", true);

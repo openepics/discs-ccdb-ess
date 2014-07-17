@@ -22,7 +22,7 @@
             <p:dataTable id="asmDevTable" var="pslot" value="#{deviceManager.asmDevices}" 
                          scrollRows="25" scrollable="true" liveScroll="true"   scrollHeight="200"                               
                          emptyMessage="No assembly slots found"                         
-                         rowKey="#{pslot.deviceId}}"  >              
+                         rowKey="#{pslot.id}"  >              
 
                 <p:column id="ops" width="10%">
                     <p:commandLink  styleClass="ui-icon ui-icon-trash"  style="display:inline-block;"

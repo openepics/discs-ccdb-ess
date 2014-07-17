@@ -72,6 +72,7 @@ public class ComponentType extends ConfigurationEntity {
     private List<ComptypeArtifact> comptypeArtifactList;
 
     public ComponentType() {
+        this.modifiedAt = new Date();
     }
 
     public ComponentType(String name, String modifiedBy) {

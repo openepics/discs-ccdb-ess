@@ -27,7 +27,7 @@
                 <p:column id="name" headerText="Name" sortBy="#{ctasm.childType.name}" >                   
                     <h:link outcome="details" target="_blank" >
                         <h:outputText value="#{ctasm.childType.name}" styleClass="link"/>
-                        <f:param name="id" value="#{ctasm.childType.componentTypeId}"/>
+                        <f:param name="id" value="#{ctasm.childType.id}"/>
                     </h:link>
                 </p:column>
                 <p:column id="desc" headerText="Description"  >

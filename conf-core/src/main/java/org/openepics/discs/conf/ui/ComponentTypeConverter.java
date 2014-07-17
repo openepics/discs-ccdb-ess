@@ -44,7 +44,7 @@ public class ComponentTypeConverter implements Converter {
             logger.log(Level.INFO, "CompType converter: empty Component Type id");
             return null;
         } else {
-            ctype = comptypeEJB.findComponentType(Integer.parseInt(value));
+            ctype = comptypeEJB.findComponentType(Long.parseLong(value));
             return ctype;
         }
     }

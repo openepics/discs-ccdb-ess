@@ -30,7 +30,7 @@ public class DeviceDetail implements Serializable {
     private DeviceEJB deviceEJB;
     private static final Logger logger = Logger.getLogger(DeviceDetail.class.getCanonicalName());
     private Device selectedObject;
-    private int id = 0; // given identifier
+    private long id = 0; // given identifier
 
     public DeviceDetail() {
     }
@@ -49,11 +49,11 @@ public class DeviceDetail implements Serializable {
         }
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 

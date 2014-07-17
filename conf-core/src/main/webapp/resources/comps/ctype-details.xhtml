@@ -29,7 +29,7 @@
                     <p:column>
                         <h:link outcome="details" target="_blank"  rendered="#{cc.attrs.componentType.superComponentType ne null}">                       
                             <h:outputText value="#{cc.attrs.componentType.superComponentType.name}" styleClass="link"/>
-                            <f:param name="id" value="#{cc.attrs.componentType.superComponentType.componentTypeId}"/>
+                            <f:param name="id" value="#{cc.attrs.componentType.superComponentType.id}"/>
                         </h:link>
                     </p:column>                               
                 </p:row>                 

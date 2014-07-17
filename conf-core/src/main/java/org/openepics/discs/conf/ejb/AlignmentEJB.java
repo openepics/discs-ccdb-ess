@@ -58,7 +58,7 @@ import org.openepics.discs.conf.ui.LoginManager;
         return comps;
     }
 
-    public AlignmentRecord findAlignmentRec(int id) {
+    public AlignmentRecord findAlignmentRec(Long id) {
         return em.find(AlignmentRecord.class, id);
     }
 

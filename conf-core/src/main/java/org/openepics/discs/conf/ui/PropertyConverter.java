@@ -41,7 +41,7 @@ public class PropertyConverter implements Converter {
             logger.log(Level.INFO, "PropertyConverter: empty property id");
             return null;
         } else {
-            prop = configurationEJB.findProperty(Integer.parseInt(value));
+            prop = configurationEJB.findProperty(Long.parseLong(value));
             return prop;
         }
     }

@@ -30,7 +30,7 @@
                              selectionMode="single" selection="#{propertyManager.selectedObject}" 
                              filteredValue="#{propertyManager.filteredObjects}"
                              emptyMessage="No records found!" 
-                             rowKey="#{obj.propertyId}}" >
+                             rowKey="#{obj.id}" >
 
                     <p:ajax event="rowSelect" listener="#{propertyManager.onRowSelect}" update=":propsform:managePanel :propsform:messages" />
 

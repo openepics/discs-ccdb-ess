@@ -25,7 +25,7 @@
                      selectionMode="single" selection="#{deviceManager.selectedObject}" 
                      filteredValue="#{deviceManager.filteredObjects}"
                      emptyMessage="No records found!" 
-                     rowKey="#{item.deviceId}}" >
+                     rowKey="#{item.id}" >
 
             <f:facet name="footer">
                 <p:commandButton id="addBtn" value="Add" icon="ui-icon-plus" actionListener="#{deviceManager.onDeviceAdd}"
@@ -33,7 +33,7 @@
             </f:facet>
             <p:ajax event="rowSelect" listener="#{deviceManager.onDeviceSelect}" update=":detailsPanel :messages" />
 
-            <p:column id="id" headerText="Name" sortBy="#{item.serialNumber}" filterBy="#{item.serialNumber}">
+            <p:column id="id" headerText="Serial Number" sortBy="#{item.serialNumber}" filterBy="#{item.serialNumber}">
                 <h:outputText value="#{item.serialNumber}"/>
             </p:column>
             <p:column id="desc" headerText="Description" filterBy="#{item.description}" filterMatchMode="contains">

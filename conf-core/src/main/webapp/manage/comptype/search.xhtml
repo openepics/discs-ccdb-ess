@@ -25,7 +25,7 @@
                      selectionMode="single" selection="#{componentTypeMananger.selectedObject}" 
                      filteredValue="#{componentTypeMananger.filteredObjects}"
                      emptyMessage="No records found!" 
-                     rowKey="#{ctype.componentTypeId}}" >
+                     rowKey="#{ctype.id}" >
 
             <p:ajax event="rowSelect" listener="#{componentTypeMananger.onCompTypeSelect}" update=":detailsPanel :messages" />
 
