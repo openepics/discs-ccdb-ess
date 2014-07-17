@@ -442,9 +442,9 @@ public class SlotManager implements Serializable {
 
     public void onPartSlotSave(ActionEvent event) {
         try {
-            inputAsmSlot.setAsmPosition(inputAsmPosition);
-            inputAsmSlot.setAsmComment(inputAsmComment);
-            inputAsmSlot.setAsmSlot(selectedObject);
+            inputAsmSlot.setAssemblyPosition(inputAsmPosition);
+            inputAsmSlot.setAssemblyComment(inputAsmComment);
+            inputAsmSlot.setAssemblySlot(selectedObject);
             slotEJB.saveLayoutSlot(inputAsmSlot);
             selectedObject.getSlotList().add(inputAsmSlot);
             slotEJB.saveLayoutSlot(selectedObject);
@@ -464,9 +464,9 @@ public class SlotManager implements Serializable {
                 return;
             }
 
-            slot.setAsmPosition(null);
-            slot.setAsmComment(null);
-            slot.setAsmSlot(null);
+            slot.setAssemblyPosition(null);
+            slot.setAssemblyComment(null);
+            slot.setAssemblySlot(null);
             slotEJB.saveLayoutSlot(slot);
             selectedObject.getSlotList().remove(slot);
             slotEJB.saveLayoutSlot(selectedObject);

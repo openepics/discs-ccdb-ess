@@ -31,15 +31,15 @@
                           filterBy="#{dev.componentType.name}" filterMatchMode="contains">
                     <h:outputText value="#{dev.componentType.name}"/>
                 </p:column>
-                <p:column headerText="Part Of" sortBy="#{dev.asmParent.serialNumber}" 
-                          filterBy="#{dev.asmParent.serialNumber}" filterMatchMode="contains">
-                    <h:outputText value="#{dev.asmParent.serialNumber}"/>
+                <p:column headerText="Part Of" sortBy="#{dev.assemblyParent.serialNumber}" 
+                          filterBy="#{dev.assemblyParent.serialNumber}" filterMatchMode="contains">
+                    <h:outputText value="#{dev.assemblyParent.serialNumber}"/>
                 </p:column>
                 <p:column  headerText="Asm Position" >
-                    <h:outputText value="#{dev.asmPosition}"/>
+                    <h:outputText value="#{dev.assemblyPosition}"/>
                 </p:column>
                 <p:column  headerText="Asm Comment" >
-                    <h:outputText value="#{dev.asmDescription}"/>
+                    <h:outputText value="#{dev.assemblyDescription}"/>
                 </p:column>
 
                 <p:column id="moddate" headerText="Date Modified" rendered="false" >
