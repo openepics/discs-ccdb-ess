@@ -22,7 +22,7 @@ public class CCDBPackager {
 
 	    final File[] libraries = Maven.resolver().loadPomFromFile("pom.xml").importRuntimeDependencies().resolve().withTransitivity().asFile();
 	    final BeansDescriptor beans = Descriptors.create(BeansDescriptor.class).getOrCreateAlternatives().clazz("org.openepics.discs.conf.util.AppPropertiesJBoss").up();
-        WebArchive war = ShrinkWrap.create(WebArchive.class, "confmgr.war")
+        WebArchive war = ShrinkWrap.create(WebArchive.class, "confmgr_test.war")
             .addAsLibraries(libraries)
             .addPackages(true, "org.openepics.discs.conf.ent", "org.openepics.discs.conf.ejb", "org.openepics.discs.conf.ui", "org.openepics.discs.conf.dl", "org.openepics.discs.conf.util")
             .addAsResource("test-persistence.xml", "META-INF/persistence.xml")
