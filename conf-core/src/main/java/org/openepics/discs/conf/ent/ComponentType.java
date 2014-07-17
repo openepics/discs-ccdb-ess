@@ -2,12 +2,15 @@ package org.openepics.discs.conf.ent;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -26,13 +29,10 @@ import javax.xml.bind.annotation.XmlTransient;
 @Table(name = "component_type")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "ComponentType.findAll", query = "SELECT c FROM ComponentType c"),
-    @NamedQuery(name = "ComponentType.findByComponentTypeId", query = "SELECT c FROM ComponentType c WHERE c.id = :id"),
-    @NamedQuery(name = "ComponentType.findByName", query = "SELECT c FROM ComponentType c WHERE c.name = :name"),
-    @NamedQuery(name = "ComponentType.findByDescription", query = "SELECT c FROM ComponentType c WHERE c.description = :description"),
-    @NamedQuery(name = "ComponentType.findByModifiedAt", query = "SELECT c FROM ComponentType c WHERE c.modifiedAt = :modifiedAt"),
-    @NamedQuery(name = "ComponentType.findByModifiedBy", query = "SELECT c FROM ComponentType c WHERE c.modifiedBy = :modifiedBy"),
-    @NamedQuery(name = "ComponentType.findByVersion", query = "SELECT c FROM ComponentType c WHERE c.version = :version")})
+        @NamedQuery(name = "ComponentType.findAll", query = "SELECT c FROM ComponentType c"),
+        @NamedQuery(name = "ComponentType.findByComponentTypeId", query = "SELECT c FROM ComponentType c WHERE c.id = :id"),
+        @NamedQuery(name = "ComponentType.findByName", query = "SELECT c FROM ComponentType c WHERE c.name = :name"),
+        @NamedQuery(name = "ComponentType.findByModifiedBy", query = "SELECT c FROM ComponentType c WHERE c.modifiedBy = :modifiedBy") })
 public class ComponentType extends ConfigurationEntity {
     private static final long serialVersionUID = 1L;
 
@@ -71,6 +71,11 @@ public class ComponentType extends ConfigurationEntity {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentType")
     private List<ComptypeArtifact> comptypeArtifactList;
 
+    @ManyToMany
+    @JoinTable(name = "comptype_tags",
+        joinColumns = { @JoinColumn(name = "comptype_id") }, inverseJoinColumns = { @JoinColumn(name = "tag_id") })
+    private Set<Tag> tags;
+
     public ComponentType() {
         this.modifiedAt = new Date();
     }
@@ -81,96 +86,48 @@ public class ComponentType extends ConfigurationEntity {
         this.modifiedAt = new Date();
     }
 
-    public String getName() {
-        return name;
-    }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
 
     @XmlTransient
-    public List<ComptypeProperty> getComptypePropertyList() {
-        return comptypePropertyList;
-    }
-
-    public void setComptypePropertyList(List<ComptypeProperty> comptypePropertyList) {
-        this.comptypePropertyList = comptypePropertyList;
-    }
+    public List<ComptypeProperty> getComptypePropertyList() { return comptypePropertyList; }
+    public void setComptypePropertyList( List<ComptypeProperty> comptypePropertyList) { this.comptypePropertyList = comptypePropertyList; }
 
     @XmlTransient
-    public List<Slot> getSlotList() {
-        return slotList;
-    }
-
-    public void setSlotList(List<Slot> slotList) {
-        this.slotList = slotList;
-    }
+    public List<Slot> getSlotList() { return slotList; }
+    public void setSlotList(List<Slot> slotList) { this.slotList = slotList; }
 
     @XmlTransient
-    public List<ComptypeAsm> getComptypeAsmList() {
-        return comptypeAsmList;
-    }
-
-    public void setComptypeAsmList(List<ComptypeAsm> comptypeAsmList) {
-        this.comptypeAsmList = comptypeAsmList;
-    }
+    public List<ComptypeAsm> getComptypeAsmList() { return comptypeAsmList; }
+    public void setComptypeAsmList(List<ComptypeAsm> comptypeAsmList) { this.comptypeAsmList = comptypeAsmList; }
 
     @XmlTransient
-    public List<ComptypeAsm> getComptypeAsmList1() {
-        return comptypeAsmList1;
-    }
-
-    public void setComptypeAsmList1(List<ComptypeAsm> comptypeAsmList1) {
-        this.comptypeAsmList1 = comptypeAsmList1;
-    }
+    public List<ComptypeAsm> getComptypeAsmList1() { return comptypeAsmList1; }
+    public void setComptypeAsmList1(List<ComptypeAsm> comptypeAsmList1) { this.comptypeAsmList1 = comptypeAsmList1; }
 
     @XmlTransient
-    public List<ComponentType> getComponentTypeList() {
-        return componentTypeList;
-    }
+    public List<ComponentType> getComponentTypeList() { return componentTypeList; }
+    public void setComponentTypeList(List<ComponentType> componentTypeList) { this.componentTypeList = componentTypeList; }
 
-    public void setComponentTypeList(List<ComponentType> componentTypeList) {
-        this.componentTypeList = componentTypeList;
-    }
-
-    public ComponentType getSuperComponentType() {
-        return superComponentType;
-    }
-
-    public void setSuperComponentType(ComponentType superComponentType) {
-        this.superComponentType = superComponentType;
-    }
+    public ComponentType getSuperComponentType() { return superComponentType; }
+    public void setSuperComponentType(ComponentType superComponentType) { this.superComponentType = superComponentType; }
 
     @XmlTransient
-    public List<Device> getDeviceList() {
-        return deviceList;
-    }
-
-    public void setDeviceList(List<Device> deviceList) {
-        this.deviceList = deviceList;
-    }
+    public List<Device> getDeviceList() { return deviceList; }
+    public void setDeviceList(List<Device> deviceList) { this.deviceList = deviceList; }
 
     @XmlTransient
-    public List<ComptypeArtifact> getComptypeArtifactList() {
-        return comptypeArtifactList;
-    }
+    public List<ComptypeArtifact> getComptypeArtifactList() { return comptypeArtifactList; }
+    public void setComptypeArtifactList(List<ComptypeArtifact> comptypeArtifactList) { this.comptypeArtifactList = comptypeArtifactList; }
 
-    public void setComptypeArtifactList(List<ComptypeArtifact> comptypeArtifactList) {
-        this.comptypeArtifactList = comptypeArtifactList;
-    }
+    @XmlTransient
+    public Set<Tag> getTags() { return tags; }
+    public void setTags(Set<Tag> tags) { this.tags = tags; }
 
     @Override
-    public String toString() {
-        return "ComponentType[ componentTypeId=" + id + " ]";
-    }
+    public String toString() { return "ComponentType[ componentTypeId=" + id + " ]"; }
 
 }

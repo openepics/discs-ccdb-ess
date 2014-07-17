@@ -45,15 +45,15 @@
                       filterBy="#{item.componentType.name}" filterMatchMode="contains">
                 <h:outputText value="#{item.componentType.name}"/>
             </p:column>  
-            <p:column headerText="Part Of" sortBy="#{item.asmSlot.name}" 
-                      filterBy="#{item.asmSlot.name}">
-                <h:outputText value="#{item.asmSlot.name}"/>
+            <p:column headerText="Part Of" sortBy="#{item.assemblySlot.name}" 
+                      filterBy="#{item.assemblySlot.name}">
+                <h:outputText value="#{item.assemblySlot.name}"/>
             </p:column>
             <p:column  headerText="Part Position" >
-                <h:outputText value="#{item.asmPosition}"/>
+                <h:outputText value="#{item.assemblyPosition}"/>
             </p:column>
             <p:column  headerText="Asm Comment" >
-                <h:outputText value="#{item.asmComment}"/>
+                <h:outputText value="#{item.assemblyComment}"/>
             </p:column>
             <p:column headerText="Date Modified" rendered="false" >
                 <h:outputText value="#{item.modifiedAt}">
