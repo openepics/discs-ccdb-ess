@@ -2,12 +2,15 @@ package org.openepics.discs.conf.ent;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -89,6 +92,11 @@ public class AlignmentRecord extends ConfigurationEntity {
     @ManyToOne(optional = false)
     private Device device;
 
+    @ManyToMany
+    @JoinTable(name = "alignment_tags",
+        joinColumns = { @JoinColumn(name = "alignment_id") }, inverseJoinColumns = { @JoinColumn(name = "tag_id") })
+    private Set<Tag> tags;
+
     protected AlignmentRecord() {
     }
 
@@ -99,107 +107,49 @@ public class AlignmentRecord extends ConfigurationEntity {
         this.modifiedAt = new Date();
     }
 
-    public String getRecordNumber() {
-        return recordNumber;
-    }
+    public String getRecordNumber() { return recordNumber; }
+    public void setRecordNumber(String recordNumber) { this.recordNumber = recordNumber; }
 
-    public void setRecordNumber(String recordNumber) {
-        this.recordNumber = recordNumber;
-    }
+    public Date getAlignmentDate() { return alignmentDate; }
+    public void setAlignmentDate(Date alignmentDate) { this.alignmentDate = alignmentDate; }
 
-    public Date getAlignmentDate() {
-        return alignmentDate;
-    }
+    public Double getGlobalX() { return globalX; }
+    public void setGlobalX(Double globalX) { this.globalX = globalX; }
 
-    public void setAlignmentDate(Date alignmentDate) {
-        this.alignmentDate = alignmentDate;
-    }
+    public Double getGlobalY() { return globalY; }
+    public void setGlobalY(Double globalY) { this.globalY = globalY; }
 
-    public Double getGlobalX() {
-        return globalX;
-    }
+    public Double getGlobalZ() { return globalZ; }
+    public void setGlobalZ(Double globalZ) { this.globalZ = globalZ; }
 
-    public void setGlobalX(Double globalX) {
-        this.globalX = globalX;
-    }
+    public Double getGlobalPitch() { return globalPitch; }
+    public void setGlobalPitch(Double globalPitch) { this.globalPitch = globalPitch; }
 
-    public Double getGlobalY() {
-        return globalY;
-    }
+    public Double getGlobalYaw() { return globalYaw; }
+    public void setGlobalYaw(Double globalYaw) { this.globalYaw = globalYaw; }
 
-    public void setGlobalY(Double globalY) {
-        this.globalY = globalY;
-    }
-
-    public Double getGlobalZ() {
-        return globalZ;
-    }
-
-    public void setGlobalZ(Double globalZ) {
-        this.globalZ = globalZ;
-    }
-
-    public Double getGlobalPitch() {
-        return globalPitch;
-    }
-
-    public void setGlobalPitch(Double globalPitch) {
-        this.globalPitch = globalPitch;
-    }
-
-    public Double getGlobalYaw() {
-        return globalYaw;
-    }
-
-    public void setGlobalYaw(Double globalYaw) {
-        this.globalYaw = globalYaw;
-    }
-
-    public Double getGlobalRoll() {
-        return globalRoll;
-    }
-
-    public void setGlobalRoll(Double globalRoll) {
-        this.globalRoll = globalRoll;
-    }
+    public Double getGlobalRoll() { return globalRoll; }
+    public void setGlobalRoll(Double globalRoll) { this.globalRoll = globalRoll; }
 
     @XmlTransient
-    public List<AlignmentArtifact> getAlignmentArtifactList() {
-        return alignmentArtifactList;
-    }
-
-    public void setAlignmentArtifactList(List<AlignmentArtifact> alignmentArtifactList) {
-        this.alignmentArtifactList = alignmentArtifactList;
-    }
+    public List<AlignmentArtifact> getAlignmentArtifactList() { return alignmentArtifactList; }
+    public void setAlignmentArtifactList(List<AlignmentArtifact> alignmentArtifactList) { this.alignmentArtifactList = alignmentArtifactList; }
 
     @XmlTransient
-    public List<AlignmentProperty> getAlignmentPropertyList() {
-        return alignmentPropertyList;
-    }
+    public List<AlignmentProperty> getAlignmentPropertyList() { return alignmentPropertyList; }
+    public void setAlignmentPropertyList(List<AlignmentProperty> alignmentPropertyList) { this.alignmentPropertyList = alignmentPropertyList; }
 
-    public void setAlignmentPropertyList(List<AlignmentProperty> alignmentPropertyList) {
-        this.alignmentPropertyList = alignmentPropertyList;
-    }
+    public Slot getSlot() { return slot; }
+    public void setSlot(Slot slot) { this.slot = slot; }
 
-    public Slot getSlot() {
-        return slot;
-    }
+    public Device getDevice() { return device; }
+    public void setDevice(Device device) { this.device = device; }
 
-    public void setSlot(Slot slot) {
-        this.slot = slot;
-    }
-
-    public Device getDevice() {
-        return device;
-    }
-
-    public void setDevice(Device device) {
-        this.device = device;
-    }
+    @XmlTransient
+    public Set<Tag> getTags() { return tags; }
+    public void setTags(Set<Tag> tags) { this.tags = tags; }
 
     @Override
-    public String toString() {
-        return "AlignmentRecord[ alignmentRecordId=" + id + " ]";
-    }
+    public String toString() { return "AlignmentRecord[ alignmentRecordId=" + id + " ]"; }
 
 }
