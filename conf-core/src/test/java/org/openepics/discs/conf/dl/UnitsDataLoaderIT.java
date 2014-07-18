@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
+
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -15,9 +16,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
+import org.openepics.discs.conf.dl.common.DataLoaderResult.NotAuthorizedFailureDataLoaderResult;
 import org.openepics.discs.conf.dl.common.DataLoaderResult.RowFormatFailureDataLoaderResult;
-import org.openepics.discs.conf.ejb.ConfigurationEJB;
-import org.openepics.discs.conf.ui.LoginManager;
 
 import com.google.common.collect.ImmutableList;
 
@@ -31,8 +31,6 @@ import com.google.common.collect.ImmutableList;
 public class UnitsDataLoaderIT {
 
     @Inject @UnitLoaderQualifier private DataLoader unitsDataLoader;
-    @Inject private ConfigurationEJB confEJB;
-    @Inject private LoginManager loginManager;
     private List<List<String>> inputRows;
 
     @Deployment
@@ -68,18 +66,19 @@ public class UnitsDataLoaderIT {
      */
     @Test
     public void headerMissingFieldsTest() {
-        inputRows.add(ImmutableList.of("HEADER"));
+        inputRows.add(ImmutableList.of("1", "HEADER"));
 
         DataLoaderResult dataLoaderResult = unitsDataLoader.loadDataToDatabase(inputRows);
         assertThat(dataLoaderResult, instanceOf(DataLoaderResult.RowFormatFailureDataLoaderResult.class));
         assertEquals(((RowFormatFailureDataLoaderResult)dataLoaderResult).getReason(), DataLoaderResult.RowFormatFailureReason.HEADER_FIELD_MISSING);
+        assertEquals("1", ((RowFormatFailureDataLoaderResult)dataLoaderResult).getRowNumber());
 
         inputRows.clear();
 
-        inputRows.add(ImmutableList.of("HEADER", "NAME", "SYMBOL", "EXPRESSION", "QUANTITY", "DESCRIPTION"));
-
+        inputRows.add(ImmutableList.of("1", "HEADER", "NAME", "SYMBOL", "EXPRESSION", "QUANTITY", "DESCRIPTION"));
         dataLoaderResult = unitsDataLoader.loadDataToDatabase(inputRows);
         assertThat(dataLoaderResult, instanceOf(DataLoaderResult.RowFormatFailureDataLoaderResult.class));
         assertEquals(((RowFormatFailureDataLoaderResult)dataLoaderResult).getReason(), DataLoaderResult.RowFormatFailureReason.HEADER_FIELD_MISSING);
+        assertEquals("1", ((RowFormatFailureDataLoaderResult)dataLoaderResult).getRowNumber());
     }
 }
