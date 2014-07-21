@@ -9,9 +9,9 @@
 
     <ui:define name="content">
         <h:form id="searchForm"  prependId="false"> 
-            <p:dataTable id="searchTable" var="item" value="#{componentTypeMananger.objects}" 
+            <p:dataTable id="searchTable" var="item" value="#{componentTypeManager.objects}" 
                          scrollRows="25" scrollable="true" liveScroll="true"   scrollHeight="500"                                         
-                         filteredValue="#{componentTypeMananger.filteredObjects}"
+                         filteredValue="#{componentTypeManager.filteredObjects}"
                          emptyMessage="No component types found!" 
                          rowKey="#{item.id}}" >
                 <f:facet name="header">

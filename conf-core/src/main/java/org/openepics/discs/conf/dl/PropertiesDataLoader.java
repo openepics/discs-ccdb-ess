@@ -79,7 +79,7 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
 
                     final String command = As.notNull(row.get(1).toUpperCase());
                     final @Nullable String name = row.get(nameIndex);
-                    final @Nullable String unit = row.get(unitIndex);
+                    final @Nullable String unit = unitIndex == -1 ? null : row.get(unitIndex);
                     final @Nullable String dataType = row.get(dataTypeIndex);
                     final @Nullable String description = row.get(descriptionIndex);
                     final @Nullable String association = row.get(associationIndex);

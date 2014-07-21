@@ -99,7 +99,7 @@
                                           var="ct" converter="#{componentTypeConverter}" 
                                           filter="true" filterMatchMode="startsWith" required="true">  
                             <f:selectItem itemLabel="Select One"  itemValue="" />
-                            <f:selectItems value="#{componentTypeMananger.objects}" var="ctype" itemLabel="#{ctype.name}" itemValue="#{ctype}"/>
+                            <f:selectItems value="#{componentTypeManager.objects}" var="ctype" itemLabel="#{ctype.name}" itemValue="#{ctype}"/>
                             <p:column>  
                                 #{ct.name}
                             </p:column>                                                

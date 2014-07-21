@@ -5,6 +5,8 @@
  */
 package org.openepics.discs.conf.ui;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -20,11 +22,19 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.commons.io.FilenameUtils;
+import org.openepics.discs.conf.dl.ComponentTypesLoaderQualifier;
+import org.openepics.discs.conf.dl.SlotsLoaderQualifier;
+import org.openepics.discs.conf.dl.common.DataLoader;
+import org.openepics.discs.conf.ejb.AuthEJB;
 import org.openepics.discs.conf.ejb.SlotEJB;
+import org.openepics.discs.conf.ent.EntityType;
+import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotArtifact;
 import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotProperty;
+import org.openepics.discs.conf.ui.common.DataLoaderHandler;
 import org.openepics.discs.conf.util.BlobStore;
 import org.openepics.discs.conf.util.Utility;
 import org.primefaces.context.RequestContext;
@@ -34,6 +44,8 @@ import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 import org.primefaces.model.UploadedFile;
 
+import com.google.common.io.ByteStreams;
+
 /**
  *
  * @author vuppala
@@ -42,12 +54,13 @@ import org.primefaces.model.UploadedFile;
 @ViewScoped
 public class SlotManager implements Serializable {
 
-    @EJB
-    private SlotEJB slotEJB;
+    @EJB private SlotEJB slotEJB;
     private static final Logger logger = Logger.getLogger(SlotManager.class.getCanonicalName());
-    @Inject
-    private BlobStore blobStore;
+    @Inject private BlobStore blobStore;
     @Inject private LoginManager loginManager;
+    @Inject private DataLoaderHandler dataLoaderHandler;
+    @Inject @SlotsLoaderQualifier private DataLoader slotsDataLoader;
+    @Inject private AuthEJB authEJB;
 
     private List<Slot> objects;
     private List<Slot> sortedObjects;
@@ -85,6 +98,9 @@ public class SlotManager implements Serializable {
     private Slot inputAsmSlot;
     private String inputAsmComment;
     private String inputAsmPosition;
+
+    private byte[] importData;
+    private String importFileName;
 
     /**
      * Creates a new instance of SlotManager
@@ -536,6 +552,35 @@ public class SlotManager implements Serializable {
         }
 
         return file;
+    }
+
+
+    public boolean canImportSlots() {
+        return authEJB.userHasAuth(loginManager.getUserid(), EntityType.SLOT, EntityTypeOperation.CREATE) ||
+                authEJB.userHasAuth(loginManager.getUserid(), EntityType.SLOT, EntityTypeOperation.DELETE) ||
+                authEJB.userHasAuth(loginManager.getUserid(), EntityType.SLOT, EntityTypeOperation.UPDATE) ||
+                authEJB.userHasAuth(loginManager.getUserid(), EntityType.SLOT, EntityTypeOperation.RENAME);
+    }
+
+    public String getImportFileName() { return importFileName; }
+
+    public void importSlots() {
+        final InputStream inputStream = new ByteArrayInputStream(importData);
+        dataLoaderHandler.loadData(inputStream, slotsDataLoader);
+    }
+
+    public void prepareImportPopup() {
+        importData = null;
+        importFileName = null;
+    }
+
+    public void handleImportFileUpload(FileUploadEvent event) {
+        try (InputStream inputStream = event.getFile().getInputstream()) {
+            this.importData = ByteStreams.toByteArray(inputStream);
+            this.importFileName = FilenameUtils.getName(event.getFile().getFileName());
+        } catch (IOException e) {
+            throw new RuntimeException();
+        }
     }
 
     // --------------------- Setters and getters --------------------

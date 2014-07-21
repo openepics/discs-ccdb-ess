@@ -7,19 +7,19 @@
     xmlns:h="http://java.sun.com/jsf/html">              
 
     <ui:remove> -------------------------- Search/Select ------------------- </ui:remove>
-    <h:form id="propertyForm" prependId="false" rendered="#{componentTypeMananger.selectedObject ne null}">
+    <h:form id="propertyForm" prependId="false" rendered="#{componentTypeManager.selectedObject ne null}">
         <p:panel toggleable="true" id="propertytPanel" >
             <f:facet name="header">                           
                 <h:outputText value="Properties : " />
                 <p:commandButton  icon="ui-icon-plus"  update=":propertyInputForm :messages" 
-                                  process="@this" actionListener="#{componentTypeMananger.onPropertyAdd}" 
+                                  process="@this" actionListener="#{componentTypeManager.onPropertyAdd}" 
                                   oncomplete="PF('propertyInputDlg').show()" rendered="false"/>   
                 <p:commandLink  styleClass="ui-icon ui-icon-circle-plus"  style="display:inline-block;" 
                                 update=":propertyInputForm :messages"  title="Add"
-                                process="@this" actionListener="#{componentTypeMananger.onPropertyAdd}" 
+                                process="@this" actionListener="#{componentTypeManager.onPropertyAdd}" 
                                 oncomplete="PF('propertyInputDlg').show()"/> 
             </f:facet>
-            <p:dataTable id="propertyTable" var="cprop" value="#{componentTypeMananger.selectedProperties}" 
+            <p:dataTable id="propertyTable" var="cprop" value="#{componentTypeManager.selectedProperties}" 
                          scrollRows="25" scrollable="true" liveScroll="true"   scrollHeight="200"                               
                          emptyMessage="No artifacts found"  editMode="row" editable="false"                          
                          rowKey="#{cprop.id}"  >                
@@ -27,10 +27,10 @@
                 <p:column id="ops" width="10%">
                     <p:commandLink  styleClass="ui-icon ui-icon-trash"  style="display:inline-block;"
                                     update="propertyTable  :messages"  title="Delete"
-                                    process="@this" action="#{componentTypeMananger.onPropertyDelete(cprop)}" />                   
+                                    process="@this" action="#{componentTypeManager.onPropertyDelete(cprop)}" />                   
                     <p:commandLink styleClass="ui-icon ui-icon-pencil"  style="display:inline-block;"
                                    update=":propertyInputForm :messages" title="Edit"
-                                   process="@this"  action="#{componentTypeMananger.onPropertyEdit(cprop)}"
+                                   process="@this"  action="#{componentTypeManager.onPropertyEdit(cprop)}"
                                    oncomplete="PF('propertyInputDlg').show()" />
                 </p:column>
                 <p:column  headerText="Name">                   
@@ -42,8 +42,8 @@
                     <p:commandLink id="downloadLink" value="dl" ajax="false"                                  
                                    styleClass="ui-icon ui-icon-arrowthickstop-1-s" style="display:inline-block;"
                                    rendered="#{cprop.inRepository}">   
-                        <f:setPropertyActionListener target="#{componentTypeMananger.selectedProperty}" value="#{cprop}" />
-                        <p:fileDownload value="#{componentTypeMananger.downloadedPropertyFile}" />  
+                        <f:setPropertyActionListener target="#{componentTypeManager.selectedProperty}" value="#{cprop}" />
+                        <p:fileDownload value="#{componentTypeManager.downloadedPropertyFile}" />  
                     </p:commandLink>
                 </p:column> 
             </p:dataTable>
@@ -58,7 +58,7 @@
                 <p:row>
                     <p:column><h:outputLabel value="Property :" /></p:column>
                     <p:column>
-                        <p:selectOneMenu value="#{componentTypeMananger.inputProperty.property}" style="width:100%"
+                        <p:selectOneMenu value="#{componentTypeManager.inputProperty.property}" style="width:100%"
                                          var="p" filter="true"  converter="#{propertyConverter}">                        
                             <f:selectItems value="#{propertyManager.objects}" var="prop" itemLabel="#{prop.name}" itemValue="#{prop}" />
                             <p:column>
@@ -75,25 +75,25 @@
                 <p:row>
                     <p:column><h:outputLabel value="File :" /></p:column>
                     <p:column>
-                        <p:selectBooleanCheckbox  value="#{componentTypeMananger.inRepository}" disabled="#{componentTypeMananger.propertyOperation eq 'e'}">                           
+                        <p:selectBooleanCheckbox  value="#{componentTypeManager.inRepository}" disabled="#{componentTypeManager.propertyOperation eq 'e'}">                           
                             <p:ajax process="@this" update="propertyInputPanel :messages" />
                         </p:selectBooleanCheckbox>
                     </p:column>
                 </p:row >
-                <p:row rendered="#{! componentTypeMananger.inRepository}" >
+                <p:row rendered="#{! componentTypeManager.inRepository}" >
                     <p:column><h:outputLabel value="Value :" /></p:column>
                     <p:column>
-                        <h:inputText id="val" value="#{componentTypeMananger.inputProperty.propValue}" size="32" />
+                        <h:inputText id="val" value="#{componentTypeManager.inputProperty.propValue}" size="32" />
                         <p:message for="val"  />
                     </p:column>
                     <p:watermark for="val" value="Enter property value"/>
                 </p:row>
-                <p:row rendered="#{componentTypeMananger.inRepository}">     
+                <p:row rendered="#{componentTypeManager.inRepository}">     
                     <p:column><h:outputLabel value="File :" /></p:column>
                     <p:column  colspan="2">
-                        <h:outputText id="upPropFileName" value="Uploaded File: #{componentTypeMananger.uploadedFileName}" />
-                        <p:fileUpload fileUploadListener="#{componentTypeMananger.handlePropertyUpload}"
-                                      mode="advanced"  process="@this"  required="true"  disabled="#{componentTypeMananger.propertyOperation eq 'e'}"
+                        <h:outputText id="upPropFileName" value="Uploaded File: #{componentTypeManager.uploadedFileName}" />
+                        <p:fileUpload fileUploadListener="#{componentTypeManager.handlePropertyUpload}"
+                                      mode="advanced"  process="@this"  required="true"  disabled="#{componentTypeManager.propertyOperation eq 'e'}"
                                       dragDropSupport="true" update="upPropFileName :messages" />                        
                     </p:column>                  
                 </p:row>
@@ -104,7 +104,7 @@
                             <p:toolbarGroup  align="right" >                      
                                 <p:commandButton value="Save" icon="ui-icon-disk" 
                                                  update=":propertyForm:propertytPanel propertyInputPanel :messages"
-                                                 process="@form" actionListener="#{componentTypeMananger.onPropertySave}"                                               
+                                                 process="@form" actionListener="#{componentTypeManager.onPropertySave}"                                               
                                                  oncomplete="if (!args.validationFailed &amp;&amp; args.success) PF('propertyInputDlg').hide()" /> 
                                 <p:separator /> 
                                 <p:commandButton value="Cancel" icon="ui-icon-close"                                         

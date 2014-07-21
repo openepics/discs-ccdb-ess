@@ -9,6 +9,7 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -58,38 +59,31 @@ import org.openepics.discs.conf.ui.LoginManager;
         return comps;
     }
 
+    public Slot findSlotByName(String name) {
+        Slot slot;
+        try {
+            slot = em.createNamedQuery("Slot.findByName", Slot.class).setParameter("name", name).getSingleResult();
+        } catch (NoResultException e) {
+            slot = null;
+        }
+        return slot;
+    }
+
     public Slot findLayoutSlot(Long id) {
         return em.find(Slot.class, id);
     }
 
-    public void saveLayoutSlot(Slot slot) throws Exception {
-        if (slot == null) {
-            logger.log(Level.SEVERE, "Property is null!");
-            return;
-            // throw new Exception("property is null");
-        }
-        String user = loginManager.getUserid();
-        if (!authEJB.userHasAuth(user, EntityType.SLOT, EntityTypeOperation.UPDATE)) {
-            logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
-            throw new Exception("User " + user + " is not authorized to perform this operation");
-        }
+    public void saveLayoutSlot(Slot slot) {
         slot.setModifiedAt(new Date());
-        slot.setModifiedBy("user");
-        logger.log(Level.INFO, "Preparing to save slot");
         em.merge(slot);
         makeAuditEntry(EntityTypeOperation.UPDATE, slot.getName(), "Modified slot");
     }
 
-    public void deleteLayoutSlot(Slot slot) throws Exception {
-        if (slot == null) {
-            logger.log(Level.SEVERE, "Property is null!");
-            throw new Exception("property is null");
-        }
-        String user = loginManager.getUserid();
-        if (!authEJB.userHasAuth(user, EntityType.SLOT, EntityTypeOperation.DELETE)) {
-            logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
-            throw new Exception("User " + user + " is not authorized to perform this operation");
-        }
+    public void addSlot(Slot slot) {
+        em.persist(slot);
+    }
+
+    public void deleteLayoutSlot(Slot slot) {
         Slot ct = em.find(Slot.class, slot.getId());
         em.remove(ct);
         makeAuditEntry(EntityTypeOperation.DELETE, slot.getName(), "Deleted slot");
@@ -97,16 +91,7 @@ import org.openepics.discs.conf.ui.LoginManager;
 
     // ------------------ Slot Property ---------------
 
-    public void saveSlotProp(SlotProperty prop, boolean create) throws Exception {
-        if (prop == null) {
-            logger.log(Level.SEVERE, "saveSlotProp: property is null");
-            return;
-        }
-        String user = loginManager.getUserid();
-        if (!authEJB.userHasAuth(user, EntityType.SLOT, EntityTypeOperation.UPDATE)) {
-            logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
-            throw new Exception("User " + user + " is not authorized to perform this operation");
-        }
+    public void saveSlotProp(SlotProperty prop, boolean create) {
         prop.setModifiedAt(new Date());
         // ctprop.setType("a");
         prop.setModifiedBy("user");
@@ -121,22 +106,16 @@ import org.openepics.discs.conf.ui.LoginManager;
         logger.log(Level.INFO, "Comp Type Property: id " + newProp.getId() + " name " + newProp.getProperty().getName());
     }
 
-    public void deleteSlotProp(SlotProperty prop) throws Exception {
-        if (prop == null) {
-            logger.log(Level.SEVERE, "deleteDeviceArtifact: dev-artifact is null");
-            return;
-        }
-        String user = loginManager.getUserid();
-        if (!authEJB.userHasAuth(user, EntityType.SLOT, EntityTypeOperation.UPDATE)) {
-            logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
-            throw new Exception("User " + user + " is not authorized to perform this operation");
-        }
-
+    public void deleteSlotProp(SlotProperty prop) {
         SlotProperty property = em.find(SlotProperty.class, prop.getId());
         Slot slot = property.getSlot();
         slot.getSlotPropertyList().remove(property);
         em.remove(property);
         makeAuditEntry(EntityTypeOperation.DELETE, prop.getSlot().getName(), "Deleted slot property " + prop.getProperty().getName());
+    }
+
+    public void addSlotProperty(SlotProperty property) {
+        em.persist(property);
     }
 
     // ---------------- Slot Artifact ---------------------

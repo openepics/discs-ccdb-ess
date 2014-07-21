@@ -76,7 +76,7 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
 
                     final String command = As.notNull(row.get(1).toUpperCase());
                     final @Nullable String name = row.get(nameIndex);
-                    final @Nullable String description = row.get(descriptionIndex);
+                    final @Nullable String description = descriptionIndex == -1 ? null : row.get(descriptionIndex);
                     final String modifiedBy = loginManager.getUserid();
 
                     if (name == null) {

@@ -9,10 +9,10 @@
     <h:form id="searchForm"  prependId="false">
         <p:contextMenu for="searchTable">  
             <p:menuitem value="Add" icon="ui-icon-plus"  update=":compTypeForm :messages" 
-                        actionListener="#{componentTypeMananger.onCompTypeAdd}"
+                        actionListener="#{componentTypeManager.onCompTypeAdd}"
                         process="@this"  onclick="PF('editDialog').show()"/>  
             <p:menuitem value="Edit" icon="ui-icon-pencil" update=":compTypeForm :messages" 
-                        actionListener="#{componentTypeMananger.onCompTypeEdit}"
+                        actionListener="#{componentTypeManager.onCompTypeEdit}"
                         process="@this searchTable" oncomplete="PF('editDialog').show()"/>  
             <p:menuitem value="Delete" icon="ui-icon-trash"  
                         onclick="PF('deleteConfirm').show()"/>  
@@ -20,14 +20,14 @@
 
         <ui:remove> -------------------------- Search  ------------------- </ui:remove>    
 
-        <p:dataTable id="searchTable" var="ctype" value="#{componentTypeMananger.objects}" 
+        <p:dataTable id="searchTable" var="ctype" value="#{componentTypeManager.objects}" 
                      scrollRows="25" scrollable="true" liveScroll="true"   scrollHeight="200"                  
-                     selectionMode="single" selection="#{componentTypeMananger.selectedObject}" 
-                     filteredValue="#{componentTypeMananger.filteredObjects}"
+                     selectionMode="single" selection="#{componentTypeManager.selectedObject}" 
+                     filteredValue="#{componentTypeManager.filteredObjects}"
                      emptyMessage="No records found!" 
                      rowKey="#{ctype.id}" >
 
-            <p:ajax event="rowSelect" listener="#{componentTypeMananger.onCompTypeSelect}" update=":detailsPanel :messages" />
+            <p:ajax event="rowSelect" listener="#{componentTypeManager.onCompTypeSelect}" update=":detailsPanel :messages" />
 
             <p:column id="id" headerText="ID" sortBy="#{ctype.name}" filterBy="#{ctype.name}">
                 <h:outputText value="#{ctype.name}"/>
@@ -48,7 +48,7 @@
             </p:column>
             
             <f:facet name="footer">
-                <p:commandButton id="addBtn" value="Add" icon="ui-icon-plus" actionListener="#{componentTypeMananger.onCompTypeAdd}"
+                <p:commandButton id="addBtn" value="Add" icon="ui-icon-plus" actionListener="#{componentTypeManager.onCompTypeAdd}"
                                  process="@this" update="@form :messages"  oncomplete="PF('editDialog').show()" />
             </f:facet>
         </p:dataTable>
@@ -60,24 +60,24 @@
             <p:panelGrid id="ctypeEditPanel" >
                 <p:row>
                     <p:column><h:outputLabel value="Component Type ID:" /></p:column>
-                    <p:column><h:inputText id="icode" value="#{componentTypeMananger.inputObject.name}" 
+                    <p:column><h:inputText id="icode" value="#{componentTypeManager.inputObject.name}" 
                                            required="true"  /> 
                     </p:column>
                 </p:row>
                 <p:row>                       
                     <p:column><h:outputLabel value="Description:" /></p:column>
-                    <p:column><p:inputTextarea id="desc" value="#{componentTypeMananger.inputObject.description}" 
+                    <p:column><p:inputTextarea id="desc" value="#{componentTypeManager.inputObject.description}" 
                                                required="true"   rows="5" cols="50"  /> </p:column>
                 </p:row>
                 <p:row>
                     <p:column><h:outputLabel value="Super Component Type" /></p:column>
                     <p:column>
-                        <p:selectOneMenu id="parent" value="#{componentTypeMananger.inputObject.superComponentType}"   
+                        <p:selectOneMenu id="parent" value="#{componentTypeManager.inputObject.superComponentType}"   
                                                var="ct"  
                                                converter="#{componentTypeConverter}" rendered="true"
                                                filter="true" filterMatchMode="startsWith">  
                             <f:selectItem itemLabel="Select One"  itemValue="" />
-                            <f:selectItems value="#{componentTypeMananger.objects}" var="ctype" itemLabel="#{ctype.name}" itemValue="#{ctype}"/>
+                            <f:selectItems value="#{componentTypeManager.objects}" var="ctype" itemLabel="#{ctype.name}" itemValue="#{ctype}"/>
                             <p:column>  
                                 #{ct.name}
                             </p:column>                                                
@@ -92,7 +92,7 @@
                 <p:toolbarGroup  align="right" >                      
                     <p:commandButton value="Save" icon="ui-icon-disk" 
                                      update=":searchForm:searchTable :messages" 
-                                     process="@this :compTypeForm" actionListener="#{componentTypeMananger.onCompTypeSave}"
+                                     process="@this :compTypeForm" actionListener="#{componentTypeManager.onCompTypeSave}"
                                      oncomplete="PF('editDialog').hide()"
                                      /> 
                     <p:separator /> 
@@ -117,7 +117,7 @@
                              icon="ui-icon-check"
                              process="@form" update="@all"
                              oncomplete="PF('deleteConfirm').hide()"                                                                
-                             actionListener="#{componentTypeMananger.onCompTypeDelete}"/> 
+                             actionListener="#{componentTypeManager.onCompTypeDelete}"/> 
             <p:commandButton  type="cancel" value="No" style="float: right"
                               icon="ui-icon-close"
                               update="@none" process="@this"                                  

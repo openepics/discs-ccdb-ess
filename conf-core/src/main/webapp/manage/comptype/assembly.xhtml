@@ -7,25 +7,25 @@
     xmlns:h="http://java.sun.com/jsf/html">              
 
     <ui:remove> -------------------------- Assembly ------------------- </ui:remove>
-    <h:form id="assemblyForm" prependId="false" rendered="#{componentTypeMananger.selectedObject ne null}">
+    <h:form id="assemblyForm" prependId="false" rendered="#{componentTypeManager.selectedObject ne null}">
         <p:panel toggleable="true" >
             <f:facet name="header">                           
                 <h:outputText value="Type Assembly : " />
                 <p:commandButton  icon="ui-icon-plus"  update="asmTable :messages" 
-                                  process="@this" actionListener="#{componentTypeMananger.onAsmAdd}" />
+                                  process="@this" actionListener="#{componentTypeManager.onAsmAdd}" />
             </f:facet>
-            <p:dataTable id="asmTable" var="asmp" value="#{componentTypeMananger.selectedParts}" 
+            <p:dataTable id="asmTable" var="asmp" value="#{componentTypeManager.selectedParts}" 
                          scrollRows="25" scrollable="true" liveScroll="true"   scrollHeight="200"                               
                          emptyMessage="No artifacts found"  editMode="row" editable="true" 
                          rowKey="#{asmp.id}}"  >                
 
-                <p:ajax event="rowEdit" listener="#{componentTypeMananger.onAsmSave}" update="asmTable  :messages" />                  
-                <p:ajax event="rowEditInit" listener="#{componentTypeMananger.onAsmEdit}" update=":messages" />                  
-                <p:ajax event="rowEditCancel" listener="#{componentTypeMananger.onAsmCancel}" update="asmTable  :messages" />                  
+                <p:ajax event="rowEdit" listener="#{componentTypeManager.onAsmSave}" update="asmTable  :messages" />                  
+                <p:ajax event="rowEditInit" listener="#{componentTypeManager.onAsmEdit}" update=":messages" />                  
+                <p:ajax event="rowEditCancel" listener="#{componentTypeManager.onAsmCancel}" update="asmTable  :messages" />                  
 
                 <p:column id="ops" width="10%">
                     <p:commandLink  styleClass="ui-icon ui-icon-trash"  update="asmTable  :messages" 
-                                    process="@this" action="#{componentTypeMananger.onAsmDelete(asmp)}" />
+                                    process="@this" action="#{componentTypeManager.onAsmDelete(asmp)}" />
 
                 </p:column>
                 <p:column headerText="Position">
@@ -44,7 +44,7 @@
                                              converter="#{componentTypeConverter}" rendered="true"
                                              filter="true" filterMatchMode="startsWith" style="width: 100%;">  
                                 <f:selectItem itemLabel="Select One"  itemValue="" />
-                                <f:selectItems value="#{componentTypeMananger.objects}" var="ctype" itemLabel="#{ctype.name}" itemValue="#{ctype}"/>
+                                <f:selectItems value="#{componentTypeManager.objects}" var="ctype" itemLabel="#{ctype.name}" itemValue="#{ctype}"/>
                                 <p:column>  
                                     #{ct.name}
                                 </p:column>                                                

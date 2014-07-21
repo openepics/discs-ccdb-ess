@@ -27,8 +27,8 @@
                         <p:commandLink  value="dl" ajax="false"                                  
                                         styleClass="ui-icon ui-icon-arrowthickstop-1-s" style="display:inline-block;"
                                         rendered="#{art.isInternal}">   
-                            <f:setPropertyActionListener target="#{componentTypeMananger.selectedArtifact}" value="#{art}" />
-                            <p:fileDownload value="#{componentTypeMananger.downloadedFile}" />  
+                            <f:setPropertyActionListener target="#{componentTypeManager.selectedArtifact}" value="#{art}" />
+                            <p:fileDownload value="#{componentTypeManager.downloadedFile}" />  
                         </p:commandLink>
                         <h:outputText value="#{art.name}" />
                     </p:column>               

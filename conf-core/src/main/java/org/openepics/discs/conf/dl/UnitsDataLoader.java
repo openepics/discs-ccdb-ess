@@ -76,7 +76,7 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
                 final @Nullable String quantity = row.get(quantityIndex);
                 final @Nullable String symbol = row.get(symbolIndex);
                 final @Nullable String description = row.get(descriptionIndex);
-                final @Nullable String baseUnitExpr = row.get(baseUnitExprIndex);
+                final @Nullable String baseUnitExpr = baseUnitExprIndex == -1 ? null : row.get(baseUnitExprIndex);
                 final Date modifiedAt = new Date();
                 final String modifiedBy = loginManager.getUserid();
 

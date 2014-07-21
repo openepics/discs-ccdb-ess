@@ -7,32 +7,32 @@
     xmlns:h="http://java.sun.com/jsf/html">              
 
     <ui:remove> -------------------------- Properties ------------------- </ui:remove>
-    <h:form id="propertyForm" prependId="false" rendered="#{componentTypeMananger.selectedObject ne null}">
+    <h:form id="propertyForm" prependId="false" rendered="#{componentTypeManager.selectedObject ne null}">
         <p:panel toggleable="true" >
             <f:facet name="header">
                 <h:outputText value="Properties : " /> 
                 <p:commandButton  icon="ui-icon-plus"  update="propertyTable :messages" 
-                                  process="@this" actionListener="#{componentTypeMananger.onPropertyAdd}" />
+                                  process="@this" actionListener="#{componentTypeManager.onPropertyAdd}" />
             </f:facet>    
 
             <p:contextMenu for="propertyTable" widgetVar="propMenu">  
                 <p:menuitem value="Delete Property" icon="ui-icon-trash"  update="propertyTable  :messages" 
-                            actionListener="#{componentTypeMananger.onPropertyDelete}"
+                            actionListener="#{componentTypeManager.onPropertyDelete}"
                             />  
                 <p:menuitem value="Hide Menu" icon="ui-icon-close"  onclick="PF('propMenu').hide()"/>                  
             </p:contextMenu>
-            <p:dataTable id="propertyTable" var="ctp" value="#{componentTypeMananger.selectedCompProps}" 
+            <p:dataTable id="propertyTable" var="ctp" value="#{componentTypeManager.selectedCompProps}" 
                          scrollRows="25" scrollable="true" liveScroll="true"   scrollHeight="200"                               
                          emptyMessage="No properties."  editMode="row" editable="true" 
                          rowKey="#{ctp.id}"  >                
 
-                <p:ajax event="rowEdit" listener="#{componentTypeMananger.onPropertySave}" update="propertyTable  :messages" />                  
-                <p:ajax event="rowEditInit" listener="#{componentTypeMananger.onPropertyInit}" update=":messages" />                  
-                <p:ajax event="rowEditCancel" listener="#{componentTypeMananger.onPropertyCancel}" update="propertyTable  :messages" />
+                <p:ajax event="rowEdit" listener="#{componentTypeManager.onPropertySave}" update="propertyTable  :messages" />                  
+                <p:ajax event="rowEditInit" listener="#{componentTypeManager.onPropertyInit}" update=":messages" />                  
+                <p:ajax event="rowEditCancel" listener="#{componentTypeManager.onPropertyCancel}" update="propertyTable  :messages" />
 
                 <p:column id="ops" width="10%">
                     <p:commandLink  styleClass="ui-icon ui-icon-trash"  update="propertyTable  :messages" 
-                                    process="@this" action="#{componentTypeMananger.onPropertyDelete(ctp)}" />
+                                    process="@this" action="#{componentTypeManager.onPropertyDelete(ctp)}" />
 
                 </p:column>
                 <p:column id="id" headerText="Name">

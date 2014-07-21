@@ -52,18 +52,18 @@ import com.google.common.io.ByteStreams;
  */
 @Named
 @ViewScoped
-public class ComponentTypeMananger implements Serializable {
+public class ComponentTypeManager implements Serializable {
 
     @EJB
     private ComptypeEJB comptypeEJB;
-    private static final Logger logger = Logger.getLogger(ComponentTypeMananger.class.getCanonicalName());
+    private static final Logger logger = Logger.getLogger(ComponentTypeManager.class.getCanonicalName());
     // private static String folderName = "/var/proteus/"; // ToDo: get it from configuration
 
     @Inject
     private BlobStore blobStore;
     @Inject LoginManager loginManager;
     @Inject private DataLoaderHandler dataLoaderHandler;
-    @Inject @ComponentTypesLoaderQualifier private DataLoader unitsDataLoader;
+    @Inject @ComponentTypesLoaderQualifier private DataLoader compTypesDataLoader;
     @Inject private AuthEJB authEJB;
 
     private byte[] importData;
@@ -101,7 +101,7 @@ public class ComponentTypeMananger implements Serializable {
     /**
      * Creates a new instance of ComponentTypeMananger
      */
-    public ComponentTypeMananger() {
+    public ComponentTypeManager() {
     }
 
     @PostConstruct
@@ -511,7 +511,7 @@ public class ComponentTypeMananger implements Serializable {
 
     public void importCompTypes() {
         final InputStream inputStream = new ByteArrayInputStream(importData);
-        dataLoaderHandler.loadData(inputStream, unitsDataLoader);
+        dataLoaderHandler.loadData(inputStream, compTypesDataLoader);
     }
 
     public void prepareImportPopup() {
