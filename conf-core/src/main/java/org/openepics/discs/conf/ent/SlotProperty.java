@@ -24,9 +24,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "SlotProperty.findAll", query = "SELECT s FROM SlotProperty s"),
     @NamedQuery(name = "SlotProperty.findBySlotPropId", query = "SELECT s FROM SlotProperty s WHERE s.id = :id"),
     @NamedQuery(name = "SlotProperty.findByInRepository", query = "SELECT s FROM SlotProperty s WHERE s.inRepository = :inRepository"),
-    @NamedQuery(name = "SlotProperty.findByModifiedAt", query = "SELECT s FROM SlotProperty s WHERE s.modifiedAt = :modifiedAt"),
-    @NamedQuery(name = "SlotProperty.findByModifiedBy", query = "SELECT s FROM SlotProperty s WHERE s.modifiedBy = :modifiedBy"),
-    @NamedQuery(name = "SlotProperty.findByVersion", query = "SELECT s FROM SlotProperty s WHERE s.version = :version")})
+    @NamedQuery(name = "SlotProperty.findByModifiedBy", query = "SELECT s FROM SlotProperty s WHERE s.modifiedBy = :modifiedBy")})
 public class SlotProperty extends ConfigurationEntity {
     private static final long serialVersionUID = 1L;
 

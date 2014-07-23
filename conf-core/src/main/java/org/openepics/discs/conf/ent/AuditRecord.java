@@ -30,9 +30,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "AuditRecord.findAll", query = "SELECT a FROM AuditRecord a"),
-    @NamedQuery(name = "AuditRecord.findByAuditRecordId", query = "SELECT a FROM AuditRecord a WHERE a.auditRecordId = :auditRecordId"),
     @NamedQuery(name = "AuditRecord.findByLogTime", query = "SELECT a FROM AuditRecord a WHERE a.logTime = :logTime"),
-    @NamedQuery(name = "AuditRecord.findByOper", query = "SELECT a FROM AuditRecord a WHERE a.oper = :oper"),
     @NamedQuery(name = "AuditRecord.findByUser", query = "SELECT a FROM AuditRecord a WHERE a.user = :user"),
     @NamedQuery(name = "AuditRecord.findByEntityType", query = "SELECT a FROM AuditRecord a WHERE a.entityType = :entityType"),
     @NamedQuery(name = "AuditRecord.findByEntityKey", query = "SELECT a FROM AuditRecord a WHERE a.entityKey = :entityKey")})
@@ -66,9 +64,11 @@ public class AuditRecord implements Serializable {
     @Column(name = "entity_type")
     private EntityType entityType;
 
-    @Size(max = 64)
     @Column(name = "entity_key")
     private String entityKey;
+
+    @Column(name = "entity_id")
+    private Long entityId;
 
     @Basic(optional = false)
     @NotNull
@@ -130,6 +130,14 @@ public class AuditRecord implements Serializable {
 
     public void setEntityKey(String entityKey) {
         this.entityKey = entityKey;
+    }
+
+    public Long getEntityId() {
+        return entityId;
+    }
+
+    public void setEntityId(Long entityId) {
+        this.entityId = entityId;
     }
 
     public String getEntry() {

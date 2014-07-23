@@ -36,7 +36,7 @@ import org.openepics.discs.conf.ui.LoginManager;
     @PersistenceContext private EntityManager em;
 
     // ----------- Audit record ---------------------------------------
-    private void makeAuditEntry(EntityTypeOperation oper, String key, String entry) {
+    private void makeAuditEntry(EntityTypeOperation oper, String key, String entry, Long id) {
         AuditRecord arec = new AuditRecord(new Date(), oper, loginManager.getUserid(), entry);
         arec.setEntityType(EntityType.SLOT);
         arec.setEntityKey(key);
@@ -77,7 +77,7 @@ import org.openepics.discs.conf.ui.LoginManager;
         slot.setModifiedBy("user");
         logger.log(Level.INFO, "Preparing to save slot");
         em.merge(slot);
-        makeAuditEntry(EntityTypeOperation.UPDATE, slot.getName(), "Modified slot");
+        makeAuditEntry(EntityTypeOperation.UPDATE, slot.getName(), "Modified slot", slot.getId());
     }
 
     public void deleteLayoutSlot(Slot slot) throws Exception {
@@ -92,7 +92,7 @@ import org.openepics.discs.conf.ui.LoginManager;
         }
         Slot ct = em.find(Slot.class, slot.getId());
         em.remove(ct);
-        makeAuditEntry(EntityTypeOperation.DELETE, slot.getName(), "Deleted slot");
+        makeAuditEntry(EntityTypeOperation.DELETE, slot.getName(), "Deleted slot", slot.getId());
     }
 
     // ------------------ Slot Property ---------------
@@ -117,7 +117,7 @@ import org.openepics.discs.conf.ui.LoginManager;
             slot.getSlotPropertyList().add(newProp);
             em.merge(slot);
         }
-        makeAuditEntry(EntityTypeOperation.UPDATE, prop.getSlot().getName(), "Modified slot property " + prop.getProperty().getName());
+        makeAuditEntry(EntityTypeOperation.UPDATE, prop.getSlot().getName(), "Modified slot property " + prop.getProperty().getName(), prop.getSlot().getId());
         logger.log(Level.INFO, "Comp Type Property: id " + newProp.getId() + " name " + newProp.getProperty().getName());
     }
 
@@ -136,7 +136,7 @@ import org.openepics.discs.conf.ui.LoginManager;
         Slot slot = property.getSlot();
         slot.getSlotPropertyList().remove(property);
         em.remove(property);
-        makeAuditEntry(EntityTypeOperation.DELETE, prop.getSlot().getName(), "Deleted slot property " + prop.getProperty().getName());
+        makeAuditEntry(EntityTypeOperation.DELETE, prop.getSlot().getName(), "Deleted slot property " + prop.getProperty().getName(), prop.getSlot().getId());
     }
 
     // ---------------- Slot Artifact ---------------------
@@ -159,7 +159,7 @@ import org.openepics.discs.conf.ui.LoginManager;
             slot.getSlotArtifactList().add(newArt);
             em.merge(slot);
         }
-        makeAuditEntry(EntityTypeOperation.UPDATE, art.getSlot().getName(), "Modified slot artifact " + art.getName());
+        makeAuditEntry(EntityTypeOperation.UPDATE, art.getSlot().getName(), "Modified slot artifact " + art.getName(), art.getSlot().getId());
         logger.log(Level.INFO, "slot Artifact: name " + art.getName() + " description " + art.getDescription() + " uri " + art.getUri());
     }
 
@@ -178,7 +178,7 @@ import org.openepics.discs.conf.ui.LoginManager;
         Slot slot = artifact.getSlot();
         slot.getSlotArtifactList().remove(artifact);
         em.remove(artifact);
-        makeAuditEntry(EntityTypeOperation.UPDATE, art.getSlot().getName(), "Deleted slot artifact " + art.getName());
+        makeAuditEntry(EntityTypeOperation.UPDATE, art.getSlot().getName(), "Deleted slot artifact " + art.getName(), art.getSlot().getId());
     }
 
     // ---------------- Related Slots ---------------------
@@ -200,8 +200,8 @@ import org.openepics.discs.conf.ui.LoginManager;
             pslot.getSlotPairList1().add(newArt);
             em.merge(pslot);
         }
-        makeAuditEntry(EntityTypeOperation.UPDATE, spair.getChildSlot().getName(), "Modified child slot");
-        makeAuditEntry(EntityTypeOperation.UPDATE, spair.getParentSlot().getName(), "Modified parent slot");
+        makeAuditEntry(EntityTypeOperation.UPDATE, spair.getChildSlot().getName(), "Modified child slot", spair.getChildSlot().getId());
+        makeAuditEntry(EntityTypeOperation.UPDATE, spair.getParentSlot().getName(), "Modified parent slot", spair.getParentSlot().getId());
         logger.log(Level.INFO, "saved slot pair: child " + spair.getChildSlot().getName() + " parent " + spair.getParentSlot().getName() + " relation ");
     }
 
@@ -220,8 +220,8 @@ import org.openepics.discs.conf.ui.LoginManager;
         Slot pslot = slotPair.getParentSlot();
         pslot.getSlotPairList().remove(slotPair);
         em.remove(slotPair);
-        makeAuditEntry(EntityTypeOperation.UPDATE, spair.getChildSlot().getName(), "Deleted parent slot relationship");
-        makeAuditEntry(EntityTypeOperation.UPDATE, spair.getParentSlot().getName(), "Deleted child slot relationship");
+        makeAuditEntry(EntityTypeOperation.UPDATE, spair.getChildSlot().getName(), "Deleted parent slot relationship", spair.getChildSlot().getId());
+        makeAuditEntry(EntityTypeOperation.UPDATE, spair.getParentSlot().getName(), "Deleted child slot relationship", spair.getParentSlot().getId());
     }
 
     // -----------------

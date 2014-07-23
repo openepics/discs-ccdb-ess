@@ -5,5 +5,5 @@ package org.openepics.discs.conf.ent;
  *
  */
 public enum EntityTypeOperation {
-    UPDATE, CREATE, DELETE, LOGIN, LOGOUT, AUTHORIZED, RENAME;
+    UPDATE, CREATE, DELETE, AUTHORIZED, RENAME;
 }

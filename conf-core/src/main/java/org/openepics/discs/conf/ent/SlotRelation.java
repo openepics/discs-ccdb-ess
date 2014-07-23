@@ -26,12 +26,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "SlotRelation.findAll", query = "SELECT s FROM SlotRelation s"),
     @NamedQuery(name = "SlotRelation.findBySlotRelationId", query = "SELECT s FROM SlotRelation s WHERE s.id = :id"),
-    @NamedQuery(name = "SlotRelation.findByName", query = "SELECT s FROM SlotRelation s WHERE s.name = :name"),
-    @NamedQuery(name = "SlotRelation.findByIname", query = "SELECT s FROM SlotRelation s WHERE s.iname = :iname"),
-    @NamedQuery(name = "SlotRelation.findByDescription", query = "SELECT s FROM SlotRelation s WHERE s.description = :description"),
-    @NamedQuery(name = "SlotRelation.findByModifiedAt", query = "SELECT s FROM SlotRelation s WHERE s.modifiedAt = :modifiedAt"),
-    @NamedQuery(name = "SlotRelation.findByModifiedBy", query = "SELECT s FROM SlotRelation s WHERE s.modifiedBy = :modifiedBy"),
-    @NamedQuery(name = "SlotRelation.findByVersion", query = "SELECT s FROM SlotRelation s WHERE s.version = :version")})
+    @NamedQuery(name = "SlotRelation.findByName", query = "SELECT s FROM SlotRelation s WHERE s.name = :name")})
 public class SlotRelation extends ConfigurationEntity {
     private static final long serialVersionUID = 1L;
 

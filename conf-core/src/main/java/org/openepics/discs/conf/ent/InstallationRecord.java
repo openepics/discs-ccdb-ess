@@ -30,12 +30,9 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "InstallationRecord.findAll", query = "SELECT i FROM InstallationRecord i"),
     @NamedQuery(name = "InstallationRecord.findByInstallationRecordId", query = "SELECT i FROM InstallationRecord i WHERE i.id = :id"),
-    @NamedQuery(name = "InstallationRecord.findByRecordNumber", query = "SELECT i FROM InstallationRecord i WHERE i.recordNumber = :recordNumber"),
     @NamedQuery(name = "InstallationRecord.findByInstallDate", query = "SELECT i FROM InstallationRecord i WHERE i.installDate = :installDate"),
     @NamedQuery(name = "InstallationRecord.findByUninstallDate", query = "SELECT i FROM InstallationRecord i WHERE i.uninstallDate = :uninstallDate"),
-    @NamedQuery(name = "InstallationRecord.findByModifiedAt", query = "SELECT i FROM InstallationRecord i WHERE i.modifiedAt = :modifiedAt"),
-    @NamedQuery(name = "InstallationRecord.findByModifiedBy", query = "SELECT i FROM InstallationRecord i WHERE i.modifiedBy = :modifiedBy"),
-    @NamedQuery(name = "InstallationRecord.findByVersion", query = "SELECT i FROM InstallationRecord i WHERE i.version = :version")})
+    @NamedQuery(name = "InstallationRecord.findByModifiedBy", query = "SELECT i FROM InstallationRecord i WHERE i.modifiedBy = :modifiedBy")})
 public class InstallationRecord extends ConfigurationEntity {
     private static final long serialVersionUID = 1L;
 
