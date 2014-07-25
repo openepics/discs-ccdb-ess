@@ -45,18 +45,18 @@ public class UnitsDataLoaderIT {
 
     @Test
     public void notAuthorizedTest() {
-        inputRows.add(ImmutableList.of("1", "HEADER", "NAME", "SYMBOL", "EXPR", "QUANTITY", "DESCRIPTION"));
-        inputRows.add(ImmutableList.of("2", "UPDATE", "Ampere", "A", "", "Current", "Electric current"));
+        inputRows.add(ImmutableList.of("1", "HEADER", "NAME", "SYMBOL", "QUANTITY", "DESCRIPTION"));
+        inputRows.add(ImmutableList.of("2", "UPDATE", "Ampere", "A", "Current", "Electric current"));
         DataLoaderResult dataLoaderResult = unitsDataLoader.loadDataToDatabase(inputRows);
         assertThat(dataLoaderResult, instanceOf(DataLoaderResult.NotAuthorizedFailureDataLoaderResult.class));
 
         inputRows.remove(1);
-        inputRows.add(ImmutableList.of("2", "DELETE", "Ampere", "A", "", "Current", "Electric current"));
+        inputRows.add(ImmutableList.of("2", "DELETE", "Ampere", "A", "Current", "Electric current"));
         dataLoaderResult = unitsDataLoader.loadDataToDatabase(inputRows);
         assertThat(dataLoaderResult, instanceOf(DataLoaderResult.NotAuthorizedFailureDataLoaderResult.class));
 
         inputRows.remove(1);
-        inputRows.add(ImmutableList.of("2", "RENAME", "Ampere", "A", "", "Current", "Electric current"));
+        inputRows.add(ImmutableList.of("2", "RENAME", "Ampere", "A", "Current", "Electric current"));
         dataLoaderResult = unitsDataLoader.loadDataToDatabase(inputRows);
         assertThat(dataLoaderResult, instanceOf(DataLoaderResult.NotAuthorizedFailureDataLoaderResult.class));
     }
@@ -75,7 +75,7 @@ public class UnitsDataLoaderIT {
 
         inputRows.clear();
 
-        inputRows.add(ImmutableList.of("1", "HEADER", "NAME", "SYMBOL", "EXPRESSION", "QUANTITY", "DESCRIPTION"));
+        inputRows.add(ImmutableList.of("1", "HEADER", "NAME", "SYMBOL", "QUANTITIES", "DESCRIPTION"));
         dataLoaderResult = unitsDataLoader.loadDataToDatabase(inputRows);
         assertThat(dataLoaderResult, instanceOf(DataLoaderResult.RowFormatFailureDataLoaderResult.class));
         assertEquals(((RowFormatFailureDataLoaderResult)dataLoaderResult).getReason(), DataLoaderResult.RowFormatFailureReason.HEADER_FIELD_MISSING);
