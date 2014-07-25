@@ -110,83 +110,28 @@
 			widgetVar="aboutPanelWid">
 			<ui:include src="about.xhtml" />
 		</p:dialog>
-
-	</h:form>
-
-
-
-	<h:form id="importUnitsForm" enctype="multipart/form-data">
-		<p:dialog id="importUnits" widgetVar="importUnits" modal="true"
-			resizable="false" width="35%">
-			<f:facet name="header">
-				<h:outputText value="Units Import" />
-			</f:facet>
-			<h:panelGroup id="grp" layout="block">
-				<h:panelGroup rendered="#{unitManager.importFileName == null}"
-					layout="block" style="padding: 0 0 7px 0">Please choose an Excel file (*.xlsx) to import units from.</h:panelGroup>
-				<p:fileUpload fileUploadListener="#{unitManager.handleFileUpload}"
-					update="grp" mode="advanced" auto="true" fileLimit="1"
-					dragDropSupport="true" allowTypes="/(\.|\/)(xlsx)$/"
-					rendered="#{unitManager.importFileName == null}" />
-				<h:outputText value="#{unitManager.importFileName}" />
-				<p:separator />
-				<p:commandButton value="Cancel" style="float: right"
-					onclick="importUnits.hide();" />
-				<p:commandButton value="Import" style="float: right"
-					update=":menuform" oncomplete="importUnits.hide()"
-					action="#{unitManager.importUnits()}"
-					disabled="#{unitManager.importFileName == null}" />
-			</h:panelGroup>
-		</p:dialog>
+		
+		   
 	</h:form>
 	
-	<h:form id="importPropertiesForm" enctype="multipart/form-data">
-        <p:dialog id="importProperties" widgetVar="importProperties" modal="true"
-            resizable="false" width="35%">
-            <f:facet name="header">
-                <h:outputText value="Properties Import" />
-            </f:facet>
-            <h:panelGroup id="grp" layout="block">
-                <h:panelGroup rendered="#{propertyManager.importFileName == null}"
-                    layout="block" style="padding: 0 0 7px 0">Please choose an Excel file (*.xlsx) to import properties from.</h:panelGroup>
-                <p:fileUpload fileUploadListener="#{propertyManager.handleFileUpload}"
-                    update="grp" mode="advanced" auto="true" fileLimit="1"
-                    dragDropSupport="true" allowTypes="/(\.|\/)(xlsx)$/"
-                    rendered="#{propertyManager.importFileName == null}" />
-                <h:outputText value="#{propertyManager.importFileName}" />
-                <p:separator />
-                <p:commandButton value="Cancel" style="float: right"
-                    onclick="importProperties.hide();" />
-                <p:commandButton value="Import" style="float: right"
-                    update=":menuform" oncomplete="importProperties.hide()"
-                    action="#{propertyManager.importProperties()}"
-                    disabled="#{propertyManager.importFileName == null}" />
-            </h:panelGroup>
-        </p:dialog>
-    </h:form>
+	<ui:include src="/loaders/data-loader.xhtml">
+        <ui:param name="formId" value="importUnitsForm" />
+        <ui:param name="dialogTitle" value="Units Import" />
+        <ui:param name="widgetName" value="importUnits" />
+        <ui:param name="controller" value="#{unitManager}" />
+    </ui:include>
     
-    <h:form id="importCompTypesForm" enctype="multipart/form-data">
-        <p:dialog id="importCompTypes" widgetVar="importCompTypes" modal="true"
-            resizable="false" width="35%">
-            <f:facet name="header">
-                <h:outputText value="Component Types Import" />
-            </f:facet>
-            <h:panelGroup id="grp" layout="block">
-                <h:panelGroup rendered="#{componentTypeMananger.importFileName == null}"
-                    layout="block" style="padding: 0 0 7px 0">Please choose an Excel file (*.xlsx) to import component types from.</h:panelGroup>
-                <p:fileUpload fileUploadListener="#{componentTypeMananger.handleImportFileUpload}"
-                    update="grp" mode="advanced" auto="true" fileLimit="1"
-                    dragDropSupport="true" allowTypes="/(\.|\/)(xlsx)$/"
-                    rendered="#{componentTypeMananger.importFileName == null}" />
-                <h:outputText value="#{componentTypeMananger.importFileName}" />
-                <p:separator />
-                <p:commandButton value="Cancel" style="float: right"
-                    onclick="importCompTypes.hide();" />
-                <p:commandButton value="Import" style="float: right"
-                    update=":menuform" oncomplete="importCompTypes.hide()"
-                    action="#{componentTypeMananger.importCompTypes()}"
-                    disabled="#{componentTypeMananger.importFileName == null}" />
-            </h:panelGroup>
-        </p:dialog>
-    </h:form>
+    <ui:include src="/loaders/data-loader.xhtml">
+        <ui:param name="formId" value="importPropertiesForm" />
+        <ui:param name="dialogTitle" value="Properties Import" />
+        <ui:param name="widgetName" value="importProperties" />
+        <ui:param name="controller" value="#{propertyManager}" />
+    </ui:include>
+
+    <ui:include src="/loaders/data-loader.xhtml">
+        <ui:param name="formId" value="importCompTypesForm" />
+        <ui:param name="dialogTitle" value="Component Types Import" />
+        <ui:param name="widgetName" value="importCompTypes" />
+        <ui:param name="controller" value="#{componentTypeMananger}" />
+    </ui:include>
 </ui:composition>

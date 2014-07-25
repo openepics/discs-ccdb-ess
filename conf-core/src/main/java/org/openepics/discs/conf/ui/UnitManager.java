@@ -93,7 +93,7 @@ public class UnitManager implements Serializable {
         this.filteredUnits = filteredUnits;
     }
 
-    public void importUnits() {
+    public void doImport() {
         final InputStream inputStream = new ByteArrayInputStream(importData);
         dataLoaderHandler.loadData(inputStream, unitsDataLoader);
     }
@@ -103,7 +103,7 @@ public class UnitManager implements Serializable {
         importFileName = null;
     }
 
-    public void handleFileUpload(FileUploadEvent event) {
+    public void handleImportFileUpload(FileUploadEvent event) {
         try (InputStream inputStream = event.getFile().getInputstream()) {
             this.importData = ByteStreams.toByteArray(inputStream);
             this.importFileName = FilenameUtils.getName(event.getFile().getFileName());

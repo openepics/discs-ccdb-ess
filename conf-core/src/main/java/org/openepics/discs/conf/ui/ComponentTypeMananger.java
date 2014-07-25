@@ -509,7 +509,7 @@ public class ComponentTypeMananger implements Serializable {
 
     public String getImportFileName() { return importFileName; }
 
-    public void importCompTypes() {
+    public void doImport() {
         final InputStream inputStream = new ByteArrayInputStream(importData);
         dataLoaderHandler.loadData(inputStream, unitsDataLoader);
     }
