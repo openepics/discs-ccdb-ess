@@ -42,7 +42,7 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
     @Resource private EJBContext context;
 
     private Map<String, Unit> unitByName;
-    private int nameIndex, quantityIndex, symbolIndex, baseUnitExprIndex, descriptionIndex;
+    private int nameIndex, quantityIndex, symbolIndex, descriptionIndex;
 
     @Override public DataLoaderResult loadDataToDatabase(List<List<String>> inputRows) {
         init();
@@ -76,7 +76,6 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
                 final @Nullable String quantity = row.get(quantityIndex);
                 final @Nullable String symbol = row.get(symbolIndex);
                 final @Nullable String description = row.get(descriptionIndex);
-                final @Nullable String baseUnitExpr = row.get(baseUnitExprIndex);
                 final Date modifiedAt = new Date();
                 final String modifiedBy = loginManager.getUserid();
 
@@ -89,7 +88,6 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
                     if (unitByName.containsKey(name)) {
                         if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.UNIT, EntityTypeOperation.UPDATE)) {
                             final Unit unitToUpdate = unitByName.get(name);
-                            unitToUpdate.setBaseUnitExpr(baseUnitExpr);
                             unitToUpdate.setDescription(description);
                             unitToUpdate.setQuantity(quantity);
                             unitToUpdate.setSymbol(symbol);
@@ -100,7 +98,7 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
                         }
                     } else {
                         if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.UNIT, EntityTypeOperation.CREATE)) {
-                            final Unit unitToAdd = new Unit(name, quantity, symbol, baseUnitExpr, description, modifiedBy);
+                            final Unit unitToAdd = new Unit(name, quantity, symbol, description, modifiedBy);
                             configurationEJB.addUnit(unitToAdd);
                             unitByName.put(unitToAdd.getUnitName(), unitToAdd);
                         } else {
@@ -173,10 +171,9 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
         nameIndex = header.indexOf("NAME");
         quantityIndex = header.indexOf("QUANTITY");
         symbolIndex = header.indexOf("SYMBOL");
-        baseUnitExprIndex = header.indexOf("EXPR");
         descriptionIndex = header.indexOf("DESCRIPTION");
 
-        if (nameIndex == -1 || quantityIndex == -1 || symbolIndex == -1 || baseUnitExprIndex == -1 || descriptionIndex == -1) {
+        if (nameIndex == -1 || quantityIndex == -1 || symbolIndex == -1 || descriptionIndex == -1) {
             return new DataLoaderResult.RowFormatFailureDataLoaderResult(rowNumber, RowFormatFailureReason.HEADER_FIELD_MISSING);
         } else {
             return new DataLoaderResult.SuccessDataLoaderResult();

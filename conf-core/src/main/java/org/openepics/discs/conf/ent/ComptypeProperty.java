@@ -24,17 +24,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "ComptypeProperty.findAll", query = "SELECT c FROM ComptypeProperty c"),
     @NamedQuery(name = "ComptypeProperty.findByCtypePropId", query = "SELECT c FROM ComptypeProperty c WHERE c.id = :id"),
-    @NamedQuery(name = "ComptypeProperty.findByType", query = "SELECT c FROM ComptypeProperty c WHERE c.type = :type"),
     @NamedQuery(name = "ComptypeProperty.findByInRepository", query = "SELECT c FROM ComptypeProperty c WHERE c.inRepository = :inRepository"),
     @NamedQuery(name = "ComptypeProperty.findByModifiedAt", query = "SELECT c FROM ComptypeProperty c WHERE c.modifiedAt = :modifiedAt"),
     @NamedQuery(name = "ComptypeProperty.findByModifiedBy", query = "SELECT c FROM ComptypeProperty c WHERE c.modifiedBy = :modifiedBy"),
     @NamedQuery(name = "ComptypeProperty.findByVersion", query = "SELECT c FROM ComptypeProperty c WHERE c.version = :version")})
 public class ComptypeProperty extends ConfigurationEntity {
     private static final long serialVersionUID = 1L;
-
-    @Size(max = 4)
-    @Column(name = "type")
-    private String type;
 
     @Column(name = "prop_value", columnDefinition="TEXT")
     private String propValue;
@@ -63,14 +58,6 @@ public class ComptypeProperty extends ConfigurationEntity {
         this.inRepository = inRepository;
         this.modifiedBy = modifiedBy;
         this.modifiedAt = new Date();
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
     }
 
     public String getPropValue() {

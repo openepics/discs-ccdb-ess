@@ -28,7 +28,6 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Unit.findByQuantity", query = "SELECT u FROM Unit u WHERE u.quantity = :quantity"),
     @NamedQuery(name = "Unit.findBySymbol", query = "SELECT u FROM Unit u WHERE u.symbol = :symbol"),
     @NamedQuery(name = "Unit.findByDescription", query = "SELECT u FROM Unit u WHERE u.description = :description"),
-    @NamedQuery(name = "Unit.findByBaseUnitExpr", query = "SELECT u FROM Unit u WHERE u.baseUnitExpr = :baseUnitExpr"),
     @NamedQuery(name = "Unit.findByModifiedAt", query = "SELECT u FROM Unit u WHERE u.modifiedAt = :modifiedAt"),
     @NamedQuery(name = "Unit.findByModifiedBy", query = "SELECT u FROM Unit u WHERE u.modifiedBy = :modifiedBy"),
     @NamedQuery(name = "Unit.findByVersion", query = "SELECT u FROM Unit u WHERE u.version = :version")})
@@ -59,10 +58,6 @@ public class Unit extends ConfigurationEntity {
     @Column(name = "description")
     private String description;
 
-    @Size(max = 255)
-    @Column(name = "base_unit_expr")
-    private String baseUnitExpr;
-
     @OneToMany(mappedBy = "unit")
     private List<ComptypeProperty> comptypePropertyList;
 
@@ -78,11 +73,10 @@ public class Unit extends ConfigurationEntity {
     protected Unit() {
     }
 
-    public Unit(String unitName, String quantity, String symbol, String baseUnitExpr, String description, String modifiedBy) {
+    public Unit(String unitName, String quantity, String symbol, String description, String modifiedBy) {
         this.unitName = unitName;
         this.quantity = quantity;
         this.symbol = symbol;
-        this.baseUnitExpr = baseUnitExpr;
         this.description = description;
         this.modifiedBy = modifiedBy;
         this.modifiedAt = new Date();
@@ -118,14 +112,6 @@ public class Unit extends ConfigurationEntity {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getBaseUnitExpr() {
-        return baseUnitExpr;
-    }
-
-    public void setBaseUnitExpr(String baseUnitExpr) {
-        this.baseUnitExpr = baseUnitExpr;
     }
 
     @XmlTransient
