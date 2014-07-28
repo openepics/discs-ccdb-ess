@@ -34,14 +34,6 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Slot.findByName", query = "SELECT s FROM Slot s WHERE s.name = :name"),
     @NamedQuery(name = "Slot.findByIsHostingSlot", query = "SELECT s FROM Slot s WHERE s.isHostingSlot = :isHostingSlot"),
     @NamedQuery(name = "Slot.findByBeamlinePosition", query = "SELECT s FROM Slot s WHERE s.beamlinePosition = :beamlinePosition"),
-    @NamedQuery(name = "Slot.findByGlobalX", query = "SELECT s FROM Slot s WHERE s.globalX = :globalX"),
-    @NamedQuery(name = "Slot.findByGlobalY", query = "SELECT s FROM Slot s WHERE s.globalY = :globalY"),
-    @NamedQuery(name = "Slot.findByGlobalZ", query = "SELECT s FROM Slot s WHERE s.globalZ = :globalZ"),
-    @NamedQuery(name = "Slot.findByGlobalRoll", query = "SELECT s FROM Slot s WHERE s.globalRoll = :globalRoll"),
-    @NamedQuery(name = "Slot.findByGlobalYaw", query = "SELECT s FROM Slot s WHERE s.globalYaw = :globalYaw"),
-    @NamedQuery(name = "Slot.findByGlobalPitch", query = "SELECT s FROM Slot s WHERE s.globalPitch = :globalPitch"),
-    @NamedQuery(name = "Slot.findByAsmPosition", query = "SELECT s FROM Slot s WHERE s.asmPosition = :asmPosition"),
-    @NamedQuery(name = "Slot.findByComment", query = "SELECT s FROM Slot s WHERE s.comment = :comment"),
     @NamedQuery(name = "Slot.findByModifiedBy", query = "SELECT s FROM Slot s WHERE s.modifiedBy = :modifiedBy")})
 public class Slot extends ConfigurationEntity {
     private static final long serialVersionUID = 1L;
@@ -116,10 +108,10 @@ public class Slot extends ConfigurationEntity {
     private List<InstallationRecord> installationRecordList;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "childSlot")
-    private List<SlotPair> slotPairList;
+    private List<SlotPair> childrenSlots;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "parentSlot")
-    private List<SlotPair> slotPairList1;
+    private List<SlotPair> parentSlots;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "slot")
     private List<SlotProperty> slotPropertyList;
@@ -202,12 +194,12 @@ public class Slot extends ConfigurationEntity {
     public void setInstallationRecordList(List<InstallationRecord> installationRecordList) { this.installationRecordList = installationRecordList; }
 
     @XmlTransient
-    public List<SlotPair> getSlotPairList() { return slotPairList; }
-    public void setSlotPairList(List<SlotPair> slotPairList) { this.slotPairList = slotPairList; }
+    public List<SlotPair> getSlotPairList() { return childrenSlots; }
+    public void setSlotPairList(List<SlotPair> slotPairList) { this.childrenSlots = slotPairList; }
 
     @XmlTransient
-    public List<SlotPair> getSlotPairList1() { return slotPairList1; }
-    public void setSlotPairList1(List<SlotPair> slotPairList1) { this.slotPairList1 = slotPairList1; }
+    public List<SlotPair> getSlotPairList1() { return parentSlots; }
+    public void setSlotPairList1(List<SlotPair> slotPairList1) { this.parentSlots = slotPairList1; }
 
     @XmlTransient
     public List<SlotProperty> getSlotPropertyList() { return slotPropertyList; }

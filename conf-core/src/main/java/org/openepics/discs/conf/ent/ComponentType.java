@@ -53,10 +53,10 @@ public class ComponentType extends ConfigurationEntity {
     private List<Slot> slotList;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "childType")
-    private List<ComptypeAsm> comptypeAsmList;
+    private List<ComptypeAsm> childrenTypes;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "parentType")
-    private List<ComptypeAsm> comptypeAsmList1;
+    private List<ComptypeAsm> parentTypes;
 
     @OneToMany(mappedBy = "superComponentType")
     private List<ComponentType> componentTypeList;
@@ -101,12 +101,12 @@ public class ComponentType extends ConfigurationEntity {
     public void setSlotList(List<Slot> slotList) { this.slotList = slotList; }
 
     @XmlTransient
-    public List<ComptypeAsm> getComptypeAsmList() { return comptypeAsmList; }
-    public void setComptypeAsmList(List<ComptypeAsm> comptypeAsmList) { this.comptypeAsmList = comptypeAsmList; }
+    public List<ComptypeAsm> getComptypeAsmList() { return childrenTypes; }
+    public void setComptypeAsmList(List<ComptypeAsm> comptypeAsmList) { this.childrenTypes = comptypeAsmList; }
 
     @XmlTransient
-    public List<ComptypeAsm> getComptypeAsmList1() { return comptypeAsmList1; }
-    public void setComptypeAsmList1(List<ComptypeAsm> comptypeAsmList1) { this.comptypeAsmList1 = comptypeAsmList1; }
+    public List<ComptypeAsm> getComptypeAsmList1() { return parentTypes; }
+    public void setComptypeAsmList1(List<ComptypeAsm> comptypeAsmList1) { this.parentTypes = comptypeAsmList1; }
 
     @XmlTransient
     public List<ComponentType> getComponentTypeList() { return componentTypeList; }

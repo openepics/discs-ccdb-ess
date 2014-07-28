@@ -37,7 +37,7 @@ import org.openepics.discs.conf.ui.LoginManager;
     @Inject private LoginManager loginManager;
 
     // ----------- Audit record ---------------------------------------
-    private void makeAuditEntry(EntityTypeOperation oper, String key, String entry) {
+    private void makeAuditEntry(EntityTypeOperation oper, String key, String entry, Long id) {
         AuditRecord arec = new AuditRecord(new Date(), oper, loginManager.getUserid(), entry);
         arec.setEntityType(EntityType.COMPONENT_TYPE);
         arec.setEntityKey(key);
@@ -76,18 +76,18 @@ import org.openepics.discs.conf.ui.LoginManager;
     public void saveComponentType(ComponentType ctype) {
         ctype.setModifiedAt(new Date());
         em.merge(ctype);
-        makeAuditEntry(EntityTypeOperation.UPDATE, ctype.getName(), "Updated component type");
+        makeAuditEntry(EntityTypeOperation.UPDATE, ctype.getName(), "Updated component type", ctype.getId());
     }
 
     public void addComponentType(ComponentType ctype) {
         em.persist(ctype);
-        makeAuditEntry(EntityTypeOperation.CREATE, ctype.getName(), "Created component type");
+        makeAuditEntry(EntityTypeOperation.CREATE, ctype.getName(), "Created component type", ctype.getId());
     }
 
     public void deleteComponentType(ComponentType ctype) {
         final ComponentType merged = em.merge(ctype);
         em.remove(merged);
-        makeAuditEntry(EntityTypeOperation.DELETE, ctype.getName(), "Deleted component type");
+        makeAuditEntry(EntityTypeOperation.DELETE, ctype.getName(), "Deleted component type", ctype.getId());
     }
 
     // ---------------- Component Type Property ---------------------
@@ -101,7 +101,7 @@ import org.openepics.discs.conf.ui.LoginManager;
             ctype.getComptypePropertyList().add(newProp);
             em.merge(ctype);
         }
-        makeAuditEntry(EntityTypeOperation.UPDATE, ctprop.getComponentType().getName(), "Updated property " + ctprop.getProperty().getName());
+        makeAuditEntry(EntityTypeOperation.UPDATE, ctprop.getComponentType().getName(), "Updated property " + ctprop.getProperty().getName(), ctprop.getComponentType().getId());
         logger.log(Level.INFO, "Comp Type Property: id " + newProp.getId() + " name " + newProp.getProperty().getName());
     }
 
@@ -111,7 +111,7 @@ import org.openepics.discs.conf.ui.LoginManager;
         ComponentType arec = property.getComponentType();
         arec.getComptypePropertyList().remove(property);
         em.remove(property);
-        makeAuditEntry(EntityTypeOperation.UPDATE, ctp.getComponentType().getName(), "Deleted property " + ctp.getProperty().getName());
+        makeAuditEntry(EntityTypeOperation.UPDATE, ctp.getComponentType().getName(), "Deleted property " + ctp.getProperty().getName(), ctp.getComponentType().getId());
     }
 
     public void addCompTypeProp(ComptypeProperty ctp) {
@@ -140,7 +140,7 @@ import org.openepics.discs.conf.ui.LoginManager;
             ctype.getComptypeArtifactList().add(newArt);
             em.merge(ctype);
         }
-        makeAuditEntry(EntityTypeOperation.UPDATE, art.getComponentType().getName(), "Updated artifact " + art.getName());
+        makeAuditEntry(EntityTypeOperation.UPDATE, art.getComponentType().getName(), "Updated artifact " + art.getName(), art.getComponentType().getId());
         logger.log(Level.INFO, "Artifact: name " + newArt.getName() + " description " + newArt.getDescription() + " uri " + newArt.getUri() + "is int " + newArt.getIsInternal());
         // logger.log(Level.INFO, "device serial " + device.getSerialNumber());
         // return newArt;
@@ -162,7 +162,7 @@ import org.openepics.discs.conf.ui.LoginManager;
         ComponentType arec = artifact.getComponentType();
         arec.getComptypeArtifactList().remove(artifact);
         em.remove(artifact);
-        makeAuditEntry(EntityTypeOperation.UPDATE, art.getComponentType().getName(), "Deleted artifact " + art.getName());
+        makeAuditEntry(EntityTypeOperation.UPDATE, art.getComponentType().getName(), "Deleted artifact " + art.getName(), art.getComponentType().getId());
     }
 
     // ---------------- Component Type Assmebly ---------------------
@@ -185,7 +185,7 @@ import org.openepics.discs.conf.ui.LoginManager;
             prt.setParentType(ctype);
             em.merge(prt);
             em.merge(ctype);
-            makeAuditEntry(EntityTypeOperation.UPDATE, ctype.getName(), "Updated component type. Added an assembly part");
+            makeAuditEntry(EntityTypeOperation.UPDATE, ctype.getName(), "Updated component type. Added an assembly part", ctype.getId());
         }
     }
 
@@ -199,7 +199,7 @@ import org.openepics.discs.conf.ui.LoginManager;
             ComptypeAsm entity = em.find(ComptypeAsm.class, prt.getId());
             em.remove(entity);
             em.merge(ctype);
-            makeAuditEntry(EntityTypeOperation.UPDATE, ctype.getName(), "Updated component type. Deleted a part from assembly.");
+            makeAuditEntry(EntityTypeOperation.UPDATE, ctype.getName(), "Updated component type. Deleted a part from assembly.", ctype.getId());
         }
     }
 

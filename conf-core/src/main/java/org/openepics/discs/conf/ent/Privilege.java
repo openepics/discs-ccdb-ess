@@ -27,9 +27,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Privilege.findAll", query = "SELECT p FROM Privilege p"),
-    @NamedQuery(name = "Privilege.findByPrivilegeId", query = "SELECT p FROM Privilege p WHERE p.privilegeId = :privilegeId"),
-    @NamedQuery(name = "Privilege.findByResource", query = "SELECT p FROM Privilege p WHERE p.resource = :resource"),
-    @NamedQuery(name = "Privilege.findByOper", query = "SELECT p FROM Privilege p WHERE p.oper = :oper")})
+    @NamedQuery(name = "Privilege.findByPrivilegeId", query = "SELECT p FROM Privilege p WHERE p.privilegeId = :privilegeId")})
 public class Privilege implements Serializable {
     private static final long serialVersionUID = 1L;
 

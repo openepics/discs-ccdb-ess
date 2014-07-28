@@ -36,7 +36,7 @@ import org.openepics.discs.conf.ui.LoginManager;
     @Inject private LoginManager loginManager;
 
     // ----------- Audit record ---------------------------------------
-    private void makeAuditEntry(EntityTypeOperation oper, String key, String entry) {
+    private void makeAuditEntry(EntityTypeOperation oper, String key, String entry, Long id) {
         AuditRecord arec = new AuditRecord(new Date(), oper, loginManager.getUserid(), entry);
         arec.setEntityType(EntityType.INSTALLATION_RECORD);
         arec.setEntityKey(key);
@@ -82,7 +82,7 @@ import org.openepics.discs.conf.ui.LoginManager;
         } else {
             em.merge(irec);
         }
-        makeAuditEntry(EntityTypeOperation.UPDATE, irec.getRecordNumber(), "updated installation record ");
+        makeAuditEntry(EntityTypeOperation.UPDATE, irec.getRecordNumber(), "updated installation record ", irec.getId());
     }
 
     public void deleteIRecord(InstallationRecord irec) throws Exception {
@@ -97,7 +97,7 @@ import org.openepics.discs.conf.ui.LoginManager;
         }
         InstallationRecord ct = em.find(InstallationRecord.class, irec.getId());
         em.remove(ct);
-        makeAuditEntry(EntityTypeOperation.DELETE, irec.getRecordNumber(), "deleted installation record ");
+        makeAuditEntry(EntityTypeOperation.DELETE, irec.getRecordNumber(), "deleted installation record ", irec.getId());
     }
 
     // ---------------- Artifact ---------------------
@@ -120,7 +120,7 @@ import org.openepics.discs.conf.ui.LoginManager;
             arec.getInstallationArtifactList().add(newArt);
             em.merge(arec);
         }
-        makeAuditEntry(EntityTypeOperation.UPDATE, art.getInstallationRecord().getRecordNumber(), "updated installation artifact " + art.getName());
+        makeAuditEntry(EntityTypeOperation.UPDATE, art.getInstallationRecord().getRecordNumber(), "updated installation artifact " + art.getName(), art.getInstallationRecord().getId());
         logger.log(Level.INFO, "Artifact: name " + art.getName() + " description " + art.getDescription() + " uri " + art.getUri() + "is int " + art.getIsInternal());
         // logger.log(Level.INFO, "device serial " + device.getSerialNumber());
     }
@@ -141,6 +141,6 @@ import org.openepics.discs.conf.ui.LoginManager;
 
         em.remove(artifact);
         irec.getInstallationArtifactList().remove(artifact);
-        makeAuditEntry(EntityTypeOperation.UPDATE, art.getInstallationRecord().getRecordNumber(), "deleted installation artifact " + art.getName());
+        makeAuditEntry(EntityTypeOperation.UPDATE, art.getInstallationRecord().getRecordNumber(), "deleted installation artifact " + art.getName(), art.getInstallationRecord().getId());
     }
 }

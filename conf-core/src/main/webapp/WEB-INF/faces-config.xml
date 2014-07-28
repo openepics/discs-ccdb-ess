@@ -5,10 +5,10 @@
               xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-facesconfig_2_2.xsd">
 
     <application>
-    	<resource-bundle>
+        <resource-bundle>
             <base-name>messages</base-name>
             <var>msgs</var>
-        </resource-bundle>   
+        </resource-bundle>       
     </application>
     <navigation-rule>
 	    <from-view-id>*</from-view-id>

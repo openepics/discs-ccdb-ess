@@ -26,9 +26,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "ComptypeArtifact.findByArtifactId", query = "SELECT c FROM ComptypeArtifact c WHERE c.id = :id"),
     @NamedQuery(name = "ComptypeArtifact.findByName", query = "SELECT c FROM ComptypeArtifact c WHERE c.name = :name"),
     @NamedQuery(name = "ComptypeArtifact.findByIsInternal", query = "SELECT c FROM ComptypeArtifact c WHERE c.isInternal = :isInternal"),
-    @NamedQuery(name = "ComptypeArtifact.findByDescription", query = "SELECT c FROM ComptypeArtifact c WHERE c.description = :description"),
-    @NamedQuery(name = "ComptypeArtifact.findByModifiedBy", query = "SELECT c FROM ComptypeArtifact c WHERE c.modifiedBy = :modifiedBy"),
-    @NamedQuery(name = "ComptypeArtifact.findByModifiedAt", query = "SELECT c FROM ComptypeArtifact c WHERE c.modifiedAt = :modifiedAt")})
+    @NamedQuery(name = "ComptypeArtifact.findByModifiedBy", query = "SELECT c FROM ComptypeArtifact c WHERE c.modifiedBy = :modifiedBy")})
 public class ComptypeArtifact extends ConfigurationEntity {
     private static final long serialVersionUID = 1L;
 

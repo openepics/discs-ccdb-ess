@@ -35,15 +35,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "AlignmentRecord.findByAlignmentRecordId", query = "SELECT a FROM AlignmentRecord a WHERE a.id = :id"),
     @NamedQuery(name = "AlignmentRecord.findByRecordNumber", query = "SELECT a FROM AlignmentRecord a WHERE a.recordNumber = :recordNumber"),
     @NamedQuery(name = "AlignmentRecord.findByAlignmentDate", query = "SELECT a FROM AlignmentRecord a WHERE a.alignmentDate = :alignmentDate"),
-    @NamedQuery(name = "AlignmentRecord.findByGlobalX", query = "SELECT a FROM AlignmentRecord a WHERE a.globalX = :globalX"),
-    @NamedQuery(name = "AlignmentRecord.findByGlobalY", query = "SELECT a FROM AlignmentRecord a WHERE a.globalY = :globalY"),
-    @NamedQuery(name = "AlignmentRecord.findByGlobalZ", query = "SELECT a FROM AlignmentRecord a WHERE a.globalZ = :globalZ"),
-    @NamedQuery(name = "AlignmentRecord.findByGlobalPitch", query = "SELECT a FROM AlignmentRecord a WHERE a.globalPitch = :globalPitch"),
-    @NamedQuery(name = "AlignmentRecord.findByGlobalYaw", query = "SELECT a FROM AlignmentRecord a WHERE a.globalYaw = :globalYaw"),
-    @NamedQuery(name = "AlignmentRecord.findByGlobalRoll", query = "SELECT a FROM AlignmentRecord a WHERE a.globalRoll = :globalRoll"),
-    @NamedQuery(name = "AlignmentRecord.findByModifiedAt", query = "SELECT a FROM AlignmentRecord a WHERE a.modifiedAt = :modifiedAt"),
-    @NamedQuery(name = "AlignmentRecord.findByModifiedBy", query = "SELECT a FROM AlignmentRecord a WHERE a.modifiedBy = :modifiedBy"),
-    @NamedQuery(name = "AlignmentRecord.findByVersion", query = "SELECT a FROM AlignmentRecord a WHERE a.version = :version")})
+    @NamedQuery(name = "AlignmentRecord.findByModifiedBy", query = "SELECT a FROM AlignmentRecord a WHERE a.modifiedBy = :modifiedBy")})
 public class AlignmentRecord extends ConfigurationEntity {
     private static final long serialVersionUID = 1L;
 

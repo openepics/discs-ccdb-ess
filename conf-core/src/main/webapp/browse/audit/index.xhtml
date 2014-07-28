@@ -23,7 +23,7 @@
                         <f:convertDateTime pattern="#{msgs.dateFormat}"/>
                     </h:outputText>
                 </p:column>
-                <p:column id="desc" headerText="Description" filterBy="#{item.user}" filterMatchMode="contains">
+                <p:column id="desc" headerText="User" filterBy="#{item.user}" filterMatchMode="contains">
                     <h:outputText value="#{item.user}"/>
                 </p:column>              
                 <p:column  headerText="Operation" >

@@ -26,9 +26,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "DeviceArtifact.findByArtifactId", query = "SELECT d FROM DeviceArtifact d WHERE d.id = :id"),
     @NamedQuery(name = "DeviceArtifact.findByName", query = "SELECT d FROM DeviceArtifact d WHERE d.name = :name"),
     @NamedQuery(name = "DeviceArtifact.findByIsInternal", query = "SELECT d FROM DeviceArtifact d WHERE d.isInternal = :isInternal"),
-    @NamedQuery(name = "DeviceArtifact.findByDescription", query = "SELECT d FROM DeviceArtifact d WHERE d.description = :description"),
-    @NamedQuery(name = "DeviceArtifact.findByModifiedBy", query = "SELECT d FROM DeviceArtifact d WHERE d.modifiedBy = :modifiedBy"),
-    @NamedQuery(name = "DeviceArtifact.findByModifiedAt", query = "SELECT d FROM DeviceArtifact d WHERE d.modifiedAt = :modifiedAt")})
+    @NamedQuery(name = "DeviceArtifact.findByModifiedBy", query = "SELECT d FROM DeviceArtifact d WHERE d.modifiedBy = :modifiedBy")})
 public class DeviceArtifact extends ConfigurationEntity {
     private static final long serialVersionUID = 1L;
 

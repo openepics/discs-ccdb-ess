@@ -28,5 +28,7 @@ public enum PropertyAssociation {
 	/** The property is for both <i>Component Type</i> and <i>Slot</i>. */
 	TYPE_SLOT,
 	/** The property is for <i>Component Type</i>, <i>Slot</i> and <i>Physical Device</i> .*/
-	ALL
+	ALL,
+	/** The property is for <i>Alignment Record</i>. */
+	ALIGNMENT
 }
