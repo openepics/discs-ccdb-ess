@@ -6,17 +6,13 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nullable;
-import javax.annotation.Resource;
-import javax.ejb.EJBContext;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
 import org.openepics.discs.conf.dl.common.AbstractDataLoader;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
-import org.openepics.discs.conf.dl.common.DataLoaderResult.RowFormatFailureReason;
+import org.openepics.discs.conf.dl.common.ErrorMessage;
+import org.openepics.discs.conf.dl.common.ValidationMessage;
 import org.openepics.discs.conf.ejb.AuthEJB;
 import org.openepics.discs.conf.ejb.ConfigurationEJB;
 import org.openepics.discs.conf.ent.EntityType;
@@ -38,11 +34,9 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
     @Inject private LoginManager loginManager;
     @Inject private AuthEJB authEJB;
     @Inject private ConfigurationEJB configurationEJB;
-    @PersistenceContext private EntityManager em;
-    @Resource private EJBContext context;
 
     private Map<String, Unit> unitByName;
-    private int nameIndex, quantityIndex, symbolIndex, baseUnitExprIndex, descriptionIndex;
+    private int nameIndex, quantityIndex, symbolIndex, descriptionIndex;
 
     @Override public DataLoaderResult loadDataToDatabase(List<List<String>> inputRows) {
         init();
@@ -52,18 +46,21 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
          * in the first column. There should be no commands before "HEADER".
          */
         List<String> headerRow = inputRows.get(0);
-        DataLoaderResult fieldsIndexSetupResult = setUpIndexesForFields(headerRow);
+        setUpIndexesForFields(headerRow);
 
-        if (fieldsIndexSetupResult instanceof DataLoaderResult.FailureDataLoaderResult) {
-            return fieldsIndexSetupResult;
+        if (rowResult.isError()) {
+            loaderResult.addResult(rowResult);
+            return loaderResult;
         } else {
             for (List<String> row : inputRows.subList(1, inputRows.size())) {
                 final String rowNumber = row.get(0);
-                if (row.get(1).equals(CMD_HEADER)) {
+                loaderResult.addResult(rowResult);
+                rowResult = new DataLoaderResult();
+                if (row.get(commandIndex).equals(CMD_HEADER)) {
                     headerRow = row;
-                    fieldsIndexSetupResult = setUpIndexesForFields(headerRow);
-                    if (fieldsIndexSetupResult instanceof DataLoaderResult.FailureDataLoaderResult) {
-                        return fieldsIndexSetupResult;
+                    setUpIndexesForFields(headerRow);
+                    if (rowResult.isError()) {
+                        return loaderResult;
                     } else {
                         continue; // skip the rest of the processing for HEADER row
                     }
@@ -71,115 +68,135 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
                     break;
                 }
 
-                final String command = As.notNull(row.get(1).toUpperCase());
+                final String command = As.notNull(row.get(commandIndex).toUpperCase());
                 final @Nullable String name = row.get(nameIndex);
                 final @Nullable String quantity = row.get(quantityIndex);
                 final @Nullable String symbol = row.get(symbolIndex);
                 final @Nullable String description = row.get(descriptionIndex);
-                final @Nullable String baseUnitExpr = baseUnitExprIndex == -1 ? null : row.get(baseUnitExprIndex);
+
                 final Date modifiedAt = new Date();
                 final String modifiedBy = loginManager.getUserid();
 
-                if (name == null || quantity == null || symbol == null || description == null) {
-                    return new DataLoaderResult.RowFormatFailureDataLoaderResult(rowNumber, RowFormatFailureReason.REQUIRED_FIELD_MISSING);
+                if (name == null) {
+                    rowResult.addMessage(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, rowNumber, headerRow.get(nameIndex)));
+                } else if (quantity == null && !command.equals(CMD_RENAME)) {
+                    rowResult.addMessage(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, rowNumber, headerRow.get(quantityIndex)));
+                } else if (symbol == null && !command.equals(CMD_RENAME)) {
+                    rowResult.addMessage(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, rowNumber, headerRow.get(symbolIndex)));
+                } else if (description == null && !command.equals(CMD_RENAME)) {
+                    rowResult.addMessage(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, rowNumber, headerRow.get(descriptionIndex)));
                 }
 
-                switch (command) {
-                case CMD_UPDATE:
-                    if (unitByName.containsKey(name)) {
-                        if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.UNIT, EntityTypeOperation.UPDATE)) {
-                            final Unit unitToUpdate = unitByName.get(name);
-                            unitToUpdate.setBaseUnitExpr(baseUnitExpr);
-                            unitToUpdate.setDescription(description);
-                            unitToUpdate.setQuantity(quantity);
-                            unitToUpdate.setSymbol(symbol);
-                            unitToUpdate.setModifiedAt(modifiedAt);
-                            configurationEJB.saveUnit(unitToUpdate);
-                        } else {
-                            return new DataLoaderResult.NotAuthorizedFailureDataLoaderResult(EntityTypeOperation.UPDATE);
-                        }
-                    } else {
-                        if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.UNIT, EntityTypeOperation.CREATE)) {
-                            final Unit unitToAdd = new Unit(name, quantity, symbol, baseUnitExpr, description, modifiedBy);
-                            configurationEJB.addUnit(unitToAdd);
-                            unitByName.put(unitToAdd.getUnitName(), unitToAdd);
-                        } else {
-                            return new DataLoaderResult.NotAuthorizedFailureDataLoaderResult(EntityTypeOperation.CREATE);
-                        }
-                    }
-                    break;
-                case CMD_DELETE:
-                    if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.UNIT, EntityTypeOperation.DELETE)) {
-                        final Unit unitToDelete = unitByName.get(name);
-                        if (unitToDelete == null) {
-                           return new DataLoaderResult.EntityNotFoundFailureDataLoaderResult(rowNumber, EntityType.UNIT);
-                        } else {
-                            configurationEJB.deleteUnit(unitToDelete);
-                            unitByName.remove(unitToDelete.getUnitName());
-                        }
-                    } else {
-                        return new DataLoaderResult.NotAuthorizedFailureDataLoaderResult(EntityTypeOperation.DELETE);
-                    }
-                    break;
-                case CMD_RENAME:
-                    if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.UNIT, EntityTypeOperation.RENAME)) {
-                        final int startOldNameMarkerIndex = name.indexOf("[");
-                        final int endOldNameMarkerIndex = name.indexOf("]");
-                        if (startOldNameMarkerIndex == -1 || endOldNameMarkerIndex == -1) {
-                            return new DataLoaderResult.RowFormatFailureDataLoaderResult(rowNumber, RowFormatFailureReason.RENAME_MISFORMAT);
-                        }
-
-                        final String oldName = name.substring(startOldNameMarkerIndex + 1, endOldNameMarkerIndex).trim();
-                        final String newName = name.substring(endOldNameMarkerIndex + 1).trim();
-
-                        if (unitByName.containsKey(oldName)) {
-                            if (unitByName.containsKey(newName)) {
-                                return new DataLoaderResult.RowFormatFailureDataLoaderResult(rowNumber, RowFormatFailureReason.DUPLICATE_ENTITY);
+                if (!rowResult.isError()) {
+                    switch (command) {
+                    case CMD_UPDATE:
+                        if (unitByName.containsKey(name)) {
+                            if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.UNIT, EntityTypeOperation.UPDATE)) {
+                                final Unit unitToUpdate = unitByName.get(name);
+                                unitToUpdate.setDescription(description);
+                                unitToUpdate.setQuantity(quantity);
+                                unitToUpdate.setSymbol(symbol);
+                                unitToUpdate.setModifiedAt(modifiedAt);
+                                configurationEJB.saveUnit(unitToUpdate);
                             } else {
-                                final Unit unitToRename = unitByName.get(oldName);
-                                unitToRename.setUnitName(newName);
-                                configurationEJB.saveUnit(unitToRename);
-                                unitByName.remove(oldName);
-                                unitByName.put(newName, unitToRename);
+                                rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex), EntityTypeOperation.UPDATE, EntityType.UNIT));
+                                continue;
                             }
                         } else {
-                            return new DataLoaderResult.EntityNotFoundFailureDataLoaderResult(rowNumber, EntityType.UNIT);
+                            if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.UNIT, EntityTypeOperation.CREATE)) {
+                                final Unit unitToAdd = new Unit(name, quantity, symbol, description, modifiedBy);
+                                configurationEJB.addUnit(unitToAdd);
+                                unitByName.put(unitToAdd.getUnitName(), unitToAdd);
+                            } else {
+                                rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex), EntityTypeOperation.CREATE, EntityType.UNIT));
+                                continue;
+                            }
                         }
-                    } else {
-                        return new DataLoaderResult.NotAuthorizedFailureDataLoaderResult(EntityTypeOperation.RENAME);
+                        break;
+                    case CMD_DELETE:
+                        if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.UNIT, EntityTypeOperation.DELETE)) {
+                            final Unit unitToDelete = unitByName.get(name);
+                            if (unitToDelete == null) {
+                               rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex), EntityTypeOperation.DELETE, EntityType.UNIT));
+                               continue;
+                            } else {
+                                configurationEJB.deleteUnit(unitToDelete);
+                                unitByName.remove(unitToDelete.getUnitName());
+                            }
+                        } else {
+                            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex), EntityTypeOperation.DELETE, EntityType.UNIT));
+                            continue;
+                        }
+                        break;
+                    case CMD_RENAME:
+                        if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.UNIT, EntityTypeOperation.RENAME)) {
+                            final int startOldNameMarkerIndex = name.indexOf("[");
+                            final int endOldNameMarkerIndex = name.indexOf("]");
+                            if (startOldNameMarkerIndex == -1 || endOldNameMarkerIndex == -1) {
+                                rowResult.addMessage(new ValidationMessage(ErrorMessage.RENAME_MISFORMAT, rowNumber, headerRow.get(nameIndex)));
+                                continue;
+                            }
+
+                            final String oldName = name.substring(startOldNameMarkerIndex + 1, endOldNameMarkerIndex).trim();
+                            final String newName = name.substring(endOldNameMarkerIndex + 1).trim();
+
+                            if (unitByName.containsKey(oldName)) {
+                                if (unitByName.containsKey(newName)) {
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NAME_ALREADY_EXISTS, rowNumber, headerRow.get(nameIndex), EntityTypeOperation.RENAME, EntityType.UNIT));
+                                    continue;
+                                } else {
+                                    final Unit unitToRename = unitByName.get(oldName);
+                                    unitToRename.setUnitName(newName);
+                                    configurationEJB.saveUnit(unitToRename);
+                                    unitByName.remove(oldName);
+                                    unitByName.put(newName, unitToRename);
+                                }
+                            } else {
+                                rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex), EntityTypeOperation.RENAME, EntityType.UNIT));
+                                continue;
+                            }
+                        } else {
+                            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex), EntityTypeOperation.RENAME, EntityType.UNIT));
+                            continue;
+                        }
+                        break;
+                    default:
+                        rowResult.addMessage(new ValidationMessage(ErrorMessage.COMMAND_NOT_VALID, rowNumber, headerRow.get(commandIndex)));
                     }
-                    break;
-                default:
-                    return new DataLoaderResult.RowFormatFailureDataLoaderResult(rowNumber, RowFormatFailureReason.COMMAND_NOT_VALID);
                 }
             }
         }
-
-        return new DataLoaderResult.SuccessDataLoaderResult();
+        loaderResult.addResult(rowResult);
+        return loaderResult;
     }
 
     /**
      * Local cache of all units by their names to speed up operations.
      */
     private void init() {
+        loaderResult = new DataLoaderResult();
         unitByName = new HashMap<>();
         for (Unit unit : configurationEJB.findUnits()) {
             unitByName.put(unit.getUnitName(), unit);
         }
     }
 
-    @Override protected DataLoaderResult setUpIndexesForFields(List<String> header) {
+    @Override protected void setUpIndexesForFields(List<String> header) {
         final String rowNumber = header.get(0);
-        nameIndex = header.indexOf("NAME");
-        quantityIndex = header.indexOf("QUANTITY");
-        symbolIndex = header.indexOf("SYMBOL");
-        baseUnitExprIndex = header.indexOf("EXPR");
-        descriptionIndex = header.indexOf("DESCRIPTION");
+        rowResult = new DataLoaderResult();
+        nameIndex = setUpFieldIndex(header, "NAME");
+        quantityIndex = setUpFieldIndex(header, "QUANTITY");
+        symbolIndex = setUpFieldIndex(header, "SYMBOL");
+        descriptionIndex = setUpFieldIndex(header, "DESCRIPTION");
 
-        if (nameIndex == -1 || quantityIndex == -1 || symbolIndex == -1 || baseUnitExprIndex == -1 || descriptionIndex == -1) {
-            return new DataLoaderResult.RowFormatFailureDataLoaderResult(rowNumber, RowFormatFailureReason.HEADER_FIELD_MISSING);
-        } else {
-            return new DataLoaderResult.SuccessDataLoaderResult();
+        if (nameIndex == -1) {
+            rowResult.addMessage(new ValidationMessage(ErrorMessage.HEADER_FIELD_MISSING, rowNumber, "NAME"));
+        } else if (quantityIndex == -1) {
+            rowResult.addMessage(new ValidationMessage(ErrorMessage.HEADER_FIELD_MISSING, rowNumber, "QUANTITY"));
+        } else if (symbolIndex == -1) {
+            rowResult.addMessage(new ValidationMessage(ErrorMessage.HEADER_FIELD_MISSING, rowNumber, "SYMBOL"));
+        } else if (descriptionIndex == -1) {
+            rowResult.addMessage(new ValidationMessage(ErrorMessage.HEADER_FIELD_MISSING, rowNumber, "DESCRIPTION"));
         }
     }
 }

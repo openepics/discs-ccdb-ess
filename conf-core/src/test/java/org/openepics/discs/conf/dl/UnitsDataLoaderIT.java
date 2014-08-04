@@ -1,6 +1,5 @@
 package org.openepics.discs.conf.dl;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
@@ -16,8 +15,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
-import org.openepics.discs.conf.dl.common.DataLoaderResult.NotAuthorizedFailureDataLoaderResult;
-import org.openepics.discs.conf.dl.common.DataLoaderResult.RowFormatFailureDataLoaderResult;
+import org.openepics.discs.conf.dl.common.ErrorMessage;
 
 import com.google.common.collect.ImmutableList;
 
@@ -45,20 +43,20 @@ public class UnitsDataLoaderIT {
 
     @Test
     public void notAuthorizedTest() {
-        inputRows.add(ImmutableList.of("1", "HEADER", "NAME", "SYMBOL", "EXPR", "QUANTITY", "DESCRIPTION"));
-        inputRows.add(ImmutableList.of("2", "UPDATE", "Ampere", "A", "", "Current", "Electric current"));
+        inputRows.add(ImmutableList.of("1", "HEADER", "NAME", "SYMBOL", "QUANTITY", "DESCRIPTION"));
+        inputRows.add(ImmutableList.of("2", "UPDATE", "Ampere", "A", "Current", "Electric current"));
         DataLoaderResult dataLoaderResult = unitsDataLoader.loadDataToDatabase(inputRows);
-        assertThat(dataLoaderResult, instanceOf(DataLoaderResult.NotAuthorizedFailureDataLoaderResult.class));
+        assertEquals(ErrorMessage.NOT_AUTHORIZED, dataLoaderResult.getMessages().get(0).getMessage());
 
         inputRows.remove(1);
-        inputRows.add(ImmutableList.of("2", "DELETE", "Ampere", "A", "", "Current", "Electric current"));
+        inputRows.add(ImmutableList.of("2", "DELETE", "Ampere", "A", "Current", "Electric current"));
         dataLoaderResult = unitsDataLoader.loadDataToDatabase(inputRows);
-        assertThat(dataLoaderResult, instanceOf(DataLoaderResult.NotAuthorizedFailureDataLoaderResult.class));
+        assertEquals(ErrorMessage.NOT_AUTHORIZED, dataLoaderResult.getMessages().get(0).getMessage());
 
         inputRows.remove(1);
-        inputRows.add(ImmutableList.of("2", "RENAME", "Ampere", "A", "", "Current", "Electric current"));
+        inputRows.add(ImmutableList.of("2", "RENAME", "Ampere", "A", "Current", "Electric current"));
         dataLoaderResult = unitsDataLoader.loadDataToDatabase(inputRows);
-        assertThat(dataLoaderResult, instanceOf(DataLoaderResult.NotAuthorizedFailureDataLoaderResult.class));
+        assertEquals(ErrorMessage.NOT_AUTHORIZED, dataLoaderResult.getMessages().get(0).getMessage());
     }
 
     /**
@@ -69,16 +67,14 @@ public class UnitsDataLoaderIT {
         inputRows.add(ImmutableList.of("1", "HEADER"));
 
         DataLoaderResult dataLoaderResult = unitsDataLoader.loadDataToDatabase(inputRows);
-        assertThat(dataLoaderResult, instanceOf(DataLoaderResult.RowFormatFailureDataLoaderResult.class));
-        assertEquals(((RowFormatFailureDataLoaderResult)dataLoaderResult).getReason(), DataLoaderResult.RowFormatFailureReason.HEADER_FIELD_MISSING);
-        assertEquals("1", ((RowFormatFailureDataLoaderResult)dataLoaderResult).getRowNumber());
+        assertEquals(ErrorMessage.HEADER_FIELD_MISSING, dataLoaderResult.getMessages().get(0).getMessage());
+        assertEquals("1", dataLoaderResult.getMessages().get(0).getRow());
 
         inputRows.clear();
 
-        inputRows.add(ImmutableList.of("1", "HEADER", "NAME", "SYMBOL", "EXPRESSION", "QUANTITY", "DESCRIPTION"));
+        inputRows.add(ImmutableList.of("1", "HEADER", "NAME", "SYMBOL", "QUANTITIES", "DESCRIPTION"));
         dataLoaderResult = unitsDataLoader.loadDataToDatabase(inputRows);
-        assertThat(dataLoaderResult, instanceOf(DataLoaderResult.RowFormatFailureDataLoaderResult.class));
-        assertEquals(((RowFormatFailureDataLoaderResult)dataLoaderResult).getReason(), DataLoaderResult.RowFormatFailureReason.HEADER_FIELD_MISSING);
-        assertEquals("1", ((RowFormatFailureDataLoaderResult)dataLoaderResult).getRowNumber());
+        assertEquals(ErrorMessage.HEADER_FIELD_MISSING, dataLoaderResult.getMessages().get(0).getMessage());
+        assertEquals("1", dataLoaderResult.getMessages().get(0).getRow());
     }
 }

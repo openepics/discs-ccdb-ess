@@ -9,13 +9,11 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
 import org.openepics.discs.conf.dl.common.AbstractDataLoader;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
-import org.openepics.discs.conf.dl.common.DataLoaderResult.RowFormatFailureReason;
+import org.openepics.discs.conf.dl.common.ValidationMessage;
+import org.openepics.discs.conf.dl.common.ErrorMessage;
 import org.openepics.discs.conf.ejb.AuthEJB;
 import org.openepics.discs.conf.ejb.ComptypeEJB;
 import org.openepics.discs.conf.ejb.ConfigurationEJB;
@@ -38,139 +36,167 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
     @Inject private AuthEJB authEJB;
     @Inject private ComptypeEJB comptypeEJB;
     @Inject private ConfigurationEJB configurationEJB;
-    @PersistenceContext private EntityManager em;
     private int nameIndex, descriptionIndex;
 
-    @Override public DataLoaderResult loadDataToDatabase(List<List<String>> inputRows) {
+    @Override
+    public DataLoaderResult loadDataToDatabase(List<List<String>> inputRows) {
+        loaderResult = new DataLoaderResult();
+        final ArrayList<String> fields = new ArrayList<>();
+        fields.add("NAME");
+        fields.add("DESCRIPTION");
+        /*
+         * List does not contain any rows that do not have a value (command) in
+         * the first column. There should be no commands before "HEADER".
+         */
+        List<String> headerRow = inputRows.get(0);
 
-        if (inputRows != null && inputRows.size() > 0) {
-            final ArrayList<String> fields = new ArrayList<>();
-            fields.add("NAME");
-            fields.add("DESCRIPTION");
-            /*
-             * List does not contain any rows that do not have a value (command)
-             * in the first column. There should be no commands before "HEADER".
-             */
-            List<String> headerRow = inputRows.get(0);
+        setUpIndexesForFields(headerRow);
+        HashMap<String, Integer> indexByPropertyName = indexByPropertyName(fields, headerRow);
+        checkPropertyAssociation(indexByPropertyName, headerRow.get(0));
 
-            DataLoaderResult fieldsIndexSetupResult = setUpIndexesForFields(headerRow);
-            HashMap<String,Integer> indexByPropertyName = indexByPropertyName(fields, headerRow);
-
-            if (fieldsIndexSetupResult instanceof DataLoaderResult.FailureDataLoaderResult) {
-                return fieldsIndexSetupResult;
-            } else {
-                for (List<String> row : inputRows.subList(1, inputRows.size())) {
-                    final String rowNumber = row.get(0);
-                    if (Objects.equal(row.get(1), CMD_HEADER)) {
-                        headerRow = row;
-                        fieldsIndexSetupResult = setUpIndexesForFields(headerRow);
-                        indexByPropertyName = indexByPropertyName(fields, headerRow);
-                        if (fieldsIndexSetupResult instanceof DataLoaderResult.FailureDataLoaderResult) {
-                            return fieldsIndexSetupResult;
-                        } else {
-                            continue; // skip the rest of the processing for HEADER row
-                        }
-                    } else if (row.get(1).equals(CMD_END)) {
-                        break;
+        if (rowResult.isError()) {
+            loaderResult.addResult(rowResult);
+            return loaderResult;
+        } else {
+            for (List<String> row : inputRows.subList(1, inputRows.size())) {
+                final String rowNumber = row.get(0);
+                loaderResult.addResult(rowResult);
+                rowResult = new DataLoaderResult();
+                if (Objects.equal(row.get(commandIndex), CMD_HEADER)) {
+                    headerRow = row;
+                    setUpIndexesForFields(headerRow);
+                    indexByPropertyName = indexByPropertyName(fields, headerRow);
+                    checkPropertyAssociation(indexByPropertyName, rowNumber);
+                    if (rowResult.isError()) {
+                        return loaderResult;
+                    } else {
+                        continue; // skip the rest of the processing for HEADER
+                                  // row
                     }
+                } else if (row.get(commandIndex).equals(CMD_END)) {
+                    break;
+                }
 
-                    final String command = As.notNull(row.get(1).toUpperCase());
-                    final @Nullable String name = row.get(nameIndex);
-                    final @Nullable String description = descriptionIndex == -1 ? null : row.get(descriptionIndex);
-                    final String modifiedBy = loginManager.getUserid();
+                final String command = As.notNull(row.get(commandIndex).toUpperCase());
+                final @Nullable String name = row.get(nameIndex);
+                final @Nullable String description = descriptionIndex == -1 ? null : row.get(descriptionIndex);
+                final String modifiedBy = loginManager.getUserid();
 
-                    if (name == null) {
-                        return new DataLoaderResult.RowFormatFailureDataLoaderResult(rowNumber, RowFormatFailureReason.REQUIRED_FIELD_MISSING);
+                if (name == null) {
+                    rowResult.addMessage(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, rowNumber, headerRow.get(nameIndex)));
+                    continue; //Continue to next row
+                }
+
+                switch (command) {
+                case CMD_UPDATE:
+                    final ComponentType componentTypeToUpdate = comptypeEJB.findComponentTypeByName(name);
+                    if (componentTypeToUpdate != null) {
+                        if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.COMPONENT_TYPE, EntityTypeOperation.UPDATE)) {
+                            componentTypeToUpdate.setDescription(description);
+                            addOrUpdateProperties(componentTypeToUpdate, indexByPropertyName, row, rowNumber, modifiedBy);
+                            if (rowResult.isError()) {
+                                continue;
+                            }
+                        } else {
+                            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex), EntityTypeOperation.UPDATE, EntityType.COMPONENT_TYPE));
+                        }
+                    } else {
+                        if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.COMPONENT_TYPE, EntityTypeOperation.CREATE)) {
+                            final ComponentType compTypeToAdd = new ComponentType(name, modifiedBy);
+                            compTypeToAdd.setDescription(description);
+                            comptypeEJB.addComponentType(compTypeToAdd);
+                            addOrUpdateProperties(compTypeToAdd, indexByPropertyName, row, rowNumber, modifiedBy);
+                            if (rowResult.isError()) {
+                                continue;
+                            }
+                        } else {
+                            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex), EntityTypeOperation.CREATE, EntityType.COMPONENT_TYPE));
+                        }
                     }
-
-                    switch (command) {
-                    case CMD_UPDATE:
-                        final ComponentType componentTypeToUpdate = comptypeEJB.findComponentTypeByName(name);
-                        if (componentTypeToUpdate != null) {
-                            if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.COMPONENT_TYPE, EntityTypeOperation.UPDATE)) {
-                                componentTypeToUpdate.setDescription(description);
-                                final DataLoaderResult updatePropertiesResult = addOrUpdateProperties(componentTypeToUpdate, indexByPropertyName, row, rowNumber, modifiedBy);
-                                if (updatePropertiesResult instanceof DataLoaderResult.FailureDataLoaderResult) {
-                                    return updatePropertiesResult;
-                                }
-                            } else {
-                                return new DataLoaderResult.NotAuthorizedFailureDataLoaderResult(EntityTypeOperation.UPDATE);
-                            }
+                    break;
+                case CMD_DELETE:
+                    final ComponentType componentTypeToDelete = comptypeEJB.findComponentTypeByName(name);
+                    if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.COMPONENT_TYPE, EntityTypeOperation.DELETE)) {
+                        if (componentTypeToDelete == null) {
+                            rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex), EntityTypeOperation.DELETE, EntityType.COMPONENT_TYPE));
+                            continue;
                         } else {
-                            if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.COMPONENT_TYPE, EntityTypeOperation.CREATE)) {
-                                final ComponentType compTypeToAdd = new ComponentType(name, modifiedBy);
-                                compTypeToAdd.setDescription(description);
-                                comptypeEJB.addComponentType(compTypeToAdd);
-                                final DataLoaderResult addPropertiesResult = addOrUpdateProperties(compTypeToAdd, indexByPropertyName, row, rowNumber, modifiedBy);
-                                if (addPropertiesResult instanceof DataLoaderResult.FailureDataLoaderResult) {
-                                    return addPropertiesResult;
-                                }
-                            } else {
-                                return new DataLoaderResult.NotAuthorizedFailureDataLoaderResult(EntityTypeOperation.CREATE);
-                            }
+                            comptypeEJB.deleteComponentType(componentTypeToDelete);
                         }
-                        break;
-                    case CMD_DELETE:
-                        final ComponentType componentTypeToDelete = comptypeEJB.findComponentTypeByName(name);
-                        if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.COMPONENT_TYPE, EntityTypeOperation.DELETE)) {
-                            if (componentTypeToDelete == null) {
-                                return new DataLoaderResult.EntityNotFoundFailureDataLoaderResult(rowNumber, EntityType.COMPONENT_TYPE);
-                            } else {
-                                comptypeEJB.deleteComponentType(componentTypeToDelete);
-                            }
-                        } else {
-                            return new DataLoaderResult.NotAuthorizedFailureDataLoaderResult(EntityTypeOperation.DELETE);
-                        }
-                        break;
-                    case CMD_RENAME:
-                        if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.COMPONENT_TYPE, EntityTypeOperation.RENAME)) {
-                            final int startOldNameMarkerIndex = name.indexOf("[");
-                            final int endOldNameMarkerIndex = name.indexOf("]");
-                            if (startOldNameMarkerIndex == -1 || endOldNameMarkerIndex == -1) {
-                                return new DataLoaderResult.RowFormatFailureDataLoaderResult(rowNumber, RowFormatFailureReason.RENAME_MISFORMAT);
-                            }
-
-                            final String oldName = name.substring(startOldNameMarkerIndex + 1, endOldNameMarkerIndex).trim();
-                            final String newName = name.substring(endOldNameMarkerIndex + 1).trim();
-
-                            final ComponentType componentTypeToRename = comptypeEJB.findComponentTypeByName(oldName);
-                            if (componentTypeToRename != null) {
-                                if (comptypeEJB.findComponentTypeByName(newName) != null) {
-                                    return new DataLoaderResult.RowFormatFailureDataLoaderResult(rowNumber, RowFormatFailureReason.DUPLICATE_ENTITY);
-                                } else {
-                                    componentTypeToRename.setName(newName);
-                                    comptypeEJB.saveComponentType(componentTypeToRename);
-                                }
-                            } else {
-                                return new DataLoaderResult.EntityNotFoundFailureDataLoaderResult(rowNumber, EntityType.COMPONENT_TYPE);
-                            }
-                        } else {
-                            return new DataLoaderResult.NotAuthorizedFailureDataLoaderResult(EntityTypeOperation.RENAME);
-                        }
-                        break;
-                    default:
-                        return new DataLoaderResult.RowFormatFailureDataLoaderResult(rowNumber, RowFormatFailureReason.COMMAND_NOT_VALID);
+                    } else {
+                        rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex), EntityTypeOperation.DELETE, EntityType.COMPONENT_TYPE));
                     }
+                    break;
+                case CMD_RENAME:
+                    if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.COMPONENT_TYPE, EntityTypeOperation.RENAME)) {
+                        final int startOldNameMarkerIndex = name.indexOf("[");
+                        final int endOldNameMarkerIndex = name.indexOf("]");
+                        if (startOldNameMarkerIndex == -1 || endOldNameMarkerIndex == -1) {
+                            rowResult.addMessage(new ValidationMessage(ErrorMessage.RENAME_MISFORMAT, rowNumber, headerRow.get(nameIndex)));
+                            continue;
+                        }
+
+                        final String oldName = name.substring(startOldNameMarkerIndex + 1, endOldNameMarkerIndex).trim();
+                        final String newName = name.substring(endOldNameMarkerIndex + 1).trim();
+
+                        final ComponentType componentTypeToRename = comptypeEJB.findComponentTypeByName(oldName);
+                        if (componentTypeToRename != null) {
+                            if (comptypeEJB.findComponentTypeByName(newName) != null) {
+                                rowResult.addMessage(new ValidationMessage(ErrorMessage.NAME_ALREADY_EXISTS, rowNumber, headerRow.get(nameIndex), EntityTypeOperation.RENAME, EntityType.COMPONENT_TYPE));
+                                continue;
+                            } else {
+                                componentTypeToRename.setName(newName);
+                                comptypeEJB.saveComponentType(componentTypeToRename);
+                            }
+                        } else {
+                            rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex), EntityTypeOperation.RENAME, EntityType.COMPONENT_TYPE));
+                            continue;
+                        }
+                    } else {
+                        rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex), EntityTypeOperation.RENAME, EntityType.COMPONENT_TYPE));
+                    }
+                    break;
+                default:
+                    rowResult.addMessage(new ValidationMessage(ErrorMessage.COMMAND_NOT_VALID, rowNumber, headerRow.get(commandIndex)));
                 }
             }
         }
-
-        return new DataLoaderResult.SuccessDataLoaderResult();
+        loaderResult.addResult(rowResult);
+        return loaderResult;
     }
 
-    @Override protected DataLoaderResult setUpIndexesForFields(List<String> header) {
+    @Override
+    protected void setUpIndexesForFields(List<String> header) {
         final String rowNumber = header.get(0);
-        nameIndex = header.indexOf("NAME");
-        descriptionIndex = header.indexOf("DESCRIPTION");
+        rowResult = new DataLoaderResult();
+        nameIndex = setUpFieldIndex(header, "NAME");
+        descriptionIndex = setUpFieldIndex(header, "DESCRIPTION");
 
-        if (nameIndex == -1 || descriptionIndex == -1) {
-            return new DataLoaderResult.RowFormatFailureDataLoaderResult(rowNumber, RowFormatFailureReason.HEADER_FIELD_MISSING);
-        } else {
-            return new DataLoaderResult.SuccessDataLoaderResult();
+
+        if (nameIndex == -1) {
+            rowResult.addMessage(new ValidationMessage(ErrorMessage.HEADER_FIELD_MISSING, rowNumber, "NAME"));
+        } else if (descriptionIndex == -1) {
+            rowResult.addMessage(new ValidationMessage(ErrorMessage.HEADER_FIELD_MISSING, rowNumber, "DESCRIPTION"));
         }
     }
 
-    private DataLoaderResult addOrUpdateProperties(ComponentType compType, Map<String, Integer> properties, List<String> row, String rowNumber, String modifiedBy) {
+    private void checkPropertyAssociation(Map<String, Integer> properties, String rowNumber) {
+        final Iterator<String> propertiesIterator = properties.keySet().iterator();
+        while (propertiesIterator.hasNext()) {
+            final String propertyName = propertiesIterator.next();
+            final @Nullable Property property = configurationEJB.findPropertyByName(propertyName);
+            if (property == null) {
+                rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, propertyName));
+            } else {
+                final PropertyAssociation propAssociation = property.getAssociation();
+                if (propAssociation != PropertyAssociation.ALL && propAssociation != PropertyAssociation.TYPE && propAssociation != PropertyAssociation.TYPE_DEVICE && propAssociation != PropertyAssociation.TYPE_SLOT) {
+                    rowResult.addMessage(new ValidationMessage(ErrorMessage.PROPERTY_ASSOCIATION_FAILURE, rowNumber, propertyName));
+                }
+            }
+        }
+    }
+
+    private void addOrUpdateProperties(ComponentType compType, Map<String, Integer> properties, List<String> row, String rowNumber, String modifiedBy) {
         final Iterator<String> propertiesIterator = properties.keySet().iterator();
         final List<ComptypeProperty> compTypeProperties = new ArrayList<>();
         if (compType.getComptypePropertyList() != null) {
@@ -187,9 +213,7 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
             final int propertyIndex = properties.get(propertyName);
             final @Nullable Property property = configurationEJB.findPropertyByName(propertyName);
             final @Nullable String propertyValue = row.get(propertyIndex);
-            if (property == null) {
-                return new DataLoaderResult.EntityNotFoundFailureDataLoaderResult(rowNumber, EntityType.PROPERTY);
-            } else if (compTypePropertyByProperty.containsKey(property)){
+            if (compTypePropertyByProperty.containsKey(property)) {
                 final ComptypeProperty compTypePropertyToUpdate = compTypePropertyByProperty.get(property);
                 if (propertyValue == null) {
                     comptypeEJB.deleteCompTypeProp(compTypePropertyToUpdate);
@@ -200,19 +224,12 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
                 }
 
             } else if (propertyValue != null) {
-            	final PropertyAssociation propAss = property.getAssociation();
-                if (propAss == PropertyAssociation.ALL || propAss == PropertyAssociation.TYPE || propAss == PropertyAssociation.TYPE_DEVICE || propAss == PropertyAssociation.TYPE_SLOT) {
-                    final ComptypeProperty comptypePropertyToAdd = new ComptypeProperty(false, modifiedBy);
-                    comptypePropertyToAdd.setProperty(property);
-                    comptypePropertyToAdd.setPropValue(propertyValue);
-                    comptypePropertyToAdd.setComponentType(compType);
-                    comptypeEJB.addCompTypeProp(comptypePropertyToAdd);
-                } else {
-                    return new DataLoaderResult.RowFormatFailureDataLoaderResult(rowNumber, RowFormatFailureReason.WRONG_VALUE);
-                }
+                final ComptypeProperty comptypePropertyToAdd = new ComptypeProperty(false, modifiedBy);
+                comptypePropertyToAdd.setProperty(property);
+                comptypePropertyToAdd.setPropValue(propertyValue);
+                comptypePropertyToAdd.setComponentType(compType);
+                comptypeEJB.addCompTypeProp(comptypePropertyToAdd);
             }
         }
-
-        return new DataLoaderResult.SuccessDataLoaderResult();
     }
 }

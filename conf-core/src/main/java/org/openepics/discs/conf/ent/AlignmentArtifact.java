@@ -26,9 +26,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "AlignmentArtifact.findByArtifactId", query = "SELECT a FROM AlignmentArtifact a WHERE a.id = :id"),
     @NamedQuery(name = "AlignmentArtifact.findByName", query = "SELECT a FROM AlignmentArtifact a WHERE a.name = :name"),
     @NamedQuery(name = "AlignmentArtifact.findByIsInternal", query = "SELECT a FROM AlignmentArtifact a WHERE a.isInternal = :isInternal"),
-    @NamedQuery(name = "AlignmentArtifact.findByDescription", query = "SELECT a FROM AlignmentArtifact a WHERE a.description = :description"),
-    @NamedQuery(name = "AlignmentArtifact.findByModifiedBy", query = "SELECT a FROM AlignmentArtifact a WHERE a.modifiedBy = :modifiedBy"),
-    @NamedQuery(name = "AlignmentArtifact.findByModifiedAt", query = "SELECT a FROM AlignmentArtifact a WHERE a.modifiedAt = :modifiedAt")})
+    @NamedQuery(name = "AlignmentArtifact.findByModifiedBy", query = "SELECT a FROM AlignmentArtifact a WHERE a.modifiedBy = :modifiedBy")})
 public class AlignmentArtifact extends ConfigurationEntity {
     private static final long serialVersionUID = 1L;
 

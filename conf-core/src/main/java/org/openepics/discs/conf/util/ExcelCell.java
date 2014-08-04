@@ -27,6 +27,8 @@ public class ExcelCell {
                 return cell.getStringCellValue() != null ? cell.getStringCellValue() : null;
             } else if (cell.getCellType() == Cell.CELL_TYPE_BLANK) {
                 return null;
+            } else if (cell.getCellType() == Cell.CELL_TYPE_BOOLEAN) {
+                return String.valueOf(cell.getBooleanCellValue());
             } else if (cell.getCellType() == Cell.CELL_TYPE_FORMULA) {
                 final FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
                 final CellValue cellValue = evaluator.evaluate(cell);

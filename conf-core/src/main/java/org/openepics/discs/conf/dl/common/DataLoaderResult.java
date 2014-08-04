@@ -1,114 +1,61 @@
 package org.openepics.discs.conf.dl.common;
 
-import org.openepics.discs.conf.ent.EntityType;
-import org.openepics.discs.conf.ent.EntityTypeOperation;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Reports the outcome of data loading operation
+ * This represents a result of load operation, consisting of the error status,
+ * load {@link ValidationMessage}s, and the list of objects affected by the load.
  *
- * @author Andraz Pozar <andraz.pozar@cosylab.com>
+ * @param <T> Class of the objects affected by the load.
  *
+ * @author Sunil Sah <sunil.sah@cosylab.com>
  */
-public abstract class DataLoaderResult {
+public class DataLoaderResult {
 
-    /**
-     * Reports a successful data loading to the database
-     */
-    public static class SuccessDataLoaderResult extends DataLoaderResult {}
+	private List<ValidationMessage> messages = new ArrayList<ValidationMessage>();
+	private boolean error;
 
-    /**
-     * Reports a failure while loading data to the database
-     */
-    public static abstract class FailureDataLoaderResult extends DataLoaderResult {}
+	/** @return the messages of this report */
+	public List<ValidationMessage> getMessages() { return messages; }
 
-    /**
-     * Reports a failure while loading data to the database because no header definition was found
-     */
-    public static class MissingHeaderFailureDataLoaderResult extends FailureDataLoaderResult {}
+	/** @return the report error state */
+	public boolean isError() { return error; }
 
-    /**
-     * Reports a failure while loading data to the database because field that is required was not found
-     */
-    public static class RowFormatFailureDataLoaderResult extends FailureDataLoaderResult {
+	/**
+	 * Adds the message to the report
+	 *
+	 * @param message the message to add
+	 */
+	public void addMessage(ValidationMessage message) {
+		messages.add(message);
+		if (message.isError()) error = true;
+	}
 
-        private String rowNumber;
-        private RowFormatFailureReason reason;
+	/**
+	 * Appends the content of the given result to this one.
+	 *
+	 * @param result the result to append
+	 */
+	public void addResult(DataLoaderResult result) {
+		for (ValidationMessage message : result.getMessages()) {
+			addMessage(message);
+		}
+	}
 
-        /**
-         * @param rowNumber row number in which the failure occurred
-         * @param reason {@link RowFormatFailureReason}
-         */
-        public RowFormatFailureDataLoaderResult(String rowNumber, RowFormatFailureReason reason) {
-            this.rowNumber = rowNumber;
-            this.reason = reason;
-        }
 
-        /**
-         * Row number where error happened
-         */
-        public String getRowNumber() { return this.rowNumber; }
+	@Override
+	public String toString() {
+		final StringBuilder builder = new StringBuilder();
 
-        /**
-         * Reason for failure
-         */
-        public RowFormatFailureReason getReason() { return this.reason; }
-    }
+		for (ValidationMessage message: messages) {
+			builder.append(message.toString());
+			builder.append("\n");
+		}
 
-    /**
-     * Reports a failure while loading data to the database because the user does not have permissions
-     * to execute some {@link EntityTypeOperation}
-     */
-    public static class NotAuthorizedFailureDataLoaderResult extends FailureDataLoaderResult {
-
-        private EntityTypeOperation operation;
-
-        /**
-         * @param operation {@link EntityTypeOperation} which triggered the failure
-         */
-        public NotAuthorizedFailureDataLoaderResult(EntityTypeOperation operation) {
-            this.operation = operation;
-        }
-
-        /**
-         * {@link EntityTypeOperation} which triggered the failure
-         */
-        public EntityTypeOperation getOperation() { return operation; }
-
-    }
-
-    /**
-     * Reports a failure while loading data to the database because the {@link EntityType} on which
-     * operation should be executed does not exist in the database
-     */
-    public static class EntityNotFoundFailureDataLoaderResult extends FailureDataLoaderResult {
-
-        private String rowNumber;
-        private EntityType entity;
-
-        /**
-         * @param entity {@link EntityType} which was not found in the database
-         */
-        public EntityNotFoundFailureDataLoaderResult(String rowNumber, EntityType entity) {
-            this.rowNumber = rowNumber;
-            this.entity = entity;
-        }
-
-        /**
-         * Row number where error happened
-         */
-        public String getRowNumber() { return this.rowNumber; }
-
-        /**
-         * {@link EntityType} which was not found in the database
-         */
-        public EntityType getEntity() { return entity; }
-
-    }
-
-    public enum RowFormatFailureReason {
-        HEADER_FIELD_MISSING, COMMAND_NOT_VALID, DUPLICATE_ENTITY, RENAME_MISFORMAT, REQUIRED_FIELD_MISSING, WRONG_VALUE;
-    }
-
+		if (isError()) {
+			builder.append("There were some errors.\n");
+		}
+		return builder.toString();
+	}
 }
-
-

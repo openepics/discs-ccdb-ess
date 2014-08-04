@@ -27,11 +27,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "DataType.findAll", query = "SELECT d FROM DataType d"),
     @NamedQuery(name = "DataType.findByName", query = "SELECT d FROM DataType d WHERE d.name = :name"),
     @NamedQuery(name = "DataType.findByDataTypeId", query = "SELECT d FROM DataType d WHERE d.id = :id"),
-    @NamedQuery(name = "DataType.findByDescription", query = "SELECT d FROM DataType d WHERE d.description = :description"),
-    @NamedQuery(name = "DataType.findByScalar", query = "SELECT d FROM DataType d WHERE d.scalar = :scalar"),
-    @NamedQuery(name = "DataType.findByModifiedAt", query = "SELECT d FROM DataType d WHERE d.modifiedAt = :modifiedAt"),
-    @NamedQuery(name = "DataType.findByModifiedBy", query = "SELECT d FROM DataType d WHERE d.modifiedBy = :modifiedBy"),
-    @NamedQuery(name = "DataType.findByVersion", query = "SELECT d FROM DataType d WHERE d.version = :version")})
+    @NamedQuery(name = "DataType.findByModifiedBy", query = "SELECT d FROM DataType d WHERE d.modifiedBy = :modifiedBy")})
 public class DataType extends ConfigurationEntity {
     private static final long serialVersionUID = 1L;
 
@@ -43,7 +39,6 @@ public class DataType extends ConfigurationEntity {
 
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 255)
     @Column(name = "description")
     private String description;
 
@@ -52,16 +47,20 @@ public class DataType extends ConfigurationEntity {
     @Column(name = "scalar")
     private boolean scalar;
 
+    @Column(name = "definition", columnDefinition="TEXT")
+    private String definition;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "dataType")
     private List<Property> propertyList;
 
     protected DataType() {
     }
 
-    public DataType(String name, String description, boolean scalar, String modifiedBy) {
+    public DataType(String name, String description, boolean scalar, String definition, String modifiedBy) {
         this.name = name;
         this.description = description;
         this.scalar = scalar;
+        this.definition = definition;
         this.modifiedBy = modifiedBy;
         this.modifiedAt = new Date();
     }
@@ -84,6 +83,14 @@ public class DataType extends ConfigurationEntity {
 
     public boolean getScalar() {
         return scalar;
+    }
+
+    public String getDefinition() {
+        return definition;
+    }
+
+    public void setDefinition(String definition) {
+        this.definition = definition;
     }
 
     public void setScalar(boolean scalar) {

@@ -36,7 +36,7 @@ import org.openepics.discs.conf.ui.LoginManager;
     @Inject private LoginManager loginManager;
 
     // ----------- Audit record ---------------------------------------
-    private void makeAuditEntry(EntityTypeOperation oper, String key, String entry) {
+    private void makeAuditEntry(EntityTypeOperation oper, String key, String entry, Long id) {
         AuditRecord arec = new AuditRecord(new Date(), oper, loginManager.getUserid(), entry);
         arec.setEntityType(EntityType.ALIGNMENT_RECORD);
         arec.setEntityKey(key);
@@ -76,7 +76,7 @@ import org.openepics.discs.conf.ui.LoginManager;
         arec.setModifiedAt(new Date());
         logger.log(Level.INFO, "Preparing to save device");
         em.persist(arec);
-        makeAuditEntry(EntityTypeOperation.UPDATE, arec.getRecordNumber(), "updated alignment record");
+        makeAuditEntry(EntityTypeOperation.UPDATE, arec.getRecordNumber(), "updated alignment record", arec.getId());
     }
 
     public void deleteAlignment(AlignmentRecord arec) throws Exception {
@@ -91,7 +91,7 @@ import org.openepics.discs.conf.ui.LoginManager;
         }
         AlignmentRecord ct = em.find(AlignmentRecord.class, arec.getId());
         em.remove(ct);
-        makeAuditEntry(EntityTypeOperation.DELETE, arec.getRecordNumber(), "deleted alignment record");
+        makeAuditEntry(EntityTypeOperation.DELETE, arec.getRecordNumber(), "deleted alignment record", arec.getId());
     }
 
     // ------------------ Property ---------------
@@ -116,7 +116,7 @@ import org.openepics.discs.conf.ui.LoginManager;
             slot.getAlignmentPropertyList().add(newProp);
             em.merge(slot);
         }
-        makeAuditEntry(EntityTypeOperation.UPDATE, prop.getAlignmentRecord().getRecordNumber(), "updated alignment property " + prop.getProperty().getName());
+        makeAuditEntry(EntityTypeOperation.UPDATE, prop.getAlignmentRecord().getRecordNumber(), "updated alignment property " + prop.getProperty().getName(), prop.getAlignmentRecord().getId());
         logger.log(Level.INFO, "Comp Type Property: id " + newProp.getId() + " name " + newProp.getProperty().getName());
     }
 
@@ -134,7 +134,7 @@ import org.openepics.discs.conf.ui.LoginManager;
         AlignmentRecord arec = property.getAlignmentRecord();
         arec.getAlignmentPropertyList().remove(property);
         em.remove(property);
-        makeAuditEntry(EntityTypeOperation.DELETE, prop.getAlignmentRecord().getRecordNumber(), "deleted alignment property " + prop.getProperty().getName());
+        makeAuditEntry(EntityTypeOperation.DELETE, prop.getAlignmentRecord().getRecordNumber(), "deleted alignment property " + prop.getProperty().getName(), prop.getAlignmentRecord().getId());
     }
 
     // ---------------- Artifact ---------------------
@@ -158,7 +158,7 @@ import org.openepics.discs.conf.ui.LoginManager;
             arec.getAlignmentArtifactList().add(newArt);
             em.merge(arec);
         }
-        makeAuditEntry(EntityTypeOperation.UPDATE, art.getAlignmentRecord().getRecordNumber(), "updated alignment artifact " + art.getName());
+        makeAuditEntry(EntityTypeOperation.UPDATE, art.getAlignmentRecord().getRecordNumber(), "updated alignment artifact " + art.getName(), art.getAlignmentRecord().getId());
         // art.setAlignmentRecord(em.merge(arec)); // todo: improve this code.
         // this is not the right way.
         logger.log(Level.INFO, "Artifact: name " + newArt.getName() + " description " + newArt.getDescription() + " uri " + newArt.getUri() + "is int " + newArt.getIsInternal());
@@ -180,6 +180,6 @@ import org.openepics.discs.conf.ui.LoginManager;
         AlignmentRecord arec = artifact.getAlignmentRecord();
         arec.getAlignmentArtifactList().remove(artifact);
         em.remove(artifact);
-        makeAuditEntry(EntityTypeOperation.UPDATE, art.getAlignmentRecord().getRecordNumber(), "deleted alignment artifact " + art.getName());
+        makeAuditEntry(EntityTypeOperation.UPDATE, art.getAlignmentRecord().getRecordNumber(), "deleted alignment artifact " + art.getName(), art.getAlignmentRecord().getId());
     }
 }

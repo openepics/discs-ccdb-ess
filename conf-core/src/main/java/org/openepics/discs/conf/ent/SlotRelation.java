@@ -7,6 +7,8 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -26,24 +28,18 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "SlotRelation.findAll", query = "SELECT s FROM SlotRelation s"),
     @NamedQuery(name = "SlotRelation.findBySlotRelationId", query = "SELECT s FROM SlotRelation s WHERE s.id = :id"),
-    @NamedQuery(name = "SlotRelation.findByName", query = "SELECT s FROM SlotRelation s WHERE s.name = :name"),
-    @NamedQuery(name = "SlotRelation.findByIname", query = "SELECT s FROM SlotRelation s WHERE s.iname = :iname"),
-    @NamedQuery(name = "SlotRelation.findByDescription", query = "SELECT s FROM SlotRelation s WHERE s.description = :description"),
-    @NamedQuery(name = "SlotRelation.findByModifiedAt", query = "SELECT s FROM SlotRelation s WHERE s.modifiedAt = :modifiedAt"),
-    @NamedQuery(name = "SlotRelation.findByModifiedBy", query = "SELECT s FROM SlotRelation s WHERE s.modifiedBy = :modifiedBy"),
-    @NamedQuery(name = "SlotRelation.findByVersion", query = "SELECT s FROM SlotRelation s WHERE s.version = :version")})
+    @NamedQuery(name = "SlotRelation.findByName", query = "SELECT s FROM SlotRelation s WHERE s.name = :name")})
 public class SlotRelation extends ConfigurationEntity {
     private static final long serialVersionUID = 1L;
 
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 32)
+    @Enumerated(EnumType.STRING)
     @Column(name = "name")
-    private String name;
+    private SlotRelationName name;
 
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 32)
     @Column(name = "iname")
     private String iname;
 
@@ -57,27 +53,36 @@ public class SlotRelation extends ConfigurationEntity {
     protected SlotRelation() {
     }
 
-    public SlotRelation(String name, String iname, String modifiedBy) {
+    public SlotRelation(SlotRelationName name, String modifiedBy) {
         this.name = name;
-        this.iname = iname;
         this.modifiedBy = modifiedBy;
         this.modifiedAt = new Date();
+        if (name == SlotRelationName.CONTAINS) {
+            iname = "contained in";
+        } else if (name == SlotRelationName.POWERS) {
+            iname = "powered by";
+        } else if (name == SlotRelationName.CONTROLS) {
+            iname = "controlled by";
+        }
     }
 
-    public String getName() {
+    public SlotRelationName getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(SlotRelationName name) {
         this.name = name;
+        if (name == SlotRelationName.CONTAINS) {
+            iname = "contained in";
+        } else if (name == SlotRelationName.POWERS) {
+            iname = "powered by";
+        } else if (name == SlotRelationName.CONTROLS) {
+            iname = "controlled by";
+        }
     }
 
     public String getIname() {
         return iname;
-    }
-
-    public void setIname(String iname) {
-        this.iname = iname;
     }
 
     public String getDescription() {
@@ -101,5 +106,4 @@ public class SlotRelation extends ConfigurationEntity {
     public String toString() {
         return "SlotRelation[ slotRelationId=" + id + " ]";
     }
-
 }

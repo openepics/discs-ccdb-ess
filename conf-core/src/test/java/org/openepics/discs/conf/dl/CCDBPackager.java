@@ -26,8 +26,7 @@ public class CCDBPackager {
             .addAsLibraries(libraries)
             .addPackages(true, "org.openepics.discs.conf.ent", "org.openepics.discs.conf.ejb", "org.openepics.discs.conf.ui", "org.openepics.discs.conf.dl", "org.openepics.discs.conf.util")
             .addAsResource("test-persistence.xml", "META-INF/persistence.xml")
-            .addAsWebInfResource(new StringAsset(beans.exportAsString()), "beans.xml")
-            .addAsWebInfResource("ccdb_test-ds.xml");
+            .addAsWebInfResource(new StringAsset(beans.exportAsString()), "beans.xml");
 
         return war;
 	}

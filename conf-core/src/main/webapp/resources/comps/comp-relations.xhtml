@@ -14,7 +14,7 @@
     <!-- IMPLEMENTATION -->
     <cc:implementation>
         <p:panel header="Relationships" toggleable="true"  style="border: 0px;" collapsed="#{cc.attrs.collapsed}">  
-            <p:dataTable id="reltable" var="child" emptyMessage="" value="#{cc.attrs.selectedComponent.slotPairList1}" >				
+            <p:dataTable id="reltable" var="child" emptyMessage="" value="#{cc.attrs.selectedComponent.parentSlotsPairList}" >				
                 <p:column id="name" headerText="Name"  >
                     <h:outputText value="#{child.slotRelation.name}" />                                                 
                 </p:column>
@@ -22,7 +22,7 @@
                     <h:outputText value="#{child.childSlot.name}" />
                 </p:column>  
             </p:dataTable>  
-            <p:dataTable id="ireltable" var="parent" emptyMessage="" value="#{cc.attrs.selectedComponent.slotPairList}" >				
+            <p:dataTable id="ireltable" var="parent" emptyMessage="" value="#{cc.attrs.selectedComponent.childrenSlotsPairList}" >				
                 <p:column id="name"   >
                     <h:outputText value="#{parent.slotRelation.iname}" />                                                 
                 </p:column>

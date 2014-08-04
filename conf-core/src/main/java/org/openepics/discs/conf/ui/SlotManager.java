@@ -24,8 +24,9 @@ import javax.inject.Named;
 
 import org.apache.commons.io.FilenameUtils;
 import org.openepics.discs.conf.dl.ComponentTypesLoaderQualifier;
-import org.openepics.discs.conf.dl.SlotsLoaderQualifier;
+import org.openepics.discs.conf.dl.SlotsAndSlotPairsLoaderQualifier;
 import org.openepics.discs.conf.dl.common.DataLoader;
+import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.ejb.AuthEJB;
 import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.EntityType;
@@ -59,7 +60,6 @@ public class SlotManager implements Serializable {
     @Inject private BlobStore blobStore;
     @Inject private LoginManager loginManager;
     @Inject private DataLoaderHandler dataLoaderHandler;
-    @Inject @SlotsLoaderQualifier private DataLoader slotsDataLoader;
     @Inject private AuthEJB authEJB;
 
     private List<Slot> objects;
@@ -99,8 +99,9 @@ public class SlotManager implements Serializable {
     private String inputAsmComment;
     private String inputAsmPosition;
 
-    private byte[] importData;
-    private String importFileName;
+    private byte[] importSlotData, importSlotRelationshipsData;
+    private String firstFileName, secondFileName;
+    private DataLoaderResult loaderResult;
 
     /**
      * Creates a new instance of SlotManager
@@ -126,7 +127,7 @@ public class SlotManager implements Serializable {
 
         selectedProperties = selectedObject.getSlotPropertyList();
         selectedArtifacts = selectedObject.getSlotArtifactList();
-        relatedSlots = selectedObject.getSlotPairList1();
+        relatedSlots = selectedObject.getParentSlotsPairList();
         asmSlots = selectedObject.getSlotList();
 
 
@@ -562,22 +563,35 @@ public class SlotManager implements Serializable {
                 authEJB.userHasAuth(loginManager.getUserid(), EntityType.SLOT, EntityTypeOperation.RENAME);
     }
 
-    public String getImportFileName() { return importFileName; }
+    public String getFirstFileName() { return firstFileName; }
+    public String getSecondFileName() { return secondFileName; }
 
-    public void importSlots() {
-        final InputStream inputStream = new ByteArrayInputStream(importData);
-        dataLoaderHandler.loadData(inputStream, slotsDataLoader);
+    public void doImport() {
+        loaderResult = dataLoaderHandler.loadDataFromTwoFiles(importSlotData != null ? new ByteArrayInputStream(importSlotData) : null, importSlotRelationshipsData != null ? new ByteArrayInputStream(importSlotRelationshipsData) : null, firstFileName, secondFileName);
     }
+
+    public DataLoaderResult getLoaderResult() { return loaderResult; }
 
     public void prepareImportPopup() {
-        importData = null;
-        importFileName = null;
+        importSlotData = null;
+        firstFileName = null;
+        importSlotRelationshipsData = null;
+        secondFileName = null;
     }
 
-    public void handleImportFileUpload(FileUploadEvent event) {
+    public void handleFirstImportFileUpload(FileUploadEvent event) {
         try (InputStream inputStream = event.getFile().getInputstream()) {
-            this.importData = ByteStreams.toByteArray(inputStream);
-            this.importFileName = FilenameUtils.getName(event.getFile().getFileName());
+            this.importSlotData = ByteStreams.toByteArray(inputStream);
+            this.firstFileName = FilenameUtils.getName(event.getFile().getFileName());
+        } catch (IOException e) {
+            throw new RuntimeException();
+        }
+    }
+
+    public void handleSecondImportFileUpload(FileUploadEvent event) {
+        try (InputStream inputStream = event.getFile().getInputstream()) {
+            this.importSlotRelationshipsData= ByteStreams.toByteArray(inputStream);
+            this.secondFileName = FilenameUtils.getName(event.getFile().getFileName());
         } catch (IOException e) {
             throw new RuntimeException();
         }

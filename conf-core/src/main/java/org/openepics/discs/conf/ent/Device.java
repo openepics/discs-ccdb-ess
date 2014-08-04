@@ -8,6 +8,8 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -38,8 +40,6 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Device.findByManufSerialNumber", query = "SELECT d FROM Device d WHERE d.manufSerialNumber = :manufSerialNumber"),
     @NamedQuery(name = "Device.findByLocation", query = "SELECT d FROM Device d WHERE d.location = :location"),
     @NamedQuery(name = "Device.findByPurchaseOrder", query = "SELECT d FROM Device d WHERE d.purchaseOrder = :purchaseOrder"),
-    @NamedQuery(name = "Device.findByAsmPosition", query = "SELECT d FROM Device d WHERE d.asmPosition = :asmPosition"),
-    @NamedQuery(name = "Device.findByAsmDescription", query = "SELECT d FROM Device d WHERE d.asmDescription = :asmDescription"),
     @NamedQuery(name = "Device.findByModifiedBy", query = "SELECT d FROM Device d WHERE d.modifiedBy = :modifiedBy")})
 public class Device extends ConfigurationEntity {
     private static final long serialVersionUID = 1L;
@@ -54,16 +54,9 @@ public class Device extends ConfigurationEntity {
     @Column(name = "description")
     private String description;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    private Character status;
-
-    @Size(max = 64)
-    @Column(name = "manufacturer")
-    private String manufacturer;
-
-    @Size(max = 64)
-    @Column(name = "manuf_model")
-    private String manufModel;
+    private DeviceStatus status;
 
     @Size(max = 64)
     @Column(name = "manuf_serial_number")
@@ -84,6 +77,12 @@ public class Device extends ConfigurationEntity {
     @Size(max = 255)
     @Column(name = "asm_description")
     private String asmDescription;
+
+    @Column(name = "manufacturer")
+    private String manufacturer;
+
+    @Column(name = "manuf_model")
+    private String manufModel;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "device")
     private List<DeviceProperty> devicePropertyList;
@@ -128,14 +127,8 @@ public class Device extends ConfigurationEntity {
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
 
-    public Character getStatus() { return status; }
-    public void setStatus(Character status) { this.status = status; }
-
-    public String getManufacturer() { return manufacturer; }
-    public void setManufacturer(String manufacturer) { this.manufacturer = manufacturer; }
-
-    public String getManufacturerModel() { return manufModel; }
-    public void setManufacturerModel(String manufModel) { this.manufModel = manufModel; }
+    public DeviceStatus getStatus() { return status; }
+    public void setStatus(DeviceStatus status) { this.status = status; }
 
     public String getManufacturerSerialNumber() { return manufSerialNumber; }
     public void setManufacturerSerialNumber(String manufSerialNumber) { this.manufSerialNumber = manufSerialNumber; }
@@ -151,6 +144,12 @@ public class Device extends ConfigurationEntity {
 
     public String getAssemblyDescription() { return asmDescription; }
     public void setAssemblyDescription(String asmDescription) { this.asmDescription = asmDescription; }
+
+    public String getManufacturer() { return manufacturer; }
+    public void setManufacturer(String manufacturer) { this.manufacturer = manufacturer; }
+
+    public String getManufacturerModel() { return manufModel; }
+    public void setManufacturerModel(String manufModel) { this.manufModel = manufModel; }
 
     @XmlTransient
     public List<DeviceProperty> getDevicePropertyList() { return devicePropertyList; }

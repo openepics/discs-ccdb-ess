@@ -11,13 +11,11 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
 import org.openepics.discs.conf.dl.common.AbstractDataLoader;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
-import org.openepics.discs.conf.dl.common.DataLoaderResult.RowFormatFailureReason;
+import org.openepics.discs.conf.dl.common.ValidationMessage;
+import org.openepics.discs.conf.dl.common.ErrorMessage;
 import org.openepics.discs.conf.ejb.AuthEJB;
 import org.openepics.discs.conf.ejb.ConfigurationEJB;
 import org.openepics.discs.conf.ent.DataType;
@@ -44,52 +42,61 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
     @Inject private LoginManager loginManager;
     @Inject private AuthEJB authEJB;
     @Inject private ConfigurationEJB configurationEJB;
-    @PersistenceContext private EntityManager em;
     private Map<String, Property> propertyByName;
     private int nameIndex, associationIndex, unitIndex, dataTypeIndex, descriptionIndex;
 
     @Override public DataLoaderResult loadDataToDatabase(List<List<String>> inputRows) {
         init();
 
-        if (inputRows != null && inputRows.size() > 0) {
-            /*
-             * List does not contain any rows that do not have a value (command)
-             * in the first column. There should be no commands before "HEADER".
-             */
-            List<String> headerRow = inputRows.get(0);
 
-            DataLoaderResult fieldsIndexSetupResult = setUpIndexesForFields(headerRow);
+        /*
+         * List does not contain any rows that do not have a value (command)
+         * in the first column. There should be no commands before "HEADER".
+         */
+        List<String> headerRow = inputRows.get(0);
 
-            if (fieldsIndexSetupResult instanceof DataLoaderResult.FailureDataLoaderResult) {
-                return fieldsIndexSetupResult;
-            } else {
-                for (List<String> row : inputRows.subList(1, inputRows.size())) {
-                    final String rowNumber = row.get(0);
-                    if (Objects.equal(row.get(1), CMD_HEADER)) {
-                        headerRow = row;
-                        fieldsIndexSetupResult = setUpIndexesForFields(headerRow);
-                        if (fieldsIndexSetupResult instanceof DataLoaderResult.FailureDataLoaderResult) {
-                            return fieldsIndexSetupResult;
-                        } else {
-                            continue; // skip the rest of the processing for HEADER row
-                        }
-                    } else if (row.get(1).equals(CMD_END)) {
-                        break;
+        setUpIndexesForFields(headerRow);
+
+        if (rowResult.isError()) {
+            loaderResult.addResult(rowResult);
+            return loaderResult;
+        } else {
+            for (List<String> row : inputRows.subList(1, inputRows.size())) {
+                final String rowNumber = row.get(0);
+                loaderResult.addResult(rowResult);
+                rowResult = new DataLoaderResult();
+                if (Objects.equal(row.get(commandIndex), CMD_HEADER)) {
+                    headerRow = row;
+                    setUpIndexesForFields(headerRow);
+                    if (rowResult.isError()) {
+                        return loaderResult;
+                    } else {
+                        continue; // skip the rest of the processing for HEADER row
                     }
+                } else if (row.get(commandIndex).equals(CMD_END)) {
+                    break;
+                }
 
-                    final String command = As.notNull(row.get(1).toUpperCase());
-                    final @Nullable String name = row.get(nameIndex);
-                    final @Nullable String unit = unitIndex == -1 ? null : row.get(unitIndex);
-                    final @Nullable String dataType = row.get(dataTypeIndex);
-                    final @Nullable String description = row.get(descriptionIndex);
-                    final @Nullable String association = row.get(associationIndex);
-                    final Date modifiedAt = new Date();
-                    final String modifiedBy = loginManager.getUserid();
+                final String command = As.notNull(row.get(commandIndex).toUpperCase());
+                final @Nullable String name = row.get(nameIndex);
+                final @Nullable String unit = unitIndex == -1 ? null : row.get(unitIndex);
+                final @Nullable String dataType = row.get(dataTypeIndex);
+                final @Nullable String description = row.get(descriptionIndex);
+                final @Nullable String association = row.get(associationIndex);
+                final Date modifiedAt = new Date();
+                final String modifiedBy = loginManager.getUserid();
 
-                    if (name == null || dataType == null || description == null || association == null) {
-                        return new DataLoaderResult.RowFormatFailureDataLoaderResult(rowNumber, RowFormatFailureReason.REQUIRED_FIELD_MISSING);
-                    }
+                if (name == null) {
+                    rowResult.addMessage(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, rowNumber, headerRow.get(nameIndex)));
+                } else if (dataType == null && !command.equals(CMD_RENAME)) {
+                    rowResult.addMessage(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, rowNumber, headerRow.get(dataTypeIndex)));
+                } else if (description == null && !command.equals(CMD_RENAME)) {
+                    rowResult.addMessage(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, rowNumber, headerRow.get(descriptionIndex)));
+                } else if (association == null && !command.equals(CMD_RENAME)) {
+                    rowResult.addMessage(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, rowNumber, headerRow.get(associationIndex)));
+                }
 
+                if (!rowResult.isError()) {
                     switch (command) {
                     case CMD_UPDATE:
                         if (propertyByName.containsKey(name)) {
@@ -99,27 +106,27 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
                                 propertyToUpdate.setAssociation(propertyAssociation(association));
                                 propertyToUpdate.setModifiedAt(modifiedAt);
                                 propertyToUpdate.setModifiedBy(modifiedBy);
-                                final DataLoaderResult setPropertyFieldsResult = setPropertyFields(propertyToUpdate, unit, dataType, rowNumber);
-                                if (setPropertyFieldsResult instanceof DataLoaderResult.FailureDataLoaderResult) {
-                                    return setPropertyFieldsResult;
+                                setPropertyFields(propertyToUpdate, unit, dataType, rowNumber);
+                                if (rowResult.isError()) {
+                                    continue;
                                 } else {
                                     configurationEJB.saveProperty(propertyToUpdate);
                                 }
                             } else {
-                                return new DataLoaderResult.NotAuthorizedFailureDataLoaderResult(EntityTypeOperation.UPDATE);
+                                rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex), EntityTypeOperation.UPDATE, EntityType.PROPERTY));
                             }
                         } else {
                             if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.PROPERTY, EntityTypeOperation.CREATE)) {
                                 final Property propertyToAdd = new Property(name, description, propertyAssociation(association), modifiedBy);
-                                final DataLoaderResult setPropertyFieldsResult = setPropertyFields(propertyToAdd, unit, dataType, rowNumber);
-                                if (setPropertyFieldsResult instanceof DataLoaderResult.FailureDataLoaderResult) {
-                                    return setPropertyFieldsResult;
+                                setPropertyFields(propertyToAdd, unit, dataType, rowNumber);
+                                if (rowResult.isError()) {
+                                    continue;
                                 } else {
                                     configurationEJB.addProperty(propertyToAdd);
                                     propertyByName.put(propertyToAdd.getName(), propertyToAdd);
                                 }
                             } else {
-                                return new DataLoaderResult.NotAuthorizedFailureDataLoaderResult(EntityTypeOperation.CREATE);
+                                rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex), EntityTypeOperation.CREATE, EntityType.PROPERTY));
                             }
                         }
                         break;
@@ -127,13 +134,14 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
                         if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.PROPERTY, EntityTypeOperation.DELETE)) {
                             final Property propertyToDelete = propertyByName.get(name);
                             if (propertyToDelete == null) {
-                                return new DataLoaderResult.EntityNotFoundFailureDataLoaderResult(rowNumber, EntityType.PROPERTY);
+                                rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex), EntityTypeOperation.DELETE, EntityType.PROPERTY));
+                                continue;
                             } else {
                                 configurationEJB.deleteProperty(propertyToDelete);
                                 propertyByName.remove(propertyToDelete.getName());
                             }
                         } else {
-                            return new DataLoaderResult.NotAuthorizedFailureDataLoaderResult(EntityTypeOperation.DELETE);
+                            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex), EntityTypeOperation.DELETE, EntityType.PROPERTY));
                         }
                         break;
                     case CMD_RENAME:
@@ -141,7 +149,8 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
                             final int startOldNameMarkerIndex = name.indexOf("[");
                             final int endOldNameMarkerIndex = name.indexOf("]");
                             if (startOldNameMarkerIndex == -1 || endOldNameMarkerIndex == -1) {
-                                return new DataLoaderResult.RowFormatFailureDataLoaderResult(rowNumber, RowFormatFailureReason.RENAME_MISFORMAT);
+                                rowResult.addMessage(new ValidationMessage(ErrorMessage.RENAME_MISFORMAT, rowNumber, headerRow.get(nameIndex)));
+                                continue;
                             }
 
                             final String oldName = name.substring(startOldNameMarkerIndex + 1, endOldNameMarkerIndex).trim();
@@ -149,7 +158,8 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
 
                             if (propertyByName.containsKey(oldName)) {
                                 if (propertyByName.containsKey(newName)) {
-                                    return new DataLoaderResult.RowFormatFailureDataLoaderResult(rowNumber, RowFormatFailureReason.DUPLICATE_ENTITY);
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NAME_ALREADY_EXISTS, rowNumber, headerRow.get(nameIndex), EntityTypeOperation.RENAME, EntityType.PROPERTY));
+                                    continue;
                                 } else {
                                     final Property propertyToRename = propertyByName.get(oldName);
                                     propertyToRename.setName(newName);
@@ -158,35 +168,43 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
                                     propertyByName.put(newName, propertyToRename);
                                 }
                             } else {
-                                return new DataLoaderResult.EntityNotFoundFailureDataLoaderResult(rowNumber, EntityType.PROPERTY);
+                                rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex), EntityTypeOperation.RENAME, EntityType.PROPERTY));
+                                continue;
                             }
                         } else {
-                            return new DataLoaderResult.NotAuthorizedFailureDataLoaderResult(EntityTypeOperation.RENAME);
+                            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex), EntityTypeOperation.RENAME, EntityType.PROPERTY));
                         }
                         break;
                     default:
-                        return new DataLoaderResult.RowFormatFailureDataLoaderResult(rowNumber, RowFormatFailureReason.COMMAND_NOT_VALID);
+                        rowResult.addMessage(new ValidationMessage(ErrorMessage.COMMAND_NOT_VALID, rowNumber, headerRow.get(commandIndex)));
                     }
                 }
             }
         }
-
-        return new DataLoaderResult.SuccessDataLoaderResult();
+        loaderResult.addResult(rowResult);
+        return loaderResult;
     }
 
 
-    @Override protected DataLoaderResult setUpIndexesForFields(List<String> header) {
+    @Override protected void setUpIndexesForFields(List<String> header) {
         final String rowNumber = header.get(0);
-        nameIndex = header.indexOf("NAME");
-        associationIndex = header.indexOf("ASSOCIATION");
-        unitIndex = header.indexOf("UNIT");
-        dataTypeIndex = header.indexOf("DATA-TYPE");
-        descriptionIndex = header.indexOf("DESCRIPTION");
+        rowResult = new DataLoaderResult();
+        nameIndex = setUpFieldIndex(header, "NAME");
+        associationIndex = setUpFieldIndex(header, "ASSOCIATION");
+        unitIndex = setUpFieldIndex(header, "UNIT");
+        dataTypeIndex = setUpFieldIndex(header, "DATA-TYPE");
+        descriptionIndex = setUpFieldIndex(header, "DESCRIPTION");
 
-        if (nameIndex == -1 || associationIndex == -1 || unitIndex == -1 || dataTypeIndex == -1 || descriptionIndex == -1) {
-            return new DataLoaderResult.RowFormatFailureDataLoaderResult(rowNumber, RowFormatFailureReason.HEADER_FIELD_MISSING);
-        } else {
-            return new DataLoaderResult.SuccessDataLoaderResult();
+        if (nameIndex == -1) {
+            rowResult.addMessage(new ValidationMessage(ErrorMessage.HEADER_FIELD_MISSING, rowNumber, "NAME"));
+        } else if (associationIndex == -1) {
+            rowResult.addMessage(new ValidationMessage(ErrorMessage.HEADER_FIELD_MISSING, rowNumber, "ASSOCIATION"));
+        } else if (unitIndex == -1) {
+            rowResult.addMessage(new ValidationMessage(ErrorMessage.HEADER_FIELD_MISSING, rowNumber, "UNIT"));
+        } else if (dataTypeIndex == -1) {
+            rowResult.addMessage(new ValidationMessage(ErrorMessage.HEADER_FIELD_MISSING, rowNumber, "DATA-TYPE"));
+        } else if (descriptionIndex == -1) {
+            rowResult.addMessage(new ValidationMessage(ErrorMessage.HEADER_FIELD_MISSING, rowNumber, "DESCRIPTION"));
         }
     }
 
@@ -194,19 +212,20 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
      * Local cache of all properties by their names to speed up operations.
      */
     private void init() {
+        loaderResult = new DataLoaderResult();
         propertyByName = new HashMap<>();
         for (Property property : configurationEJB.findProperties()) {
             propertyByName.put(property.getName(), property);
         }
     }
 
-    private DataLoaderResult setPropertyFields(Property property, @Nullable String unit, String dataType, String rowNumber) {
+    private void setPropertyFields(Property property, @Nullable String unit, String dataType, String rowNumber) {
         if (unit != null) {
             final Unit newUnit = configurationEJB.findUnitByName(unit);
             if (newUnit != null) {
                 property.setUnit(newUnit);
             } else {
-                return new DataLoaderResult.EntityNotFoundFailureDataLoaderResult(rowNumber, EntityType.UNIT);
+                rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, "UNIT"));
             }
         } else {
             property.setUnit(null);
@@ -216,10 +235,8 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
         if (newDataType != null) {
             property.setDataType(newDataType);
         } else {
-            return new DataLoaderResult.EntityNotFoundFailureDataLoaderResult(rowNumber, EntityType.DATA_TYPE);
+            rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, "DATA-TYPE"));
         }
-
-        return new DataLoaderResult.SuccessDataLoaderResult();
     }
 
     private PropertyAssociation propertyAssociation(String association) {

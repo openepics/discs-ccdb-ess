@@ -23,6 +23,7 @@ import javax.inject.Named;
 import org.apache.commons.io.FilenameUtils;
 import org.openepics.discs.conf.dl.PropertiesLoaderQualifier;
 import org.openepics.discs.conf.dl.common.DataLoader;
+import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.ejb.AuthEJB;
 import org.openepics.discs.conf.ejb.ConfigurationEJB;
 import org.openepics.discs.conf.ent.EntityType;
@@ -34,6 +35,7 @@ import org.openepics.discs.conf.util.Utility;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.SelectEvent;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.io.ByteStreams;
 
 /**
@@ -58,6 +60,7 @@ public class PropertyManager implements Serializable {
 
     private byte[] importData;
     private String importFileName;
+    private DataLoaderResult loaderResult;
     // private Property newProperty = new Property();
 
     //
@@ -193,9 +196,9 @@ public class PropertyManager implements Serializable {
 
     public String getImportFileName() { return importFileName; }
 
-    public void importProperties() {
+    public void doImport() {
         final InputStream inputStream = new ByteArrayInputStream(importData);
-        dataLoaderHandler.loadData(inputStream, propertiesDataLoader);
+        loaderResult = dataLoaderHandler.loadData(inputStream, propertiesDataLoader);
     }
 
     public void prepareImportPopup() {
@@ -203,7 +206,9 @@ public class PropertyManager implements Serializable {
         importFileName = null;
     }
 
-    public void handleFileUpload(FileUploadEvent event) {
+    public DataLoaderResult getLoaderResult() { return loaderResult; }
+
+    public void handleImportFileUpload(FileUploadEvent event) {
         try (InputStream inputStream = event.getFile().getInputstream()) {
             this.importData = ByteStreams.toByteArray(inputStream);
             this.importFileName = FilenameUtils.getName(event.getFile().getFileName());

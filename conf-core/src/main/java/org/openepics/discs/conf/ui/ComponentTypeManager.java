@@ -25,6 +25,7 @@ import javax.inject.Named;
 import org.apache.commons.io.FilenameUtils;
 import org.openepics.discs.conf.dl.ComponentTypesLoaderQualifier;
 import org.openepics.discs.conf.dl.common.DataLoader;
+import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.ejb.AuthEJB;
 import org.openepics.discs.conf.ejb.ComptypeEJB;
 import org.openepics.discs.conf.ent.ComponentType;
@@ -44,6 +45,7 @@ import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 import org.primefaces.model.UploadedFile;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.io.ByteStreams;
 
 /**
@@ -68,6 +70,7 @@ public class ComponentTypeManager implements Serializable {
 
     private byte[] importData;
     private String importFileName;
+    private DataLoaderResult loaderResult;
 
     private List<ComponentType> objects;
     private List<ComponentType> sortedObjects;
@@ -509,10 +512,12 @@ public class ComponentTypeManager implements Serializable {
 
     public String getImportFileName() { return importFileName; }
 
-    public void importCompTypes() {
+    public void doImport() {
         final InputStream inputStream = new ByteArrayInputStream(importData);
-        dataLoaderHandler.loadData(inputStream, compTypesDataLoader);
+        loaderResult = dataLoaderHandler.loadData(inputStream, compTypesDataLoader);
     }
+
+    public DataLoaderResult getLoaderResult() { return loaderResult; }
 
     public void prepareImportPopup() {
         importData = null;

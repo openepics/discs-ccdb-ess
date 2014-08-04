@@ -24,8 +24,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "SlotPair.findAll", query = "SELECT s FROM SlotPair s"),
-    @NamedQuery(name = "SlotPair.findBySlotPairId", query = "SELECT s FROM SlotPair s WHERE s.slotPairId = :slotPairId"),
-    @NamedQuery(name = "SlotPair.findByVersion", query = "SELECT s FROM SlotPair s WHERE s.version = :version")})
+    @NamedQuery(name = "SlotPair.findByParentChildRelation", query = "SELECT s FROM SlotPair s WHERE s.childSlot.name LIKE :childName AND s.parentSlot.name = :parentName AND s.slotRelation.name = :relationName"),
+    @NamedQuery(name = "SlotPair.findBySlotPairId", query = "SELECT s FROM SlotPair s WHERE s.slotPairId = :slotPairId")})
 public class SlotPair implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -50,6 +50,12 @@ public class SlotPair implements Serializable {
     private Slot parentSlot;
 
     public SlotPair() {
+    }
+
+    public SlotPair(Slot childSlot, Slot parentSlot, SlotRelation slotRelation) {
+        this.childSlot = childSlot;
+        this.parentSlot = parentSlot;
+        this.slotRelation = slotRelation;
     }
 
     public Integer getSlotPairId() {

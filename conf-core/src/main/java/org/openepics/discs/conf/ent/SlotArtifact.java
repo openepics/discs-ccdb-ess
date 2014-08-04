@@ -24,11 +24,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "SlotArtifact.findAll", query = "SELECT s FROM SlotArtifact s"),
     @NamedQuery(name = "SlotArtifact.findByArtifactId", query = "SELECT s FROM SlotArtifact s WHERE s.id = :id"),
-    @NamedQuery(name = "SlotArtifact.findByName", query = "SELECT s FROM SlotArtifact s WHERE s.name = :name"),
     @NamedQuery(name = "SlotArtifact.findByIsInternal", query = "SELECT s FROM SlotArtifact s WHERE s.isInternal = :isInternal"),
-    @NamedQuery(name = "SlotArtifact.findByDescription", query = "SELECT s FROM SlotArtifact s WHERE s.description = :description"),
-    @NamedQuery(name = "SlotArtifact.findByModifiedBy", query = "SELECT s FROM SlotArtifact s WHERE s.modifiedBy = :modifiedBy"),
-    @NamedQuery(name = "SlotArtifact.findByModifiedAt", query = "SELECT s FROM SlotArtifact s WHERE s.modifiedAt = :modifiedAt")})
+    @NamedQuery(name = "SlotArtifact.findByModifiedBy", query = "SELECT s FROM SlotArtifact s WHERE s.modifiedBy = :modifiedBy")})
 public class SlotArtifact extends ConfigurationEntity {
     private static final long serialVersionUID = 1L;
 

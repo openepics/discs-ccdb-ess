@@ -23,6 +23,8 @@ import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotArtifact;
 import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotProperty;
+import org.openepics.discs.conf.ent.SlotRelation;
+import org.openepics.discs.conf.ent.SlotRelationName;
 import org.openepics.discs.conf.ui.LoginManager;
 
 /**
@@ -37,7 +39,7 @@ import org.openepics.discs.conf.ui.LoginManager;
     @PersistenceContext private EntityManager em;
 
     // ----------- Audit record ---------------------------------------
-    private void makeAuditEntry(EntityTypeOperation oper, String key, String entry) {
+    private void makeAuditEntry(EntityTypeOperation oper, String key, String entry, Long id) {
         AuditRecord arec = new AuditRecord(new Date(), oper, loginManager.getUserid(), entry);
         arec.setEntityType(EntityType.SLOT);
         arec.setEntityKey(key);
@@ -69,14 +71,41 @@ import org.openepics.discs.conf.ui.LoginManager;
         return slot;
     }
 
+    public List<Slot> findSlotByNameContainingString(String namePart) {
+        return em.createNamedQuery("Slot.findByNameContaining", Slot.class).setParameter("name", namePart).getResultList();
+    }
+
+    public SlotRelation findSlotRelationByName(SlotRelationName name) {
+        SlotRelation slotRelation;
+        try {
+            slotRelation = em.createNamedQuery("SlotRelation.findByName", SlotRelation.class).setParameter("name", name).getSingleResult();
+        } catch (NoResultException e) {
+            slotRelation = null;
+        }
+        return slotRelation;
+    }
+
+    public void addSlotPair(SlotPair slotPair) {
+        em.persist(slotPair);
+    }
+
+    public void removeSlotPair(SlotPair slotPair) {
+        em.merge(slotPair);
+        em.remove(slotPair);
+    }
+
     public Slot findLayoutSlot(Long id) {
         return em.find(Slot.class, id);
+    }
+
+    public List<SlotPair> findSlotPairsByParentChildRelation(String childName, String parentName, SlotRelationName relationName) {
+        return em.createNamedQuery("SlotPair.findByParentChildRelation", SlotPair.class).setParameter("childName", childName).setParameter("parentName", parentName).setParameter("relationName", relationName).getResultList();
     }
 
     public void saveLayoutSlot(Slot slot) {
         slot.setModifiedAt(new Date());
         em.merge(slot);
-        makeAuditEntry(EntityTypeOperation.UPDATE, slot.getName(), "Modified slot");
+        makeAuditEntry(EntityTypeOperation.UPDATE, slot.getName(), "Modified slot", slot.getId());
     }
 
     public void addSlot(Slot slot) {
@@ -86,7 +115,7 @@ import org.openepics.discs.conf.ui.LoginManager;
     public void deleteLayoutSlot(Slot slot) {
         Slot ct = em.find(Slot.class, slot.getId());
         em.remove(ct);
-        makeAuditEntry(EntityTypeOperation.DELETE, slot.getName(), "Deleted slot");
+        makeAuditEntry(EntityTypeOperation.DELETE, slot.getName(), "Deleted slot", slot.getId());
     }
 
     // ------------------ Slot Property ---------------
@@ -102,7 +131,7 @@ import org.openepics.discs.conf.ui.LoginManager;
             slot.getSlotPropertyList().add(newProp);
             em.merge(slot);
         }
-        makeAuditEntry(EntityTypeOperation.UPDATE, prop.getSlot().getName(), "Modified slot property " + prop.getProperty().getName());
+        makeAuditEntry(EntityTypeOperation.UPDATE, prop.getSlot().getName(), "Modified slot property " + prop.getProperty().getName(), prop.getSlot().getId());
         logger.log(Level.INFO, "Comp Type Property: id " + newProp.getId() + " name " + newProp.getProperty().getName());
     }
 
@@ -111,7 +140,7 @@ import org.openepics.discs.conf.ui.LoginManager;
         Slot slot = property.getSlot();
         slot.getSlotPropertyList().remove(property);
         em.remove(property);
-        makeAuditEntry(EntityTypeOperation.DELETE, prop.getSlot().getName(), "Deleted slot property " + prop.getProperty().getName());
+        makeAuditEntry(EntityTypeOperation.DELETE, prop.getSlot().getName(), "Deleted slot property " + prop.getProperty().getName(), prop.getSlot().getId());
     }
 
     public void addSlotProperty(SlotProperty property) {
@@ -138,7 +167,7 @@ import org.openepics.discs.conf.ui.LoginManager;
             slot.getSlotArtifactList().add(newArt);
             em.merge(slot);
         }
-        makeAuditEntry(EntityTypeOperation.UPDATE, art.getSlot().getName(), "Modified slot artifact " + art.getName());
+        makeAuditEntry(EntityTypeOperation.UPDATE, art.getSlot().getName(), "Modified slot artifact " + art.getName(), art.getSlot().getId());
         logger.log(Level.INFO, "slot Artifact: name " + art.getName() + " description " + art.getDescription() + " uri " + art.getUri());
     }
 
@@ -157,7 +186,7 @@ import org.openepics.discs.conf.ui.LoginManager;
         Slot slot = artifact.getSlot();
         slot.getSlotArtifactList().remove(artifact);
         em.remove(artifact);
-        makeAuditEntry(EntityTypeOperation.UPDATE, art.getSlot().getName(), "Deleted slot artifact " + art.getName());
+        makeAuditEntry(EntityTypeOperation.UPDATE, art.getSlot().getName(), "Deleted slot artifact " + art.getName(), art.getSlot().getId());
     }
 
     // ---------------- Related Slots ---------------------
@@ -176,11 +205,11 @@ import org.openepics.discs.conf.ui.LoginManager;
         if (create) { // create instead of update
             Slot pslot = spair.getParentSlot(); // get the parent. Todo: update
                                                 // the child too
-            pslot.getSlotPairList1().add(newArt);
+            pslot.getParentSlotsPairList().add(newArt);
             em.merge(pslot);
         }
-        makeAuditEntry(EntityTypeOperation.UPDATE, spair.getChildSlot().getName(), "Modified child slot");
-        makeAuditEntry(EntityTypeOperation.UPDATE, spair.getParentSlot().getName(), "Modified parent slot");
+        makeAuditEntry(EntityTypeOperation.UPDATE, spair.getChildSlot().getName(), "Modified child slot", spair.getChildSlot().getId());
+        makeAuditEntry(EntityTypeOperation.UPDATE, spair.getParentSlot().getName(), "Modified parent slot", spair.getParentSlot().getId());
         logger.log(Level.INFO, "saved slot pair: child " + spair.getChildSlot().getName() + " parent " + spair.getParentSlot().getName() + " relation ");
     }
 
@@ -197,10 +226,10 @@ import org.openepics.discs.conf.ui.LoginManager;
         logger.log(Level.INFO, "deleting " + spair.getChildSlot().getName() + " parent " + spair.getParentSlot().getName() + " des ");
         SlotPair slotPair = em.find(SlotPair.class, spair.getSlotPairId());
         Slot pslot = slotPair.getParentSlot();
-        pslot.getSlotPairList().remove(slotPair);
+        pslot.getChildrenSlotsPairList().remove(slotPair);
         em.remove(slotPair);
-        makeAuditEntry(EntityTypeOperation.UPDATE, spair.getChildSlot().getName(), "Deleted parent slot relationship");
-        makeAuditEntry(EntityTypeOperation.UPDATE, spair.getParentSlot().getName(), "Deleted child slot relationship");
+        makeAuditEntry(EntityTypeOperation.UPDATE, spair.getChildSlot().getName(), "Deleted parent slot relationship", spair.getChildSlot().getId());
+        makeAuditEntry(EntityTypeOperation.UPDATE, spair.getParentSlot().getName(), "Deleted child slot relationship", spair.getParentSlot().getId());
     }
 
     // -----------------
@@ -210,7 +239,7 @@ import org.openepics.discs.conf.ui.LoginManager;
                                                         // configuration (JNDI,
                                                         // config table etc)
 
-    public List<Slot> getRootNodes(String relationName) {
+    public List<Slot> getRootNodes(SlotRelationName relationName) {
         List<Slot> components;
         TypedQuery<Slot> queryComp;
 
@@ -225,7 +254,7 @@ import org.openepics.discs.conf.ui.LoginManager;
     }
 
     public List<Slot> getRootNodes() {
-        return getRootNodes("contains"); // ToDo: get the relation name from
+        return getRootNodes(SlotRelationName.CONTAINS); // ToDo: get the relation name from
                                          // configuration
     }
 
@@ -234,7 +263,7 @@ import org.openepics.discs.conf.ui.LoginManager;
         TypedQuery<Slot> queryComp;
 
         // ToDO; remove 'contains' and move it to configuration
-        queryComp = em.createQuery("SELECT cp.childSlot FROM SlotPair cp WHERE cp.parentSlot.name = :compname AND cp.slotRelation.name = :relname", Slot.class).setParameter("compname", compName).setParameter("relname", "contains");
+        queryComp = em.createQuery("SELECT cp.childSlot FROM SlotPair cp WHERE cp.parentSlot.name = :compname AND cp.slotRelation.name = :relname", Slot.class).setParameter("compname", compName).setParameter("relname", SlotRelationName.CONTAINS);
         // queryComp =
         // em.createQuery("SELECT l FROM LogicalComponent l, IN (l.childList) c WHERE c.parentLogicalComponent.name = :compname AND c.componentRelation.name = :relname ORDER BY l.name",
         // LogicalComponent.class).setParameter("compname",

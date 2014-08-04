@@ -51,8 +51,9 @@ public class Config implements Serializable {
     public Config() {
     }
 
-    public Config(String name) {
+    public Config(String name, String propValue) {
         this.name = name;
+        this.propValue = propValue;
     }
 
     public int getCofingId() {

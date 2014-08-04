@@ -22,6 +22,7 @@ import javax.inject.Named;
 import org.apache.commons.io.FilenameUtils;
 import org.openepics.discs.conf.dl.UnitLoaderQualifier;
 import org.openepics.discs.conf.dl.common.DataLoader;
+import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.ejb.AuthEJB;
 import org.openepics.discs.conf.ejb.ConfigurationEJB;
 import org.openepics.discs.conf.ent.EntityType;
@@ -52,6 +53,7 @@ public class UnitManager implements Serializable {
 
     private List<Unit> units;
     private List<Unit> filteredUnits;
+    private DataLoaderResult loaderResult;
 
     private byte[] importData;
     private String importFileName;
@@ -93,9 +95,10 @@ public class UnitManager implements Serializable {
         this.filteredUnits = filteredUnits;
     }
 
-    public void importUnits() {
+    public void doImport() {
         final InputStream inputStream = new ByteArrayInputStream(importData);
-        dataLoaderHandler.loadData(inputStream, unitsDataLoader);
+        loaderResult = dataLoaderHandler.loadData(inputStream, unitsDataLoader);
+        return;
     }
 
     public void prepareImportPopup() {
@@ -103,7 +106,9 @@ public class UnitManager implements Serializable {
         importFileName = null;
     }
 
-    public void handleFileUpload(FileUploadEvent event) {
+    public DataLoaderResult getLoaderResult() { return loaderResult; }
+
+    public void handleImportFileUpload(FileUploadEvent event) {
         try (InputStream inputStream = event.getFile().getInputstream()) {
             this.importData = ByteStreams.toByteArray(inputStream);
             this.importFileName = FilenameUtils.getName(event.getFile().getFileName());
