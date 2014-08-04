@@ -37,6 +37,7 @@ import org.openepics.discs.conf.util.As;
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
 
+
 @Stateless
 public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
 
@@ -63,7 +64,6 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
             slotsLoaderResult.addMessage(new ValidationMessage(slotsFileName));
             loadSlots(slotsFileRows);
             if (slotsLoaderResult.isError()) {
-                loaderResult.addResult(rowResult);
                 loaderResult.addResult(slotsLoaderResult);
             }
         }
@@ -73,7 +73,6 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
             slotPairsLoaderResult.addMessage(new ValidationMessage(slotPairsFileName));
             loadSlotPairs(slotPairsFileRows);
             if (slotPairsLoaderResult.isError()) {
-                loaderResult.addResult(rowResult);
                 loaderResult.addResult(slotPairsLoaderResult);
             }
         }
@@ -146,6 +145,10 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                     rowResult.addMessage(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, rowNumber, headerRow.get(compTypeIndex)));
                 }
 
+                if (rowResult.isError()) {
+                    continue;
+                }
+
                 final boolean isHosting;
 
                 if (isHostingString.equalsIgnoreCase(Boolean.TRUE.toString())) {
@@ -174,7 +177,7 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                                         continue;
                                     }
                                 } else {
-                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex), EntityTypeOperation.UPDATE, EntityType.SLOT));
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                                 }
                             }
                         } else {
@@ -193,7 +196,7 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                                         continue;
                                     }
                                 } else {
-                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex), EntityTypeOperation.CREATE, EntityType.SLOT));
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                                 }
                             }
                         }
@@ -208,7 +211,7 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                                 slotEJB.deleteLayoutSlot(slotToDelete);
                             }
                         } else {
-                            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex), EntityTypeOperation.DELETE, EntityType.SLOT));
+                            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                         }
                         break;
                     case CMD_RENAME:
@@ -226,18 +229,18 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                             final Slot slotToRename = slotEJB.findSlotByName(oldName);
                             if (slotToRename != null) {
                                 if (slotEJB.findSlotByName(newName) != null) {
-                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NAME_ALREADY_EXISTS, rowNumber, headerRow.get(nameIndex), EntityTypeOperation.RENAME, EntityType.SLOT));
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NAME_ALREADY_EXISTS, rowNumber, headerRow.get(nameIndex)));
                                     continue;
                                 } else {
                                     slotToRename.setName(newName);
                                     slotEJB.saveLayoutSlot(slotToRename);
                                 }
                             } else {
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex), EntityTypeOperation.RENAME, EntityType.SLOT));
+                                rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
                                 continue;
                             }
                         } else {
-                            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex), EntityTypeOperation.RENAME, EntityType.SLOT));
+                            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                         }
                         break;
                     default:
@@ -245,6 +248,7 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                     }
                 }
             }
+            slotsLoaderResult.addResult(rowResult);
         }
     }
 
@@ -371,7 +375,7 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                                                 rowResult.addMessage(new ValidationMessage(ErrorMessage.SAME_CHILD_AND_PARENT, rowNumber));
                                             }
                                         } else {
-                                            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex), EntityTypeOperation.CREATE, EntityType.SLOT));
+                                            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                                         }
                                     }
                                 }
@@ -384,7 +388,7 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                                             slotEJB.removeSlotPair(slotPair);
                                         }
                                     } else {
-                                        rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex), EntityTypeOperation.DELETE, EntityType.SLOT));
+                                        rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                                     }
                                 } else {
                                     rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber));
@@ -396,15 +400,16 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                     }
                 }
             }
+            slotPairsLoaderResult.addResult(rowResult);
         }
     }
 
     private void checkForRelationConsistency() {
         for (Slot newSlot : newSlots) {
-            if (!newSlotPairChildren.contains(newSlot)) {
+            if (!newSlotPairChildren.contains(newSlot) && !newSlot.getComponentType().getName().equals("_ROOT")) {
                 final ValidationMessage orphanSlotMessage = new ValidationMessage(ErrorMessage.ORPHAN_SLOT);
                 orphanSlotMessage.setOrphanSlotName(newSlot.getName());
-                rowResult.addMessage(orphanSlotMessage);
+                loaderResult.addMessage(orphanSlotMessage);
             }
         }
     }
@@ -472,7 +477,7 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
             final String propertyName = propertiesIterator.next();
             final @Nullable Property property = configurationEJB.findPropertyByName(propertyName);
             if (property == null) {
-                rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, propertyName));
+                rowResult.addMessage(new ValidationMessage(ErrorMessage.PROPERTY_NOT_FOUND, rowNumber, propertyName));
             } else {
                 final PropertyAssociation propAssociation = property.getAssociation();
                 if (propAssociation != PropertyAssociation.ALL && propAssociation != PropertyAssociation.SLOT && propAssociation != PropertyAssociation.SLOT_DEVICE && propAssociation != PropertyAssociation.TYPE_SLOT) {
