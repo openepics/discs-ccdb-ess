@@ -97,12 +97,6 @@ public class InitialDBPopulation {
         privilege = new Privilege(EntityType.DEVICE, EntityTypeOperation.DELETE);
         privilege.setRole(role);
         em.persist(privilege);
-        privilege = new Privilege(EntityType.SLOT_PAIR, EntityTypeOperation.CREATE);
-        privilege.setRole(role);
-        em.persist(privilege);
-        privilege = new Privilege(EntityType.SLOT_PAIR, EntityTypeOperation.DELETE);
-        privilege.setRole(role);
-        em.persist(privilege);
 
         em.persist(new DataType("Integer", "Integer number", true, null, userName));
         em.persist(new DataType("Double", "Double precision floating point", true, null, userName));

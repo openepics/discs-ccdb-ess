@@ -338,7 +338,7 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                             case CMD_UPDATE:
                                 for (Slot childSlot : childrenSlots) {
                                     if (newSlots.contains(childSlot)) {
-                                        if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.SLOT_PAIR, EntityTypeOperation.CREATE)) {
+                                        if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.SLOT, EntityTypeOperation.CREATE)) {
                                             if (!childSlot.getName().equals(parentSlot.getName())) {
                                                 if (slotRelation.getName() == SlotRelationName.CONTAINS) {
                                                     if (childSlot.getComponentType().getName().equalsIgnoreCase("_ROOT")) {
@@ -371,7 +371,7 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                                                 rowResult.addMessage(new ValidationMessage(ErrorMessage.SAME_CHILD_AND_PARENT, rowNumber));
                                             }
                                         } else {
-                                            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex), EntityTypeOperation.CREATE, EntityType.SLOT_PAIR));
+                                            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex), EntityTypeOperation.CREATE, EntityType.SLOT));
                                         }
                                     }
                                 }
@@ -379,12 +379,12 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                             case CMD_DELETE:
                                 final List<SlotPair> slotPairs = slotEJB.findSlotPairsByParentChildRelation(child, parent, slotRelationName);
                                 if (slotPairs.size() != 0) {
-                                    if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.SLOT_PAIR, EntityTypeOperation.DELETE)) {
+                                    if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.SLOT, EntityTypeOperation.DELETE)) {
                                         for (SlotPair slotPair : slotPairs) {
                                             slotEJB.removeSlotPair(slotPair);
                                         }
                                     } else {
-                                        rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex), EntityTypeOperation.DELETE, EntityType.SLOT_PAIR));
+                                        rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex), EntityTypeOperation.DELETE, EntityType.SLOT));
                                     }
                                 } else {
                                     rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber));
