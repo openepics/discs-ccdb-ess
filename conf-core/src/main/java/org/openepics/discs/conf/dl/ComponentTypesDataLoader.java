@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+
 import org.openepics.discs.conf.dl.common.AbstractDataLoader;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
@@ -27,6 +28,7 @@ import org.openepics.discs.conf.ui.LoginManager;
 import org.openepics.discs.conf.util.As;
 
 import com.google.common.base.Objects;
+import com.google.common.collect.ImmutableList;
 
 @Stateless
 @ComponentTypesLoaderQualifier
@@ -41,14 +43,17 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
     @Override
     public DataLoaderResult loadDataToDatabase(List<List<String>> inputRows) {
         loaderResult = new DataLoaderResult();
-        final ArrayList<String> fields = new ArrayList<>();
-        fields.add("NAME");
-        fields.add("DESCRIPTION");
+        final List<String> fields = ImmutableList.of("NAME", "DESCRIPTION");
         /*
          * List does not contain any rows that do not have a value (command) in
          * the first column. There should be no commands before "HEADER".
          */
         List<String> headerRow = inputRows.get(0);
+        checkForDuplicateHeaderEntries(headerRow);
+        if (rowResult.isError()) {
+            loaderResult.addResult(rowResult);
+            return loaderResult;
+        }
 
         setUpIndexesForFields(headerRow);
         HashMap<String, Integer> indexByPropertyName = indexByPropertyName(fields, headerRow);
@@ -64,6 +69,11 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
                 rowResult = new DataLoaderResult();
                 if (Objects.equal(row.get(commandIndex), CMD_HEADER)) {
                     headerRow = row;
+                    checkForDuplicateHeaderEntries(headerRow);
+                    if (rowResult.isError()) {
+                        loaderResult.addResult(rowResult);
+                        return loaderResult;
+                    }
                     setUpIndexesForFields(headerRow);
                     indexByPropertyName = indexByPropertyName(fields, headerRow);
                     checkPropertyAssociation(indexByPropertyName, rowNumber);
@@ -169,8 +179,8 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
     protected void setUpIndexesForFields(List<String> header) {
         final String rowNumber = header.get(0);
         rowResult = new DataLoaderResult();
-        nameIndex = setUpFieldIndex(header, "NAME");
-        descriptionIndex = setUpFieldIndex(header, "DESCRIPTION");
+        nameIndex = header.indexOf("NAME");
+        descriptionIndex = header.indexOf("DESCRIPTION");
 
 
         if (nameIndex == -1) {

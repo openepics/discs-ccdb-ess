@@ -9,6 +9,7 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -21,6 +22,8 @@ import org.openepics.discs.conf.ent.DeviceArtifact;
 import org.openepics.discs.conf.ent.DeviceProperty;
 import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
+import org.openepics.discs.conf.ent.Slot;
+import org.openepics.discs.conf.ent.SlotProperty;
 import org.openepics.discs.conf.ui.LoginManager;
 
 /**
@@ -61,21 +64,17 @@ import org.openepics.discs.conf.ui.LoginManager;
         return em.find(Device.class, id);
     }
 
-    public void saveDevice(String token, Device device) throws Exception {
-        String user = token; // todo: convert token to user
-
-        if (device == null) {
-            logger.log(Level.SEVERE, "Device is null!");
-            return;
-            // throw new Exception("property is null");
+    public Device findDeviceBySerialNumber(String serialNumber) {
+        Device device;
+        try {
+            device = em.createNamedQuery("Device.findBySerialNumber", Device.class).setParameter("serialNumber", serialNumber).getSingleResult();
+        } catch (NoResultException e) {
+            device = null;
         }
-        if (!authEJB.userHasAuth(user, EntityType.DEVICE, EntityTypeOperation.CREATE)) {
-            logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
-            throw new Exception("User " + user + " is not authorized to perform this operation");
-        }
+        return device;
+    }
 
-        device.setModifiedAt(new Date());
-        device.setModifiedBy(user);
+    public void saveDevice(String token, Device device) {
         logger.log(Level.INFO, "Preparing to save device");
         em.merge(device);
         makeAuditEntry(EntityTypeOperation.UPDATE, device.getSerialNumber(), "Modified device", device.getId());
@@ -86,17 +85,7 @@ import org.openepics.discs.conf.ui.LoginManager;
         makeAuditEntry(EntityTypeOperation.UPDATE, device.getSerialNumber(), "Added device", device.getId());
     }
 
-    public void deleteDevice(Device device) throws Exception {
-
-        if (device == null) {
-            logger.log(Level.SEVERE, "Property is null!");
-            throw new Exception("property is null");
-        }
-        String user = loginManager.getUserid();
-        if (!authEJB.userHasAuth(user, EntityType.DEVICE, EntityTypeOperation.DELETE)) {
-            logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
-            throw new Exception("User " + user + " is not authorized to perform this operation");
-        }
+    public void deleteDevice(Device device) {
         Device ct = em.find(Device.class, device.getId());
         em.remove(ct);
         makeAuditEntry(EntityTypeOperation.DELETE, device.getSerialNumber(), "Deleted device", device.getId());
@@ -104,19 +93,8 @@ import org.openepics.discs.conf.ui.LoginManager;
 
     // ------------------ Property ---------------
 
-    public void saveDeviceProp(DeviceProperty prop, boolean create) throws Exception {
-        if (prop == null) {
-            logger.log(Level.SEVERE, "saveDeviceProp: property is null");
-            return;
-        }
-        String user = loginManager.getUserid();
-        if (!authEJB.userHasAuth(user, EntityType.DEVICE, EntityTypeOperation.UPDATE)) {
-            logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
-            throw new Exception("User " + user + " is not authorized to perform this operation");
-        }
+    public void saveDeviceProp(DeviceProperty prop, boolean create) {
         prop.setModifiedAt(new Date());
-        // ctprop.setType("a");
-        prop.setModifiedBy(user);
         DeviceProperty newProp = em.merge(prop);
 
         if (create) { // create instead of update
@@ -128,21 +106,16 @@ import org.openepics.discs.conf.ui.LoginManager;
         makeAuditEntry(EntityTypeOperation.UPDATE, prop.getDevice().getSerialNumber(), "Modified property " + prop.getProperty().getName(),prop.getDevice().getId());
     }
 
-    public void deleteDeviceProp(DeviceProperty prop) throws Exception {
-        if (prop == null) {
-            logger.log(Level.SEVERE, "deleteDeviceArtifact: dev-artifact is null");
-            return;
-        }
-        String user = loginManager.getUserid();
-        if (!authEJB.userHasAuth(user, EntityType.DEVICE, EntityTypeOperation.UPDATE)) {
-            logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
-            throw new Exception("User " + user + " is not authorized to perform this operation");
-        }
+    public void deleteDeviceProp(DeviceProperty prop) {
         DeviceProperty property = em.find(DeviceProperty.class, prop.getId());
         Device device = property.getDevice();
         device.getDevicePropertyList().remove(property);
         em.remove(property);
         makeAuditEntry(EntityTypeOperation.UPDATE, prop.getDevice().getSerialNumber(), "Deleted property " + prop.getProperty().getName(), prop.getDevice().getId());
+    }
+
+    public void addDeviceProperty(DeviceProperty property) {
+        em.persist(property);
     }
 
     // ---------------- Artifact ---------------------

@@ -91,9 +91,6 @@ public class InitialDBPopulation {
         privilege = new Privilege(EntityType.DEVICE, EntityTypeOperation.UPDATE);
         privilege.setRole(role);
         em.persist(privilege);
-        privilege = new Privilege(EntityType.DEVICE, EntityTypeOperation.RENAME);
-        privilege.setRole(role);
-        em.persist(privilege);
         privilege = new Privilege(EntityType.DEVICE, EntityTypeOperation.DELETE);
         privilege.setRole(role);
         em.persist(privilege);

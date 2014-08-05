@@ -54,6 +54,11 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
          * in the first column. There should be no commands before "HEADER".
          */
         List<String> headerRow = inputRows.get(0);
+        checkForDuplicateHeaderEntries(headerRow);
+        if (rowResult.isError()) {
+            loaderResult.addResult(rowResult);
+            return loaderResult;
+        }
 
         setUpIndexesForFields(headerRow);
 
@@ -67,6 +72,11 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
                 rowResult = new DataLoaderResult();
                 if (Objects.equal(row.get(commandIndex), CMD_HEADER)) {
                     headerRow = row;
+                    checkForDuplicateHeaderEntries(headerRow);
+                    if (rowResult.isError()) {
+                        loaderResult.addResult(rowResult);
+                        return loaderResult;
+                    }
                     setUpIndexesForFields(headerRow);
                     if (rowResult.isError()) {
                         return loaderResult;
@@ -88,11 +98,11 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
 
                 if (name == null) {
                     rowResult.addMessage(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, rowNumber, headerRow.get(nameIndex)));
-                } else if (dataType == null && !command.equals(CMD_RENAME)) {
+                } else if (dataType == null && !command.equals(CMD_RENAME) && !command.equals(CMD_DELETE)) {
                     rowResult.addMessage(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, rowNumber, headerRow.get(dataTypeIndex)));
-                } else if (description == null && !command.equals(CMD_RENAME)) {
+                } else if (description == null && !command.equals(CMD_RENAME) && !command.equals(CMD_DELETE)) {
                     rowResult.addMessage(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, rowNumber, headerRow.get(descriptionIndex)));
-                } else if (association == null && !command.equals(CMD_RENAME)) {
+                } else if (association == null && !command.equals(CMD_RENAME) && !command.equals(CMD_DELETE)) {
                     rowResult.addMessage(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, rowNumber, headerRow.get(associationIndex)));
                 }
 
@@ -189,11 +199,11 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
     @Override protected void setUpIndexesForFields(List<String> header) {
         final String rowNumber = header.get(0);
         rowResult = new DataLoaderResult();
-        nameIndex = setUpFieldIndex(header, "NAME");
-        associationIndex = setUpFieldIndex(header, "ASSOCIATION");
-        unitIndex = setUpFieldIndex(header, "UNIT");
-        dataTypeIndex = setUpFieldIndex(header, "DATA-TYPE");
-        descriptionIndex = setUpFieldIndex(header, "DESCRIPTION");
+        nameIndex = header.indexOf("NAME");
+        associationIndex = header.indexOf("ASSOCIATION");
+        unitIndex = header.indexOf("UNIT");
+        dataTypeIndex = header.indexOf("DATA-TYPE");
+        descriptionIndex = header.indexOf("DESCRIPTION");
 
         if (nameIndex == -1) {
             rowResult.addMessage(new ValidationMessage(ErrorMessage.HEADER_FIELD_MISSING, rowNumber, "NAME"));
@@ -240,27 +250,24 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
     }
 
     private PropertyAssociation propertyAssociation(String association) {
-        final PropertyAssociation associationToSet;
         if (association == null) {
-            associationToSet = PropertyAssociation.TYPE;
+            return PropertyAssociation.TYPE;
         } else if (association.equalsIgnoreCase(PropertyAssociation.ALL.name())) {
-            associationToSet = PropertyAssociation.ALL;
+            return PropertyAssociation.ALL;
         } else if (association.equalsIgnoreCase(PropertyAssociation.DEVICE.name())) {
-            associationToSet = PropertyAssociation.DEVICE;
+            return PropertyAssociation.DEVICE;
         } else if (association.equalsIgnoreCase(PropertyAssociation.SLOT.name())) {
-            associationToSet = PropertyAssociation.SLOT;
+            return PropertyAssociation.SLOT;
         } else if (association.equalsIgnoreCase(PropertyAssociation.SLOT_DEVICE.name())) {
-            associationToSet = PropertyAssociation.SLOT_DEVICE;
+            return PropertyAssociation.SLOT_DEVICE;
         } else if (association.equalsIgnoreCase(PropertyAssociation.TYPE.name())) {
-            associationToSet = PropertyAssociation.TYPE;
+            return PropertyAssociation.TYPE;
         } else if (association.equalsIgnoreCase(PropertyAssociation.TYPE_DEVICE.name())) {
-            associationToSet = PropertyAssociation.TYPE_DEVICE;
+            return PropertyAssociation.TYPE_DEVICE;
         } else if (association.equalsIgnoreCase(PropertyAssociation.TYPE_SLOT.name())) {
-            associationToSet = PropertyAssociation.TYPE_SLOT;
+            return PropertyAssociation.TYPE_SLOT;
         } else {
-            associationToSet = PropertyAssociation.TYPE;
+            return PropertyAssociation.TYPE;
         }
-
-        return associationToSet;
     }
 }

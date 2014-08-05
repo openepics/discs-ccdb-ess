@@ -46,6 +46,12 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
          * in the first column. There should be no commands before "HEADER".
          */
         List<String> headerRow = inputRows.get(0);
+
+        checkForDuplicateHeaderEntries(headerRow);
+        if (rowResult.isError()) {
+            loaderResult.addResult(rowResult);
+            return loaderResult;
+        }
         setUpIndexesForFields(headerRow);
 
         if (rowResult.isError()) {
@@ -58,6 +64,11 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
                 rowResult = new DataLoaderResult();
                 if (row.get(commandIndex).equals(CMD_HEADER)) {
                     headerRow = row;
+                    checkForDuplicateHeaderEntries(headerRow);
+                    if (rowResult.isError()) {
+                        loaderResult.addResult(rowResult);
+                        return loaderResult;
+                    }
                     setUpIndexesForFields(headerRow);
                     if (rowResult.isError()) {
                         return loaderResult;
@@ -79,11 +90,11 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
 
                 if (name == null) {
                     rowResult.addMessage(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, rowNumber, headerRow.get(nameIndex)));
-                } else if (quantity == null && !command.equals(CMD_RENAME)) {
+                } else if (quantity == null && !command.equals(CMD_RENAME) && !command.equals(CMD_DELETE)) {
                     rowResult.addMessage(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, rowNumber, headerRow.get(quantityIndex)));
-                } else if (symbol == null && !command.equals(CMD_RENAME)) {
+                } else if (symbol == null && !command.equals(CMD_RENAME) && !command.equals(CMD_DELETE)) {
                     rowResult.addMessage(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, rowNumber, headerRow.get(symbolIndex)));
-                } else if (description == null && !command.equals(CMD_RENAME)) {
+                } else if (description == null && !command.equals(CMD_RENAME) && !command.equals(CMD_DELETE)) {
                     rowResult.addMessage(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, rowNumber, headerRow.get(descriptionIndex)));
                 }
 
@@ -184,10 +195,10 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
     @Override protected void setUpIndexesForFields(List<String> header) {
         final String rowNumber = header.get(0);
         rowResult = new DataLoaderResult();
-        nameIndex = setUpFieldIndex(header, "NAME");
-        quantityIndex = setUpFieldIndex(header, "QUANTITY");
-        symbolIndex = setUpFieldIndex(header, "SYMBOL");
-        descriptionIndex = setUpFieldIndex(header, "DESCRIPTION");
+        nameIndex = header.indexOf("NAME");
+        quantityIndex = header.indexOf("QUANTITY");
+        symbolIndex = header.indexOf("SYMBOL");
+        descriptionIndex = header.indexOf("DESCRIPTION");
 
         if (nameIndex == -1) {
             rowResult.addMessage(new ValidationMessage(ErrorMessage.HEADER_FIELD_MISSING, rowNumber, "NAME"));
