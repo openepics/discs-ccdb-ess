@@ -113,7 +113,7 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
                                     configurationEJB.saveProperty(propertyToUpdate);
                                 }
                             } else {
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex), EntityTypeOperation.UPDATE, EntityType.PROPERTY));
+                                rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                             }
                         } else {
                             if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.PROPERTY, EntityTypeOperation.CREATE)) {
@@ -126,7 +126,7 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
                                     propertyByName.put(propertyToAdd.getName(), propertyToAdd);
                                 }
                             } else {
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex), EntityTypeOperation.CREATE, EntityType.PROPERTY));
+                                rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                             }
                         }
                         break;
@@ -134,14 +134,14 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
                         if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.PROPERTY, EntityTypeOperation.DELETE)) {
                             final Property propertyToDelete = propertyByName.get(name);
                             if (propertyToDelete == null) {
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex), EntityTypeOperation.DELETE, EntityType.PROPERTY));
+                                rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
                                 continue;
                             } else {
                                 configurationEJB.deleteProperty(propertyToDelete);
                                 propertyByName.remove(propertyToDelete.getName());
                             }
                         } else {
-                            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex), EntityTypeOperation.DELETE, EntityType.PROPERTY));
+                            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                         }
                         break;
                     case CMD_RENAME:
@@ -158,7 +158,7 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
 
                             if (propertyByName.containsKey(oldName)) {
                                 if (propertyByName.containsKey(newName)) {
-                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NAME_ALREADY_EXISTS, rowNumber, headerRow.get(nameIndex), EntityTypeOperation.RENAME, EntityType.PROPERTY));
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NAME_ALREADY_EXISTS, rowNumber, headerRow.get(nameIndex)));
                                     continue;
                                 } else {
                                     final Property propertyToRename = propertyByName.get(oldName);
@@ -168,11 +168,11 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
                                     propertyByName.put(newName, propertyToRename);
                                 }
                             } else {
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex), EntityTypeOperation.RENAME, EntityType.PROPERTY));
+                                rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
                                 continue;
                             }
                         } else {
-                            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex), EntityTypeOperation.RENAME, EntityType.PROPERTY));
+                            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                         }
                         break;
                     default:

@@ -98,7 +98,7 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
                                 continue;
                             }
                         } else {
-                            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex), EntityTypeOperation.UPDATE, EntityType.COMPONENT_TYPE));
+                            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                         }
                     } else {
                         if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.COMPONENT_TYPE, EntityTypeOperation.CREATE)) {
@@ -110,7 +110,7 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
                                 continue;
                             }
                         } else {
-                            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex), EntityTypeOperation.CREATE, EntityType.COMPONENT_TYPE));
+                            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                         }
                     }
                     break;
@@ -118,13 +118,13 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
                     final ComponentType componentTypeToDelete = comptypeEJB.findComponentTypeByName(name);
                     if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.COMPONENT_TYPE, EntityTypeOperation.DELETE)) {
                         if (componentTypeToDelete == null) {
-                            rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex), EntityTypeOperation.DELETE, EntityType.COMPONENT_TYPE));
+                            rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
                             continue;
                         } else {
                             comptypeEJB.deleteComponentType(componentTypeToDelete);
                         }
                     } else {
-                        rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex), EntityTypeOperation.DELETE, EntityType.COMPONENT_TYPE));
+                        rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                     }
                     break;
                 case CMD_RENAME:
@@ -142,18 +142,18 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
                         final ComponentType componentTypeToRename = comptypeEJB.findComponentTypeByName(oldName);
                         if (componentTypeToRename != null) {
                             if (comptypeEJB.findComponentTypeByName(newName) != null) {
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.NAME_ALREADY_EXISTS, rowNumber, headerRow.get(nameIndex), EntityTypeOperation.RENAME, EntityType.COMPONENT_TYPE));
+                                rowResult.addMessage(new ValidationMessage(ErrorMessage.NAME_ALREADY_EXISTS, rowNumber, headerRow.get(nameIndex)));
                                 continue;
                             } else {
                                 componentTypeToRename.setName(newName);
                                 comptypeEJB.saveComponentType(componentTypeToRename);
                             }
                         } else {
-                            rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex), EntityTypeOperation.RENAME, EntityType.COMPONENT_TYPE));
+                            rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
                             continue;
                         }
                     } else {
-                        rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex), EntityTypeOperation.RENAME, EntityType.COMPONENT_TYPE));
+                        rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                     }
                     break;
                 default:
@@ -186,7 +186,7 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
             final String propertyName = propertiesIterator.next();
             final @Nullable Property property = configurationEJB.findPropertyByName(propertyName);
             if (property == null) {
-                rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, propertyName));
+                rowResult.addMessage(new ValidationMessage(ErrorMessage.PROPERTY_NOT_FOUND, rowNumber, propertyName));
             } else {
                 final PropertyAssociation propAssociation = property.getAssociation();
                 if (propAssociation != PropertyAssociation.ALL && propAssociation != PropertyAssociation.TYPE && propAssociation != PropertyAssociation.TYPE_DEVICE && propAssociation != PropertyAssociation.TYPE_SLOT) {

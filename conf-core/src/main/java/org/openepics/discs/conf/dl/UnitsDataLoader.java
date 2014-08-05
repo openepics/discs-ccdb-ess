@@ -99,7 +99,7 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
                                 unitToUpdate.setModifiedAt(modifiedAt);
                                 configurationEJB.saveUnit(unitToUpdate);
                             } else {
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex), EntityTypeOperation.UPDATE, EntityType.UNIT));
+                                rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                                 continue;
                             }
                         } else {
@@ -108,7 +108,7 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
                                 configurationEJB.addUnit(unitToAdd);
                                 unitByName.put(unitToAdd.getUnitName(), unitToAdd);
                             } else {
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex), EntityTypeOperation.CREATE, EntityType.UNIT));
+                                rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                                 continue;
                             }
                         }
@@ -117,14 +117,14 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
                         if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.UNIT, EntityTypeOperation.DELETE)) {
                             final Unit unitToDelete = unitByName.get(name);
                             if (unitToDelete == null) {
-                               rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex), EntityTypeOperation.DELETE, EntityType.UNIT));
+                               rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
                                continue;
                             } else {
                                 configurationEJB.deleteUnit(unitToDelete);
                                 unitByName.remove(unitToDelete.getUnitName());
                             }
                         } else {
-                            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex), EntityTypeOperation.DELETE, EntityType.UNIT));
+                            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                             continue;
                         }
                         break;
@@ -142,7 +142,7 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
 
                             if (unitByName.containsKey(oldName)) {
                                 if (unitByName.containsKey(newName)) {
-                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NAME_ALREADY_EXISTS, rowNumber, headerRow.get(nameIndex), EntityTypeOperation.RENAME, EntityType.UNIT));
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NAME_ALREADY_EXISTS, rowNumber, headerRow.get(nameIndex)));
                                     continue;
                                 } else {
                                     final Unit unitToRename = unitByName.get(oldName);
@@ -152,11 +152,11 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
                                     unitByName.put(newName, unitToRename);
                                 }
                             } else {
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex), EntityTypeOperation.RENAME, EntityType.UNIT));
+                                rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
                                 continue;
                             }
                         } else {
-                            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex), EntityTypeOperation.RENAME, EntityType.UNIT));
+                            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                             continue;
                         }
                         break;
