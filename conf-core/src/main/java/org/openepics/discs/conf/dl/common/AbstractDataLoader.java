@@ -1,5 +1,6 @@
 package org.openepics.discs.conf.dl.common;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -20,6 +21,8 @@ public abstract class AbstractDataLoader {
     protected DataLoaderResult loaderResult;
     protected DataLoaderResult rowResult;
     protected final int commandIndex = 1;
+
+    final ArrayList<String> duplicateFields = new ArrayList<>();
 
 
     /**
@@ -44,9 +47,6 @@ public abstract class AbstractDataLoader {
 		final HashMap<String, Integer> indexByPropertyName = new HashMap<>();
 		for (String headerEntry : headerRow.subList(2, headerRow.size())) {
 			if (!fields.contains(headerEntry) && headerEntry != null && headerEntry.length() > 0) {
-			    if (headerRow.indexOf(headerEntry) != headerRow.lastIndexOf(headerEntry)) {
-			        rowResult.addMessage(new ValidationMessage(ErrorMessage.DUPLICATES_IN_HEADER,headerRow.get(0), headerEntry));
-			    }
 				indexByPropertyName.put(headerEntry, headerRow.indexOf(headerEntry));
 			}
 		}
@@ -54,17 +54,18 @@ public abstract class AbstractDataLoader {
 	}
 
 	/**
-	 * Set index of the column named columnName and add new error message to row result if
-	 * this name appears in the header more than once.
+	 * Checks if there are multiple occurrences of same header entry in the header
 	 *
-	 * @param headerRow {@link List} representing header
-	 * @param columnName Name of the column for which the index should be set
-	 * @return index of the column with given name in the header
+	 * @param headerRow {@link List} containing header entries
 	 */
-	protected int setUpFieldIndex(List<String> headerRow, String columnName) {
-        if (headerRow.indexOf(columnName) != headerRow.lastIndexOf(columnName)) {
-            rowResult.addMessage(new ValidationMessage(ErrorMessage.DUPLICATES_IN_HEADER,headerRow.get(0), columnName));
-        }
-        return headerRow.indexOf(columnName);
-    }
+	protected void checkForDuplicateHeaderEntries(List<String> headerRow) {
+	    final ArrayList<String> duplicateHeaderEntries = new ArrayList<>();
+	    rowResult = new DataLoaderResult();
+	    for (String headerEntry : headerRow.subList(2, headerRow.size())) {
+	        if (headerEntry != null && headerEntry.length() > 0 && headerRow.indexOf(headerEntry) != headerRow.lastIndexOf(headerEntry) && !duplicateHeaderEntries.contains(headerEntry)) {
+	            rowResult.addMessage(new ValidationMessage(ErrorMessage.DUPLICATES_IN_HEADER, headerRow.get(0), headerEntry));
+	            duplicateHeaderEntries.add(headerEntry);
+	        }
+	    }
+	}
 }

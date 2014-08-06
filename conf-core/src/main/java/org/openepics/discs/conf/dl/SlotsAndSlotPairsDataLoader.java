@@ -92,6 +92,11 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
          */
         List<String> headerRow = inputRows.get(0);
 
+        checkForDuplicateHeaderEntries(headerRow);
+        if (rowResult.isError()) {
+            slotsLoaderResult.addResult(rowResult);
+            return;
+        }
         setUpIndexesForFields(headerRow);
         HashMap<String, Integer> indexByPropertyName = indexByPropertyName(fields, headerRow);
         checkPropertyAssociation(indexByPropertyName, headerRow.get(0));
@@ -106,6 +111,11 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                 rowResult = new DataLoaderResult();
                 if (Objects.equal(row.get(commandIndex), CMD_HEADER)) {
                     headerRow = row;
+                    checkForDuplicateHeaderEntries(headerRow);
+                    if (rowResult.isError()) {
+                        slotsLoaderResult.addResult(rowResult);
+                        return;
+                    }
                     setUpIndexesForFields(headerRow);
                     indexByPropertyName = indexByPropertyName(fields, headerRow);
                     checkPropertyAssociation(indexByPropertyName, rowNumber);
@@ -139,9 +149,9 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
 
                 if (name == null) {
                     rowResult.addMessage(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, rowNumber, headerRow.get(nameIndex)));
-                } else if (isHostingString == null && !command.equals(CMD_RENAME)) {
+                } else if (isHostingString == null && !command.equals(CMD_RENAME) && !command.equals(CMD_DELETE)) {
                     rowResult.addMessage(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, rowNumber, headerRow.get(isHostingIndex)));
-                } else if (componentType == null && !command.equals(CMD_RENAME)) {
+                } else if (componentType == null && !command.equals(CMD_RENAME) && !command.equals(CMD_DELETE)) {
                     rowResult.addMessage(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, rowNumber, headerRow.get(compTypeIndex)));
                 }
 
@@ -277,6 +287,11 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
          */
         List<String> headerRow = inputRows.get(0);
 
+        checkForDuplicateHeaderEntries(headerRow);
+        if (rowResult.isError()) {
+            slotPairsLoaderResult.addResult(rowResult);
+            return;
+        }
         setUpIndexesForSlotPairFields(headerRow);
         if (rowResult.isError()) {
             slotPairsLoaderResult.addResult(rowResult);
@@ -288,6 +303,11 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                 rowResult = new DataLoaderResult();
                 if (Objects.equal(row.get(1), CMD_HEADER)) {
                     headerRow = row;
+                    checkForDuplicateHeaderEntries(headerRow);
+                    if (rowResult.isError()) {
+                        slotPairsLoaderResult.addResult(rowResult);
+                        return;
+                    }
                     setUpIndexesForFields(headerRow);
                     if (rowResult.isError()) {
                         return;
@@ -446,20 +466,20 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
 
     @Override protected void setUpIndexesForFields(List<String> header) {
         final String rowNumber = header.get(0);
-        nameIndex = setUpFieldIndex(header, "NAME");
-        descriptionIndex = setUpFieldIndex(header, "DESCRIPTION");
-        compTypeIndex = setUpFieldIndex(header, "CTYPE");
-        isHostingIndex = setUpFieldIndex(header, "IS-HOSTING-SLOT");
-        blpIndex = setUpFieldIndex(header, "BLP");
-        globalXIndex = setUpFieldIndex(header, "GCX");
-        globalYIndex = setUpFieldIndex(header, "GCY");
-        globalZIndex = setUpFieldIndex(header, "GCZ");
-        globalRollIndex = setUpFieldIndex(header, "GL-ROLL");
-        globalYawIndex = setUpFieldIndex(header, "GL-YAW");
-        globalPitchIndex = setUpFieldIndex(header, "GL-PITCH");
-        asmCommentIndex = setUpFieldIndex(header, "ASM-COMMENT");
-        asmPositionIndex = setUpFieldIndex(header, "ASM-POSITION");
-        commentIndex = setUpFieldIndex(header, "COMMENT");
+        nameIndex = header.indexOf("NAME");
+        descriptionIndex = header.indexOf("DESCRIPTION");
+        compTypeIndex = header.indexOf("CTYPE");
+        isHostingIndex = header.indexOf("IS-HOSTING-SLOT");
+        blpIndex = header.indexOf("BLP");
+        globalXIndex = header.indexOf("GCX");
+        globalYIndex = header.indexOf("GCY");
+        globalZIndex = header.indexOf("GCZ");
+        globalRollIndex = header.indexOf("GL-ROLL");
+        globalYawIndex = header.indexOf("GL-YAW");
+        globalPitchIndex = header.indexOf("GL-PITCH");
+        asmCommentIndex = header.indexOf("ASM-COMMENT");
+        asmPositionIndex = header.indexOf("ASM-POSITION");
+        commentIndex = header.indexOf("COMMENT");
 
         rowResult = new DataLoaderResult();
         if (nameIndex == -1) {

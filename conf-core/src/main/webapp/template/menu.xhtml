@@ -93,6 +93,11 @@
                     oncomplete="importSlots.show()" title="Import Slots"
                     actionListener="#{slotManager.prepareImportPopup()}"
                     disabled="#{!slotManager.canImportSlots()}"/>
+                  
+                <p:menuitem value="Import Device Instances" update=":importDevicesForm"
+                    oncomplete="importDevices.show()" title="Import Devices"
+                    actionListener="#{deviceManager.prepareImportPopup()}"
+                    disabled="#{!deviceManager.canImportDevices()}"/>
 
 				
 			</p:submenu>
@@ -152,5 +157,12 @@
         <ui:param name="controller" value="#{slotManager}" />
         <ui:param name="firstFileContents" value="slots" />
         <ui:param name="secondFileContents" value="slot pairs" />
+    </ui:include>
+    
+    <ui:include src="/loaders/single-file-DL.xhtml">
+        <ui:param name="formId" value="importDevicesForm" />
+        <ui:param name="dialogTitle" value="Devices Import" />
+        <ui:param name="widgetName" value="importDevices" />
+        <ui:param name="controller" value="#{deviceManager}" />
     </ui:include>
 </ui:composition>

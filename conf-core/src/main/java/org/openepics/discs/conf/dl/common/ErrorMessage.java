@@ -18,8 +18,9 @@ public enum ErrorMessage {
     CONTROL_RELATIONSHIP_RESTRICTIONS("\"Controls\" slot relationship can only be set up between two installation slots"),
     ORPHAN_SLOT("Newly added slot was not assigned a parent."),
     SAME_CHILD_AND_PARENT("Loop relationship. Child and parent can't be the same slot"),
-    DUPLICATES_IN_HEADER("Duplicate filed or property definition has been vounf in header"),
-    PROPERTY_NOT_FOUND("Property with this name was not found");
+    DUPLICATES_IN_HEADER("Duplicate filed or property definition has been found in header"),
+    PROPERTY_NOT_FOUND("Property with this name was not found"),
+    DEVICE_STATUS_NOT_FOUND("This value of device status does not exist");
 
     private final String text;
 
