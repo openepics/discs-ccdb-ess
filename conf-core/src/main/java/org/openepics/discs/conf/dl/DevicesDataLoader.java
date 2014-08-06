@@ -127,12 +127,9 @@ public class DevicesDataLoader extends AbstractDataLoader implements DataLoader 
                             } else {
                                 if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.DEVICE, EntityTypeOperation.UPDATE)) {
                                     final Device deviceToUpdate = deviceEJB.findDeviceBySerialNumber(serial);
-                                    addOrUpdateDevice(deviceToUpdate, serial, compType, description, status, manufSerial, location, purchaseOrder, asmPosition, asmDescription, manufacturer, manufModel, modifiedBy);
+                                    addOrUpdateDevice(deviceToUpdate, compType, description, status, manufSerial, location, purchaseOrder, asmPosition, asmDescription, manufacturer, manufModel, modifiedBy);
                                     addOrUpdateProperties(deviceToUpdate, indexByPropertyName, row, rowNumber, modifiedBy);
-                                    if (rowResult.isError()) {
-                                        continue;
-                                    }
-                                } else {
+                                 } else {
                                     rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                                 }
                             }
@@ -144,12 +141,9 @@ public class DevicesDataLoader extends AbstractDataLoader implements DataLoader 
                             } else {
                                 if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.DEVICE, EntityTypeOperation.CREATE)) {
                                     final Device newDevice = new Device(serial, modifiedBy);
-                                    addOrUpdateDevice(newDevice, serial, compType, description, status, manufSerial, location, purchaseOrder, asmPosition, asmDescription, manufacturer, manufModel, modifiedBy);
+                                    addOrUpdateDevice(newDevice, compType, description, status, manufSerial, location, purchaseOrder, asmPosition, asmDescription, manufacturer, manufModel, modifiedBy);
                                     deviceEJB.addDevice(newDevice);
                                     addOrUpdateProperties(newDevice, indexByPropertyName, row, rowNumber, modifiedBy);
-                                    if (rowResult.isError()) {
-                                        continue;
-                                    }
                                 } else {
                                     rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                                 }
@@ -158,15 +152,14 @@ public class DevicesDataLoader extends AbstractDataLoader implements DataLoader 
                         break;
                     case CMD_DELETE:
                         final @Nullable Device deviceToDelete = deviceEJB.findDeviceBySerialNumber(serial);
-                        if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.DEVICE, EntityTypeOperation.DELETE)) {
-                            if (deviceToDelete == null) {
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(serialIndex)));
-                                continue;
-                            } else {
-                                deviceEJB.deleteDevice(deviceToDelete);
-                            }
+                        if (deviceToDelete == null) {
+                            rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(serialIndex)));
                         } else {
-                            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                            if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.DEVICE, EntityTypeOperation.DELETE)) {
+                                deviceEJB.deleteDevice(deviceToDelete);
+                            } else {
+                                rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                            }
                         }
                         break;
                     default:
@@ -179,12 +172,19 @@ public class DevicesDataLoader extends AbstractDataLoader implements DataLoader 
         return loaderResult;
     }
 
-    private void addOrUpdateDevice(Device device, String serial, ComponentType compType, String description, DeviceStatus status, String manufSerial, String location, String purchaseOrder, String asmPosition, String asmDescription, String manufacturer, String manufModel, String modifiedBy) {
+    private void addOrUpdateDevice(Device device, ComponentType compType, String description, DeviceStatus status, String manufSerial, String location, String purchaseOrder, String asmPosition, String asmDescription, String manufacturer, String manufModel, String modifiedBy) {
         device.setModifiedAt(new Date());
         device.setModifiedBy(modifiedBy);
         device.setComponentType(compType);
         device.setDescription(description);
         device.setAssemblyPosition(asmPosition);
+        device.setStatus(status);
+        device.setManufacturer(manufacturer);
+        device.setManufacturerModel(manufModel);
+        device.setManufacturerSerialNumber(manufSerial);
+        device.setAssemblyDescription(asmDescription);
+        device.setLocation(location);
+        device.setPurchaseOrder(purchaseOrder);
     }
 
     @Override protected void setUpIndexesForFields(List<String> header) {
