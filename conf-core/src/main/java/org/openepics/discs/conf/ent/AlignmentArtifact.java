@@ -24,7 +24,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class AlignmentArtifact extends Artifact {
     private static final long serialVersionUID = 1L;
 
-    @JoinColumn(name = "alignment_record", referencedColumnName = "id")
+    @JoinColumn(name = "alignment_record")
     @ManyToOne(optional = false)
     private AlignmentRecord alignmentRecord;
 

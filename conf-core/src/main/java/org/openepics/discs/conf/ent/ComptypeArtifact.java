@@ -24,7 +24,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class ComptypeArtifact extends Artifact {
     private static final long serialVersionUID = 1L;
 
-    @JoinColumn(name = "component_type", referencedColumnName = "id")
+    @JoinColumn(name = "component_type")
     @ManyToOne(optional = false)
     private ComponentType componentType;
 

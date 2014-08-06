@@ -45,7 +45,6 @@ import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 import org.primefaces.model.UploadedFile;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.io.ByteStreams;
 
 /**
@@ -334,8 +333,8 @@ public class ComponentTypeManager implements Serializable {
     public void onArtifactSave(ActionEvent event) {
         try {
             if (artifactOperation == 'a') {
-                inputArtifact.setIsInternal(internalArtifact);
-                if (inputArtifact.getIsInternal()) { // internal artifact
+                inputArtifact.setInternal(internalArtifact);
+                if (inputArtifact.isInternal()) { // internal artifact
                     if (!fileUploaded) {
                         Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error:", "You must upload a file");
                         RequestContext.getCurrentInstance().addCallbackParam("success", false);

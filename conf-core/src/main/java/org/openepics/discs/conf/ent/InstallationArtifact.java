@@ -24,7 +24,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class InstallationArtifact extends Artifact {
     private static final long serialVersionUID = 1L;
 
-    @JoinColumn(name = "installation_record", referencedColumnName = "id")
+    @JoinColumn(name = "installation_record")
     @ManyToOne(optional = false)
     private InstallationRecord installationRecord;
 

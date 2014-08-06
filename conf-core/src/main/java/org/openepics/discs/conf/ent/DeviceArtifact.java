@@ -24,7 +24,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class DeviceArtifact extends Artifact {
     private static final long serialVersionUID = 1L;
 
-    @JoinColumn(name = "device", referencedColumnName = "id")
+    @JoinColumn(name = "device")
     @ManyToOne(optional = false)
     private Device device;
 

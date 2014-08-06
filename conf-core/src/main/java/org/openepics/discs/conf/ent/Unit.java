@@ -56,16 +56,10 @@ public class Unit extends ConfigurationEntity {
     private String description;
 
     @OneToMany(mappedBy = "unit")
-    private List<ComptypeProperty> comptypePropertyList;
-
-    @OneToMany(mappedBy = "unit")
-    private List<DeviceProperty> devicePropertyList;
+    private List<PropertyValue> propertyValuesList;
 
     @OneToMany(mappedBy = "unit")
     private List<Property> propertyList;
-
-    @OneToMany(mappedBy = "unit")
-    private List<SlotProperty> slotPropertyList;
 
     protected Unit() {
     }
@@ -112,21 +106,12 @@ public class Unit extends ConfigurationEntity {
     }
 
     @XmlTransient
-    public List<ComptypeProperty> getComptypePropertyList() {
-        return comptypePropertyList;
+    public List<PropertyValue> getPropertyValuesList() {
+        return propertyValuesList;
     }
 
-    public void setComptypePropertyList(List<ComptypeProperty> comptypePropertyList) {
-        this.comptypePropertyList = comptypePropertyList;
-    }
-
-    @XmlTransient
-    public List<DeviceProperty> getDevicePropertyList() {
-        return devicePropertyList;
-    }
-
-    public void setDevicePropertyList(List<DeviceProperty> devicePropertyList) {
-        this.devicePropertyList = devicePropertyList;
+    public void setPropertyValuesList(List<PropertyValue> propertyValuesList) {
+        this.propertyValuesList = propertyValuesList;
     }
 
     @XmlTransient
@@ -136,15 +121,6 @@ public class Unit extends ConfigurationEntity {
 
     public void setPropertyList(List<Property> propertyList) {
         this.propertyList = propertyList;
-    }
-
-    @XmlTransient
-    public List<SlotProperty> getSlotPropertyList() {
-        return slotPropertyList;
-    }
-
-    public void setSlotPropertyList(List<SlotProperty> slotPropertyList) {
-        this.slotPropertyList = slotPropertyList;
     }
 
     @Override

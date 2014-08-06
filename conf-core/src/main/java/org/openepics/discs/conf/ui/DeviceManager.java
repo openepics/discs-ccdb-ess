@@ -24,7 +24,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.io.FilenameUtils;
-import org.openepics.discs.conf.dl.ComponentTypesLoaderQualifier;
 import org.openepics.discs.conf.dl.DevicesLoaderQualifier;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
@@ -346,8 +345,8 @@ public class DeviceManager implements Serializable {
     public void onArtifactSave(ActionEvent event) {
         try {
             if (artifactOperation == 'a') {
-                inputArtifact.setIsInternal(internalArtifact);
-                if (inputArtifact.getIsInternal()) { // internal artifact
+                inputArtifact.setInternal(internalArtifact);
+                if (inputArtifact.isInternal()) { // internal artifact
                     if (!fileUploaded) {
                         Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error:", "You must upload a file");
                         RequestContext.getCurrentInstance().addCallbackParam("success", false);

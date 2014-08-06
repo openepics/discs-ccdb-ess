@@ -55,13 +55,7 @@ public class Property extends ConfigurationEntity {
     private PropertyAssociation association;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "property")
-    private List<ComptypeProperty> comptypePropertyList;
-
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "property")
-    private List<DeviceProperty> devicePropertyList;
-
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "property")
-    private List<AlignmentProperty> alignmentPropertyList;
+    private List<PropertyValue> propertyValuesList;
 
     @JoinColumn(name = "data_type", referencedColumnName = "id")
     @ManyToOne(optional = false)
@@ -70,9 +64,6 @@ public class Property extends ConfigurationEntity {
     @JoinColumn(name = "unit", referencedColumnName = "id")
     @ManyToOne
     private Unit unit;
-
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "property")
-    private List<SlotProperty> slotPropertyList;
 
     protected Property() {
     }
@@ -110,30 +101,12 @@ public class Property extends ConfigurationEntity {
     }
 
     @XmlTransient
-    public List<ComptypeProperty> getComptypePropertyList() {
-        return comptypePropertyList;
+    public List<PropertyValue> getPropertyValuesList() {
+        return propertyValuesList;
     }
 
-    public void setComptypePropertyList(List<ComptypeProperty> comptypePropertyList) {
-        this.comptypePropertyList = comptypePropertyList;
-    }
-
-    @XmlTransient
-    public List<DeviceProperty> getDevicePropertyList() {
-        return devicePropertyList;
-    }
-
-    public void setDevicePropertyList(List<DeviceProperty> devicePropertyList) {
-        this.devicePropertyList = devicePropertyList;
-    }
-
-    @XmlTransient
-    public List<AlignmentProperty> getAlignmentPropertyList() {
-        return alignmentPropertyList;
-    }
-
-    public void setAlignmentPropertyList(List<AlignmentProperty> alignmentPropertyList) {
-        this.alignmentPropertyList = alignmentPropertyList;
+    public void setPropertyValuesList(List<PropertyValue> propertyValuesList) {
+        this.propertyValuesList = propertyValuesList;
     }
 
     public DataType getDataType() {
@@ -150,15 +123,6 @@ public class Property extends ConfigurationEntity {
 
     public void setUnit(Unit unit) {
         this.unit = unit;
-    }
-
-    @XmlTransient
-    public List<SlotProperty> getSlotPropertyList() {
-        return slotPropertyList;
-    }
-
-    public void setSlotPropertyList(List<SlotProperty> slotPropertyList) {
-        this.slotPropertyList = slotPropertyList;
     }
 
     @Override

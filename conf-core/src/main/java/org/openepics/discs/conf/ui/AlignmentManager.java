@@ -299,7 +299,7 @@ public class AlignmentManager implements Serializable{
                 selectedArtifacts = new ArrayList<>();
             }
             // TODO replaced void constructor (now protected) with default values. Check.
-            inputArtifact = new AlignmentArtifact("", false, "", loginManager.getUserid());
+            inputArtifact = new AlignmentArtifact("", false, "", "", loginManager.getUserid());
             inputArtifact.setAlignmentRecord(selectedObject);
             fileUploaded = false;
             uploadedFileName = null;
@@ -313,8 +313,8 @@ public class AlignmentManager implements Serializable{
     public void onArtifactSave(ActionEvent event) {
         try {
             if (artifactOperation == 'a') {
-                inputArtifact.setIsInternal(internalArtifact);
-                if (inputArtifact.getIsInternal()) { // internal artifact
+                inputArtifact.setInternal(internalArtifact);
+                if (inputArtifact.isInternal()) { // internal artifact
                     if (!fileUploaded) {
                         Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error:", "You must upload a file");
                         RequestContext.getCurrentInstance().addCallbackParam("success", false);

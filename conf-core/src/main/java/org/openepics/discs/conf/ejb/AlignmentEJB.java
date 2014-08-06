@@ -161,7 +161,7 @@ import org.openepics.discs.conf.ui.LoginManager;
         makeAuditEntry(EntityTypeOperation.UPDATE, art.getAlignmentRecord().getRecordNumber(), "updated alignment artifact " + art.getName(), art.getAlignmentRecord().getId());
         // art.setAlignmentRecord(em.merge(arec)); // todo: improve this code.
         // this is not the right way.
-        logger.log(Level.INFO, "Artifact: name " + newArt.getName() + " description " + newArt.getDescription() + " uri " + newArt.getUri() + "is int " + newArt.getIsInternal());
+        logger.log(Level.INFO, "Artifact: name " + newArt.getName() + " description " + newArt.getDescription() + " uri " + newArt.getUri() + "is int " + newArt.isInternal());
         // logger.log(Level.INFO, "device serial " + device.getSerialNumber());
     }
 

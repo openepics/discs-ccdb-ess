@@ -141,7 +141,7 @@ import org.openepics.discs.conf.ui.LoginManager;
             em.merge(ctype);
         }
         makeAuditEntry(EntityTypeOperation.UPDATE, art.getComponentType().getName(), "Updated artifact " + art.getName(), art.getComponentType().getId());
-        logger.log(Level.INFO, "Artifact: name " + newArt.getName() + " description " + newArt.getDescription() + " uri " + newArt.getUri() + "is int " + newArt.getIsInternal());
+        logger.log(Level.INFO, "Artifact: name " + newArt.getName() + " description " + newArt.getDescription() + " uri " + newArt.getUri() + "is int " + newArt.isInternal());
         // logger.log(Level.INFO, "device serial " + device.getSerialNumber());
         // return newArt;
 

@@ -23,7 +23,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class SlotArtifact extends Artifact {
     private static final long serialVersionUID = 1L;
 
-    @JoinColumn(name = "slot", referencedColumnName = "id")
+    @JoinColumn(name = "slot")
     @ManyToOne(optional = false)
     private Slot slot;
 
