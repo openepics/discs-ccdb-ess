@@ -13,7 +13,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 @Entity
-@Table(name = "property_value")
+@Table(name = "property_values")
 @Inheritance(strategy = InheritanceType.JOINED)
 public class PropertyValue extends ConfigurationEntity {
     private static final long serialVersionUID = 1L;
