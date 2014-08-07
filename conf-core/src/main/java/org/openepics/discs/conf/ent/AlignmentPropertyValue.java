@@ -16,10 +16,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(name = "alignment_property_values")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "AlignmentProperty.findAll", query = "SELECT a FROM AlignmentProperty a"),
-    @NamedQuery(name = "AlignmentProperty.findByAlignPropId", query = "SELECT a FROM AlignmentProperty a WHERE a.id = :id"),
-    @NamedQuery(name = "AlignmentProperty.findByInRepository", query = "SELECT a FROM AlignmentProperty a WHERE a.inRepository = :inRepository"),
-    @NamedQuery(name = "AlignmentProperty.findByModifiedBy", query = "SELECT a FROM AlignmentProperty a WHERE a.modifiedBy = :modifiedBy")})
+    @NamedQuery(name = "AlignmentPropertyValue.findAll", query = "SELECT a FROM AlignmentProperty a"),
+    @NamedQuery(name = "AlignmentPropertyValue.findByAlignPropId", query = "SELECT a FROM AlignmentProperty a WHERE a.id = :id"),
+    @NamedQuery(name = "AlignmentPropertyValue.findByInRepository", query = "SELECT a FROM AlignmentProperty a WHERE a.inRepository = :inRepository"),
+    @NamedQuery(name = "AlignmentPropertyValue.findByModifiedBy", query = "SELECT a FROM AlignmentProperty a WHERE a.modifiedBy = :modifiedBy")})
 public class AlignmentPropertyValue extends PropertyValue {
     private static final long serialVersionUID = 1L;
 
@@ -37,7 +37,5 @@ public class AlignmentPropertyValue extends PropertyValue {
     public void setAlignmentRecord(AlignmentRecord alignmentRecord) { this.alignmentRecord = alignmentRecord; }
 
     @Override
-    public String toString() {
-        return "AlignmentProperty[ alignPropId=" + id + " ]";
-    }
+    public String toString() { return "AlignmentProperty[ alignPropId=" + id + " ]"; }
 }

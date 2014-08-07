@@ -16,10 +16,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(name = "device_property_values")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "DeviceProperty.findAll", query = "SELECT d FROM DeviceProperty d"),
-    @NamedQuery(name = "DeviceProperty.findByDevPropId", query = "SELECT d FROM DeviceProperty d WHERE d.id = :id"),
-    @NamedQuery(name = "DeviceProperty.findByInRepository", query = "SELECT d FROM DeviceProperty d WHERE d.inRepository = :inRepository"),
-    @NamedQuery(name = "DeviceProperty.findByModifiedBy", query = "SELECT d FROM DeviceProperty d WHERE d.modifiedBy = :modifiedBy")})
+    @NamedQuery(name = "DevicePropertyValue.findAll", query = "SELECT d FROM DeviceProperty d"),
+    @NamedQuery(name = "DevicePropertyValue.findByDevPropId", query = "SELECT d FROM DeviceProperty d WHERE d.id = :id"),
+    @NamedQuery(name = "DevicePropertyValue.findByInRepository", query = "SELECT d FROM DeviceProperty d WHERE d.inRepository = :inRepository"),
+    @NamedQuery(name = "DevicePropertyValue.findByModifiedBy", query = "SELECT d FROM DeviceProperty d WHERE d.modifiedBy = :modifiedBy")})
 public class DevicePropertyValue extends PropertyValue {
     private static final long serialVersionUID = 1L;
 
@@ -37,7 +37,5 @@ public class DevicePropertyValue extends PropertyValue {
     public void setDevice(Device device) { this.device = device; }
 
     @Override
-    public String toString() {
-        return "DeviceProperty[ devPropId=" + id + " ]";
-    }
+    public String toString() { return "DeviceProperty[ devPropId=" + id + " ]"; }
 }

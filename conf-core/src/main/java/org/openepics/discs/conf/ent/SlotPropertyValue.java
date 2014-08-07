@@ -16,10 +16,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(name = "slot_property_values")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "SlotProperty.findAll", query = "SELECT s FROM SlotProperty s"),
-    @NamedQuery(name = "SlotProperty.findBySlotPropId", query = "SELECT s FROM SlotProperty s WHERE s.id = :id"),
-    @NamedQuery(name = "SlotProperty.findByInRepository", query = "SELECT s FROM SlotProperty s WHERE s.inRepository = :inRepository"),
-    @NamedQuery(name = "SlotProperty.findByModifiedBy", query = "SELECT s FROM SlotProperty s WHERE s.modifiedBy = :modifiedBy")})
+    @NamedQuery(name = "SlotPropertyValue.findAll", query = "SELECT s FROM SlotProperty s"),
+    @NamedQuery(name = "SlotPropertyValue.findBySlotPropId", query = "SELECT s FROM SlotProperty s WHERE s.id = :id"),
+    @NamedQuery(name = "SlotPropertyValue.findByInRepository", query = "SELECT s FROM SlotProperty s WHERE s.inRepository = :inRepository"),
+    @NamedQuery(name = "SlotPropertyValue.findByModifiedBy", query = "SELECT s FROM SlotProperty s WHERE s.modifiedBy = :modifiedBy")})
 public class SlotPropertyValue extends PropertyValue {
     private static final long serialVersionUID = 1L;
 
@@ -27,8 +27,7 @@ public class SlotPropertyValue extends PropertyValue {
     @ManyToOne(optional = false)
     private Slot slot;
 
-    protected SlotPropertyValue() {
-    }
+    protected SlotPropertyValue() { }
 
     public SlotPropertyValue(boolean inRepository, String modifiedBy) {
         super(inRepository, modifiedBy);
@@ -38,7 +37,5 @@ public class SlotPropertyValue extends PropertyValue {
     public void setSlot(Slot slot) { this.slot = slot; }
 
     @Override
-    public String toString() {
-        return "SlotProperty[ slotPropId=" + id + " ]";
-    }
+    public String toString() { return "SlotProperty[ slotPropId=" + id + " ]"; }
 }

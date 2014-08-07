@@ -16,10 +16,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(name = "comptype_property_values")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "ComptypeProperty.findAll", query = "SELECT c FROM ComptypeProperty c"),
-    @NamedQuery(name = "ComptypeProperty.findByCtypePropId", query = "SELECT c FROM ComptypeProperty c WHERE c.id = :id"),
-    @NamedQuery(name = "ComptypeProperty.findByInRepository", query = "SELECT c FROM ComptypeProperty c WHERE c.inRepository = :inRepository"),
-    @NamedQuery(name = "ComptypeProperty.findByModifiedBy", query = "SELECT c FROM ComptypeProperty c WHERE c.modifiedBy = :modifiedBy")})
+    @NamedQuery(name = "ComptypePropertyValue.findAll", query = "SELECT c FROM ComptypeProperty c"),
+    @NamedQuery(name = "ComptypePropertyValue.findByCtypePropId", query = "SELECT c FROM ComptypeProperty c WHERE c.id = :id"),
+    @NamedQuery(name = "ComptypePropertyValue.findByInRepository", query = "SELECT c FROM ComptypeProperty c WHERE c.inRepository = :inRepository"),
+    @NamedQuery(name = "ComptypePropertyValue.findByModifiedBy", query = "SELECT c FROM ComptypeProperty c WHERE c.modifiedBy = :modifiedBy")})
 public class ComptypePropertyValue extends PropertyValue {
     private static final long serialVersionUID = 1L;
 
@@ -37,7 +37,5 @@ public class ComptypePropertyValue extends PropertyValue {
     public void setComponentType(ComponentType componentType) { this.componentType = componentType; }
 
     @Override
-    public String toString() {
-        return "ComptypeProperty[ ctypePropId=" + id + " ]";
-    }
+    public String toString() { return "ComptypeProperty[ ctypePropId=" + id + " ]"; }
 }
