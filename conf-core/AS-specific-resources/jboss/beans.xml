@@ -5,4 +5,7 @@
     <alternatives>
         <class>org.openepics.discs.conf.util.AppPropertiesJBoss</class>
     </alternatives>
+    <interceptors>
+      <class>org.openepics.discs.conf.util.SecurityInterceptor</class>
+     </interceptors>
 </beans>

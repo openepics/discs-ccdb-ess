@@ -19,11 +19,15 @@ import org.openepics.discs.conf.ent.DataType;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.SlotRelation;
 import org.openepics.discs.conf.ent.Unit;
+import org.openepics.discs.conf.util.CRUDAnnotation;
+import org.openepics.discs.conf.util.CRUDAnnotation.Operation;
+import org.openepics.discs.conf.util.SecurityInterceptorBinding;
 
 /**
  *
  * @author vuppala
  */
+
 @Stateless public class ConfigurationEJB {
 
     private static final Logger logger = Logger.getLogger(ConfigurationEJB.class.getCanonicalName());
@@ -64,11 +68,15 @@ import org.openepics.discs.conf.ent.Unit;
         em.merge(property);
     }
 
+    @CRUDAnnotation(operation=Operation.CREATE)
+    @SecurityInterceptorBinding
     public void addProperty(Property property) {
         property.setModifiedAt(new Date());
         em.persist(property);
     }
 
+    @CRUDAnnotation(operation=Operation.DELETE)
+    @SecurityInterceptorBinding
     public void deleteProperty(Property property) {
         Property prop = em.find(Property.class, property.getId());
         em.remove(prop);
