@@ -16,7 +16,7 @@
             </f:facet>
             <p:dataTable id="asmTable" var="asmp" value="#{componentTypeManager.selectedParts}" 
                          scrollRows="25" scrollable="true" liveScroll="true"   scrollHeight="200"                               
-                         emptyMessage="No artifacts found"  editMode="row" editable="true" 
+                         emptyMessage="No assembly parts found"  editMode="row" editable="true" 
                          rowKey="#{asmp.id}}"  >                
 
                 <p:ajax event="rowEdit" listener="#{componentTypeManager.onAsmSave}" update="asmTable  :messages" />                  
