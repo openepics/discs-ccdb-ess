@@ -15,8 +15,8 @@ import javax.inject.Inject;
 
 import org.openepics.discs.conf.dl.common.AbstractDataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
-import org.openepics.discs.conf.dl.common.ValidationMessage;
 import org.openepics.discs.conf.dl.common.ErrorMessage;
+import org.openepics.discs.conf.dl.common.ValidationMessage;
 import org.openepics.discs.conf.ejb.AuthEJB;
 import org.openepics.discs.conf.ejb.ComptypeEJB;
 import org.openepics.discs.conf.ejb.ConfigurationEJB;
@@ -269,12 +269,12 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
         slotToAddOrUpdate.setDescription(description);
         slotToAddOrUpdate.setIsHostingSlot(isHosting);
         slotToAddOrUpdate.setBeamlinePosition(blp);
-        slotToAddOrUpdate.setGlobalX(globalX);
-        slotToAddOrUpdate.setGlobalY(globalY);
-        slotToAddOrUpdate.setGlobalZ(globalZ);
-        slotToAddOrUpdate.setGlobalRoll(globalRoll);
-        slotToAddOrUpdate.setGlobalPitch(globalPitch);
-        slotToAddOrUpdate.setGlobalYaw(globalYaw);
+        slotToAddOrUpdate.getPositionInformation().setGlobalX(globalX);
+        slotToAddOrUpdate.getPositionInformation().setGlobalY(globalY);
+        slotToAddOrUpdate.getPositionInformation().setGlobalZ(globalZ);
+        slotToAddOrUpdate.getPositionInformation().setGlobalRoll(globalRoll);
+        slotToAddOrUpdate.getPositionInformation().setGlobalPitch(globalPitch);
+        slotToAddOrUpdate.getPositionInformation().setGlobalYaw(globalYaw);
         slotToAddOrUpdate.setAssemblyComment(asmComment);
         slotToAddOrUpdate.setAssemblyPosition(asmPosition);
         slotToAddOrUpdate.setComment(comment);

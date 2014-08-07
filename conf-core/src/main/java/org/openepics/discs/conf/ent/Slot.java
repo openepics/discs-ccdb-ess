@@ -7,6 +7,7 @@ import java.util.Set;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -58,23 +59,8 @@ public class Slot extends ConfigurationEntity {
     @Column(name = "beamline_position")
     private Double beamlinePosition;
 
-    @Column(name = "global_x")
-    private Double globalX;
-
-    @Column(name = "global_y")
-    private Double globalY;
-
-    @Column(name = "global_z")
-    private Double globalZ;
-
-    @Column(name = "global_roll")
-    private Double globalRoll;
-
-    @Column(name = "global_yaw")
-    private Double globalYaw;
-
-    @Column(name = "global_pitch")
-    private Double globalPitch;
+    @Embedded
+    private AlignmentInformation positionInfo;
 
     @Size(max = 255)
     @Column(name = "asm_comment")
@@ -127,6 +113,7 @@ public class Slot extends ConfigurationEntity {
     }
 
     public Slot(String name, boolean isHostingSlot, String modifiedBy) {
+        this.positionInfo = new AlignmentInformation();
         this.name = name;
         this.isHostingSlot = isHostingSlot;
         this.modifiedBy = modifiedBy;
@@ -145,23 +132,7 @@ public class Slot extends ConfigurationEntity {
     public Double getBeamlinePosition() { return beamlinePosition; }
     public void setBeamlinePosition(Double beamlinePosition) { this.beamlinePosition = beamlinePosition; }
 
-    public Double getGlobalX() { return globalX; }
-    public void setGlobalX(Double globalX) { this.globalX = globalX; }
-
-    public Double getGlobalY() { return globalY; }
-    public void setGlobalY(Double globalY) { this.globalY = globalY; }
-
-    public Double getGlobalZ() { return globalZ; }
-    public void setGlobalZ(Double globalZ) { this.globalZ = globalZ; }
-
-    public Double getGlobalRoll() { return globalRoll; }
-    public void setGlobalRoll(Double globalRoll) { this.globalRoll = globalRoll; }
-
-    public Double getGlobalYaw() { return globalYaw; }
-    public void setGlobalYaw(Double globalYaw) { this.globalYaw = globalYaw; }
-
-    public Double getGlobalPitch() { return globalPitch; }
-    public void setGlobalPitch(Double globalPitch) { this.globalPitch = globalPitch; }
+    public AlignmentInformation getPositionInformation() { return positionInfo; }
 
     public String getAssemblyComment() { return asmComment; }
     public void setAssemblyComment(String asmComment) { this.asmComment = asmComment; }
