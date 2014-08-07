@@ -57,11 +57,11 @@ public class Property extends ConfigurationEntity {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "property")
     private List<PropertyValue> propertyValuesList;
 
-    @JoinColumn(name = "data_type", referencedColumnName = "id")
+    @JoinColumn(name = "data_type")
     @ManyToOne(optional = false)
     private DataType dataType;
 
-    @JoinColumn(name = "unit", referencedColumnName = "id")
+    @JoinColumn(name = "unit")
     @ManyToOne
     private Unit unit;
 
@@ -76,58 +76,24 @@ public class Property extends ConfigurationEntity {
         this.modifiedAt = new Date();
     }
 
-    public String getName() {
-        return name;
-    }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public PropertyAssociation getAssociation() {
-        return association;
-    }
-
-    public void setAssociation(PropertyAssociation association) {
-        this.association = association;
-    }
+    public PropertyAssociation getAssociation() { return association; }
+    public void setAssociation(PropertyAssociation association) { this.association = association; }
 
     @XmlTransient
-    public List<PropertyValue> getPropertyValuesList() {
-        return propertyValuesList;
-    }
+    public List<PropertyValue> getPropertyValuesList() { return propertyValuesList; }
 
-    public void setPropertyValuesList(List<PropertyValue> propertyValuesList) {
-        this.propertyValuesList = propertyValuesList;
-    }
+    public DataType getDataType() { return dataType; }
+    public void setDataType(DataType dataType) { this.dataType = dataType; }
 
-    public DataType getDataType() {
-        return dataType;
-    }
-
-    public void setDataType(DataType dataType) {
-        this.dataType = dataType;
-    }
-
-    public Unit getUnit() {
-        return unit;
-    }
-
-    public void setUnit(Unit unit) {
-        this.unit = unit;
-    }
+    public Unit getUnit() { return unit; }
+    public void setUnit(Unit unit) { this.unit = unit; }
 
     @Override
-    public String toString() {
-        return "Property[ propertyId=" + id + " ]";
-    }
-
+    public String toString() { return "Property[ propertyId=" + id + " ]"; }
 }

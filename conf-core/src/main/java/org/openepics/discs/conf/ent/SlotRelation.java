@@ -54,21 +54,13 @@ public class SlotRelation extends ConfigurationEntity {
     }
 
     public SlotRelation(SlotRelationName name, String modifiedBy) {
-        this.name = name;
+        setName(name);
         this.modifiedBy = modifiedBy;
         this.modifiedAt = new Date();
-        if (name == SlotRelationName.CONTAINS) {
-            iname = "contained in";
-        } else if (name == SlotRelationName.POWERS) {
-            iname = "powered by";
-        } else if (name == SlotRelationName.CONTROLS) {
-            iname = "controlled by";
-        }
     }
 
-    public SlotRelationName getName() {
-        return name;
-    }
+    public SlotRelationName getName() { return name; }
+    public String getNameAsString() { return name.toString().toLowerCase(); }
 
     public void setName(SlotRelationName name) {
         this.name = name;
@@ -81,29 +73,14 @@ public class SlotRelation extends ConfigurationEntity {
         }
     }
 
-    public String getIname() {
-        return iname;
-    }
+    public String getIname() { return iname; }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
 
     @XmlTransient
-    public List<SlotPair> getSlotPairList() {
-        return slotPairList;
-    }
-
-    public void setSlotPairList(List<SlotPair> slotPairList) {
-        this.slotPairList = slotPairList;
-    }
+    public List<SlotPair> getSlotPairList() { return slotPairList; }
 
     @Override
-    public String toString() {
-        return "SlotRelation[ slotRelationId=" + id + " ]";
-    }
+    public String toString() { return "SlotRelation[ slotRelationId=" + id + " ]"; }
 }

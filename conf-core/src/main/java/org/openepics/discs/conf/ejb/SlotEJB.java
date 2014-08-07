@@ -224,7 +224,7 @@ import org.openepics.discs.conf.ui.LoginManager;
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
         logger.log(Level.INFO, "deleting " + spair.getChildSlot().getName() + " parent " + spair.getParentSlot().getName() + " des ");
-        SlotPair slotPair = em.find(SlotPair.class, spair.getSlotPairId());
+        SlotPair slotPair = em.find(SlotPair.class, spair.getId());
         Slot pslot = slotPair.getParentSlot();
         pslot.getChildrenSlotsPairList().remove(slotPair);
         em.remove(slotPair);

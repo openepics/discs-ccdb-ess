@@ -39,8 +39,8 @@ public class AuditRecord implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "audit_record_id")
-    private Integer auditRecordId;
+    @Column(name = "id")
+    private Long id;
 
     @Basic(optional = false)
     @NotNull
@@ -88,8 +88,8 @@ public class AuditRecord implements Serializable {
         this.entry = entry;
     }
 
-    public Integer getAuditRecordId() {
-        return auditRecordId;
+    public Long getId() {
+        return id;
     }
 
     public Date getLogTime() {
@@ -151,7 +151,7 @@ public class AuditRecord implements Serializable {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (auditRecordId != null ? auditRecordId.hashCode() : 0);
+        hash += (id != null ? id.hashCode() : 0);
         return hash;
     }
 
@@ -160,15 +160,15 @@ public class AuditRecord implements Serializable {
         if (!(object instanceof AuditRecord)) return false;
 
         AuditRecord other = (AuditRecord) object;
-        if (this.auditRecordId == null && other.auditRecordId != null) return false;
-        if (this.auditRecordId != null) return this.auditRecordId.equals(other.auditRecordId);
+        if (this.id == null && other.id != null) return false;
+        if (this.id != null) return this.id.equals(other.id);
 
         return this==object;
     }
 
     @Override
     public String toString() {
-        return "AuditRecord[ auditRecordId=" + auditRecordId + " ]";
+        return "AuditRecord[ auditRecordId=" + id + " ]";
     }
 
 }

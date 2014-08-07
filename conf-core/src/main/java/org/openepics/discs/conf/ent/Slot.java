@@ -91,14 +91,14 @@ public class Slot extends ConfigurationEntity {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "slot")
     private List<SlotArtifact> slotArtifactList;
 
-    @JoinColumn(name = "component_type", referencedColumnName = "id")
+    @JoinColumn(name = "component_type")
     @ManyToOne(optional = false)
     private ComponentType componentType;
 
     @OneToMany(mappedBy = "asmSlot")
     private List<Slot> slotList;
 
-    @JoinColumn(name = "asm_slot", referencedColumnName = "id")
+    @JoinColumn(name = "asm_slot")
     @ManyToOne
     private Slot asmSlot;
 
@@ -174,37 +174,30 @@ public class Slot extends ConfigurationEntity {
 
     @XmlTransient
     public List<SlotArtifact> getSlotArtifactList() { return slotArtifactList; }
-    public void setSlotArtifactList(List<SlotArtifact> slotArtifactList) { this.slotArtifactList = slotArtifactList; }
 
     public ComponentType getComponentType() { return componentType; }
     public void setComponentType(ComponentType componentType) { this.componentType = componentType; }
 
     @XmlTransient
     public List<Slot> getSlotList() { return slotList; }
-    public void setSlotList(List<Slot> slotList) { this.slotList = slotList; }
 
     public Slot getAssemblySlot() { return asmSlot; }
     public void setAssemblySlot(Slot asmSlot) { this.asmSlot = asmSlot; }
 
     @XmlTransient
     public List<AlignmentRecord> getAlignmentRecordList() { return alignmentRecordList; }
-    public void setAlignmentRecordList(List<AlignmentRecord> alignmentRecordList) { this.alignmentRecordList = alignmentRecordList; }
 
     @XmlTransient
     public List<InstallationRecord> getInstallationRecordList() { return installationRecordList; }
-    public void setInstallationRecordList(List<InstallationRecord> installationRecordList) { this.installationRecordList = installationRecordList; }
 
     @XmlTransient
     public List<SlotPair> getChildrenSlotsPairList() { return childrenSlots; }
-    public void setSlotPairList(List<SlotPair> slotPairList) { this.childrenSlots = slotPairList; }
 
     @XmlTransient
     public List<SlotPair> getParentSlotsPairList() { return parentSlots; }
-    public void setSlotPairList1(List<SlotPair> slotPairList1) { this.parentSlots = slotPairList1; }
 
     @XmlTransient
     public List<SlotPropertyValue> getSlotPropertyList() { return slotPropertyList; }
-    public void setSlotPropertyList(List<SlotPropertyValue> slotPropertyList) { this.slotPropertyList = slotPropertyList; }
 
     @XmlTransient
     public Set<Tag> getTags() { return tags; }
@@ -212,5 +205,4 @@ public class Slot extends ConfigurationEntity {
 
     @Override
     public String toString() { return "Slot[ slotId=" + id + " ]"; }
-
 }

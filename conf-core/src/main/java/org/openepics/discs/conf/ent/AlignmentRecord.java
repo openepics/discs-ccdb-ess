@@ -76,11 +76,11 @@ public class AlignmentRecord extends ConfigurationEntity {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "alignmentRecord")
     private List<AlignmentPropertyValue> alignmentPropertyList;
 
-    @JoinColumn(name = "slot", referencedColumnName = "id")
+    @JoinColumn(name = "slot")
     @ManyToOne(optional = false)
     private Slot slot;
 
-    @JoinColumn(name = "device", referencedColumnName = "id")
+    @JoinColumn(name = "device")
     @ManyToOne(optional = false)
     private Device device;
 
@@ -125,11 +125,9 @@ public class AlignmentRecord extends ConfigurationEntity {
 
     @XmlTransient
     public List<AlignmentArtifact> getAlignmentArtifactList() { return alignmentArtifactList; }
-    public void setAlignmentArtifactList(List<AlignmentArtifact> alignmentArtifactList) { this.alignmentArtifactList = alignmentArtifactList; }
 
     @XmlTransient
     public List<AlignmentPropertyValue> getAlignmentPropertyList() { return alignmentPropertyList; }
-    public void setAlignmentPropertyList(List<AlignmentPropertyValue> alignmentPropertyList) { this.alignmentPropertyList = alignmentPropertyList; }
 
     public Slot getSlot() { return slot; }
     public void setSlot(Slot slot) { this.slot = slot; }

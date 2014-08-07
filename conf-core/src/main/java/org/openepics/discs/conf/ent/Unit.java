@@ -73,59 +73,24 @@ public class Unit extends ConfigurationEntity {
         this.modifiedAt = new Date();
     }
 
-    public String getUnitName() {
-        return unitName;
-    }
+    public String getUnitName() { return unitName; }
+    public void setUnitName(String unitName) { this.unitName = unitName; }
 
-    public void setUnitName(String unitName) {
-        this.unitName = unitName;
-    }
+    public String getQuantity() { return quantity; }
+    public void setQuantity(String quantity) { this.quantity = quantity; }
 
-    public String getQuantity() {
-        return quantity;
-    }
+    public String getSymbol() { return symbol; }
+    public void setSymbol(String symbol) { this.symbol = symbol; }
 
-    public void setQuantity(String quantity) {
-        this.quantity = quantity;
-    }
-
-    public String getSymbol() {
-        return symbol;
-    }
-
-    public void setSymbol(String symbol) {
-        this.symbol = symbol;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
 
     @XmlTransient
-    public List<PropertyValue> getPropertyValuesList() {
-        return propertyValuesList;
-    }
-
-    public void setPropertyValuesList(List<PropertyValue> propertyValuesList) {
-        this.propertyValuesList = propertyValuesList;
-    }
+    public List<PropertyValue> getPropertyValuesList() { return propertyValuesList; }
 
     @XmlTransient
-    public List<Property> getPropertyList() {
-        return propertyList;
-    }
-
-    public void setPropertyList(List<Property> propertyList) {
-        this.propertyList = propertyList;
-    }
+    public List<Property> getPropertyList() { return propertyList; }
 
     @Override
-    public String toString() {
-        return "Unit[ unitId=" + id + " ]";
-    }
-
+    public String toString() { return "Unit[ unitId=" + id + " ]"; }
 }

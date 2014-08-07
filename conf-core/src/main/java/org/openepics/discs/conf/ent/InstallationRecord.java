@@ -55,11 +55,11 @@ public class InstallationRecord extends ConfigurationEntity {
     @Column(name = "notes", columnDefinition="TEXT")
     private String notes;
 
-    @JoinColumn(name = "slot", referencedColumnName = "id")
+    @JoinColumn(name = "slot")
     @ManyToOne(optional = false)
     private Slot slot;
 
-    @JoinColumn(name = "device", referencedColumnName = "id")
+    @JoinColumn(name = "device")
     @ManyToOne(optional = false)
     private Device device;
 
@@ -76,66 +76,27 @@ public class InstallationRecord extends ConfigurationEntity {
         this.modifiedAt = new Date();
     }
 
-    public String getRecordNumber() {
-        return recordNumber;
-    }
+    public String getRecordNumber() { return recordNumber; }
+    public void setRecordNumber(String recordNumber) { this.recordNumber = recordNumber; }
 
-    public void setRecordNumber(String recordNumber) {
-        this.recordNumber = recordNumber;
-    }
+    public Date getInstallDate() { return installDate; }
+    public void setInstallDate(Date installDate) { this.installDate = installDate; }
 
-    public Date getInstallDate() {
-        return installDate;
-    }
+    public Date getUninstallDate() { return uninstallDate; }
+    public void setUninstallDate(Date uninstallDate) { this.uninstallDate = uninstallDate; }
 
-    public void setInstallDate(Date installDate) {
-        this.installDate = installDate;
-    }
+    public String getNotes() { return notes; }
+    public void setNotes(String notes) { this.notes = notes; }
 
-    public Date getUninstallDate() {
-        return uninstallDate;
-    }
+    public Slot getSlot() { return slot; }
+    public void setSlot(Slot slot) { this.slot = slot; }
 
-    public void setUninstallDate(Date uninstallDate) {
-        this.uninstallDate = uninstallDate;
-    }
-
-    public String getNotes() {
-        return notes;
-    }
-
-    public void setNotes(String notes) {
-        this.notes = notes;
-    }
-
-    public Slot getSlot() {
-        return slot;
-    }
-
-    public void setSlot(Slot slot) {
-        this.slot = slot;
-    }
-
-    public Device getDevice() {
-        return device;
-    }
-
-    public void setDevice(Device device) {
-        this.device = device;
-    }
+    public Device getDevice() { return device; }
+    public void setDevice(Device device) { this.device = device; }
 
     @XmlTransient
-    public List<InstallationArtifact> getInstallationArtifactList() {
-        return installationArtifactList;
-    }
-
-    public void setInstallationArtifactList(List<InstallationArtifact> installationArtifactList) {
-        this.installationArtifactList = installationArtifactList;
-    }
+    public List<InstallationArtifact> getInstallationArtifactList() { return installationArtifactList; }
 
     @Override
-    public String toString() {
-        return "InstallationRecord[ installationRecordId=" + id + " ]";
-    }
-
+    public String toString() { return "InstallationRecord[ installationRecordId=" + id + " ]"; }
 }
