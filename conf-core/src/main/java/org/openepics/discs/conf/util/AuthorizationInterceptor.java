@@ -5,18 +5,18 @@ import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
 
-import org.openepics.discs.conf.util.CRUDAnnotation.Operation;
-import org.openepics.discs.conf.util.SecurityInterceptorBinding;
+import org.openepics.discs.conf.util.CRUDOperation.Operation;
+import org.openepics.discs.conf.util.Authorized;
 
 @Interceptor
-@SecurityInterceptorBinding
-public class SecurityInterceptor {
+@Authorized
+public class AuthorizationInterceptor {
     @Inject private RBACMock rbac;
 
     @AroundInvoke
     public Object authorizationCheck(InvocationContext context) throws Exception {
         Object entity = context.getParameters()[0];
-        CRUDAnnotation annotation = context.getMethod().getAnnotation(CRUDAnnotation.class);
+        CRUDOperation annotation = context.getMethod().getAnnotation(CRUDOperation.class);
         Operation operation = annotation.operation();
         if (rbac.isAuthorized(operation, entity)) {
             return context.proceed();

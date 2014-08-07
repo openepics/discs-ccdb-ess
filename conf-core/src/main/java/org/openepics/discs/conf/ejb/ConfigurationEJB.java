@@ -19,9 +19,9 @@ import org.openepics.discs.conf.ent.DataType;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.SlotRelation;
 import org.openepics.discs.conf.ent.Unit;
-import org.openepics.discs.conf.util.CRUDAnnotation;
-import org.openepics.discs.conf.util.CRUDAnnotation.Operation;
-import org.openepics.discs.conf.util.SecurityInterceptorBinding;
+import org.openepics.discs.conf.util.CRUDOperation;
+import org.openepics.discs.conf.util.CRUDOperation.Operation;
+import org.openepics.discs.conf.util.Authorized;
 
 /**
  *
@@ -68,15 +68,15 @@ import org.openepics.discs.conf.util.SecurityInterceptorBinding;
         em.merge(property);
     }
 
-    @CRUDAnnotation(operation=Operation.CREATE)
-    @SecurityInterceptorBinding
+    @CRUDOperation(operation=Operation.CREATE)
+    @Authorized
     public void addProperty(Property property) {
         property.setModifiedAt(new Date());
         em.persist(property);
     }
 
-    @CRUDAnnotation(operation=Operation.DELETE)
-    @SecurityInterceptorBinding
+    @CRUDOperation(operation=Operation.DELETE)
+    @Authorized
     public void deleteProperty(Property property) {
         Property prop = em.find(Property.class, property.getId());
         em.remove(prop);

@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 
 @Target(METHOD)
 @Retention(RUNTIME)
-public @interface CRUDAnnotation {
+public @interface CRUDOperation {
     public enum Operation {
         CREATE, REMOVE, UPDATE, DELETE;
     }

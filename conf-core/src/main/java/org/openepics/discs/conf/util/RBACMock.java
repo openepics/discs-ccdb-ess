@@ -3,7 +3,7 @@ package org.openepics.discs.conf.util;
 import javax.ejb.Stateless;
 
 import org.openepics.discs.conf.ent.Property;
-import org.openepics.discs.conf.util.CRUDAnnotation.Operation;
+import org.openepics.discs.conf.util.CRUDOperation.Operation;
 
 @Stateless
 public class RBACMock {
