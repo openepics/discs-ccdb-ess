@@ -13,23 +13,23 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author vuppala
  */
 @Entity
-@Table(name = "alignment_property")
+@Table(name = "alignment_property_values")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "AlignmentProperty.findAll", query = "SELECT a FROM AlignmentProperty a"),
     @NamedQuery(name = "AlignmentProperty.findByAlignPropId", query = "SELECT a FROM AlignmentProperty a WHERE a.id = :id"),
     @NamedQuery(name = "AlignmentProperty.findByInRepository", query = "SELECT a FROM AlignmentProperty a WHERE a.inRepository = :inRepository"),
     @NamedQuery(name = "AlignmentProperty.findByModifiedBy", query = "SELECT a FROM AlignmentProperty a WHERE a.modifiedBy = :modifiedBy")})
-public class AlignmentProperty extends PropertyValue {
+public class AlignmentPropertyValue extends PropertyValue {
     private static final long serialVersionUID = 1L;
 
     @JoinColumn(name = "alignment_record")
     @ManyToOne(optional = false)
     private AlignmentRecord alignmentRecord;
 
-    protected AlignmentProperty() { }
+    protected AlignmentPropertyValue() { }
 
-    public AlignmentProperty(boolean inRepository, String modifiedBy) {
+    public AlignmentPropertyValue(boolean inRepository, String modifiedBy) {
         super(inRepository, modifiedBy);
     }
 

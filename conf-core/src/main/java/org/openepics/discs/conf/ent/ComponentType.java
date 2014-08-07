@@ -47,7 +47,7 @@ public class ComponentType extends ConfigurationEntity {
     private String description;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentType")
-    private List<ComptypeProperty> comptypePropertyList;
+    private List<ComptypePropertyValue> comptypePropertyList;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentType")
     private List<Slot> slotList;
@@ -93,8 +93,8 @@ public class ComponentType extends ConfigurationEntity {
     public void setDescription(String description) { this.description = description; }
 
     @XmlTransient
-    public List<ComptypeProperty> getComptypePropertyList() { return comptypePropertyList; }
-    public void setComptypePropertyList( List<ComptypeProperty> comptypePropertyList) { this.comptypePropertyList = comptypePropertyList; }
+    public List<ComptypePropertyValue> getComptypePropertyList() { return comptypePropertyList; }
+    public void setComptypePropertyList( List<ComptypePropertyValue> comptypePropertyList) { this.comptypePropertyList = comptypePropertyList; }
 
     @XmlTransient
     public List<Slot> getSlotList() { return slotList; }

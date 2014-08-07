@@ -31,7 +31,7 @@ import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotArtifact;
 import org.openepics.discs.conf.ent.SlotPair;
-import org.openepics.discs.conf.ent.SlotProperty;
+import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
 import org.openepics.discs.conf.util.BlobStore;
 import org.openepics.discs.conf.util.Utility;
@@ -67,9 +67,9 @@ public class SlotManager implements Serializable {
     private char selectedOp = 'n'; // selected operation: [a]dd, [e]dit, [d]elete, [n]one
 
     // Property
-    private List<SlotProperty> selectedProperties;
-    private SlotProperty selectedProperty;
-    private SlotProperty inputProperty;
+    private List<SlotPropertyValue> selectedProperties;
+    private SlotPropertyValue selectedProperty;
+    private SlotPropertyValue inputProperty;
     private boolean inRepository = false;
     private char propertyOperation = 'n'; // selected operation on artifact: [a]dd, [e]dit, [d]elete, [n]one
 
@@ -191,7 +191,7 @@ public class SlotManager implements Serializable {
             propertyOperation = 'a';
 
             // TODO replaced void constructor (now protected) with default values. Check!
-            inputProperty = new SlotProperty(false, loginManager.getUserid());
+            inputProperty = new SlotPropertyValue(false, loginManager.getUserid());
             inputProperty.setSlot(selectedObject);
             fileUploaded = false;
             uploadedFileName = null;
@@ -203,7 +203,7 @@ public class SlotManager implements Serializable {
 
     }
 
-    public void onPropertyDelete(SlotProperty ctp) {
+    public void onPropertyDelete(SlotPropertyValue ctp) {
         try {
             if (ctp == null) {
                 Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "No property selected");
@@ -219,7 +219,7 @@ public class SlotManager implements Serializable {
 
     }
 
-    public void onPropertyEdit(SlotProperty prop) {
+    public void onPropertyEdit(SlotPropertyValue prop) {
         try {
             if (prop == null) {
                 Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "No property selected");
@@ -716,19 +716,19 @@ public class SlotManager implements Serializable {
         return propertyOperation;
     }
 
-    public SlotProperty getSelectedProperty() {
+    public SlotPropertyValue getSelectedProperty() {
         return selectedProperty;
     }
 
-    public void setSelectedProperty(SlotProperty selectedProperty) {
+    public void setSelectedProperty(SlotPropertyValue selectedProperty) {
         this.selectedProperty = selectedProperty;
     }
 
-    public SlotProperty getInputProperty() {
+    public SlotPropertyValue getInputProperty() {
         return inputProperty;
     }
 
-    public void setInputProperty(SlotProperty inputProperty) {
+    public void setInputProperty(SlotPropertyValue inputProperty) {
         this.inputProperty = inputProperty;
     }
 
@@ -740,7 +740,7 @@ public class SlotManager implements Serializable {
         this.inRepository = inRepository;
     }
 
-    public List<SlotProperty> getSelectedProperties() {
+    public List<SlotPropertyValue> getSelectedProperties() {
         return selectedProperties;
     }
 

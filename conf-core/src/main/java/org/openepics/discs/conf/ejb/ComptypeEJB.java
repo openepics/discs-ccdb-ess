@@ -20,7 +20,7 @@ import org.openepics.discs.conf.ent.AuditRecord;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypeArtifact;
 import org.openepics.discs.conf.ent.ComptypeAsm;
-import org.openepics.discs.conf.ent.ComptypeProperty;
+import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ui.LoginManager;
@@ -92,9 +92,9 @@ import org.openepics.discs.conf.ui.LoginManager;
 
     // ---------------- Component Type Property ---------------------
 
-    public void saveCompTypeProp(ComptypeProperty ctprop, boolean create) {
+    public void saveCompTypeProp(ComptypePropertyValue ctprop, boolean create) {
         ctprop.setModifiedAt(new Date());
-        ComptypeProperty newProp = em.merge(ctprop);
+        ComptypePropertyValue newProp = em.merge(ctprop);
 
         if (create) { // create instead of update
             ComponentType ctype = ctprop.getComponentType();
@@ -105,16 +105,16 @@ import org.openepics.discs.conf.ui.LoginManager;
         logger.log(Level.INFO, "Comp Type Property: id " + newProp.getId() + " name " + newProp.getProperty().getName());
     }
 
-    public void deleteCompTypeProp(ComptypeProperty ctp) {
+    public void deleteCompTypeProp(ComptypePropertyValue ctp) {
         logger.log(Level.INFO, "deleting comp type property id " + ctp.getId() + " name " + ctp.getProperty().getName());
-        ComptypeProperty property = em.find(ComptypeProperty.class, ctp.getId());
+        ComptypePropertyValue property = em.find(ComptypePropertyValue.class, ctp.getId());
         ComponentType arec = property.getComponentType();
         arec.getComptypePropertyList().remove(property);
         em.remove(property);
         makeAuditEntry(EntityTypeOperation.UPDATE, ctp.getComponentType().getName(), "Deleted property " + ctp.getProperty().getName(), ctp.getComponentType().getId());
     }
 
-    public void addCompTypeProp(ComptypeProperty ctp) {
+    public void addCompTypeProp(ComptypePropertyValue ctp) {
         em.persist(ctp);
     }
 

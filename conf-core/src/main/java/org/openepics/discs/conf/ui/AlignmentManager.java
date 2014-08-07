@@ -25,7 +25,7 @@ import javax.inject.Named;
 
 import org.openepics.discs.conf.ejb.AlignmentEJB;
 import org.openepics.discs.conf.ent.AlignmentArtifact;
-import org.openepics.discs.conf.ent.AlignmentProperty;
+import org.openepics.discs.conf.ent.AlignmentPropertyValue;
 import org.openepics.discs.conf.ent.AlignmentRecord;
 import org.openepics.discs.conf.util.BlobStore;
 import org.openepics.discs.conf.util.Utility;
@@ -60,9 +60,9 @@ public class AlignmentManager implements Serializable{
     private char selectedOp = 'n'; // selected operation: [a]dd, [e]dit, [d]elete, [n]one
 
     // Property
-    private List<AlignmentProperty> selectedProperties;
-    private AlignmentProperty selectedProperty;
-    private AlignmentProperty inputProperty;
+    private List<AlignmentPropertyValue> selectedProperties;
+    private AlignmentPropertyValue selectedProperty;
+    private AlignmentPropertyValue inputProperty;
     private boolean inRepository = false;
     private char propertyOperation = 'n'; // selected operation on artifact: [a]dd, [e]dit, [d]elete, [n]one
 
@@ -165,7 +165,7 @@ public class AlignmentManager implements Serializable{
             propertyOperation = 'a';
 
             // TODO replaced void constructor (now protected) with default values. Check.
-            inputProperty = new AlignmentProperty(false, loginManager.getUserid());
+            inputProperty = new AlignmentPropertyValue(false, loginManager.getUserid());
             inputProperty.setAlignmentRecord(selectedObject);
             fileUploaded = false;
             uploadedFileName = null;
@@ -177,7 +177,7 @@ public class AlignmentManager implements Serializable{
 
     }
 
-    public void onPropertyDelete(AlignmentProperty prop) {
+    public void onPropertyDelete(AlignmentPropertyValue prop) {
         try {
             if (prop == null) {
                 Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "No property selected");
@@ -205,7 +205,7 @@ public class AlignmentManager implements Serializable{
         }
     }
 
-    public void onPropertyEdit(AlignmentProperty prop) {
+    public void onPropertyEdit(AlignmentPropertyValue prop) {
         try {
             if (prop == null) {
                 Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "No property selected");
@@ -483,7 +483,7 @@ public class AlignmentManager implements Serializable{
         return selectedOp;
     }
 
-    public List<AlignmentProperty> getSelectedProperties() {
+    public List<AlignmentPropertyValue> getSelectedProperties() {
         return selectedProperties;
     }
 
@@ -503,19 +503,19 @@ public class AlignmentManager implements Serializable{
         return fileUploaded;
     }
 
-    public AlignmentProperty getSelectedProperty() {
+    public AlignmentPropertyValue getSelectedProperty() {
         return selectedProperty;
     }
 
-    public void setSelectedProperty(AlignmentProperty selectedProperty) {
+    public void setSelectedProperty(AlignmentPropertyValue selectedProperty) {
         this.selectedProperty = selectedProperty;
     }
 
-    public AlignmentProperty getInputProperty() {
+    public AlignmentPropertyValue getInputProperty() {
         return inputProperty;
     }
 
-    public void setInputProperty(AlignmentProperty inputProperty) {
+    public void setInputProperty(AlignmentPropertyValue inputProperty) {
         this.inputProperty = inputProperty;
     }
 

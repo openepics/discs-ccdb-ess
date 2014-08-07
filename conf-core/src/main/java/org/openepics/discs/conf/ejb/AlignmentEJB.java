@@ -16,7 +16,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
 import org.openepics.discs.conf.ent.AlignmentArtifact;
-import org.openepics.discs.conf.ent.AlignmentProperty;
+import org.openepics.discs.conf.ent.AlignmentPropertyValue;
 import org.openepics.discs.conf.ent.AlignmentRecord;
 import org.openepics.discs.conf.ent.AuditRecord;
 import org.openepics.discs.conf.ent.EntityType;
@@ -96,7 +96,7 @@ import org.openepics.discs.conf.ui.LoginManager;
 
     // ------------------ Property ---------------
 
-    public void saveAlignmentProp(AlignmentProperty prop, boolean create) throws Exception {
+    public void saveAlignmentProp(AlignmentPropertyValue prop, boolean create) throws Exception {
         if (prop == null) {
             logger.log(Level.SEVERE, "saveDeviceProp: property is null");
             return;
@@ -109,7 +109,7 @@ import org.openepics.discs.conf.ui.LoginManager;
         prop.setModifiedAt(new Date());
         // ctprop.setType("a");
         prop.setModifiedBy("user");
-        AlignmentProperty newProp = em.merge(prop);
+        AlignmentPropertyValue newProp = em.merge(prop);
 
         if (create) { // create instead of update
             AlignmentRecord slot = prop.getAlignmentRecord();
@@ -120,7 +120,7 @@ import org.openepics.discs.conf.ui.LoginManager;
         logger.log(Level.INFO, "Comp Type Property: id " + newProp.getId() + " name " + newProp.getProperty().getName());
     }
 
-    public void deleteAlignmentProp(AlignmentProperty prop) throws Exception {
+    public void deleteAlignmentProp(AlignmentPropertyValue prop) throws Exception {
         if (prop == null) {
             logger.log(Level.SEVERE, "deleteAlignmentArtifact: dev-artifact is null");
             return;
@@ -130,7 +130,7 @@ import org.openepics.discs.conf.ui.LoginManager;
             logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
             throw new Exception("User " + user + " is not authorized to perform this operation");
         }
-        AlignmentProperty property = em.find(AlignmentProperty.class, prop.getId());
+        AlignmentPropertyValue property = em.find(AlignmentPropertyValue.class, prop.getId());
         AlignmentRecord arec = property.getAlignmentRecord();
         arec.getAlignmentPropertyList().remove(property);
         em.remove(property);

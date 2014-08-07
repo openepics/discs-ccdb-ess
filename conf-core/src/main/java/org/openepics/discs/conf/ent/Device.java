@@ -85,7 +85,7 @@ public class Device extends ConfigurationEntity {
     private String manufModel;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "device")
-    private List<DeviceProperty> devicePropertyList;
+    private List<DevicePropertyValue> devicePropertyList;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "device")
     private List<AlignmentRecord> alignmentRecordList;
@@ -152,8 +152,8 @@ public class Device extends ConfigurationEntity {
     public void setManufacturerModel(String manufModel) { this.manufModel = manufModel; }
 
     @XmlTransient
-    public List<DeviceProperty> getDevicePropertyList() { return devicePropertyList; }
-    public void setDevicePropertyList(List<DeviceProperty> devicePropertyList) { this.devicePropertyList = devicePropertyList; }
+    public List<DevicePropertyValue> getDevicePropertyList() { return devicePropertyList; }
+    public void setDevicePropertyList(List<DevicePropertyValue> devicePropertyList) { this.devicePropertyList = devicePropertyList; }
 
     @XmlTransient
     public List<AlignmentRecord> getAlignmentRecordList() { return alignmentRecordList; }

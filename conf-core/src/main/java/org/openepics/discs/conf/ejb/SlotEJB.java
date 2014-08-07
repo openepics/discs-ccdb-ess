@@ -22,7 +22,7 @@ import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotArtifact;
 import org.openepics.discs.conf.ent.SlotPair;
-import org.openepics.discs.conf.ent.SlotProperty;
+import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.ent.SlotRelation;
 import org.openepics.discs.conf.ent.SlotRelationName;
 import org.openepics.discs.conf.ui.LoginManager;
@@ -120,11 +120,11 @@ import org.openepics.discs.conf.ui.LoginManager;
 
     // ------------------ Slot Property ---------------
 
-    public void saveSlotProp(SlotProperty prop, boolean create) {
+    public void saveSlotProp(SlotPropertyValue prop, boolean create) {
         prop.setModifiedAt(new Date());
         // ctprop.setType("a");
         prop.setModifiedBy("user");
-        SlotProperty newProp = em.merge(prop);
+        SlotPropertyValue newProp = em.merge(prop);
 
         if (create) { // create instead of update
             Slot slot = prop.getSlot();
@@ -135,15 +135,15 @@ import org.openepics.discs.conf.ui.LoginManager;
         logger.log(Level.INFO, "Comp Type Property: id " + newProp.getId() + " name " + newProp.getProperty().getName());
     }
 
-    public void deleteSlotProp(SlotProperty prop) {
-        SlotProperty property = em.find(SlotProperty.class, prop.getId());
+    public void deleteSlotProp(SlotPropertyValue prop) {
+        SlotPropertyValue property = em.find(SlotPropertyValue.class, prop.getId());
         Slot slot = property.getSlot();
         slot.getSlotPropertyList().remove(property);
         em.remove(property);
         makeAuditEntry(EntityTypeOperation.DELETE, prop.getSlot().getName(), "Deleted slot property " + prop.getProperty().getName(), prop.getSlot().getId());
     }
 
-    public void addSlotProperty(SlotProperty property) {
+    public void addSlotProperty(SlotPropertyValue property) {
         em.persist(property);
     }
 

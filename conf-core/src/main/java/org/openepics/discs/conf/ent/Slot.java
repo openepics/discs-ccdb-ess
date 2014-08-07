@@ -115,7 +115,7 @@ public class Slot extends ConfigurationEntity {
     private List<SlotPair> parentSlots;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "slot")
-    private List<SlotProperty> slotPropertyList;
+    private List<SlotPropertyValue> slotPropertyList;
 
     @ManyToMany
     @JoinTable(name = "slot_tags",
@@ -203,8 +203,8 @@ public class Slot extends ConfigurationEntity {
     public void setSlotPairList1(List<SlotPair> slotPairList1) { this.parentSlots = slotPairList1; }
 
     @XmlTransient
-    public List<SlotProperty> getSlotPropertyList() { return slotPropertyList; }
-    public void setSlotPropertyList(List<SlotProperty> slotPropertyList) { this.slotPropertyList = slotPropertyList; }
+    public List<SlotPropertyValue> getSlotPropertyList() { return slotPropertyList; }
+    public void setSlotPropertyList(List<SlotPropertyValue> slotPropertyList) { this.slotPropertyList = slotPropertyList; }
 
     @XmlTransient
     public Set<Tag> getTags() { return tags; }

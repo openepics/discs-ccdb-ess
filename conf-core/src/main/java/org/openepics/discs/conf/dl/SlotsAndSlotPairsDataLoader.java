@@ -28,7 +28,7 @@ import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyAssociation;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotPair;
-import org.openepics.discs.conf.ent.SlotProperty;
+import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.ent.SlotRelation;
 import org.openepics.discs.conf.ent.SlotRelationName;
 import org.openepics.discs.conf.ui.LoginManager;
@@ -509,13 +509,13 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
 
     private void addOrUpdateProperties(Slot slot, Map<String, Integer> properties, List<String> row, String rowNumber, String modifiedBy) {
         final Iterator<String> propertiesIterator = properties.keySet().iterator();
-        final List<SlotProperty> slotProperties = new ArrayList<>();
+        final List<SlotPropertyValue> slotProperties = new ArrayList<>();
         if (slot.getSlotPropertyList() != null) {
             slotProperties.addAll(slot.getSlotPropertyList());
         }
-        final Map<Property, SlotProperty> slotPropertyByProperty = new HashMap<>();
+        final Map<Property, SlotPropertyValue> slotPropertyByProperty = new HashMap<>();
 
-        for (SlotProperty slotProperty : slotProperties) {
+        for (SlotPropertyValue slotProperty : slotProperties) {
             slotPropertyByProperty.put(slotProperty.getProperty(), slotProperty);
         }
 
@@ -525,7 +525,7 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
             final @Nullable Property property = configurationEJB.findPropertyByName(propertyName);
             final @Nullable String propertyValue = row.get(propertyIndex);
             if (slotPropertyByProperty.containsKey(property)) {
-                final SlotProperty slotPropertyToUpdate = slotPropertyByProperty.get(property);
+                final SlotPropertyValue slotPropertyToUpdate = slotPropertyByProperty.get(property);
                 if (propertyValue == null) {
                     slotEJB.deleteSlotProp(slotPropertyToUpdate);
                 } else {
@@ -535,7 +535,7 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                 }
 
             } else if (propertyValue != null) {
-                final SlotProperty slotPropertyToAdd = new SlotProperty(false, modifiedBy);
+                final SlotPropertyValue slotPropertyToAdd = new SlotPropertyValue(false, modifiedBy);
                 slotPropertyToAdd.setProperty(property);
                 slotPropertyToAdd.setPropValue(propertyValue);
                 slotPropertyToAdd.setSlot(slot);

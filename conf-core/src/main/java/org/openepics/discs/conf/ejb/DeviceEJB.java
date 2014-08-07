@@ -19,11 +19,11 @@ import javax.persistence.criteria.Root;
 import org.openepics.discs.conf.ent.AuditRecord;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.DeviceArtifact;
-import org.openepics.discs.conf.ent.DeviceProperty;
+import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.Slot;
-import org.openepics.discs.conf.ent.SlotProperty;
+import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.ui.LoginManager;
 
 /**
@@ -93,9 +93,9 @@ import org.openepics.discs.conf.ui.LoginManager;
 
     // ------------------ Property ---------------
 
-    public void saveDeviceProp(DeviceProperty prop, boolean create) {
+    public void saveDeviceProp(DevicePropertyValue prop, boolean create) {
         prop.setModifiedAt(new Date());
-        DeviceProperty newProp = em.merge(prop);
+        DevicePropertyValue newProp = em.merge(prop);
 
         if (create) { // create instead of update
             Device device = prop.getDevice();
@@ -106,15 +106,15 @@ import org.openepics.discs.conf.ui.LoginManager;
         makeAuditEntry(EntityTypeOperation.UPDATE, prop.getDevice().getSerialNumber(), "Modified property " + prop.getProperty().getName(),prop.getDevice().getId());
     }
 
-    public void deleteDeviceProp(DeviceProperty prop) {
-        DeviceProperty property = em.find(DeviceProperty.class, prop.getId());
+    public void deleteDeviceProp(DevicePropertyValue prop) {
+        DevicePropertyValue property = em.find(DevicePropertyValue.class, prop.getId());
         Device device = property.getDevice();
         device.getDevicePropertyList().remove(property);
         em.remove(property);
         makeAuditEntry(EntityTypeOperation.UPDATE, prop.getDevice().getSerialNumber(), "Deleted property " + prop.getProperty().getName(), prop.getDevice().getId());
     }
 
-    public void addDeviceProperty(DeviceProperty property) {
+    public void addDeviceProperty(DevicePropertyValue property) {
         em.persist(property);
     }
 

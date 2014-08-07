@@ -31,7 +31,7 @@ import org.openepics.discs.conf.ejb.AuthEJB;
 import org.openepics.discs.conf.ejb.DeviceEJB;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.DeviceArtifact;
-import org.openepics.discs.conf.ent.DeviceProperty;
+import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
@@ -81,9 +81,9 @@ public class DeviceManager implements Serializable {
     private char selectedOp = 'n'; // selected operation: [a]dd, [e]dit, [d]elete, [n]one
 
     // Property
-    private List<DeviceProperty> selectedProperties;
-    private DeviceProperty selectedProperty;
-    private DeviceProperty inputProperty;
+    private List<DevicePropertyValue> selectedProperties;
+    private DevicePropertyValue selectedProperty;
+    private DevicePropertyValue inputProperty;
     private boolean inRepository = false;
     private char propertyOperation = 'n'; // selected operation on artifact: [a]dd, [e]dit, [d]elete, [n]one
 
@@ -196,7 +196,7 @@ public class DeviceManager implements Serializable {
             propertyOperation = 'a';
 
             // TODO replaced void constructor (now protected) with default values. Check!
-            inputProperty = new DeviceProperty(false, loginManager.getUserid());
+            inputProperty = new DevicePropertyValue(false, loginManager.getUserid());
             inputProperty.setDevice(selectedObject);
             fileUploaded = false;
             uploadedFileName = null;
@@ -208,7 +208,7 @@ public class DeviceManager implements Serializable {
 
     }
 
-    public void onPropertyDelete(DeviceProperty ctp) {
+    public void onPropertyDelete(DevicePropertyValue ctp) {
         try {
             if (ctp == null) {
                 Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "No property selected");
@@ -236,7 +236,7 @@ public class DeviceManager implements Serializable {
         }
     }
 
-    public void onPropertyEdit(DeviceProperty prop) {
+    public void onPropertyEdit(DevicePropertyValue prop) {
         try {
             if (prop == null) {
                 Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "No property selected");
@@ -606,7 +606,7 @@ public class DeviceManager implements Serializable {
         return objects;
     }
 
-    public List<DeviceProperty> getSelectedProperties() {
+    public List<DevicePropertyValue> getSelectedProperties() {
         return selectedProperties;
     }
 
@@ -658,19 +658,19 @@ public class DeviceManager implements Serializable {
         return asmDevices;
     }
 
-    public DeviceProperty getSelectedProperty() {
+    public DevicePropertyValue getSelectedProperty() {
         return selectedProperty;
     }
 
-    public void setSelectedProperty(DeviceProperty selectedProperty) {
+    public void setSelectedProperty(DevicePropertyValue selectedProperty) {
         this.selectedProperty = selectedProperty;
     }
 
-    public DeviceProperty getInputProperty() {
+    public DevicePropertyValue getInputProperty() {
         return inputProperty;
     }
 
-    public void setInputProperty(DeviceProperty inputProperty) {
+    public void setInputProperty(DevicePropertyValue inputProperty) {
         this.inputProperty = inputProperty;
     }
 

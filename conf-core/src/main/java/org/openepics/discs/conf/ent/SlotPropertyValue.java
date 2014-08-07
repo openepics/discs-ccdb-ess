@@ -13,24 +13,24 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author vuppala
  */
 @Entity
-@Table(name = "slot_property")
+@Table(name = "slot_property_values")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "SlotProperty.findAll", query = "SELECT s FROM SlotProperty s"),
     @NamedQuery(name = "SlotProperty.findBySlotPropId", query = "SELECT s FROM SlotProperty s WHERE s.id = :id"),
     @NamedQuery(name = "SlotProperty.findByInRepository", query = "SELECT s FROM SlotProperty s WHERE s.inRepository = :inRepository"),
     @NamedQuery(name = "SlotProperty.findByModifiedBy", query = "SELECT s FROM SlotProperty s WHERE s.modifiedBy = :modifiedBy")})
-public class SlotProperty extends PropertyValue {
+public class SlotPropertyValue extends PropertyValue {
     private static final long serialVersionUID = 1L;
 
     @JoinColumn(name = "slot")
     @ManyToOne(optional = false)
     private Slot slot;
 
-    protected SlotProperty() {
+    protected SlotPropertyValue() {
     }
 
-    public SlotProperty(boolean inRepository, String modifiedBy) {
+    public SlotPropertyValue(boolean inRepository, String modifiedBy) {
         super(inRepository, modifiedBy);
     }
 

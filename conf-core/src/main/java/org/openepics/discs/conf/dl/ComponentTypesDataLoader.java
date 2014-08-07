@@ -19,7 +19,7 @@ import org.openepics.discs.conf.ejb.AuthEJB;
 import org.openepics.discs.conf.ejb.ComptypeEJB;
 import org.openepics.discs.conf.ejb.ConfigurationEJB;
 import org.openepics.discs.conf.ent.ComponentType;
-import org.openepics.discs.conf.ent.ComptypeProperty;
+import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.Property;
@@ -208,13 +208,13 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
 
     private void addOrUpdateProperties(ComponentType compType, Map<String, Integer> properties, List<String> row, String rowNumber, String modifiedBy) {
         final Iterator<String> propertiesIterator = properties.keySet().iterator();
-        final List<ComptypeProperty> compTypeProperties = new ArrayList<>();
+        final List<ComptypePropertyValue> compTypeProperties = new ArrayList<>();
         if (compType.getComptypePropertyList() != null) {
             compTypeProperties.addAll(compType.getComptypePropertyList());
         }
-        final Map<Property, ComptypeProperty> compTypePropertyByProperty = new HashMap<>();
+        final Map<Property, ComptypePropertyValue> compTypePropertyByProperty = new HashMap<>();
 
-        for (ComptypeProperty compProperty : compTypeProperties) {
+        for (ComptypePropertyValue compProperty : compTypeProperties) {
             compTypePropertyByProperty.put(compProperty.getProperty(), compProperty);
         }
 
@@ -224,7 +224,7 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
             final @Nullable Property property = configurationEJB.findPropertyByName(propertyName);
             final @Nullable String propertyValue = row.get(propertyIndex);
             if (compTypePropertyByProperty.containsKey(property)) {
-                final ComptypeProperty compTypePropertyToUpdate = compTypePropertyByProperty.get(property);
+                final ComptypePropertyValue compTypePropertyToUpdate = compTypePropertyByProperty.get(property);
                 if (propertyValue == null) {
                     comptypeEJB.deleteCompTypeProp(compTypePropertyToUpdate);
                 } else {
@@ -234,7 +234,7 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
                 }
 
             } else if (propertyValue != null) {
-                final ComptypeProperty comptypePropertyToAdd = new ComptypeProperty(false, modifiedBy);
+                final ComptypePropertyValue comptypePropertyToAdd = new ComptypePropertyValue(false, modifiedBy);
                 comptypePropertyToAdd.setProperty(property);
                 comptypePropertyToAdd.setPropValue(propertyValue);
                 comptypePropertyToAdd.setComponentType(compType);
