@@ -21,6 +21,7 @@ import org.openepics.discs.conf.ejb.AuthEJB;
 import org.openepics.discs.conf.ejb.ComptypeEJB;
 import org.openepics.discs.conf.ejb.ConfigurationEJB;
 import org.openepics.discs.conf.ejb.SlotEJB;
+import org.openepics.discs.conf.ent.AlignmentInformation;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
@@ -269,15 +270,16 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
         slotToAddOrUpdate.setDescription(description);
         slotToAddOrUpdate.setIsHostingSlot(isHosting);
         slotToAddOrUpdate.setBeamlinePosition(blp);
-        slotToAddOrUpdate.getPositionInformation().setGlobalX(globalX);
-        slotToAddOrUpdate.getPositionInformation().setGlobalY(globalY);
-        slotToAddOrUpdate.getPositionInformation().setGlobalZ(globalZ);
-        slotToAddOrUpdate.getPositionInformation().setGlobalRoll(globalRoll);
-        slotToAddOrUpdate.getPositionInformation().setGlobalPitch(globalPitch);
-        slotToAddOrUpdate.getPositionInformation().setGlobalYaw(globalYaw);
         slotToAddOrUpdate.setAssemblyComment(asmComment);
         slotToAddOrUpdate.setAssemblyPosition(asmPosition);
         slotToAddOrUpdate.setComment(comment);
+        final AlignmentInformation positionInfo = slotToAddOrUpdate.getPositionInformation();
+        positionInfo.setGlobalX(globalX);
+        positionInfo.setGlobalY(globalY);
+        positionInfo.setGlobalZ(globalZ);
+        positionInfo.setGlobalRoll(globalRoll);
+        positionInfo.setGlobalPitch(globalPitch);
+        positionInfo.setGlobalYaw(globalYaw);
     }
 
     private void loadSlotPairs(List<List<String>> inputRows) {
