@@ -16,10 +16,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(name = "device_property_values")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "DevicePropertyValue.findAll", query = "SELECT d FROM DeviceProperty d"),
-    @NamedQuery(name = "DevicePropertyValue.findByDevPropId", query = "SELECT d FROM DeviceProperty d WHERE d.id = :id"),
-    @NamedQuery(name = "DevicePropertyValue.findByInRepository", query = "SELECT d FROM DeviceProperty d WHERE d.inRepository = :inRepository"),
-    @NamedQuery(name = "DevicePropertyValue.findByModifiedBy", query = "SELECT d FROM DeviceProperty d WHERE d.modifiedBy = :modifiedBy")})
+    @NamedQuery(name = "DevicePropertyValue.findAll", query = "SELECT d FROM DevicePropertyValue d"),
+    @NamedQuery(name = "DevicePropertyValue.findByDevPropId", query = "SELECT d FROM DevicePropertyValue d WHERE d.id = :id"),
+    @NamedQuery(name = "DevicePropertyValue.findByInRepository", query = "SELECT d FROM DevicePropertyValue d WHERE d.inRepository = :inRepository"),
+    @NamedQuery(name = "DevicePropertyValue.findByModifiedBy", query = "SELECT d FROM DevicePropertyValue d WHERE d.modifiedBy = :modifiedBy")})
 public class DevicePropertyValue extends PropertyValue {
     private static final long serialVersionUID = 1L;
 

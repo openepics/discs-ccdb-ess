@@ -25,7 +25,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "SlotPair.findAll", query = "SELECT s FROM SlotPair s"),
     @NamedQuery(name = "SlotPair.findByParentChildRelation", query = "SELECT s FROM SlotPair s WHERE s.childSlot.name LIKE :childName AND s.parentSlot.name = :parentName AND s.slotRelation.name = :relationName"),
-    @NamedQuery(name = "SlotPair.findBySlotPairId", query = "SELECT s FROM SlotPair s WHERE s.slotPairId = :slotPairId")})
+    @NamedQuery(name = "SlotPair.findById", query = "SELECT s FROM SlotPair s WHERE s.id = :id")})
 public class SlotPair implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -88,5 +88,5 @@ public class SlotPair implements Serializable {
     }
 
     @Override
-    public String toString() { return "SlotPair[ slotPairId=" + id + " ]"; }
+    public String toString() { return "SlotPair[ id=" + id + " ]"; }
 }

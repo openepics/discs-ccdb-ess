@@ -16,10 +16,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(name = "comptype_property_values")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "ComptypePropertyValue.findAll", query = "SELECT c FROM ComptypeProperty c"),
-    @NamedQuery(name = "ComptypePropertyValue.findByCtypePropId", query = "SELECT c FROM ComptypeProperty c WHERE c.id = :id"),
-    @NamedQuery(name = "ComptypePropertyValue.findByInRepository", query = "SELECT c FROM ComptypeProperty c WHERE c.inRepository = :inRepository"),
-    @NamedQuery(name = "ComptypePropertyValue.findByModifiedBy", query = "SELECT c FROM ComptypeProperty c WHERE c.modifiedBy = :modifiedBy")})
+    @NamedQuery(name = "ComptypePropertyValue.findAll", query = "SELECT c FROM ComptypePropertyValue c"),
+    @NamedQuery(name = "ComptypePropertyValue.findByCtypePropId", query = "SELECT c FROM ComptypePropertyValue c WHERE c.id = :id"),
+    @NamedQuery(name = "ComptypePropertyValue.findByInRepository", query = "SELECT c FROM ComptypePropertyValue c WHERE c.inRepository = :inRepository"),
+    @NamedQuery(name = "ComptypePropertyValue.findByModifiedBy", query = "SELECT c FROM ComptypePropertyValue c WHERE c.modifiedBy = :modifiedBy")})
 public class ComptypePropertyValue extends PropertyValue {
     private static final long serialVersionUID = 1L;
 
