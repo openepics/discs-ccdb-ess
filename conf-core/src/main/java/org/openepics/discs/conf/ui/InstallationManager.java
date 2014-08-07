@@ -151,7 +151,7 @@ public class InstallationManager implements Serializable {
                 selectedArtifacts = new ArrayList<>();
             }
             // TODO replaced void constructor (now protected) with default values. Check!
-            inputArtifact = new InstallationArtifact("", false, "", loginManager.getUserid());
+            inputArtifact = new InstallationArtifact("", false, "", "", loginManager.getUserid());
             inputArtifact.setInstallationRecord(selectedObject);
             fileUploaded = false;
             uploadedFileName = null;
@@ -165,8 +165,8 @@ public class InstallationManager implements Serializable {
     public void onArtifactSave(ActionEvent event) {
         try {
             if (artifactOperation == 'a') {
-                inputArtifact.setIsInternal(internalArtifact);
-                if (inputArtifact.getIsInternal()) { // internal artifact
+                inputArtifact.setInternal(internalArtifact);
+                if (inputArtifact.isInternal()) { // internal artifact
                     if (!fileUploaded) {
                         Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error:", "You must upload a file");
                         RequestContext.getCurrentInstance().addCallbackParam("success", false);

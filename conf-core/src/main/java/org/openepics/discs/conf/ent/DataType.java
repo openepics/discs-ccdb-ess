@@ -65,50 +65,21 @@ public class DataType extends ConfigurationEntity {
         this.modifiedAt = new Date();
     }
 
-    public String getName() {
-        return name;
-    }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description;     }
 
-    public String getDescription() {
-        return description;
-    }
+    public boolean isScalar() { return scalar; }
+    public void setScalar(boolean scalar) { this.scalar = scalar; }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public boolean getScalar() {
-        return scalar;
-    }
-
-    public String getDefinition() {
-        return definition;
-    }
-
-    public void setDefinition(String definition) {
-        this.definition = definition;
-    }
-
-    public void setScalar(boolean scalar) {
-        this.scalar = scalar;
-    }
+    public String getDefinition() { return definition; }
+    public void setDefinition(String definition) { this.definition = definition; }
 
     @XmlTransient
-    public List<Property> getPropertyList() {
-        return propertyList;
-    }
-
-    public void setPropertyList(List<Property> propertyList) {
-        this.propertyList = propertyList;
-    }
+    public List<Property> getPropertyList() { return propertyList; }
 
     @Override
-    public String toString() {
-        return "DataType[ dataTypeId=" + id + " ]";
-    }
-
+    public String toString() { return "DataType[ dataTypeId=" + id + " ]"; }
 }

@@ -47,7 +47,7 @@ public class ComponentType extends ConfigurationEntity {
     private String description;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentType")
-    private List<ComptypeProperty> comptypePropertyList;
+    private List<ComptypePropertyValue> comptypePropertyList;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentType")
     private List<Slot> slotList;
@@ -61,7 +61,7 @@ public class ComponentType extends ConfigurationEntity {
     @OneToMany(mappedBy = "superComponentType")
     private List<ComponentType> componentTypeList;
 
-    @JoinColumn(name = "super_component_type", referencedColumnName = "id")
+    @JoinColumn(name = "super_component_type")
     @ManyToOne
     private ComponentType superComponentType;
 
@@ -93,12 +93,10 @@ public class ComponentType extends ConfigurationEntity {
     public void setDescription(String description) { this.description = description; }
 
     @XmlTransient
-    public List<ComptypeProperty> getComptypePropertyList() { return comptypePropertyList; }
-    public void setComptypePropertyList( List<ComptypeProperty> comptypePropertyList) { this.comptypePropertyList = comptypePropertyList; }
+    public List<ComptypePropertyValue> getComptypePropertyList() { return comptypePropertyList; }
 
     @XmlTransient
     public List<Slot> getSlotList() { return slotList; }
-    public void setSlotList(List<Slot> slotList) { this.slotList = slotList; }
 
     @XmlTransient
     public List<ComptypeAsm> getComptypeAsmList() { return childrenTypes; }
@@ -110,14 +108,12 @@ public class ComponentType extends ConfigurationEntity {
 
     @XmlTransient
     public List<ComponentType> getComponentTypeList() { return componentTypeList; }
-    public void setComponentTypeList(List<ComponentType> componentTypeList) { this.componentTypeList = componentTypeList; }
 
     public ComponentType getSuperComponentType() { return superComponentType; }
     public void setSuperComponentType(ComponentType superComponentType) { this.superComponentType = superComponentType; }
 
     @XmlTransient
     public List<Device> getDeviceList() { return deviceList; }
-    public void setDeviceList(List<Device> deviceList) { this.deviceList = deviceList; }
 
     @XmlTransient
     public List<ComptypeArtifact> getComptypeArtifactList() { return comptypeArtifactList; }

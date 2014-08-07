@@ -56,16 +56,10 @@ public class Unit extends ConfigurationEntity {
     private String description;
 
     @OneToMany(mappedBy = "unit")
-    private List<ComptypeProperty> comptypePropertyList;
-
-    @OneToMany(mappedBy = "unit")
-    private List<DeviceProperty> devicePropertyList;
+    private List<PropertyValue> propertyValuesList;
 
     @OneToMany(mappedBy = "unit")
     private List<Property> propertyList;
-
-    @OneToMany(mappedBy = "unit")
-    private List<SlotProperty> slotPropertyList;
 
     protected Unit() {
     }
@@ -79,77 +73,24 @@ public class Unit extends ConfigurationEntity {
         this.modifiedAt = new Date();
     }
 
-    public String getUnitName() {
-        return unitName;
-    }
+    public String getUnitName() { return unitName; }
+    public void setUnitName(String unitName) { this.unitName = unitName; }
 
-    public void setUnitName(String unitName) {
-        this.unitName = unitName;
-    }
+    public String getQuantity() { return quantity; }
+    public void setQuantity(String quantity) { this.quantity = quantity; }
 
-    public String getQuantity() {
-        return quantity;
-    }
+    public String getSymbol() { return symbol; }
+    public void setSymbol(String symbol) { this.symbol = symbol; }
 
-    public void setQuantity(String quantity) {
-        this.quantity = quantity;
-    }
-
-    public String getSymbol() {
-        return symbol;
-    }
-
-    public void setSymbol(String symbol) {
-        this.symbol = symbol;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
 
     @XmlTransient
-    public List<ComptypeProperty> getComptypePropertyList() {
-        return comptypePropertyList;
-    }
-
-    public void setComptypePropertyList(List<ComptypeProperty> comptypePropertyList) {
-        this.comptypePropertyList = comptypePropertyList;
-    }
+    public List<PropertyValue> getPropertyValuesList() { return propertyValuesList; }
 
     @XmlTransient
-    public List<DeviceProperty> getDevicePropertyList() {
-        return devicePropertyList;
-    }
-
-    public void setDevicePropertyList(List<DeviceProperty> devicePropertyList) {
-        this.devicePropertyList = devicePropertyList;
-    }
-
-    @XmlTransient
-    public List<Property> getPropertyList() {
-        return propertyList;
-    }
-
-    public void setPropertyList(List<Property> propertyList) {
-        this.propertyList = propertyList;
-    }
-
-    @XmlTransient
-    public List<SlotProperty> getSlotPropertyList() {
-        return slotPropertyList;
-    }
-
-    public void setSlotPropertyList(List<SlotProperty> slotPropertyList) {
-        this.slotPropertyList = slotPropertyList;
-    }
+    public List<Property> getPropertyList() { return propertyList; }
 
     @Override
-    public String toString() {
-        return "Unit[ unitId=" + id + " ]";
-    }
-
+    public String toString() { return "Unit[ unitId=" + id + " ]"; }
 }

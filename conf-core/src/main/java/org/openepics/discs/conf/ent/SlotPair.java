@@ -31,21 +31,21 @@ public class SlotPair implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "slot_pair_id")
-    private Integer slotPairId;
+    @Column(name = "id")
+    private Integer id;
 
     @Version
     private Long version;
 
-    @JoinColumn(name = "child_slot", referencedColumnName = "id")
+    @JoinColumn(name = "child_slot")
     @ManyToOne(optional = false)
     private Slot childSlot;
 
-    @JoinColumn(name = "slot_relation", referencedColumnName = "id")
+    @JoinColumn(name = "slot_relation")
     @ManyToOne(optional = false)
     private SlotRelation slotRelation;
 
-    @JoinColumn(name = "parent_slot", referencedColumnName = "id")
+    @JoinColumn(name = "parent_slot")
     @ManyToOne(optional = false)
     private Slot parentSlot;
 
@@ -58,38 +58,21 @@ public class SlotPair implements Serializable {
         this.slotRelation = slotRelation;
     }
 
-    public Integer getSlotPairId() {
-        return slotPairId;
-    }
+    public Integer getId() { return id; }
 
-    public Slot getChildSlot() {
-        return childSlot;
-    }
+    public Slot getChildSlot() { return childSlot; }
+    public void setChildSlot(Slot childSlot) { this.childSlot = childSlot; }
 
-    public void setChildSlot(Slot childSlot) {
-        this.childSlot = childSlot;
-    }
+    public SlotRelation getSlotRelation() { return slotRelation; }
+    public void setSlotRelation(SlotRelation slotRelation) { this.slotRelation = slotRelation; }
 
-    public SlotRelation getSlotRelation() {
-        return slotRelation;
-    }
-
-    public void setSlotRelation(SlotRelation slotRelation) {
-        this.slotRelation = slotRelation;
-    }
-
-    public Slot getParentSlot() {
-        return parentSlot;
-    }
-
-    public void setParentSlot(Slot parentSlot) {
-        this.parentSlot = parentSlot;
-    }
+    public Slot getParentSlot() { return parentSlot; }
+    public void setParentSlot(Slot parentSlot) { this.parentSlot = parentSlot; }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (slotPairId != null ? slotPairId.hashCode() : 0);
+        hash += (id != null ? id.hashCode() : 0);
         return hash;
     }
 
@@ -98,15 +81,12 @@ public class SlotPair implements Serializable {
         if (!(object instanceof SlotPair)) return false;
 
         SlotPair other = (SlotPair) object;
-        if (this.slotPairId == null && other.slotPairId != null) return false;
-        if (this.slotPairId != null) return this.slotPairId.equals(other.slotPairId); // return true for same DB entity
+        if (this.id == null && other.id != null) return false;
+        if (this.id != null) return this.id.equals(other.id); // return true for same DB entity
 
         return this==object;
     }
 
     @Override
-    public String toString() {
-        return "SlotPair[ slotPairId=" + slotPairId + " ]";
-    }
-
+    public String toString() { return "SlotPair[ slotPairId=" + id + " ]"; }
 }

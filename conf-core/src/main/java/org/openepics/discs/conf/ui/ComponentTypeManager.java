@@ -31,7 +31,7 @@ import org.openepics.discs.conf.ejb.ComptypeEJB;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypeArtifact;
 import org.openepics.discs.conf.ent.ComptypeAsm;
-import org.openepics.discs.conf.ent.ComptypeProperty;
+import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
@@ -45,7 +45,6 @@ import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 import org.primefaces.model.UploadedFile;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.io.ByteStreams;
 
 /**
@@ -80,9 +79,9 @@ public class ComponentTypeManager implements Serializable {
     private List<ComptypeAsm> selectedParts;
 
     // properties
-    private List<ComptypeProperty> selectedProperties;
-    private ComptypeProperty selectedProperty;
-    private ComptypeProperty inputProperty;
+    private List<ComptypePropertyValue> selectedProperties;
+    private ComptypePropertyValue selectedProperty;
+    private ComptypePropertyValue inputProperty;
     private boolean inRepository = false;
     private char propertyOperation = 'n'; // selected operation on artifact: [a]dd, [e]dit, [d]elete, [n]one
 
@@ -193,7 +192,7 @@ public class ComponentTypeManager implements Serializable {
             propertyOperation = 'a';
 
             // TODO replaced void constructor (now protected) with default values. Check.
-            inputProperty = new ComptypeProperty(false, loginManager.getUserid());
+            inputProperty = new ComptypePropertyValue(false, loginManager.getUserid());
             inputProperty.setComponentType(selectedObject);
             fileUploaded = false;
             uploadedFileName = null;
@@ -205,7 +204,7 @@ public class ComponentTypeManager implements Serializable {
 
     }
 
-    public void onPropertyDelete(ComptypeProperty ctp) {
+    public void onPropertyDelete(ComptypePropertyValue ctp) {
         try {
             if (ctp == null) {
                 Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "No property selected");
@@ -221,7 +220,7 @@ public class ComponentTypeManager implements Serializable {
 
     }
 
-    public void onPropertyEdit(ComptypeProperty prop) {
+    public void onPropertyEdit(ComptypePropertyValue prop) {
         try {
             if (prop == null) {
                 Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "No property selected");
@@ -334,8 +333,8 @@ public class ComponentTypeManager implements Serializable {
     public void onArtifactSave(ActionEvent event) {
         try {
             if (artifactOperation == 'a') {
-                inputArtifact.setIsInternal(internalArtifact);
-                if (inputArtifact.getIsInternal()) { // internal artifact
+                inputArtifact.setInternal(internalArtifact);
+                if (inputArtifact.isInternal()) { // internal artifact
                     if (!fileUploaded) {
                         Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error:", "You must upload a file");
                         RequestContext.getCurrentInstance().addCallbackParam("success", false);
@@ -574,11 +573,11 @@ public class ComponentTypeManager implements Serializable {
         return inTrans;
     }
 
-    public ComptypeProperty getSelectedCTP() {
+    public ComptypePropertyValue getSelectedCTP() {
         return selectedProperty;
     }
 
-    public void setSelectedCTP(ComptypeProperty selectedCTP) {
+    public void setSelectedCTP(ComptypePropertyValue selectedCTP) {
         this.selectedProperty = selectedCTP;
     }
 
@@ -622,7 +621,7 @@ public class ComponentTypeManager implements Serializable {
         this.selectedArtifact = selectedArtifact;
     }
 
-    public List<ComptypeProperty> getSelectedProperties() {
+    public List<ComptypePropertyValue> getSelectedProperties() {
         return selectedProperties;
     }
 
@@ -630,19 +629,19 @@ public class ComponentTypeManager implements Serializable {
         return propertyOperation;
     }
 
-    public ComptypeProperty getSelectedProperty() {
+    public ComptypePropertyValue getSelectedProperty() {
         return selectedProperty;
     }
 
-    public void setSelectedProperty(ComptypeProperty selectedProperty) {
+    public void setSelectedProperty(ComptypePropertyValue selectedProperty) {
         this.selectedProperty = selectedProperty;
     }
 
-    public ComptypeProperty getInputProperty() {
+    public ComptypePropertyValue getInputProperty() {
         return inputProperty;
     }
 
-    public void setInputProperty(ComptypeProperty inputProperty) {
+    public void setInputProperty(ComptypePropertyValue inputProperty) {
         this.inputProperty = inputProperty;
     }
 

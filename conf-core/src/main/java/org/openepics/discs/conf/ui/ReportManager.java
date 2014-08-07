@@ -19,7 +19,7 @@ import javax.inject.Named;
 
 import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.Slot;
-import org.openepics.discs.conf.ent.SlotProperty;
+import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.util.Utility;
 
 /**
@@ -94,7 +94,7 @@ public class ReportManager implements Serializable {
         if (slot == null) {
             return null;
         }
-        for (SlotProperty sp : slot.getSlotPropertyList()) {
+        for (SlotPropertyValue sp : slot.getSlotPropertyList()) {
             if (sp.getProperty().getName().equals(propName)) {
                 pvalue = sp.getPropValue();
                 break;

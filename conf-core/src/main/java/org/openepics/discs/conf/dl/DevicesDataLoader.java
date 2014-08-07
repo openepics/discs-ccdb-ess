@@ -22,7 +22,7 @@ import org.openepics.discs.conf.ejb.ConfigurationEJB;
 import org.openepics.discs.conf.ejb.DeviceEJB;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.Device;
-import org.openepics.discs.conf.ent.DeviceProperty;
+import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ent.DeviceStatus;
 import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
@@ -246,13 +246,13 @@ public class DevicesDataLoader extends AbstractDataLoader implements DataLoader 
 
     private void addOrUpdateProperties(Device device, Map<String, Integer> properties, List<String> row, String rowNumber, String modifiedBy) {
         final Iterator<String> propertiesIterator = properties.keySet().iterator();
-        final List<DeviceProperty> deviceProperties = new ArrayList<>();
+        final List<DevicePropertyValue> deviceProperties = new ArrayList<>();
         if (device.getDevicePropertyList() != null) {
             deviceProperties.addAll(device.getDevicePropertyList());
         }
-        final Map<Property, DeviceProperty> devicePropertyByProperty = new HashMap<>();
+        final Map<Property, DevicePropertyValue> devicePropertyByProperty = new HashMap<>();
 
-        for (DeviceProperty deviceProperty : deviceProperties) {
+        for (DevicePropertyValue deviceProperty : deviceProperties) {
             devicePropertyByProperty.put(deviceProperty.getProperty(), deviceProperty);
         }
 
@@ -262,7 +262,7 @@ public class DevicesDataLoader extends AbstractDataLoader implements DataLoader 
             final @Nullable Property property = configurationEJB.findPropertyByName(propertyName);
             final @Nullable String propertyValue = row.get(propertyIndex);
             if (devicePropertyByProperty.containsKey(property)) {
-                final DeviceProperty devicePropertyToUpdate = devicePropertyByProperty.get(property);
+                final DevicePropertyValue devicePropertyToUpdate = devicePropertyByProperty.get(property);
                 if (propertyValue == null) {
                     deviceEJB.deleteDeviceProp(devicePropertyToUpdate);
                 } else {
@@ -272,7 +272,7 @@ public class DevicesDataLoader extends AbstractDataLoader implements DataLoader 
                 }
 
             } else if (propertyValue != null) {
-                final DeviceProperty devicePropertyToAdd = new DeviceProperty(false, modifiedBy);
+                final DevicePropertyValue devicePropertyToAdd = new DevicePropertyValue(false, modifiedBy);
                 devicePropertyToAdd.setProperty(property);
                 devicePropertyToAdd.setPropValue(propertyValue);
                 devicePropertyToAdd.setDevice(device);

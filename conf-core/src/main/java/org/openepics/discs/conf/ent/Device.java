@@ -85,7 +85,7 @@ public class Device extends ConfigurationEntity {
     private String manufModel;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "device")
-    private List<DeviceProperty> devicePropertyList;
+    private List<DevicePropertyValue> devicePropertyList;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "device")
     private List<AlignmentRecord> alignmentRecordList;
@@ -96,14 +96,14 @@ public class Device extends ConfigurationEntity {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "device")
     private List<DeviceArtifact> deviceArtifactList;
 
-    @JoinColumn(name = "component_type", referencedColumnName = "id")
+    @JoinColumn(name = "component_type")
     @ManyToOne(optional = false)
     private ComponentType componentType;
 
     @OneToMany(mappedBy = "asmParent")
     private List<Device> deviceList;
 
-    @JoinColumn(name = "asm_parent", referencedColumnName = "id")
+    @JoinColumn(name = "asm_parent")
     @ManyToOne
     private Device asmParent;
 
@@ -152,27 +152,22 @@ public class Device extends ConfigurationEntity {
     public void setManufacturerModel(String manufModel) { this.manufModel = manufModel; }
 
     @XmlTransient
-    public List<DeviceProperty> getDevicePropertyList() { return devicePropertyList; }
-    public void setDevicePropertyList(List<DeviceProperty> devicePropertyList) { this.devicePropertyList = devicePropertyList; }
+    public List<DevicePropertyValue> getDevicePropertyList() { return devicePropertyList; }
 
     @XmlTransient
     public List<AlignmentRecord> getAlignmentRecordList() { return alignmentRecordList; }
-    public void setAlignmentRecordList(List<AlignmentRecord> alignmentRecordList) { this.alignmentRecordList = alignmentRecordList; }
 
     @XmlTransient
     public List<InstallationRecord> getInstallationRecordList() { return installationRecordList; }
-    public void setInstallationRecordList(List<InstallationRecord> installationRecordList) { this.installationRecordList = installationRecordList; }
 
     @XmlTransient
     public List<DeviceArtifact> getDeviceArtifactList() { return deviceArtifactList; }
-    public void setDeviceArtifactList(List<DeviceArtifact> deviceArtifactList) { this.deviceArtifactList = deviceArtifactList; }
 
     public ComponentType getComponentType() { return componentType; }
     public void setComponentType(ComponentType componentType) { this.componentType = componentType; }
 
     @XmlTransient
     public List<Device> getDeviceList() { return deviceList; }
-    public void setDeviceList(List<Device> deviceList) { this.deviceList = deviceList; }
 
     public Device getAssemblyParent() { return asmParent; }
     public void setAssemblyParent(Device asmParent) { this.asmParent = asmParent; }
