@@ -22,6 +22,8 @@ import org.openepics.discs.conf.ent.AuditRecord;
 import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ui.LoginManager;
+import org.openepics.discs.conf.util.Audit;
+import org.openepics.discs.conf.util.CRUDOperation;
 
 /**
  *
@@ -34,14 +36,6 @@ import org.openepics.discs.conf.ui.LoginManager;
     @EJB private AuthEJB authEJB;
 
     @Inject private LoginManager loginManager;
-
-    // ----------- Audit record ---------------------------------------
-    private void makeAuditEntry(EntityTypeOperation oper, String key, String entry, Long id) {
-        AuditRecord arec = new AuditRecord(new Date(), oper, loginManager.getUserid(), entry);
-        arec.setEntityType(EntityType.ALIGNMENT_RECORD);
-        arec.setEntityKey(key);
-        em.persist(arec);
-    }
 
     // ---------------- Alignment Record -------------------------
 
@@ -62,6 +56,8 @@ import org.openepics.discs.conf.ui.LoginManager;
         return em.find(AlignmentRecord.class, id);
     }
 
+    @CRUDOperation(operation=EntityTypeOperation.UPDATE)
+    @Audit
     public void saveAlignment(AlignmentRecord arec) throws Exception {
         if (arec == null) {
             logger.log(Level.SEVERE, "Property is null!");
@@ -76,9 +72,10 @@ import org.openepics.discs.conf.ui.LoginManager;
         arec.setModifiedAt(new Date());
         logger.log(Level.INFO, "Preparing to save device");
         em.persist(arec);
-        makeAuditEntry(EntityTypeOperation.UPDATE, arec.getRecordNumber(), "updated alignment record", arec.getId());
     }
 
+    @CRUDOperation(operation=EntityTypeOperation.DELETE)
+    @Audit
     public void deleteAlignment(AlignmentRecord arec) throws Exception {
         if (arec == null) {
             logger.log(Level.SEVERE, "Property is null!");
@@ -91,11 +88,12 @@ import org.openepics.discs.conf.ui.LoginManager;
         }
         AlignmentRecord ct = em.find(AlignmentRecord.class, arec.getId());
         em.remove(ct);
-        makeAuditEntry(EntityTypeOperation.DELETE, arec.getRecordNumber(), "deleted alignment record", arec.getId());
     }
 
     // ------------------ Property ---------------
 
+    @CRUDOperation(operation=EntityTypeOperation.UPDATE)
+    @Audit
     public void saveAlignmentProp(AlignmentProperty prop, boolean create) throws Exception {
         if (prop == null) {
             logger.log(Level.SEVERE, "saveDeviceProp: property is null");
@@ -116,10 +114,11 @@ import org.openepics.discs.conf.ui.LoginManager;
             slot.getAlignmentPropertyList().add(newProp);
             em.merge(slot);
         }
-        makeAuditEntry(EntityTypeOperation.UPDATE, prop.getAlignmentRecord().getRecordNumber(), "updated alignment property " + prop.getProperty().getName(), prop.getAlignmentRecord().getId());
         logger.log(Level.INFO, "Comp Type Property: id " + newProp.getId() + " name " + newProp.getProperty().getName());
     }
 
+    @CRUDOperation(operation=EntityTypeOperation.DELETE)
+    @Audit
     public void deleteAlignmentProp(AlignmentProperty prop) throws Exception {
         if (prop == null) {
             logger.log(Level.SEVERE, "deleteAlignmentArtifact: dev-artifact is null");
@@ -134,11 +133,12 @@ import org.openepics.discs.conf.ui.LoginManager;
         AlignmentRecord arec = property.getAlignmentRecord();
         arec.getAlignmentPropertyList().remove(property);
         em.remove(property);
-        makeAuditEntry(EntityTypeOperation.DELETE, prop.getAlignmentRecord().getRecordNumber(), "deleted alignment property " + prop.getProperty().getName(), prop.getAlignmentRecord().getId());
     }
 
     // ---------------- Artifact ---------------------
 
+    @CRUDOperation(operation=EntityTypeOperation.UPDATE)
+    @Audit
     public void saveAlignmentArtifact(AlignmentArtifact art, boolean create) throws Exception {
         if (art == null) {
             logger.log(Level.SEVERE, "saveAlignmentArtifact: artifact is null");
@@ -158,13 +158,14 @@ import org.openepics.discs.conf.ui.LoginManager;
             arec.getAlignmentArtifactList().add(newArt);
             em.merge(arec);
         }
-        makeAuditEntry(EntityTypeOperation.UPDATE, art.getAlignmentRecord().getRecordNumber(), "updated alignment artifact " + art.getName(), art.getAlignmentRecord().getId());
         // art.setAlignmentRecord(em.merge(arec)); // todo: improve this code.
         // this is not the right way.
         logger.log(Level.INFO, "Artifact: name " + newArt.getName() + " description " + newArt.getDescription() + " uri " + newArt.getUri() + "is int " + newArt.getIsInternal());
         // logger.log(Level.INFO, "device serial " + device.getSerialNumber());
     }
 
+    @CRUDOperation(operation=EntityTypeOperation.DELETE)
+    @Audit
     public void deleteAlignmentArtifact(AlignmentArtifact art) throws Exception {
         if (art == null) {
             logger.log(Level.SEVERE, "deleteAlignmentArtifact: alignment artifact is null");
@@ -180,6 +181,5 @@ import org.openepics.discs.conf.ui.LoginManager;
         AlignmentRecord arec = artifact.getAlignmentRecord();
         arec.getAlignmentArtifactList().remove(artifact);
         em.remove(artifact);
-        makeAuditEntry(EntityTypeOperation.UPDATE, art.getAlignmentRecord().getRecordNumber(), "deleted alignment artifact " + art.getName(), art.getAlignmentRecord().getId());
     }
 }

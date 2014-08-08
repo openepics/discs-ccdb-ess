@@ -16,11 +16,13 @@ import javax.persistence.criteria.Root;
 
 import org.openepics.discs.conf.ent.AuditRecord;
 import org.openepics.discs.conf.ent.DataType;
+import org.openepics.discs.conf.ent.EntityType;
+import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.SlotRelation;
 import org.openepics.discs.conf.ent.Unit;
+import org.openepics.discs.conf.util.Audit;
 import org.openepics.discs.conf.util.CRUDOperation;
-import org.openepics.discs.conf.util.CRUDOperation.Operation;
 import org.openepics.discs.conf.util.Authorized;
 
 /**
@@ -63,19 +65,22 @@ import org.openepics.discs.conf.util.Authorized;
         return property;
     }
 
+    @CRUDOperation(operation=EntityTypeOperation.UPDATE)
+    @Audit
     public void saveProperty(Property property) {
         property.setModifiedAt(new Date());
         em.merge(property);
     }
 
-    @CRUDOperation(operation=Operation.CREATE)
+    @CRUDOperation(operation=EntityTypeOperation.CREATE)
     @Authorized
+    @Audit
     public void addProperty(Property property) {
         property.setModifiedAt(new Date());
         em.persist(property);
     }
 
-    @CRUDOperation(operation=Operation.DELETE)
+    @CRUDOperation(operation=EntityTypeOperation.DELETE)
     @Authorized
     public void deleteProperty(Property property) {
         Property prop = em.find(Property.class, property.getId());
@@ -104,23 +109,29 @@ import org.openepics.discs.conf.util.Authorized;
     public Unit findUnitByName(String name) {
         Unit unit;
         try {
-            unit = em.createNamedQuery("Unit.findByUnitName", Unit.class).setParameter("unitName", name).getSingleResult();
+            unit = em.createNamedQuery("Unit.findByName", Unit.class).setParameter("unitName", name).getSingleResult();
         } catch (NoResultException e) {
             unit = null;
         }
         return unit;
     }
 
+    @CRUDOperation(operation=EntityTypeOperation.CREATE)
+    @Audit
     public void addUnit(Unit unit) {
         unit.setModifiedAt(new Date());
         em.persist(unit);
     }
 
+    @CRUDOperation(operation=EntityTypeOperation.UPDATE)
+    @Audit
     public void saveUnit(Unit unit) {
         unit.setModifiedAt(new Date());
         em.merge(unit);
     }
 
+    @CRUDOperation(operation=EntityTypeOperation.DELETE)
+    @Audit
     public void deleteUnit(Unit unit) {
         final Unit unitToDelete = findUnit(unit.getId());
         em.remove(unitToDelete);

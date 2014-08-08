@@ -25,6 +25,8 @@ import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotProperty;
 import org.openepics.discs.conf.ui.LoginManager;
+import org.openepics.discs.conf.util.Audit;
+import org.openepics.discs.conf.util.CRUDOperation;
 
 /**
  *
@@ -36,14 +38,6 @@ import org.openepics.discs.conf.ui.LoginManager;
     @Inject private LoginManager loginManager;
     private static final Logger logger = Logger.getLogger(DeviceEJB.class.getCanonicalName());
     @PersistenceContext private EntityManager em;
-
-    // ----------- Audit record ---------------------------------------
-    private void makeAuditEntry(EntityTypeOperation oper, String key, String entry, Long id) {
-        AuditRecord arec = new AuditRecord(new Date(), oper, loginManager.getUserid(), entry);
-        arec.setEntityType(EntityType.DEVICE);
-        arec.setEntityKey(key);
-        em.persist(arec);
-    }
 
     // ---------------- Physical Component -------------------------
 
@@ -74,25 +68,30 @@ import org.openepics.discs.conf.ui.LoginManager;
         return device;
     }
 
+    @CRUDOperation(operation=EntityTypeOperation.UPDATE)
+    @Audit
     public void saveDevice(String token, Device device) {
         logger.log(Level.INFO, "Preparing to save device");
         em.merge(device);
-        makeAuditEntry(EntityTypeOperation.UPDATE, device.getSerialNumber(), "Modified device", device.getId());
     }
 
+    @CRUDOperation(operation=EntityTypeOperation.CREATE)
+    @Audit
     public void addDevice(Device device) {
         em.persist(device);
-        makeAuditEntry(EntityTypeOperation.UPDATE, device.getSerialNumber(), "Added device", device.getId());
     }
 
+    @CRUDOperation(operation=EntityTypeOperation.DELETE)
+    @Audit
     public void deleteDevice(Device device) {
         Device ct = em.find(Device.class, device.getId());
         em.remove(ct);
-        makeAuditEntry(EntityTypeOperation.DELETE, device.getSerialNumber(), "Deleted device", device.getId());
     }
 
     // ------------------ Property ---------------
 
+    @CRUDOperation(operation=EntityTypeOperation.UPDATE)
+    @Audit
     public void saveDeviceProp(DeviceProperty prop, boolean create) {
         prop.setModifiedAt(new Date());
         DeviceProperty newProp = em.merge(prop);
@@ -103,23 +102,27 @@ import org.openepics.discs.conf.ui.LoginManager;
             em.merge(device);
         }
         logger.log(Level.INFO, "Comp Type Property: id " + newProp.getId() + " name " + newProp.getProperty().getName());
-        makeAuditEntry(EntityTypeOperation.UPDATE, prop.getDevice().getSerialNumber(), "Modified property " + prop.getProperty().getName(),prop.getDevice().getId());
     }
 
+    @CRUDOperation(operation=EntityTypeOperation.DELETE)
+    @Audit
     public void deleteDeviceProp(DeviceProperty prop) {
         DeviceProperty property = em.find(DeviceProperty.class, prop.getId());
         Device device = property.getDevice();
         device.getDevicePropertyList().remove(property);
         em.remove(property);
-        makeAuditEntry(EntityTypeOperation.UPDATE, prop.getDevice().getSerialNumber(), "Deleted property " + prop.getProperty().getName(), prop.getDevice().getId());
     }
 
+    @CRUDOperation(operation=EntityTypeOperation.CREATE)
+    @Audit
     public void addDeviceProperty(DeviceProperty property) {
         em.persist(property);
     }
 
     // ---------------- Artifact ---------------------
 
+    @CRUDOperation(operation=EntityTypeOperation.UPDATE)
+    @Audit
     public void saveDeviceArtifact(DeviceArtifact art, boolean create) throws Exception {
         if (art == null) {
             logger.log(Level.SEVERE, "deleteDeviceArtifact: Device is null");
@@ -138,13 +141,10 @@ import org.openepics.discs.conf.ui.LoginManager;
             dev.getDeviceArtifactList().add(newArt);
             em.merge(dev);
         }
-        // logger.log(Level.INFO, "Artifact: name " + art.getName() +
-        // " description " + art.getDescription() + " uri " + art.getUri() +
-        // "is int " + art.getIsInternal());
-        // logger.log(Level.INFO, "device serial " + device.getSerialNumber());
-        makeAuditEntry(EntityTypeOperation.UPDATE, art.getDevice().getSerialNumber(), "Modified artifact " + art.getName(), art.getDevice().getId());
     }
 
+    @CRUDOperation(operation=EntityTypeOperation.DELETE)
+    @Audit
     public void deleteDeviceArtifact(DeviceArtifact art) throws Exception {
         if (art == null) {
             logger.log(Level.SEVERE, "deleteDeviceArtifact: dev-artifact is null");
@@ -160,6 +160,5 @@ import org.openepics.discs.conf.ui.LoginManager;
         Device device = artifact.getDevice();
         device.getDeviceArtifactList().remove(artifact);
         em.remove(artifact);
-        makeAuditEntry(EntityTypeOperation.UPDATE, art.getDevice().getSerialNumber(), "Deleted artifact " + art.getName(), art.getDevice().getId());
     }
 }

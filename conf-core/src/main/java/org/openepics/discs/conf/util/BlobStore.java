@@ -26,6 +26,8 @@ import javax.inject.Inject;
  */
 public class BlobStore implements Serializable {
 
+
+    private static final long serialVersionUID = 1L;
     private static final Logger logger = Logger.getLogger(BlobStore.class.getCanonicalName());
     private static String blobStoreRoot = "/var/confmgr";
     private boolean validStore = true; // is the blob store valid?

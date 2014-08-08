@@ -24,7 +24,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Unit.findAll", query = "SELECT u FROM Unit u"),
-    @NamedQuery(name = "Unit.findByUnitName", query = "SELECT u FROM Unit u WHERE u.unitName = :unitName"),
+    @NamedQuery(name = "Unit.findByName", query = "SELECT u FROM Unit u WHERE u.name = :unitName"),
     @NamedQuery(name = "Unit.findByQuantity", query = "SELECT u FROM Unit u WHERE u.quantity = :quantity"),
     @NamedQuery(name = "Unit.findBySymbol", query = "SELECT u FROM Unit u WHERE u.symbol = :symbol"),
     @NamedQuery(name = "Unit.findByModifiedBy", query = "SELECT u FROM Unit u WHERE u.modifiedBy = :modifiedBy")})
@@ -35,7 +35,7 @@ public class Unit extends ConfigurationEntity {
     @NotNull
     @Size(min = 1, max = 32)
     @Column(name = "unit_name", unique=true)
-    private String unitName;
+    private String name;
 
     @Basic(optional = false)
     @NotNull
@@ -71,7 +71,7 @@ public class Unit extends ConfigurationEntity {
     }
 
     public Unit(String unitName, String quantity, String symbol, String description, String modifiedBy) {
-        this.unitName = unitName;
+        this.name = unitName;
         this.quantity = quantity;
         this.symbol = symbol;
         this.description = description;
@@ -79,12 +79,12 @@ public class Unit extends ConfigurationEntity {
         this.modifiedAt = new Date();
     }
 
-    public String getUnitName() {
-        return unitName;
+    public String getName() {
+        return name;
     }
 
-    public void setUnitName(String unitName) {
-        this.unitName = unitName;
+    public void setName(String unitName) {
+        this.name = unitName;
     }
 
     public String getQuantity() {

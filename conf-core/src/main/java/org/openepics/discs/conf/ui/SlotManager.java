@@ -422,7 +422,7 @@ public class SlotManager implements Serializable {
                 return;
             }
 
-            slotEJB.deleteSlotPair(art);
+            slotEJB.removeSlotPair(art);
             relatedSlots.remove(art);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted Artifact", "");
         } catch (Exception e) {

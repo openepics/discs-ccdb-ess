@@ -6,6 +6,7 @@
         <class>org.openepics.discs.conf.util.AppPropertiesJBoss</class>
     </alternatives>
     <interceptors>
-      <class>org.openepics.discs.conf.util.SecurityInterceptor</class>
+      <class>org.openepics.discs.conf.util.AuthorizationInterceptor</class>
+      <class>org.openepics.discs.conf.util.AuditInterceptor</class>
      </interceptors>
 </beans>

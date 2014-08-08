@@ -117,7 +117,7 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
                             if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.UNIT, EntityTypeOperation.CREATE)) {
                                 final Unit unitToAdd = new Unit(name, quantity, symbol, description, modifiedBy);
                                 configurationEJB.addUnit(unitToAdd);
-                                unitByName.put(unitToAdd.getUnitName(), unitToAdd);
+                                unitByName.put(unitToAdd.getName(), unitToAdd);
                             } else {
                                 rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                                 continue;
@@ -132,7 +132,7 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
                                continue;
                             } else {
                                 configurationEJB.deleteUnit(unitToDelete);
-                                unitByName.remove(unitToDelete.getUnitName());
+                                unitByName.remove(unitToDelete.getName());
                             }
                         } else {
                             rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
@@ -157,7 +157,7 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
                                     continue;
                                 } else {
                                     final Unit unitToRename = unitByName.get(oldName);
-                                    unitToRename.setUnitName(newName);
+                                    unitToRename.setName(newName);
                                     configurationEJB.saveUnit(unitToRename);
                                     unitByName.remove(oldName);
                                     unitByName.put(newName, unitToRename);
@@ -188,7 +188,7 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
         loaderResult = new DataLoaderResult();
         unitByName = new HashMap<>();
         for (Unit unit : configurationEJB.findUnits()) {
-            unitByName.put(unit.getUnitName(), unit);
+            unitByName.put(unit.getName(), unit);
         }
     }
 
