@@ -16,7 +16,10 @@ body {
 .ui-widget, 
 .ui-widget .ui-widget {
     font-size: 12px;
+}
 
+.preliminary {
+	color: #990033;
 }
 
 .ui-widget table {
