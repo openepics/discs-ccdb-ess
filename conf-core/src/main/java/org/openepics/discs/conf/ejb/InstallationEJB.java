@@ -22,6 +22,8 @@ import org.openepics.discs.conf.ent.InstallationArtifact;
 import org.openepics.discs.conf.ent.InstallationRecord;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ui.LoginManager;
+import org.openepics.discs.conf.util.Audit;
+import org.openepics.discs.conf.util.CRUDOperation;
 
 /**
  *
@@ -34,14 +36,6 @@ import org.openepics.discs.conf.ui.LoginManager;
     @EJB private AuthEJB authEJB;
 
     @Inject private LoginManager loginManager;
-
-    // ----------- Audit record ---------------------------------------
-    private void makeAuditEntry(EntityTypeOperation oper, String key, String entry, Long id) {
-        AuditRecord arec = new AuditRecord(new Date(), oper, loginManager.getUserid(), entry);
-        arec.setEntityType(EntityType.INSTALLATION_RECORD);
-        arec.setEntityKey(key);
-        em.persist(arec);
-    }
 
     // ----- Installation
 
@@ -58,6 +52,8 @@ import org.openepics.discs.conf.ui.LoginManager;
         return irecs;
     }
 
+    @CRUDOperation(operation=EntityTypeOperation.UPDATE)
+    @Audit
     public void saveIRecord(InstallationRecord irec, boolean create) throws Exception {
         if (irec == null) {
             logger.log(Level.SEVERE, "Installation Record is null!");
@@ -82,9 +78,10 @@ import org.openepics.discs.conf.ui.LoginManager;
         } else {
             em.merge(irec);
         }
-        makeAuditEntry(EntityTypeOperation.UPDATE, irec.getRecordNumber(), "updated installation record ", irec.getId());
     }
 
+    @CRUDOperation(operation=EntityTypeOperation.DELETE)
+    @Audit
     public void deleteIRecord(InstallationRecord irec) throws Exception {
         if (irec == null) {
             logger.log(Level.SEVERE, "Installation Record is null!");
@@ -97,11 +94,12 @@ import org.openepics.discs.conf.ui.LoginManager;
         }
         InstallationRecord ct = em.find(InstallationRecord.class, irec.getId());
         em.remove(ct);
-        makeAuditEntry(EntityTypeOperation.DELETE, irec.getRecordNumber(), "deleted installation record ", irec.getId());
     }
 
     // ---------------- Artifact ---------------------
 
+    @CRUDOperation(operation=EntityTypeOperation.UPDATE)
+    @Audit
     public void saveInstallationArtifact(InstallationArtifact art, boolean create) throws Exception {
         if (art == null) {
             logger.log(Level.SEVERE, "deleteInstallationArtifact: Installation Record is null");
@@ -120,11 +118,13 @@ import org.openepics.discs.conf.ui.LoginManager;
             arec.getInstallationArtifactList().add(newArt);
             em.merge(arec);
         }
-        makeAuditEntry(EntityTypeOperation.UPDATE, art.getInstallationRecord().getRecordNumber(), "updated installation artifact " + art.getName(), art.getInstallationRecord().getId());
+
         logger.log(Level.INFO, "Artifact: name " + art.getName() + " description " + art.getDescription() + " uri " + art.getUri() + "is int " + art.isInternal());
         // logger.log(Level.INFO, "device serial " + device.getSerialNumber());
     }
 
+    @CRUDOperation(operation=EntityTypeOperation.DELETE)
+    @Audit
     public void deleteInstallationArtifact(InstallationArtifact art) throws Exception {
         if (art == null) {
             logger.log(Level.SEVERE, "deleteInstallationArtifact: irec-artifact is null");
@@ -141,6 +141,5 @@ import org.openepics.discs.conf.ui.LoginManager;
 
         em.remove(artifact);
         irec.getInstallationArtifactList().remove(artifact);
-        makeAuditEntry(EntityTypeOperation.UPDATE, art.getInstallationRecord().getRecordNumber(), "deleted installation artifact " + art.getName(), art.getInstallationRecord().getId());
     }
 }

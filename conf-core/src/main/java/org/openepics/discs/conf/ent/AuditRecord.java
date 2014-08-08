@@ -81,11 +81,12 @@ public class AuditRecord implements Serializable {
     protected AuditRecord() {
     }
 
-    public AuditRecord(Date logTime, EntityTypeOperation oper, String user, String entry) {
-        this.logTime = logTime;
+    public AuditRecord(EntityTypeOperation oper, String user, String entry, Long entityId) {
+        this.logTime = new Date();
         this.oper = oper;
         this.user = user;
         this.entry = entry;
+        this.entityId = entityId;
     }
 
     public Long getId() {
