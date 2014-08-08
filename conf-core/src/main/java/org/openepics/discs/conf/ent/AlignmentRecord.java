@@ -9,6 +9,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -29,11 +30,11 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author vuppala
  */
 @Entity
-@Table(name = "alignment_record")
+@Table(name = "alignment_record", indexes = { @Index(columnList = "slot"), @Index(columnList = "device") })
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "AlignmentRecord.findAll", query = "SELECT a FROM AlignmentRecord a"),
-    @NamedQuery(name = "AlignmentRecord.findByAlignmentRecordId", query = "SELECT a FROM AlignmentRecord a WHERE a.id = :id"),
+    @NamedQuery(name = "AlignmentRecord.findById", query = "SELECT a FROM AlignmentRecord a WHERE a.id = :id"),
     @NamedQuery(name = "AlignmentRecord.findByRecordNumber", query = "SELECT a FROM AlignmentRecord a WHERE a.recordNumber = :recordNumber"),
     @NamedQuery(name = "AlignmentRecord.findByAlignmentDate", query = "SELECT a FROM AlignmentRecord a WHERE a.alignmentDate = :alignmentDate"),
     @NamedQuery(name = "AlignmentRecord.findByModifiedBy", query = "SELECT a FROM AlignmentRecord a WHERE a.modifiedBy = :modifiedBy")})

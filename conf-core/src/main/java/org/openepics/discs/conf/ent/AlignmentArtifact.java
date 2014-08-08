@@ -1,6 +1,7 @@
 package org.openepics.discs.conf.ent;
 
 import javax.persistence.Entity;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
@@ -13,11 +14,11 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author vuppala
  */
 @Entity
-@Table(name = "alignment_artifact")
+@Table(name = "alignment_artifact", indexes = { @Index(columnList = "alignment_record") })
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "AlignmentArtifact.findAll", query = "SELECT a FROM AlignmentArtifact a"),
-    @NamedQuery(name = "AlignmentArtifact.findByArtifactId", query = "SELECT a FROM AlignmentArtifact a WHERE a.id = :id"),
+    @NamedQuery(name = "AlignmentArtifact.findById", query = "SELECT a FROM AlignmentArtifact a WHERE a.id = :id"),
     @NamedQuery(name = "AlignmentArtifact.findByName", query = "SELECT a FROM AlignmentArtifact a WHERE a.name = :name"),
     @NamedQuery(name = "AlignmentArtifact.findByIsInternal", query = "SELECT a FROM AlignmentArtifact a WHERE a.isInternal = :isInternal"),
     @NamedQuery(name = "AlignmentArtifact.findByModifiedBy", query = "SELECT a FROM AlignmentArtifact a WHERE a.modifiedBy = :modifiedBy")})

@@ -8,6 +8,7 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -26,11 +27,11 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author vuppala
  */
 @Entity
-@Table(name = "component_type")
+@Table(name = "component_type", indexes = { @Index(columnList = "super_component_type") })
 @XmlRootElement
 @NamedQueries({
         @NamedQuery(name = "ComponentType.findAll", query = "SELECT c FROM ComponentType c"),
-        @NamedQuery(name = "ComponentType.findByComponentTypeId", query = "SELECT c FROM ComponentType c WHERE c.id = :id"),
+        @NamedQuery(name = "ComponentType.findById", query = "SELECT c FROM ComponentType c WHERE c.id = :id"),
         @NamedQuery(name = "ComponentType.findByName", query = "SELECT c FROM ComponentType c WHERE c.name = :name"),
         @NamedQuery(name = "ComponentType.findByModifiedBy", query = "SELECT c FROM ComponentType c WHERE c.modifiedBy = :modifiedBy") })
 public class ComponentType extends ConfigurationEntity {

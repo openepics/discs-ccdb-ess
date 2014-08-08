@@ -1,6 +1,7 @@
 package org.openepics.discs.conf.ent;
 
 import javax.persistence.Entity;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
@@ -13,11 +14,11 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author vuppala
  */
 @Entity
-@Table(name = "alignment_property_values")
+@Table(name = "alignment_property_values", indexes = { @Index(columnList = "alignment_record") })
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "AlignmentPropertyValue.findAll", query = "SELECT a FROM AlignmentPropertyValue a"),
-    @NamedQuery(name = "AlignmentPropertyValue.findByAlignPropId", query = "SELECT a FROM AlignmentPropertyValue a WHERE a.id = :id"),
+    @NamedQuery(name = "AlignmentPropertyValue.findById", query = "SELECT a FROM AlignmentPropertyValue a WHERE a.id = :id"),
     @NamedQuery(name = "AlignmentPropertyValue.findByInRepository", query = "SELECT a FROM AlignmentPropertyValue a WHERE a.inRepository = :inRepository"),
     @NamedQuery(name = "AlignmentPropertyValue.findByModifiedBy", query = "SELECT a FROM AlignmentPropertyValue a WHERE a.modifiedBy = :modifiedBy")})
 public class AlignmentPropertyValue extends PropertyValue {
