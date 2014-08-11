@@ -16,14 +16,11 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
-import org.openepics.discs.conf.ent.AuditRecord;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.DeviceArtifact;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
-import org.openepics.discs.conf.ent.Slot;
-import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.ui.LoginManager;
 import org.openepics.discs.conf.util.Audit;
 import org.openepics.discs.conf.util.CRUDOperation;

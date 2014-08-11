@@ -22,6 +22,8 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 /**
  *
  * @author vuppala
@@ -144,33 +146,41 @@ public class Slot extends ConfigurationEntity {
     public void setComment(String comment) { this.comment = comment; }
 
     @XmlTransient
+    @JsonIgnore
     public List<SlotArtifact> getSlotArtifactList() { return slotArtifactList; }
 
     public ComponentType getComponentType() { return componentType; }
     public void setComponentType(ComponentType componentType) { this.componentType = componentType; }
 
     @XmlTransient
+    @JsonIgnore
     public List<Slot> getSlotList() { return slotList; }
 
     public Slot getAssemblySlot() { return asmSlot; }
     public void setAssemblySlot(Slot asmSlot) { this.asmSlot = asmSlot; }
 
     @XmlTransient
+    @JsonIgnore
     public List<AlignmentRecord> getAlignmentRecordList() { return alignmentRecordList; }
 
     @XmlTransient
+    @JsonIgnore
     public List<InstallationRecord> getInstallationRecordList() { return installationRecordList; }
 
     @XmlTransient
+    @JsonIgnore
     public List<SlotPair> getChildrenSlotsPairList() { return childrenSlots; }
 
     @XmlTransient
+    @JsonIgnore
     public List<SlotPair> getParentSlotsPairList() { return parentSlots; }
 
     @XmlTransient
+    @JsonIgnore
     public List<SlotPropertyValue> getSlotPropertyList() { return slotPropertyList; }
 
     @XmlTransient
+    @JsonIgnore
     public Set<Tag> getTags() { return tags; }
     public void setTags(Set<Tag> tags) { this.tags = tags; }
 

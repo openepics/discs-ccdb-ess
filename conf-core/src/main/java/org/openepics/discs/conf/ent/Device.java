@@ -23,6 +23,8 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 /**
  *
  * @author vuppala
@@ -152,27 +154,33 @@ public class Device extends ConfigurationEntity {
     public void setManufacturerModel(String manufModel) { this.manufModel = manufModel; }
 
     @XmlTransient
+    @JsonIgnore
     public List<DevicePropertyValue> getDevicePropertyList() { return devicePropertyList; }
 
     @XmlTransient
+    @JsonIgnore
     public List<AlignmentRecord> getAlignmentRecordList() { return alignmentRecordList; }
 
     @XmlTransient
+    @JsonIgnore
     public List<InstallationRecord> getInstallationRecordList() { return installationRecordList; }
 
     @XmlTransient
+    @JsonIgnore
     public List<DeviceArtifact> getDeviceArtifactList() { return deviceArtifactList; }
 
     public ComponentType getComponentType() { return componentType; }
     public void setComponentType(ComponentType componentType) { this.componentType = componentType; }
 
     @XmlTransient
+    @JsonIgnore
     public List<Device> getDeviceList() { return deviceList; }
 
     public Device getAssemblyParent() { return asmParent; }
     public void setAssemblyParent(Device asmParent) { this.asmParent = asmParent; }
 
     @XmlTransient
+    @JsonIgnore
     public Set<Tag> getTags() { return tags; }
     public void setTags(Set<Tag> tags) { this.tags = tags; }
 

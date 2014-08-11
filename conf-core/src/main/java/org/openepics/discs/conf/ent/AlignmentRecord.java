@@ -24,6 +24,8 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 /**
  *
  * @author vuppala
@@ -94,9 +96,11 @@ public class AlignmentRecord extends ConfigurationEntity {
     public AlignmentInformation getAlignmentInformation() { return alignmentInfo; }
 
     @XmlTransient
+    @JsonIgnore
     public List<AlignmentArtifact> getAlignmentArtifactList() { return alignmentArtifactList; }
 
     @XmlTransient
+    @JsonIgnore
     public List<AlignmentPropertyValue> getAlignmentPropertyList() { return alignmentPropertyList; }
 
     public Slot getSlot() { return slot; }
@@ -106,6 +110,7 @@ public class AlignmentRecord extends ConfigurationEntity {
     public void setDevice(Device device) { this.device = device; }
 
     @XmlTransient
+    @JsonIgnore
     public Set<Tag> getTags() { return tags; }
     public void setTags(Set<Tag> tags) { this.tags = tags; }
 

@@ -20,6 +20,8 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 /**
  *
  * @author vuppala
@@ -86,6 +88,7 @@ public class Property extends ConfigurationEntity {
     public void setAssociation(PropertyAssociation association) { this.association = association; }
 
     @XmlTransient
+    @JsonIgnore
     public List<PropertyValue> getPropertyValuesList() { return propertyValuesList; }
 
     public DataType getDataType() { return dataType; }

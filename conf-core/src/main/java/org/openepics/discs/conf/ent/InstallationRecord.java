@@ -20,6 +20,8 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 /**
  *
  * @author vuppala
@@ -95,6 +97,7 @@ public class InstallationRecord extends ConfigurationEntity {
     public void setDevice(Device device) { this.device = device; }
 
     @XmlTransient
+    @JsonIgnore
     public List<InstallationArtifact> getInstallationArtifactList() { return installationArtifactList; }
 
     @Override

@@ -16,6 +16,8 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 /**
  *
  * @author vuppala
@@ -78,6 +80,7 @@ public class DataType extends ConfigurationEntity {
     public void setDefinition(String definition) { this.definition = definition; }
 
     @XmlTransient
+    @JsonIgnore
     public List<Property> getPropertyList() { return propertyList; }
 
     @Override
