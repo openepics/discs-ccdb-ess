@@ -263,6 +263,7 @@ public class DevicesDataLoader extends AbstractDataLoader implements DataLoader 
             final @Nullable String propertyValue = row.get(propertyIndex);
             if (devicePropertyByProperty.containsKey(property)) {
                 final DevicePropertyValue devicePropertyToUpdate = devicePropertyByProperty.get(property);
+
                 if (propertyValue == null) {
                     deviceEJB.deleteDeviceProp(devicePropertyToUpdate);
                 } else {

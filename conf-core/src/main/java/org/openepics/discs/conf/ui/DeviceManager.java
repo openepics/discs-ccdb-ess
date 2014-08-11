@@ -24,6 +24,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.io.FilenameUtils;
+
+import org.openepics.discs.conf.dl.ComponentTypesLoaderQualifier;
 import org.openepics.discs.conf.dl.DevicesLoaderQualifier;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
