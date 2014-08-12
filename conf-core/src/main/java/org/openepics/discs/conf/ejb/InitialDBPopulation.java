@@ -3,6 +3,7 @@ package org.openepics.discs.conf.ejb;
 import java.util.Date;
 
 import javax.ejb.Stateless;
+import javax.json.JsonObject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -15,6 +16,9 @@ import org.openepics.discs.conf.ent.SlotRelation;
 import org.openepics.discs.conf.ent.SlotRelationName;
 import org.openepics.discs.conf.ent.User;
 import org.openepics.discs.conf.ent.UserRole;
+import org.openepics.seds.api.datatypes.SedsEnum;
+import org.openepics.seds.core.Seds;
+import org.openepics.seds.util.SedsException;
 
 @Stateless
 public class InitialDBPopulation {
@@ -104,6 +108,12 @@ public class InitialDBPopulation {
         em.persist(new DataType("Doubles Vector", "Vector of double precision numbers (1D array)", false, null, userName));
         em.persist(new DataType("Strings List", "List of strings (1D array)", false, null, userName));
         em.persist(new DataType("Doubles Table", "Table of double precision numbers (2D array)", false, null, userName));
+
+        final SedsEnum testEnum = Seds.newFactory().newEnum("TEST1", new String[]{"TEST1", "TEST2", "TEST3", "TEST4"});
+        JsonObject jsonEnum = Seds.newDBConverter().serialize(testEnum);
+
+
+        em.persist(new DataType("Test enums", "Testing of enums", false, jsonEnum.toString(), userName));
 
         em.persist(new SlotRelation(SlotRelationName.CONTAINS, userName));
         em.persist(new SlotRelation(SlotRelationName.POWERS, userName));
