@@ -97,6 +97,7 @@ public class ComponentType extends ConfigurationEntity {
     @XmlTransient
     @JsonIgnore
     public List<ComptypePropertyValue> getComptypePropertyList() { return comptypePropertyList; }
+    public void setComptypePropertyList(List<ComptypePropertyValue> comptypePropertyList) { this.comptypePropertyList = comptypePropertyList; }
 
     @XmlTransient
     @JsonIgnore

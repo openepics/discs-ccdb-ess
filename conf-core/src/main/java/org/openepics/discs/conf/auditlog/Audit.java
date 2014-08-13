@@ -1,4 +1,4 @@
-package org.openepics.discs.conf.util;
+package org.openepics.discs.conf.auditlog;
 
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.ElementType.TYPE;

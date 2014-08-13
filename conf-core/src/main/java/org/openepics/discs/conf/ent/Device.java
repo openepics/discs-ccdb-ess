@@ -156,6 +156,7 @@ public class Device extends ConfigurationEntity {
     @XmlTransient
     @JsonIgnore
     public List<DevicePropertyValue> getDevicePropertyList() { return devicePropertyList; }
+    public void setDevicePropertyList(List<DevicePropertyValue> devicePropertyList) { this.devicePropertyList = devicePropertyList; }
 
     @XmlTransient
     @JsonIgnore
@@ -168,6 +169,7 @@ public class Device extends ConfigurationEntity {
     @XmlTransient
     @JsonIgnore
     public List<DeviceArtifact> getDeviceArtifactList() { return deviceArtifactList; }
+    public void setDeviceArtifactList(List<DeviceArtifact> deviceArtifactList) { this.deviceArtifactList = deviceArtifactList; }
 
     public ComponentType getComponentType() { return componentType; }
     public void setComponentType(ComponentType componentType) { this.componentType = componentType; }

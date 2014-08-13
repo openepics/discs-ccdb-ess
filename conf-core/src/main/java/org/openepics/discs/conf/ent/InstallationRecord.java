@@ -99,6 +99,7 @@ public class InstallationRecord extends ConfigurationEntity {
     @XmlTransient
     @JsonIgnore
     public List<InstallationArtifact> getInstallationArtifactList() { return installationArtifactList; }
+    public void setInstallationArtifactList(List<InstallationArtifact> installationArtifactList) { this.installationArtifactList = installationArtifactList; }
 
     @Override
     public String toString() { return "InstallationRecord[ installationRecordId=" + id + " ]"; }

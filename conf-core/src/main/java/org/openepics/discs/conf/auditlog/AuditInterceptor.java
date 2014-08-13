@@ -1,6 +1,4 @@
-package org.openepics.discs.conf.util;
-
-import java.util.Date;
+package org.openepics.discs.conf.auditlog;
 
 import javax.inject.Inject;
 import javax.interceptor.AroundInvoke;
@@ -32,6 +30,7 @@ import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.ent.Unit;
 import org.openepics.discs.conf.ui.LoginManager;
+import org.openepics.discs.conf.util.CRUDOperation;
 
 
 /**
