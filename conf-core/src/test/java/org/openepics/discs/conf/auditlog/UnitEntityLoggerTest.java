@@ -1,6 +1,6 @@
 package org.openepics.discs.conf.auditlog;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
 
@@ -11,8 +11,8 @@ import org.openepics.discs.conf.ent.Unit;
 
 public class UnitEntityLoggerTest {
 
-    private Unit unit = new Unit("Ampre", "Current", "A", "BlahBlha", "Miki");
-    private UnitEntityLogger entLogger = new UnitEntityLogger();
+    private final Unit unit = new Unit("Ampre", "Current", "A", "BlahBlha", "Miki");
+    private final UnitEntityLogger entLogger = new UnitEntityLogger();
 
     @Before
     public void setUp() {

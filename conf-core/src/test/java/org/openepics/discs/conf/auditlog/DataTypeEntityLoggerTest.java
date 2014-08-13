@@ -8,7 +8,7 @@ import org.openepics.discs.conf.ent.EntityTypeOperation;
 
 public class DataTypeEntityLoggerTest {
 
-    private DataTypeEntityLogger entLogger = new DataTypeEntityLogger();
+    private final DataTypeEntityLogger entLogger = new DataTypeEntityLogger();
 
     @Test
     public void testGetType() {
@@ -17,7 +17,7 @@ public class DataTypeEntityLoggerTest {
 
     @Test
     public void testSerializeEntity() {
-        DataType dt = new DataType("Float", "Float", true, "Well.. a scalar float", "Iznogud");
+        final DataType dt = new DataType("Float", "Float", true, "Well.. a scalar float", "Iznogud");
 
         System.out.println(entLogger.auditEntry(dt, EntityTypeOperation.CREATE, "admin").getEntry());
     }

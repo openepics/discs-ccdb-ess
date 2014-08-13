@@ -1,6 +1,6 @@
 package org.openepics.discs.conf.auditlog;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -12,17 +12,16 @@ import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyAssociation;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 
 public class ComponentTypeEntityLoggerTest {
 
-    final private Property prop1 = new Property("DETER", "deter", PropertyAssociation.ALL, "admin");
-    final private ComptypePropertyValue compTypePropVal1 = new ComptypePropertyValue(false, "admin");
-    final private Property prop2 = new Property("APERTURE", "aperture", PropertyAssociation.ALL, "admin");
-    final private ComptypePropertyValue compTypePropVal2 = new ComptypePropertyValue(false, "admin");
-    final private ComponentType compType = new ComponentType("Deteriorator", "admin");
-    final private ComptypeArtifact artifact1 = new ComptypeArtifact("CAT Image", true, "Simple CAT image", "/var/usr/images/CAT", "admin");
-    final private ComptypeArtifact artifact2 = new ComptypeArtifact("Manual", false, "Users manual", "www.deteriorator.com/user-manual", "admin");
+    private final Property prop1 = new Property("DETER", "deter", PropertyAssociation.ALL, "admin");
+    private final ComptypePropertyValue compTypePropVal1 = new ComptypePropertyValue(false, "admin");
+    private final Property prop2 = new Property("APERTURE", "aperture", PropertyAssociation.ALL, "admin");
+    private final ComptypePropertyValue compTypePropVal2 = new ComptypePropertyValue(false, "admin");
+    private final ComponentType compType = new ComponentType("Deteriorator", "admin");
+    private final ComptypeArtifact artifact1 = new ComptypeArtifact("CAT Image", true, "Simple CAT image", "/var/usr/images/CAT", "admin");
+    private final ComptypeArtifact artifact2 = new ComptypeArtifact("Manual", false, "Users manual", "www.deteriorator.com/user-manual", "admin");
 
     final private ComponentTypeEntityLogger ctel = new ComponentTypeEntityLogger();
 

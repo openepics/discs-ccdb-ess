@@ -7,6 +7,6 @@
     </alternatives>
     <interceptors>
       <class>org.openepics.discs.conf.util.AuthorizationInterceptor</class>
-      <class>org.openepics.discs.conf.util.AuditInterceptor</class>
+      <class>org.openepics.discs.conf.auditlog.AuditInterceptor</class>
      </interceptors>
 </beans>

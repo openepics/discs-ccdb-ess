@@ -21,15 +21,17 @@ import org.openepics.discs.conf.ent.EntityTypeOperation;
  */
 @Singleton
 @Startup
-public class AuditLogSerializer {
+public class AuditLogEntryCreator {
     private Map<Class<?>, EntityLogger> loggers = new ConcurrentHashMap<Class<?>, EntityLogger>();
+
+    public AuditLogEntryCreator(){}
 
     /**
      * Constructs the item. Expects injected iterator of all EntityLogger implementations
      *
      */
     @Inject
-    public AuditLogSerializer(
+    public AuditLogEntryCreator(
             @Any
             Instance<EntityLogger> allLoggers)
     {
@@ -40,12 +42,12 @@ public class AuditLogSerializer {
     }
 
     /**
-     * Serialize a supported entity to a JSON String
+     * Serialize a supported entity to a JSON String and creates {@link AuditRecord}
      *
      * @param entity Entity to be serialized. Supported Unit, DataType, Property etc
-     * @return JSON String or null if serialization of the entity is not supported / implemented.
+     * @return {@link AuditRecord} for the entities that are supported / implemented.
      */
-    public AuditRecord serialize(Object entity, EntityTypeOperation operation, String user) {
+    public AuditRecord auditRecord(Object entity, EntityTypeOperation operation, String user) {
         // Resolve the EntityLogger by class and use it to serialize to String
         EntityLogger logger = loggers.get(entity.getClass());
         if (logger==null) return null;

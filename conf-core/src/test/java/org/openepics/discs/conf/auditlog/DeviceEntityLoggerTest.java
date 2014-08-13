@@ -16,16 +16,16 @@ import com.google.common.collect.ImmutableList;
 
 public class DeviceEntityLoggerTest {
 
-    final private Property prop1 = new Property("DETER", "deter", PropertyAssociation.ALL, "admin");
-    final private Device device = new Device("serial1", "admin");
-    final private DevicePropertyValue devicePropVal1 = new DevicePropertyValue(false, "admin");
-    final private Property prop2 = new Property("APERTURE", "aperture", PropertyAssociation.ALL, "admin");
-    final private DevicePropertyValue devicePropVal2 = new DevicePropertyValue(false, "admin");
-    final private DeviceArtifact artifact1 = new DeviceArtifact("CAT Image", true, "Simple CAT image", "/var/usr/images/CAT", "admin");
-    final private DeviceArtifact artifact2 = new DeviceArtifact("Manual", false, "Users manual", "www.deteriorator.com/user-manual", "admin");
-    final private ComponentType compType = new ComponentType("Devices component", "admin");
+    private final Property prop1 = new Property("DETER", "deter", PropertyAssociation.ALL, "admin");
+    private final Device device = new Device("serial1", "admin");
+    private final DevicePropertyValue devicePropVal1 = new DevicePropertyValue(false, "admin");
+    private final Property prop2 = new Property("APERTURE", "aperture", PropertyAssociation.ALL, "admin");
+    private final DevicePropertyValue devicePropVal2 = new DevicePropertyValue(false, "admin");
+    private final DeviceArtifact artifact1 = new DeviceArtifact("CAT Image", true, "Simple CAT image", "/var/usr/images/CAT", "admin");
+    private final DeviceArtifact artifact2 = new DeviceArtifact("Manual", false, "Users manual", "www.deteriorator.com/user-manual", "admin");
+    private final ComponentType compType = new ComponentType("Devices component", "admin");
 
-    final private DeviceEntityLogger deviceEntityLogger = new DeviceEntityLogger();
+    private final DeviceEntityLogger deviceEntityLogger = new DeviceEntityLogger();
 
     @Before
     public void setUp() {

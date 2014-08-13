@@ -85,6 +85,17 @@ public class AuditLogUtil {
         }
     }
 
+    /**
+     * Creates audit record
+     *
+     * @param oper {@link EntityTypeOperation} that was performed
+     * @param entityType {@link EntityType} on which operation was performed
+     * @param key Natural key of the entity
+     * @param id Database id of the entity
+     * @param user Username
+     *
+     * @return {@link AuditRecord}
+     */
     public AuditRecord auditEntry(EntityTypeOperation oper, EntityType entityType, String key, Long id, String user) {
         final String serialized = serialize();
         final AuditRecord arec = new AuditRecord(oper, user, serialized, id);

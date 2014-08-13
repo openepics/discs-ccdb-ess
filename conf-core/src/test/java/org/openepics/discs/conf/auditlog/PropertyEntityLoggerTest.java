@@ -1,6 +1,6 @@
 package org.openepics.discs.conf.auditlog;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -11,9 +11,9 @@ import org.openepics.discs.conf.ent.PropertyAssociation;
 import org.openepics.discs.conf.ent.Unit;
 
 public class PropertyEntityLoggerTest {
-    private Unit unit = new Unit("Ampre", "Current", "A", "BlahBlha", "Miki");
-    private DataType dt = new DataType("Float", "Float", true, "Well.. a scalar float", "Iznogud");
-    private Property prop = new Property("TestProperty", "Description of test Property", PropertyAssociation.TYPE_DEVICE, "Iznogud");
+    private final Unit unit = new Unit("Ampre", "Current", "A", "BlahBlha", "Miki");
+    private final DataType dt = new DataType("Float", "Float", true, "Well.. a scalar float", "Iznogud");
+    private final Property prop = new Property("TestProperty", "Description of test Property", PropertyAssociation.TYPE_DEVICE, "Iznogud");
 
     private PropertyEntityLogger pel = new PropertyEntityLogger();
 
