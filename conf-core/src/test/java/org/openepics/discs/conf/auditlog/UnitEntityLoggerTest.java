@@ -26,7 +26,7 @@ public class UnitEntityLoggerTest {
 
     @Test
     public void testSerializeEntity() {
-        System.out.println(entLogger.auditEntry(unit, EntityTypeOperation.CREATE, "admin").getEntry());
+        System.out.println(entLogger.auditEntries(unit, EntityTypeOperation.CREATE, "admin").get(0).getEntry());
     }
 
 }

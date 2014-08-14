@@ -1,6 +1,7 @@
 package org.openepics.discs.conf.auditlog;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -58,7 +59,7 @@ public class AuditLogUtil {
     /**
      * Adds list of values
      */
-    public AuditLogUtil addArrayOfProperties(String key, Map<String, String> arrayValuePairs) {
+    public AuditLogUtil addArrayOfMappedProperties(String key, Map<String, String> arrayValuePairs) {
         final ArrayNode arrayNode = mapper.createArrayNode();
         final Iterator<String> it = arrayValuePairs.keySet().iterator();
         while (it.hasNext()) {
@@ -66,6 +67,15 @@ public class AuditLogUtil {
             final String keyValue = it.next();
             arrayObjectNode.put(keyValue, arrayValuePairs.get(keyValue));
             arrayNode.add(arrayObjectNode);
+        }
+        node.put(key, arrayNode);
+        return this;
+    }
+
+    public AuditLogUtil addArrayOfProperties(String key, List<String> arrayValues) {
+        final ArrayNode arrayNode = mapper.createArrayNode();
+        for (String value : arrayValues) {
+           arrayNode.add(value);
         }
         node.put(key, arrayNode);
         return this;

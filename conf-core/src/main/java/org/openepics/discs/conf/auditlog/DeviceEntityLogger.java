@@ -10,6 +10,7 @@
 package org.openepics.discs.conf.auditlog;
 
 import java.util.HashMap;
+import java.util.List;
 
 import javax.ejb.Stateless;
 
@@ -20,8 +21,15 @@ import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 
+/**
+ * {@link AuditRecord} maker for {@link Device}
+ *
+ * @author Andraz Pozar <andraz.pozar@cosylab.com>
+ *
+ */
 @Stateless
 public class DeviceEntityLogger implements EntityLogger {
 
@@ -31,7 +39,7 @@ public class DeviceEntityLogger implements EntityLogger {
     }
 
     @Override
-    public AuditRecord auditEntry(Object value, EntityTypeOperation operation, String user) {
+    public List<AuditRecord> auditEntries(Object value, EntityTypeOperation operation, String user) {
         final Device device = (Device) value;
 
         final HashMap<String, String> propertiesMap = new HashMap<>();
@@ -48,11 +56,11 @@ public class DeviceEntityLogger implements EntityLogger {
             }
         }
 
-        return (new AuditLogUtil(device).
+        return ImmutableList.of((new AuditLogUtil(device).
                 removeTopProperties(Sets.newHashSet("id", "modifiedAt", "modifiedBy", "version", "serialNumber", "componentType")).
                 addStringProperty("componentType", device.getComponentType() != null ? device.getComponentType().getName() : null).
-                addArrayOfProperties("devicePropertyList", propertiesMap).
-                addArrayOfProperties("deviceArtifactList", artifactsMap).
-                auditEntry(operation, EntityType.DEVICE, device.getSerialNumber(), device.getId(), user));
+                addArrayOfMappedProperties("devicePropertyList", propertiesMap).
+                addArrayOfMappedProperties("deviceArtifactList", artifactsMap).
+                auditEntry(operation, EntityType.DEVICE, device.getSerialNumber(), device.getId(), user)));
     }
 }

@@ -1,5 +1,6 @@
 package org.openepics.discs.conf.auditlog;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -31,12 +32,8 @@ public class AuditLogEntryCreator {
      *
      */
     @Inject
-    public AuditLogEntryCreator(
-            @Any
-            Instance<EntityLogger> allLoggers)
-    {
-        for (EntityLogger logger : allLoggers)
-        {
+    public AuditLogEntryCreator(@Any Instance<EntityLogger> allLoggers) {
+        for (EntityLogger logger : allLoggers) {
             loggers.put(logger.getType(), logger);
         }
     }
@@ -45,13 +42,15 @@ public class AuditLogEntryCreator {
      * Serialize a supported entity to a JSON String and creates {@link AuditRecord}
      *
      * @param entity Entity to be serialized. Supported Unit, DataType, Property etc
-     * @return {@link AuditRecord} for the entities that are supported / implemented.
+     * @return List of {@link AuditRecord}s for the entities that are supported / implemented.
      */
-    public AuditRecord auditRecord(Object entity, EntityTypeOperation operation, String user) {
+    public List<AuditRecord> auditRecords(Object entity, EntityTypeOperation operation, String user) {
         // Resolve the EntityLogger by class and use it to serialize to String
-        EntityLogger logger = loggers.get(entity.getClass());
-        if (logger==null) return null;
+        final EntityLogger logger = loggers.get(entity.getClass());
+        if (logger == null) {
+            return null;
+        }
 
-        return logger.auditEntry(entity, operation, user);
+        return logger.auditEntries(entity, operation, user);
     }
 }

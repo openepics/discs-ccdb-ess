@@ -17,7 +17,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
 import org.openepics.discs.conf.auditlog.Audit;
-import org.openepics.discs.conf.ent.AuditRecord;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypeArtifact;
 import org.openepics.discs.conf.ent.ComptypeAsm;
@@ -90,23 +89,14 @@ import org.openepics.discs.conf.util.CRUDOperation;
     // ---------------- Component Type Property ---------------------
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
-    public void saveCompTypeProp(ComptypePropertyValue ctprop, boolean create) {
-
-        ctprop.setModifiedAt(new Date());
+    public void saveCompTypeProp(ComptypePropertyValue ctprop) {
         ComptypePropertyValue newProp = em.merge(ctprop);
-
-        if (create) { // create instead of update
-            ComponentType ctype = ctprop.getComponentType();
-            ctype.getComptypePropertyList().add(newProp);
-            em.merge(ctype);
-        }
         logger.log(Level.INFO, "Comp Type Property: id " + newProp.getId() + " name " + newProp.getProperty().getName());
     }
 
     @CRUDOperation(operation=EntityTypeOperation.DELETE)
     @Audit
     public void deleteCompTypeProp(ComptypePropertyValue ctp) {
-
         logger.log(Level.INFO, "deleting comp type property id " + ctp.getId() + " name " + ctp.getProperty().getName());
         ComptypePropertyValue property = em.find(ComptypePropertyValue.class, ctp.getId());
         ComponentType arec = property.getComponentType();
@@ -117,57 +107,36 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @CRUDOperation(operation=EntityTypeOperation.CREATE)
     @Audit
     public void addCompTypeProp(ComptypePropertyValue ctp) {
-        em.persist(ctp);
+        final ComptypePropertyValue newProp = em.merge(ctp);
+        final ComponentType ctype = ctp.getComponentType();
+        ctype.getComptypePropertyList().add(newProp);
+        em.merge(ctype);
     }
 
     // ---------------- Component Type Artifact ---------------------
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
-    public void saveCompTypeArtifact(ComptypeArtifact art, boolean create) throws Exception {
-        if (art == null) {
-            logger.log(Level.SEVERE, "saveCompTypeArtifact: artifact is null");
-            return;
-        }
-        String user = loginManager.getUserid();
-        if (!authEJB.userHasAuth(user, EntityType.COMPONENT_TYPE, EntityTypeOperation.UPDATE)) {
-            logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
-            throw new Exception("User " + user + " is not authorized to perform this operation");
-        }
-        art.setModifiedAt(new Date());
-        // ctprop.setType("a");
-        art.setModifiedBy("user");
+    public void saveCompTypeArtifact(ComptypeArtifact art) throws Exception {
         ComptypeArtifact newArt = em.merge(art);
-
-        if (create) { // create instead of update
-            ComponentType ctype = art.getComponentType();
-            ctype.getComptypeArtifactList().add(newArt);
-            em.merge(ctype);
-        }
-
         logger.log(Level.INFO, "Artifact: name " + newArt.getName() + " description " + newArt.getDescription() + " uri " + newArt.getUri() + "is int " + newArt.isInternal());
-
-        // logger.log(Level.INFO, "device serial " + device.getSerialNumber());
-        // return newArt;
-
     }
 
     @CRUDOperation(operation=EntityTypeOperation.DELETE)
     @Audit
     public void deleteCompTypeArtifact(ComptypeArtifact art) throws Exception {
-        if (art == null) {
-            logger.log(Level.SEVERE, "deleteCompTypeArtifact: alignment artifact is null");
-            return;
-        }
-        String user = loginManager.getUserid();
-        if (!authEJB.userHasAuth(user, EntityType.COMPONENT_TYPE, EntityTypeOperation.UPDATE)) {
-            logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
-            throw new Exception("User " + user + " is not authorized to perform this operation");
-        }
-        logger.log(Level.INFO, "deleting " + art.getName() + " id " + art.getId() + " des " + art.getDescription());
         ComptypeArtifact artifact = em.find(ComptypeArtifact.class, art.getId());
         ComponentType arec = artifact.getComponentType();
         arec.getComptypeArtifactList().remove(artifact);
         em.remove(artifact);
+    }
+
+    @CRUDOperation(operation=EntityTypeOperation.CREATE)
+    @Audit
+    public void addCompTypeArtifact(ComptypeArtifact art) {
+        final ComptypeArtifact newArt = em.merge(art);
+        final ComponentType ctype = art.getComponentType();
+        ctype.getComptypeArtifactList().add(newArt);
+        em.merge(ctype);
     }
 
     // ---------------- Component Type Assmebly ---------------------

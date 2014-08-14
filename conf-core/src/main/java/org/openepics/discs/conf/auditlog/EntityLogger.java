@@ -1,14 +1,13 @@
 package org.openepics.discs.conf.auditlog;
 
-import javax.inject.Inject;
+import java.util.List;
 
 import org.openepics.discs.conf.ent.AuditRecord;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
-import org.openepics.discs.conf.ui.LoginManager;
 
 
 /**
- * Converts entity to String dump, with standard format and stripped ID, Name etc.
+ * Creates list of {@link AuditRecord}s for entity
  *
  * @author mpavleski
  *
@@ -21,11 +20,11 @@ public interface EntityLogger {
     public Class getType();
 
     /**
-     * Serializes entity value to a String
+     * Creates audit logs for given entity
      *
-     * @param value
-     * @return
+     * @param entity Entity for which {@link AuditRecord} should be created
+     * @return List of {@link AuditRecord}s for input entity
      */
-    public AuditRecord auditEntry(Object value, EntityTypeOperation operation, String user);
+    public List<AuditRecord> auditEntries(Object entity, EntityTypeOperation operation, String user);
 
 }

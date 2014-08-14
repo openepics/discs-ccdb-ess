@@ -21,8 +21,6 @@ import org.openepics.discs.conf.ent.InstallationArtifact;
 import org.openepics.discs.conf.ent.InstallationRecord;
 import org.openepics.discs.conf.ent.Slot;
 
-import com.google.common.collect.ImmutableList;
-
 /**
  * @author Andraz Pozar <andraz.pozar@cosylab.com>
  *
@@ -40,7 +38,8 @@ public class InstallationRecordEntityLoggerTest {
     public void setUp() {
         installationRecord.setSlot(slot);
         installationRecord.setDevice(device);
-        installationRecord.setInstallationArtifactList(ImmutableList.of(artifact1, artifact2));
+        installationRecord.getInstallationArtifactList().add(artifact1);
+        installationRecord.getInstallationArtifactList().add(artifact2);
     }
 
     @Test
@@ -50,6 +49,6 @@ public class InstallationRecordEntityLoggerTest {
 
     @Test
     public void testSerializeEntity() {
-        System.out.println("ReducedInstallationRecord:" + installationRecordEntityLogger.auditEntry(installationRecord, EntityTypeOperation.CREATE, "admin").getEntry());
+        System.out.println("ReducedInstallationRecord:" + installationRecordEntityLogger.auditEntries(installationRecord, EntityTypeOperation.CREATE, "admin").get(0).getEntry());
     }
 }

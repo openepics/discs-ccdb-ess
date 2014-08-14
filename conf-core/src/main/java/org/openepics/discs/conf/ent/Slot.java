@@ -1,5 +1,6 @@
 package org.openepics.discs.conf.ent;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -147,7 +148,12 @@ public class Slot extends ConfigurationEntity {
 
     @XmlTransient
     @JsonIgnore
-    public List<SlotArtifact> getSlotArtifactList() { return slotArtifactList; }
+    public List<SlotArtifact> getSlotArtifactList() {
+        if (slotArtifactList == null) {
+            slotArtifactList = new ArrayList<>();
+        }
+        return slotArtifactList;
+    }
 
     public ComponentType getComponentType() { return componentType; }
     public void setComponentType(ComponentType componentType) { this.componentType = componentType; }
@@ -177,7 +183,12 @@ public class Slot extends ConfigurationEntity {
 
     @XmlTransient
     @JsonIgnore
-    public List<SlotPropertyValue> getSlotPropertyList() { return slotPropertyList; }
+    public List<SlotPropertyValue> getSlotPropertyList() {
+        if (slotPropertyList == null) {
+            slotPropertyList = new ArrayList<>();
+        }
+        return slotPropertyList;
+    }
 
     @XmlTransient
     @JsonIgnore

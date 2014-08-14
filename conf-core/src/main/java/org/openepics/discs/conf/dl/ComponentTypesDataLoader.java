@@ -13,8 +13,8 @@ import javax.inject.Inject;
 import org.openepics.discs.conf.dl.common.AbstractDataLoader;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
-import org.openepics.discs.conf.dl.common.ValidationMessage;
 import org.openepics.discs.conf.dl.common.ErrorMessage;
+import org.openepics.discs.conf.dl.common.ValidationMessage;
 import org.openepics.discs.conf.ejb.AuthEJB;
 import org.openepics.discs.conf.ejb.ComptypeEJB;
 import org.openepics.discs.conf.ejb.ConfigurationEJB;
@@ -230,7 +230,7 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
                 } else {
                     compTypePropertyToUpdate.setPropValue(propertyValue);
                     compTypePropertyToUpdate.setModifiedBy(modifiedBy);
-                    comptypeEJB.saveCompTypeProp(compTypePropertyToUpdate, false);
+                    comptypeEJB.saveCompTypeProp(compTypePropertyToUpdate);
                 }
 
             } else if (propertyValue != null) {

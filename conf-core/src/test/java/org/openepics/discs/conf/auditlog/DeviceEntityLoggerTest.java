@@ -12,8 +12,6 @@ import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyAssociation;
 
-import com.google.common.collect.ImmutableList;
-
 public class DeviceEntityLoggerTest {
 
     private final Property prop1 = new Property("DETER", "deter", PropertyAssociation.ALL, "admin");
@@ -33,8 +31,10 @@ public class DeviceEntityLoggerTest {
         devicePropVal2.setProperty(prop2);
         devicePropVal1.setPropValue("10");
         devicePropVal2.setPropValue("20");
-        device.setDevicePropertyList(ImmutableList.of(devicePropVal1, devicePropVal2));
-        device.setDeviceArtifactList(ImmutableList.of(artifact1, artifact2));
+        device.getDevicePropertyList().add(devicePropVal1);
+        device.getDevicePropertyList().add(devicePropVal2);
+        device.getDeviceArtifactList().add(artifact1);
+        device.getDeviceArtifactList().add(artifact2);
         device.setComponentType(compType);
     }
 
@@ -45,6 +45,6 @@ public class DeviceEntityLoggerTest {
 
     @Test
     public void testSerializeEntity() {
-        System.out.println("ReducedDevice:" + deviceEntityLogger.auditEntry(device, EntityTypeOperation.CREATE, "admin").getEntry());
+        System.out.println("ReducedDevice:" + deviceEntityLogger.auditEntries(device, EntityTypeOperation.CREATE, "admin").get(0).getEntry());
     }
 }

@@ -250,7 +250,11 @@ public class ComponentTypeManager implements Serializable {
                 inputProperty.setPropValue(repoFileId);
             }
 
-            comptypeEJB.saveCompTypeProp(inputProperty, propertyOperation == 'a');
+            if (propertyOperation == 'a') {
+                comptypeEJB.addCompTypeProp(inputProperty);
+            } else {
+                comptypeEJB.saveCompTypeProp(inputProperty);
+            }
             logger.log(Level.INFO, "returned artifact id is " + inputProperty.getId());
 
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Property saved", "");
@@ -343,8 +347,11 @@ public class ComponentTypeManager implements Serializable {
                 }
             }
 
-            // comptypeEJB.saveComponentTypeArtifact(selectedObject, inputArtifact);
-            comptypeEJB.saveCompTypeArtifact(inputArtifact, artifactOperation == 'a');
+            if (artifactOperation == 'a') {
+                comptypeEJB.addCompTypeArtifact(inputArtifact);
+            } else {
+                comptypeEJB.saveCompTypeArtifact(inputArtifact);
+            }
             logger.log(Level.INFO, "returned artifact id is " + inputArtifact.getId());
 
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Artifact saved", "");

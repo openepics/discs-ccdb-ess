@@ -10,6 +10,7 @@
 package org.openepics.discs.conf.auditlog;
 
 import java.util.HashMap;
+import java.util.List;
 
 import org.openepics.discs.conf.ent.AuditRecord;
 import org.openepics.discs.conf.ent.EntityType;
@@ -17,6 +18,7 @@ import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.InstallationArtifact;
 import org.openepics.discs.conf.ent.InstallationRecord;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 
 /**
@@ -31,7 +33,7 @@ public class InstallationRecordEntityLogger implements EntityLogger{
     }
 
     @Override
-    public AuditRecord auditEntry(Object value, EntityTypeOperation operation, String user) {
+    public List<AuditRecord> auditEntries(Object value, EntityTypeOperation operation, String user) {
         final InstallationRecord installationRecord = (InstallationRecord) value;
 
         final HashMap<String, String> artifactsMap = new HashMap<>();
@@ -41,11 +43,11 @@ public class InstallationRecordEntityLogger implements EntityLogger{
             }
         }
 
-        return (new AuditLogUtil(installationRecord).
+        return ImmutableList.of((new AuditLogUtil(installationRecord).
                 removeTopProperties(Sets.newHashSet("id", "modifiedAt", "modifiedBy", "version", "recordNumber", "slot", "device")).
                 addStringProperty("slot", installationRecord.getSlot().getName()).
                 addStringProperty("device", installationRecord.getDevice().getSerialNumber()).
-                addArrayOfProperties("installationArtifactList", artifactsMap).
-                auditEntry(operation, EntityType.INSTALLATION_RECORD, installationRecord.getRecordNumber(), installationRecord.getId(), user));
+                addArrayOfMappedProperties("installationArtifactList", artifactsMap).
+                auditEntry(operation, EntityType.INSTALLATION_RECORD, installationRecord.getRecordNumber(), installationRecord.getId(), user)));
     }
 }

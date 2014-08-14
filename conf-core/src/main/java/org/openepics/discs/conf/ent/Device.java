@@ -1,5 +1,6 @@
 package org.openepics.discs.conf.ent;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -155,8 +156,12 @@ public class Device extends ConfigurationEntity {
 
     @XmlTransient
     @JsonIgnore
-    public List<DevicePropertyValue> getDevicePropertyList() { return devicePropertyList; }
-    public void setDevicePropertyList(List<DevicePropertyValue> devicePropertyList) { this.devicePropertyList = devicePropertyList; }
+    public List<DevicePropertyValue> getDevicePropertyList() {
+        if (devicePropertyList == null) {
+            devicePropertyList = new ArrayList<>();
+        }
+        return devicePropertyList;
+    }
 
     @XmlTransient
     @JsonIgnore
@@ -168,8 +173,12 @@ public class Device extends ConfigurationEntity {
 
     @XmlTransient
     @JsonIgnore
-    public List<DeviceArtifact> getDeviceArtifactList() { return deviceArtifactList; }
-    public void setDeviceArtifactList(List<DeviceArtifact> deviceArtifactList) { this.deviceArtifactList = deviceArtifactList; }
+    public List<DeviceArtifact> getDeviceArtifactList() {
+        if (deviceArtifactList == null) {
+            deviceArtifactList = new ArrayList<>();
+        }
+        return deviceArtifactList;
+    }
 
     public ComponentType getComponentType() { return componentType; }
     public void setComponentType(ComponentType componentType) { this.componentType = componentType; }

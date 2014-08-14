@@ -1,6 +1,7 @@
 package org.openepics.discs.conf.auditlog;
 
 import java.util.HashMap;
+import java.util.List;
 
 import org.openepics.discs.conf.ent.AuditRecord;
 import org.openepics.discs.conf.ent.ComponentType;
@@ -8,6 +9,8 @@ import org.openepics.discs.conf.ent.ComptypeArtifact;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
+
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 
 /**
@@ -24,7 +27,7 @@ public class ComponentTypeEntityLogger implements EntityLogger {
     }
 
     @Override
-    public AuditRecord auditEntry(Object value, EntityTypeOperation operation, String user) {
+    public List<AuditRecord> auditEntries(Object value, EntityTypeOperation operation, String user) {
         final ComponentType compType = (ComponentType) value;
 
         final HashMap<String, String> propertiesMap = new HashMap<>();
@@ -41,10 +44,10 @@ public class ComponentTypeEntityLogger implements EntityLogger {
             }
         }
 
-        return (new AuditLogUtil(compType).
+        return ImmutableList.of((new AuditLogUtil(compType).
             removeTopProperties(Sets.newHashSet("id", "modifiedAt", "modifiedBy", "version", "name")).
-            addArrayOfProperties("comptypePropertyList", propertiesMap).
-            addArrayOfProperties("comptypeArtifactList", artifactsMap).
-            auditEntry(operation, EntityType.COMPONENT_TYPE, compType.getName(), compType.getId(), user));
+            addArrayOfMappedProperties("comptypePropertyList", propertiesMap).
+            addArrayOfMappedProperties("comptypeArtifactList", artifactsMap).
+            auditEntry(operation, EntityType.COMPONENT_TYPE, compType.getName(), compType.getId(), user)));
     }
 }

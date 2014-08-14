@@ -31,6 +31,6 @@ public class PropertyEntityLoggerTest {
 
     @Test
     public void testSerializeEntity() {
-        System.out.println("ReducedProperty:" + pel.auditEntry(prop, EntityTypeOperation.CREATE, "admin").getEntry());
+        System.out.println("ReducedProperty:" + pel.auditEntries(prop, EntityTypeOperation.CREATE, "admin").get(0).getEntry());
     }
 }

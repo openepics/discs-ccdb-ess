@@ -11,8 +11,6 @@ import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyAssociation;
 
-import com.google.common.collect.ImmutableList;
-
 public class ComponentTypeEntityLoggerTest {
 
     private final Property prop1 = new Property("DETER", "deter", PropertyAssociation.ALL, "admin");
@@ -32,8 +30,10 @@ public class ComponentTypeEntityLoggerTest {
         compTypePropVal2.setPropValue("10");
         compTypePropVal2.setProperty(prop2);
 
-        compType.setComptypePropertyList(ImmutableList.of(compTypePropVal1, compTypePropVal2));
-        compType.setComptypeArtifactList(ImmutableList.of(artifact1, artifact2));
+        compType.getComptypePropertyList().add(compTypePropVal1);
+        compType.getComptypePropertyList().add(compTypePropVal2);
+        compType.getComptypeArtifactList().add(artifact1);
+        compType.getComptypeArtifactList().add(artifact2);
     }
 
     @Test
@@ -43,7 +43,7 @@ public class ComponentTypeEntityLoggerTest {
 
     @Test
     public void testSerializeEntity() {
-        System.out.println("ReducedCompType:" + ctel.auditEntry(compType, EntityTypeOperation.CREATE, "admin").getEntry());
+        System.out.println("ReducedCompType:" + ctel.auditEntries(compType, EntityTypeOperation.CREATE, "admin").get(0).getEntry());
     }
 
 }

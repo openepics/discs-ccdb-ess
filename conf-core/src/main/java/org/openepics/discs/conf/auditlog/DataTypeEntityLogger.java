@@ -1,10 +1,13 @@
 package org.openepics.discs.conf.auditlog;
 
+import java.util.List;
+
 import org.openepics.discs.conf.ent.AuditRecord;
 import org.openepics.discs.conf.ent.DataType;
 import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 
 /**
@@ -21,12 +24,12 @@ public class DataTypeEntityLogger implements EntityLogger {
     }
 
     @Override
-    public AuditRecord auditEntry(Object value, EntityTypeOperation operation, String user) {
+    public List<AuditRecord> auditEntries(Object value, EntityTypeOperation operation, String user) {
         DataType dt = (DataType) value;
 
-        return (new AuditLogUtil(dt).
+        return ImmutableList.of((new AuditLogUtil(dt).
             removeTopProperties(Sets.newHashSet(
                     "id", "modifiedAt", "modifiedBy", "version", "name")).
-                    auditEntry(operation, EntityType.DATA_TYPE, dt.getName(), dt.getId(), user));
+                    auditEntry(operation, EntityType.DATA_TYPE, dt.getName(), dt.getId(), user)));
     }
 }

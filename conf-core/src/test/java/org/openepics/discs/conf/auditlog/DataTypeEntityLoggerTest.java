@@ -19,7 +19,7 @@ public class DataTypeEntityLoggerTest {
     public void testSerializeEntity() {
         final DataType dt = new DataType("Float", "Float", true, "Well.. a scalar float", "Iznogud");
 
-        System.out.println(entLogger.auditEntry(dt, EntityTypeOperation.CREATE, "admin").getEntry());
+        System.out.println(entLogger.auditEntries(dt, EntityTypeOperation.CREATE, "admin").get(0).getEntry());
     }
 
 }

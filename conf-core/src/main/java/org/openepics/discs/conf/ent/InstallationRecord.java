@@ -1,5 +1,6 @@
 package org.openepics.discs.conf.ent;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -98,8 +99,12 @@ public class InstallationRecord extends ConfigurationEntity {
 
     @XmlTransient
     @JsonIgnore
-    public List<InstallationArtifact> getInstallationArtifactList() { return installationArtifactList; }
-    public void setInstallationArtifactList(List<InstallationArtifact> installationArtifactList) { this.installationArtifactList = installationArtifactList; }
+    public List<InstallationArtifact> getInstallationArtifactList() {
+        if (installationArtifactList == null) {
+            installationArtifactList = new ArrayList<>();
+        }
+        return installationArtifactList;
+    }
 
     @Override
     public String toString() { return "InstallationRecord[ installationRecordId=" + id + " ]"; }

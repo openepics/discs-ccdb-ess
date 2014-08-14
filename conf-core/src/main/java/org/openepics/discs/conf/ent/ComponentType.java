@@ -1,5 +1,6 @@
 package org.openepics.discs.conf.ent;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -96,8 +97,12 @@ public class ComponentType extends ConfigurationEntity {
 
     @XmlTransient
     @JsonIgnore
-    public List<ComptypePropertyValue> getComptypePropertyList() { return comptypePropertyList; }
-    public void setComptypePropertyList(List<ComptypePropertyValue> comptypePropertyList) { this.comptypePropertyList = comptypePropertyList; }
+    public List<ComptypePropertyValue> getComptypePropertyList() {
+        if (componentTypeList == null) {
+            componentTypeList = new ArrayList<>();
+        }
+        return comptypePropertyList;
+    }
 
     @XmlTransient
     @JsonIgnore
@@ -106,12 +111,10 @@ public class ComponentType extends ConfigurationEntity {
     @XmlTransient
     @JsonIgnore
     public List<ComptypeAsm> getComptypeAsmList() { return childrenTypes; }
-    public void setComptypeAsmList(List<ComptypeAsm> comptypeAsmList) { this.childrenTypes = comptypeAsmList; }
 
     @XmlTransient
     @JsonIgnore
     public List<ComptypeAsm> getComptypeAsmList1() { return parentTypes; }
-    public void setComptypeAsmList1(List<ComptypeAsm> comptypeAsmList1) { this.parentTypes = comptypeAsmList1; }
 
     @XmlTransient
     @JsonIgnore
@@ -126,8 +129,12 @@ public class ComponentType extends ConfigurationEntity {
 
     @XmlTransient
     @JsonIgnore
-    public List<ComptypeArtifact> getComptypeArtifactList() { return comptypeArtifactList; }
-    public void setComptypeArtifactList(List<ComptypeArtifact> comptypeArtifactList) { this.comptypeArtifactList = comptypeArtifactList; }
+    public List<ComptypeArtifact> getComptypeArtifactList() {
+        if (comptypeArtifactList == null) {
+            comptypeArtifactList = new ArrayList<>();
+        }
+        return comptypeArtifactList;
+    }
 
     @XmlTransient
     @JsonIgnore
