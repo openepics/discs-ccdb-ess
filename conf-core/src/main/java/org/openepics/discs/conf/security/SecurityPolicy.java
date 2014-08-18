@@ -36,10 +36,9 @@ public interface SecurityPolicy {
      * Checks if user is authorized to do opeeration operationType on entity of entityType
      * 
      * @param entity The target entity
-     * @param entityType The entity type
      * @param operationType The operation type
      */
-    public void checkAuth(Object entity, EntityType entityType, EntityTypeOperation operationType);
+    public void checkAuth(Object entity, EntityTypeOperation operationType);
     
     /**
      * Returns UI hints for the JSF/ManagedBeans layer

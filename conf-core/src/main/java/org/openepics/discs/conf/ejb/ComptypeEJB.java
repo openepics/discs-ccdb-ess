@@ -23,8 +23,8 @@ import org.openepics.discs.conf.ent.ComptypeAsm;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
+import org.openepics.discs.conf.security.Authorized;
 import org.openepics.discs.conf.ui.LoginManager;
-import org.openepics.discs.conf.util.Authorized;
 import org.openepics.discs.conf.util.CRUDOperation;
 
 /**

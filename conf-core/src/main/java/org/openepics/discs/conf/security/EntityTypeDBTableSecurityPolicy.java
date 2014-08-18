@@ -14,11 +14,13 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.ejb.Stateful;
 import javax.enterprise.inject.Alternative;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -38,6 +40,7 @@ import com.google.common.base.Preconditions;
  *
  */
 @Stateful
+@Named("securityPolicy")
 @Alternative
 public class EntityTypeDBTableSecurityPolicy implements SecurityPolicy {
     private static final Logger logger = Logger.getLogger(EntityTypeDBTableSecurityPolicy.class.getCanonicalName());
@@ -53,8 +56,12 @@ public class EntityTypeDBTableSecurityPolicy implements SecurityPolicy {
 
     
     @Override
-    public void checkAuth(Object entity, EntityType entityType, EntityTypeOperation operationType) {
-        if (!hasPermission(entityType, operationType)) {
+    public void checkAuth(Object entity, EntityTypeOperation operationType) {
+        final EntityType entityType = EntityTypeResolver.resolveEntityType(entity);
+        
+        logger.log(Level.INFO, "Check auth with " + entityType.toString() + " and " + operationType.toString());
+ 
+        if (!hasPermission(entityType , operationType)) {
             throw SecurityException.generateExceptionMessage(entity, entityType, operationType);
         }
     }
@@ -62,6 +69,7 @@ public class EntityTypeDBTableSecurityPolicy implements SecurityPolicy {
   
     @Override
     public boolean getUIHint(String param) {
+        logger.log(Level.INFO, "Get UI Hint with " + param);
         if (SecurityPolicy.MANAGE_COMPONENT_TYPES.equals(param)) {
             return hasPermission(EntityType.COMPONENT_TYPE, EntityTypeOperation.CREATE) ||
                     hasPermission(EntityType.COMPONENT_TYPE, EntityTypeOperation.DELETE) ||
@@ -88,6 +96,7 @@ public class EntityTypeDBTableSecurityPolicy implements SecurityPolicy {
                     hasPermission(EntityType.UNIT, EntityTypeOperation.RENAME);
         }
         
+        logger.log(Level.INFO, "Get UI Hint probably invoked with invalid key");
         return false;
     }
 
@@ -100,6 +109,14 @@ public class EntityTypeDBTableSecurityPolicy implements SecurityPolicy {
      * @return true if permission exists
      */
     private boolean hasPermission(EntityType entityType, EntityTypeOperation operationType) {
+        
+        final String principal = loginManager.getUserid();
+        
+        // Handle the non-logged case 
+        if (principal == null) {
+            return false;
+        }
+        
         if (cachedPermissions == null)
             populateCachedPermissions();       
         
@@ -123,7 +140,7 @@ public class EntityTypeDBTableSecurityPolicy implements SecurityPolicy {
         cachedPermissions = new EnumMap<EntityType, Set<EntityTypeOperation>>(EntityType.class);
 
         final String principal = loginManager.getUserid();
-        
+        // The following should not happen for logged in user
         if (principal == null || principal.isEmpty()) {
             throw new SecurityException("Identity could not be established. Is user logged in");
         }

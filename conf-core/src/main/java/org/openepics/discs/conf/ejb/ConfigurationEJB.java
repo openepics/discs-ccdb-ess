@@ -21,8 +21,8 @@ import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.SlotRelation;
 import org.openepics.discs.conf.ent.Unit;
+import org.openepics.discs.conf.security.Authorized;
 import org.openepics.discs.conf.util.CRUDOperation;
-import org.openepics.discs.conf.util.Authorized;
 
 /**
  *

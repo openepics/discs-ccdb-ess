@@ -77,22 +77,22 @@
 				<p:menuitem value="Import Units" update=":importUnitsForm"
 					oncomplete="importUnits.show()" title="Import Units"
 					actionListener="#{unitManager.prepareImportPopup()}"
-					disabled="#{!unitManager.canImportUnits()}" />
+					disabled="#{!securityPolicy.getUIHint('manage-units')}" />
 					
 				<p:menuitem value="Import Properties" update=":importPropertiesForm"
                     oncomplete="importProperties.show()" title="Import Properties"
                     actionListener="#{propertyManager.prepareImportPopup()}"
-                    disabled="#{!propertyManager.canImportProperties()}" />
+                    disabled="#{!securityPolicy.getUIHint('manage-properties')}" />
                     
                 <p:menuitem value="Import Component Types" update=":importCompTypesForm"
                     oncomplete="importCompTypes.show()" title="Import Component Types"
                     actionListener="#{componentTypeManager.prepareImportPopup()}"
-                    disabled="#{!securityPolicy.getUIHint('manage-component-types')}" />
+                    disabled="#{! securityPolicy.getUIHint('manage-component-types')}" />
                     
                 <p:menuitem value="Import Slots and Slot Relationships" update=":importSlotsForm"
                     oncomplete="importSlots.show()" title="Import Slots"
                     actionListener="#{slotManager.prepareImportPopup()}"
-                    disabled="#{!slotManager.canImportSlots()}"/>
+                    disabled="#{!securityPolicy.getUIHint('manage-layout-slots')}"/>
                   
                 <p:menuitem value="Import Device Instances" update=":importDevicesForm"
                     oncomplete="importDevices.show()" title="Import Devices"
