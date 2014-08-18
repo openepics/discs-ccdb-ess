@@ -28,15 +28,14 @@ import org.openepics.discs.conf.util.CRUDOperation;
 /**
  *
  * @author vuppala
+ * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
+ * 
  */
 @Stateless public class AlignmentEJB {
-
     private static final Logger logger = Logger.getLogger(AlignmentEJB.class.getCanonicalName());
+   
     @PersistenceContext private EntityManager em;
-    @EJB private AuthEJB authEJB;
-
-    @Inject private LoginManager loginManager;
-
+    
     // ---------------- Alignment Record -------------------------
 
     public List<AlignmentRecord> findAlignmentRec() {
@@ -62,13 +61,8 @@ import org.openepics.discs.conf.util.CRUDOperation;
         if (arec == null) {
             logger.log(Level.SEVERE, "Property is null!");
             return;
-            // throw new Exception("property is null");
         }
-        String user = loginManager.getUserid();
-        if (!authEJB.userHasAuth(user, EntityType.ALIGNMENT_RECORD, EntityTypeOperation.UPDATE)) {
-            logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
-            throw new Exception("User " + user + " is not authorized to perform this operation");
-        }
+    
         arec.setModifiedAt(new Date());
         logger.log(Level.INFO, "Preparing to save device");
         em.persist(arec);
@@ -81,11 +75,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
             logger.log(Level.SEVERE, "Property is null!");
             return;
         }
-        String user = loginManager.getUserid();
-        if (!authEJB.userHasAuth(user, EntityType.ALIGNMENT_RECORD, EntityTypeOperation.DELETE)) {
-            logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
-            throw new Exception("User " + user + " is not authorized to perform this operation");
-        }
+
         AlignmentRecord ct = em.find(AlignmentRecord.class, arec.getId());
         em.remove(ct);
     }
@@ -99,11 +89,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
             logger.log(Level.SEVERE, "saveDeviceProp: property is null");
             return;
         }
-        String user = loginManager.getUserid();
-        if (!authEJB.userHasAuth(user, EntityType.ALIGNMENT_RECORD, EntityTypeOperation.UPDATE)) {
-            logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
-            throw new Exception("User " + user + " is not authorized to perform this operation");
-        }
+        
         prop.setModifiedAt(new Date());
         // ctprop.setType("a");
         prop.setModifiedBy("user");
@@ -120,16 +106,11 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @CRUDOperation(operation=EntityTypeOperation.DELETE)
     @Audit
     public void deleteAlignmentProp(AlignmentPropertyValue prop) throws Exception {
-
         if (prop == null) {
             logger.log(Level.SEVERE, "deleteAlignmentArtifact: dev-artifact is null");
             return;
         }
-        String user = loginManager.getUserid();
-        if (!authEJB.userHasAuth(user, EntityType.ALIGNMENT_RECORD, EntityTypeOperation.UPDATE)) {
-            logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
-            throw new Exception("User " + user + " is not authorized to perform this operation");
-        }
+
         AlignmentPropertyValue property = em.find(AlignmentPropertyValue.class, prop.getId());
         AlignmentRecord arec = property.getAlignmentRecord();
         arec.getAlignmentPropertyList().remove(property);
@@ -145,11 +126,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
             logger.log(Level.SEVERE, "saveAlignmentArtifact: artifact is null");
             return;
         }
-        String user = loginManager.getUserid();
-        if (!authEJB.userHasAuth(user, EntityType.ALIGNMENT_RECORD, EntityTypeOperation.UPDATE)) {
-            logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
-            throw new Exception("User " + user + " is not authorized to perform this operation");
-        }
+
         art.setModifiedAt(new Date());
         art.setModifiedBy("user");
         AlignmentArtifact newArt = em.merge(art);
@@ -172,11 +149,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
             logger.log(Level.SEVERE, "deleteAlignmentArtifact: alignment artifact is null");
             return;
         }
-        String user = loginManager.getUserid();
-        if (!authEJB.userHasAuth(user, EntityType.ALIGNMENT_RECORD, EntityTypeOperation.UPDATE)) {
-            logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
-            throw new Exception("User " + user + " is not authorized to perform this operation");
-        }
+
         logger.log(Level.INFO, "deleting " + art.getName() + " id " + art.getId() + " des " + art.getDescription());
         AlignmentArtifact artifact = em.find(AlignmentArtifact.class, art.getId());
         AlignmentRecord arec = artifact.getAlignmentRecord();

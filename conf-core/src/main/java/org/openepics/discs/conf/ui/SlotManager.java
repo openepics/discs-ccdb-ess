@@ -24,10 +24,7 @@ import javax.inject.Named;
 
 import org.apache.commons.io.FilenameUtils;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
-import org.openepics.discs.conf.ejb.AuthEJB;
 import org.openepics.discs.conf.ejb.SlotEJB;
-import org.openepics.discs.conf.ent.EntityType;
-import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotArtifact;
 import org.openepics.discs.conf.ent.SlotPair;
@@ -57,8 +54,7 @@ public class SlotManager implements Serializable {
     @Inject private BlobStore blobStore;
     @Inject private LoginManager loginManager;
     @Inject private DataLoaderHandler dataLoaderHandler;
-    @Inject private AuthEJB authEJB;
-
+   
     private List<Slot> objects;
     private List<Slot> sortedObjects;
     private List<Slot> filteredObjects;
@@ -550,14 +546,6 @@ public class SlotManager implements Serializable {
         }
 
         return file;
-    }
-
-
-    public boolean canImportSlots() {
-        return authEJB.userHasAuth(loginManager.getUserid(), EntityType.SLOT, EntityTypeOperation.CREATE) ||
-                authEJB.userHasAuth(loginManager.getUserid(), EntityType.SLOT, EntityTypeOperation.DELETE) ||
-                authEJB.userHasAuth(loginManager.getUserid(), EntityType.SLOT, EntityTypeOperation.UPDATE) ||
-                authEJB.userHasAuth(loginManager.getUserid(), EntityType.SLOT, EntityTypeOperation.RENAME);
     }
 
     public String getFirstFileName() { return firstFileName; }

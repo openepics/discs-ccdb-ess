@@ -27,6 +27,7 @@ import org.openepics.discs.conf.util.Authorized;
 /**
  *
  * @author vuppala
+ * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
  */
 
 @Stateless public class ConfigurationEJB {

@@ -17,7 +17,6 @@ import org.openepics.discs.conf.dl.common.AbstractDataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.dl.common.ErrorMessage;
 import org.openepics.discs.conf.dl.common.ValidationMessage;
-import org.openepics.discs.conf.ejb.AuthEJB;
 import org.openepics.discs.conf.ejb.ComptypeEJB;
 import org.openepics.discs.conf.ejb.ConfigurationEJB;
 import org.openepics.discs.conf.ejb.SlotEJB;
@@ -32,6 +31,7 @@ import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.ent.SlotRelation;
 import org.openepics.discs.conf.ent.SlotRelationName;
+import org.openepics.discs.conf.security.SecurityException;
 import org.openepics.discs.conf.ui.LoginManager;
 import org.openepics.discs.conf.util.As;
 
@@ -43,7 +43,6 @@ import com.google.common.collect.ImmutableList;
 public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
 
     @Inject private LoginManager loginManager;
-    @Inject private AuthEJB authEJB;
     @Inject private SlotEJB slotEJB;
     @Inject private ConfigurationEJB configurationEJB;
     @Inject private ComptypeEJB comptypeEJB;
@@ -180,14 +179,14 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                                 rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(compTypeIndex)));
                                 continue;
                             } else {
-                                if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.SLOT, EntityTypeOperation.UPDATE)) {
+                                try {
                                     final Slot slotToUpdate = slotEJB.findSlotByName(name);
                                     addOrUpdateSlot(slotToUpdate, modifiedBy, compType, isHosting, description, blp, globalX, globalY, globalZ, globalRoll, globalPitch, globalYaw, asmComment, asmPosition, comment);
                                     addOrUpdateProperties(slotToUpdate, indexByPropertyName, row, rowNumber, modifiedBy);
                                     if (rowResult.isError()) {
                                         continue;
                                     }
-                                } else {
+                                } catch (SecurityException e) {
                                     rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                                 }
                             }
@@ -197,7 +196,7 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                                 rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(compTypeIndex)));
                                 continue;
                             } else {
-                                if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.SLOT, EntityTypeOperation.CREATE)) {
+                                try {
                                     final Slot newSlot = new Slot(name, isHosting, modifiedBy);
                                     addOrUpdateSlot(newSlot, modifiedBy, compType, isHosting, description, blp, globalX, globalY, globalZ, globalRoll, globalPitch, globalYaw, asmComment, asmPosition, comment);
                                     slotEJB.addSlot(newSlot);
@@ -206,7 +205,7 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                                     if (rowResult.isError()) {
                                         continue;
                                     }
-                                } else {
+                                } catch (SecurityException e) {
                                     rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                                 }
                             }
@@ -214,19 +213,19 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                         break;
                     case CMD_DELETE:
                         final @Nullable Slot slotToDelete = slotEJB.findSlotByName(name);
-                        if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.SLOT, EntityTypeOperation.DELETE)) {
+                        try {
                             if (slotToDelete == null) {
                                 rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
                                 continue;
                             } else {
                                 slotEJB.deleteLayoutSlot(slotToDelete);
                             }
-                        } else {
+                        } catch (SecurityException e) {
                             rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                         }
                         break;
                     case CMD_RENAME:
-                        if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.SLOT, EntityTypeOperation.RENAME)) {
+                        try {
                             final int startOldNameMarkerIndex = name.indexOf("[");
                             final int endOldNameMarkerIndex = name.indexOf("]");
                             if (startOldNameMarkerIndex == -1 || endOldNameMarkerIndex == -1) {
@@ -250,7 +249,7 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                                 rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
                                 continue;
                             }
-                        } else {
+                        } catch (SecurityException e) {
                             rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                         }
                         break;
@@ -364,7 +363,7 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                             case CMD_UPDATE:
                                 for (Slot childSlot : childrenSlots) {
                                     if (newSlots.contains(childSlot)) {
-                                        if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.SLOT, EntityTypeOperation.CREATE)) {
+                                        try {
                                             if (!childSlot.getName().equals(parentSlot.getName())) {
                                                 if (slotRelation.getName() == SlotRelationName.CONTAINS) {
                                                     if (childSlot.getComponentType().getName().equalsIgnoreCase("_ROOT")) {
@@ -396,7 +395,7 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                                             } else {
                                                 rowResult.addMessage(new ValidationMessage(ErrorMessage.SAME_CHILD_AND_PARENT, rowNumber));
                                             }
-                                        } else {
+                                        } catch (SecurityException e) {
                                             rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                                         }
                                     }
@@ -405,11 +404,11 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                             case CMD_DELETE:
                                 final List<SlotPair> slotPairs = slotEJB.findSlotPairsByParentChildRelation(child, parent, slotRelationName);
                                 if (slotPairs.size() != 0) {
-                                    if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.SLOT, EntityTypeOperation.DELETE)) {
+                                    try {
                                         for (SlotPair slotPair : slotPairs) {
                                             slotEJB.removeSlotPair(slotPair);
                                         }
-                                    } else {
+                                    } catch (SecurityException e) {
                                         rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                                     }
                                 } else {

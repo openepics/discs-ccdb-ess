@@ -11,12 +11,12 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+
 import org.openepics.discs.conf.dl.common.AbstractDataLoader;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
-import org.openepics.discs.conf.dl.common.ValidationMessage;
 import org.openepics.discs.conf.dl.common.ErrorMessage;
-import org.openepics.discs.conf.ejb.AuthEJB;
+import org.openepics.discs.conf.dl.common.ValidationMessage;
 import org.openepics.discs.conf.ejb.ConfigurationEJB;
 import org.openepics.discs.conf.ent.DataType;
 import org.openepics.discs.conf.ent.EntityType;
@@ -24,6 +24,7 @@ import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyAssociation;
 import org.openepics.discs.conf.ent.Unit;
+import org.openepics.discs.conf.security.SecurityException;
 import org.openepics.discs.conf.ui.LoginManager;
 import org.openepics.discs.conf.util.As;
 
@@ -40,7 +41,6 @@ import com.google.common.base.Objects;
 public class PropertiesDataLoader extends AbstractDataLoader implements DataLoader {
 
     @Inject private LoginManager loginManager;
-    @Inject private AuthEJB authEJB;
     @Inject private ConfigurationEJB configurationEJB;
     private Map<String, Property> propertyByName;
     private int nameIndex, associationIndex, unitIndex, dataTypeIndex, descriptionIndex;
@@ -110,7 +110,7 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
                     switch (command) {
                     case CMD_UPDATE:
                         if (propertyByName.containsKey(name)) {
-                            if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.PROPERTY, EntityTypeOperation.UPDATE)) {
+                            try {
                                 final Property propertyToUpdate = propertyByName.get(name);
                                 propertyToUpdate.setDescription(description);
                                 propertyToUpdate.setAssociation(propertyAssociation(association));
@@ -122,11 +122,11 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
                                 } else {
                                     configurationEJB.saveProperty(propertyToUpdate);
                                 }
-                            } else {
+                            } catch (SecurityException e) {
                                 rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                             }
                         } else {
-                            if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.PROPERTY, EntityTypeOperation.CREATE)) {
+                            try {
                                 final Property propertyToAdd = new Property(name, description, propertyAssociation(association), modifiedBy);
                                 setPropertyFields(propertyToAdd, unit, dataType, rowNumber);
                                 if (rowResult.isError()) {
@@ -135,13 +135,13 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
                                     configurationEJB.addProperty(propertyToAdd);
                                     propertyByName.put(propertyToAdd.getName(), propertyToAdd);
                                 }
-                            } else {
+                            } catch (SecurityException e) {
                                 rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                             }
                         }
                         break;
                     case CMD_DELETE:
-                        if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.PROPERTY, EntityTypeOperation.DELETE)) {
+                        try {
                             final Property propertyToDelete = propertyByName.get(name);
                             if (propertyToDelete == null) {
                                 rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
@@ -150,12 +150,12 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
                                 configurationEJB.deleteProperty(propertyToDelete);
                                 propertyByName.remove(propertyToDelete.getName());
                             }
-                        } else {
+                        } catch (SecurityException e) {
                             rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                         }
                         break;
                     case CMD_RENAME:
-                        if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.PROPERTY, EntityTypeOperation.RENAME)) {
+                        try {
                             final int startOldNameMarkerIndex = name.indexOf("[");
                             final int endOldNameMarkerIndex = name.indexOf("]");
                             if (startOldNameMarkerIndex == -1 || endOldNameMarkerIndex == -1) {
@@ -181,7 +181,7 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
                                 rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
                                 continue;
                             }
-                        } else {
+                        } catch (SecurityException e) {
                             rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                         }
                         break;

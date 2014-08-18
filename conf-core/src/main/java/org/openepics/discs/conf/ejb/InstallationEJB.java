@@ -28,14 +28,13 @@ import org.openepics.discs.conf.util.CRUDOperation;
 /**
  *
  * @author vuppala
+ * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
+ * 
  */
 @Stateless public class InstallationEJB {
-
     private static final Logger logger = Logger.getLogger(InstallationEJB.class.getCanonicalName());
+    
     @PersistenceContext private EntityManager em;
-    @EJB private AuthEJB authEJB;
-
-    @Inject private LoginManager loginManager;
 
     // ----- Installation
 
@@ -60,11 +59,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
             return;
             // throw new Exception("property is null");
         }
-        String user = loginManager.getUserid();
-        if (!authEJB.userHasAuth(user, EntityType.INSTALLATION_RECORD, EntityTypeOperation.UPDATE)) {
-            logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
-            throw new Exception("User " + user + " is not authorized to perform this operation");
-        }
+
         irec.setModifiedAt(new Date());
 
         logger.log(Level.INFO, "Preparing to save installation record");
@@ -87,11 +82,6 @@ import org.openepics.discs.conf.util.CRUDOperation;
             logger.log(Level.SEVERE, "Installation Record is null!");
             throw new Exception("Installation Record is null");
         }
-        String user = loginManager.getUserid();
-        if (!authEJB.userHasAuth(user, EntityType.INSTALLATION_RECORD, EntityTypeOperation.DELETE)) {
-            logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
-            throw new Exception("User " + user + " is not authorized to perform this operation");
-        }
         InstallationRecord ct = em.find(InstallationRecord.class, irec.getId());
         em.remove(ct);
     }
@@ -105,11 +95,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
             logger.log(Level.SEVERE, "deleteInstallationArtifact: Installation Record is null");
             return;
         }
-        String user = loginManager.getUserid();
-        if (!authEJB.userHasAuth(user, EntityType.INSTALLATION_RECORD, EntityTypeOperation.UPDATE)) {
-            logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
-            throw new Exception("User " + user + " is not authorized to perform this operation");
-        }
+
         art.setModifiedAt(new Date());
         art.setModifiedBy("user");
         InstallationArtifact newArt = em.merge(art);
@@ -130,11 +116,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
             logger.log(Level.SEVERE, "deleteInstallationArtifact: irec-artifact is null");
             return;
         }
-        String user = loginManager.getUserid();
-        if (!authEJB.userHasAuth(user, EntityType.INSTALLATION_RECORD, EntityTypeOperation.UPDATE)) {
-            logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
-            throw new Exception("User " + user + " is not authorized to perform this operation");
-        }
+
         logger.log(Level.INFO, "deleting " + art.getName() + " id " + art.getId() + " des " + art.getDescription());
         InstallationArtifact artifact = em.find(InstallationArtifact.class, art.getId());
         InstallationRecord irec = artifact.getInstallationRecord();

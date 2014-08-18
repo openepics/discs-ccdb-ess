@@ -8,16 +8,17 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+
 import org.openepics.discs.conf.dl.common.AbstractDataLoader;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.dl.common.ErrorMessage;
 import org.openepics.discs.conf.dl.common.ValidationMessage;
-import org.openepics.discs.conf.ejb.AuthEJB;
 import org.openepics.discs.conf.ejb.ConfigurationEJB;
 import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.Unit;
+import org.openepics.discs.conf.security.SecurityException;
 import org.openepics.discs.conf.ui.LoginManager;
 import org.openepics.discs.conf.util.As;
 
@@ -32,7 +33,6 @@ import org.openepics.discs.conf.util.As;
 public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
 
     @Inject private LoginManager loginManager;
-    @Inject private AuthEJB authEJB;
     @Inject private ConfigurationEJB configurationEJB;
 
     private Map<String, Unit> unitByName;
@@ -102,30 +102,30 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
                     switch (command) {
                     case CMD_UPDATE:
                         if (unitByName.containsKey(name)) {
-                            if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.UNIT, EntityTypeOperation.UPDATE)) {
+                            try {
                                 final Unit unitToUpdate = unitByName.get(name);
                                 unitToUpdate.setDescription(description);
                                 unitToUpdate.setQuantity(quantity);
                                 unitToUpdate.setSymbol(symbol);
                                 unitToUpdate.setModifiedAt(modifiedAt);
                                 configurationEJB.saveUnit(unitToUpdate);
-                            } else {
+                            } catch (SecurityException e) {
                                 rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                                 continue;
                             }
                         } else {
-                            if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.UNIT, EntityTypeOperation.CREATE)) {
+                            try {
                                 final Unit unitToAdd = new Unit(name, quantity, symbol, description, modifiedBy);
                                 configurationEJB.addUnit(unitToAdd);
                                 unitByName.put(unitToAdd.getName(), unitToAdd);
-                            } else {
+                            } catch (SecurityException e) {
                                 rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                                 continue;
                             }
                         }
                         break;
                     case CMD_DELETE:
-                        if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.UNIT, EntityTypeOperation.DELETE)) {
+                        try {
                             final Unit unitToDelete = unitByName.get(name);
                             if (unitToDelete == null) {
                                rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
@@ -134,13 +134,13 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
                                 configurationEJB.deleteUnit(unitToDelete);
                                 unitByName.remove(unitToDelete.getName());
                             }
-                        } else {
+                        } catch (SecurityException e) {
                             rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                             continue;
                         }
                         break;
                     case CMD_RENAME:
-                        if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.UNIT, EntityTypeOperation.RENAME)) {
+                        try {
                             final int startOldNameMarkerIndex = name.indexOf("[");
                             final int endOldNameMarkerIndex = name.indexOf("]");
                             if (startOldNameMarkerIndex == -1 || endOldNameMarkerIndex == -1) {
@@ -166,7 +166,7 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
                                 rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
                                 continue;
                             }
-                        } else {
+                        } catch (SecurityException e) {
                             rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                             continue;
                         }

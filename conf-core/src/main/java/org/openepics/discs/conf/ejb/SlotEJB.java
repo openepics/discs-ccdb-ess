@@ -32,11 +32,10 @@ import org.openepics.discs.conf.util.CRUDOperation;
 /**
  *
  * @author vuppala
+ * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
+ * 
  */
 @Stateless public class SlotEJB {
-    @EJB private AuthEJB authEJB;
-
-    @Inject private LoginManager loginManager;
     private static final Logger logger = Logger.getLogger(SlotEJB.class.getCanonicalName());
     @PersistenceContext private EntityManager em;
 
@@ -149,11 +148,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
             logger.log(Level.SEVERE, "saveSlotArtifact: artifact is null");
             return;
         }
-        String user = loginManager.getUserid();
-        if (!authEJB.userHasAuth(user, EntityType.SLOT, EntityTypeOperation.UPDATE)) {
-            logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
-            throw new Exception("User " + user + " is not authorized to perform this operation");
-        }
+
         art.setModifiedAt(new Date());
         art.setModifiedBy("user");
         SlotArtifact newArt = em.merge(art);
@@ -172,11 +167,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
             logger.log(Level.SEVERE, "deleteAlignmentArtifact: alignment artifact is null");
             return;
         }
-        String user = loginManager.getUserid();
-        if (!authEJB.userHasAuth(user, EntityType.SLOT, EntityTypeOperation.UPDATE)) {
-            logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
-            throw new Exception("User " + user + " is not authorized to perform this operation");
-        }
+
         logger.log(Level.INFO, "deleting " + art.getName() + " id " + art.getId() + " des " + art.getDescription());
         SlotArtifact artifact = em.find(SlotArtifact.class, art.getId());
         Slot slot = artifact.getSlot();
@@ -193,11 +184,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
             logger.log(Level.SEVERE, "saveSlotPair: slot pair is null");
             return;
         }
-        String user = loginManager.getUserid();
-        if (!authEJB.userHasAuth(user, EntityType.SLOT, EntityTypeOperation.UPDATE)) {
-            logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
-            throw new Exception("User " + user + " is not authorized to perform this operation");
-        }
+
         SlotPair newArt = em.merge(spair);
         if (create) { // create instead of update
             Slot pslot = spair.getParentSlot(); // get the parent. Todo: update

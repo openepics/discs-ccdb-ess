@@ -24,18 +24,13 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.io.FilenameUtils;
-
-import org.openepics.discs.conf.dl.ComponentTypesLoaderQualifier;
 import org.openepics.discs.conf.dl.DevicesLoaderQualifier;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
-import org.openepics.discs.conf.ejb.AuthEJB;
 import org.openepics.discs.conf.ejb.DeviceEJB;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.DeviceArtifact;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
-import org.openepics.discs.conf.ent.EntityType;
-import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
 import org.openepics.discs.conf.util.BlobStore;
 import org.openepics.discs.conf.util.Utility;
@@ -52,6 +47,8 @@ import com.google.common.io.ByteStreams;
 /**
  *
  * @author vuppala
+ * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
+ * 
  */
 @Named
 @ViewScoped
@@ -69,7 +66,6 @@ public class DeviceManager implements Serializable {
 
     @Inject private DataLoaderHandler dataLoaderHandler;
     @Inject @DevicesLoaderQualifier private DataLoader devicesDataLoader;
-    @Inject private AuthEJB authEJB;
 
     private byte[] importData;
     private String importFileName;
@@ -165,7 +161,6 @@ public class DeviceManager implements Serializable {
     }
 
     public void onDeviceSave(ActionEvent event) {
-        String token = loginManager.getToken();
         logger.info("Saving device");
 
         try {
@@ -174,7 +169,7 @@ public class DeviceManager implements Serializable {
                 selectedObject = inputObject;
                 objects.add(selectedObject);
             } else {
-                deviceEJB.saveDevice(token, inputObject);
+                deviceEJB.saveDevice(inputObject);
             }
             // tell the client if the operation was a success so that it can hide
             RequestContext.getCurrentInstance().addCallbackParam("success", true);
@@ -468,15 +463,14 @@ public class DeviceManager implements Serializable {
     }
 
     public void onPartDeviceSave(ActionEvent event) {
-        String token = loginManager.getToken();
         try {
             inputAsmDevice.setAssemblyPosition(inputAsmPosition);
             inputAsmDevice.setAssemblyDescription(inputAsmComment);
             inputAsmDevice.setAssemblyParent(selectedObject);
-            deviceEJB.saveDevice(token,inputAsmDevice);
+            deviceEJB.saveDevice(inputAsmDevice);
             selectedObject.getDeviceList().add(inputAsmDevice);
 
-            deviceEJB.saveDevice(token, selectedObject);
+            deviceEJB.saveDevice(selectedObject);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Part saved", "");
             RequestContext.getCurrentInstance().addCallbackParam("success", true);
         } catch (Exception e) {
@@ -487,7 +481,6 @@ public class DeviceManager implements Serializable {
     }
 
     public void onPartDeviceDelete(Device device) {
-        String token = loginManager.getToken();
         try {
             if (device == null) {
                 Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "Null slot selected");
@@ -497,9 +490,9 @@ public class DeviceManager implements Serializable {
             device.setAssemblyPosition(null);
             device.setAssemblyDescription(null);
             device.setAssemblyParent(null);
-            deviceEJB.saveDevice(token, device);
+            deviceEJB.saveDevice(device);
             selectedObject.getDeviceList().remove(device);
-            deviceEJB.saveDevice(token, selectedObject);
+            deviceEJB.saveDevice(selectedObject);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted Artifact", "");
         } catch (Exception e) {
             Utility.showMessage(FacesMessage.SEVERITY_FATAL, "Error in deleting artifact", "Refresh the page");
@@ -515,12 +508,6 @@ public class DeviceManager implements Serializable {
         artifactOperation = 'e';
         inputAsmDevice = device;
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Edit:", "Edit initiated " );
-    }
-
-    public boolean canImportDevices() {
-        return authEJB.userHasAuth(loginManager.getUserid(), EntityType.DEVICE, EntityTypeOperation.CREATE) ||
-                authEJB.userHasAuth(loginManager.getUserid(), EntityType.DEVICE, EntityTypeOperation.DELETE) ||
-                authEJB.userHasAuth(loginManager.getUserid(), EntityType.DEVICE, EntityTypeOperation.UPDATE);
     }
 
     public String getImportFileName() { return importFileName; }

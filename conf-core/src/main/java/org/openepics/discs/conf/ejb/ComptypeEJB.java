@@ -24,18 +24,18 @@ import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ui.LoginManager;
+import org.openepics.discs.conf.util.Authorized;
 import org.openepics.discs.conf.util.CRUDOperation;
 
 /**
  *
  * @author vuppala
+ * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
+ * 
  */
 @Stateless public class ComptypeEJB {
-
-    @EJB private AuthEJB authEJB;
     private static final Logger logger = Logger.getLogger(ComptypeEJB.class.getCanonicalName());
     @PersistenceContext private EntityManager em;
-    @Inject private LoginManager loginManager;
 
     // ---------------- Component Type -------------------------
 
@@ -68,6 +68,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
 
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
+    @Authorized
     public void saveComponentType(ComponentType ctype) {
         ctype.setModifiedAt(new Date());
         em.merge(ctype);
@@ -75,12 +76,14 @@ import org.openepics.discs.conf.util.CRUDOperation;
 
     @CRUDOperation(operation=EntityTypeOperation.CREATE)
     @Audit
+    @Authorized
     public void addComponentType(ComponentType ctype) {
         em.persist(ctype);
     }
 
     @CRUDOperation(operation=EntityTypeOperation.DELETE)
     @Audit
+    @Authorized
     public void deleteComponentType(ComponentType ctype) {
         final ComponentType merged = em.merge(ctype);
         em.remove(merged);
@@ -89,6 +92,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
     // ---------------- Component Type Property ---------------------
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
+    @Authorized
     public void saveCompTypeProp(ComptypePropertyValue ctprop) {
         ComptypePropertyValue newProp = em.merge(ctprop);
         logger.log(Level.INFO, "Comp Type Property: id " + newProp.getId() + " name " + newProp.getProperty().getName());
@@ -96,6 +100,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
 
     @CRUDOperation(operation=EntityTypeOperation.DELETE)
     @Audit
+    @Authorized
     public void deleteCompTypeProp(ComptypePropertyValue ctp) {
         logger.log(Level.INFO, "deleting comp type property id " + ctp.getId() + " name " + ctp.getProperty().getName());
         ComptypePropertyValue property = em.find(ComptypePropertyValue.class, ctp.getId());
@@ -106,6 +111,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
 
     @CRUDOperation(operation=EntityTypeOperation.CREATE)
     @Audit
+    @Authorized
     public void addCompTypeProp(ComptypePropertyValue ctp) {
         final ComptypePropertyValue newProp = em.merge(ctp);
         final ComponentType ctype = ctp.getComponentType();
@@ -116,6 +122,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
     // ---------------- Component Type Artifact ---------------------
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
+    @Authorized
     public void saveCompTypeArtifact(ComptypeArtifact art) throws Exception {
         ComptypeArtifact newArt = em.merge(art);
         logger.log(Level.INFO, "Artifact: name " + newArt.getName() + " description " + newArt.getDescription() + " uri " + newArt.getUri() + "is int " + newArt.isInternal());
@@ -123,6 +130,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
 
     @CRUDOperation(operation=EntityTypeOperation.DELETE)
     @Audit
+    @Authorized
     public void deleteCompTypeArtifact(ComptypeArtifact art) throws Exception {
         ComptypeArtifact artifact = em.find(ComptypeArtifact.class, art.getId());
         ComponentType arec = artifact.getComponentType();
@@ -132,6 +140,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
 
     @CRUDOperation(operation=EntityTypeOperation.CREATE)
     @Audit
+    @Authorized
     public void addCompTypeArtifact(ComptypeArtifact art) {
         final ComptypeArtifact newArt = em.merge(art);
         final ComponentType ctype = art.getComponentType();
@@ -142,11 +151,6 @@ import org.openepics.discs.conf.util.CRUDOperation;
     // ---------------- Component Type Assmebly ---------------------
 
     public void saveComptypeAsm(ComponentType ctype, ComptypeAsm prt) throws Exception {
-        String user = loginManager.getUserid();
-        if (!authEJB.userHasAuth(user, EntityType.COMPONENT_TYPE, EntityTypeOperation.UPDATE)) {
-            logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
-            throw new Exception("User " + user + " is not authorized to perform this operation");
-        }
         if (prt != null) {
             prt.setModifiedAt(new Date());
             // ctprop.setType("a");
@@ -163,11 +167,6 @@ import org.openepics.discs.conf.util.CRUDOperation;
     }
 
     public void deleteComptypeAsm(ComponentType ctype, ComptypeAsm prt) throws Exception {
-        String user = loginManager.getUserid();
-        if (!authEJB.userHasAuth(user, EntityType.COMPONENT_TYPE, EntityTypeOperation.UPDATE)) {
-            logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
-            throw new Exception("User " + user + " is not authorized to perform this operation");
-        }
         if (prt != null) {
             ComptypeAsm entity = em.find(ComptypeAsm.class, prt.getId());
             em.remove(entity);

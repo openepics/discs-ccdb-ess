@@ -26,13 +26,10 @@ import org.openepics.discs.conf.ui.LoginManager;
 import org.openepics.discs.conf.util.CRUDOperation;
 
 /**
- *
  * @author vuppala
+ * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
  */
 @Stateless public class DeviceEJB {
-
-    @EJB private AuthEJB authEJB;
-    @Inject private LoginManager loginManager;
     private static final Logger logger = Logger.getLogger(DeviceEJB.class.getCanonicalName());
     @PersistenceContext private EntityManager em;
 
@@ -67,7 +64,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
 
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
-    public void saveDevice(String token, Device device) {
+    public void saveDevice(Device device) {
         logger.log(Level.INFO, "Preparing to save device");
         em.merge(device);
     }
@@ -125,11 +122,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
             logger.log(Level.SEVERE, "deleteDeviceArtifact: Device is null");
             return;
         }
-        String user = loginManager.getUserid();
-        if (!authEJB.userHasAuth(user, EntityType.DEVICE, EntityTypeOperation.UPDATE)) {
-            logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
-            throw new Exception("User " + user + " is not authorized to perform this operation");
-        }
+
         art.setModifiedAt(new Date());
         art.setModifiedBy("user");
         DeviceArtifact newArt = em.merge(art);
@@ -147,11 +140,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
             logger.log(Level.SEVERE, "deleteDeviceArtifact: dev-artifact is null");
             return;
         }
-        String user = loginManager.getUserid();
-        if (!authEJB.userHasAuth(user, EntityType.DEVICE, EntityTypeOperation.UPDATE)) {
-            logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
-            throw new Exception("User " + user + " is not authorized to perform this operation");
-        }
+
         logger.log(Level.INFO, "deleting " + art.getName() + " id " + art.getId() + " des " + art.getDescription());
         DeviceArtifact artifact = em.find(DeviceArtifact.class, art.getId());
         Device device = artifact.getDevice();
