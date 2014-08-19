@@ -335,12 +335,4 @@
             </build>
         </profile>
     </profiles>
-    
-    <repositories>
-        <repository>
-            <id>local-repo</id>
-            <name>local-repo</name>
-            <url>file://${project.basedir}/lib</url>
-        </repository>
-    </repositories>
 </project>
