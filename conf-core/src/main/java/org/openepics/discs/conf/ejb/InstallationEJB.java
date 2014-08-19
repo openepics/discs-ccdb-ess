@@ -1,11 +1,11 @@
 package org.openepics.discs.conf.ejb;
 
-import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaQuery;
@@ -25,8 +25,8 @@ import org.openepics.discs.conf.util.CRUDOperation;
  */
 @Stateless public class InstallationEJB {
     private static final Logger logger = Logger.getLogger(InstallationEJB.class.getCanonicalName());
-   
     @PersistenceContext private EntityManager em;
+    @Inject private ConfigurationEntityUtility entityUtility;
 
     // ----- Installation Records
 
@@ -44,7 +44,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @Audit
     @Authorized
     public void addIRecord(InstallationRecord irec) {
-        irec.setModifiedAt(new Date());
+        entityUtility.setModified(irec);
         em.persist(irec);        
     }
 
@@ -52,7 +52,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @Audit
     @Authorized
     public void saveIRecord(InstallationRecord irec) {
-        irec.setModifiedAt(new Date());
+        entityUtility.setModified(irec);
         em.persist(irec);        
     }
 
@@ -73,7 +73,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
         final InstallationArtifact mergedArtifact = em.merge(artifact);
         final InstallationRecord parent = mergedArtifact.getInstallationRecord();
         
-        DateUtility.setModifiedAt(parent, mergedArtifact);
+        entityUtility.setModified(parent, mergedArtifact);
         
         parent.getInstallationArtifactList().add(mergedArtifact);
     }
@@ -84,7 +84,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
     public void saveInstallationArtifact(InstallationArtifact artifact) {
         final InstallationArtifact mergedArtifact = em.merge(artifact);
         
-        DateUtility.setModifiedAt(mergedArtifact.getInstallationRecord(), mergedArtifact);
+        entityUtility.setModified(mergedArtifact.getInstallationRecord(), mergedArtifact);
         
         logger.log(Level.INFO, "Installation Artifact: name " + mergedArtifact.getName() + " description " + mergedArtifact.getDescription() + " uri " + mergedArtifact.getUri() + "is int " + mergedArtifact.isInternal());
     }
@@ -96,7 +96,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
         final InstallationArtifact mergedArtifact = em.merge(artifact);
         final InstallationRecord parent = mergedArtifact.getInstallationRecord();
         
-        parent.setModifiedAt(new Date());
+        entityUtility.setModified(parent);
         
         parent.getInstallationArtifactList().remove(mergedArtifact);
         em.remove(mergedArtifact);

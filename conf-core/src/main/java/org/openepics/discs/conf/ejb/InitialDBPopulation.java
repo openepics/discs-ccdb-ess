@@ -18,7 +18,6 @@ import org.openepics.discs.conf.ent.User;
 import org.openepics.discs.conf.ent.UserRole;
 import org.openepics.seds.api.datatypes.SedsEnum;
 import org.openepics.seds.core.Seds;
-import org.openepics.seds.util.SedsException;
 
 @Stateless
 public class InitialDBPopulation {

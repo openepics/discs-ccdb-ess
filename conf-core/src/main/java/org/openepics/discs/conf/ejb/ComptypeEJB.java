@@ -1,11 +1,11 @@
 package org.openepics.discs.conf.ejb;
 
-import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
@@ -29,7 +29,8 @@ import org.openepics.discs.conf.util.CRUDOperation;
 @Stateless public class ComptypeEJB {
     private static final Logger logger = Logger.getLogger(ComptypeEJB.class.getCanonicalName());
     @PersistenceContext private EntityManager em;
-
+    @Inject private ConfigurationEntityUtility entityUtility;
+    
     // ---------------- Component Type ---------------------
     
     public List<ComponentType> findComponentType() {
@@ -60,7 +61,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @Audit
     @Authorized
     public void addComponentType(ComponentType componentType) {
-        componentType.setModifiedAt(new Date());
+        entityUtility.setModified(componentType);
         em.persist(componentType);
     }
     
@@ -68,7 +69,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @Audit
     @Authorized
     public void saveComponentType(ComponentType componentType) {
-        componentType.setModifiedAt(new Date());
+        entityUtility.setModified(componentType);
         em.merge(componentType);
     }
 
@@ -90,7 +91,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
         final ComptypePropertyValue mergedPropertyValue = em.merge(propertyValue);
         final ComponentType parent = mergedPropertyValue.getComponentType();
         
-        DateUtility.setModifiedAt(parent, mergedPropertyValue);
+        entityUtility.setModified(parent, mergedPropertyValue);
         
         parent.getComptypePropertyList().add(mergedPropertyValue);
         em.merge(parent);
@@ -102,7 +103,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
     public void saveCompTypeProp(ComptypePropertyValue propertyValue) {
         final ComptypePropertyValue mergedPropertyValue = em.merge(propertyValue);
         
-        DateUtility.setModifiedAt(mergedPropertyValue.getComponentType(), mergedPropertyValue);
+        entityUtility.setModified(mergedPropertyValue.getComponentType(), mergedPropertyValue);
         
         logger.log(Level.INFO, "Comp Type Property: id " + mergedPropertyValue.getId() + " name " + mergedPropertyValue.getProperty().getName());
     }
@@ -116,7 +117,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
         final ComptypePropertyValue mergedPropertyValue = em.merge(propertyValue);
         final ComponentType parent = mergedPropertyValue.getComponentType();
         
-        parent.setModifiedAt(new Date());
+        entityUtility.setModified(parent);
         
         parent.getComptypePropertyList().remove(mergedPropertyValue);
         em.remove(mergedPropertyValue);
@@ -132,7 +133,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
         final ComptypeArtifact mergedArtifact = em.merge(artifact);
         final ComponentType parent = mergedArtifact.getComponentType();
 
-        DateUtility.setModifiedAt(parent, mergedArtifact);
+        entityUtility.setModified(parent, mergedArtifact);
         
         parent.getComptypeArtifactList().add(mergedArtifact);        
     }
@@ -144,7 +145,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
     public void saveCompTypeArtifact(ComptypeArtifact artifact) {
         final ComptypeArtifact mergedArtifact = em.merge(artifact);
 
-        DateUtility.setModifiedAt(mergedArtifact.getComponentType(), mergedArtifact);
+        entityUtility.setModified(mergedArtifact.getComponentType(), mergedArtifact);
         
         logger.log(Level.INFO, "Component Type Artifact: name " + mergedArtifact.getName() + " description " + mergedArtifact.getDescription() + " uri " + mergedArtifact.getUri() + "is int " + mergedArtifact.isInternal());
     }
@@ -156,7 +157,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
         final ComptypeArtifact mergedArtifact = em.merge(artifact);                       
         final ComponentType parent = mergedArtifact.getComponentType();
 
-        parent.setModifiedAt(new Date());
+        entityUtility.setModified(parent);
         
         parent.getComptypeArtifactList().remove(mergedArtifact);
         em.remove(mergedArtifact);
@@ -168,7 +169,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @Audit
     @Authorized
     public void saveComptypeAsm(ComponentType componentType, ComptypeAsm assembly) {
-        DateUtility.setModifiedAt(componentType, assembly);
+        entityUtility.setModified(componentType, assembly);
             
         assembly.setParentType(componentType);
         
@@ -182,7 +183,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
     public void deleteComptypeAsm(ComponentType componentType, ComptypeAsm assembly) {        
         final ComptypeAsm mergedAssembly = em.merge(assembly);
         
-        componentType.setModifiedAt(new Date());
+        entityUtility.setModified(componentType);
         
         em.remove(mergedAssembly);
         em.merge(componentType);

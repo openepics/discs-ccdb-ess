@@ -1,11 +1,11 @@
 package org.openepics.discs.conf.ejb;
 
-import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaQuery;
@@ -27,6 +27,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
 @Stateless public class AlignmentEJB {
     private static final Logger logger = Logger.getLogger(AlignmentEJB.class.getCanonicalName());   
     @PersistenceContext private EntityManager em;
+    @Inject private ConfigurationEntityUtility entityUtility;
     
     // ---------------- Alignment Record -------------------------
     
@@ -49,7 +50,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @Audit
     @Authorized
     public void addAlignment(AlignmentRecord record) {
-        record.setModifiedAt(new Date());
+        entityUtility.setModified(record);
         em.persist(record);
     }    
         
@@ -57,7 +58,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @Audit
     @Authorized
     public void saveAlignment(AlignmentRecord record) {
-        record.setModifiedAt(new Date());
+        entityUtility.setModified(record);
         em.merge(record);
     }
     
@@ -79,7 +80,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
         final AlignmentPropertyValue mergedPropertyValue = em.merge(propertyValye);      
         final AlignmentRecord parent = mergedPropertyValue.getAlignmentRecord();
         
-        DateUtility.setModifiedAt(parent, mergedPropertyValue);
+        entityUtility.setModified(parent, mergedPropertyValue);
 
         parent.getAlignmentPropertyList().add(propertyValye);
         em.merge(parent);
@@ -90,10 +91,8 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @Authorized
     public void saveAlignmentProp(AlignmentPropertyValue prop){
         final AlignmentPropertyValue mergedPropValue = em.merge(prop);
-        
-        final Date now = new Date();
-        mergedPropValue.getAlignmentRecord().setModifiedAt(now);
-        mergedPropValue.setModifiedAt(now);
+
+        entityUtility.setModified(mergedPropValue.getAlignmentRecord(), mergedPropValue);
         
         logger.log(Level.INFO, "Alignment Record Property: id " + mergedPropValue.getId() + " name " + mergedPropValue.getProperty().getName());
     }
@@ -107,7 +106,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
         final AlignmentPropertyValue mergedProperty = em.merge(prop);
         final AlignmentRecord parent = prop.getAlignmentRecord();
         
-        parent.setModifiedAt(new Date());
+        entityUtility.setModified(parent);
         
         parent.getAlignmentPropertyList().remove(mergedProperty);        
         em.remove(mergedProperty);
@@ -116,36 +115,37 @@ import org.openepics.discs.conf.util.CRUDOperation;
     // ---------------- Alignment Record Artifact ---------------------
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
+    @Authorized
     public void addAlignmentArtifact(AlignmentArtifact artifact) {
         final AlignmentArtifact mergedArtifact = em.merge(artifact);
         final AlignmentRecord parent = mergedArtifact.getAlignmentRecord();
 
-        DateUtility.setModifiedAt(parent, mergedArtifact);
+        entityUtility.setModified(parent, mergedArtifact);
         
         parent.getAlignmentArtifactList().add(mergedArtifact); 
     }
     
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
+    @Authorized
     public void saveAlignmentArtifact(AlignmentArtifact artifact) {
         final AlignmentArtifact mergedArtifact = em.merge(artifact);
         
-        DateUtility.setModifiedAt(mergedArtifact.getAlignmentRecord(), mergedArtifact);
+        entityUtility.setModified(mergedArtifact.getAlignmentRecord(), mergedArtifact);
         
         logger.log(Level.INFO, "Artifact: name " + mergedArtifact.getName() + " description " + mergedArtifact.getDescription() + " uri " + mergedArtifact.getUri() + "is int " + mergedArtifact.isInternal());
     }
 
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
+    @Authorized
     public void deleteAlignmentArtifact(AlignmentArtifact artifact) {
         final AlignmentArtifact mergedArtifact = em.merge(artifact);
         final AlignmentRecord parent = mergedArtifact.getAlignmentRecord();
         
-        parent.setModifiedAt(new Date());
+        entityUtility.setModified(parent);
         
         parent.getAlignmentArtifactList().remove(mergedArtifact);
         em.remove(mergedArtifact);
     }
-
-
 }
