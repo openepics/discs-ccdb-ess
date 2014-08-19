@@ -88,8 +88,8 @@ import org.openepics.discs.conf.util.CRUDOperation;
 
     public List<Unit> findUnits() {
         final CriteriaQuery<Unit> cq = em.getCriteriaBuilder().createQuery(Unit.class);
-        final List<Unit> units = em.createQuery(cq).getResultList();
         cq.from(Unit.class);
+        final List<Unit> units = em.createQuery(cq).getResultList();
         
         logger.log(Level.INFO, "Number of units: {0}", units.size());
 
@@ -138,8 +138,9 @@ import org.openepics.discs.conf.util.CRUDOperation;
 
     public List<DataType> findDataType() {
         final CriteriaQuery<DataType> cq = em.getCriteriaBuilder().createQuery(DataType.class);
-        final List<DataType> dataTypes = em.createQuery(cq).getResultList();
         cq.from(DataType.class);
+        final List<DataType> dataTypes = em.createQuery(cq).getResultList();
+        
         
         logger.log(Level.INFO, "Number of data-types: {0}", dataTypes.size());
 
@@ -164,9 +165,9 @@ import org.openepics.discs.conf.util.CRUDOperation;
 
     public List<SlotRelation> findSlotRelation() {
         final CriteriaQuery<SlotRelation> cq = em.getCriteriaBuilder().createQuery(SlotRelation.class);
-        final List<SlotRelation> slotRelations = em.createQuery(cq).getResultList();
         cq.from(SlotRelation.class);
-        
+        final List<SlotRelation> slotRelations = em.createQuery(cq).getResultList();
+                
         logger.log(Level.INFO, "Number of slot relations: {0}", slotRelations.size());
 
         return slotRelations;
@@ -180,8 +181,9 @@ import org.openepics.discs.conf.util.CRUDOperation;
 
     public List<AuditRecord> findAuditRecord() {
         final CriteriaQuery<AuditRecord> cq = em.getCriteriaBuilder().createQuery(AuditRecord.class);
-        final List<AuditRecord> auditRecords = em.createQuery(cq).getResultList();
         cq.from(AuditRecord.class);
+        final List<AuditRecord> auditRecords = em.createQuery(cq).getResultList();
+        
         
         logger.log(Level.INFO, "Number of audit records: {0}", auditRecords.size());
 
