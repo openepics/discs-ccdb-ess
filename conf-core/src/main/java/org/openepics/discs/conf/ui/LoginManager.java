@@ -4,17 +4,17 @@
  */
 package org.openepics.discs.conf.ui;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Named;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
+
+import org.openepics.discs.conf.security.SecurityPolicy;
 
 /**
  * @author Vasu V <vuppala@frib.msu.org>
@@ -24,61 +24,51 @@ import javax.servlet.http.HttpServletRequest;
 @Named
 @SessionScoped
 public class LoginManager implements Serializable {
+    private static final long serialVersionUID = 1L;
     private static final Logger logger = Logger.getLogger(LoginManager.class.getCanonicalName());
 
-    private String userid;
+    private String userId;
     private String password;
     
-    private boolean loggedin = false;
+    private boolean loggedIn = false;
+    
+    @EJB private SecurityPolicy securityPolicy;
     
 
-    public String onLogin() throws IOException {
-        FacesContext context = FacesContext.getCurrentInstance();
-        HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
-
+    public String onLogin() {
         try {
-            if (request.getUserPrincipal() == null) {
-                request.login(userid, password);
-
-                loggedin = true;
-                logger.log(Level.INFO, "Login successful for " + userid);
-                showMessage(FacesMessage.SEVERITY_INFO, "You are logged in. Welcome!", userid);
-            } else {
-                showMessage(FacesMessage.SEVERITY_INFO, "You are already logged in!", userid);
-            }
-        } catch (ServletException e) {
+            securityPolicy.login(userId, password);            
+            showMessage(FacesMessage.SEVERITY_INFO, "You are logged in. Welcome!", userId);
+            loggedIn = true;
+        } catch (Exception e) {
             showMessage(FacesMessage.SEVERITY_ERROR, "Login Failed! Please try again. ", "Status: ");
-            logger.log(Level.INFO, "Login failed for " + userid);
-            loggedin = false;
+            logger.log(Level.INFO, "Login failed for " + userId);
+            loggedIn = false;
         } finally {
             password = "xxxxxx"; // ToDo implement a better way destroy the password (from JVM)
         }
-        return null;
+        return null;                        
     }
 
     public String onLogout() {
-        FacesContext context = FacesContext.getCurrentInstance();
-        HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
         try {
-            request.logout();
-            loggedin = false;
-            userid = null;
+            securityPolicy.logout();
+            loggedIn = false;
+            userId = null;
             showMessage(FacesMessage.SEVERITY_INFO, "You have been logged out.", "Thank you!");
         } catch (Exception e) {
             showMessage(FacesMessage.SEVERITY_ERROR, "Strangely, logout has failed", "That's odd!");
-        } finally {
-
-        }
-
+        } 
+        
         return "logout"; // ToDo: replace with null
     }
 
-    public String getUserid() {
-        return userid;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setUserid(String userid) {
-        this.userid = userid;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getPassword() {
@@ -89,14 +79,13 @@ public class LoginManager implements Serializable {
         this.password = password;
     }
 
-    public boolean isLoggedin() {
-        return loggedin;
+    public boolean isLoggedIn() {
+        return loggedIn;
     }
 
     private void showMessage(FacesMessage.Severity severity, String summary, String message) {
         FacesContext context = FacesContext.getCurrentInstance();
 
         context.addMessage(null, new FacesMessage(severity, summary, message));
-        // FacesMessage n = new FacesMessage();
     }
 }

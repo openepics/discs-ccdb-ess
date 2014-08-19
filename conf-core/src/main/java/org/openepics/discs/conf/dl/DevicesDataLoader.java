@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nullable;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
@@ -23,12 +24,10 @@ import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ent.DeviceStatus;
-import org.openepics.discs.conf.ent.EntityType;
-import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyAssociation;
 import org.openepics.discs.conf.security.SecurityException;
-import org.openepics.discs.conf.ui.LoginManager;
+import org.openepics.discs.conf.security.SecurityPolicy;
 import org.openepics.discs.conf.util.As;
 
 import com.google.common.base.Objects;
@@ -38,7 +37,7 @@ import com.google.common.collect.ImmutableList;
 @DevicesLoaderQualifier
 public class DevicesDataLoader extends AbstractDataLoader implements DataLoader  {
 
-    @Inject private LoginManager loginManager;
+    @EJB private SecurityPolicy securityPolicy;
     @Inject private ConfigurationEJB configurationEJB;
     @Inject private ComptypeEJB comptypeEJB;
     @Inject private DeviceEJB deviceEJB;
@@ -104,7 +103,7 @@ public class DevicesDataLoader extends AbstractDataLoader implements DataLoader 
                 final @Nullable String manufacturer = manufacturerIndex == -1 ? null : row.get(manufacturerIndex);
                 final @Nullable String manufModel = manufModelIndex == -1 ? null : row.get(manufModelIndex);
 
-                final String modifiedBy = loginManager.getUserid();
+                final String modifiedBy = securityPolicy.getUserId();
 
                 if (serial == null) {
                     rowResult.addMessage(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, rowNumber, headerRow.get(serialIndex)));

@@ -41,13 +41,11 @@ import com.google.common.io.ByteStreams;
 @ManagedBean
 @ViewScoped
 public class UnitManager implements Serializable {
-
-
     private static final long serialVersionUID = 1L;
+
     @Inject private ConfigurationEJB configurationEJB;
     @Inject private DataLoaderHandler dataLoaderHandler;
     @Inject @UnitLoaderQualifier private DataLoader unitsDataLoader;
-    @Inject private LoginManager loginManager;
 
     private List<Unit> units;
     private List<Unit> filteredUnits;

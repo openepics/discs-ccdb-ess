@@ -9,6 +9,7 @@
  */
 package org.openepics.discs.conf.security;
 
+import java.io.Serializable;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.List;
@@ -18,11 +19,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.ejb.Stateful;
+import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.Alternative;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.servlet.http.HttpServletRequest;
 
 import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
@@ -33,27 +38,67 @@ import com.google.common.base.Preconditions;
 
 
 /**
- * Implementation of simple security policy (checking for entity-type access only) using the DB {@link Privilege} table
+ * Implementation of simple security policy (checking for entity-type access only) using the DB {@link Privilege} table 
+ * and the Java EE security module, as was in Configuration Module v. 1.0.
+ * 
  * Stateful EJB, caches all permissions from database on first access. 
  * 
  * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
  *
  */
 @Stateful
+@SessionScoped
 @Named("securityPolicy")
 @Alternative
-public class EntityTypeDBTableSecurityPolicy implements SecurityPolicy {
+public class EntityTypeDBTableSecurityPolicy implements SecurityPolicy, Serializable {
+    private static final long serialVersionUID = 1L;
     private static final Logger logger = Logger.getLogger(EntityTypeDBTableSecurityPolicy.class.getCanonicalName());
     
     @PersistenceContext private EntityManager em;
     @Inject private LoginManager loginManager;
-    
  
     /**
      * Contains cached permissions
      */
     private Map<EntityType, Set<EntityTypeOperation> > cachedPermissions;
+    
+    private String userName;
 
+    
+    @Override
+    public void login(String userName, String password) {
+        final FacesContext context = FacesContext.getCurrentInstance();
+        final HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
+
+        try {
+            if (request.getUserPrincipal() == null) {
+                request.login(userName, password);                
+                this.userName = userName;                
+                logger.log(Level.INFO, "Login successful for " + userName);                
+            }
+        } catch (Exception e) {
+            throw new SecurityException("Login Failed !", e);
+        }
+    }
+
+    @Override
+    public void logout() {
+        final FacesContext context = FacesContext.getCurrentInstance();
+        final HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
+        try {
+            request.logout();
+            request.getSession().invalidate();
+            
+            this.userName = null;
+        } catch (Exception e) {
+            throw new SecurityException("Error while logging out!", e);
+        }
+    }
+
+    @Override
+    public String getUserId() {        
+        return userName;
+    }
     
     @Override
     public void checkAuth(Object entity, EntityTypeOperation operationType) {
@@ -96,7 +141,7 @@ public class EntityTypeDBTableSecurityPolicy implements SecurityPolicy {
      */
     private boolean hasPermission(EntityType entityType, EntityTypeOperation operationType) {
         
-        final String principal = loginManager.getUserid();
+        final String principal = loginManager.getUserId();
         
         // Handle the non-logged case 
         if (principal == null) {
@@ -125,7 +170,7 @@ public class EntityTypeDBTableSecurityPolicy implements SecurityPolicy {
         
         cachedPermissions = new EnumMap<EntityType, Set<EntityTypeOperation>>(EntityType.class);
 
-        final String principal = loginManager.getUserid();
+        final String principal = loginManager.getUserId();
         // The following should not happen for logged in user
         if (principal == null || principal.isEmpty()) {
             throw new SecurityException("Identity could not be established. Is user logged in");

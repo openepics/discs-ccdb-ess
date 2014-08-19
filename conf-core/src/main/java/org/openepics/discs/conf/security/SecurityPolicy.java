@@ -21,6 +21,28 @@ import org.openepics.discs.conf.ent.EntityTypeOperation;
  */
 public interface SecurityPolicy {
     /**
+     * Returns the user id (user-name) for the current user
+     * 
+     * @return
+     */
+    public String getUserId();
+
+
+    /**
+     * Method used to login (authenticate)
+     * 
+     * @return
+     */
+    public void login(String userName, String password);
+
+    
+    /**
+     * Method used for logout
+     */
+    public void logout();
+    
+    
+    /**
      * Checks if user is authorized to do opeeration operationType on entity of entityType
      * 
      * @param entity The target entity
@@ -34,5 +56,5 @@ public interface SecurityPolicy {
      * @param param
      * @return
      */
-    public boolean getUIHint(String param);
+    public boolean getUIHint(String param);            
 }

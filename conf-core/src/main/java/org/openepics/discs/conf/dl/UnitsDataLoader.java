@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nullable;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
@@ -15,11 +16,9 @@ import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.dl.common.ErrorMessage;
 import org.openepics.discs.conf.dl.common.ValidationMessage;
 import org.openepics.discs.conf.ejb.ConfigurationEJB;
-import org.openepics.discs.conf.ent.EntityType;
-import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.Unit;
 import org.openepics.discs.conf.security.SecurityException;
-import org.openepics.discs.conf.ui.LoginManager;
+import org.openepics.discs.conf.security.SecurityPolicy;
 import org.openepics.discs.conf.util.As;
 
 /**
@@ -31,8 +30,7 @@ import org.openepics.discs.conf.util.As;
 @Stateless
 @UnitLoaderQualifier
 public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
-
-    @Inject private LoginManager loginManager;
+    @EJB private SecurityPolicy securityPolicy;
     @Inject private ConfigurationEJB configurationEJB;
 
     private Map<String, Unit> unitByName;
@@ -86,7 +84,7 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
                 final @Nullable String description = row.get(descriptionIndex);
 
                 final Date modifiedAt = new Date();
-                final String modifiedBy = loginManager.getUserid();
+                final String modifiedBy = securityPolicy.getUserId();
 
                 if (name == null) {
                     rowResult.addMessage(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, rowNumber, headerRow.get(nameIndex)));

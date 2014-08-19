@@ -33,6 +33,7 @@ import org.openepics.discs.conf.ent.ComptypeAsm;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
+import org.openepics.discs.conf.security.SecurityPolicy;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
 import org.openepics.discs.conf.util.BlobStore;
 import org.openepics.discs.conf.util.Utility;
@@ -62,7 +63,7 @@ public class ComponentTypeManager implements Serializable {
 
     @Inject
     private BlobStore blobStore;
-    @Inject LoginManager loginManager;
+    @EJB SecurityPolicy securityPolicy;
     @Inject private DataLoaderHandler dataLoaderHandler;
     @Inject @ComponentTypesLoaderQualifier private DataLoader compTypesDataLoader;
     
@@ -191,7 +192,7 @@ public class ComponentTypeManager implements Serializable {
             propertyOperation = 'a';
 
             // TODO replaced void constructor (now protected) with default values. Check.
-            inputProperty = new ComptypePropertyValue(false, loginManager.getUserid());
+            inputProperty = new ComptypePropertyValue(false, securityPolicy.getUserId());
             inputProperty.setComponentType(selectedObject);
             fileUploaded = false;
             uploadedFileName = null;
@@ -450,7 +451,7 @@ public class ComponentTypeManager implements Serializable {
                 selectedParts = new ArrayList<>();
             }
             // TODO replaced void constructor (now protected) with default values. Check!
-            ComptypeAsm prt = new ComptypeAsm("", loginManager.getUserid());
+            ComptypeAsm prt = new ComptypeAsm("", securityPolicy.getUserId());
 
             prt.setParentType(selectedObject);
             // CTP.setComponentType1(inputObject);

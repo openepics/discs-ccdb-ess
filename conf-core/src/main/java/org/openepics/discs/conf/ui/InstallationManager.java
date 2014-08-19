@@ -25,6 +25,7 @@ import javax.inject.Named;
 import org.openepics.discs.conf.ejb.InstallationEJB;
 import org.openepics.discs.conf.ent.InstallationArtifact;
 import org.openepics.discs.conf.ent.InstallationRecord;
+import org.openepics.discs.conf.security.SecurityPolicy;
 import org.openepics.discs.conf.util.BlobStore;
 import org.openepics.discs.conf.util.Utility;
 import org.primefaces.context.RequestContext;
@@ -47,7 +48,7 @@ public class InstallationManager implements Serializable {
     @Inject
     private BlobStore blobStore;
 
-    @Inject LoginManager loginManager;
+    @EJB SecurityPolicy securityPolicy;
 
     private static final Logger logger = Logger.getLogger(InstallationManager.class.getCanonicalName());
 
@@ -95,7 +96,7 @@ public class InstallationManager implements Serializable {
     public void onIRecAdd(ActionEvent event) {
         selectedOp = 'a';
         // TODO replaced void constructor (now protected) with default values. Check!
-        inputObject = new InstallationRecord("1", new Date(), loginManager.getUserid());
+        inputObject = new InstallationRecord("1", new Date(), securityPolicy.getUserId());
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Add", "");
     }
 
@@ -141,7 +142,7 @@ public class InstallationManager implements Serializable {
             selectedArtifacts = new ArrayList<>();
         }
         // TODO replaced void constructor (now protected) with default values. Check!
-        inputArtifact = new InstallationArtifact("", false, "", "", loginManager.getUserid());
+        inputArtifact = new InstallationArtifact("", false, "", "", securityPolicy.getUserId());
         inputArtifact.setInstallationRecord(selectedObject);
         fileUploaded = false;
         uploadedFileName = null;

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nullable;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
@@ -22,7 +23,7 @@ import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyAssociation;
 import org.openepics.discs.conf.security.SecurityException;
-import org.openepics.discs.conf.ui.LoginManager;
+import org.openepics.discs.conf.security.SecurityPolicy;
 import org.openepics.discs.conf.util.As;
 
 import com.google.common.base.Objects;
@@ -31,7 +32,7 @@ import com.google.common.collect.ImmutableList;
 @Stateless
 @ComponentTypesLoaderQualifier
 public class ComponentTypesDataLoader extends AbstractDataLoader implements DataLoader {
-    @Inject private LoginManager loginManager;
+    @EJB private SecurityPolicy securityPolicy;
     @Inject private ComptypeEJB comptypeEJB;
     @Inject private ConfigurationEJB configurationEJB;
     private int nameIndex, descriptionIndex;
@@ -86,7 +87,7 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
                 final String command = As.notNull(row.get(commandIndex).toUpperCase());
                 final @Nullable String name = row.get(nameIndex);
                 final @Nullable String description = descriptionIndex == -1 ? null : row.get(descriptionIndex);
-                final String modifiedBy = loginManager.getUserid();
+                final String modifiedBy = securityPolicy.getUserId();
 
                 if (name == null) {
                     rowResult.addMessage(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, rowNumber, headerRow.get(nameIndex)));

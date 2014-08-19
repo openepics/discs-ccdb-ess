@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.Nullable;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
@@ -22,8 +23,6 @@ import org.openepics.discs.conf.ejb.ConfigurationEJB;
 import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.AlignmentInformation;
 import org.openepics.discs.conf.ent.ComponentType;
-import org.openepics.discs.conf.ent.EntityType;
-import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyAssociation;
 import org.openepics.discs.conf.ent.Slot;
@@ -32,7 +31,7 @@ import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.ent.SlotRelation;
 import org.openepics.discs.conf.ent.SlotRelationName;
 import org.openepics.discs.conf.security.SecurityException;
-import org.openepics.discs.conf.ui.LoginManager;
+import org.openepics.discs.conf.security.SecurityPolicy;
 import org.openepics.discs.conf.util.As;
 
 import com.google.common.base.Objects;
@@ -41,8 +40,7 @@ import com.google.common.collect.ImmutableList;
 
 @Stateless
 public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
-
-    @Inject private LoginManager loginManager;
+    @EJB private SecurityPolicy securityPolicy;
     @Inject private SlotEJB slotEJB;
     @Inject private ConfigurationEJB configurationEJB;
     @Inject private ComptypeEJB comptypeEJB;
@@ -137,7 +135,7 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                 final @Nullable String asmComment = asmCommentIndex == -1 ? null : row.get(asmCommentIndex);
                 final @Nullable String asmPosition = asmPositionIndex == -1 ? null : row.get(asmPositionIndex);
                 final @Nullable String comment = commentIndex == -1 ? null : row.get(commentIndex);
-                final String modifiedBy = loginManager.getUserid();
+                final String modifiedBy = securityPolicy.getUserId();
 
                 final @Nullable Double blp = parseDouble(blpIndex == -1 ? null : row.get(blpIndex), blpIndex == -1 ? null : headerRow.get(blpIndex), rowNumber);
                 final @Nullable Double globalX = parseDouble(globalXIndex == -1 ? null : row.get(globalXIndex), globalXIndex == -1 ? null : headerRow.get(globalXIndex), rowNumber);

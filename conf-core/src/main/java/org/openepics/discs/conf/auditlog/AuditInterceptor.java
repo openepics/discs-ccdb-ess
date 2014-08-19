@@ -2,6 +2,7 @@ package org.openepics.discs.conf.auditlog;
 
 import java.util.List;
 
+import javax.ejb.EJB;
 import javax.inject.Inject;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptor;
@@ -10,6 +11,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.openepics.discs.conf.ent.AuditRecord;
+import org.openepics.discs.conf.security.SecurityPolicy;
 import org.openepics.discs.conf.ui.LoginManager;
 import org.openepics.discs.conf.util.CRUDOperation;
 import org.openepics.discs.conf.util.ParentEntityResolver;
@@ -25,8 +27,8 @@ import org.openepics.discs.conf.util.ParentEntityResolver;
 @Interceptor
 public class AuditInterceptor {
     @PersistenceContext private EntityManager em;
-    @Inject private LoginManager loginManager;
     @Inject private AuditLogEntryCreator auditLogEntryCreator;
+    @EJB private SecurityPolicy securityPolicy;
 
     /**
      * Creates audit log after the method annotated with this interceptor has finished executing.
@@ -42,7 +44,7 @@ public class AuditInterceptor {
 
         final Object entity = context.getParameters()[0];
         if (context.getMethod().getAnnotation(CRUDOperation.class) != null) {
-            final List<AuditRecord>  auditRecords = auditLogEntryCreator.auditRecords(ParentEntityResolver.resolveParentEntity(entity), context.getMethod().getAnnotation(CRUDOperation.class).operation(), loginManager.getUserid());
+            final List<AuditRecord>  auditRecords = auditLogEntryCreator.auditRecords(ParentEntityResolver.resolveParentEntity(entity), context.getMethod().getAnnotation(CRUDOperation.class).operation(), securityPolicy.getUserId());
             if (auditRecords != null) {
                 for (AuditRecord auditRecord : auditRecords) {
                     em.persist(auditRecord);
