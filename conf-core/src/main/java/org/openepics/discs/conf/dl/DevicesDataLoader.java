@@ -26,7 +26,6 @@ import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ent.DeviceStatus;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyAssociation;
-import org.openepics.discs.conf.security.SecurityException;
 import org.openepics.discs.conf.security.SecurityPolicy;
 import org.openepics.discs.conf.util.As;
 
@@ -127,7 +126,7 @@ public class DevicesDataLoader extends AbstractDataLoader implements DataLoader 
                                     final Device deviceToUpdate = deviceEJB.findDeviceBySerialNumber(serial);
                                     addOrUpdateDevice(deviceToUpdate, compType, description, status, manufSerial, location, purchaseOrder, asmPosition, asmDescription, manufacturer, manufModel, modifiedBy);
                                     addOrUpdateProperties(deviceToUpdate, indexByPropertyName, row, rowNumber, modifiedBy);
-                                } catch (SecurityException e) {
+                                } catch (Exception e) {
                                     rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                                 }
                             }
@@ -142,7 +141,7 @@ public class DevicesDataLoader extends AbstractDataLoader implements DataLoader 
                                     addOrUpdateDevice(newDevice, compType, description, status, manufSerial, location, purchaseOrder, asmPosition, asmDescription, manufacturer, manufModel, modifiedBy);
                                     deviceEJB.addDevice(newDevice);
                                     addOrUpdateProperties(newDevice, indexByPropertyName, row, rowNumber, modifiedBy);
-                                } catch (SecurityException e) {
+                                } catch (Exception e) {
                                     rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                                 }
                             }
@@ -155,7 +154,7 @@ public class DevicesDataLoader extends AbstractDataLoader implements DataLoader 
                         } else {
                             try {
                                 deviceEJB.deleteDevice(deviceToDelete);
-                            } catch (SecurityException e) {
+                            } catch (Exception e) {
                                 rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                             }
                         }

@@ -23,7 +23,6 @@ import org.openepics.discs.conf.ent.DataType;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyAssociation;
 import org.openepics.discs.conf.ent.Unit;
-import org.openepics.discs.conf.security.SecurityException;
 import org.openepics.discs.conf.security.SecurityPolicy;
 import org.openepics.discs.conf.util.As;
 
@@ -38,7 +37,7 @@ import com.google.common.base.Objects;
 @Stateless
 @PropertiesLoaderQualifier
 public class PropertiesDataLoader extends AbstractDataLoader implements DataLoader {
-    @EJB private SecurityPolicy securityPolicy;   
+    @EJB private SecurityPolicy securityPolicy;
     @Inject private ConfigurationEJB configurationEJB;
     private Map<String, Property> propertyByName;
     private int nameIndex, associationIndex, unitIndex, dataTypeIndex, descriptionIndex;
@@ -120,7 +119,7 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
                                 } else {
                                     configurationEJB.saveProperty(propertyToUpdate);
                                 }
-                            } catch (SecurityException e) {
+                            } catch (Exception e) {
                                 rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                             }
                         } else {
@@ -133,7 +132,7 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
                                     configurationEJB.addProperty(propertyToAdd);
                                     propertyByName.put(propertyToAdd.getName(), propertyToAdd);
                                 }
-                            } catch (SecurityException e) {
+                            } catch (Exception e) {
                                 rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                             }
                         }
@@ -148,7 +147,7 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
                                 configurationEJB.deleteProperty(propertyToDelete);
                                 propertyByName.remove(propertyToDelete.getName());
                             }
-                        } catch (SecurityException e) {
+                        } catch (Exception e) {
                             rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                         }
                         break;
@@ -179,7 +178,7 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
                                 rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
                                 continue;
                             }
-                        } catch (SecurityException e) {
+                        } catch (Exception e) {
                             rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                         }
                         break;

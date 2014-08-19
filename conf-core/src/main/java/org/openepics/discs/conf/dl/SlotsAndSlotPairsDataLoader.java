@@ -30,7 +30,6 @@ import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.ent.SlotRelation;
 import org.openepics.discs.conf.ent.SlotRelationName;
-import org.openepics.discs.conf.security.SecurityException;
 import org.openepics.discs.conf.security.SecurityPolicy;
 import org.openepics.discs.conf.util.As;
 
@@ -184,7 +183,7 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                                     if (rowResult.isError()) {
                                         continue;
                                     }
-                                } catch (SecurityException e) {
+                                } catch (Exception e) {
                                     rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                                 }
                             }
@@ -203,7 +202,7 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                                     if (rowResult.isError()) {
                                         continue;
                                     }
-                                } catch (SecurityException e) {
+                                } catch (Exception e) {
                                     rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                                 }
                             }
@@ -218,7 +217,7 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                             } else {
                                 slotEJB.deleteLayoutSlot(slotToDelete);
                             }
-                        } catch (SecurityException e) {
+                        } catch (Exception e) {
                             rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                         }
                         break;
@@ -247,7 +246,7 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                                 rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
                                 continue;
                             }
-                        } catch (SecurityException e) {
+                        } catch (Exception e) {
                             rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                         }
                         break;
@@ -393,7 +392,7 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                                             } else {
                                                 rowResult.addMessage(new ValidationMessage(ErrorMessage.SAME_CHILD_AND_PARENT, rowNumber));
                                             }
-                                        } catch (SecurityException e) {
+                                        } catch (Exception e) {
                                             rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                                         }
                                     }
@@ -406,7 +405,7 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                                         for (SlotPair slotPair : slotPairs) {
                                             slotEJB.deleteSlotPair(slotPair);
                                         }
-                                    } catch (SecurityException e) {
+                                    } catch (Exception e) {
                                         rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                                     }
                                 } else {

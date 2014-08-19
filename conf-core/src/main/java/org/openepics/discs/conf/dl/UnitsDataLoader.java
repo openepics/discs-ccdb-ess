@@ -17,7 +17,6 @@ import org.openepics.discs.conf.dl.common.ErrorMessage;
 import org.openepics.discs.conf.dl.common.ValidationMessage;
 import org.openepics.discs.conf.ejb.ConfigurationEJB;
 import org.openepics.discs.conf.ent.Unit;
-import org.openepics.discs.conf.security.SecurityException;
 import org.openepics.discs.conf.security.SecurityPolicy;
 import org.openepics.discs.conf.util.As;
 
@@ -107,7 +106,7 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
                                 unitToUpdate.setSymbol(symbol);
                                 unitToUpdate.setModifiedAt(modifiedAt);
                                 configurationEJB.saveUnit(unitToUpdate);
-                            } catch (SecurityException e) {
+                            } catch (Exception e) {
                                 rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                                 continue;
                             }
@@ -116,7 +115,7 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
                                 final Unit unitToAdd = new Unit(name, quantity, symbol, description, modifiedBy);
                                 configurationEJB.addUnit(unitToAdd);
                                 unitByName.put(unitToAdd.getName(), unitToAdd);
-                            } catch (SecurityException e) {
+                            } catch (Exception e) {
                                 rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                                 continue;
                             }
@@ -132,7 +131,7 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
                                 configurationEJB.deleteUnit(unitToDelete);
                                 unitByName.remove(unitToDelete.getName());
                             }
-                        } catch (SecurityException e) {
+                        } catch (Exception e) {
                             rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                             continue;
                         }
@@ -164,7 +163,7 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
                                 rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
                                 continue;
                             }
-                        } catch (SecurityException e) {
+                        } catch (Exception e) {
                             rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                             continue;
                         }

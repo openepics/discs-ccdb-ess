@@ -24,7 +24,7 @@ public class CCDBPackager {
 	    final BeansDescriptor beans = Descriptors.create(BeansDescriptor.class).getOrCreateAlternatives().clazz("org.openepics.discs.conf.util.AppPropertiesJBoss").up();
         WebArchive war = ShrinkWrap.create(WebArchive.class, "confmgr_test.war")
             .addAsLibraries(libraries)
-            .addPackages(true, "org.openepics.discs.conf.ent", "org.openepics.discs.conf.ejb", "org.openepics.discs.conf.ui", "org.openepics.discs.conf.dl", "org.openepics.discs.conf.util")
+            .addPackages(true, "org.openepics.discs.conf.ent", "org.openepics.discs.conf.ejb", "org.openepics.discs.conf.ui", "org.openepics.discs.conf.dl", "org.openepics.discs.conf.util", "org.openepics.discs.conf.security")
             .addAsResource("test-persistence.xml", "META-INF/persistence.xml")
             .addAsWebInfResource(new StringAsset(beans.exportAsString()), "beans.xml");
 

@@ -22,7 +22,6 @@ import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyAssociation;
-import org.openepics.discs.conf.security.SecurityException;
 import org.openepics.discs.conf.security.SecurityPolicy;
 import org.openepics.discs.conf.util.As;
 
@@ -97,14 +96,14 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
                 switch (command) {
                 case CMD_UPDATE:
                     final ComponentType componentTypeToUpdate = comptypeEJB.findComponentTypeByName(name);
-                    if (componentTypeToUpdate != null) {                     
+                    if (componentTypeToUpdate != null) {
                         try {
                             componentTypeToUpdate.setDescription(description);
                             addOrUpdateProperties(componentTypeToUpdate, indexByPropertyName, row, rowNumber, modifiedBy);
                             if (rowResult.isError()) {
                                 continue;
                             }
-                        } catch (SecurityException e) {
+                        } catch (Exception e) {
                             rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                         }
                     } else {
@@ -116,7 +115,7 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
                             if (rowResult.isError()) {
                                 continue;
                             }
-                        } catch (SecurityException e) {
+                        } catch (Exception e) {
                             rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                         }
                     }
@@ -130,7 +129,7 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
                         } else {
                             comptypeEJB.deleteComponentType(componentTypeToDelete);
                         }
-                    } catch (SecurityException e) {
+                    } catch (Exception e) {
                         rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                     }
                     break;
@@ -159,7 +158,7 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
                             rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
                             continue;
                         }
-                    } catch (SecurityException e) {
+                    } catch (Exception e) {
                         rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                     }
                     break;
