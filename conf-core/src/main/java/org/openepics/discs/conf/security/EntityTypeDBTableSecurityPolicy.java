@@ -69,37 +69,23 @@ public class EntityTypeDBTableSecurityPolicy implements SecurityPolicy {
   
     @Override
     public boolean getUIHint(String param) {
-        logger.log(Level.INFO, "Get UI Hint with " + param);
-        if (SecurityPolicy.MANAGE_COMPONENT_TYPES.equals(param)) {
-            return hasPermission(EntityType.COMPONENT_TYPE, EntityTypeOperation.CREATE) ||
-                    hasPermission(EntityType.COMPONENT_TYPE, EntityTypeOperation.DELETE) ||
-                    hasPermission(EntityType.COMPONENT_TYPE, EntityTypeOperation.UPDATE) ||
-                    hasPermission(EntityType.COMPONENT_TYPE, EntityTypeOperation.RENAME);
-        } else if (SecurityPolicy.MANAGE_PROPERTIES.equals(param)) {
-            return hasPermission(EntityType.PROPERTY, EntityTypeOperation.CREATE) ||
-                    hasPermission(EntityType.PROPERTY, EntityTypeOperation.DELETE) ||
-                    hasPermission(EntityType.PROPERTY, EntityTypeOperation.UPDATE) ||
-                    hasPermission(EntityType.PROPERTY, EntityTypeOperation.RENAME);
-        } else if (SecurityPolicy.MANAGE_DEVICES.equals(param)) {
-            return hasPermission(EntityType.DEVICE, EntityTypeOperation.CREATE) ||
-                    hasPermission(EntityType.DEVICE, EntityTypeOperation.DELETE) ||
-                    hasPermission(EntityType.DEVICE, EntityTypeOperation.UPDATE);
-        } else if (SecurityPolicy.MANAGE_LAYOUT_SLOTS.equals(param)) {
-            return hasPermission(EntityType.SLOT, EntityTypeOperation.CREATE) ||
-                    hasPermission(EntityType.SLOT, EntityTypeOperation.DELETE) ||
-                    hasPermission(EntityType.SLOT, EntityTypeOperation.UPDATE) ||
-                    hasPermission(EntityType.SLOT, EntityTypeOperation.RENAME);
-        } else if (SecurityPolicy.MANAGE_UNITS.equals(param)) {
-            return hasPermission(EntityType.UNIT, EntityTypeOperation.CREATE) ||
-                    hasPermission(EntityType.UNIT, EntityTypeOperation.DELETE) ||
-                    hasPermission(EntityType.UNIT, EntityTypeOperation.UPDATE) ||
-                    hasPermission(EntityType.UNIT, EntityTypeOperation.RENAME);
-        }
-        
-        logger.log(Level.INFO, "Get UI Hint probably invoked with invalid key");
-        return false;
+        return hasAnyModifyPermission( EntityType.valueOf(param) );
     }
 
+   
+    /** 
+     * Will allow UI element to be shown for given entity type
+     * 
+     * @param entityType
+     * @return
+     */
+    private boolean hasAnyModifyPermission(EntityType entityType) {
+        return hasPermission(entityType, EntityTypeOperation.CREATE) ||
+                hasPermission(entityType, EntityTypeOperation.DELETE) ||
+                hasPermission(entityType, EntityTypeOperation.UPDATE) ||
+                hasPermission(entityType, EntityTypeOperation.RENAME);  
+    }
+     
     
     /** 
      * Checks if the user has access to the given entityType using operation operationType

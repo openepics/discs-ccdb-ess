@@ -46,6 +46,7 @@ public class InitialDBPopulation {
         privilege = new Privilege(EntityType.COMPONENT_TYPE, EntityTypeOperation.DELETE);
         privilege.setRole(role);
         em.persist(privilege);
+        
         privilege = new Privilege(EntityType.UNIT, EntityTypeOperation.CREATE);
         privilege.setRole(role);
         em.persist(privilege);
@@ -58,6 +59,7 @@ public class InitialDBPopulation {
         privilege = new Privilege(EntityType.UNIT, EntityTypeOperation.DELETE);
         privilege.setRole(role);
         em.persist(privilege);
+        
         privilege = new Privilege(EntityType.PROPERTY, EntityTypeOperation.CREATE);
         privilege.setRole(role);
         em.persist(privilege);
@@ -70,6 +72,7 @@ public class InitialDBPopulation {
         privilege = new Privilege(EntityType.PROPERTY, EntityTypeOperation.DELETE);
         privilege.setRole(role);
         em.persist(privilege);
+        
         privilege = new Privilege(EntityType.SLOT, EntityTypeOperation.CREATE);
         privilege.setRole(role);
         em.persist(privilege);
@@ -82,9 +85,11 @@ public class InitialDBPopulation {
         privilege = new Privilege(EntityType.SLOT, EntityTypeOperation.DELETE);
         privilege.setRole(role);
         em.persist(privilege);
+        
         privilege = new Privilege(EntityType.MENU, EntityTypeOperation.AUTHORIZED);
         privilege.setRole(role);
         em.persist(privilege);
+        
         privilege = new Privilege(EntityType.DEVICE, EntityTypeOperation.CREATE);
         privilege.setRole(role);
         em.persist(privilege);
@@ -94,7 +99,46 @@ public class InitialDBPopulation {
         privilege = new Privilege(EntityType.DEVICE, EntityTypeOperation.DELETE);
         privilege.setRole(role);
         em.persist(privilege);
-
+                
+        privilege = new Privilege(EntityType.ALIGNMENT_RECORD, EntityTypeOperation.CREATE);
+        privilege.setRole(role);
+        em.persist(privilege);
+        privilege = new Privilege(EntityType.ALIGNMENT_RECORD, EntityTypeOperation.UPDATE);
+        privilege.setRole(role);
+        em.persist(privilege);
+        privilege = new Privilege(EntityType.ALIGNMENT_RECORD, EntityTypeOperation.RENAME);
+        privilege.setRole(role);
+        em.persist(privilege);
+        privilege = new Privilege(EntityType.ALIGNMENT_RECORD, EntityTypeOperation.DELETE);
+        privilege.setRole(role);
+        em.persist(privilege);
+                
+        privilege = new Privilege(EntityType.DATA_TYPE, EntityTypeOperation.CREATE);
+        privilege.setRole(role);
+        em.persist(privilege);
+        privilege = new Privilege(EntityType.DATA_TYPE, EntityTypeOperation.UPDATE);
+        privilege.setRole(role);
+        em.persist(privilege);
+        privilege = new Privilege(EntityType.DATA_TYPE, EntityTypeOperation.RENAME);
+        privilege.setRole(role);
+        em.persist(privilege);
+        privilege = new Privilege(EntityType.DATA_TYPE, EntityTypeOperation.DELETE);
+        privilege.setRole(role);
+        em.persist(privilege);
+        
+        privilege = new Privilege(EntityType.INSTALLATION_RECORD, EntityTypeOperation.CREATE);
+        privilege.setRole(role);
+        em.persist(privilege);
+        privilege = new Privilege(EntityType.INSTALLATION_RECORD, EntityTypeOperation.UPDATE);
+        privilege.setRole(role);
+        em.persist(privilege);
+        privilege = new Privilege(EntityType.INSTALLATION_RECORD, EntityTypeOperation.RENAME);
+        privilege.setRole(role);
+        em.persist(privilege);
+        privilege = new Privilege(EntityType.INSTALLATION_RECORD, EntityTypeOperation.DELETE);
+        privilege.setRole(role);
+        em.persist(privilege);
+        
         em.persist(new DataType("Integer", "Integer number", true, null, userName));
         em.persist(new DataType("Double", "Double precision floating point", true, null, userName));
         em.persist(new DataType("String", "String of characters (text)", true, null, userName));
@@ -108,8 +152,5 @@ public class InitialDBPopulation {
         em.persist(new SlotRelation(SlotRelationName.CONTAINS, userName));
         em.persist(new SlotRelation(SlotRelationName.POWERS, userName));
         em.persist(new SlotRelation(SlotRelationName.CONTROLS, userName));
-
-
-
     }
 }

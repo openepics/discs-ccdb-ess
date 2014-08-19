@@ -10,7 +10,6 @@
 
 package org.openepics.discs.conf.security;
 
-import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
 
 
@@ -21,17 +20,6 @@ import org.openepics.discs.conf.ent.EntityTypeOperation;
  *
  */
 public interface SecurityPolicy {
-    public final String MANAGE_ALIGNMENT_RECORDS    = "manage-alignment-records";
-    public final String MANAGE_COMPONENT_TYPES      = "manage-component-types";
-    public final String MANAGE_DATA_TYPES           = "manage-data-types";
-    public final String MANAGE_DEVICE_ASSEMBLIES    = "manage-device-assemblies";
-    public final String MANAGE_INSTALLATION_RECORDS = "manage-installation-records";
-    public final String MANAGE_PROPERTIES           = "manage-properties";
-    public final String MANAGE_LAYOUT_SLOTS         = "manage-layout-slots";
-    public final String MANAGE_UNITS                = "manage-units";
-    public final String MANAGE_DEVICES              = "manage-devices";
-    
-    
     /**
      * Checks if user is authorized to do opeeration operationType on entity of entityType
      * 
