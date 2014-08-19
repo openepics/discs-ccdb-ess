@@ -23,7 +23,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.openepics.discs.conf.dl.UnitLoaderQualifier;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
-import org.openepics.discs.conf.ejb.AuthEJB;
 import org.openepics.discs.conf.ejb.ConfigurationEJB;
 import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
@@ -49,7 +48,6 @@ public class UnitManager implements Serializable {
     @Inject private DataLoaderHandler dataLoaderHandler;
     @Inject @UnitLoaderQualifier private DataLoader unitsDataLoader;
     @Inject private LoginManager loginManager;
-    @Inject private AuthEJB authEJB;
 
     private List<Unit> units;
     private List<Unit> filteredUnits;
@@ -80,13 +78,6 @@ public class UnitManager implements Serializable {
 
     public List<Unit> getFilteredUnits() {
         return filteredUnits;
-    }
-
-    public boolean canImportUnits() {
-        return authEJB.userHasAuth(loginManager.getUserid(), EntityType.UNIT, EntityTypeOperation.CREATE) ||
-                authEJB.userHasAuth(loginManager.getUserid(), EntityType.UNIT, EntityTypeOperation.DELETE) ||
-                authEJB.userHasAuth(loginManager.getUserid(), EntityType.UNIT, EntityTypeOperation.UPDATE) ||
-                authEJB.userHasAuth(loginManager.getUserid(), EntityType.UNIT, EntityTypeOperation.RENAME);
     }
 
     public String getImportFileName() { return importFileName; }

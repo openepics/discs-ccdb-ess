@@ -16,7 +16,6 @@ import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.dl.common.ErrorMessage;
 import org.openepics.discs.conf.dl.common.ValidationMessage;
-import org.openepics.discs.conf.ejb.AuthEJB;
 import org.openepics.discs.conf.ejb.ComptypeEJB;
 import org.openepics.discs.conf.ejb.ConfigurationEJB;
 import org.openepics.discs.conf.ejb.DeviceEJB;
@@ -28,6 +27,7 @@ import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyAssociation;
+import org.openepics.discs.conf.security.SecurityException;
 import org.openepics.discs.conf.ui.LoginManager;
 import org.openepics.discs.conf.util.As;
 
@@ -39,7 +39,6 @@ import com.google.common.collect.ImmutableList;
 public class DevicesDataLoader extends AbstractDataLoader implements DataLoader  {
 
     @Inject private LoginManager loginManager;
-    @Inject private AuthEJB authEJB;
     @Inject private ConfigurationEJB configurationEJB;
     @Inject private ComptypeEJB comptypeEJB;
     @Inject private DeviceEJB deviceEJB;
@@ -125,11 +124,11 @@ public class DevicesDataLoader extends AbstractDataLoader implements DataLoader 
                                 rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(compTypeIndex)));
                                 continue;
                             } else {
-                                if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.DEVICE, EntityTypeOperation.UPDATE)) {
+                                try {
                                     final Device deviceToUpdate = deviceEJB.findDeviceBySerialNumber(serial);
                                     addOrUpdateDevice(deviceToUpdate, compType, description, status, manufSerial, location, purchaseOrder, asmPosition, asmDescription, manufacturer, manufModel, modifiedBy);
                                     addOrUpdateProperties(deviceToUpdate, indexByPropertyName, row, rowNumber, modifiedBy);
-                                 } else {
+                                } catch (SecurityException e) {
                                     rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                                 }
                             }
@@ -139,12 +138,12 @@ public class DevicesDataLoader extends AbstractDataLoader implements DataLoader 
                                 rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(compTypeIndex)));
                                 continue;
                             } else {
-                                if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.DEVICE, EntityTypeOperation.CREATE)) {
+                                try {
                                     final Device newDevice = new Device(serial, modifiedBy);
                                     addOrUpdateDevice(newDevice, compType, description, status, manufSerial, location, purchaseOrder, asmPosition, asmDescription, manufacturer, manufModel, modifiedBy);
                                     deviceEJB.addDevice(newDevice);
                                     addOrUpdateProperties(newDevice, indexByPropertyName, row, rowNumber, modifiedBy);
-                                } else {
+                                } catch (SecurityException e) {
                                     rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                                 }
                             }
@@ -155,9 +154,9 @@ public class DevicesDataLoader extends AbstractDataLoader implements DataLoader 
                         if (deviceToDelete == null) {
                             rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(serialIndex)));
                         } else {
-                            if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.DEVICE, EntityTypeOperation.DELETE)) {
+                            try {
                                 deviceEJB.deleteDevice(deviceToDelete);
-                            } else {
+                            } catch (SecurityException e) {
                                 rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                             }
                         }

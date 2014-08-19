@@ -8,8 +8,6 @@ import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 
 import org.openepics.discs.conf.auditlog.Audit;
@@ -17,107 +15,137 @@ import org.openepics.discs.conf.ent.AlignmentArtifact;
 import org.openepics.discs.conf.ent.AlignmentPropertyValue;
 import org.openepics.discs.conf.ent.AlignmentRecord;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
+import org.openepics.discs.conf.security.Authorized;
 import org.openepics.discs.conf.util.CRUDOperation;
 
 /**
  *
  * @author vuppala
+ * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
+ * 
  */
 @Stateless public class AlignmentEJB {
-
-    private static final Logger logger = Logger.getLogger(AlignmentEJB.class.getCanonicalName());
+    private static final Logger logger = Logger.getLogger(AlignmentEJB.class.getCanonicalName());   
     @PersistenceContext private EntityManager em;
-
+    
     // ---------------- Alignment Record -------------------------
-
+    
     public List<AlignmentRecord> findAlignmentRec() {
-        final List<AlignmentRecord> comps;
-        final CriteriaBuilder cb = em.getCriteriaBuilder();
-        final CriteriaQuery<AlignmentRecord> cq = cb.createQuery(AlignmentRecord.class);
+        final CriteriaQuery<AlignmentRecord> cq =  em.getCriteriaBuilder().
+                createQuery(AlignmentRecord.class);
+        cq.from(AlignmentRecord.class);
+                
+        final List<AlignmentRecord> records = em.createQuery(cq).getResultList();
+        logger.log(Level.INFO, "Number of alignment records: {0}", records.size());
 
-        final TypedQuery<AlignmentRecord> query = em.createQuery(cq);
-        comps = query.getResultList();
-        logger.log(Level.INFO, "Number of physical components: {0}", comps.size());
-
-        return comps;
+        return records;
     }
 
     public AlignmentRecord findAlignmentRec(Long id) {
         return em.find(AlignmentRecord.class, id);
     }
 
+    @CRUDOperation(operation=EntityTypeOperation.CREATE)
+    @Audit
+    @Authorized
+    public void addAlignment(AlignmentRecord record) {
+        record.setModifiedAt(new Date());
+        em.persist(record);
+    }    
+        
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
-    public void saveAlignment(AlignmentRecord arec) {
-        arec.setModifiedAt(new Date());
-        logger.log(Level.INFO, "Preparing to save device");
-        em.persist(arec);
+    @Authorized
+    public void saveAlignment(AlignmentRecord record) {
+        record.setModifiedAt(new Date());
+        em.merge(record);
     }
-
+    
     @CRUDOperation(operation=EntityTypeOperation.DELETE)
     @Audit
-    public void deleteAlignment(AlignmentRecord arec) throws Exception {
-        final AlignmentRecord ct = em.find(AlignmentRecord.class, arec.getId());
-        ct.setModifiedAt(new Date());
-        em.remove(ct);
+    @Authorized
+    public void deleteAlignment(AlignmentRecord record) throws Exception {
+        final AlignmentRecord mergedRecord = em.merge(record);
+        em.remove(mergedRecord);
     }
-
-    // ------------------ Property ---------------
-
+    
+    
+    // ------------------ Alignment Property ---------------
+    
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
+    @Authorized
+    public void addAlignmentProp(AlignmentPropertyValue propertyValye) {
+        final AlignmentPropertyValue mergedPropertyValue = em.merge(propertyValye);      
+        final AlignmentRecord parent = mergedPropertyValue.getAlignmentRecord();
+        
+        DateUtility.setModifiedAt(parent, mergedPropertyValue);
+
+        parent.getAlignmentPropertyList().add(propertyValye);
+        em.merge(parent);
+    }        
+    
+    @CRUDOperation(operation=EntityTypeOperation.UPDATE)
+    @Audit
+    @Authorized
     public void saveAlignmentProp(AlignmentPropertyValue prop){
-        final AlignmentPropertyValue newProp = em.merge(prop);
-        newProp.setModifiedAt(new Date());
-        logger.log(Level.INFO, "Comp Type Property: id " + newProp.getId() + " name " + newProp.getProperty().getName());
+        final AlignmentPropertyValue mergedPropValue = em.merge(prop);
+        
+        final Date now = new Date();
+        mergedPropValue.getAlignmentRecord().setModifiedAt(now);
+        mergedPropValue.setModifiedAt(now);
+        
+        logger.log(Level.INFO, "Alignment Record Property: id " + mergedPropValue.getId() + " name " + mergedPropValue.getProperty().getName());
     }
-
-    @CRUDOperation(operation=EntityTypeOperation.CREATE)
-    @Audit
-    public void addAlignmentProp(AlignmentPropertyValue prop) {
-        final AlignmentPropertyValue newProp = em.merge(prop);
-        final AlignmentRecord slot = prop.getAlignmentRecord();
-        slot.getAlignmentPropertyList().add(newProp);
-        em.merge(slot);
-    }
-
-    @CRUDOperation(operation=EntityTypeOperation.DELETE)
-    @Audit
-    public void deleteAlignmentProp(AlignmentPropertyValue prop) {
-        final AlignmentPropertyValue property = em.find(AlignmentPropertyValue.class, prop.getId());
-        final AlignmentRecord arec = property.getAlignmentRecord();
-        prop.setModifiedAt(new Date());
-        arec.getAlignmentPropertyList().remove(property);
-        em.remove(property);
-    }
-
-    // ---------------- Artifact ---------------------
 
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
-    public void saveAlignmentArtifact(AlignmentArtifact art) {
-        final AlignmentArtifact newArt = em.merge(art);
-        newArt.setModifiedAt(new Date());
-        logger.log(Level.INFO, "Artifact: name " + newArt.getName() + " description " + newArt.getDescription() + " uri " + newArt.getUri() + "is int " + newArt.isInternal());
+    @Authorized
+    public void deleteAlignmentProp(AlignmentPropertyValue prop) {
+        logger.log(Level.INFO, "deleting alignment type property id " + prop.getId() + " name " + prop.getProperty().getName());
+                
+        final AlignmentPropertyValue mergedProperty = em.merge(prop);
+        final AlignmentRecord parent = prop.getAlignmentRecord();
+        
+        parent.setModifiedAt(new Date());
+        
+        parent.getAlignmentPropertyList().remove(mergedProperty);        
+        em.remove(mergedProperty);
     }
 
-    @CRUDOperation(operation=EntityTypeOperation.DELETE)
+    // ---------------- Alignment Record Artifact ---------------------
+    @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
-    public void deleteAlignmentArtifact(AlignmentArtifact art) {
-        final AlignmentArtifact artifact = em.find(AlignmentArtifact.class, art.getId());
-        final AlignmentRecord arec = artifact.getAlignmentRecord();
-        arec.setModifiedAt(new Date());
-        arec.getAlignmentArtifactList().remove(artifact);
-        em.remove(artifact);
+    public void addAlignmentArtifact(AlignmentArtifact artifact) {
+        final AlignmentArtifact mergedArtifact = em.merge(artifact);
+        final AlignmentRecord parent = mergedArtifact.getAlignmentRecord();
+
+        DateUtility.setModifiedAt(parent, mergedArtifact);
+        
+        parent.getAlignmentArtifactList().add(mergedArtifact); 
+    }
+    
+    @CRUDOperation(operation=EntityTypeOperation.UPDATE)
+    @Audit
+    public void saveAlignmentArtifact(AlignmentArtifact artifact) {
+        final AlignmentArtifact mergedArtifact = em.merge(artifact);
+        
+        DateUtility.setModifiedAt(mergedArtifact.getAlignmentRecord(), mergedArtifact);
+        
+        logger.log(Level.INFO, "Artifact: name " + mergedArtifact.getName() + " description " + mergedArtifact.getDescription() + " uri " + mergedArtifact.getUri() + "is int " + mergedArtifact.isInternal());
     }
 
-    @CRUDOperation(operation=EntityTypeOperation.CREATE)
+    @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
-    public void addAlignmentArtifact(AlignmentArtifact art) {
-        final AlignmentArtifact newArt = em.merge(art);
-        final AlignmentRecord arec = art.getAlignmentRecord();
-        arec.setModifiedAt(new Date());
-        arec.getAlignmentArtifactList().add(newArt);
-        em.merge(arec);
+    public void deleteAlignmentArtifact(AlignmentArtifact artifact) {
+        final AlignmentArtifact mergedArtifact = em.merge(artifact);
+        final AlignmentRecord parent = mergedArtifact.getAlignmentRecord();
+        
+        parent.setModifiedAt(new Date());
+        
+        parent.getAlignmentArtifactList().remove(mergedArtifact);
+        em.remove(mergedArtifact);
     }
+
+
 }

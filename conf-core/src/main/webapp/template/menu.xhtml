@@ -38,24 +38,24 @@
 			<p:submenu label="Manage" icon="ui-icon-newwin">
 				<p:menuitem value="Alignments" title="Edit Alignment Records"
 					url="/manage/alignment/" icon="ui-icon-newwin"
-					disabled="#{! loginManager.authorized}" />
+					disabled="#{! securityPolicy.getUIHint('manage-alignment-records')}" />
 				<p:menuitem value="Component Types" title="Edit Component Types"
 					url="/manage/comptype/" icon="ui-icon-newwin"
-					disabled="#{! loginManager.authorized}" />
+					disabled="#{! securityPolicy.getUIHint('manage-component-types')}" />
 				<p:menuitem value="Data Types" title="Edit Data Types"
 					url="/manage/property/" icon="ui-icon-newwin" disabled="true" />
 				<p:menuitem value="Devices" title="Device Assemblies"
 					url="/manage/device/" icon="ui-icon-newwin"
-					disabled="#{! loginManager.authorized}" />
+					disabled="#{! securityPolicy.getUIHint('manage-device-assemblies')}" />
 				<p:menuitem value="Installations" title="Edit Installation Records"
 					url="/manage/installation/" icon="ui-icon-newwin"
-					disabled="#{! loginManager.authorized}" />
+					disabled="#{! securityPolicy.getUIHint('manage-installation-records')}" />
 				<p:menuitem value="Propeties" title="Edit Properties"
 					url="/manage/property/" icon="ui-icon-newwin"
-					disabled="#{! loginManager.authorized}" />
+					disabled="#{! securityPolicy.getUIHint('manage-properties')}" />
 				<p:menuitem value="Slots" title="Edit Layout Slots"
 					url="/manage/slot/" icon="ui-icon-newwin"
-					disabled="#{! loginManager.authorized}" />
+					disabled="#{! securityPolicy.getUIHint('manage-layout-slots')}" />
 				<p:menuitem value="Units" title="Edit Units" url="/manage/property/"
 					icon="ui-icon-newwin" disabled="true" />
 			</p:submenu>
@@ -77,27 +77,27 @@
 				<p:menuitem value="Import Units" update=":importUnitsForm"
 					oncomplete="importUnits.show()" title="Import Units"
 					actionListener="#{unitManager.prepareImportPopup()}"
-					disabled="#{!unitManager.canImportUnits()}" />
+					disabled="#{!securityPolicy.getUIHint('manage-units')}" />
 					
 				<p:menuitem value="Import Properties" update=":importPropertiesForm"
                     oncomplete="importProperties.show()" title="Import Properties"
                     actionListener="#{propertyManager.prepareImportPopup()}"
-                    disabled="#{!propertyManager.canImportProperties()}" />
+                    disabled="#{!securityPolicy.getUIHint('manage-properties')}" />
                     
                 <p:menuitem value="Import Component Types" update=":importCompTypesForm"
                     oncomplete="importCompTypes.show()" title="Import Component Types"
                     actionListener="#{componentTypeManager.prepareImportPopup()}"
-                    disabled="#{!componentTypeManager.canImportCompTypes()}" />
+                    disabled="#{! securityPolicy.getUIHint('manage-component-types')}" />
                     
                 <p:menuitem value="Import Slots and Slot Relationships" update=":importSlotsForm"
                     oncomplete="importSlots.show()" title="Import Slots"
                     actionListener="#{slotManager.prepareImportPopup()}"
-                    disabled="#{!slotManager.canImportSlots()}"/>
+                    disabled="#{!securityPolicy.getUIHint('manage-layout-slots')}"/>
                   
                 <p:menuitem value="Import Device Instances" update=":importDevicesForm"
                     oncomplete="importDevices.show()" title="Import Devices"
                     actionListener="#{deviceManager.prepareImportPopup()}"
-                    disabled="#{!deviceManager.canImportDevices()}"/>
+                    disabled="#{!securityPolicy.getUIHint('manage-devices')}"/>
 
 				
 			</p:submenu>

@@ -19,12 +19,9 @@ import java.security.Principal;
 import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
-import javax.ejb.EJB;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
-
-import org.openepics.discs.conf.ejb.AuthEJB;
 
 /**
  *
@@ -34,9 +31,6 @@ import org.openepics.discs.conf.ejb.AuthEJB;
 @Named
 @ViewScoped
 public class AuthManager implements Serializable {
-
-    @EJB
-    private AuthEJB authEJB;
     private static final Logger logger = Logger.getLogger(AuthManager.class.getCanonicalName());
     private String userID;
     private String token;

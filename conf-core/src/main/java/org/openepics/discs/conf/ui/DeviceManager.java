@@ -27,13 +27,10 @@ import org.apache.commons.io.FilenameUtils;
 import org.openepics.discs.conf.dl.DevicesLoaderQualifier;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
-import org.openepics.discs.conf.ejb.AuthEJB;
 import org.openepics.discs.conf.ejb.DeviceEJB;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.DeviceArtifact;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
-import org.openepics.discs.conf.ent.EntityType;
-import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
 import org.openepics.discs.conf.util.BlobStore;
 import org.openepics.discs.conf.util.Utility;
@@ -50,10 +47,14 @@ import com.google.common.io.ByteStreams;
 /**
  *
  * @author vuppala
+ * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
+ * 
  */
 @Named
 @ViewScoped
 public class DeviceManager implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     @EJB
     private DeviceEJB deviceEJB;
     private static final Logger logger = Logger.getLogger(DeviceManager.class.getCanonicalName());
@@ -67,7 +68,6 @@ public class DeviceManager implements Serializable {
 
     @Inject private DataLoaderHandler dataLoaderHandler;
     @Inject @DevicesLoaderQualifier private DataLoader devicesDataLoader;
-    @Inject private AuthEJB authEJB;
 
     private byte[] importData;
     private String importFileName;
@@ -149,54 +149,78 @@ public class DeviceManager implements Serializable {
     }
 
     public void onDeviceDelete(ActionEvent event) {
-        deviceEJB.deleteDevice(selectedObject);
-        objects.remove(selectedObject);
-        selectedObject = null;
-        inputObject = null;
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted", "");
+        try {
+            deviceEJB.deleteDevice(selectedObject);
+            objects.remove(selectedObject);
+            selectedObject = null;
+            inputObject = null;
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted", "");
+        } catch (Exception e) {
+            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Device not deleted", e.getMessage());
+        } finally {
+
+        }
     }
 
     public void onDeviceSave(ActionEvent event) {
-        String token = loginManager.getToken();
         logger.info("Saving device");
-        if (selectedOp == 'a') {
-            deviceEJB.addDevice(inputObject);
-            selectedObject = inputObject;
-            objects.add(selectedObject);
-        } else {
-            deviceEJB.saveDevice(token, inputObject);
+
+        try {
+            if (selectedOp == 'a') {
+                deviceEJB.addDevice(inputObject);
+                selectedObject = inputObject;
+                objects.add(selectedObject);
+            } else {
+                deviceEJB.saveDevice(inputObject);
+            }
+            // tell the client if the operation was a success so that it can hide
+            RequestContext.getCurrentInstance().addCallbackParam("success", true);
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Saved", "");
+        } catch (Exception e) {
+            logger.severe(e.getMessage());
+            // tell the client  if the operation was a success so that it can hide
+            RequestContext.getCurrentInstance().addCallbackParam("success", false);
+            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error: Device not saved.", e.getMessage());
+        } finally {
+            selectedOp = 'n';
         }
-        // tell the client if the operation was a success so that it can hide
-        RequestContext.getCurrentInstance().addCallbackParam("success", true);
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Saved", "");
-
-        selectedOp = 'n';
-
     }
 
      // --------------------------------- Property ------------------------------------------------
     public void onPropertyAdd(ActionEvent event) {
-        if (selectedProperties == null) {
-            selectedProperties = new ArrayList<>();
-        }
-        propertyOperation = 'a';
+        try {
+            if (selectedProperties == null) {
+                selectedProperties = new ArrayList<>();
+            }
+            propertyOperation = 'a';
 
-        // TODO replaced void constructor (now protected) with default values. Check!
-        inputProperty = new DevicePropertyValue(false, loginManager.getUserid());
-        inputProperty.setDevice(selectedObject);
-        fileUploaded = false;
-        uploadedFileName = null;
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, "New property", "");
+            // TODO replaced void constructor (now protected) with default values. Check!
+            inputProperty = new DevicePropertyValue(false, loginManager.getUserid());
+            inputProperty.setDevice(selectedObject);
+            fileUploaded = false;
+            uploadedFileName = null;
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, "New property", "");
+        } catch (Exception e) {
+            Utility.showMessage(FacesMessage.SEVERITY_FATAL, "Error in adding property", "");
+            logger.severe(e.getMessage());
+        }
+
     }
 
     public void onPropertyDelete(DevicePropertyValue ctp) {
-        if (ctp == null) {
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "No property selected");
-            return;
+        try {
+            if (ctp == null) {
+                Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "No property selected");
+                return;
+            }
+            deviceEJB.deleteDeviceProp(ctp);
+            selectedProperties.remove(ctp);
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted property", "");
+        } catch (Exception e) {
+            Utility.showMessage(FacesMessage.SEVERITY_FATAL, "Error in deleting property", "Refresh the page");
+            logger.severe(e.getMessage());
         }
-        deviceEJB.deleteDeviceProp(ctp);
-        selectedProperties.remove(ctp);
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted property", "");
+
     }
 
     public void onPropertyInit(RowEditEvent event) {
@@ -212,36 +236,46 @@ public class DeviceManager implements Serializable {
     }
 
     public void onPropertyEdit(DevicePropertyValue prop) {
-        if (prop == null) {
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "No property selected");
-            return;
+        try {
+            if (prop == null) {
+                Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "No property selected");
+                return;
+            }
+            propertyOperation = 'e';
+            inputProperty = prop;
+            uploadedFileName = prop.getProperty().getName();
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Edit:", "Edit initiated " + inputProperty.getId());
+        } catch (Exception e) {
+            // selectedCompProps.remove(prop);
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Error:", "Property can not be edited");
         }
-        propertyOperation = 'e';
-        inputProperty = prop;
-        uploadedFileName = prop.getProperty().getName();
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Edit:", "Edit initiated " + inputProperty.getId());
     }
 
     public void onPropertySave(ActionEvent event) {
-        inputProperty.setInRepository(inRepository);
-        if (inRepository) { // internal artifact
-            if (!fileUploaded) {
-                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error:", "You must upload a file");
-                RequestContext.getCurrentInstance().addCallbackParam("success", false);
-                return;
+        try {
+            inputProperty.setInRepository(inRepository);
+            if (inRepository) { // internal artifact
+                if (!fileUploaded) {
+                    Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error:", "You must upload a file");
+                    RequestContext.getCurrentInstance().addCallbackParam("success", false);
+                    return;
+                }
+                inputProperty.setPropValue(repoFileId);
             }
-            inputProperty.setPropValue(repoFileId);
+            
+            if (propertyOperation == 'a') {
+                deviceEJB.addDeviceProperty(inputProperty);
+            } else {
+                deviceEJB.saveDeviceProp(inputProperty);
+            }
+         
+            logger.log(Level.INFO, "returned artifact id is " + inputProperty.getId());
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Property saved", "");
+            RequestContext.getCurrentInstance().addCallbackParam("success", true);
+        } catch (Exception e) {
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Error:", "Property not saved");
+            RequestContext.getCurrentInstance().addCallbackParam("success", false);
         }
-
-        if (propertyOperation == 'a') {
-            deviceEJB.addDeviceProperty(inputProperty);
-        } else {
-            deviceEJB.saveDeviceProp(inputProperty);
-        }
-
-        logger.log(Level.INFO, "returned artifact id is " + inputProperty.getId());
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Property saved", "");
-        RequestContext.getCurrentInstance().addCallbackParam("success", true);
     }
 
     // -------------------------- File upload/download Property ---------------------------
@@ -296,40 +330,51 @@ public class DeviceManager implements Serializable {
 
     // --------------------------------- Artifact ------------------------------------------------
     public void onArtifactAdd(ActionEvent event) {
-        artifactOperation = 'a';
-        if (selectedArtifacts == null) {
-            selectedArtifacts = new ArrayList<>();
+        try {
+            artifactOperation = 'a';
+            if (selectedArtifacts == null) {
+                selectedArtifacts = new ArrayList<>();
+            }
+            // TODO replaced void constructor (now protected) with default values. Check!
+            inputArtifact = new DeviceArtifact("", false, "", "", loginManager.getUserid());
+            inputArtifact.setDevice(selectedObject);
+            fileUploaded = false;
+            uploadedFileName = null;
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, "New artifact", "");
+        } catch (Exception e) {
+            Utility.showMessage(FacesMessage.SEVERITY_FATAL, "Error in adding artifact", "");
+            logger.severe(e.getMessage());
         }
-        // TODO replaced void constructor (now protected) with default values. Check!
-        inputArtifact = new DeviceArtifact("", false, "", "", loginManager.getUserid());
-        inputArtifact.setDevice(selectedObject);
-        fileUploaded = false;
-        uploadedFileName = null;
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, "New artifact", "");
     }
 
     public void onArtifactSave(ActionEvent event) {
-        if (artifactOperation == 'a') {
-            inputArtifact.setInternal(internalArtifact);
-            if (inputArtifact.isInternal()) { // internal artifact
-                if (!fileUploaded) {
-                    Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error:", "You must upload a file");
-                    RequestContext.getCurrentInstance().addCallbackParam("success", false);
-                    return;
+        try {
+            if (artifactOperation == 'a') {
+                inputArtifact.setInternal(internalArtifact);
+                if (inputArtifact.isInternal()) { // internal artifact
+                    if (!fileUploaded) {
+                        Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error:", "You must upload a file");
+                        RequestContext.getCurrentInstance().addCallbackParam("success", false);
+                        return;
+                    }
                 }
             }
+
+            if (artifactOperation == 'a') {
+                deviceEJB.addDeviceArtifact(inputArtifact);
+            } else {
+                deviceEJB.saveDeviceArtifact(inputArtifact);
+            }
+            
+            logger.log(Level.INFO,"returned artifact id is " + inputArtifact.getId());
+
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Artifact saved", "");
+            RequestContext.getCurrentInstance().addCallbackParam("success", true);
+        } catch (Exception e) {
+            // selectedArtifacts.remove(inputArtifact);
+            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error:", "Artifact not saved");
+            RequestContext.getCurrentInstance().addCallbackParam("success", false);
         }
-
-        if (artifactOperation == 'a') {
-            deviceEJB.addDeviceArtifact(inputArtifact);
-        } else {
-            deviceEJB.saveDeviceArtifact(inputArtifact);
-        }
-
-        logger.log(Level.INFO,"returned artifact id is " + inputArtifact.getId());
-
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Artifact saved", "");
-        RequestContext.getCurrentInstance().addCallbackParam("success", true);
     }
 
     public void onArtifactDelete(DeviceArtifact art) {
@@ -430,15 +475,14 @@ public class DeviceManager implements Serializable {
     }
 
     public void onPartDeviceSave(ActionEvent event) {
-        String token = loginManager.getToken();
         try {
             inputAsmDevice.setAssemblyPosition(inputAsmPosition);
             inputAsmDevice.setAssemblyDescription(inputAsmComment);
             inputAsmDevice.setAssemblyParent(selectedObject);
-            deviceEJB.saveDevice(token,inputAsmDevice);
+            deviceEJB.saveDevice(inputAsmDevice);
             selectedObject.getDeviceList().add(inputAsmDevice);
 
-            deviceEJB.saveDevice(token, selectedObject);
+            deviceEJB.saveDevice(selectedObject);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Part saved", "");
             RequestContext.getCurrentInstance().addCallbackParam("success", true);
         } catch (Exception e) {
@@ -449,19 +493,23 @@ public class DeviceManager implements Serializable {
     }
 
     public void onPartDeviceDelete(Device device) {
-        String token = loginManager.getToken();
-        if (device == null) {
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "Null slot selected");
-            return;
-        }
+        try {
+            if (device == null) {
+                Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "Null slot selected");
+                return;
+            }
 
-        device.setAssemblyPosition(null);
-        device.setAssemblyDescription(null);
-        device.setAssemblyParent(null);
-        deviceEJB.saveDevice(token, device);
-        selectedObject.getDeviceList().remove(device);
-        deviceEJB.saveDevice(token, selectedObject);
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted Artifact", "");
+            device.setAssemblyPosition(null);
+            device.setAssemblyDescription(null);
+            device.setAssemblyParent(null);
+            deviceEJB.saveDevice(device);
+            selectedObject.getDeviceList().remove(device);
+            deviceEJB.saveDevice(selectedObject);
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted Artifact", "");
+        } catch (Exception e) {
+            Utility.showMessage(FacesMessage.SEVERITY_FATAL, "Error in deleting artifact", "Refresh the page");
+            logger.severe(e.getMessage());
+        }
     }
 
     public void onPartDeviceEdit(Device device) {
@@ -472,12 +520,6 @@ public class DeviceManager implements Serializable {
         artifactOperation = 'e';
         inputAsmDevice = device;
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Edit:", "Edit initiated " );
-    }
-
-    public boolean canImportDevices() {
-        return authEJB.userHasAuth(loginManager.getUserid(), EntityType.DEVICE, EntityTypeOperation.CREATE) ||
-                authEJB.userHasAuth(loginManager.getUserid(), EntityType.DEVICE, EntityTypeOperation.DELETE) ||
-                authEJB.userHasAuth(loginManager.getUserid(), EntityType.DEVICE, EntityTypeOperation.UPDATE);
     }
 
     public String getImportFileName() { return importFileName; }

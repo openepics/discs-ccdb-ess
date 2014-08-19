@@ -39,6 +39,9 @@ public class AuditLogUtil {
 
     /**
      * Given a set of property names, those will be removed from the serialized output
+     * 
+     * ToDo: Check if it exists and throw exception if it doesn't. Exception should not happen, 
+     * if it happens something is changed and the audit logger should be updated.
      *
      * @param propertyNames
      * @return This class, with updated state (removed properties)
