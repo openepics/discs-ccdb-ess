@@ -35,10 +35,10 @@
                 </p:column>
                 <p:column id="artName" headerText="Name">                   
                     <h:outputLink value="#{art.uri}"  styleClass="ui-icon ui-icon-extlink" 
-                                  style="display:inline-block;" target="_blank" rendered="#{! art.isInternal}"/>                  
+                                  style="display:inline-block;" target="_blank" rendered="#{! art.internal}"/>                  
                     <p:commandLink id="downloadLink" value="dl" ajax="false"                                  
                                    styleClass="ui-icon ui-icon-arrowthickstop-1-s" style="display:inline-block;"
-                                   rendered="#{art.isInternal}">   
+                                   rendered="#{art.internal}">   
                         <f:setPropertyActionListener target="#{deviceManager.selectedArtifact}" value="#{art}" />
                         <p:fileDownload value="#{deviceManager.downloadedFile}" />  
                     </p:commandLink>
