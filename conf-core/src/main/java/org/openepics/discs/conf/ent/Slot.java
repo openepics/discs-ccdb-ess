@@ -175,11 +175,21 @@ public class Slot extends ConfigurationEntity {
 
     @XmlTransient
     @JsonIgnore
-    public List<SlotPair> getChildrenSlotsPairList() { return childrenSlots; }
+    public List<SlotPair> getChildrenSlotsPairList() {
+        if (childrenSlots == null) {
+            childrenSlots = new ArrayList<>();
+        }
+        return childrenSlots;
+    }
 
     @XmlTransient
     @JsonIgnore
-    public List<SlotPair> getParentSlotsPairList() { return parentSlots; }
+    public List<SlotPair> getParentSlotsPairList() {
+        if (parentSlots == null) {
+            parentSlots = new ArrayList<>();
+        }
+        return parentSlots;
+    }
 
     @XmlTransient
     @JsonIgnore
