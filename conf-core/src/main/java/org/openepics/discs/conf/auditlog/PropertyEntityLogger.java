@@ -11,7 +11,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 
 /**
- * Serializes Property contents for auditing.
+ * {@link AuditRecord} maker for {@link Property}
  *
  * @author mpavleski
  *

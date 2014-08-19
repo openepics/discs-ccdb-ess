@@ -5,26 +5,19 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 
 import org.openepics.discs.conf.auditlog.Audit;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypeArtifact;
 import org.openepics.discs.conf.ent.ComptypeAsm;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
-import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.security.Authorized;
-import org.openepics.discs.conf.ui.LoginManager;
 import org.openepics.discs.conf.util.CRUDOperation;
 
 /**
@@ -37,16 +30,13 @@ import org.openepics.discs.conf.util.CRUDOperation;
     private static final Logger logger = Logger.getLogger(ComptypeEJB.class.getCanonicalName());
     @PersistenceContext private EntityManager em;
 
-    // ---------------- Component Type -------------------------
-
+    // ---------------- Component Type ---------------------
+    
     public List<ComponentType> findComponentType() {
-        List<ComponentType> comptypes;
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<ComponentType> cq = cb.createQuery(ComponentType.class);
-        Root<ComponentType> prop = cq.from(ComponentType.class);
-
-        TypedQuery<ComponentType> query = em.createQuery(cq);
-        comptypes = query.getResultList();
+        final CriteriaQuery<ComponentType> cq = em.getCriteriaBuilder().createQuery(ComponentType.class);
+        cq.from(ComponentType.class);
+       
+        final List<ComponentType> comptypes = em.createQuery(cq).getResultList();
         logger.log(Level.INFO, "Number of component types: {0}", comptypes.size());
 
         return comptypes;
@@ -66,112 +56,135 @@ import org.openepics.discs.conf.util.CRUDOperation;
         return componentType;
     }
 
-    @CRUDOperation(operation=EntityTypeOperation.UPDATE)
-    @Audit
-    @Authorized
-    public void saveComponentType(ComponentType ctype) {
-        ctype.setModifiedAt(new Date());
-        em.merge(ctype);
-    }
-
     @CRUDOperation(operation=EntityTypeOperation.CREATE)
     @Audit
     @Authorized
-    public void addComponentType(ComponentType ctype) {
-        em.persist(ctype);
+    public void addComponentType(ComponentType componentType) {
+        componentType.setModifiedAt(new Date());
+        em.persist(componentType);
+    }
+    
+    @CRUDOperation(operation=EntityTypeOperation.UPDATE)
+    @Audit
+    @Authorized
+    public void saveComponentType(ComponentType componentType) {
+        componentType.setModifiedAt(new Date());
+        em.merge(componentType);
     }
 
     @CRUDOperation(operation=EntityTypeOperation.DELETE)
     @Audit
     @Authorized
-    public void deleteComponentType(ComponentType ctype) {
-        final ComponentType merged = em.merge(ctype);
-        em.remove(merged);
+    public void deleteComponentType(ComponentType componentType) {
+        final ComponentType mergedComponentType = em.merge(componentType);
+        em.remove(mergedComponentType);
     }
+    
 
     // ---------------- Component Type Property ---------------------
+    
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
     @Authorized
-    public void saveCompTypeProp(ComptypePropertyValue ctprop) {
-        ComptypePropertyValue newProp = em.merge(ctprop);
-        logger.log(Level.INFO, "Comp Type Property: id " + newProp.getId() + " name " + newProp.getProperty().getName());
+    public void addCompTypeProp(ComptypePropertyValue propertyValue) {
+        final ComptypePropertyValue mergedPropertyValue = em.merge(propertyValue);
+        final ComponentType parent = mergedPropertyValue.getComponentType();
+        
+        DateUtility.setModifiedAt(parent, mergedPropertyValue);
+        
+        parent.getComptypePropertyList().add(mergedPropertyValue);
+        em.merge(parent);
     }
-
-    @CRUDOperation(operation=EntityTypeOperation.DELETE)
+    
+    @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
     @Authorized
-    public void deleteCompTypeProp(ComptypePropertyValue ctp) {
-        logger.log(Level.INFO, "deleting comp type property id " + ctp.getId() + " name " + ctp.getProperty().getName());
-        ComptypePropertyValue property = em.find(ComptypePropertyValue.class, ctp.getId());
-        ComponentType arec = property.getComponentType();
-        arec.getComptypePropertyList().remove(property);
-        em.remove(property);
+    public void saveCompTypeProp(ComptypePropertyValue propertyValue) {
+        final ComptypePropertyValue mergedPropertyValue = em.merge(propertyValue);
+        
+        DateUtility.setModifiedAt(mergedPropertyValue.getComponentType(), mergedPropertyValue);
+        
+        logger.log(Level.INFO, "Comp Type Property: id " + mergedPropertyValue.getId() + " name " + mergedPropertyValue.getProperty().getName());
     }
 
-    @CRUDOperation(operation=EntityTypeOperation.CREATE)
+    @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
     @Authorized
-    public void addCompTypeProp(ComptypePropertyValue ctp) {
-        final ComptypePropertyValue newProp = em.merge(ctp);
-        final ComponentType ctype = ctp.getComponentType();
-        ctype.getComptypePropertyList().add(newProp);
-        em.merge(ctype);
+    public void deleteCompTypeProp(ComptypePropertyValue propertyValue) {
+        logger.log(Level.INFO, "deleting comp type property id " + propertyValue.getId() + " name " + propertyValue.getProperty().getName());
+        
+        final ComptypePropertyValue mergedPropertyValue = em.merge(propertyValue);
+        final ComponentType parent = mergedPropertyValue.getComponentType();
+        
+        parent.setModifiedAt(new Date());
+        
+        parent.getComptypePropertyList().remove(mergedPropertyValue);
+        em.remove(mergedPropertyValue);
     }
+
 
     // ---------------- Component Type Artifact ---------------------
+    
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
     @Authorized
-    public void saveCompTypeArtifact(ComptypeArtifact art) throws Exception {
-        ComptypeArtifact newArt = em.merge(art);
-        logger.log(Level.INFO, "Artifact: name " + newArt.getName() + " description " + newArt.getDescription() + " uri " + newArt.getUri() + "is int " + newArt.isInternal());
-    }
+    public void addCompTypeArtifact(ComptypeArtifact artifact) {
+        final ComptypeArtifact mergedArtifact = em.merge(artifact);
+        final ComponentType parent = mergedArtifact.getComponentType();
 
-    @CRUDOperation(operation=EntityTypeOperation.DELETE)
+        DateUtility.setModifiedAt(parent, mergedArtifact);
+        
+        parent.getComptypeArtifactList().add(mergedArtifact);        
+    }
+    
+    
+    @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
     @Authorized
-    public void deleteCompTypeArtifact(ComptypeArtifact art) throws Exception {
-        ComptypeArtifact artifact = em.find(ComptypeArtifact.class, art.getId());
-        ComponentType arec = artifact.getComponentType();
-        arec.getComptypeArtifactList().remove(artifact);
-        em.remove(artifact);
+    public void saveCompTypeArtifact(ComptypeArtifact artifact) {
+        final ComptypeArtifact mergedArtifact = em.merge(artifact);
+
+        DateUtility.setModifiedAt(mergedArtifact.getComponentType(), mergedArtifact);
+        
+        logger.log(Level.INFO, "Component Type Artifact: name " + mergedArtifact.getName() + " description " + mergedArtifact.getDescription() + " uri " + mergedArtifact.getUri() + "is int " + mergedArtifact.isInternal());
     }
 
-    @CRUDOperation(operation=EntityTypeOperation.CREATE)
+    @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
     @Authorized
-    public void addCompTypeArtifact(ComptypeArtifact art) {
-        final ComptypeArtifact newArt = em.merge(art);
-        final ComponentType ctype = art.getComponentType();
-        ctype.getComptypeArtifactList().add(newArt);
-        em.merge(ctype);
+    public void deleteCompTypeArtifact(ComptypeArtifact artifact) {
+        final ComptypeArtifact mergedArtifact = em.merge(artifact);                       
+        final ComponentType parent = mergedArtifact.getComponentType();
+
+        parent.setModifiedAt(new Date());
+        
+        parent.getComptypeArtifactList().remove(mergedArtifact);
+        em.remove(mergedArtifact);
     }
+
 
     // ---------------- Component Type Assmebly ---------------------
-
-    public void saveComptypeAsm(ComponentType ctype, ComptypeAsm prt) throws Exception {
-        if (prt != null) {
-            prt.setModifiedAt(new Date());
-            // ctprop.setType("a");
-            prt.setModifiedBy("user");
-            // ctprop.setComponentType1(findComponentType(ctprop.getDevicePropertyPK().getComponentType()));
-            // ctprop.setProperty1(findProperty(ctprop.getDevicePropertyPK().getProperty()));
-            // logger.info("save ctp: {0} {1} {2}",
-            // ctprop.getDevicePropertyPK().getComponentType(),
-            // ctprop.getDevicePropertyPK().getProperty(), ctprop.getType());
-            prt.setParentType(ctype);
-            em.merge(prt);
-            em.merge(ctype);
-        }
+    @CRUDOperation(operation=EntityTypeOperation.UPDATE)
+    @Audit
+    @Authorized
+    public void saveComptypeAsm(ComponentType componentType, ComptypeAsm assembly) {
+        DateUtility.setModifiedAt(componentType, assembly);
+            
+        assembly.setParentType(componentType);
+        
+        em.merge(assembly);
+        em.merge(componentType);   
     }
 
-    public void deleteComptypeAsm(ComponentType ctype, ComptypeAsm prt) throws Exception {
-        if (prt != null) {
-            ComptypeAsm entity = em.find(ComptypeAsm.class, prt.getId());
-            em.remove(entity);
-            em.merge(ctype);
-        }
+    @CRUDOperation(operation=EntityTypeOperation.UPDATE)
+    @Audit
+    @Authorized
+    public void deleteComptypeAsm(ComponentType componentType, ComptypeAsm assembly) {        
+        final ComptypeAsm mergedAssembly = em.merge(assembly);
+        
+        componentType.setModifiedAt(new Date());
+        
+        em.remove(mergedAssembly);
+        em.merge(componentType);
     }
-
 }

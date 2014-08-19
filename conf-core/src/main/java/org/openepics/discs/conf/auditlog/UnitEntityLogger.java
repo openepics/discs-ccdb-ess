@@ -11,7 +11,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 
 /**
- * Serializes Unit contents for auditing.
+ * {@link AuditRecord} maker for {@link Unit}
  *
  * @author mpavleski
  *

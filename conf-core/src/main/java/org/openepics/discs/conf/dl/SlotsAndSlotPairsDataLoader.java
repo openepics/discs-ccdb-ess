@@ -406,7 +406,7 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                                 if (slotPairs.size() != 0) {
                                     try {
                                         for (SlotPair slotPair : slotPairs) {
-                                            slotEJB.removeSlotPair(slotPair);
+                                            slotEJB.deleteSlotPair(slotPair);
                                         }
                                     } catch (SecurityException e) {
                                         rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
@@ -532,7 +532,7 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                 } else {
                     slotPropertyToUpdate.setPropValue(propertyValue);
                     slotPropertyToUpdate.setModifiedBy(modifiedBy);
-                    slotEJB.saveSlotProp(slotPropertyToUpdate, false);
+                    slotEJB.saveSlotProp(slotPropertyToUpdate);
                 }
 
             } else if (propertyValue != null) {

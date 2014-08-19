@@ -2,6 +2,7 @@ package org.openepics.discs.conf.auditlog;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.openepics.discs.conf.ent.AuditRecord;
 import org.openepics.discs.conf.ent.ComponentType;
@@ -14,7 +15,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 
 /**
- * Serializes {@link ComponentType} contents for auditing.
+ * {@link AuditRecord} maker for {@link ComponentType}
  *
  * @author Andraz Pozar <andraz.pozar@cosylab.com>
  *
@@ -30,14 +31,14 @@ public class ComponentTypeEntityLogger implements EntityLogger {
     public List<AuditRecord> auditEntries(Object value, EntityTypeOperation operation, String user) {
         final ComponentType compType = (ComponentType) value;
 
-        final HashMap<String, String> propertiesMap = new HashMap<>();
+        final Map<String, String> propertiesMap = new HashMap<>();
         if (compType.getComptypePropertyList() != null) {
             for (ComptypePropertyValue propValue : compType.getComptypePropertyList()) {
                 propertiesMap.put(propValue.getProperty().getName(), propValue.getPropValue());
             }
         }
 
-        final HashMap<String, String> artifactsMap = new HashMap<>();
+        final Map<String, String> artifactsMap = new HashMap<>();
         if (compType.getComptypeArtifactList() != null) {
             for (ComptypeArtifact artifact : compType.getComptypeArtifactList()) {
                 artifactsMap.put(artifact.getName(), artifact.getUri());

@@ -268,7 +268,7 @@ public class DevicesDataLoader extends AbstractDataLoader implements DataLoader 
                 } else {
                     devicePropertyToUpdate.setPropValue(propertyValue);
                     devicePropertyToUpdate.setModifiedBy(modifiedBy);
-                    deviceEJB.saveDeviceProp(devicePropertyToUpdate, false);
+                    deviceEJB.saveDeviceProp(devicePropertyToUpdate);
                 }
 
             } else if (propertyValue != null) {

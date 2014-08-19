@@ -53,6 +53,8 @@ import com.google.common.io.ByteStreams;
 @Named
 @ViewScoped
 public class DeviceManager implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     @EJB
     private DeviceEJB deviceEJB;
     private static final Logger logger = Logger.getLogger(DeviceManager.class.getCanonicalName());
@@ -260,7 +262,13 @@ public class DeviceManager implements Serializable {
                 }
                 inputProperty.setPropValue(repoFileId);
             }
-            deviceEJB.saveDeviceProp(inputProperty, propertyOperation == 'a');
+            
+            if (propertyOperation == 'a') {
+                deviceEJB.addDeviceProperty(inputProperty);
+            } else {
+                deviceEJB.saveDeviceProp(inputProperty);
+            }
+         
             logger.log(Level.INFO, "returned artifact id is " + inputProperty.getId());
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Property saved", "");
             RequestContext.getCurrentInstance().addCallbackParam("success", true);
@@ -352,8 +360,12 @@ public class DeviceManager implements Serializable {
                 }
             }
 
-            // deviceEJB.saveDeviceArtifact(selectedObject, inputArtifact);
-            deviceEJB.saveDeviceArtifact(inputArtifact, artifactOperation == 'a');
+            if (artifactOperation == 'a') {
+                deviceEJB.addDeviceArtifact(inputArtifact);
+            } else {
+                deviceEJB.saveDeviceArtifact(inputArtifact);
+            }
+            
             logger.log(Level.INFO,"returned artifact id is " + inputArtifact.getId());
 
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Artifact saved", "");

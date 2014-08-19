@@ -11,6 +11,7 @@ package org.openepics.discs.conf.auditlog;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.ejb.Stateless;
 
@@ -42,14 +43,14 @@ public class DeviceEntityLogger implements EntityLogger {
     public List<AuditRecord> auditEntries(Object value, EntityTypeOperation operation, String user) {
         final Device device = (Device) value;
 
-        final HashMap<String, String> propertiesMap = new HashMap<>();
+        final Map<String, String> propertiesMap = new HashMap<>();
         if (device.getDevicePropertyList() != null) {
             for (DevicePropertyValue propValue : device.getDevicePropertyList()) {
                 propertiesMap.put(propValue.getProperty().getName(), propValue.getPropValue());
             }
         }
 
-        final HashMap<String, String> artifactsMap = new HashMap<>();
+        final Map<String, String> artifactsMap = new HashMap<>();
         if (device.getDeviceArtifactList() != null) {
             for (DeviceArtifact artifact : device.getDeviceArtifactList()) {
                 artifactsMap.put(artifact.getName(), artifact.getUri());

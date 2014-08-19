@@ -21,16 +21,17 @@ public class EntityTypeResolver {
         entityTypes.put("org.openepics.discs.conf.ent.ComponentType", EntityType.COMPONENT_TYPE);
         entityTypes.put("org.openepics.discs.conf.ent.ComptypePropertyValue", EntityType.COMPONENT_TYPE);
         entityTypes.put("org.openepics.discs.conf.ent.ComptypeArtifact", EntityType.COMPONENT_TYPE);
-        
+        entityTypes.put("org.openepics.discs.conf.ent.ComptypeAsm", EntityType.COMPONENT_TYPE);
+                       
         
         entityTypes.put("org.openepics.discs.conf.ent.InstallationRecord", EntityType.INSTALLATION_RECORD);
         entityTypes.put("org.openepics.discs.conf.ent.InstallationArtifact", EntityType.INSTALLATION_RECORD);
         
         entityTypes.put("org.openepics.discs.conf.ent.AlignmentRecord", EntityType.ALIGNMENT_RECORD);
         entityTypes.put("org.openepics.discs.conf.ent.AlignmentArtifact", EntityType.ALIGNMENT_RECORD);
-
-        entityTypes.put("org.openepics.discs.conf.ent.Unit", EntityType.UNIT);
+        entityTypes.put("org.openepics.discs.conf.ent.AlignmentPropertyValue", EntityType.ALIGNMENT_RECORD);
         
+        entityTypes.put("org.openepics.discs.conf.ent.Unit", EntityType.UNIT);
         
         entityTypes.put("org.openepics.discs.conf.ent.User", EntityType.USER);
         entityTypes.put("org.openepics.discs.conf.ent.Property", EntityType.PROPERTY);
