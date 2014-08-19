@@ -1,5 +1,6 @@
 package org.openepics.discs.conf.ent;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -19,6 +20,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+
+import org.codehaus.jackson.annotate.JsonIgnore;
 
 /**
  *
@@ -95,7 +98,13 @@ public class InstallationRecord extends ConfigurationEntity {
     public void setDevice(Device device) { this.device = device; }
 
     @XmlTransient
-    public List<InstallationArtifact> getInstallationArtifactList() { return installationArtifactList; }
+    @JsonIgnore
+    public List<InstallationArtifact> getInstallationArtifactList() {
+        if (installationArtifactList == null) {
+            installationArtifactList = new ArrayList<>();
+        }
+        return installationArtifactList;
+    }
 
     @Override
     public String toString() { return "InstallationRecord[ installationRecordId=" + id + " ]"; }

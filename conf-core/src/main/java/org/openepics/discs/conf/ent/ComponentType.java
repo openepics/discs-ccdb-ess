@@ -1,5 +1,6 @@
 package org.openepics.discs.conf.ent;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -20,6 +21,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+
+import org.codehaus.jackson.annotate.JsonIgnore;
 
 /**
  *
@@ -93,33 +96,48 @@ public class ComponentType extends ConfigurationEntity {
     public void setDescription(String description) { this.description = description; }
 
     @XmlTransient
-    public List<ComptypePropertyValue> getComptypePropertyList() { return comptypePropertyList; }
+    @JsonIgnore
+    public List<ComptypePropertyValue> getComptypePropertyList() {
+        if (comptypePropertyList == null) {
+            comptypePropertyList = new ArrayList<>();
+        }
+        return comptypePropertyList;
+    }
 
     @XmlTransient
+    @JsonIgnore
     public List<Slot> getSlotList() { return slotList; }
 
     @XmlTransient
+    @JsonIgnore
     public List<ComptypeAsm> getComptypeAsmList() { return childrenTypes; }
-    public void setComptypeAsmList(List<ComptypeAsm> comptypeAsmList) { this.childrenTypes = comptypeAsmList; }
 
     @XmlTransient
+    @JsonIgnore
     public List<ComptypeAsm> getComptypeAsmList1() { return parentTypes; }
-    public void setComptypeAsmList1(List<ComptypeAsm> comptypeAsmList1) { this.parentTypes = comptypeAsmList1; }
 
     @XmlTransient
+    @JsonIgnore
     public List<ComponentType> getComponentTypeList() { return componentTypeList; }
 
     public ComponentType getSuperComponentType() { return superComponentType; }
     public void setSuperComponentType(ComponentType superComponentType) { this.superComponentType = superComponentType; }
 
     @XmlTransient
+    @JsonIgnore
     public List<Device> getDeviceList() { return deviceList; }
 
     @XmlTransient
-    public List<ComptypeArtifact> getComptypeArtifactList() { return comptypeArtifactList; }
-    public void setComptypeArtifactList(List<ComptypeArtifact> comptypeArtifactList) { this.comptypeArtifactList = comptypeArtifactList; }
+    @JsonIgnore
+    public List<ComptypeArtifact> getComptypeArtifactList() {
+        if (comptypeArtifactList == null) {
+            comptypeArtifactList = new ArrayList<>();
+        }
+        return comptypeArtifactList;
+    }
 
     @XmlTransient
+    @JsonIgnore
     public Set<Tag> getTags() { return tags; }
     public void setTags(Set<Tag> tags) { this.tags = tags; }
 

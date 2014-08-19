@@ -15,6 +15,8 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 /**
  *
  * @author vuppala
@@ -87,9 +89,11 @@ public class Unit extends ConfigurationEntity {
     public void setDescription(String description) { this.description = description; }
 
     @XmlTransient
+    @JsonIgnore
     public List<PropertyValue> getPropertyValuesList() { return propertyValuesList; }
 
     @XmlTransient
+    @JsonIgnore
     public List<Property> getPropertyList() { return propertyList; }
 
     @Override

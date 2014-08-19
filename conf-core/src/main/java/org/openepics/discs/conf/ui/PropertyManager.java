@@ -24,10 +24,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.openepics.discs.conf.dl.PropertiesLoaderQualifier;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
-import org.openepics.discs.conf.ejb.AuthEJB;
 import org.openepics.discs.conf.ejb.ConfigurationEJB;
-import org.openepics.discs.conf.ent.EntityType;
-import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyAssociation;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
@@ -35,19 +32,20 @@ import org.openepics.discs.conf.util.Utility;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.SelectEvent;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.io.ByteStreams;
 
 /**
  *
  * @author vuppala
+ * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
+ * 
  */
 @Named
 @ViewScoped
 public class PropertyManager implements Serializable {
     @Inject private ConfigurationEJB configurationEJB;
     @Inject private LoginManager loginManager;
-    @Inject private AuthEJB authEJB;
+    
     @Inject private DataLoaderHandler dataLoaderHandler;
     @Inject @PropertiesLoaderQualifier private DataLoader propertiesDataLoader;
     private static final Logger logger = Logger.getLogger(PropertyManager.class.getCanonicalName());
@@ -61,9 +59,7 @@ public class PropertyManager implements Serializable {
     private byte[] importData;
     private String importFileName;
     private DataLoaderResult loaderResult;
-    // private Property newProperty = new Property();
 
-    //
     private boolean inTrans = false; // in the middle of an operations
     private char selectedOp = 'n'; // selected operation: [a]dd, [e]dit, [d]elete, [n]one
 
@@ -185,13 +181,6 @@ public class PropertyManager implements Serializable {
 
     public boolean isInTrans() {
         return inTrans;
-    }
-
-    public boolean canImportProperties() {
-        return authEJB.userHasAuth(loginManager.getUserid(), EntityType.PROPERTY, EntityTypeOperation.CREATE) ||
-                authEJB.userHasAuth(loginManager.getUserid(), EntityType.PROPERTY, EntityTypeOperation.DELETE) ||
-                authEJB.userHasAuth(loginManager.getUserid(), EntityType.PROPERTY, EntityTypeOperation.UPDATE) ||
-                authEJB.userHasAuth(loginManager.getUserid(), EntityType.PROPERTY, EntityTypeOperation.RENAME);
     }
 
     public String getImportFileName() { return importFileName; }

@@ -1,5 +1,6 @@
 package org.openepics.discs.conf.ent;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -22,6 +23,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+
+import org.codehaus.jackson.annotate.JsonIgnore;
 
 /**
  *
@@ -152,27 +155,43 @@ public class Device extends ConfigurationEntity {
     public void setManufacturerModel(String manufModel) { this.manufModel = manufModel; }
 
     @XmlTransient
-    public List<DevicePropertyValue> getDevicePropertyList() { return devicePropertyList; }
+    @JsonIgnore
+    public List<DevicePropertyValue> getDevicePropertyList() {
+        if (devicePropertyList == null) {
+            devicePropertyList = new ArrayList<>();
+        }
+        return devicePropertyList;
+    }
 
     @XmlTransient
+    @JsonIgnore
     public List<AlignmentRecord> getAlignmentRecordList() { return alignmentRecordList; }
 
     @XmlTransient
+    @JsonIgnore
     public List<InstallationRecord> getInstallationRecordList() { return installationRecordList; }
 
     @XmlTransient
-    public List<DeviceArtifact> getDeviceArtifactList() { return deviceArtifactList; }
+    @JsonIgnore
+    public List<DeviceArtifact> getDeviceArtifactList() {
+        if (deviceArtifactList == null) {
+            deviceArtifactList = new ArrayList<>();
+        }
+        return deviceArtifactList;
+    }
 
     public ComponentType getComponentType() { return componentType; }
     public void setComponentType(ComponentType componentType) { this.componentType = componentType; }
 
     @XmlTransient
+    @JsonIgnore
     public List<Device> getDeviceList() { return deviceList; }
 
     public Device getAssemblyParent() { return asmParent; }
     public void setAssemblyParent(Device asmParent) { this.asmParent = asmParent; }
 
     @XmlTransient
+    @JsonIgnore
     public Set<Tag> getTags() { return tags; }
     public void setTags(Set<Tag> tags) { this.tags = tags; }
 

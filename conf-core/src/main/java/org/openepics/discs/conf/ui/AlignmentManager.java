@@ -232,7 +232,13 @@ public class AlignmentManager implements Serializable{
                 }
                 inputProperty.setPropValue(repoFileId);
             }
-            alignmentEJB.saveAlignmentProp(inputProperty, propertyOperation == 'a');
+
+            if (propertyOperation == 'a') {
+                alignmentEJB.addAlignmentProp(inputProperty);
+            } else {
+                alignmentEJB.saveAlignmentProp(inputProperty);
+            }
+
             logger.log(Level.INFO, "returned artifact id is " + inputProperty.getId());
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Property saved", "");
             RequestContext.getCurrentInstance().addCallbackParam("success", true);
@@ -323,8 +329,12 @@ public class AlignmentManager implements Serializable{
                 }
             }
 
-            // alignmentEJB.saveAlignmentArtifact(selectedObject, inputArtifact);
-            alignmentEJB.saveAlignmentArtifact(inputArtifact, artifactOperation == 'a');
+            if (artifactOperation == 'a') {
+                alignmentEJB.addAlignmentArtifact(inputArtifact);
+            } else {
+                alignmentEJB.saveAlignmentArtifact(inputArtifact);
+            }
+
             logger.log(Level.INFO,"returned artifact id is " + inputArtifact.getId());
 
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Artifact saved", "");

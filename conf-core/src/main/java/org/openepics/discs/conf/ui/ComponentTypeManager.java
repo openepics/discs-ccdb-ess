@@ -26,7 +26,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.openepics.discs.conf.dl.ComponentTypesLoaderQualifier;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
-import org.openepics.discs.conf.ejb.AuthEJB;
 import org.openepics.discs.conf.ejb.ComptypeEJB;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypeArtifact;
@@ -50,6 +49,7 @@ import com.google.common.io.ByteStreams;
 /**
  *
  * @author vuppala
+ * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
  */
 @Named
 @ViewScoped
@@ -65,8 +65,7 @@ public class ComponentTypeManager implements Serializable {
     @Inject LoginManager loginManager;
     @Inject private DataLoaderHandler dataLoaderHandler;
     @Inject @ComponentTypesLoaderQualifier private DataLoader compTypesDataLoader;
-    @Inject private AuthEJB authEJB;
-
+    
     private byte[] importData;
     private String importFileName;
     private DataLoaderResult loaderResult;
@@ -250,7 +249,11 @@ public class ComponentTypeManager implements Serializable {
                 inputProperty.setPropValue(repoFileId);
             }
 
-            comptypeEJB.saveCompTypeProp(inputProperty, propertyOperation == 'a');
+            if (propertyOperation == 'a') {
+                comptypeEJB.addCompTypeProp(inputProperty);
+            } else {
+                comptypeEJB.saveCompTypeProp(inputProperty);
+            }
             logger.log(Level.INFO, "returned artifact id is " + inputProperty.getId());
 
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Property saved", "");
@@ -343,8 +346,11 @@ public class ComponentTypeManager implements Serializable {
                 }
             }
 
-            // comptypeEJB.saveComponentTypeArtifact(selectedObject, inputArtifact);
-            comptypeEJB.saveCompTypeArtifact(inputArtifact, artifactOperation == 'a');
+            if (artifactOperation == 'a') {
+                comptypeEJB.addCompTypeArtifact(inputArtifact);
+            } else {
+                comptypeEJB.saveCompTypeArtifact(inputArtifact);
+            }
             logger.log(Level.INFO, "returned artifact id is " + inputArtifact.getId());
 
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Artifact saved", "");
@@ -502,12 +508,6 @@ public class ComponentTypeManager implements Serializable {
         }
     }
 
-    public boolean canImportCompTypes() {
-        return authEJB.userHasAuth(loginManager.getUserid(), EntityType.COMPONENT_TYPE, EntityTypeOperation.CREATE) ||
-                authEJB.userHasAuth(loginManager.getUserid(), EntityType.COMPONENT_TYPE, EntityTypeOperation.DELETE) ||
-                authEJB.userHasAuth(loginManager.getUserid(), EntityType.COMPONENT_TYPE, EntityTypeOperation.UPDATE) ||
-                authEJB.userHasAuth(loginManager.getUserid(), EntityType.COMPONENT_TYPE, EntityTypeOperation.RENAME);
-    }
 
     public String getImportFileName() { return importFileName; }
 

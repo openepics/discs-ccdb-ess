@@ -18,6 +18,8 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 /**
  *
  * @author vuppala
@@ -79,6 +81,7 @@ public class SlotRelation extends ConfigurationEntity {
     public void setDescription(String description) { this.description = description; }
 
     @XmlTransient
+    @JsonIgnore
     public List<SlotPair> getSlotPairList() { return slotPairList; }
 
     @Override

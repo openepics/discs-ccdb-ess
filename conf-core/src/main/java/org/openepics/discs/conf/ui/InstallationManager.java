@@ -106,101 +106,80 @@ public class InstallationManager implements Serializable {
     }
 
     public void onIRecDelete(ActionEvent event) {
-        try {
-            installationEJB.deleteIRecord(selectedObject);
-            objects.remove(selectedObject);
-            selectedObject = null;
-            inputObject = null;
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted", "");
-        } catch (Exception e) {
-            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error", e.getMessage());
-        } finally {
-
-        }
+        installationEJB.deleteIRecord(selectedObject);
+        objects.remove(selectedObject);
+        selectedObject = null;
+        inputObject = null;
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted", "");
     }
 
     public void onIRecSave(ActionEvent event) {
         logger.info("Saving Installation Record");
-        try {
-            // inputObject.setAssociation("T");
-            inputObject.setModifiedBy("test-user");
-            installationEJB.saveIRecord(inputObject, selectedOp == 'a');
+        inputObject.setModifiedBy("test-user");
 
-            if (selectedOp == 'a') {
-                selectedObject = inputObject;
-                objects.add(selectedObject);
-            }
-            // tell the client if the operation was a success so that it can hide
-            RequestContext.getCurrentInstance().addCallbackParam("success", true);
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Saved", "");
-        } catch (Exception e) {
-            logger.severe(e.getMessage());
-            // tell the client  if the operation was a success so that it can hide
-            RequestContext.getCurrentInstance().addCallbackParam("success", false);
-            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error", e.getMessage());
-        } finally {
-            selectedOp = 'n';
+        if (selectedOp == 'a') {
+            installationEJB.addIRecord(inputObject);
+        } else {
+            installationEJB.saveIRecord(inputObject);
         }
+
+        if (selectedOp == 'a') {
+            selectedObject = inputObject;
+            objects.add(selectedObject);
+        }
+
+        // tell the client if the operation was a success so that it can hide
+        RequestContext.getCurrentInstance().addCallbackParam("success", true);
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Saved", "");
+        selectedOp = 'n';
     }
 
     // --------------------------------- Artifact ------------------------------------------------
     public void onArtifactAdd(ActionEvent event) {
-        try {
-            artifactOperation = 'a';
-            if (selectedArtifacts == null) {
-                selectedArtifacts = new ArrayList<>();
-            }
-            // TODO replaced void constructor (now protected) with default values. Check!
-            inputArtifact = new InstallationArtifact("", false, "", "", loginManager.getUserid());
-            inputArtifact.setInstallationRecord(selectedObject);
-            fileUploaded = false;
-            uploadedFileName = null;
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "New artifact", "");
-        } catch (Exception e) {
-            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error in adding artifact", e.getMessage());
-            logger.severe(e.getMessage());
+        artifactOperation = 'a';
+        if (selectedArtifacts == null) {
+            selectedArtifacts = new ArrayList<>();
         }
+        // TODO replaced void constructor (now protected) with default values. Check!
+        inputArtifact = new InstallationArtifact("", false, "", "", loginManager.getUserid());
+        inputArtifact.setInstallationRecord(selectedObject);
+        fileUploaded = false;
+        uploadedFileName = null;
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, "New artifact", "");
     }
 
     public void onArtifactSave(ActionEvent event) {
-        try {
-            if (artifactOperation == 'a') {
-                inputArtifact.setInternal(internalArtifact);
-                if (inputArtifact.isInternal()) { // internal artifact
-                    if (!fileUploaded) {
-                        Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error:", "You must upload a file");
-                        RequestContext.getCurrentInstance().addCallbackParam("success", false);
-                        return;
-                    }
+        if (artifactOperation == 'a') {
+            inputArtifact.setInternal(internalArtifact);
+            if (inputArtifact.isInternal()) { // internal artifact
+                if (!fileUploaded) {
+                    Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error:", "You must upload a file");
+                    RequestContext.getCurrentInstance().addCallbackParam("success", false);
+                    return;
                 }
             }
-
-            // deviceEJB.saveInstallationArtifact(selectedObject, inputArtifact);
-            installationEJB.saveInstallationArtifact(inputArtifact, artifactOperation == 'a');
-            logger.log(Level.INFO,"returned artifact id is " + inputArtifact.getId());
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Artifact saved", "");
-            RequestContext.getCurrentInstance().addCallbackParam("success", true);
-        } catch (Exception e) {
-            // selectedArtifacts.remove(inputArtifact);
-            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error: Artifact not saved", e.getMessage());
-            RequestContext.getCurrentInstance().addCallbackParam("success", false);
         }
+
+        if (artifactOperation == 'a') {
+            installationEJB.addInstallationArtifact(inputArtifact);
+        } else {
+            installationEJB.saveInstallationArtifact(inputArtifact);
+        }
+
+        logger.log(Level.INFO,"returned artifact id is " + inputArtifact.getId());
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Artifact saved", "");
+        RequestContext.getCurrentInstance().addCallbackParam("success", true);
     }
 
     public void onArtifactDelete(InstallationArtifact art) {
-        try {
-            if (art == null) {
-                Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "No artifact selected");
-                return;
-            }
-
-            installationEJB.deleteInstallationArtifact(art);
-            selectedArtifacts.remove(art);
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted Artifact", "");
-        } catch (Exception e) {
-            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error in deleting artifact", e.getMessage());
-            logger.severe(e.getMessage());
+        if (art == null) {
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "No artifact selected");
+            return;
         }
+
+        installationEJB.deleteInstallationArtifact(art);
+        selectedArtifacts.remove(art);
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted Artifact", "");
     }
 
     public void onArtifactEdit(InstallationArtifact art) {
@@ -221,9 +200,7 @@ public class InstallationManager implements Serializable {
     // -------------------------- File upload/download ---------------------------
 
     public void handleFileUpload(FileUploadEvent event) {
-        // String msg = event.getFile().getFileName() + " is uploaded.";
-        // Utility.showMessage(FacesMessage.SEVERITY_INFO, "Succesful", msg);
-        InputStream istream;
+        final InputStream istream;
 
         try {
             UploadedFile uploadedFile = event.getFile();

@@ -24,10 +24,7 @@ import javax.inject.Named;
 
 import org.apache.commons.io.FilenameUtils;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
-import org.openepics.discs.conf.ejb.AuthEJB;
 import org.openepics.discs.conf.ejb.SlotEJB;
-import org.openepics.discs.conf.ent.EntityType;
-import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotArtifact;
 import org.openepics.discs.conf.ent.SlotPair;
@@ -57,8 +54,7 @@ public class SlotManager implements Serializable {
     @Inject private BlobStore blobStore;
     @Inject private LoginManager loginManager;
     @Inject private DataLoaderHandler dataLoaderHandler;
-    @Inject private AuthEJB authEJB;
-
+   
     private List<Slot> objects;
     private List<Slot> sortedObjects;
     private List<Slot> filteredObjects;
@@ -145,120 +141,87 @@ public class SlotManager implements Serializable {
     }
 
     public void onSlotDelete(ActionEvent event) {
-        try {
-            slotEJB.deleteLayoutSlot(selectedObject);
-            objects.remove(selectedObject);
-            selectedObject = null;
-            inputObject = null;
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted", "");
-        } catch (Exception e) {
-            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Not deleted", e.getMessage());
-        } finally {
-
-        }
+        slotEJB.deleteLayoutSlot(selectedObject);
+        objects.remove(selectedObject);
+        selectedObject = null;
+        inputObject = null;
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted", "");
     }
 
     public void onSlotSave(ActionEvent event) {
         logger.info("Saving slot");
-        try {
-            // inputObject.setAssociation("T");
-            // inputObject.setModifiedBy("test-user");
-            slotEJB.saveLayoutSlot(inputObject);
 
-            if (selectedOp == 'a') {
-                selectedObject = inputObject;
-                objects.add(selectedObject);
-            }
-            // tell the dialog panel if the operation was a success so that it can hide
-            RequestContext.getCurrentInstance().addCallbackParam("success", true);
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Saved", "");
-        } catch (Exception e) {
-            logger.severe(e.getMessage());
-            // tell the dialog panel if the operation was a success so that it can hide
-            RequestContext.getCurrentInstance().addCallbackParam("success", false);
-            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error", e.getMessage());
-        } finally {
-            selectedOp = 'n';
+        slotEJB.saveLayoutSlot(inputObject);
+
+        if (selectedOp == 'a') {
+            selectedObject = inputObject;
+            objects.add(selectedObject);
         }
+        // tell the dialog panel if the operation was a success so that it can hide
+        RequestContext.getCurrentInstance().addCallbackParam("success", true);
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Saved", "");
+
+        selectedOp = 'n';
     }
 
     // --------------------------------- Property ------------------------------------------------
     public void onPropertyAdd(ActionEvent event) {
-        try {
-            if (selectedProperties == null) {
-                selectedProperties = new ArrayList<>();
-            }
-            propertyOperation = 'a';
-
-            // TODO replaced void constructor (now protected) with default values. Check!
-            inputProperty = new SlotPropertyValue(false, loginManager.getUserid());
-            inputProperty.setSlot(selectedObject);
-            fileUploaded = false;
-            uploadedFileName = null;
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "New property", "");
-        } catch (Exception e) {
-            Utility.showMessage(FacesMessage.SEVERITY_FATAL, "Error in adding property", e.getMessage());
-            logger.severe(e.getMessage());
+        if (selectedProperties == null) {
+            selectedProperties = new ArrayList<>();
         }
+        propertyOperation = 'a';
 
+        // TODO replaced void constructor (now protected) with default values. Check!
+        inputProperty = new SlotPropertyValue(false, loginManager.getUserid());
+        inputProperty.setSlot(selectedObject);
+        fileUploaded = false;
+        uploadedFileName = null;
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, "New property", "");
     }
 
     public void onPropertyDelete(SlotPropertyValue ctp) {
-        try {
-            if (ctp == null) {
-                Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "No property selected");
-                return;
-            }
-            slotEJB.deleteSlotProp(ctp);
-            selectedProperties.remove(ctp);
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted property", "");
-        } catch (Exception e) {
-            Utility.showMessage(FacesMessage.SEVERITY_FATAL, "Error in deleting property", "Refresh the page");
-            logger.severe(e.getMessage());
+        if (ctp == null) {
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "No property selected");
+            return;
         }
-
+        slotEJB.deleteSlotProp(ctp);
+        selectedProperties.remove(ctp);
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted property", "");
     }
 
     public void onPropertyEdit(SlotPropertyValue prop) {
-        try {
-            if (prop == null) {
-                Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "No property selected");
-                return;
-            }
-            artifactOperation = 'e';
-            inputProperty = prop;
-            uploadedFileName = prop.getProperty().getName();
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Edit:", "Edit initiated " + inputProperty.getId());
-        } catch (Exception e) {
-            // selectedCompProps.remove(prop);
-            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error:", e.getMessage());
+        if (prop == null) {
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "No property selected");
+            return;
         }
+        artifactOperation = 'e';
+        inputProperty = prop;
+        uploadedFileName = prop.getProperty().getName();
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Edit:", "Edit initiated " + inputProperty.getId());
     }
 
     public void onPropertySave(ActionEvent event) {
-        // SlotProperty ctp = (SlotProperty) event.getObject();
-        try {
-
-            inputProperty.setInRepository(inRepository);
-            if (inRepository) { // internal artifact
-                if (!fileUploaded) {
-                    Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error:", "You must upload a file");
-                    RequestContext.getCurrentInstance().addCallbackParam("success", false);
-                    return;
-                }
-                inputProperty.setPropValue(repoFileId);
+        inputProperty.setInRepository(inRepository);
+        if (inRepository) { // internal artifact
+            if (!fileUploaded) {
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error:", "You must upload a file");
+                RequestContext.getCurrentInstance().addCallbackParam("success", false);
+                return;
             }
-
-            slotEJB.saveSlotProp(inputProperty, propertyOperation == 'a');
-            logger.log(Level.INFO, "returned artifact id is " + inputProperty.getId());
-
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Property saved", "");
-            RequestContext.getCurrentInstance().addCallbackParam("success", true);
-        } catch (Exception e) {
-            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error:", e.getMessage());
-            RequestContext.getCurrentInstance().addCallbackParam("success", false);
+            inputProperty.setPropValue(repoFileId);
         }
-    }
+
+        if (propertyOperation == 'a') {
+            slotEJB.addSlotProperty(inputProperty);
+        } else {
+            slotEJB.saveSlotProp(inputProperty);
+        }
+
+        logger.log(Level.INFO, "returned artifact id is " + inputProperty.getId());
+
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Property saved", "");
+        RequestContext.getCurrentInstance().addCallbackParam("success", true);
+}
 
     // -------------------------- File upload/download Property ---------------------------
     // todo: merge with artifact file ops. finally put in blobStore
@@ -313,59 +276,48 @@ public class SlotManager implements Serializable {
 
     // --------------------------------- Artifact ------------------------------------------------
     public void onArtifactAdd(ActionEvent event) {
-        try {
-            artifactOperation = 'a';
-            if (selectedArtifacts == null) {
-                selectedArtifacts = new ArrayList<>();
-            }
-            // TODO replaced void constructor (now protected) with default values. Check!
-            inputArtifact = new SlotArtifact("", false, "", "", loginManager.getUserid());
-            inputArtifact.setSlot(selectedObject);
-            fileUploaded = false;
-            uploadedFileName = null;
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "New artifact", "");
-        } catch (Exception e) {
-            Utility.showMessage(FacesMessage.SEVERITY_FATAL, "Error in adding artifact", e.getMessage());
-            logger.severe(e.getMessage());
+        artifactOperation = 'a';
+        if (selectedArtifacts == null) {
+            selectedArtifacts = new ArrayList<>();
         }
+        // TODO replaced void constructor (now protected) with default values. Check!
+        inputArtifact = new SlotArtifact("", false, "", "", loginManager.getUserid());
+        inputArtifact.setSlot(selectedObject);
+        fileUploaded = false;
+        uploadedFileName = null;
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, "New artifact", "");
     }
 
     public void onArtifactSave(ActionEvent event) {
-        try {
-            if (artifactOperation == 'a') {
-                inputArtifact.setInternal(internalArtifact);
-                if (inputArtifact.isInternal()) { // internal artifact
-                    if (!fileUploaded) {
-                        Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error:", "You must upload a file");
-                        RequestContext.getCurrentInstance().addCallbackParam("success", false);
-                        return;
-                    }
+        if (artifactOperation == 'a') {
+            inputArtifact.setInternal(internalArtifact);
+            if (inputArtifact.isInternal()) { // internal artifact
+                if (!fileUploaded) {
+                    Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error:", "You must upload a file");
+                    RequestContext.getCurrentInstance().addCallbackParam("success", false);
+                    return;
                 }
             }
-
-            slotEJB.saveSlotArtifact(inputArtifact, artifactOperation == 'a');
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Artifact saved", "");
-            RequestContext.getCurrentInstance().addCallbackParam("success", true);
-        } catch (Exception e) {
-            // selectedArtifacts.remove(inputArtifact);
-            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error: Artifact not saved", e.getMessage());
-            RequestContext.getCurrentInstance().addCallbackParam("success", false);
         }
+
+        if (artifactOperation == 'a') {
+            slotEJB.addSlotArtifact(inputArtifact);
+        } else {
+            slotEJB.saveSlotArtifact(inputArtifact);
+        }
+
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Artifact saved", "");
+        RequestContext.getCurrentInstance().addCallbackParam("success", true);
     }
 
     public void onArtifactDelete(SlotArtifact art) {
-        try {
-            if (art == null) {
-                Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "No artifact selected");
-                return;
-            }
-            selectedArtifacts.remove(art); // ToDo: should this be done before or after delete from db?
-            slotEJB.deleteSlotArtifact(art);
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted Artifact", "");
-        } catch (Exception e) {
-            Utility.showMessage(FacesMessage.SEVERITY_FATAL, "Error in deleting artifact", e.getMessage());
-            logger.severe(e.getMessage());
+        if (art == null) {
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "No artifact selected");
+            return;
         }
+        selectedArtifacts.remove(art); // ToDo: should this be done before or after delete from db?
+        slotEJB.deleteSlotArtifact(art);
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted Artifact", "");
     }
 
     public void onArtifactEdit(SlotArtifact art) {
@@ -380,52 +332,40 @@ public class SlotManager implements Serializable {
     }
 
     public void onArtifactType() {
-        // Toto: remove it
+        // ToDo: remove it
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Artifact type selected","");
     }
 
     // --------------------------------- Related Slots ------------------------------------------------
     public void onRelSlotAdd(ActionEvent event) {
-        try {
-            relationOperation = 'a';
-            if (relatedSlots == null) {
-                relatedSlots = new ArrayList<>();
-            }
-            inputSlotPair = new SlotPair();
-            inputSlotPair.setParentSlot(selectedObject);
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "New related slot", "");
-        } catch (Exception e) {
-            Utility.showMessage(FacesMessage.SEVERITY_FATAL, "Error in adding related slot", e.getMessage());
-            logger.severe(e.getMessage());
+        relationOperation = 'a';
+        if (relatedSlots == null) {
+            relatedSlots = new ArrayList<>();
         }
+        inputSlotPair = new SlotPair();
+        inputSlotPair.setParentSlot(selectedObject);
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, "New related slot", "");
     }
 
     public void onRelSlotSave(ActionEvent event) {
-        try {
-            slotEJB.saveSlotPair(inputSlotPair, relationOperation == 'a');
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Related slot saved", "");
-            RequestContext.getCurrentInstance().addCallbackParam("success", true);
-        } catch (Exception e) {
-            // selectedArtifacts.remove(inputArtifact);
-            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error: Related slot not saved", e.getMessage());
-            RequestContext.getCurrentInstance().addCallbackParam("success", false);
+        if (relationOperation == 'a') {
+            slotEJB.addSlotPair(inputSlotPair);
+        } else {
+            slotEJB.saveSlotPair(inputSlotPair);
         }
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Related slot saved", "");
+        RequestContext.getCurrentInstance().addCallbackParam("success", true);
     }
 
     public void onRelSlotDelete(SlotPair art) {
-        try {
-            if (art == null) {
-                Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "No slot pair selected");
-                return;
-            }
-
-            slotEJB.removeSlotPair(art);
-            relatedSlots.remove(art);
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted Artifact", "");
-        } catch (Exception e) {
-            Utility.showMessage(FacesMessage.SEVERITY_FATAL, "Error in deleting related slot", e.getMessage());
-            logger.severe(e.getMessage());
+        if (art == null) {
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "No slot pair selected");
+            return;
         }
+
+        slotEJB.deleteSlotPair(art);
+        relatedSlots.remove(art);
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted Artifact", "");
     }
 
     public void onRelSlotEdit(SlotPair art) {
@@ -550,14 +490,6 @@ public class SlotManager implements Serializable {
         }
 
         return file;
-    }
-
-
-    public boolean canImportSlots() {
-        return authEJB.userHasAuth(loginManager.getUserid(), EntityType.SLOT, EntityTypeOperation.CREATE) ||
-                authEJB.userHasAuth(loginManager.getUserid(), EntityType.SLOT, EntityTypeOperation.DELETE) ||
-                authEJB.userHasAuth(loginManager.getUserid(), EntityType.SLOT, EntityTypeOperation.UPDATE) ||
-                authEJB.userHasAuth(loginManager.getUserid(), EntityType.SLOT, EntityTypeOperation.RENAME);
     }
 
     public String getFirstFileName() { return firstFileName; }

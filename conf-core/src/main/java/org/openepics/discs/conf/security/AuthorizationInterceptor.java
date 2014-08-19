@@ -1,23 +1,29 @@
-package org.openepics.discs.conf.util;
+package org.openepics.discs.conf.security;
 
-import javax.inject.Inject;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.ejb.EJB;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
 
 import org.openepics.discs.conf.ent.EntityTypeOperation;
-import org.openepics.discs.conf.util.Authorized;
+import org.openepics.discs.conf.util.CRUDOperation;
 
 /**
  * Interceptor, that where defined, intercepts method call to check for user authorization permissions.
  *
  * @author Andraz Pozar <andraz.pozar@cosylab.com>
+ * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
  *
  */
 @Interceptor
 @Authorized
 public class AuthorizationInterceptor {
-    @Inject private RBACMock rbac;
+    private static final Logger logger = Logger.getLogger(AuthorizationInterceptor.class.getCanonicalName());
+           
+    @EJB private SecurityPolicy securityPolicy;
 
     /**
      * Method that checks if current user is authorized to perform operation defined with {@link CRUDOperation} on given entity.
@@ -31,13 +37,14 @@ public class AuthorizationInterceptor {
     @AroundInvoke
     public Object authorizationCheck(InvocationContext context) throws Exception {
         final Object entity = context.getParameters()[0];
-        final CRUDOperation annotation = context.getMethod().getAnnotation(CRUDOperation.class);
-
-        if (rbac.isAuthorized(annotation.operation(), entity)) {
-            return context.proceed();
-        } else {
-            return null;
+        final EntityTypeOperation entityOperationType = context.getMethod().getAnnotation(CRUDOperation.class).operation();
+                      
+        if (entityOperationType == null) {
+            throw new SecurityException("EntityOperation not specified around a authorize entry!");
         }
-
+        logger.log(Level.INFO, "Invoking authorization interceptor for operation type " + entityOperationType.toString());
+        
+        securityPolicy.checkAuth(entity, entityOperationType);
+        return context.proceed();
     }
 }

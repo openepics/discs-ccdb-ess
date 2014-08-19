@@ -13,17 +13,15 @@ import javax.inject.Inject;
 import org.openepics.discs.conf.dl.common.AbstractDataLoader;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
-import org.openepics.discs.conf.dl.common.ValidationMessage;
 import org.openepics.discs.conf.dl.common.ErrorMessage;
-import org.openepics.discs.conf.ejb.AuthEJB;
+import org.openepics.discs.conf.dl.common.ValidationMessage;
 import org.openepics.discs.conf.ejb.ComptypeEJB;
 import org.openepics.discs.conf.ejb.ConfigurationEJB;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
-import org.openepics.discs.conf.ent.EntityType;
-import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyAssociation;
+import org.openepics.discs.conf.security.SecurityException;
 import org.openepics.discs.conf.ui.LoginManager;
 import org.openepics.discs.conf.util.As;
 
@@ -33,9 +31,7 @@ import com.google.common.collect.ImmutableList;
 @Stateless
 @ComponentTypesLoaderQualifier
 public class ComponentTypesDataLoader extends AbstractDataLoader implements DataLoader {
-
     @Inject private LoginManager loginManager;
-    @Inject private AuthEJB authEJB;
     @Inject private ComptypeEJB comptypeEJB;
     @Inject private ConfigurationEJB configurationEJB;
     private int nameIndex, descriptionIndex;
@@ -100,18 +96,18 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
                 switch (command) {
                 case CMD_UPDATE:
                     final ComponentType componentTypeToUpdate = comptypeEJB.findComponentTypeByName(name);
-                    if (componentTypeToUpdate != null) {
-                        if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.COMPONENT_TYPE, EntityTypeOperation.UPDATE)) {
+                    if (componentTypeToUpdate != null) {                     
+                        try {
                             componentTypeToUpdate.setDescription(description);
                             addOrUpdateProperties(componentTypeToUpdate, indexByPropertyName, row, rowNumber, modifiedBy);
                             if (rowResult.isError()) {
                                 continue;
                             }
-                        } else {
+                        } catch (SecurityException e) {
                             rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                         }
                     } else {
-                        if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.COMPONENT_TYPE, EntityTypeOperation.CREATE)) {
+                        try {
                             final ComponentType compTypeToAdd = new ComponentType(name, modifiedBy);
                             compTypeToAdd.setDescription(description);
                             comptypeEJB.addComponentType(compTypeToAdd);
@@ -119,26 +115,26 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
                             if (rowResult.isError()) {
                                 continue;
                             }
-                        } else {
+                        } catch (SecurityException e) {
                             rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                         }
                     }
                     break;
                 case CMD_DELETE:
                     final ComponentType componentTypeToDelete = comptypeEJB.findComponentTypeByName(name);
-                    if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.COMPONENT_TYPE, EntityTypeOperation.DELETE)) {
+                    try {
                         if (componentTypeToDelete == null) {
                             rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
                             continue;
                         } else {
                             comptypeEJB.deleteComponentType(componentTypeToDelete);
                         }
-                    } else {
+                    } catch (SecurityException e) {
                         rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                     }
                     break;
                 case CMD_RENAME:
-                    if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.COMPONENT_TYPE, EntityTypeOperation.RENAME)) {
+                    try {
                         final int startOldNameMarkerIndex = name.indexOf("[");
                         final int endOldNameMarkerIndex = name.indexOf("]");
                         if (startOldNameMarkerIndex == -1 || endOldNameMarkerIndex == -1) {
@@ -162,7 +158,7 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
                             rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
                             continue;
                         }
-                    } else {
+                    } catch (SecurityException e) {
                         rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                     }
                     break;
@@ -230,7 +226,7 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
                 } else {
                     compTypePropertyToUpdate.setPropValue(propertyValue);
                     compTypePropertyToUpdate.setModifiedBy(modifiedBy);
-                    comptypeEJB.saveCompTypeProp(compTypePropertyToUpdate, false);
+                    comptypeEJB.saveCompTypeProp(compTypePropertyToUpdate);
                 }
 
             } else if (propertyValue != null) {

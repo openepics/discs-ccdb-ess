@@ -1,5 +1,6 @@
 package org.openepics.discs.conf.ent;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -21,6 +22,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+
+import org.codehaus.jackson.annotate.JsonIgnore;
 
 /**
  *
@@ -144,33 +147,66 @@ public class Slot extends ConfigurationEntity {
     public void setComment(String comment) { this.comment = comment; }
 
     @XmlTransient
-    public List<SlotArtifact> getSlotArtifactList() { return slotArtifactList; }
+    @JsonIgnore
+    public List<SlotArtifact> getSlotArtifactList() {
+        if (slotArtifactList == null) {
+            slotArtifactList = new ArrayList<>();
+        }
+        return slotArtifactList;
+    }
 
     public ComponentType getComponentType() { return componentType; }
     public void setComponentType(ComponentType componentType) { this.componentType = componentType; }
 
     @XmlTransient
+    @JsonIgnore
     public List<Slot> getSlotList() { return slotList; }
 
     public Slot getAssemblySlot() { return asmSlot; }
     public void setAssemblySlot(Slot asmSlot) { this.asmSlot = asmSlot; }
 
     @XmlTransient
+    @JsonIgnore
     public List<AlignmentRecord> getAlignmentRecordList() { return alignmentRecordList; }
 
     @XmlTransient
-    public List<InstallationRecord> getInstallationRecordList() { return installationRecordList; }
+    @JsonIgnore
+    public List<InstallationRecord> getInstallationRecordList() {
+        if (installationRecordList == null) {
+            installationRecordList = new ArrayList<>();
+        }
+        return installationRecordList;
+    }
 
     @XmlTransient
-    public List<SlotPair> getChildrenSlotsPairList() { return childrenSlots; }
+    @JsonIgnore
+    public List<SlotPair> getChildrenSlotsPairList() {
+        if (childrenSlots == null) {
+            childrenSlots = new ArrayList<>();
+        }
+        return childrenSlots;
+    }
 
     @XmlTransient
-    public List<SlotPair> getParentSlotsPairList() { return parentSlots; }
+    @JsonIgnore
+    public List<SlotPair> getParentSlotsPairList() {
+        if (parentSlots == null) {
+            parentSlots = new ArrayList<>();
+        }
+        return parentSlots;
+    }
 
     @XmlTransient
-    public List<SlotPropertyValue> getSlotPropertyList() { return slotPropertyList; }
+    @JsonIgnore
+    public List<SlotPropertyValue> getSlotPropertyList() {
+        if (slotPropertyList == null) {
+            slotPropertyList = new ArrayList<>();
+        }
+        return slotPropertyList;
+    }
 
     @XmlTransient
+    @JsonIgnore
     public Set<Tag> getTags() { return tags; }
     public void setTags(Set<Tag> tags) { this.tags = tags; }
 

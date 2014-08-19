@@ -1,4 +1,4 @@
-package org.openepics.discs.conf.util;
+package org.openepics.discs.conf.security;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
