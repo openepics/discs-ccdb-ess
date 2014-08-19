@@ -11,6 +11,7 @@ package org.openepics.discs.conf.auditlog;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.openepics.discs.conf.ent.AuditRecord;
 import org.openepics.discs.conf.ent.EntityType;
@@ -22,6 +23,8 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 
 /**
+ * {@link AuditRecord} maker for {@link InstallationRecord}
+ *
  * @author Andraz Pozar <andraz.pozar@cosylab.com>
  *
  */
@@ -36,7 +39,7 @@ public class InstallationRecordEntityLogger implements EntityLogger{
     public List<AuditRecord> auditEntries(Object value, EntityTypeOperation operation, String user) {
         final InstallationRecord installationRecord = (InstallationRecord) value;
 
-        final HashMap<String, String> artifactsMap = new HashMap<>();
+        final Map<String, String> artifactsMap = new HashMap<>();
         if (installationRecord.getInstallationArtifactList() != null) {
             for (InstallationArtifact artifact : installationRecord.getInstallationArtifactList()) {
                 artifactsMap.put(artifact.getName(), artifact.getUri());

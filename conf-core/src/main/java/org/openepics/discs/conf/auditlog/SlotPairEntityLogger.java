@@ -17,6 +17,8 @@ import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.SlotPair;
 
 /**
+ * {@link AuditRecord} maker for {@link SlotPair}
+ *
  * @author Andraz Pozar <andraz.pozar@cosylab.com>
  *
  */

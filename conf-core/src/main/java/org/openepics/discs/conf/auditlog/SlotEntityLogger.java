@@ -12,6 +12,7 @@ package org.openepics.discs.conf.auditlog;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.openepics.discs.conf.ent.AuditRecord;
 import org.openepics.discs.conf.ent.EntityType;
@@ -40,31 +41,31 @@ public class SlotEntityLogger implements EntityLogger {
     public List<AuditRecord> auditEntries(Object entity, EntityTypeOperation operation, String user) {
         final Slot slot = (Slot) entity;
 
-        final HashMap<String, String> propertiesMap = new HashMap<>();
+        final Map<String, String> propertiesMap = new HashMap<>();
         if (slot.getSlotPropertyList() != null) {
             for (SlotPropertyValue propValue : slot.getSlotPropertyList()) {
                 propertiesMap.put(propValue.getProperty().getName(), propValue.getPropValue());
             }
         }
 
-        final HashMap<String, String> artifactsMap = new HashMap<>();
+        final Map<String, String> artifactsMap = new HashMap<>();
         if (slot.getSlotArtifactList() != null) {
             for (SlotArtifact artifact : slot.getSlotArtifactList()) {
                 artifactsMap.put(artifact.getName(), artifact.getUri());
             }
         }
 
-        final List<String> childrenList = new ArrayList<>();
+        final Map<String, String> childrenMap = new HashMap<>();
         if (slot.getChildrenSlotsPairList() != null) {
             for (SlotPair slotPair : slot.getChildrenSlotsPairList()) {
-                childrenList.add(slotPair.getChildSlot().getName());
+                childrenMap.put(slotPair.getChildSlot().getName(), slotPair.getSlotRelation().getName().toString());
             }
         }
 
-        final List<String> parentsList = new ArrayList<>();
+        final Map<String, String> parentsMap = new HashMap<>();
         if (slot.getParentSlotsPairList() != null) {
             for (SlotPair slotPair : slot.getParentSlotsPairList()) {
-                parentsList.add(slotPair.getParentSlot().getName());
+                parentsMap.put(slotPair.getParentSlot().getName(), slotPair.getSlotRelation().getName().toString());
             }
         }
 
@@ -80,8 +81,8 @@ public class SlotEntityLogger implements EntityLogger {
                 addStringProperty("componentType", slot.getComponentType().getName()).
                 addArrayOfMappedProperties("slotPropertyList", propertiesMap).
                 addArrayOfMappedProperties("slotArtifactList", artifactsMap).
-                addArrayOfProperties("childrenSlots", childrenList).
-                addArrayOfProperties("parentSlots", installationRecordsList).
+                addArrayOfMappedProperties("childrenSlots", childrenMap).
+                addArrayOfMappedProperties("parentSlots", parentsMap).
                 addArrayOfProperties("installationRecordList", installationRecordsList).
                 auditEntry(operation, EntityType.SLOT, slot.getName(), slot.getId(), user)));
     }

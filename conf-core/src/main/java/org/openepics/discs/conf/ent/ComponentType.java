@@ -98,8 +98,8 @@ public class ComponentType extends ConfigurationEntity {
     @XmlTransient
     @JsonIgnore
     public List<ComptypePropertyValue> getComptypePropertyList() {
-        if (componentTypeList == null) {
-            componentTypeList = new ArrayList<>();
+        if (comptypePropertyList == null) {
+            comptypePropertyList = new ArrayList<>();
         }
         return comptypePropertyList;
     }

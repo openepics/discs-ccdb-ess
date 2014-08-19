@@ -533,7 +533,7 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                 } else {
                     slotPropertyToUpdate.setPropValue(propertyValue);
                     slotPropertyToUpdate.setModifiedBy(modifiedBy);
-                    slotEJB.saveSlotProp(slotPropertyToUpdate, false);
+                    slotEJB.saveSlotProp(slotPropertyToUpdate);
                 }
 
             } else if (propertyValue != null) {

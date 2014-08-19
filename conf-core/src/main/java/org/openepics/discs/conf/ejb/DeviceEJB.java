@@ -5,24 +5,19 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 
 import org.openepics.discs.conf.auditlog.Audit;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.DeviceArtifact;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
-import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
-import org.openepics.discs.conf.ui.LoginManager;
 import org.openepics.discs.conf.util.CRUDOperation;
 
 /**
@@ -31,20 +26,17 @@ import org.openepics.discs.conf.util.CRUDOperation;
  */
 @Stateless public class DeviceEJB {
 
-    @EJB private AuthEJB authEJB;
-    @Inject private LoginManager loginManager;
     private static final Logger logger = Logger.getLogger(DeviceEJB.class.getCanonicalName());
     @PersistenceContext private EntityManager em;
 
     // ---------------- Physical Component -------------------------
 
     public List<Device> findDevice() {
-        List<Device> comps;
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<Device> cq = cb.createQuery(Device.class);
-        Root<Device> prop = cq.from(Device.class);
+        final List<Device> comps;
+        final CriteriaBuilder cb = em.getCriteriaBuilder();
+        final CriteriaQuery<Device> cq = cb.createQuery(Device.class);
 
-        TypedQuery<Device> query = em.createQuery(cq);
+        final TypedQuery<Device> query = em.createQuery(cq);
         comps = query.getResultList();
         logger.log(Level.INFO, "Number of devices: {0}", comps.size());
 
@@ -69,6 +61,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @Audit
     public void saveDevice(String token, Device device) {
         logger.log(Level.INFO, "Preparing to save device");
+        device.setModifiedAt(new Date());
         em.merge(device);
     }
 
@@ -81,7 +74,8 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @CRUDOperation(operation=EntityTypeOperation.DELETE)
     @Audit
     public void deleteDevice(Device device) {
-        Device ct = em.find(Device.class, device.getId());
+        device.setModifiedAt(new Date());
+        final Device ct = em.find(Device.class, device.getId());
         em.remove(ct);
     }
 
@@ -89,23 +83,18 @@ import org.openepics.discs.conf.util.CRUDOperation;
 
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
-    public void saveDeviceProp(DevicePropertyValue prop, boolean create) {
+    public void saveDeviceProp(DevicePropertyValue prop) {
         prop.setModifiedAt(new Date());
-        DevicePropertyValue newProp = em.merge(prop);
-
-        if (create) { // create instead of update
-            Device device = prop.getDevice();
-            device.getDevicePropertyList().add(newProp);
-            em.merge(device);
-        }
+        final DevicePropertyValue newProp = em.merge(prop);
         logger.log(Level.INFO, "Comp Type Property: id " + newProp.getId() + " name " + newProp.getProperty().getName());
     }
 
     @CRUDOperation(operation=EntityTypeOperation.DELETE)
     @Audit
     public void deleteDeviceProp(DevicePropertyValue prop) {
-        DevicePropertyValue property = em.find(DevicePropertyValue.class, prop.getId());
-        Device device = property.getDevice();
+        prop.setModifiedAt(new Date());
+        final DevicePropertyValue property = em.find(DevicePropertyValue.class, prop.getId());
+        final Device device = property.getDevice();
         device.getDevicePropertyList().remove(property);
         em.remove(property);
     }
@@ -113,49 +102,37 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @CRUDOperation(operation=EntityTypeOperation.CREATE)
     @Audit
     public void addDeviceProperty(DevicePropertyValue property) {
-        em.persist(property);
+        final DevicePropertyValue newProp = em.merge(property);
+        final Device device = property.getDevice();
+        device.getDevicePropertyList().add(newProp);
+        em.merge(device);
     }
 
     // ---------------- Artifact ---------------------
 
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
-    public void saveDeviceArtifact(DeviceArtifact art, boolean create) throws Exception {
-        if (art == null) {
-            logger.log(Level.SEVERE, "deleteDeviceArtifact: Device is null");
-            return;
-        }
-        String user = loginManager.getUserid();
-        if (!authEJB.userHasAuth(user, EntityType.DEVICE, EntityTypeOperation.UPDATE)) {
-            logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
-            throw new Exception("User " + user + " is not authorized to perform this operation");
-        }
+    public void saveDeviceArtifact(DeviceArtifact art) {
         art.setModifiedAt(new Date());
-        art.setModifiedBy("user");
-        DeviceArtifact newArt = em.merge(art);
-        if (create) { // create instead of update
-            Device dev = art.getDevice();
-            dev.getDeviceArtifactList().add(newArt);
-            em.merge(dev);
-        }
+        em.merge(art);
     }
 
     @CRUDOperation(operation=EntityTypeOperation.DELETE)
     @Audit
-    public void deleteDeviceArtifact(DeviceArtifact art) throws Exception {
-        if (art == null) {
-            logger.log(Level.SEVERE, "deleteDeviceArtifact: dev-artifact is null");
-            return;
-        }
-        String user = loginManager.getUserid();
-        if (!authEJB.userHasAuth(user, EntityType.DEVICE, EntityTypeOperation.UPDATE)) {
-            logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
-            throw new Exception("User " + user + " is not authorized to perform this operation");
-        }
+    public void deleteDeviceArtifact(DeviceArtifact art) {
         logger.log(Level.INFO, "deleting " + art.getName() + " id " + art.getId() + " des " + art.getDescription());
-        DeviceArtifact artifact = em.find(DeviceArtifact.class, art.getId());
-        Device device = artifact.getDevice();
+        final DeviceArtifact artifact = em.find(DeviceArtifact.class, art.getId());
+        final Device device = artifact.getDevice();
         device.getDeviceArtifactList().remove(artifact);
         em.remove(artifact);
+    }
+
+    @CRUDOperation(operation=EntityTypeOperation.CREATE)
+    @Audit
+    public void addDeviceArtifact(DeviceArtifact art) {
+        final DeviceArtifact newArt = em.merge(art);
+        final Device dev = art.getDevice();
+        dev.getDeviceArtifactList().add(newArt);
+        em.merge(dev);
     }
 }

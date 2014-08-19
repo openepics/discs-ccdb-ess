@@ -5,25 +5,20 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 
 import org.openepics.discs.conf.auditlog.Audit;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypeArtifact;
 import org.openepics.discs.conf.ent.ComptypeAsm;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
-import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
-import org.openepics.discs.conf.ui.LoginManager;
 import org.openepics.discs.conf.util.CRUDOperation;
 
 /**
@@ -32,20 +27,17 @@ import org.openepics.discs.conf.util.CRUDOperation;
  */
 @Stateless public class ComptypeEJB {
 
-    @EJB private AuthEJB authEJB;
     private static final Logger logger = Logger.getLogger(ComptypeEJB.class.getCanonicalName());
     @PersistenceContext private EntityManager em;
-    @Inject private LoginManager loginManager;
 
     // ---------------- Component Type -------------------------
 
     public List<ComponentType> findComponentType() {
-        List<ComponentType> comptypes;
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<ComponentType> cq = cb.createQuery(ComponentType.class);
-        Root<ComponentType> prop = cq.from(ComponentType.class);
+        final List<ComponentType> comptypes;
+        final CriteriaBuilder cb = em.getCriteriaBuilder();
+        final CriteriaQuery<ComponentType> cq = cb.createQuery(ComponentType.class);
 
-        TypedQuery<ComponentType> query = em.createQuery(cq);
+        final TypedQuery<ComponentType> query = em.createQuery(cq);
         comptypes = query.getResultList();
         logger.log(Level.INFO, "Number of component types: {0}", comptypes.size());
 
@@ -82,6 +74,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @CRUDOperation(operation=EntityTypeOperation.DELETE)
     @Audit
     public void deleteComponentType(ComponentType ctype) {
+        ctype.setModifiedAt(new Date());
         final ComponentType merged = em.merge(ctype);
         em.remove(merged);
     }
@@ -90,7 +83,8 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
     public void saveCompTypeProp(ComptypePropertyValue ctprop) {
-        ComptypePropertyValue newProp = em.merge(ctprop);
+        ctprop.setModifiedAt(new Date());
+        final ComptypePropertyValue newProp = em.merge(ctprop);
         logger.log(Level.INFO, "Comp Type Property: id " + newProp.getId() + " name " + newProp.getProperty().getName());
     }
 
@@ -98,8 +92,8 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @Audit
     public void deleteCompTypeProp(ComptypePropertyValue ctp) {
         logger.log(Level.INFO, "deleting comp type property id " + ctp.getId() + " name " + ctp.getProperty().getName());
-        ComptypePropertyValue property = em.find(ComptypePropertyValue.class, ctp.getId());
-        ComponentType arec = property.getComponentType();
+        final ComptypePropertyValue property = em.find(ComptypePropertyValue.class, ctp.getId());
+        final ComponentType arec = property.getComponentType();
         arec.getComptypePropertyList().remove(property);
         em.remove(property);
     }
@@ -117,15 +111,17 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
     public void saveCompTypeArtifact(ComptypeArtifact art) throws Exception {
-        ComptypeArtifact newArt = em.merge(art);
+        art.setModifiedAt(new Date());
+        final ComptypeArtifact newArt = em.merge(art);
         logger.log(Level.INFO, "Artifact: name " + newArt.getName() + " description " + newArt.getDescription() + " uri " + newArt.getUri() + "is int " + newArt.isInternal());
     }
 
     @CRUDOperation(operation=EntityTypeOperation.DELETE)
     @Audit
     public void deleteCompTypeArtifact(ComptypeArtifact art) throws Exception {
-        ComptypeArtifact artifact = em.find(ComptypeArtifact.class, art.getId());
-        ComponentType arec = artifact.getComponentType();
+        art.setModifiedAt(new Date());
+        final ComptypeArtifact artifact = em.find(ComptypeArtifact.class, art.getId());
+        final ComponentType arec = artifact.getComponentType();
         arec.getComptypeArtifactList().remove(artifact);
         em.remove(artifact);
     }
@@ -141,12 +137,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
 
     // ---------------- Component Type Assmebly ---------------------
 
-    public void saveComptypeAsm(ComponentType ctype, ComptypeAsm prt) throws Exception {
-        String user = loginManager.getUserid();
-        if (!authEJB.userHasAuth(user, EntityType.COMPONENT_TYPE, EntityTypeOperation.UPDATE)) {
-            logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
-            throw new Exception("User " + user + " is not authorized to perform this operation");
-        }
+    public void saveComptypeAsm(ComponentType ctype, ComptypeAsm prt) {
         if (prt != null) {
             prt.setModifiedAt(new Date());
             // ctprop.setType("a");
@@ -162,12 +153,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
         }
     }
 
-    public void deleteComptypeAsm(ComponentType ctype, ComptypeAsm prt) throws Exception {
-        String user = loginManager.getUserid();
-        if (!authEJB.userHasAuth(user, EntityType.COMPONENT_TYPE, EntityTypeOperation.UPDATE)) {
-            logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
-            throw new Exception("User " + user + " is not authorized to perform this operation");
-        }
+    public void deleteComptypeAsm(ComponentType ctype, ComptypeAsm prt) {
         if (prt != null) {
             ComptypeAsm entity = em.find(ComptypeAsm.class, prt.getId());
             em.remove(entity);
