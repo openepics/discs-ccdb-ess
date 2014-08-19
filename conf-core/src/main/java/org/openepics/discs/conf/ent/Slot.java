@@ -171,7 +171,12 @@ public class Slot extends ConfigurationEntity {
 
     @XmlTransient
     @JsonIgnore
-    public List<InstallationRecord> getInstallationRecordList() { return installationRecordList; }
+    public List<InstallationRecord> getInstallationRecordList() {
+        if (installationRecordList == null) {
+            installationRecordList = new ArrayList<>();
+        }
+        return installationRecordList;
+    }
 
     @XmlTransient
     @JsonIgnore
