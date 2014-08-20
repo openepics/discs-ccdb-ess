@@ -108,12 +108,11 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @Audit
     @Authorized
     public void addSlotProperty(SlotPropertyValue propertyValue) {
-        final SlotPropertyValue mergedPropertyValue = em.merge(propertyValue);
-        final Slot parent = mergedPropertyValue.getSlot();
+        final Slot parent = propertyValue.getSlot();
         
-        entityUtility.setModified(parent, mergedPropertyValue);
+        entityUtility.setModified(parent, propertyValue);
         
-        parent.getSlotPropertyList().add(mergedPropertyValue);        
+        parent.getSlotPropertyList().add(propertyValue);        
         em.merge(parent);
     }
     
@@ -149,12 +148,12 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @Audit
     @Authorized
     public void addSlotArtifact(SlotArtifact artifact) {
-        final SlotArtifact mergedArtifact = em.merge(artifact);
-        final Slot parent = mergedArtifact.getSlot();
+        final Slot parent = artifact.getSlot();
         
-        entityUtility.setModified(parent, mergedArtifact);
+        entityUtility.setModified(parent, artifact);
         
-        parent.getSlotArtifactList().add(mergedArtifact);
+        parent.getSlotArtifactList().add(artifact);
+        em.merge(parent);
     }
     
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)

@@ -3,7 +3,6 @@ package org.openepics.discs.conf.auditlog;
 import java.util.Date;
 import java.util.List;
 
-import javax.ejb.EJB;
 import javax.inject.Inject;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptor;
@@ -28,7 +27,7 @@ import org.openepics.discs.conf.util.ParentEntityResolver;
 public class AuditInterceptor {
     @PersistenceContext private EntityManager em;
     @Inject private AuditLogEntryCreator auditLogEntryCreator;
-    @EJB private SecurityPolicy securityPolicy;
+    @Inject private SecurityPolicy securityPolicy;
 
     /**
      * Creates audit log after the method annotated with this interceptor has finished executing.

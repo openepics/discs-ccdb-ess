@@ -130,7 +130,13 @@ public class Slot extends ConfigurationEntity {
     public Double getBeamlinePosition() { return beamlinePosition; }
     public void setBeamlinePosition(Double beamlinePosition) { this.beamlinePosition = beamlinePosition; }
 
-    public AlignmentInformation getPositionInformation() { return positionInfo; }
+    public AlignmentInformation getPositionInformation() {
+        if (positionInfo == null) {
+            positionInfo = new AlignmentInformation();
+        }
+        
+        return positionInfo; 
+    }
 
     public String getAssemblyComment() { return asmComment; }
     public void setAssemblyComment(String asmComment) { this.asmComment = asmComment; }

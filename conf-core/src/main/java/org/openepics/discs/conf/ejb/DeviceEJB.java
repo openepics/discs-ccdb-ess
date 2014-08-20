@@ -84,12 +84,11 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @Audit
     @Authorized
     public void addDeviceProperty(DevicePropertyValue propertyValue) {
-        final DevicePropertyValue mergedPropertyValue = em.merge(propertyValue);
-        final Device parent = mergedPropertyValue.getDevice();
+        final Device parent = propertyValue.getDevice();
         
-        entityUtility.setModified(parent, mergedPropertyValue);
+        entityUtility.setModified(parent, propertyValue);
         
-        parent.getDevicePropertyList().add(mergedPropertyValue);
+        parent.getDevicePropertyList().add(propertyValue);
         em.merge(parent);
     }
     
@@ -125,12 +124,12 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @Audit
     @Authorized
     public void addDeviceArtifact(DeviceArtifact artifact) {
-        final DeviceArtifact mergedArtifact = em.merge(artifact);
-        final Device parent = mergedArtifact.getDevice();
+        final Device parent = artifact.getDevice();
         
-        entityUtility.setModified(parent, mergedArtifact);
+        entityUtility.setModified(parent, artifact);
         
-        parent.getDeviceArtifactList().add(mergedArtifact);        
+        parent.getDeviceArtifactList().add(artifact);
+        em.merge(parent);
     }
 
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)

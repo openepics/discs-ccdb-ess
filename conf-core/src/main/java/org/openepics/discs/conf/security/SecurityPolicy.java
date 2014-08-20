@@ -10,8 +10,6 @@
 
 package org.openepics.discs.conf.security;
 
-import javax.ejb.Local;
-
 import org.openepics.discs.conf.ent.EntityTypeOperation;
 
 
@@ -21,7 +19,6 @@ import org.openepics.discs.conf.ent.EntityTypeOperation;
  * @author mpavleski
  *
  */
-@Local
 public interface SecurityPolicy {
     /**
      * Returns the user id (user-name) for the current user
