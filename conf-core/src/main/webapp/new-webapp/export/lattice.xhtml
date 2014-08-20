@@ -1,0 +1,125 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition 
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    template="/template/ConfigManagerTemplate.xhtml"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://java.sun.com/jsf/core"   
+    xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+    xmlns:h="http://java.sun.com/jsf/html">              
+
+    <ui:define name="content">                  
+
+        <h:form id="expLatForm"  prependId="false">
+
+            <ui:remove> -------------------------- Data  ------------------- </ui:remove>    
+
+            <p:dataTable id="elementTable" var="item" value="#{reportManager.layoutSlots}" 
+                         paginator="true"   rows="25"                        
+                         filteredValue="#{reportManager.filteredObjects}"   resizableColumns="true"
+                         emptyMessage="No records found!" 
+                         rowKey="#{item.id}}" >
+
+                <f:facet name="header">
+                    Lattice (Layout)
+                </f:facet>
+                <f:facet name="footer">
+                    Total Elements: #{fn:length(reportManager.layoutSlots)}
+                </f:facet>           
+
+                <p:column sortBy="#{item.name}" filterBy="#{item.name}" filterMatchMode="contains">
+                    <f:facet name="header">
+                        Name
+                    </f:facet>
+                    <h:outputText value="#{item.name}"/>
+                </p:column>
+                <p:column filterBy="#{item.description}" filterMatchMode="contains">
+                    <f:facet name="header">
+                        Description
+                    </f:facet>
+                    <h:outputText value="#{item.description}"/>
+                </p:column>
+                <p:column sortBy="#{item.componentType.name}" 
+                          filterBy="#{item.componentType.name}" styleClass="alignCenter">
+                    <f:facet name="header" >
+                        Type
+                    </f:facet>
+                    <h:outputText value="#{item.componentType.name}"/>
+                </p:column>  
+                <ui:remove>
+                    <p:columns value="#{reportManager.columns}" var="column" columnIndexVar="colIndex"
+                           sortBy="#{column.property}" filterBy="#{column.property}">
+                    <f:facet name="header">
+                        #{column.header}
+                    </f:facet>
+
+                    #{reportManager.propertyValue(item,column.property)}
+                </p:columns>
+                </ui:remove>
+                <p:column styleClass="alignRight">
+                    <f:facet name="header">
+                        Beamline Position
+                    </f:facet>
+                    <h:outputText value="#{reportManager.propertyValue(item,'Beamline-Position')}"/>
+                </p:column>
+                <p:column styleClass="alignRight">
+                    <f:facet name="header">
+                        Effective Length
+                    </f:facet>
+                    <h:outputText value="#{reportManager.propertyValue(item,'Effective-Length')}"/>
+                </p:column>
+                <p:column styleClass="alignRight">
+                    <f:facet name="header">
+                        Accumulated Center to Center Length
+                    </f:facet>
+                    <h:outputText value="#{reportManager.propertyValue(item,'Accumulated-C2C-Length')}"/>
+                </p:column>
+                <p:column styleClass="alignCenter">
+                    <f:facet name="header" >
+                        Old Name
+                    </f:facet>
+                    <h:outputText value="#{reportManager.propertyValue(item,'Old-Name')}"/>
+                </p:column>
+                <p:column  styleClass="alignRight">
+                    <f:facet name="header">
+                        Length From Element Before
+                    </f:facet>
+                    <h:outputText value="#{reportManager.propertyValue(item,'Length-From-Element-Before')}"/>
+                </p:column>
+                <p:column headerText="Date Modified" rendered="false" >
+                    <h:outputText value="#{item.modifiedAt}">
+                        <f:convertDateTime pattern="#{msgs.dateFormat}" />
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Modified By"  rendered="false">
+                    <h:outputText value="#{item.modifiedBy}" />                      
+                </p:column>
+            </p:dataTable>
+            
+            <ui:remove> -------------------------- Export  ------------------- </ui:remove> 
+            <h:panelGrid  class="export-grid" >  
+                    <p:panel header="Export All Data">  
+                        <h:commandLink>  
+                            <p:graphicImage value="/resources/images/excel.png" title="Excel" />  
+                            <p:dataExporter type="xls" target="elementTable" fileName="proteus-lattice" />  
+                        </h:commandLink>  
+
+                        <h:commandLink>  
+                            <p:graphicImage value="/resources/images/pdf.png" title="PDF" />  
+                            <p:dataExporter type="pdf" target="elementTable" fileName="proteus-lattice"/>  
+                        </h:commandLink>  
+
+                        <h:commandLink>  
+                            <p:graphicImage value="/resources/images/csv.png" title="CSV" />  
+                            <p:dataExporter type="csv" target="elementTable" fileName="proteus-lattice" />  
+                        </h:commandLink>  
+
+                        <h:commandLink>  
+                            <p:graphicImage value="/resources/images/xml.png" title="XML" />  
+                            <p:dataExporter type="xml" target="elementTable" fileName="proteus-lattice" />  
+                        </h:commandLink>  
+                    </p:panel>                   
+                </h:panelGrid>
+        </h:form>
+    </ui:define>    
+</ui:composition>

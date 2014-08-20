@@ -1,0 +1,162 @@
+/* 
+    Document   : Layout
+    Created on : Oct 16, 2013, 3:48:17 PM
+    Author     : Vasu V <vuppala@frib.msu.org>
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+
+body {
+    font-size: 12px;
+    font-family: Verdana, "Verdana CE",  Arial, "Arial CE", "Lucida Grande CE", lucida, "Helvetica CE", sans-serif; 
+}
+
+/* for all of primefaces componenets */
+.ui-widget, 
+.ui-widget .ui-widget {
+    font-size: 12px;
+}
+
+.preliminary {
+	color: #990033;
+}
+
+.ui-widget table {
+    font-size: 12px;
+}
+
+/* text wrap around in data table*/
+.ui-datatable td {
+    white-space: normal !important;
+}
+
+.noBorders, .noBorders>tbody>tr, .noBorders>tbody>tr>td {
+    background: none;
+    border: none;
+    vertical-align: top;
+}
+
+.ui-growl {
+    position:absolute;
+    top: 0%;
+    left:50%;
+}
+
+.spartanTable>thead>th {
+    text-align: left;
+}
+
+.panelTopAlign>tbody>tr>td {
+    vertical-align: top;
+    border: 0px solid LightGray;
+    border-radius: 7px;
+    /* box-shadow: 0 0 7px 2px #888888; */
+}
+
+
+.menu {
+    background-color: transparent; 
+}
+
+.export-grid  img {
+    border: none;
+}
+
+.export-grid {
+    margin: 5px auto;
+}
+
+.ui-layout, .ui-layout-doc, .ui-layout-unit, .ui-layout-wrap, .ui-layout-bd, .ui-layout-hd{
+    border: none;
+}
+
+.ui-panel-title, .ui-panelgrid-header {
+    font-weight: normal;
+}
+
+.link {
+    text-decoration: underline;
+}
+
+.boxf {
+    margin: 0px; 
+    padding: 10px;
+    border: 0px solid #000000;
+    color: black;
+    width: 98%;
+    margin: 0  auto;
+    /* background-color: #FFFFFF; */
+}
+
+.menubar {
+    color: LightSlateGray;
+}
+
+#top {
+    position: relative;
+    color: black;
+    /* border: 1px; */
+    padding: 2px; 
+    /* margin: 0px 0px 10px 0px; */
+}
+
+#content {
+    margin: 2px; 
+    /* padding: 10px; */
+    width: 97%;
+    margin-left: auto;
+    margin-right: auto;
+    /* border: 0px solid LightGray; */
+    /* border-radius: 7px; */
+    /* box-shadow: 0 0 7px 2px #888888; */
+    /* color: black; */
+
+    /* text-align: left; */
+    /* width: 80%; */
+    /* background-color: #FFFFFF;  */
+}
+
+#bottom {
+    position: relative;
+    color:  #009999;
+    padding: 5px;
+    /* margin: 10px 0px 0px 0px; */
+    text-align:  center;
+}
+
+.title {
+    font-family: Georgia, "Times New Roman", Times, serif;
+    font-size: 24px; 
+    font-style: normal;
+    font-weight: bold;     
+}
+
+a {
+    text-decoration: none  !important;
+}
+
+
+.alignRight, td.alignRight {
+    text-align: right;
+}
+
+.alignCenter, td.alignCenter {
+    text-align: center;
+}
+
+
+.titlebar .titlebar>tbody>tr, .titlebar>tbody>tr>td {
+    padding: 0px !important; 
+    width: 100%;
+    /* background-image: url('../images/header-bg.png'); 
+    background-repeat: repeat; */
+    background: rgb(206,220,231); /* Old browsers */
+    background: -moz-linear-gradient(left,  rgba(206,220,231,1) 0%, rgba(89,106,114,1) 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, right top, color-stop(0%,rgba(206,220,231,1)), color-stop(100%,rgba(89,106,114,1))); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(left,  rgba(206,220,231,1) 0%,rgba(89,106,114,1) 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(left,  rgba(206,220,231,1) 0%,rgba(89,106,114,1) 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(left,  rgba(206,220,231,1) 0%,rgba(89,106,114,1) 100%); /* IE10+ */
+    background: linear-gradient(to right,  rgba(206,220,231,1) 0%,rgba(89,106,114,1) 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#cedce7', endColorstr='#596a72',GradientType=1 ); /* IE6-9 */
+}

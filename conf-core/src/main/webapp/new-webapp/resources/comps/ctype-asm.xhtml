@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+    Displays properties of a component.
+    
+    @author: Vasu V
+-->
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:cc="http://java.sun.com/jsf/composite">
+
+    <!-- INTERFACE -->
+    <cc:interface>
+        <cc:attribute name="componentType" required="true"/>
+        <cc:attribute name="collapsed" required="false" default="false"/> 
+    </cc:interface>
+
+    <!-- IMPLEMENTATION -->
+    <cc:implementation>
+        <p:panel header="Type Assembly" toggleable="true" style="border: 0px;" collapsed="#{cc.attrs.collapsed}">  
+            <p:dataTable id="proptable" var="ctasm" value="#{cc.attrs.componentType.comptypeAsmList1}" >
+                <p:column  headerText="Position" sortBy="#{ctasm.asmPosition}" >
+                    <h:outputText value="#{ctasm.childPosition}"/>
+                </p:column>
+                <p:column id="name" headerText="Name" sortBy="#{ctasm.childType.name}" >                   
+                    <h:link outcome="details" target="_blank" >
+                        <h:outputText value="#{ctasm.childType.name}" styleClass="link"/>
+                        <f:param name="id" value="#{ctasm.childType.id}"/>
+                    </h:link>
+                </p:column>
+                <p:column id="desc" headerText="Description"  >
+                    <h:outputText value="#{ctasm.description}"/>
+                </p:column>                           
+            </p:dataTable>  					  
+        </p:panel>
+    </cc:implementation>
+</html>

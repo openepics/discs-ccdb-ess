@@ -1,0 +1,42 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui">
+    <h:form>
+        <h:commandButton action="#{propertyManager.onAdd()}" value="Add new" />
+        <p:dataTable var="property" value="#{propertyManager.objects}" rows="15"
+                         paginator="true">
+	        <p:column headerText="Name">
+	            <h:outputText value="#{property.name}" />
+	        </p:column>
+	 
+	        <p:column headerText="Description">
+	            <h:outputText value="#{property.description}" />
+	        </p:column>
+	 
+	        <p:column headerText="Unit">
+	            <h:outputText value="#{property.unit.name}" />
+	        </p:column>
+	 
+	        <p:column headerText="Data Type">
+	            <h:outputText value="#{property.dataType.name}" />
+	        </p:column>
+	        <p:column headerText="Action">
+                    <p:commandButton icon="ui-icon-trash"
+                        title="Delete"
+                        actionListener="#{propertyManager.onAdd()}"
+                        ajax="false" />
+                    <p:commandButton icon="ui-icon-pencil"
+                        title="Edit"
+                        actionListener="#{propertyManager.onAdd()}"
+                        ajax="false" />
+                    <p:commandButton icon="ui-icon-clock"
+                        title="Log"
+                        actionListener="#{propertyManager.onAdd()}"
+                        ajax="false" />
+                </p:column>
+        </p:dataTable>
+    </h:form>
+</ui:composition>

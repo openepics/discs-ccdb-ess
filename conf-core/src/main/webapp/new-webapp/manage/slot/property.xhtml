@@ -1,0 +1,119 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition 
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://java.sun.com/jsf/core"   
+    xmlns:h="http://java.sun.com/jsf/html">              
+
+    <ui:remove> -------------------------- Search/Select ------------------- </ui:remove>
+    <h:form id="propertyForm" prependId="false"  rendered="#{slotManager.selectedObject ne null}">
+        <p:panel toggleable="true" id="propertytPanel" >
+            <f:facet name="header">                           
+                <h:outputText value="Properties : " />
+                <p:commandButton  icon="ui-icon-plus"  update=":propertyInputForm :messages" 
+                                  process="@this" actionListener="#{slotManager.onPropertyAdd}" 
+                                  oncomplete="PF('propertyInputDlg').show()" rendered="false"/>   
+                <p:commandLink  styleClass="ui-icon ui-icon-circle-plus"  style="display:inline-block;" 
+                                update=":propertyInputForm :messages"  title="Add"
+                                process="@this" actionListener="#{slotManager.onPropertyAdd}" 
+                                oncomplete="PF('propertyInputDlg').show()"/> 
+            </f:facet>
+            <p:dataTable id="propertyTable" var="cprop" value="#{slotManager.selectedProperties}" 
+                         scrollRows="25" scrollable="true" liveScroll="true"   scrollHeight="200"                               
+                         emptyMessage="No properties found"  editMode="row" editable="false"                          
+                         rowKey="#{cprop.id}"  >                
+
+                <p:column id="ops" width="10%">
+                    <p:commandLink  styleClass="ui-icon ui-icon-trash"  style="display:inline-block;"
+                                    update="propertyTable  :messages"  title="Delete"
+                                    process="@this" action="#{slotManager.onPropertyDelete(cprop)}" />                   
+                    <p:commandLink styleClass="ui-icon ui-icon-pencil"  style="display:inline-block;"
+                                   update=":propertyInputForm :messages" title="Edit"
+                                   process="@this"  action="#{slotManager.onPropertyEdit(cprop)}"
+                                   oncomplete="PF('propertyInputDlg').show()" />
+                </p:column>
+                <p:column  headerText="Name">                   
+                    
+                    <h:outputText value="#{cprop.property.name}" />
+                </p:column>               
+                <p:column headerText="Value" styleClass="alignRight"> 
+                    <h:outputText value="#{cprop.propValue}" rendered="#{! cprop.inRepository}"/>
+                    <p:commandLink id="downloadLink" value="dl" ajax="false"                                  
+                                   styleClass="ui-icon ui-icon-arrowthickstop-1-s" style="display:inline-block;"
+                                   rendered="#{cprop.inRepository}">   
+                        <f:setPropertyActionListener target="#{slotManager.selectedProperty}" value="#{cprop}" />
+                        <p:fileDownload value="#{slotManager.downloadedPropertyFile}" />  
+                    </p:commandLink>
+                </p:column> 
+            </p:dataTable>
+
+        </p:panel>
+    </h:form>
+
+    <ui:remove> -------------------------- Add/Edit ------------------- </ui:remove>
+    <p:dialog header="Attach an Artifact" widgetVar="propertyInputDlg">
+        <h:form id="propertyInputForm" prependId="false" enctype="multipart/form-data">
+            <p:panelGrid id="propertyInputPanel" >
+                <p:row>
+                    <p:column><h:outputLabel value="Property :" /></p:column>
+                    <p:column>
+                        <p:selectOneMenu value="#{slotManager.inputProperty.property}" style="width:100%"
+                                         var="p" filter="true"  converter="#{propertyConverter}">                        
+                            <f:selectItems value="#{propertyManager.objects}" var="prop" itemLabel="#{prop.name}" itemValue="#{prop}" />
+                            <p:column>
+                                #{p.name}
+                            </p:column>
+                            <p:column>
+                                #{p.description}
+                            </p:column>
+                        </p:selectOneMenu>
+                    </p:column>
+                </p:row>  
+
+
+                <p:row>
+                    <p:column><h:outputLabel value="File :" /></p:column>
+                    <p:column>
+                        <p:selectBooleanCheckbox  value="#{slotManager.inRepository}" disabled="#{slotManager.propertyOperation eq 'e'}">                           
+                            <p:ajax process="@this" update="propertyInputPanel :messages" />
+                        </p:selectBooleanCheckbox>
+                    </p:column>
+                </p:row >
+                <p:row rendered="#{! slotManager.inRepository}" >
+                    <p:column><h:outputLabel value="Value :" /></p:column>
+                    <p:column>
+                        <h:inputText id="val" value="#{slotManager.inputProperty.propValue}" size="32" />
+                        <p:message for="val"  />
+                    </p:column>
+                    <p:watermark for="val" value="Enter property value"/>
+                </p:row>
+                <p:row rendered="#{slotManager.inRepository}">     
+                    <p:column><h:outputLabel value="File :" /></p:column>
+                    <p:column  colspan="2">
+                        <h:outputText id="upPropFileName" value="Uploaded File: #{slotManager.uploadedFileName}" />
+                        <p:fileUpload fileUploadListener="#{slotManager.handlePropertyUpload}"
+                                      mode="advanced"  process="@this"  required="true"  disabled="#{slotManager.propertyOperation eq 'e'}"
+                                      dragDropSupport="true" update="upPropFileName :messages" />                        
+                    </p:column>                  
+                </p:row>
+
+                <p:row>
+                    <p:column colspan="2">
+                        <p:toolbar>
+                            <p:toolbarGroup  align="right" >                      
+                                <p:commandButton value="Save" icon="ui-icon-disk" 
+                                                 update=":propertyForm:propertytPanel propertyInputPanel :messages"
+                                                 process="@form" actionListener="#{slotManager.onPropertySave}"                                               
+                                                 oncomplete="if (!args.validationFailed &amp;&amp; args.success) PF('propertyInputDlg').hide()" /> 
+                                <p:separator /> 
+                                <p:commandButton value="Cancel" icon="ui-icon-close"                                         
+                                                 onclick="PF('propertyInputDlg').hide()" />
+                            </p:toolbarGroup>
+                        </p:toolbar>
+                    </p:column>
+                </p:row>
+            </p:panelGrid>
+        </h:form>
+    </p:dialog>
+</ui:composition>

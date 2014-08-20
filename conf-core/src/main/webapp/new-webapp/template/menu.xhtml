@@ -1,0 +1,94 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:fc="http://java.sun.com/jsf/composite/comps"
+	xmlns:h="http://java.sun.com/jsf/html">
+
+	<h:form id="menuform">
+		<p:growl id="menumsgs" showDetail="true" />
+
+		<p:menubar id="mainMenu" styleClass="menubar">
+			<p:menuitem value="Home" icon="ui-icon-home" title="Home" url="/" />
+			<p:menuitem value="Hierarchies" icon="ui-icon-link" title="Hierarchies" url="/" disabled="true"/>
+			<p:menuitem value="Device Types" icon="ui-icon-home" title="Device Types" url="/" disabled="true" />
+			<p:menuitem value="Reports" icon="ui-icon-home" title="Reports" url="/" disabled="true"/>
+			<p:submenu label="Import" icon="ui-icon-folder-open" rendered="true">
+                <p:menuitem value="Import Units" update=":importUnitsForm"
+                    oncomplete="importUnits.show()" title="Import Units"
+                    actionListener="#{unitManager.prepareImportPopup()}"
+                    disabled="#{!securityPolicy.getUIHint('UNIT')}" />
+                    
+                <p:menuitem value="Import Properties" update=":importPropertiesForm"
+                    oncomplete="importProperties.show()" title="Import Properties"
+                    actionListener="#{propertyManager.prepareImportPopup()}"
+                    disabled="#{!securityPolicy.getUIHint('PROPERTY')}" />
+                    
+                <p:menuitem value="Import Component Types" update=":importCompTypesForm"
+                    oncomplete="importCompTypes.show()" title="Import Component Types"
+                    actionListener="#{componentTypeManager.prepareImportPopup()}"
+                    disabled="#{! securityPolicy.getUIHint('COMPONENT_TYPE')}" />
+                    
+                <p:menuitem value="Import Slots and Slot Relationships" update=":importSlotsForm"
+                    oncomplete="importSlots.show()" title="Import Slots"
+                    actionListener="#{slotManager.prepareImportPopup()}"
+                    disabled="#{!securityPolicy.getUIHint('SLOT')}"/>
+                  
+                <p:menuitem value="Import Device Instances" update=":importDevicesForm"
+                    oncomplete="importDevices.show()" title="Import Devices"
+                    actionListener="#{deviceManager.prepareImportPopup()}"
+                    disabled="#{!securityPolicy.getUIHint('DEVICE')}"/>
+
+                
+            </p:submenu>
+
+			<p:menuitem value="Data Definitions" icon="ui-icon-home" title="Data Definitions" url="/new-webapp/data-definitions/data-definitions.xhtml" />
+			<p:menuitem value="Deleted" icon="ui-icon-home" title="Deleted" url="/" disabled="true"/>
+			<p:menuitem value="Help" icon="ui-icon-home" title="Help" url="/" disabled="true"/>	
+			
+			<f:facet name="options">
+                <fc:logincomp ajax="false" />
+            </f:facet>	
+		</p:menubar>	   
+	</h:form>
+	
+	<ui:include src="/new-webapp/loaders/single-file-DL.xhtml">
+        <ui:param name="formId" value="importUnitsForm" />
+        <ui:param name="dialogTitle" value="Units Import" />
+        <ui:param name="widgetName" value="importUnits" />
+        <ui:param name="controller" value="#{unitManager}" />
+    </ui:include>
+    
+    
+    <ui:include src="/new-webapp/loaders/single-file-DL.xhtml">
+        <ui:param name="formId" value="importPropertiesForm" />
+        <ui:param name="dialogTitle" value="Properties Import" />
+        <ui:param name="widgetName" value="importProperties" />
+        <ui:param name="controller" value="#{propertyManager}" />
+    </ui:include>
+
+    <ui:include src="/new-webapp/loaders/single-file-DL.xhtml">
+        <ui:param name="formId" value="importCompTypesForm" />
+        <ui:param name="dialogTitle" value="Component Types Import" />
+        <ui:param name="widgetName" value="importCompTypes" />
+        <ui:param name="controller" value="#{componentTypeManager}" />
+    </ui:include>
+    
+    <ui:include src="/new-webapp/loaders/multiple-files-DL.xhtml">
+        <ui:param name="formId" value="importSlotsForm" />
+        <ui:param name="dialogTitle" value="Slots and Slot Relationships Import" />
+        <ui:param name="widgetName" value="importSlots" />
+        <ui:param name="controller" value="#{slotManager}" />
+        <ui:param name="firstFileContents" value="slots" />
+        <ui:param name="secondFileContents" value="slot pairs" />
+    </ui:include>
+    
+    <ui:include src="/new-webapp/loaders/single-file-DL.xhtml">
+        <ui:param name="formId" value="importDevicesForm" />
+        <ui:param name="dialogTitle" value="Devices Import" />
+        <ui:param name="widgetName" value="importDevices" />
+        <ui:param name="controller" value="#{deviceManager}" />
+    </ui:include>
+</ui:composition>

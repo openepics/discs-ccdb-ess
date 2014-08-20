@@ -1,0 +1,74 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition 
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://java.sun.com/jsf/core"   
+    xmlns:h="http://java.sun.com/jsf/html">              
+
+    <ui:remove> -------------------------- Assembly ------------------- </ui:remove>
+    <h:form id="assemblyForm" prependId="false" rendered="#{componentTypeManager.selectedObject ne null}">
+        <p:panel toggleable="true" >
+            <f:facet name="header">                           
+                <h:outputText value="Type Assembly : " />
+                <p:commandButton  icon="ui-icon-plus"  update="asmTable :messages" 
+                                  process="@this" actionListener="#{componentTypeManager.onAsmAdd}" />
+            </f:facet>
+            <p:dataTable id="asmTable" var="asmp" value="#{componentTypeManager.selectedParts}" 
+                         scrollRows="25" scrollable="true" liveScroll="true"   scrollHeight="200"                               
+                         emptyMessage="No assembly parts found"  editMode="row" editable="true" 
+                         rowKey="#{asmp.id}}"  >                
+
+                <p:ajax event="rowEdit" listener="#{componentTypeManager.onAsmSave}" update="asmTable  :messages" />                  
+                <p:ajax event="rowEditInit" listener="#{componentTypeManager.onAsmEdit}" update=":messages" />                  
+                <p:ajax event="rowEditCancel" listener="#{componentTypeManager.onAsmCancel}" update="asmTable  :messages" />                  
+
+                <p:column id="ops" width="10%">
+                    <p:commandLink  styleClass="ui-icon ui-icon-trash"  update="asmTable  :messages" 
+                                    process="@this" action="#{componentTypeManager.onAsmDelete(asmp)}" />
+
+                </p:column>
+                <p:column headerText="Position">
+                    <p:cellEditor>
+                        <f:facet name="output"><h:outputText value="#{asmp.childPosition}" /></f:facet>
+                        <f:facet name="input"><p:inputText id="inname" value="#{asmp.childPosition}" style="width:100%"/></f:facet>
+                    </p:cellEditor> 
+                    <p:watermark for="inname" value="Enter Position"/>
+                </p:column>
+                <p:column headerText="Comp Type">
+                    <p:cellEditor>
+                        <f:facet name="output"><h:outputText value="#{asmp.childType.name}" /></f:facet>
+                        <f:facet name="input">
+                            <p:selectOneMenu id="parent" value="#{asmp.childType}"   
+                                             var="ct"  
+                                             converter="#{componentTypeConverter}" rendered="true"
+                                             filter="true" filterMatchMode="startsWith" style="width: 100%;">  
+                                <f:selectItem itemLabel="Select One"  itemValue="" />
+                                <f:selectItems value="#{componentTypeManager.objects}" var="ctype" itemLabel="#{ctype.name}" itemValue="#{ctype}"/>
+                                <p:column>  
+                                    #{ct.name}
+                                </p:column>                                                
+                                <p:column >  
+                                    <h:outputText value="#{ct.description}" />  
+                                </p:column> 
+                            </p:selectOneMenu>
+                        </f:facet>
+                    </p:cellEditor> 
+                </p:column>
+
+                <p:column headerText="Description">
+                    <p:cellEditor>
+                        <f:facet name="output"><h:outputText value="#{asmp.description}" /></f:facet>
+                        <f:facet name="input"><p:inputText id="indesc" value="#{asmp.description}" style="width:100%"/></f:facet>
+
+                    </p:cellEditor> 
+                    <p:watermark for="indesc" value="Enter description"/>
+                </p:column>
+
+                <p:column style="width:15%">
+                    <p:rowEditor />
+                </p:column>
+            </p:dataTable>
+        </p:panel>
+    </h:form>
+</ui:composition>

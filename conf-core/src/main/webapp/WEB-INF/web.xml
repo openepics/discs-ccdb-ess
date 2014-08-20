@@ -19,11 +19,11 @@
         </session-timeout>
     </session-config>
     <welcome-file-list>
-        <welcome-file>index.xhtml</welcome-file>
+        <welcome-file>new-webapp/index.xhtml</welcome-file>
     </welcome-file-list>
     <error-page>
         <exception-type>javax.faces.application.ViewExpiredException</exception-type>
-        <location>/expired.xhtml</location>
+        <location>new-webapp/expired.xhtml</location>
     </error-page>
    <!--
     <security-constraint>
@@ -59,8 +59,8 @@
         <auth-method>FORM</auth-method>
         <realm-name>org.openepics.discs</realm-name>
         <form-login-config>
-            <form-login-page>/login.xhtml</form-login-page>
-            <form-error-page>/error.xhtml</form-error-page>
+            <form-login-page>new-webapp/login.xhtml</form-login-page>
+            <form-error-page>new-webapp/error.xhtml</form-error-page>
         </form-login-config>
     </login-config>
     <security-role>

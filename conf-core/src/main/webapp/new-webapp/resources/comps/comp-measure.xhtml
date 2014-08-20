@@ -1,0 +1,75 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:cc="http://java.sun.com/jsf/composite">
+
+    <!-- INTERFACE -->
+    <cc:interface>
+        <cc:attribute name="selectedComponent" required="true"/>
+        <cc:attribute name="collapsed" required="false" default="false"/> 
+    </cc:interface>
+
+    <!-- IMPLEMENTATION -->
+    <cc:implementation>
+
+        <p:growl id="growlmm" showDetail="true"/>
+        <p:panel id="panel1" header="Measurement" toggleable="true"  style="border: 0px;" collapsed="#{cc.attrs.collapsed}">  
+            <p:dataTable id="physproptable" var="prop" emptyMessage="No measurements taken yet."
+                         value="#{measurementBean.PhysicalProperties(cc.attrs.selectedComponent)}" >				
+                <p:column id="name" headerText="Name" sortBy="#{prop.property.id}" >
+                    <h:outputText value="#{prop.property.id}" title="#{prop.property.description}" />
+                </p:column>
+                 <p:column id="desc" headerText="Description" >
+                    <h:outputText value="#{prop.property.description}" />
+                </p:column>
+                <p:column id="value" headerText="Value" >                   
+                    <h:outputLink id="img" value="resources/data/#{prop.value}" target="_blank" rendered="#{prop.property.dataType == 'IMGF'}" >
+                        <h:outputText value="#{prop.value}" />
+                    </h:outputLink>
+                    <p:panelGrid styleClass="noBorders" columns="2">
+                        <p:commandLink id="fgbutton" styleClass="ui-icon ui-icon-image" title="mesurement graph"
+                                       oncomplete="fieldGraph.show()" update=":#{p:component('fieldGraph')} :#{p:component('growlmm')}"
+                                       action="${measurementBean.createGraph()}"                                         
+                                       rendered="#{prop.property.name == 'FIELDMEASURE'}" >  
+                            <f:setPropertyActionListener value="#{prop}" target="#{measurementBean.selectedPprop}" />
+                        </p:commandLink>
+                        <h:outputLink id="fielddl" value="resources/data/#{prop.value}" 
+                                      styleClass="ui-icon ui-icon-arrowthickstop-1-s"
+                                      title="download data" 
+                                      target="_blank" rendered="#{prop.property.name == 'FIELDMEASURE'}" >
+                        </h:outputLink>
+                    </p:panelGrid>
+
+                    <h:outputLink value="resources/data/#{prop.value}" title="download file"
+                                  styleClass="ui-icon ui-icon-arrowthickstop-1-s"
+                                  target="_blank" rendered="#{prop.property.name == 'FIELDMRAW'}" >                          
+                    </h:outputLink>
+                    <p:commandLink id="poly" styleClass="ui-icon ui-icon-script" title="polynomial"
+                                   oncomplete="polynotes.show()"    
+                                   update=":#{p:component('polynotes')}"
+                                   rendered="#{prop.property.name == 'FIELDPOLY'}" >   
+                        <f:setPropertyActionListener value="#{prop}" target="#{measurementBean.selectedPprop}" />
+                    </p:commandLink>
+                    <h:outputLink value="#{prop.value}" title="Ext Link"
+                                  styleClass="ui-icon ui-icon-extlink"
+                                  target="_blank" rendered="#{prop.property.dataType == 'URI'}" >                          
+                    </h:outputLink>
+                </p:column>  
+                <p:column id="unit" headerText="Unit" rendered="false" >
+                    <h:outputText value="#{prop.property.units}"  />
+                </p:column>	
+            </p:dataTable> 
+        </p:panel> 
+        <p:dialog id="polynotes"  widgetVar="polynotes">                                
+            <h:outputText value="#{measurementBean.selectedPprop.value}" />   
+        </p:dialog>
+        <p:dialog id="fieldGraph"  widgetVar="fieldGraph" >                  
+            <p:lineChart id="fieldLine" value="#{measurementBean.fieldCurve}"  legendPosition="e" 
+                         title="Measurement Curve"  style="width: 600px; height:300px" 
+                         xaxisLabel="Current (A)" yaxisLabel="Field (Tesla)" zoom="true"/>          
+        </p:dialog>
+    </cc:implementation>
+</html>

@@ -107,7 +107,8 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
                                 unitToUpdate.setModifiedAt(modifiedAt);
                                 configurationEJB.saveUnit(unitToUpdate);
                             } catch (Exception e) {
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                                if (e instanceof SecurityException)
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                                 continue;
                             }
                         } else {
@@ -116,7 +117,8 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
                                 configurationEJB.addUnit(unitToAdd);
                                 unitByName.put(unitToAdd.getName(), unitToAdd);
                             } catch (Exception e) {
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                                if (e instanceof SecurityException)
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                                 continue;
                             }
                         }
@@ -132,7 +134,8 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
                                 unitByName.remove(unitToDelete.getName());
                             }
                         } catch (Exception e) {
-                            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                            if (e instanceof SecurityException)
+                                rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                             continue;
                         }
                         break;
@@ -141,7 +144,7 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
                             final int startOldNameMarkerIndex = name.indexOf("[");
                             final int endOldNameMarkerIndex = name.indexOf("]");
                             if (startOldNameMarkerIndex == -1 || endOldNameMarkerIndex == -1) {
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.RENAME_MISFORMAT, rowNumber, headerRow.get(nameIndex)));
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.RENAME_MISFORMAT, rowNumber, headerRow.get(nameIndex)));
                                 continue;
                             }
 
@@ -164,7 +167,8 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
                                 continue;
                             }
                         } catch (Exception e) {
-                            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                            if (e instanceof SecurityException)
+                                rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                             continue;
                         }
                         break;
