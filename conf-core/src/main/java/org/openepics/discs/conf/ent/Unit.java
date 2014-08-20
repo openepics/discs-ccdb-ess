@@ -57,9 +57,6 @@ public class Unit extends ConfigurationEntity {
     @OneToMany(mappedBy = "unit")
     private List<PropertyValue> propertyValuesList;
 
-    @OneToMany(mappedBy = "unit")
-    private List<Property> propertyList;
-
     protected Unit() {
     }
 
@@ -86,10 +83,6 @@ public class Unit extends ConfigurationEntity {
     @XmlTransient
     @JsonIgnore
     public List<PropertyValue> getPropertyValuesList() { return propertyValuesList; }
-
-    @XmlTransient
-    @JsonIgnore
-    public List<Property> getPropertyList() { return propertyList; }
 
     @Override
     public String toString() { return "Unit[ unitId=" + id + " ]"; }

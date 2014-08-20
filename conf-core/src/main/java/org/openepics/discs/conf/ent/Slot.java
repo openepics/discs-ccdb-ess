@@ -88,12 +88,6 @@ public class Slot extends ConfigurationEntity {
     @ManyToOne
     private Slot asmSlot;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "slot")
-    private List<AlignmentRecord> alignmentRecordList;
-
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "slot")
-    private List<InstallationRecord> installationRecordList;
-
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "childSlot")
     private List<SlotPair> childrenSlots;
 
@@ -165,19 +159,6 @@ public class Slot extends ConfigurationEntity {
 
     public Slot getAssemblySlot() { return asmSlot; }
     public void setAssemblySlot(Slot asmSlot) { this.asmSlot = asmSlot; }
-
-    @XmlTransient
-    @JsonIgnore
-    public List<AlignmentRecord> getAlignmentRecordList() { return alignmentRecordList; }
-
-    @XmlTransient
-    @JsonIgnore
-    public List<InstallationRecord> getInstallationRecordList() {
-        if (installationRecordList == null) {
-            installationRecordList = new ArrayList<>();
-        }
-        return installationRecordList;
-    }
 
     @XmlTransient
     @JsonIgnore
