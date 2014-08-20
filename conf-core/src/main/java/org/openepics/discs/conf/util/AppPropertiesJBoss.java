@@ -1,5 +1,6 @@
 package org.openepics.discs.conf.util;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Alternative;
 
 /**
@@ -7,6 +8,7 @@ import javax.enterprise.inject.Alternative;
  * @author Miroslav Pavleski
  */
 @Alternative
+@ApplicationScoped
 public class AppPropertiesJBoss implements AppProperties {    
     private static final String PREFIX = "org.openepics.discs.conf.props.";
         

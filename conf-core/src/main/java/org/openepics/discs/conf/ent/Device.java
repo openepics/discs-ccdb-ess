@@ -1,7 +1,6 @@
 package org.openepics.discs.conf.ent;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -24,7 +23,7 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  *
@@ -45,8 +44,6 @@ import org.codehaus.jackson.annotate.JsonIgnore;
     @NamedQuery(name = "Device.findByPurchaseOrder", query = "SELECT d FROM Device d WHERE d.purchaseOrder = :purchaseOrder"),
     @NamedQuery(name = "Device.findByModifiedBy", query = "SELECT d FROM Device d WHERE d.modifiedBy = :modifiedBy")})
 public class Device extends ConfigurationEntity {
-    private static final long serialVersionUID = 1L;
-
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)
@@ -118,10 +115,8 @@ public class Device extends ConfigurationEntity {
     protected Device() {
     }
 
-    public Device(String serialNumber, String modifiedBy) {
+    public Device(String serialNumber) {
         this.serialNumber = serialNumber;
-        this.modifiedBy = modifiedBy;
-        this.modifiedAt = new Date();
     }
 
     public String getSerialNumber() { return serialNumber; }

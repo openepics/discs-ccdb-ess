@@ -1,5 +1,6 @@
 package org.openepics.discs.conf.auditlog;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
@@ -13,13 +14,13 @@ import org.openepics.discs.conf.ent.PropertyAssociation;
 
 public class ComponentTypeEntityLoggerTest {
 
-    private final Property prop1 = new Property("DETER", "deter", PropertyAssociation.ALL, "admin");
-    private final ComptypePropertyValue compTypePropVal1 = new ComptypePropertyValue(false, "admin");
-    private final Property prop2 = new Property("APERTURE", "aperture", PropertyAssociation.ALL, "admin");
-    private final ComptypePropertyValue compTypePropVal2 = new ComptypePropertyValue(false, "admin");
-    private final ComponentType compType = new ComponentType("Deteriorator", "admin");
-    private final ComptypeArtifact artifact1 = new ComptypeArtifact("CAT Image", true, "Simple CAT image", "/var/usr/images/CAT", "admin");
-    private final ComptypeArtifact artifact2 = new ComptypeArtifact("Manual", false, "Users manual", "www.deteriorator.com/user-manual", "admin");
+    private final Property prop1 = new Property("DETER", "deter", PropertyAssociation.ALL);
+    private final ComptypePropertyValue compTypePropVal1 = new ComptypePropertyValue(false);
+    private final Property prop2 = new Property("APERTURE", "aperture", PropertyAssociation.ALL);
+    private final ComptypePropertyValue compTypePropVal2 = new ComptypePropertyValue(false);
+    private final ComponentType compType = new ComponentType("Deteriorator");
+    private final ComptypeArtifact artifact1 = new ComptypeArtifact("CAT Image", true, "Simple CAT image", "/var/usr/images/CAT");
+    private final ComptypeArtifact artifact2 = new ComptypeArtifact("Manual", false, "Users manual", "www.deteriorator.com/user-manual");
 
     final private ComponentTypeEntityLogger ctel = new ComponentTypeEntityLogger();
 
@@ -43,7 +44,8 @@ public class ComponentTypeEntityLoggerTest {
 
     @Test
     public void testSerializeEntity() {
-        System.out.println("ReducedCompType:" + ctel.auditEntries(compType, EntityTypeOperation.CREATE, "admin").get(0).getEntry());
+        final String RESULT = "{\"comptypePropertyList\":[{\"APERTURE\":\"10\"},{\"DETER\":\"15\"}],\"comptypeArtifactList\":[{\"CAT Image\":\"/var/usr/images/CAT\"},{\"Manual\":\"www.deteriorator.com/user-manual\"}]}";
+        assertEquals(RESULT, ctel.auditEntries(compType, EntityTypeOperation.CREATE).get(0).getEntry());
     }
 
 }

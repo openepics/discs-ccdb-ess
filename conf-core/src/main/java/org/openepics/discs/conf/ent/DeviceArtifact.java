@@ -22,16 +22,14 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "DeviceArtifact.findByIsInternal", query = "SELECT d FROM DeviceArtifact d WHERE d.isInternal = :isInternal"),
     @NamedQuery(name = "DeviceArtifact.findByModifiedBy", query = "SELECT d FROM DeviceArtifact d WHERE d.modifiedBy = :modifiedBy")})
 public class DeviceArtifact extends Artifact {
-    private static final long serialVersionUID = 1L;
-
     @JoinColumn(name = "device")
     @ManyToOne(optional = false)
     private Device device;
 
     protected DeviceArtifact() { }
 
-    public DeviceArtifact(String name, boolean isInternal, String description, String uri, String modifiedBy) {
-        super(name, isInternal, description, uri, modifiedBy);
+    public DeviceArtifact(String name, boolean isInternal, String description, String uri) {
+        super(name, isInternal, description, uri);
     }
 
     public Device getDevice() { return device; }

@@ -44,13 +44,13 @@ public class AuditLogEntryCreator {
      * @param entity Entity to be serialized. Supported Unit, DataType, Property etc
      * @return List of {@link AuditRecord}s for the entities that are supported / implemented.
      */
-    public List<AuditRecord> auditRecords(Object entity, EntityTypeOperation operation, String user) {
+    public List<AuditRecord> auditRecords(Object entity, EntityTypeOperation operation) {
         // Resolve the EntityLogger by class and use it to serialize to String
         final EntityLogger logger = loggers.get(entity.getClass());
         if (logger == null) {
             return null;
         }
 
-        return logger.auditEntries(entity, operation, user);
+        return logger.auditEntries(entity, operation);
     }
 }

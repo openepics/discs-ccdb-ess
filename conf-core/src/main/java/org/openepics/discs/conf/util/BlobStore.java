@@ -11,32 +11,32 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.Serializable;
 import java.util.Calendar;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
+import javax.ejb.Stateless;
 import javax.inject.Inject;
+
+import org.apache.commons.lang.NotImplementedException;
 
 /**
  *
  * @author vuppala
  */
-public class BlobStore implements Serializable {
-
-
-    private static final long serialVersionUID = 1L;
+@Stateless
+public class BlobStore {
     private static final Logger logger = Logger.getLogger(BlobStore.class.getCanonicalName());
+    
     private static String blobStoreRoot = "/var/confmgr";
+    
     private boolean validStore = true; // is the blob store valid?
 
-    @Inject
-    private AppProperties appProps;
+    @Inject private AppProperties appProps;
 
-    public void BlobStore() {
-    }
+    public BlobStore() { }
 
     @PostConstruct
     public void init() {
@@ -123,10 +123,7 @@ public class BlobStore implements Serializable {
     }
 
     public void deleteFile(String fileId) throws IOException {
-        InputStream istream;
-
-        // istream = new FileInputStream(blobStoreRoot + fileId);
-        // return istream;
+        throw new NotImplementedException();
     }
 
     public String getBlobStoreRoot() {

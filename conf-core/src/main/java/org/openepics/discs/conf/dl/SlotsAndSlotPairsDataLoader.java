@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.Nullable;
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
@@ -30,7 +29,6 @@ import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.ent.SlotRelation;
 import org.openepics.discs.conf.ent.SlotRelationName;
-import org.openepics.discs.conf.security.SecurityPolicy;
 import org.openepics.discs.conf.util.As;
 
 import com.google.common.base.Objects;
@@ -39,7 +37,6 @@ import com.google.common.collect.ImmutableList;
 
 @Stateless
 public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
-    @EJB private SecurityPolicy securityPolicy;
     @Inject private SlotEJB slotEJB;
     @Inject private ConfigurationEJB configurationEJB;
     @Inject private ComptypeEJB comptypeEJB;
@@ -134,7 +131,6 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                 final @Nullable String asmComment = asmCommentIndex == -1 ? null : row.get(asmCommentIndex);
                 final @Nullable String asmPosition = asmPositionIndex == -1 ? null : row.get(asmPositionIndex);
                 final @Nullable String comment = commentIndex == -1 ? null : row.get(commentIndex);
-                final String modifiedBy = securityPolicy.getUserId();
 
                 final @Nullable Double blp = parseDouble(blpIndex == -1 ? null : row.get(blpIndex), blpIndex == -1 ? null : headerRow.get(blpIndex), rowNumber);
                 final @Nullable Double globalX = parseDouble(globalXIndex == -1 ? null : row.get(globalXIndex), globalXIndex == -1 ? null : headerRow.get(globalXIndex), rowNumber);
@@ -178,8 +174,8 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                             } else {
                                 try {
                                     final Slot slotToUpdate = slotEJB.findSlotByName(name);
-                                    addOrUpdateSlot(slotToUpdate, modifiedBy, compType, isHosting, description, blp, globalX, globalY, globalZ, globalRoll, globalPitch, globalYaw, asmComment, asmPosition, comment);
-                                    addOrUpdateProperties(slotToUpdate, indexByPropertyName, row, rowNumber, modifiedBy);
+                                    addOrUpdateSlot(slotToUpdate, compType, isHosting, description, blp, globalX, globalY, globalZ, globalRoll, globalPitch, globalYaw, asmComment, asmPosition, comment);
+                                    addOrUpdateProperties(slotToUpdate, indexByPropertyName, row, rowNumber);
                                     if (rowResult.isError()) {
                                         continue;
                                     }
@@ -194,10 +190,10 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                                 continue;
                             } else {
                                 try {
-                                    final Slot newSlot = new Slot(name, isHosting, modifiedBy);
-                                    addOrUpdateSlot(newSlot, modifiedBy, compType, isHosting, description, blp, globalX, globalY, globalZ, globalRoll, globalPitch, globalYaw, asmComment, asmPosition, comment);
+                                    final Slot newSlot = new Slot(name, isHosting);
+                                    addOrUpdateSlot(newSlot, compType, isHosting, description, blp, globalX, globalY, globalZ, globalRoll, globalPitch, globalYaw, asmComment, asmPosition, comment);
                                     slotEJB.addSlot(newSlot);
-                                    addOrUpdateProperties(newSlot, indexByPropertyName, row, rowNumber, modifiedBy);
+                                    addOrUpdateProperties(newSlot, indexByPropertyName, row, rowNumber);
                                     newSlots.add(newSlot);
                                     if (rowResult.isError()) {
                                         continue;
@@ -259,9 +255,8 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
         }
     }
 
-    private void addOrUpdateSlot(Slot slotToAddOrUpdate, String modifiedBy, ComponentType compType, boolean isHosting, String description, Double blp, Double globalX, Double globalY, Double globalZ, Double globalRoll, Double globalPitch, Double globalYaw, String asmComment, String asmPosition, String comment) {
+    private void addOrUpdateSlot(Slot slotToAddOrUpdate, ComponentType compType, boolean isHosting, String description, Double blp, Double globalX, Double globalY, Double globalZ, Double globalRoll, Double globalPitch, Double globalYaw, String asmComment, String asmPosition, String comment) {
         slotToAddOrUpdate.setModifiedAt(new Date());
-        slotToAddOrUpdate.setModifiedBy(modifiedBy);
         slotToAddOrUpdate.setComponentType(compType);
         slotToAddOrUpdate.setDescription(description);
         slotToAddOrUpdate.setIsHostingSlot(isHosting);
@@ -505,7 +500,7 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
         }
     }
 
-    private void addOrUpdateProperties(Slot slot, Map<String, Integer> properties, List<String> row, String rowNumber, String modifiedBy) {
+    private void addOrUpdateProperties(Slot slot, Map<String, Integer> properties, List<String> row, String rowNumber) {
         final Iterator<String> propertiesIterator = properties.keySet().iterator();
         final List<SlotPropertyValue> slotProperties = new ArrayList<>();
         if (slot.getSlotPropertyList() != null) {
@@ -528,12 +523,11 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                     slotEJB.deleteSlotProp(slotPropertyToUpdate);
                 } else {
                     slotPropertyToUpdate.setPropValue(propertyValue);
-                    slotPropertyToUpdate.setModifiedBy(modifiedBy);
                     slotEJB.saveSlotProp(slotPropertyToUpdate);
                 }
 
             } else if (propertyValue != null) {
-                final SlotPropertyValue slotPropertyToAdd = new SlotPropertyValue(false, modifiedBy);
+                final SlotPropertyValue slotPropertyToAdd = new SlotPropertyValue(false);
                 slotPropertyToAdd.setProperty(property);
                 slotPropertyToAdd.setPropValue(propertyValue);
                 slotPropertyToAdd.setSlot(slot);

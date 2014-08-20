@@ -1,6 +1,5 @@
 package org.openepics.discs.conf.ent;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Basic;
@@ -16,7 +15,7 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  *
@@ -31,8 +30,6 @@ import org.codehaus.jackson.annotate.JsonIgnore;
     @NamedQuery(name = "DataType.findByDataTypeId", query = "SELECT d FROM DataType d WHERE d.id = :id"),
     @NamedQuery(name = "DataType.findByModifiedBy", query = "SELECT d FROM DataType d WHERE d.modifiedBy = :modifiedBy")})
 public class DataType extends ConfigurationEntity {
-    private static final long serialVersionUID = 1L;
-
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)
@@ -58,15 +55,13 @@ public class DataType extends ConfigurationEntity {
     protected DataType() {
     }
 
-    public DataType(String name, String description, boolean scalar, String definition, String modifiedBy) {
+    public DataType(String name, String description, boolean scalar, String definition) {
         this.name = name;
         this.description = description;
         this.scalar = scalar;
         this.definition = definition;
-        this.modifiedBy = modifiedBy;
-        this.modifiedAt = new Date();
     }
-
+    
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 

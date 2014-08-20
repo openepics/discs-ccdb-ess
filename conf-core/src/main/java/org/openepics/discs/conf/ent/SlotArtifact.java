@@ -21,16 +21,14 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "SlotArtifact.findByIsInternal", query = "SELECT s FROM SlotArtifact s WHERE s.isInternal = :isInternal"),
     @NamedQuery(name = "SlotArtifact.findByModifiedBy", query = "SELECT s FROM SlotArtifact s WHERE s.modifiedBy = :modifiedBy")})
 public class SlotArtifact extends Artifact {
-    private static final long serialVersionUID = 1L;
-
     @JoinColumn(name = "slot")
     @ManyToOne(optional = false)
     private Slot slot;
 
     protected SlotArtifact() { }
 
-    public SlotArtifact(String name, boolean isInternal, String description, String uri, String modifiedBy) {
-        super(name, isInternal, description, uri, modifiedBy);
+    public SlotArtifact(String name, boolean isInternal, String description, String uri) {
+        super(name, isInternal, description, uri);
     }
 
     public Slot getSlot() { return slot; }

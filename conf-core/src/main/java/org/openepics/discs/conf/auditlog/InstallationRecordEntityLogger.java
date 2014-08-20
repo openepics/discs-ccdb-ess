@@ -9,9 +9,10 @@
  */
 package org.openepics.discs.conf.auditlog;
 
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.openepics.discs.conf.ent.AuditRecord;
 import org.openepics.discs.conf.ent.EntityType;
@@ -20,7 +21,6 @@ import org.openepics.discs.conf.ent.InstallationArtifact;
 import org.openepics.discs.conf.ent.InstallationRecord;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Sets;
 
 /**
  * {@link AuditRecord} maker for {@link InstallationRecord}
@@ -31,15 +31,15 @@ import com.google.common.collect.Sets;
 public class InstallationRecordEntityLogger implements EntityLogger{
 
     @Override
-    public Class getType() {
+    public Class<?> getType() {
         return InstallationRecord.class;
     }
 
     @Override
-    public List<AuditRecord> auditEntries(Object value, EntityTypeOperation operation, String user) {
+    public List<AuditRecord> auditEntries(Object value, EntityTypeOperation operation) {
         final InstallationRecord installationRecord = (InstallationRecord) value;
 
-        final Map<String, String> artifactsMap = new HashMap<>();
+        final Map<String, String> artifactsMap = new TreeMap<>();
         if (installationRecord.getInstallationArtifactList() != null) {
             for (InstallationArtifact artifact : installationRecord.getInstallationArtifactList()) {
                 artifactsMap.put(artifact.getName(), artifact.getUri());
@@ -47,10 +47,10 @@ public class InstallationRecordEntityLogger implements EntityLogger{
         }
 
         return ImmutableList.of((new AuditLogUtil(installationRecord).
-                removeTopProperties(Sets.newHashSet("id", "modifiedAt", "modifiedBy", "version", "recordNumber", "slot", "device")).
+                removeTopProperties(Arrays.asList("id", "modifiedAt", "modifiedBy", "version", "recordNumber", "slot", "device")).
                 addStringProperty("slot", installationRecord.getSlot().getName()).
                 addStringProperty("device", installationRecord.getDevice().getSerialNumber()).
                 addArrayOfMappedProperties("installationArtifactList", artifactsMap).
-                auditEntry(operation, EntityType.INSTALLATION_RECORD, installationRecord.getRecordNumber(), installationRecord.getId(), user)));
+                auditEntry(operation, EntityType.INSTALLATION_RECORD, installationRecord.getRecordNumber(), installationRecord.getId())));
     }
 }

@@ -1,17 +1,19 @@
 package org.openepics.discs.conf.auditlog;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.SerializationConfig.Feature;
-import org.codehaus.jackson.node.ArrayNode;
-import org.codehaus.jackson.node.ObjectNode;
 import org.openepics.discs.conf.ent.AuditRecord;
 import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
+
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /*
  * @author mpavleski
@@ -22,9 +24,18 @@ import org.openepics.discs.conf.ent.EntityTypeOperation;
  */
 public class AuditLogUtil {
 
-    final private ObjectMapper mapper = new ObjectMapper();
+    private static final ObjectMapper mapper = new ObjectMapper();
+    
+    
+    static {   
+        // Configure Jackson to always order entries see, http://stackoverflow.com/a/18993481               
+        mapper.configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true);
+        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+        mapper.setSerializationInclusion(Include.NON_NULL);
+        
+    }
+    
     private ObjectNode node = null;
-
 
     /**
      * Constructs the helper class
@@ -32,7 +43,7 @@ public class AuditLogUtil {
      * @param entity an Entity object to be serialized to JSon
      */
     public AuditLogUtil(Object entity) {
-        mapper.configure(Feature.WRITE_DATES_AS_TIMESTAMPS, false);
+        //mapper.configure(Feature.WRITE_DATES_AS_TIMESTAMPS, false);
         node = mapper.valueToTree(entity);
     }
 
@@ -46,7 +57,7 @@ public class AuditLogUtil {
      * @param propertyNames
      * @return This class, with updated state (removed properties)
      */
-    public AuditLogUtil removeTopProperties(Set<String> propertyNames) {
+    public AuditLogUtil removeTopProperties(Collection<String> propertyNames) {
         node.remove(propertyNames);
         return this;
     }
@@ -71,7 +82,7 @@ public class AuditLogUtil {
             arrayObjectNode.put(keyValue, arrayValuePairs.get(keyValue));
             arrayNode.add(arrayObjectNode);
         }
-        node.put(key, arrayNode);
+        node.set(key, arrayNode);
         return this;
     }
 
@@ -80,7 +91,7 @@ public class AuditLogUtil {
         for (String value : arrayValues) {
            arrayNode.add(value);
         }
-        node.put(key, arrayNode);
+        node.set(key, arrayNode);
         return this;
     }
 
@@ -109,9 +120,9 @@ public class AuditLogUtil {
      *
      * @return {@link AuditRecord}
      */
-    public AuditRecord auditEntry(EntityTypeOperation oper, EntityType entityType, String key, Long id, String user) {
+    public AuditRecord auditEntry(EntityTypeOperation oper, EntityType entityType, String key, Long id) {
         final String serialized = serialize();
-        final AuditRecord arec = new AuditRecord(oper, user, serialized, id);
+        final AuditRecord arec = new AuditRecord(oper, serialized, id);
         arec.setEntityType(entityType);
         arec.setEntityKey(key);
         return arec;

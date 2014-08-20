@@ -1,5 +1,6 @@
 package org.openepics.discs.conf.auditlog;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -12,7 +13,6 @@ import javax.persistence.PersistenceContext;
 
 import org.openepics.discs.conf.ent.AuditRecord;
 import org.openepics.discs.conf.security.SecurityPolicy;
-import org.openepics.discs.conf.ui.LoginManager;
 import org.openepics.discs.conf.util.CRUDOperation;
 import org.openepics.discs.conf.util.ParentEntityResolver;
 
@@ -44,9 +44,16 @@ public class AuditInterceptor {
 
         final Object entity = context.getParameters()[0];
         if (context.getMethod().getAnnotation(CRUDOperation.class) != null) {
-            final List<AuditRecord>  auditRecords = auditLogEntryCreator.auditRecords(ParentEntityResolver.resolveParentEntity(entity), context.getMethod().getAnnotation(CRUDOperation.class).operation(), securityPolicy.getUserId());
+            
+            final String username = securityPolicy.getUserId();
+            final Date now = new Date();
+            
+            final List<AuditRecord>  auditRecords = auditLogEntryCreator.auditRecords(ParentEntityResolver.resolveParentEntity(entity), context.getMethod().getAnnotation(CRUDOperation.class).operation());
             if (auditRecords != null) {
                 for (AuditRecord auditRecord : auditRecords) {
+                    auditRecord.setUser(username);
+                    auditRecord.setLogTime(now);
+                    
                     em.persist(auditRecord);
                 }
             }

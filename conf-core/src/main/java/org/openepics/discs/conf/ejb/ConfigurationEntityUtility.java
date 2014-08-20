@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import javax.ejb.EJB;
+import javax.enterprise.context.Dependent;
 
 import org.openepics.discs.conf.ent.ConfigurationEntity;
 import org.openepics.discs.conf.security.SecurityPolicy;
@@ -14,11 +15,9 @@ import org.openepics.discs.conf.security.SecurityPolicy;
  * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
  *
  */
+@Dependent
 public class ConfigurationEntityUtility implements Serializable {
-    private static final long serialVersionUID = 1L;
-    
     private @EJB SecurityPolicy securityPolicy;
-    
     
     /**
      * Updates modifiedBy and modifiedAt for one entity
@@ -29,7 +28,7 @@ public class ConfigurationEntityUtility implements Serializable {
         final Date now = new Date();
                     
         entity.setModifiedAt(now);
-        entity.setModifiedBy(securityPolicy.getUserId());
+        entity.setModifiedBy(getUserId());
     }
     
     
@@ -41,12 +40,23 @@ public class ConfigurationEntityUtility implements Serializable {
      */
     public void setModified(ConfigurationEntity parent, ConfigurationEntity child) {
         final Date now = new Date();
-        final String username = securityPolicy.getUserId();
+        final String username = getUserId();
             
         parent.setModifiedAt(now);
         parent.setModifiedBy(username);
         
         child.setModifiedAt(now);
         child.setModifiedBy(username);
+    }
+
+    /**
+     * Resolves the user-id in case the securitypolicy returns null (meaningfull for system updates such as the initial db population)
+     * 
+     * @return
+     */
+    private String getUserId() {
+        final String username = securityPolicy.getUserId();
+        
+        return username!=null ? username : "system";
     }
 }

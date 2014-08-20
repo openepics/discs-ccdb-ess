@@ -40,9 +40,7 @@ import org.primefaces.model.TreeNode;
 @Named
 @ViewScoped
 public class ComponentTreeMBean implements Serializable {
-
-    @EJB
-    private SlotEJB slotBean;
+    @EJB private SlotEJB slotBean;
     private TreeNode root;
     private TreeNode selectedNode;
     private Slot selectedComponent;
@@ -51,7 +49,7 @@ public class ComponentTreeMBean implements Serializable {
      *
      */
     public static class NodeData implements Serializable {
-
+        @SuppressWarnings("unused")
         private char type; // l - logical component, r - relation, i - inverse relation
         private String name; // name of logical component or relationship
         private long id; // id of the logical component or relationship

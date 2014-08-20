@@ -25,10 +25,9 @@ import org.openepics.discs.conf.util.Utility;
 @Named
 @ViewScoped
 public class DeviceDetail implements Serializable {
-
-    @EJB
-    private DeviceEJB deviceEJB;
     private static final Logger logger = Logger.getLogger(DeviceDetail.class.getCanonicalName());
+    
+    @EJB private DeviceEJB deviceEJB;
     private Device selectedObject;
     private long id = 0; // given identifier
 

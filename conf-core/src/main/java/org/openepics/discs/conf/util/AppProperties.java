@@ -16,13 +16,13 @@
 
 package org.openepics.discs.conf.util;
 
+
 /**
  * 
  * @author vuppala
  * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
  * 
  */
-
 public interface AppProperties {
 
     // Entity types for Audit records, authorization, etc

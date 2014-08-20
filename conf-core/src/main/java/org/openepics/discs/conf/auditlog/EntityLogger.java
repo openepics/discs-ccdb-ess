@@ -17,7 +17,7 @@ public interface EntityLogger {
     /*
      * Returns the type of the handled logger
      */
-    public Class getType();
+    public Class<?> getType();
 
     /**
      * Creates audit logs for given entity
@@ -25,6 +25,6 @@ public interface EntityLogger {
      * @param entity Entity for which {@link AuditRecord} should be created
      * @return List of {@link AuditRecord}s for input entity
      */
-    public List<AuditRecord> auditEntries(Object entity, EntityTypeOperation operation, String user);
+    public List<AuditRecord> auditEntries(Object entity, EntityTypeOperation operation);
 
 }

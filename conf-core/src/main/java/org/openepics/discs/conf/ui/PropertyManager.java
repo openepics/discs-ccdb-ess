@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
-import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.faces.event.ActionEvent;
 import javax.faces.view.ViewScoped;
@@ -28,7 +27,6 @@ import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.ejb.ConfigurationEJB;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyAssociation;
-import org.openepics.discs.conf.security.SecurityPolicy;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
 import org.openepics.discs.conf.util.Utility;
 import org.primefaces.event.FileUploadEvent;
@@ -46,7 +44,6 @@ import com.google.common.io.ByteStreams;
 @ViewScoped
 public class PropertyManager implements Serializable {
     @Inject private ConfigurationEJB configurationEJB;
-    @EJB private SecurityPolicy securityPolicy;
     
     @Inject private DataLoaderHandler dataLoaderHandler;
     @Inject @PropertiesLoaderQualifier private DataLoader propertiesDataLoader;
@@ -90,7 +87,7 @@ public class PropertyManager implements Serializable {
         selectedOp = 'a';
         inTrans = true;
         // TODO replaced void constructor (now protected) with default values. Check!
-        inputObject = new Property("", "", PropertyAssociation.ALL, securityPolicy.getUserId());
+        inputObject = new Property("", "", PropertyAssociation.ALL);
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Add", "");
     }
 

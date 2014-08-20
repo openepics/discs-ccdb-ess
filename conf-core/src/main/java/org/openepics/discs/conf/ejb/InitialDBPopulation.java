@@ -22,8 +22,11 @@ import org.openepics.seds.core.Seds;
 @Stateless
 public class InitialDBPopulation {
     @PersistenceContext private EntityManager em;
-    final private String userName = "init-import";
-
+    
+    /**
+     * Fills out initial data for empty database
+     * 
+     */
     public void initialPopulation() {
         final User user = new User("admin", "admin");
         em.persist(user);
@@ -142,24 +145,56 @@ public class InitialDBPopulation {
         privilege.setRole(role);
         em.persist(privilege);
         
-        em.persist(new DataType("Integer", "Integer number", true, null, userName));
-        em.persist(new DataType("Double", "Double precision floating point", true, null, userName));
-        em.persist(new DataType("String", "String of characters (text)", true, null, userName));
-        em.persist(new DataType("Timestamp", "Date and time", true, null, userName));
-        em.persist(new DataType("URL", "string of characters which is known to contain URL", true, null, userName));
-        em.persist(new DataType("Integers Vector", "ector of integer numbers (1D array)", false, null, userName));
-        em.persist(new DataType("Doubles Vector", "Vector of double precision numbers (1D array)", false, null, userName));
-        em.persist(new DataType("Strings List", "List of strings (1D array)", false, null, userName));
-        em.persist(new DataType("Doubles Table", "Table of double precision numbers (2D array)", false, null, userName));
+        em.persist(createDataType("Integer", "Integer number", true, null));
+        em.persist(createDataType("Double", "Double precision floating point", true, null));
+        em.persist(createDataType("String", "String of characters (text)", true, null));
+        em.persist(createDataType("Timestamp", "Date and time", true, null));
+        em.persist(createDataType("URL", "string of characters which is known to contain URL", true, null));
+        em.persist(createDataType("Integers Vector", "ector of integer numbers (1D array)", false, null));
+        em.persist(createDataType("Doubles Vector", "Vector of double precision numbers (1D array)", false, null));
+        em.persist(createDataType("Strings List", "List of strings (1D array)", false, null));
+        em.persist(createDataType("Doubles Table", "Table of double precision numbers (2D array)", false, null));
 
         final SedsEnum testEnum = Seds.newFactory().newEnum("TEST1", new String[]{"TEST1", "TEST2", "TEST3", "TEST4"});
         JsonObject jsonEnum = Seds.newDBConverter().serialize(testEnum);
 
 
-        em.persist(new DataType("Test enums", "Testing of enums", false, jsonEnum.toString(), userName));
+        em.persist(createDataType("Test enums", "Testing of enums", false, jsonEnum.toString()));
 
-        em.persist(new SlotRelation(SlotRelationName.CONTAINS, userName));
-        em.persist(new SlotRelation(SlotRelationName.POWERS, userName));
-        em.persist(new SlotRelation(SlotRelationName.CONTROLS, userName));
+        em.persist(createSlotRelation(SlotRelationName.CONTAINS));
+        em.persist(createSlotRelation(SlotRelationName.POWERS));
+        em.persist(createSlotRelation(SlotRelationName.CONTROLS));
+    }
+    
+    /**
+     * Helper function to create data type entity and fill out mandatory modifiedAt and modifiedBy fields
+     * 
+     * @param name
+     * @param description
+     * @param scalar
+     * @param definition
+     * @return
+     */
+    private DataType createDataType(String name, String description, boolean scalar, String definition) {
+        final DataType result = new DataType(name, description, scalar, definition); 
+        
+        result.setModifiedBy("system");
+        result.setModifiedAt(new Date());
+        
+        return result;
+    }
+    
+    /**
+     * Helper function to create a slot relation entity and fill out mandatory modifietAt and modifiedBy fields
+     * @param relationName
+     * @return
+     */
+    private SlotRelation createSlotRelation(SlotRelationName relationName) {
+        final SlotRelation slotRelation = new SlotRelation(relationName);
+        
+        slotRelation.setModifiedBy("system");
+        slotRelation.setModifiedAt(new Date());
+        
+        return slotRelation;
     }
 }

@@ -1,7 +1,5 @@
 package org.openepics.discs.conf.ent;
 
-import java.util.Date;
-
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,8 +13,6 @@ import javax.validation.constraints.Size;
 @Table(name = "artifacts")
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Artifact extends ConfigurationEntity {
-    private static final long serialVersionUID = 1L;
-
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 128)
@@ -41,13 +37,11 @@ public class Artifact extends ConfigurationEntity {
 
     protected Artifact() { }
 
-    public Artifact(String name, boolean isInternal, String description, String uri, String modifiedBy) {
+    public Artifact(String name, boolean isInternal, String description, String uri) {
         this.name = name;
         this.isInternal = isInternal;
         this.description = description;
         this.uri = uri;
-        this.modifiedBy = modifiedBy;
-        this.modifiedAt = new Date();
     }
 
     public String getName() { return name; }

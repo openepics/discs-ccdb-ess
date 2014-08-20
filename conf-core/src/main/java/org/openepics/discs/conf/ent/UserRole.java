@@ -37,8 +37,6 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "UserRole.findByEndTime", query = "SELECT u FROM UserRole u WHERE u.endTime = :endTime"),
     @NamedQuery(name = "UserRole.findByComment", query = "SELECT u FROM UserRole u WHERE u.comment = :comment")})
 public class UserRole implements Serializable {
-    private static final long serialVersionUID = 1L;
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_role_id")

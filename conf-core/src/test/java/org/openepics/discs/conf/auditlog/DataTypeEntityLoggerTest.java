@@ -1,5 +1,6 @@
 package org.openepics.discs.conf.auditlog;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -17,9 +18,10 @@ public class DataTypeEntityLoggerTest {
 
     @Test
     public void testSerializeEntity() {
-        final DataType dt = new DataType("Float", "Float", true, "Well.. a scalar float", "Iznogud");
-
-        System.out.println(entLogger.auditEntries(dt, EntityTypeOperation.CREATE, "admin").get(0).getEntry());
+        final DataType dt = new DataType("Float", "Float", true, "Well.. a scalar float");
+        final String RESULT = "{\"description\":\"Float\",\"scalar\":true,\"definition\":\"Well.. a scalar float\"}";
+        
+        assertEquals(RESULT, entLogger.auditEntries(dt, EntityTypeOperation.CREATE).get(0).getEntry());
     }
 
 }

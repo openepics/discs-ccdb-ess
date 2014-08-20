@@ -21,18 +21,16 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "ComptypePropertyValue.findByInRepository", query = "SELECT c FROM ComptypePropertyValue c WHERE c.inRepository = :inRepository"),
     @NamedQuery(name = "ComptypePropertyValue.findByModifiedBy", query = "SELECT c FROM ComptypePropertyValue c WHERE c.modifiedBy = :modifiedBy")})
 public class ComptypePropertyValue extends PropertyValue {
-    private static final long serialVersionUID = 1L;
-
     @JoinColumn(name = "component_type")
     @ManyToOne(optional = false)
     private ComponentType componentType;
 
     protected ComptypePropertyValue() { }
 
-    public ComptypePropertyValue(boolean inRepository, String modifiedBy) {
-        super(inRepository, modifiedBy);
+    public ComptypePropertyValue(boolean inRepository) {
+        super(inRepository);
     }
-
+    
     public ComponentType getComponentType() { return componentType; }
     public void setComponentType(ComponentType componentType) { this.componentType = componentType; }
 

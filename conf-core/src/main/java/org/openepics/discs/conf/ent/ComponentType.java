@@ -22,7 +22,7 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  *
@@ -37,8 +37,6 @@ import org.codehaus.jackson.annotate.JsonIgnore;
         @NamedQuery(name = "ComponentType.findByName", query = "SELECT c FROM ComponentType c WHERE c.name = :name"),
         @NamedQuery(name = "ComponentType.findByModifiedBy", query = "SELECT c FROM ComponentType c WHERE c.modifiedBy = :modifiedBy") })
 public class ComponentType extends ConfigurationEntity {
-    private static final long serialVersionUID = 1L;
-
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 32)
@@ -83,10 +81,8 @@ public class ComponentType extends ConfigurationEntity {
         this.modifiedAt = new Date();
     }
 
-    public ComponentType(String name, String modifiedBy) {
+    public ComponentType(String name) {
         this.name = name;
-        this.modifiedBy = modifiedBy;
-        this.modifiedAt = new Date();
     }
 
     public String getName() { return name; }

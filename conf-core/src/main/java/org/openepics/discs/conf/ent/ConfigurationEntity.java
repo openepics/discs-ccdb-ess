@@ -15,8 +15,6 @@ import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 
 /**
 *
@@ -24,8 +22,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 */
 @MappedSuperclass
 public class ConfigurationEntity implements Serializable {
-    private static final long serialVersionUID = 1L;
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")

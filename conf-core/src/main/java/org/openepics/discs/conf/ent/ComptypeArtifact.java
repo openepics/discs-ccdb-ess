@@ -21,17 +21,15 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "ComptypeArtifact.findByName", query = "SELECT c FROM ComptypeArtifact c WHERE c.name = :name"),
     @NamedQuery(name = "ComptypeArtifact.findByIsInternal", query = "SELECT c FROM ComptypeArtifact c WHERE c.isInternal = :isInternal"),
     @NamedQuery(name = "ComptypeArtifact.findByModifiedBy", query = "SELECT c FROM ComptypeArtifact c WHERE c.modifiedBy = :modifiedBy")})
-public class ComptypeArtifact extends Artifact {
-    private static final long serialVersionUID = 1L;
-
+public class ComptypeArtifact extends Artifact {    
     @JoinColumn(name = "component_type")
     @ManyToOne(optional = false)
     private ComponentType componentType;
 
     public ComptypeArtifact() { }
 
-    public ComptypeArtifact(String name, boolean isInternal, String description, String uri, String modifiedBy) {
-        super(name, isInternal, description, uri, modifiedBy);
+    public ComptypeArtifact(String name, boolean isInternal, String description, String uri) {
+        super(name, isInternal, description, uri);
     }
 
     public ComponentType getComponentType() { return componentType; }

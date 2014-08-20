@@ -48,7 +48,6 @@ import com.google.common.base.Preconditions;
 @Named("securityPolicy")
 @Alternative
 public class EntityTypeDBTableSecurityPolicy implements SecurityPolicy, Serializable {
-    private static final long serialVersionUID = 1L;
     private static final Logger logger = Logger.getLogger(EntityTypeDBTableSecurityPolicy.class.getCanonicalName());
     
     @PersistenceContext private EntityManager em;

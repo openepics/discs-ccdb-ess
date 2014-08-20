@@ -18,7 +18,7 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  *
@@ -34,8 +34,6 @@ import org.codehaus.jackson.annotate.JsonIgnore;
     @NamedQuery(name = "User.findByEmail", query = "SELECT u FROM User u WHERE u.email = :email"),
     @NamedQuery(name = "User.findByComment", query = "SELECT u FROM User u WHERE u.comment = :comment")})
 public class User implements Serializable {
-    private static final long serialVersionUID = 1L;
-
     @Id
     @NotNull
     @Size(min = 1, max = 64)

@@ -1,6 +1,5 @@
 package org.openepics.discs.conf.ent;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Basic;
@@ -20,7 +19,7 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  *
@@ -36,8 +35,6 @@ import org.codehaus.jackson.annotate.JsonIgnore;
     @NamedQuery(name = "Property.findByAssociation", query = "SELECT p FROM Property p WHERE p.association = :association"),
     @NamedQuery(name = "Property.findByModifiedBy", query = "SELECT p FROM Property p WHERE p.modifiedBy = :modifiedBy")})
 public class Property extends ConfigurationEntity {
-    private static final long serialVersionUID = 1L;
-
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)
@@ -70,12 +67,10 @@ public class Property extends ConfigurationEntity {
     protected Property() {
     }
 
-    public Property(String name, String description, PropertyAssociation association, String modifiedBy) {
+    public Property(String name, String description, PropertyAssociation association) {
         this.name = name;
         this.description = description;
-        this.association = association;
-        this.modifiedBy = modifiedBy;
-        this.modifiedAt = new Date();
+        this.association = association;        
     }
 
     public String getName() { return name; }

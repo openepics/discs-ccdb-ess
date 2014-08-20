@@ -26,10 +26,11 @@ import org.openepics.discs.conf.util.Utility;
  */
 @Named
 @ViewScoped
-public class RelationManager implements Serializable {
-    @EJB
-    private ConfigurationEJB configurationEJB;
+public class RelationManager implements Serializable {    
+    @SuppressWarnings("unused")
     private static final Logger logger = Logger.getLogger(RelationManager.class.getCanonicalName());
+
+    @EJB private ConfigurationEJB configurationEJB;
 
     private List<SlotRelation> objects;
     /**

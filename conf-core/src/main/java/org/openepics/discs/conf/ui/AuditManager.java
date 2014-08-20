@@ -28,14 +28,13 @@ import org.openepics.discs.conf.util.Utility;
 @Named(value = "auditManager")
 @ViewScoped
 public class AuditManager implements Serializable {
-    @EJB
-    private ConfigurationEJB configurationEJB;
     private static final Logger logger = Logger.getLogger(AuditManager.class.getCanonicalName());
 
+    @EJB private ConfigurationEJB configurationEJB;
+    
     private List<AuditRecord> objects;
-    private List<AuditRecord> sortedObjects;
     private List<AuditRecord> filteredObjects;
-    private AuditRecord selectedObject;
+
     /**
      * Creates a new instance of AuditManager
      */
