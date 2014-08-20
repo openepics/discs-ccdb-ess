@@ -3,10 +3,7 @@ package org.openepics.discs.conf.util;
 import java.io.File;
 
 import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.jboss.shrinkwrap.descriptor.api.Descriptors;
-import org.jboss.shrinkwrap.descriptor.api.beans10.BeansDescriptor;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 
 /**
@@ -21,8 +18,7 @@ public class CCDBPackager {
 	public static WebArchive createWebArchive() {
 
 	    final File[] libraries = Maven.resolver().loadPomFromFile("pom.xml").importRuntimeDependencies().resolve().withTransitivity().asFile();
-	    final BeansDescriptor beans = Descriptors.create(BeansDescriptor.class).getOrCreateAlternatives().clazz("org.openepics.discs.conf.util.AppPropertiesJBoss").up();
-        WebArchive war = ShrinkWrap.create(WebArchive.class, "confmgr_test.war")
+	    WebArchive war = ShrinkWrap.create(WebArchive.class, "confmgr_test.war")
             .addAsLibraries(libraries)
             .addPackages(true, 
                     "org.openepics.discs.conf.ent", 
@@ -30,9 +26,10 @@ public class CCDBPackager {
                     "org.openepics.discs.conf.ui", 
                     "org.openepics.discs.conf.dl", 
                     "org.openepics.discs.conf.util", 
-                    "org.openepics.discs.conf.security")
+                    "org.openepics.discs.conf.security",
+                    "org.openepics.discs.conf.auditlog")
             .addAsResource("test-persistence.xml", "META-INF/persistence.xml")
-            .addAsWebInfResource(new StringAsset(beans.exportAsString()), "beans.xml");
+            .addAsWebInfResource("beans.xml");
 
         return war;
 	}
