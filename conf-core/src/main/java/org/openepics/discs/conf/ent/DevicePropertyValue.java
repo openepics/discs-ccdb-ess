@@ -21,16 +21,14 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "DevicePropertyValue.findByInRepository", query = "SELECT d FROM DevicePropertyValue d WHERE d.inRepository = :inRepository"),
     @NamedQuery(name = "DevicePropertyValue.findByModifiedBy", query = "SELECT d FROM DevicePropertyValue d WHERE d.modifiedBy = :modifiedBy")})
 public class DevicePropertyValue extends PropertyValue {
-    private static final long serialVersionUID = 1L;
-
     @JoinColumn(name = "device")
     @ManyToOne(optional = false)
     private Device device;
 
     protected DevicePropertyValue() { }
 
-    public DevicePropertyValue(boolean inRepository, String modifiedBy) {
-        super(inRepository, modifiedBy);
+    public DevicePropertyValue(boolean inRepository) {
+        super(inRepository);
     }
 
     public Device getDevice() { return device; }

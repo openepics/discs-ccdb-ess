@@ -21,7 +21,7 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  *
@@ -37,8 +37,6 @@ import org.codehaus.jackson.annotate.JsonIgnore;
     @NamedQuery(name = "InstallationRecord.findByUninstallDate", query = "SELECT i FROM InstallationRecord i WHERE i.uninstallDate = :uninstallDate"),
     @NamedQuery(name = "InstallationRecord.findByModifiedBy", query = "SELECT i FROM InstallationRecord i WHERE i.modifiedBy = :modifiedBy")})
 public class InstallationRecord extends ConfigurationEntity {
-    private static final long serialVersionUID = 1L;
-
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)
@@ -72,11 +70,9 @@ public class InstallationRecord extends ConfigurationEntity {
     protected InstallationRecord() {
     }
 
-    public InstallationRecord(String recordNumber, Date installDate, String modifiedBy) {
+    public InstallationRecord(String recordNumber, Date installDate) {
         this.recordNumber = recordNumber;
         this.installDate = installDate;
-        this.modifiedBy = modifiedBy;
-        this.modifiedAt = new Date();
     }
 
     public String getRecordNumber() { return recordNumber; }

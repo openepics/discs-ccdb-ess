@@ -1,11 +1,11 @@
 package org.openepics.discs.conf.ejb;
 
-import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
@@ -26,6 +26,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
 @Stateless public class DeviceEJB {
     private static final Logger logger = Logger.getLogger(DeviceEJB.class.getCanonicalName());
     @PersistenceContext private EntityManager em;
+    @Inject private ConfigurationEntityUtility entityUtility;
 
     // ---------------- Physical Devices -------------------------
 
@@ -57,7 +58,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @Audit
     @Authorized
     public void addDevice(Device device) {
-        device.setModifiedAt(new Date());
+        entityUtility.setModified(device);
         em.persist(device);
     }
 
@@ -65,7 +66,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @Audit
     @Authorized
     public void saveDevice(Device device) {
-        device.setModifiedAt(new Date());
+        entityUtility.setModified(device);
         em.merge(device);
     }
 
@@ -86,7 +87,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
         final DevicePropertyValue mergedPropertyValue = em.merge(propertyValue);
         final Device parent = mergedPropertyValue.getDevice();
         
-        DateUtility.setModifiedAt(parent, mergedPropertyValue);
+        entityUtility.setModified(parent, mergedPropertyValue);
         
         parent.getDevicePropertyList().add(mergedPropertyValue);
         em.merge(parent);
@@ -98,7 +99,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
     public void saveDeviceProp(DevicePropertyValue propertyValue) {
         final DevicePropertyValue mergedPropertyValue = em.merge(propertyValue);
         
-        DateUtility.setModifiedAt(mergedPropertyValue.getDevice(), mergedPropertyValue);
+        entityUtility.setModified(mergedPropertyValue.getDevice(), mergedPropertyValue);
         
         logger.log(Level.INFO, "Device Property: id " + mergedPropertyValue.getId() + " name " + mergedPropertyValue.getProperty().getName());
     }
@@ -112,7 +113,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
         final DevicePropertyValue mergedPropertyvalue = em.merge(propertyValue);
         final Device parent = mergedPropertyvalue.getDevice();
         
-        parent.setModifiedAt(new Date());
+        entityUtility.setModified(parent);
         
         parent.getDevicePropertyList().remove(mergedPropertyvalue);
         em.remove(mergedPropertyvalue);
@@ -127,7 +128,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
         final DeviceArtifact mergedArtifact = em.merge(artifact);
         final Device parent = mergedArtifact.getDevice();
         
-        DateUtility.setModifiedAt(parent, mergedArtifact);
+        entityUtility.setModified(parent, mergedArtifact);
         
         parent.getDeviceArtifactList().add(mergedArtifact);        
     }
@@ -138,7 +139,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
     public void saveDeviceArtifact(DeviceArtifact artifact) {
         final DeviceArtifact mergedArtifact = em.merge(artifact);
         
-        DateUtility.setModifiedAt(mergedArtifact.getDevice(), mergedArtifact);
+        entityUtility.setModified(mergedArtifact.getDevice(), mergedArtifact);
         
         logger.log(Level.INFO, "Device Type Artifact: name " + mergedArtifact.getName() + " description " + mergedArtifact.getDescription() + " uri " + mergedArtifact.getUri() + "is int " + mergedArtifact.isInternal());
     }
@@ -150,7 +151,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
         final DeviceArtifact mergedArtifact = em.merge(artifact);        
         final Device parent = mergedArtifact.getDevice();
         
-        parent.setModifiedAt(new Date());
+        entityUtility.setModified(parent);
         
         parent.getDeviceArtifactList().remove(mergedArtifact);
         em.remove(mergedArtifact);

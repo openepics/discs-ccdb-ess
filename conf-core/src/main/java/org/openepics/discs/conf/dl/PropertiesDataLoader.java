@@ -125,7 +125,7 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
                             }
                         } else {
                             try {
-                                final Property propertyToAdd = new Property(name, description, propertyAssociation(association), modifiedBy);
+                                final Property propertyToAdd = new Property(name, description, propertyAssociation(association));
                                 setPropertyFields(propertyToAdd, unit, dataType, rowNumber);
                                 if (rowResult.isError()) {
                                     continue;

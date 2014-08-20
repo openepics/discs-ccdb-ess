@@ -16,6 +16,7 @@ import org.junit.runner.RunWith;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.dl.common.ErrorMessage;
+import org.openepics.discs.conf.util.CCDBPackager;
 
 import com.google.common.collect.ImmutableList;
 

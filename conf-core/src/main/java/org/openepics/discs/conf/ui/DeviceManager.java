@@ -31,7 +31,6 @@ import org.openepics.discs.conf.ejb.DeviceEJB;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.DeviceArtifact;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
-import org.openepics.discs.conf.security.SecurityPolicy;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
 import org.openepics.discs.conf.util.BlobStore;
 import org.openepics.discs.conf.util.Utility;
@@ -54,18 +53,11 @@ import com.google.common.io.ByteStreams;
 @Named
 @ViewScoped
 public class DeviceManager implements Serializable {
-    private static final long serialVersionUID = 1L;
-
-    @EJB
-    private DeviceEJB deviceEJB;
     private static final Logger logger = Logger.getLogger(DeviceManager.class.getCanonicalName());
 
-    @Inject
-    private BlobStore blobStore;
-    // ToDo: Remove the injection. Not a good way to authorize.
-    @EJB
-    private SecurityPolicy securityPolicy;
-    // private String loggedInUser; // logged in user
+    @EJB private DeviceEJB deviceEJB;
+
+    @Inject private BlobStore blobStore;
 
     @Inject private DataLoaderHandler dataLoaderHandler;
     @Inject @DevicesLoaderQualifier private DataLoader devicesDataLoader;
@@ -138,8 +130,8 @@ public class DeviceManager implements Serializable {
 
     public void onDeviceAdd(ActionEvent event) {
         selectedOp = 'a';
-        // TODO replaced void constructor (now protected) with default values. Check!
-        inputObject = new Device("1", securityPolicy.getUserId());
+
+        inputObject = new Device("1");
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Add", "");
     }
 
@@ -196,7 +188,7 @@ public class DeviceManager implements Serializable {
             propertyOperation = 'a';
 
             // TODO replaced void constructor (now protected) with default values. Check!
-            inputProperty = new DevicePropertyValue(false, securityPolicy.getUserId());
+            inputProperty = new DevicePropertyValue(false);
             inputProperty.setDevice(selectedObject);
             fileUploaded = false;
             uploadedFileName = null;
@@ -336,8 +328,8 @@ public class DeviceManager implements Serializable {
             if (selectedArtifacts == null) {
                 selectedArtifacts = new ArrayList<>();
             }
-            // TODO replaced void constructor (now protected) with default values. Check!
-            inputArtifact = new DeviceArtifact("", false, "", "", securityPolicy.getUserId());
+            
+            inputArtifact = new DeviceArtifact("", false, "", "");
             inputArtifact.setDevice(selectedObject);
             fileUploaded = false;
             uploadedFileName = null;

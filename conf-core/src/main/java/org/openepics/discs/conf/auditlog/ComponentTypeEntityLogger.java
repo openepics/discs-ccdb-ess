@@ -1,8 +1,9 @@
 package org.openepics.discs.conf.auditlog;
 
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.openepics.discs.conf.ent.AuditRecord;
 import org.openepics.discs.conf.ent.ComponentType;
@@ -12,7 +13,6 @@ import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Sets;
 
 /**
  * {@link AuditRecord} maker for {@link ComponentType}
@@ -23,32 +23,33 @@ import com.google.common.collect.Sets;
 public class ComponentTypeEntityLogger implements EntityLogger {
 
     @Override
-    public Class getType() {
+    public Class<?> getType() {
         return ComponentType.class;
     }
 
     @Override
-    public List<AuditRecord> auditEntries(Object value, EntityTypeOperation operation, String user) {
+    public List<AuditRecord> auditEntries(Object value, EntityTypeOperation operation) {
         final ComponentType compType = (ComponentType) value;
 
-        final Map<String, String> propertiesMap = new HashMap<>();
+        final Map<String, String> propertiesMap = new TreeMap<>();
         if (compType.getComptypePropertyList() != null) {
             for (ComptypePropertyValue propValue : compType.getComptypePropertyList()) {
                 propertiesMap.put(propValue.getProperty().getName(), propValue.getPropValue());
             }
         }
 
-        final Map<String, String> artifactsMap = new HashMap<>();
+        final Map<String, String> artifactsMap = new TreeMap<>();
         if (compType.getComptypeArtifactList() != null) {
             for (ComptypeArtifact artifact : compType.getComptypeArtifactList()) {
                 artifactsMap.put(artifact.getName(), artifact.getUri());
             }
         }
-
+        
+        
         return ImmutableList.of((new AuditLogUtil(compType).
-            removeTopProperties(Sets.newHashSet("id", "modifiedAt", "modifiedBy", "version", "name")).
+            removeTopProperties(Arrays.asList("id", "modifiedAt", "modifiedBy", "version", "name")).
             addArrayOfMappedProperties("comptypePropertyList", propertiesMap).
             addArrayOfMappedProperties("comptypeArtifactList", artifactsMap).
-            auditEntry(operation, EntityType.COMPONENT_TYPE, compType.getName(), compType.getId(), user)));
+            auditEntry(operation, EntityType.COMPONENT_TYPE, compType.getName(), compType.getId())));                
     }
 }

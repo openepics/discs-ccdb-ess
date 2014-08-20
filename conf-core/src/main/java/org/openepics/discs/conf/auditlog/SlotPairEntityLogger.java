@@ -25,18 +25,18 @@ import org.openepics.discs.conf.ent.SlotPair;
 public class SlotPairEntityLogger implements EntityLogger {
 
     @Override
-    public Class getType() {
+    public Class<?> getType() {
         return SlotPair.class;
     }
 
     @Override
-    public List<AuditRecord> auditEntries(Object entity, EntityTypeOperation operation, String user) {
+    public List<AuditRecord> auditEntries(Object entity, EntityTypeOperation operation) {
         final SlotPair slotPair = (SlotPair) entity;
         final SlotEntityLogger slotEntityLogger = new SlotEntityLogger();
 
         List<AuditRecord> slotAuditRecords = new ArrayList<>();
-        slotAuditRecords.addAll(slotEntityLogger.auditEntries(slotPair.getChildSlot(), operation, user));
-        slotAuditRecords.addAll(slotEntityLogger.auditEntries(slotPair.getParentSlot(), operation, user));
+        slotAuditRecords.addAll(slotEntityLogger.auditEntries(slotPair.getChildSlot(), operation));
+        slotAuditRecords.addAll(slotEntityLogger.auditEntries(slotPair.getParentSlot(), operation));
 
         return slotAuditRecords;
     }

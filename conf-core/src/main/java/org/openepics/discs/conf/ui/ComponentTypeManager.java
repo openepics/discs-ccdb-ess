@@ -31,7 +31,6 @@ import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypeArtifact;
 import org.openepics.discs.conf.ent.ComptypeAsm;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
-import org.openepics.discs.conf.security.SecurityPolicy;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
 import org.openepics.discs.conf.util.BlobStore;
 import org.openepics.discs.conf.util.Utility;
@@ -53,15 +52,11 @@ import com.google.common.io.ByteStreams;
 @Named
 @ViewScoped
 public class ComponentTypeManager implements Serializable {
-
-    @EJB
-    private ComptypeEJB comptypeEJB;
     private static final Logger logger = Logger.getLogger(ComponentTypeManager.class.getCanonicalName());
-    // private static String folderName = "/var/proteus/"; // ToDo: get it from configuration
-
-    @Inject
-    private BlobStore blobStore;
-    @EJB SecurityPolicy securityPolicy;
+    
+    @EJB private ComptypeEJB comptypeEJB;
+  
+    @Inject private BlobStore blobStore;
     @Inject private DataLoaderHandler dataLoaderHandler;
     @Inject @ComponentTypesLoaderQualifier private DataLoader compTypesDataLoader;
     
@@ -189,8 +184,7 @@ public class ComponentTypeManager implements Serializable {
             }
             propertyOperation = 'a';
 
-            // TODO replaced void constructor (now protected) with default values. Check.
-            inputProperty = new ComptypePropertyValue(false, securityPolicy.getUserId());
+            inputProperty = new ComptypePropertyValue(false);
             inputProperty.setComponentType(selectedObject);
             fileUploaded = false;
             uploadedFileName = null;
@@ -448,11 +442,10 @@ public class ComponentTypeManager implements Serializable {
             if (selectedParts == null) {
                 selectedParts = new ArrayList<>();
             }
-            // TODO replaced void constructor (now protected) with default values. Check!
-            ComptypeAsm prt = new ComptypeAsm("", securityPolicy.getUserId());
+            ComptypeAsm prt = new ComptypeAsm("");
 
             prt.setParentType(selectedObject);
-            // CTP.setComponentType1(inputObject);
+            
             selectedParts.add(prt);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "New assembly element", "");
         } catch (Exception e) {

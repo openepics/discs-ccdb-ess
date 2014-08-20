@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nullable;
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
@@ -22,7 +21,6 @@ import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyAssociation;
-import org.openepics.discs.conf.security.SecurityPolicy;
 import org.openepics.discs.conf.util.As;
 
 import com.google.common.base.Objects;
@@ -31,7 +29,6 @@ import com.google.common.collect.ImmutableList;
 @Stateless
 @ComponentTypesLoaderQualifier
 public class ComponentTypesDataLoader extends AbstractDataLoader implements DataLoader {
-    @EJB private SecurityPolicy securityPolicy;
     @Inject private ComptypeEJB comptypeEJB;
     @Inject private ConfigurationEJB configurationEJB;
     private int nameIndex, descriptionIndex;
@@ -86,7 +83,6 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
                 final String command = As.notNull(row.get(commandIndex).toUpperCase());
                 final @Nullable String name = row.get(nameIndex);
                 final @Nullable String description = descriptionIndex == -1 ? null : row.get(descriptionIndex);
-                final String modifiedBy = securityPolicy.getUserId();
 
                 if (name == null) {
                     rowResult.addMessage(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, rowNumber, headerRow.get(nameIndex)));
@@ -99,7 +95,7 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
                     if (componentTypeToUpdate != null) {
                         try {
                             componentTypeToUpdate.setDescription(description);
-                            addOrUpdateProperties(componentTypeToUpdate, indexByPropertyName, row, rowNumber, modifiedBy);
+                            addOrUpdateProperties(componentTypeToUpdate, indexByPropertyName, row, rowNumber);
                             if (rowResult.isError()) {
                                 continue;
                             }
@@ -108,10 +104,10 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
                         }
                     } else {
                         try {
-                            final ComponentType compTypeToAdd = new ComponentType(name, modifiedBy);
+                            final ComponentType compTypeToAdd = new ComponentType(name);
                             compTypeToAdd.setDescription(description);
                             comptypeEJB.addComponentType(compTypeToAdd);
-                            addOrUpdateProperties(compTypeToAdd, indexByPropertyName, row, rowNumber, modifiedBy);
+                            addOrUpdateProperties(compTypeToAdd, indexByPropertyName, row, rowNumber);
                             if (rowResult.isError()) {
                                 continue;
                             }
@@ -202,7 +198,7 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
         }
     }
 
-    private void addOrUpdateProperties(ComponentType compType, Map<String, Integer> properties, List<String> row, String rowNumber, String modifiedBy) {
+    private void addOrUpdateProperties(ComponentType compType, Map<String, Integer> properties, List<String> row, String rowNumber) {
         final Iterator<String> propertiesIterator = properties.keySet().iterator();
         final List<ComptypePropertyValue> compTypeProperties = new ArrayList<>();
         if (compType.getComptypePropertyList() != null) {
@@ -225,12 +221,11 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
                     comptypeEJB.deleteCompTypeProp(compTypePropertyToUpdate);
                 } else {
                     compTypePropertyToUpdate.setPropValue(propertyValue);
-                    compTypePropertyToUpdate.setModifiedBy(modifiedBy);
                     comptypeEJB.saveCompTypeProp(compTypePropertyToUpdate);
                 }
 
             } else if (propertyValue != null) {
-                final ComptypePropertyValue comptypePropertyToAdd = new ComptypePropertyValue(false, modifiedBy);
+                final ComptypePropertyValue comptypePropertyToAdd = new ComptypePropertyValue(false);
                 comptypePropertyToAdd.setProperty(property);
                 comptypePropertyToAdd.setPropValue(propertyValue);
                 comptypePropertyToAdd.setComponentType(compType);

@@ -14,14 +14,14 @@ import org.openepics.discs.conf.ent.PropertyAssociation;
 
 public class DeviceEntityLoggerTest {
 
-    private final Property prop1 = new Property("DETER", "deter", PropertyAssociation.ALL, "admin");
-    private final Device device = new Device("serial1", "admin");
-    private final DevicePropertyValue devicePropVal1 = new DevicePropertyValue(false, "admin");
-    private final Property prop2 = new Property("APERTURE", "aperture", PropertyAssociation.ALL, "admin");
-    private final DevicePropertyValue devicePropVal2 = new DevicePropertyValue(false, "admin");
-    private final DeviceArtifact artifact1 = new DeviceArtifact("CAT Image", true, "Simple CAT image", "/var/usr/images/CAT", "admin");
-    private final DeviceArtifact artifact2 = new DeviceArtifact("Manual", false, "Users manual", "www.deteriorator.com/user-manual", "admin");
-    private final ComponentType compType = new ComponentType("Devices component", "admin");
+    private final Property prop1 = new Property("DETER", "deter", PropertyAssociation.ALL);
+    private final Device device = new Device("serial1");
+    private final DevicePropertyValue devicePropVal1 = new DevicePropertyValue(false);
+    private final Property prop2 = new Property("APERTURE", "aperture", PropertyAssociation.ALL);
+    private final DevicePropertyValue devicePropVal2 = new DevicePropertyValue(false);
+    private final DeviceArtifact artifact1 = new DeviceArtifact("CAT Image", true, "Simple CAT image", "/var/usr/images/CAT");
+    private final DeviceArtifact artifact2 = new DeviceArtifact("Manual", false, "Users manual", "www.deteriorator.com/user-manual");
+    private final ComponentType compType = new ComponentType("Devices component");
 
     private final DeviceEntityLogger deviceEntityLogger = new DeviceEntityLogger();
 
@@ -45,6 +45,8 @@ public class DeviceEntityLoggerTest {
 
     @Test
     public void testSerializeEntity() {
-        System.out.println("ReducedDevice:" + deviceEntityLogger.auditEntries(device, EntityTypeOperation.CREATE, "admin").get(0).getEntry());
+        final String RESULT = "{\"componentType\":\"Devices component\",\"devicePropertyList\":[{\"APERTURE\":\"20\"},{\"DETER\":\"10\"}],\"deviceArtifactList\":[{\"CAT Image\":\"/var/usr/images/CAT\"},{\"Manual\":\"www.deteriorator.com/user-manual\"}]}";
+
+        assertTrue(RESULT.equals(deviceEntityLogger.auditEntries(device, EntityTypeOperation.CREATE).get(0).getEntry()));
     }
 }

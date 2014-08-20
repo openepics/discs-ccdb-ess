@@ -1,5 +1,6 @@
 package org.openepics.discs.conf.auditlog;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
@@ -11,9 +12,9 @@ import org.openepics.discs.conf.ent.PropertyAssociation;
 import org.openepics.discs.conf.ent.Unit;
 
 public class PropertyEntityLoggerTest {
-    private final Unit unit = new Unit("Ampre", "Current", "A", "BlahBlha", "Miki");
-    private final DataType dt = new DataType("Float", "Float", true, "Well.. a scalar float", "Iznogud");
-    private final Property prop = new Property("TestProperty", "Description of test Property", PropertyAssociation.TYPE_DEVICE, "Iznogud");
+    private final Unit unit = new Unit("Ampre", "Current", "A", "BlahBlha");
+    private final DataType dt = new DataType("Float", "Float", true, "Well.. a scalar float");
+    private final Property prop = new Property("TestProperty", "Description of test Property", PropertyAssociation.TYPE_DEVICE);
 
     private PropertyEntityLogger pel = new PropertyEntityLogger();
 
@@ -31,6 +32,8 @@ public class PropertyEntityLoggerTest {
 
     @Test
     public void testSerializeEntity() {
-        System.out.println("ReducedProperty:" + pel.auditEntries(prop, EntityTypeOperation.CREATE, "admin").get(0).getEntry());
+        final String RESULT = "{\"description\":\"Description of test Property\",\"association\":\"TYPE_DEVICE\",\"dataType\":\"Float\",\"unit\":\"Ampre\"}";
+        
+        assertEquals(RESULT, pel.auditEntries(prop, EntityTypeOperation.CREATE).get(0).getEntry());
     }
 }

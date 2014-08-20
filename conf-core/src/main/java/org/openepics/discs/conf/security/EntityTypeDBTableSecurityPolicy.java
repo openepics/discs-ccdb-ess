@@ -21,7 +21,6 @@ import java.util.logging.Logger;
 import javax.ejb.Stateful;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.Alternative;
-import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.EntityManager;
@@ -31,7 +30,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.Privilege;
-import org.openepics.discs.conf.ui.LoginManager;
 
 import com.google.common.base.Preconditions;
 
@@ -50,29 +48,21 @@ import com.google.common.base.Preconditions;
 @Named("securityPolicy")
 @Alternative
 public class EntityTypeDBTableSecurityPolicy implements SecurityPolicy, Serializable {
-    private static final long serialVersionUID = 1L;
     private static final Logger logger = Logger.getLogger(EntityTypeDBTableSecurityPolicy.class.getCanonicalName());
 
     @PersistenceContext private EntityManager em;
-    @Inject private LoginManager loginManager;
+    @Inject private HttpServletRequest servletRequest;
 
     /**
      * Contains cached permissions
      */
     private Map<EntityType, Set<EntityTypeOperation> > cachedPermissions;
 
-    private String userName;
-
-
     @Override
     public void login(String userName, String password) {
-        final FacesContext context = FacesContext.getCurrentInstance();
-        final HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
-
         try {
-            if (request.getUserPrincipal() == null) {
-                request.login(userName, password);
-                this.userName = userName;
+            if (servletRequest.getUserPrincipal() == null) {
+                servletRequest.login(userName, password);
                 logger.log(Level.INFO, "Login successful for " + userName);
             }
         } catch (Exception e) {
@@ -82,13 +72,9 @@ public class EntityTypeDBTableSecurityPolicy implements SecurityPolicy, Serializ
 
     @Override
     public void logout() {
-        final FacesContext context = FacesContext.getCurrentInstance();
-        final HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
         try {
-            request.logout();
-            request.getSession().invalidate();
-
-            this.userName = null;
+            servletRequest.logout();
+            servletRequest.getSession().invalidate();
         } catch (Exception e) {
             throw new SecurityException("Error while logging out!", e);
         }
@@ -96,7 +82,7 @@ public class EntityTypeDBTableSecurityPolicy implements SecurityPolicy, Serializ
 
     @Override
     public String getUserId() {
-        return loginManager.getUserId();
+        return servletRequest.getUserPrincipal()!=null ? servletRequest.getUserPrincipal().getName() : null;
     }
 
     @Override
@@ -140,7 +126,7 @@ public class EntityTypeDBTableSecurityPolicy implements SecurityPolicy, Serializ
      */
     private boolean hasPermission(EntityType entityType, EntityTypeOperation operationType) {
 
-        final String principal = loginManager.getUserId();
+        final String principal = getUserId();
 
         // Handle the non-logged case
         if (principal == null) {
@@ -169,7 +155,7 @@ public class EntityTypeDBTableSecurityPolicy implements SecurityPolicy, Serializ
 
         cachedPermissions = new EnumMap<EntityType, Set<EntityTypeOperation>>(EntityType.class);
 
-        final String principal = loginManager.getUserId();
+        final String principal = getUserId();
         // The following should not happen for logged in user
         if (principal == null || principal.isEmpty()) {
             throw new SecurityException("Identity could not be established. Is user logged in");

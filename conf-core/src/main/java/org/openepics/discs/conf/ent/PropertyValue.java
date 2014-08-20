@@ -1,7 +1,5 @@
 package org.openepics.discs.conf.ent;
 
-import java.util.Date;
-
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,9 +13,7 @@ import javax.validation.constraints.NotNull;
 @Entity
 @Table(name = "property_values")
 @Inheritance(strategy = InheritanceType.JOINED)
-public class PropertyValue extends ConfigurationEntity {
-    private static final long serialVersionUID = 1L;
-
+abstract public class PropertyValue extends ConfigurationEntity {
     @Column(name = "prop_value", columnDefinition = "TEXT")
     private String propValue;
 
@@ -36,12 +32,10 @@ public class PropertyValue extends ConfigurationEntity {
 
     protected PropertyValue() { }
 
-    public PropertyValue(boolean inRepository, String modifiedBy) {
+    public PropertyValue(boolean inRepository) {
         this.inRepository = inRepository;
-        this.modifiedBy = modifiedBy;
-        this.modifiedAt = new Date();
     }
-
+    
     public String getPropValue() { return propValue; }
     public void setPropValue(String propValue) { this.propValue = propValue; }
 

@@ -19,6 +19,7 @@ package org.openepics.discs.conf.util;
 import java.util.Properties;
 
 import javax.annotation.Resource;
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Alternative;
 
 /**
@@ -26,6 +27,7 @@ import javax.enterprise.inject.Alternative;
  * @author vuppala
  */
 @Alternative
+@ApplicationScoped
 public class AppPropertiesGlassfish implements AppProperties {
     @Resource(name="org.openepics.discs.conf.props")
     private Properties properties;

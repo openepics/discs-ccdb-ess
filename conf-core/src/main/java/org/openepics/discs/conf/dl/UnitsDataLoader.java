@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nullable;
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
@@ -17,7 +16,6 @@ import org.openepics.discs.conf.dl.common.ErrorMessage;
 import org.openepics.discs.conf.dl.common.ValidationMessage;
 import org.openepics.discs.conf.ejb.ConfigurationEJB;
 import org.openepics.discs.conf.ent.Unit;
-import org.openepics.discs.conf.security.SecurityPolicy;
 import org.openepics.discs.conf.util.As;
 
 /**
@@ -29,7 +27,6 @@ import org.openepics.discs.conf.util.As;
 @Stateless
 @UnitLoaderQualifier
 public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
-    @EJB private SecurityPolicy securityPolicy;
     @Inject private ConfigurationEJB configurationEJB;
 
     private Map<String, Unit> unitByName;
@@ -83,7 +80,6 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
                 final @Nullable String description = row.get(descriptionIndex);
 
                 final Date modifiedAt = new Date();
-                final String modifiedBy = securityPolicy.getUserId();
 
                 if (name == null) {
                     rowResult.addMessage(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, rowNumber, headerRow.get(nameIndex)));
@@ -113,7 +109,7 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
                             }
                         } else {
                             try {
-                                final Unit unitToAdd = new Unit(name, quantity, symbol, description, modifiedBy);
+                                final Unit unitToAdd = new Unit(name, quantity, symbol, description);
                                 configurationEJB.addUnit(unitToAdd);
                                 unitByName.put(unitToAdd.getName(), unitToAdd);
                             } catch (Exception e) {

@@ -84,7 +84,7 @@ public class ReportManager implements Serializable {
 
         for (String columnKey : columnKeys) {
             String key = columnKey.trim();
-            columns.add(new ColumnModel(columnKey.replace('-', ' '), columnKey));
+            columns.add(new ColumnModel(columnKey.replace('-', ' '), key));
         }
     }
 

@@ -24,8 +24,6 @@ import org.openepics.discs.conf.util.As;
 @Entity
 @Table(name = "report")
 public class Report extends ConfigurationEntity {
-    private static final long serialVersionUID = 1L;
-
     @Basic(optional = false)
     @Nonnull
     @Column(name = "name")

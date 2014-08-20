@@ -1,11 +1,11 @@
 package org.openepics.discs.conf.ejb;
 
-import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
@@ -32,6 +32,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
 
     private static final Logger logger = Logger.getLogger(ConfigurationEJB.class.getCanonicalName());
     @PersistenceContext private EntityManager em;
+    @Inject private ConfigurationEntityUtility entityUtility;
 
     // -------------------- Property ---------------------
 
@@ -64,7 +65,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @Audit
     @Authorized 
     public void addProperty(Property property) {
-        property.setModifiedAt(new Date());
+        entityUtility.setModified(property);
         em.persist(property);
     }
     
@@ -72,7 +73,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @Audit
     @Authorized 
     public void saveProperty(Property property) {
-        property.setModifiedAt(new Date());
+        entityUtility.setModified(property);
         em.merge(property);
     }
 
@@ -114,7 +115,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @Audit
     @Authorized
     public void addUnit(Unit unit) {
-        unit.setModifiedAt(new Date());
+        entityUtility.setModified(unit);
         em.persist(unit);
     }
 
@@ -122,7 +123,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @Audit
     @Authorized
     public void saveUnit(Unit unit) {
-        unit.setModifiedAt(new Date());
+        entityUtility.setModified(unit);
         em.merge(unit);
     }
 

@@ -9,6 +9,7 @@
  */
 package org.openepics.discs.conf.auditlog;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
@@ -26,11 +27,11 @@ import org.openepics.discs.conf.ent.Slot;
  *
  */
 public class InstallationRecordEntityLoggerTest {
-    private final InstallationRecord installationRecord = new InstallationRecord("record1", new Date(), "admin");
-    private final Slot slot = new Slot("slot1", true, "admin");
-    private final Device device = new Device("device1", "admin");
-    private final InstallationArtifact artifact1 = new InstallationArtifact("CAT Image", true, "Simple CAT image", "/var/usr/images/CAT", "admin");
-    private final InstallationArtifact artifact2 = new InstallationArtifact("Manual", false, "Users manual", "www.deteriorator.com/user-manual", "admin");
+    private final InstallationRecord installationRecord = new InstallationRecord("record1", new Date(213123213));
+    private final Slot slot = new Slot("slot1", true);
+    private final Device device = new Device("device1");
+    private final InstallationArtifact artifact1 = new InstallationArtifact("CAT Image", true, "Simple CAT image", "/var/usr/images/CAT");
+    private final InstallationArtifact artifact2 = new InstallationArtifact("Manual", false, "Users manual", "www.deteriorator.com/user-manual");
 
     private final InstallationRecordEntityLogger installationRecordEntityLogger = new InstallationRecordEntityLogger();
 
@@ -49,6 +50,8 @@ public class InstallationRecordEntityLoggerTest {
 
     @Test
     public void testSerializeEntity() {
-        System.out.println("ReducedInstallationRecord:" + installationRecordEntityLogger.auditEntries(installationRecord, EntityTypeOperation.CREATE, "admin").get(0).getEntry());
+        final String RESULT = "{\"installDate\":\"1970-01-03T11:12:03.213+0000\",\"slot\":\"slot1\",\"device\":\"device1\",\"installationArtifactList\":[{\"CAT Image\":\"/var/usr/images/CAT\"},{\"Manual\":\"www.deteriorator.com/user-manual\"}]}";
+
+        assertEquals(RESULT, installationRecordEntityLogger.auditEntries(installationRecord, EntityTypeOperation.CREATE).get(0).getEntry());
     }
 }

@@ -1,18 +1,15 @@
 package org.openepics.discs.conf.ejb;
 
-import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 
 import org.openepics.discs.conf.auditlog.Audit;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
@@ -34,7 +31,8 @@ import org.openepics.discs.conf.util.CRUDOperation;
 @Stateless public class SlotEJB {
     private static final Logger logger = Logger.getLogger(SlotEJB.class.getCanonicalName());
     @PersistenceContext private EntityManager em;
-
+    @Inject private ConfigurationEntityUtility entityUtility;
+    
     // ---------------- Layout Slot -------------------------
 
     public List<Slot> findLayoutSlot() {
@@ -83,7 +81,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @Audit
     @Authorized
     public void addSlot(Slot slot) {
-        slot.setModifiedAt(new Date());
+        entityUtility.setModified(slot);
         em.persist(slot);
     }
 
@@ -91,7 +89,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @Audit
     @Authorized
     public void saveLayoutSlot(Slot slot) {
-        slot.setModifiedAt(new Date());
+        entityUtility.setModified(slot);
         em.merge(slot);
     }
 
@@ -108,11 +106,12 @@ import org.openepics.discs.conf.util.CRUDOperation;
 
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
+    @Authorized
     public void addSlotProperty(SlotPropertyValue propertyValue) {
         final SlotPropertyValue mergedPropertyValue = em.merge(propertyValue);
         final Slot parent = mergedPropertyValue.getSlot();
         
-        DateUtility.setModifiedAt(parent, mergedPropertyValue);
+        entityUtility.setModified(parent, mergedPropertyValue);
         
         parent.getSlotPropertyList().add(mergedPropertyValue);        
         em.merge(parent);
@@ -124,7 +123,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
     public void saveSlotProp(SlotPropertyValue propertyValue) {
         final SlotPropertyValue mergedPropertyValue = em.merge(propertyValue);
         
-        DateUtility.setModifiedAt(mergedPropertyValue.getSlot(), mergedPropertyValue);
+        entityUtility.setModified(mergedPropertyValue.getSlot(), mergedPropertyValue);
         
         logger.log(Level.INFO, "Slot Property: id " + mergedPropertyValue.getId() + " name " + mergedPropertyValue.getProperty().getName());
     }
@@ -138,7 +137,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
         final SlotPropertyValue mergedPropertyValue = em.merge(propertyValue);
         final Slot parent = mergedPropertyValue.getSlot();
         
-        parent.setModifiedAt(new Date());
+        entityUtility.setModified(parent);
         
         parent.getSlotPropertyList().remove(mergedPropertyValue);
         em.remove(mergedPropertyValue);
@@ -153,7 +152,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
         final SlotArtifact mergedArtifact = em.merge(artifact);
         final Slot parent = mergedArtifact.getSlot();
         
-        DateUtility.setModifiedAt(parent, mergedArtifact);
+        entityUtility.setModified(parent, mergedArtifact);
         
         parent.getSlotArtifactList().add(mergedArtifact);
     }
@@ -164,7 +163,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
     public void saveSlotArtifact(SlotArtifact artifact) {
         final SlotArtifact mergedArtifact = em.merge(artifact);
         
-        DateUtility.setModifiedAt(mergedArtifact.getSlot(), mergedArtifact);
+        entityUtility.setModified(mergedArtifact.getSlot(), mergedArtifact);
         
         logger.log(Level.INFO, "Slot Artifact: name " + mergedArtifact.getName() + " description " + mergedArtifact.getDescription() + " uri " + mergedArtifact.getUri() + "is int " + mergedArtifact.isInternal());
     }
@@ -176,7 +175,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
         final SlotArtifact mergedArtifact = em.merge(artifact);
         final Slot parent = mergedArtifact.getSlot();
 
-        parent.setModifiedAt(new Date());
+        entityUtility.setModified(parent);
         
         parent.getSlotArtifactList().remove(mergedArtifact);
         em.remove(mergedArtifact);

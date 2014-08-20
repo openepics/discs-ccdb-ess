@@ -1,7 +1,6 @@
 package org.openepics.discs.conf.ent;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -23,7 +22,7 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  *
@@ -41,8 +40,6 @@ import org.codehaus.jackson.annotate.JsonIgnore;
     @NamedQuery(name = "Slot.findByBeamlinePosition", query = "SELECT s FROM Slot s WHERE s.beamlinePosition = :beamlinePosition"),
     @NamedQuery(name = "Slot.findByModifiedBy", query = "SELECT s FROM Slot s WHERE s.modifiedBy = :modifiedBy")})
 public class Slot extends ConfigurationEntity {
-    private static final long serialVersionUID = 1L;
-
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 128)
@@ -115,12 +112,10 @@ public class Slot extends ConfigurationEntity {
     protected Slot() {
     }
 
-    public Slot(String name, boolean isHostingSlot, String modifiedBy) {
+    public Slot(String name, boolean isHostingSlot) {
         this.positionInfo = new AlignmentInformation();
         this.name = name;
         this.isHostingSlot = isHostingSlot;
-        this.modifiedBy = modifiedBy;
-        this.modifiedAt = new Date();
     }
 
     public String getName() { return name; }

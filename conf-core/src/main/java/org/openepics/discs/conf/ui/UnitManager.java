@@ -24,8 +24,6 @@ import org.openepics.discs.conf.dl.UnitLoaderQualifier;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.ejb.ConfigurationEJB;
-import org.openepics.discs.conf.ent.EntityType;
-import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.Unit;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
 import org.openepics.discs.conf.util.Utility;
@@ -41,8 +39,6 @@ import com.google.common.io.ByteStreams;
 @ManagedBean
 @ViewScoped
 public class UnitManager implements Serializable {
-    private static final long serialVersionUID = 1L;
-
     @Inject private ConfigurationEJB configurationEJB;
     @Inject private DataLoaderHandler dataLoaderHandler;
     @Inject @UnitLoaderQualifier private DataLoader unitsDataLoader;

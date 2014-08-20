@@ -1,7 +1,5 @@
 package org.openepics.discs.conf.ent;
 
-import java.util.Date;
-
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -26,8 +24,6 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "ComptypeAsm.findByComptypeAsmId", query = "SELECT c FROM ComptypeAsm c WHERE c.id = :id"),
     @NamedQuery(name = "ComptypeAsm.findByModifiedBy", query = "SELECT c FROM ComptypeAsm c WHERE c.modifiedBy = :modifiedBy")})
 public class ComptypeAsm extends ConfigurationEntity {
-    private static final long serialVersionUID = 1L;
-
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 16)
@@ -49,10 +45,8 @@ public class ComptypeAsm extends ConfigurationEntity {
     protected ComptypeAsm() {
     }
 
-    public ComptypeAsm(String childPosition, String modifiedBy) {
+    public ComptypeAsm(String childPosition) {
         this.childPosition = childPosition;
-        this.modifiedBy = modifiedBy;
-        this.modifiedAt = new Date();
     }
 
     public String getChildPosition() {

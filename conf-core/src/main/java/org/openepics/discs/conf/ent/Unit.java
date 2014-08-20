@@ -1,6 +1,5 @@
 package org.openepics.discs.conf.ent;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Basic;
@@ -15,7 +14,7 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  *
@@ -31,8 +30,6 @@ import org.codehaus.jackson.annotate.JsonIgnore;
     @NamedQuery(name = "Unit.findBySymbol", query = "SELECT u FROM Unit u WHERE u.symbol = :symbol"),
     @NamedQuery(name = "Unit.findByModifiedBy", query = "SELECT u FROM Unit u WHERE u.modifiedBy = :modifiedBy")})
 public class Unit extends ConfigurationEntity {
-    private static final long serialVersionUID = 1L;
-
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 32)
@@ -66,13 +63,11 @@ public class Unit extends ConfigurationEntity {
     protected Unit() {
     }
 
-    public Unit(String unitName, String quantity, String symbol, String description, String modifiedBy) {
+    public Unit(String unitName, String quantity, String symbol, String description) {
         this.name = unitName;
         this.quantity = quantity;
         this.symbol = symbol;
         this.description = description;
-        this.modifiedBy = modifiedBy;
-        this.modifiedAt = new Date();
     }
 
 

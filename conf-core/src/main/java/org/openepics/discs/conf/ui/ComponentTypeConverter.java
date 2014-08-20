@@ -26,9 +26,9 @@ import org.openepics.discs.conf.ent.ComponentType;
 // @FacesConverter(value = "experimentConverter")
 // @ViewScoped
 public class ComponentTypeConverter implements Converter {
-    @EJB
-    private ComptypeEJB comptypeEJB;
     private static final Logger logger = Logger.getLogger(ComponentTypeConverter.class.getCanonicalName());
+
+    @EJB private ComptypeEJB comptypeEJB;
 
     /**
      * Creates a new instance of ComponentTypeConverter

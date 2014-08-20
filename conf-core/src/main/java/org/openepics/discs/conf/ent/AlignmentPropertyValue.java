@@ -21,16 +21,14 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "AlignmentPropertyValue.findByInRepository", query = "SELECT a FROM AlignmentPropertyValue a WHERE a.inRepository = :inRepository"),
     @NamedQuery(name = "AlignmentPropertyValue.findByModifiedBy", query = "SELECT a FROM AlignmentPropertyValue a WHERE a.modifiedBy = :modifiedBy")})
 public class AlignmentPropertyValue extends PropertyValue {
-    private static final long serialVersionUID = 1L;
-
     @JoinColumn(name = "alignment_record")
     @ManyToOne(optional = false)
     private AlignmentRecord alignmentRecord;
 
     protected AlignmentPropertyValue() { }
 
-    public AlignmentPropertyValue(boolean inRepository, String modifiedBy) {
-        super(inRepository, modifiedBy);
+    public AlignmentPropertyValue(boolean inRepository) {
+        super(inRepository);
     }
 
     public AlignmentRecord getAlignmentRecord() { return alignmentRecord; }

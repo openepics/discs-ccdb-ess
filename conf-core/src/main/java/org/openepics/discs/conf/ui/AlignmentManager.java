@@ -27,7 +27,6 @@ import org.openepics.discs.conf.ejb.AlignmentEJB;
 import org.openepics.discs.conf.ent.AlignmentArtifact;
 import org.openepics.discs.conf.ent.AlignmentPropertyValue;
 import org.openepics.discs.conf.ent.AlignmentRecord;
-import org.openepics.discs.conf.security.SecurityPolicy;
 import org.openepics.discs.conf.util.BlobStore;
 import org.openepics.discs.conf.util.Utility;
 import org.primefaces.context.RequestContext;
@@ -45,13 +44,10 @@ import org.primefaces.model.UploadedFile;
 @Named
 @ViewScoped
 public class AlignmentManager implements Serializable{
-
-    @EJB
-    private AlignmentEJB alignmentEJB;
     private static final Logger logger = Logger.getLogger(AlignmentManager.class.getCanonicalName());
-    @Inject
-    private BlobStore blobStore;
-    @EJB private SecurityPolicy securityPolicy;
+    
+    @EJB private AlignmentEJB alignmentEJB;
+    @Inject private BlobStore blobStore;
 
     private List<AlignmentRecord> objects;
     private List<AlignmentRecord> sortedObjects;
@@ -109,7 +105,7 @@ public class AlignmentManager implements Serializable{
     public void onAlignRecAdd(ActionEvent event) {
         selectedOp = 'a';
         // TODO replaced void constructor (now protected) with default values. Check.
-        inputObject = new AlignmentRecord(UUID.randomUUID().toString(), new Date(), securityPolicy.getUserId());
+        inputObject = new AlignmentRecord(UUID.randomUUID().toString(), new Date());
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Add", "");
     }
 
@@ -166,7 +162,7 @@ public class AlignmentManager implements Serializable{
             propertyOperation = 'a';
 
             // TODO replaced void constructor (now protected) with default values. Check.
-            inputProperty = new AlignmentPropertyValue(false, securityPolicy.getUserId());
+            inputProperty = new AlignmentPropertyValue(false);
             inputProperty.setAlignmentRecord(selectedObject);
             fileUploaded = false;
             uploadedFileName = null;
@@ -306,7 +302,7 @@ public class AlignmentManager implements Serializable{
                 selectedArtifacts = new ArrayList<>();
             }
             // TODO replaced void constructor (now protected) with default values. Check.
-            inputArtifact = new AlignmentArtifact("", false, "", "", securityPolicy.getUserId());
+            inputArtifact = new AlignmentArtifact("", false, "", "");
             inputArtifact.setAlignmentRecord(selectedObject);
             fileUploaded = false;
             uploadedFileName = null;

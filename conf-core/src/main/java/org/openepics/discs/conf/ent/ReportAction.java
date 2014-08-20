@@ -23,8 +23,6 @@ import org.openepics.discs.conf.util.As;
 @Entity
 @Table(name = "report_action")
 public class ReportAction extends ConfigurationEntity {
-    private static final long serialVersionUID = 1L;
-
     @Basic(optional = false)
     @Nonnull
     @Enumerated(EnumType.STRING)

@@ -11,8 +11,6 @@ import javax.validation.constraints.NotNull;
 @Entity
 @Table(name = "tags")
 public class Tag extends ConfigurationEntity {
-    private static final long serialVersionUID = 1L;
-
     @Basic(optional = false)
     @NotNull
     @Column(name = "name", unique = true)

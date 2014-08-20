@@ -29,7 +29,6 @@ import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotArtifact;
 import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
-import org.openepics.discs.conf.security.SecurityPolicy;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
 import org.openepics.discs.conf.util.BlobStore;
 import org.openepics.discs.conf.util.Utility;
@@ -49,11 +48,10 @@ import com.google.common.io.ByteStreams;
 @Named
 @ViewScoped
 public class SlotManager implements Serializable {
+    private static final Logger logger = Logger.getLogger(SlotManager.class.getCanonicalName());
 
     @EJB private SlotEJB slotEJB;
-    private static final Logger logger = Logger.getLogger(SlotManager.class.getCanonicalName());
     @Inject private BlobStore blobStore;
-    @EJB private SecurityPolicy securityPolicy;
     @Inject private DataLoaderHandler dataLoaderHandler;
    
     private List<Slot> objects;
@@ -130,8 +128,8 @@ public class SlotManager implements Serializable {
 
     public void onSlotAdd(ActionEvent event) {
         selectedOp = 'a';
-        // TODO replaced void constructor (now protected) with default values. Check!
-        inputObject = new Slot("", false, securityPolicy.getUserId());
+
+        inputObject = new Slot("", false);
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Add", "");
     }
 
@@ -172,8 +170,7 @@ public class SlotManager implements Serializable {
         }
         propertyOperation = 'a';
 
-        // TODO replaced void constructor (now protected) with default values. Check!
-        inputProperty = new SlotPropertyValue(false, securityPolicy.getUserId());
+        inputProperty = new SlotPropertyValue(false);
         inputProperty.setSlot(selectedObject);
         fileUploaded = false;
         uploadedFileName = null;
@@ -282,7 +279,7 @@ public class SlotManager implements Serializable {
             selectedArtifacts = new ArrayList<>();
         }
         // TODO replaced void constructor (now protected) with default values. Check!
-        inputArtifact = new SlotArtifact("", false, "", "", securityPolicy.getUserId());
+        inputArtifact = new SlotArtifact("", false, "", "");
         inputArtifact.setSlot(selectedObject);
         fileUploaded = false;
         uploadedFileName = null;

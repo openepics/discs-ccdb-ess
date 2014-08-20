@@ -35,8 +35,6 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "AuditRecord.findByEntityType", query = "SELECT a FROM AuditRecord a WHERE a.entityType = :entityType"),
     @NamedQuery(name = "AuditRecord.findByEntityKey", query = "SELECT a FROM AuditRecord a WHERE a.entityKey = :entityKey")})
 public class AuditRecord implements Serializable {
-    private static final long serialVersionUID = 1L;
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -81,10 +79,8 @@ public class AuditRecord implements Serializable {
     protected AuditRecord() {
     }
 
-    public AuditRecord(EntityTypeOperation oper, String user, String entry, Long entityId) {
-        this.logTime = new Date();
+    public AuditRecord(EntityTypeOperation oper, String entry, Long entityId) {
         this.oper = oper;
-        this.user = user;
         this.entry = entry;
         this.entityId = entityId;
     }

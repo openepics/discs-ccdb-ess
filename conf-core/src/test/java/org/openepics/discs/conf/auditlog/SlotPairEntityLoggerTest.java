@@ -9,6 +9,7 @@
  */
 package org.openepics.discs.conf.auditlog;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
@@ -29,9 +30,9 @@ import org.openepics.discs.conf.ent.SlotRelationName;
  */
 public class SlotPairEntityLoggerTest {
 
-    private final Slot parentSlot = new Slot("parentSlot", false, "admin");
-    private final Slot childSlot = new Slot("childSlot", false, "admin");
-    private final SlotPair slotPair = new SlotPair(childSlot, parentSlot, new SlotRelation(SlotRelationName.CONTAINS, "admin"));
+    private final Slot parentSlot = new Slot("parentSlot", false);
+    private final Slot childSlot = new Slot("childSlot", false);
+    private final SlotPair slotPair = new SlotPair(childSlot, parentSlot, new SlotRelation(SlotRelationName.CONTAINS));
 
     private final SlotPairEntityLogger spel = new SlotPairEntityLogger();
 
@@ -50,10 +51,13 @@ public class SlotPairEntityLoggerTest {
 
     @Test
     public void testSerializeEntity() {
-        final List<AuditRecord> auditRecords = spel.auditEntries(slotPair, EntityTypeOperation.CREATE, "admin");
-        for (AuditRecord record : auditRecords) {
-            System.out.println("ReducedSlot:" + record.getEntry());
-        }
+        final List<AuditRecord> auditRecords = spel.auditEntries(slotPair, EntityTypeOperation.CREATE);
+        
+        final String RESULT_1 = "{\"isHostingSlot\":false,\"positionInformation\":{},\"componentType\":null,\"slotPropertyList\":[],\"slotArtifactList\":[],\"childrenSlots\":[],\"parentSlots\":[{\"parentSlot\":\"CONTAINS\"}],\"installationRecordList\":[]}";
+        final String RESULT_2 = "{\"isHostingSlot\":false,\"positionInformation\":{},\"componentType\":null,\"slotPropertyList\":[],\"slotArtifactList\":[],\"childrenSlots\":[{\"childSlot\":\"CONTAINS\"}],\"parentSlots\":[],\"installationRecordList\":[]}";
+        
+        assertEquals(RESULT_1, auditRecords.get(0).getEntry());
+        assertEquals(RESULT_2, auditRecords.get(1).getEntry());        
     }
 
 }

@@ -27,10 +27,10 @@ import org.openepics.discs.conf.util.Utility;
 @Named
 @ViewScoped
 public class DataTypeManager implements Serializable {
-
-    @EJB
-    private ConfigurationEJB configurationEJB;
-    private static final Logger logger = Logger.getLogger(DataTypeManager.class.getCanonicalName());
+    @SuppressWarnings("unused")
+    private static final Logger logger = Logger.getLogger(DataTypeManager.class.getCanonicalName());    
+    
+    @EJB private ConfigurationEJB configurationEJB;
 
     private List<DataType> dataTypes;
     private List<DataType> fileteredDataTypes;
