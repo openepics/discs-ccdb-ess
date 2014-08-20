@@ -29,7 +29,10 @@ public class CCDBPackager {
                     "org.openepics.discs.conf.security",
                     "org.openepics.discs.conf.auditlog")
             .addAsResource("test-persistence.xml", "META-INF/persistence.xml")
-            .addAsWebInfResource("beans.xml");
+            .addAsWebInfResource("beans.xml")
+            .addAsWebInfResource("jboss-web.xml")
+            .addAsWebInfResource("web.xml");
+            
 
         return war;
 	}

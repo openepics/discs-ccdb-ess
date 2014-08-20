@@ -117,7 +117,7 @@
         </dependency>
         <dependency>
             <groupId>org.wildfly</groupId>
-            <artifactId>wildfly-arquillian-container-remote</artifactId>
+            <artifactId>wildfly-arquillian-container-managed</artifactId>
             <version>8.1.0.Final</version>
             <scope>test</scope>
         </dependency>
