@@ -1,42 +1,88 @@
-<ui:composition 
-    xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:f="http://java.sun.com/jsf/core"
-    xmlns:h="http://java.sun.com/jsf/html"
-    xmlns:ui="http://java.sun.com/jsf/facelets"
-    xmlns:p="http://primefaces.org/ui">
-    <h:form>
-        <h:commandButton action="#{propertyManager.onAdd()}" value="Add new" />
-        <p:dataTable var="property" value="#{propertyManager.objects}" rows="15"
-                         paginator="true">
-	        <p:column headerText="Name">
-	            <h:outputText value="#{property.name}" />
-	        </p:column>
-	 
-	        <p:column headerText="Description">
-	            <h:outputText value="#{property.description}" />
-	        </p:column>
-	 
-	        <p:column headerText="Unit">
-	            <h:outputText value="#{property.unit.name}" />
-	        </p:column>
-	 
-	        <p:column headerText="Data Type">
-	            <h:outputText value="#{property.dataType.name}" />
-	        </p:column>
-	        <p:column headerText="Action">
-                    <p:commandButton icon="ui-icon-trash"
-                        title="Delete"
-                        actionListener="#{propertyManager.onAdd()}"
-                        ajax="false" />
-                    <p:commandButton icon="ui-icon-pencil"
-                        title="Edit"
-                        actionListener="#{propertyManager.onAdd()}"
-                        ajax="false" />
-                    <p:commandButton icon="ui-icon-clock"
-                        title="Log"
-                        actionListener="#{propertyManager.onAdd()}"
-                        ajax="false" />
-                </p:column>
-        </p:dataTable>
-    </h:form>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	<h:form id="propertiesForm">
+		<p:commandButton ajax="true" actionListener="#{propertyManager.prepareAddPopup()}"
+			value="Add new" oncomplete="addProperty.show()" />
+		<p:dataTable var="property" value="#{propertyManager.objects}"
+			rows="15" paginator="true" paginatorPosition="bottom">
+			<p:column headerText="Name">
+				<h:outputText value="#{property.name}" />
+			</p:column>
+
+			<p:column headerText="Description">
+				<h:outputText value="#{property.description}" />
+			</p:column>
+
+			<p:column headerText="Unit">
+				<h:outputText value="#{property.unit.name}" />
+			</p:column>
+
+			<p:column headerText="Data Type">
+				<h:outputText value="#{property.dataType.name}" />
+			</p:column>
+			<p:column headerText="Action">
+				<p:commandButton icon="ui-icon-trash" title="Delete"
+					actionListener="#{propertyManager.onAdd()}" ajax="false" />
+				<p:commandButton icon="ui-icon-pencil" title="Edit"
+					actionListener="#{propertyManager.onAdd()}" ajax="false" />
+				<p:commandButton icon="ui-icon-clock" title="Log"
+					actionListener="#{propertyManager.onAdd()}" ajax="false" />
+			</p:column>
+		</p:dataTable>
+
+		<p:dialog widgetVar="addProperty" modal="true" resizable="false"
+			width="25%">
+			<f:facet name="header">
+				<h:outputText value="Add Property" />
+			</f:facet>
+			<h:panelGrid id="grp" layout="block" columns="2">
+				<p:outputLabel for="propertyName" value="Name" />
+				<p:inputText id="propertyName" value="#{propertyManager.name}" />
+
+				<p:outputLabel for="propertyDesc" value="Description" />
+				<p:inputText id="propertyDesc" value="#{propertyManager.description}" />
+
+				<p:outputLabel for="propertyDataType" value="Data Type" />
+				<p:selectOneMenu id="propertyDataType"
+					value="#{propertyManager.dataType}" var="dt"
+					converter="#{dataTypeConverter}" rendered="true">
+					<f:selectItem itemLabel="Select One" itemValue="" />
+					<f:selectItems value="#{dataTypeManager.dataTypes}" var="dataType"
+						itemLabel="#{dataType.name}" itemValue="#{dataType}" />
+						<p:column>  
+                            #{dt.name}
+                        </p:column>            
+				</p:selectOneMenu>
+
+				<p:outputLabel for="propertyUnit" value="Unit" />
+                <p:selectOneMenu id="propertyUnit"
+                    value="#{propertyManager.unit}" var="u"
+                    converter="#{unitConverter}" rendered="true">
+                    <f:selectItem itemLabel="Select One" itemValue="" />
+                    <f:selectItems value="#{unitManager.units}" var="unit"
+                        itemLabel="#{unit.name}" itemValue="#{unit}" />
+                        <p:column>  
+                            #{u.name}
+                        </p:column>            
+                </p:selectOneMenu>
+                
+                <p:outputLabel for="propertyAssociation" value="Association" />
+                <p:selectOneMenu id="propertyAssociation"
+                    value="#{propertyManager.propertyAssociation}" rendered="true">
+                    <f:selectItem itemLabel="Select One" itemValue="" />
+                    <f:selectItems value="#{propertyManager.propertyAssociations}" />            
+                </p:selectOneMenu>
+			</h:panelGrid>
+			
+			<p:commandButton value="Cancel" style="float: right"
+                    onclick="addProperty.hide();" />
+                <p:commandButton value="Import" style="float: right"
+                    update="@form" oncomplete="addProperty.hide()"
+                    action="#{propertyManager.onAdd()}" />
+		</p:dialog>
+
+	</h:form>
 </ui:composition>

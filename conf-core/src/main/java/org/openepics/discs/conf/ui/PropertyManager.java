@@ -10,6 +10,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -25,8 +26,10 @@ import org.openepics.discs.conf.dl.PropertiesLoaderQualifier;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.ejb.ConfigurationEJB;
+import org.openepics.discs.conf.ent.DataType;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyAssociation;
+import org.openepics.discs.conf.ent.Unit;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
 import org.openepics.discs.conf.util.Utility;
 import org.primefaces.event.FileUploadEvent;
@@ -38,13 +41,13 @@ import com.google.common.io.ByteStreams;
  *
  * @author vuppala
  * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
- * 
+ *
  */
 @Named
 @ViewScoped
 public class PropertyManager implements Serializable {
     @Inject private ConfigurationEJB configurationEJB;
-    
+
     @Inject private DataLoaderHandler dataLoaderHandler;
     @Inject @PropertiesLoaderQualifier private DataLoader propertiesDataLoader;
     private static final Logger logger = Logger.getLogger(PropertyManager.class.getCanonicalName());
@@ -61,6 +64,12 @@ public class PropertyManager implements Serializable {
 
     private boolean inTrans = false; // in the middle of an operations
     private char selectedOp = 'n'; // selected operation: [a]dd, [e]dit, [d]elete, [n]one
+
+    private String name;
+    private String description;
+    private DataType dataType;
+    private Unit unit;
+    private PropertyAssociation association;
 
     /**
      * Creates a new instance of PropertyManager
@@ -82,13 +91,28 @@ public class PropertyManager implements Serializable {
         inputObject = selectedObject;
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Selected", "");
     }
-
+/*
     public void onAdd(ActionEvent event) {
         selectedOp = 'a';
         inTrans = true;
         // TODO replaced void constructor (now protected) with default values. Check!
         inputObject = new Property("", "", PropertyAssociation.ALL);
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Add", "");
+    }*/
+
+    public void onAdd() {
+        final Property propertyToAdd = new Property(name, description, association);
+        propertyToAdd.setDataType(dataType);
+        propertyToAdd.setUnit(unit);
+        configurationEJB.addProperty(propertyToAdd);
+    }
+
+    public void prepareAddPopup() {
+        name = null;
+        description = null;
+        dataType = null;
+        unit = null;
+        association = null;
     }
 
     public void onEdit(ActionEvent event) {
@@ -193,6 +217,25 @@ public class PropertyManager implements Serializable {
         importData = null;
         importFileName = null;
     }
+
+    public List<PropertyAssociation> getPropertyAssociations() {
+        return Arrays.asList(PropertyAssociation.values());
+    }
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+
+    public DataType getDataType() { return dataType; }
+    public void setDataType(DataType dataType) { this.dataType = dataType; }
+
+    public Unit getUnit() { return unit; }
+    public void setUnit(Unit unit) { this.unit = unit; }
+
+    public PropertyAssociation getPropertyAssociation() { return association; }
+    public void setPropertyAssociation(PropertyAssociation association) { this.association = association; }
 
     public DataLoaderResult getLoaderResult() { return loaderResult; }
 
