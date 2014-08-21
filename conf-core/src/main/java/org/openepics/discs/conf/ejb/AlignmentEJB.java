@@ -76,13 +76,12 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
     @Authorized
-    public void addAlignmentProp(AlignmentPropertyValue propertyValye) {
-        final AlignmentPropertyValue mergedPropertyValue = em.merge(propertyValye);      
-        final AlignmentRecord parent = mergedPropertyValue.getAlignmentRecord();
+    public void addAlignmentProp(AlignmentPropertyValue propertyValue) {
+        final AlignmentRecord parent = propertyValue.getAlignmentRecord();
         
-        entityUtility.setModified(parent, mergedPropertyValue);
+        entityUtility.setModified(parent, propertyValue);
 
-        parent.getAlignmentPropertyList().add(propertyValye);
+        parent.getAlignmentPropertyList().add(propertyValue);
         em.merge(parent);
     }        
     
@@ -117,12 +116,12 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @Audit
     @Authorized
     public void addAlignmentArtifact(AlignmentArtifact artifact) {
-        final AlignmentArtifact mergedArtifact = em.merge(artifact);
-        final AlignmentRecord parent = mergedArtifact.getAlignmentRecord();
+        final AlignmentRecord parent = artifact.getAlignmentRecord();
 
-        entityUtility.setModified(parent, mergedArtifact);
+        entityUtility.setModified(parent, artifact);
         
-        parent.getAlignmentArtifactList().add(mergedArtifact); 
+        parent.getAlignmentArtifactList().add(artifact);
+        em.merge(parent);
     }
     
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)

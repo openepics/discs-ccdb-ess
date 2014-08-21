@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nullable;
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
@@ -23,7 +22,6 @@ import org.openepics.discs.conf.ent.DataType;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyAssociation;
 import org.openepics.discs.conf.ent.Unit;
-import org.openepics.discs.conf.security.SecurityPolicy;
 import org.openepics.discs.conf.util.As;
 
 import com.google.common.base.Objects;
@@ -37,7 +35,6 @@ import com.google.common.base.Objects;
 @Stateless
 @PropertiesLoaderQualifier
 public class PropertiesDataLoader extends AbstractDataLoader implements DataLoader {
-    @EJB private SecurityPolicy securityPolicy;
     @Inject private ConfigurationEJB configurationEJB;
     private Map<String, Property> propertyByName;
     private int nameIndex, associationIndex, unitIndex, dataTypeIndex, descriptionIndex;
@@ -91,8 +88,7 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
                 final @Nullable String description = row.get(descriptionIndex);
                 final @Nullable String association = row.get(associationIndex);
                 final Date modifiedAt = new Date();
-                final String modifiedBy = securityPolicy.getUserId();
-
+                
                 if (name == null) {
                     rowResult.addMessage(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, rowNumber, headerRow.get(nameIndex)));
                 } else if (dataType == null && !command.equals(CMD_RENAME) && !command.equals(CMD_DELETE)) {
@@ -112,7 +108,6 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
                                 propertyToUpdate.setDescription(description);
                                 propertyToUpdate.setAssociation(propertyAssociation(association));
                                 propertyToUpdate.setModifiedAt(modifiedAt);
-                                propertyToUpdate.setModifiedBy(modifiedBy);
                                 setPropertyFields(propertyToUpdate, unit, dataType, rowNumber);
                                 if (rowResult.isError()) {
                                     continue;

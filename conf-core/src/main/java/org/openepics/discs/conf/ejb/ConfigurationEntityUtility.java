@@ -3,8 +3,8 @@ package org.openepics.discs.conf.ejb;
 import java.io.Serializable;
 import java.util.Date;
 
-import javax.ejb.EJB;
 import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 
 import org.openepics.discs.conf.ent.ConfigurationEntity;
 import org.openepics.discs.conf.security.SecurityPolicy;
@@ -17,7 +17,7 @@ import org.openepics.discs.conf.security.SecurityPolicy;
  */
 @Dependent
 public class ConfigurationEntityUtility implements Serializable {
-    private @EJB SecurityPolicy securityPolicy;
+    private @Inject SecurityPolicy securityPolicy;
     
     /**
      * Updates modifiedBy and modifiedAt for one entity

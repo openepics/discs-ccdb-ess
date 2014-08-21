@@ -89,7 +89,12 @@ public class AlignmentRecord extends ConfigurationEntity {
     public Date getAlignmentDate() { return alignmentDate; }
     public void setAlignmentDate(Date alignmentDate) { this.alignmentDate = alignmentDate; }
 
-    public AlignmentInformation getAlignmentInformation() { return alignmentInfo; }
+    public AlignmentInformation getAlignmentInformation() { 
+        if (alignmentInfo == null) {
+            alignmentInfo = new AlignmentInformation();
+        }
+        return alignmentInfo; 
+    }
 
     @XmlTransient
     @JsonIgnore

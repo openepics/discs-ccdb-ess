@@ -18,7 +18,6 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.ejb.Stateful;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.Alternative;
 import javax.inject.Inject;
@@ -43,7 +42,6 @@ import com.google.common.base.Preconditions;
  * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
  *
  */
-@Stateful
 @SessionScoped
 @Named("securityPolicy")
 @Alternative
@@ -57,6 +55,10 @@ public class EntityTypeDBTableSecurityPolicy implements SecurityPolicy, Serializ
      * Contains cached permissions
      */
     private Map<EntityType, Set<EntityTypeOperation> > cachedPermissions;
+
+    public EntityTypeDBTableSecurityPolicy() {
+        logger.log(Level.INFO, "Creating " + this.getClass().getCanonicalName());
+    }
 
     @Override
     public void login(String userName, String password) {
@@ -88,8 +90,6 @@ public class EntityTypeDBTableSecurityPolicy implements SecurityPolicy, Serializ
     @Override
     public void checkAuth(Object entity, EntityTypeOperation operationType) {
         final EntityType entityType = EntityTypeResolver.resolveEntityType(entity);
-
-        logger.log(Level.INFO, "Check auth with " + entityType.toString() + " and " + operationType.toString());
 
         if (!hasPermission(entityType , operationType)) {
             throw SecurityException.generateExceptionMessage(entity, entityType, operationType);

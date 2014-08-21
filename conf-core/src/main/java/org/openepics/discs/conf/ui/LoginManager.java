@@ -12,6 +12,7 @@ import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.openepics.discs.conf.security.SecurityPolicy;
@@ -31,7 +32,7 @@ public class LoginManager implements Serializable {
     
     private boolean loggedIn = false;
     
-    @EJB private SecurityPolicy securityPolicy;
+    @Inject private SecurityPolicy securityPolicy;
     
 
     public String onLogin() {

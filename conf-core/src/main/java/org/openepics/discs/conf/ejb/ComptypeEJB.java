@@ -88,12 +88,11 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @Audit
     @Authorized
     public void addCompTypeProp(ComptypePropertyValue propertyValue) {
-        final ComptypePropertyValue mergedPropertyValue = em.merge(propertyValue);
-        final ComponentType parent = mergedPropertyValue.getComponentType();
+        final ComponentType parent = propertyValue.getComponentType();
         
-        entityUtility.setModified(parent, mergedPropertyValue);
+        entityUtility.setModified(parent, propertyValue);
         
-        parent.getComptypePropertyList().add(mergedPropertyValue);
+        parent.getComptypePropertyList().add(propertyValue);
         em.merge(parent);
     }
     
@@ -130,12 +129,12 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @Audit
     @Authorized
     public void addCompTypeArtifact(ComptypeArtifact artifact) {
-        final ComptypeArtifact mergedArtifact = em.merge(artifact);
-        final ComponentType parent = mergedArtifact.getComponentType();
+        final ComponentType parent = artifact.getComponentType();
 
-        entityUtility.setModified(parent, mergedArtifact);
+        entityUtility.setModified(parent, artifact);
         
-        parent.getComptypeArtifactList().add(mergedArtifact);        
+        parent.getComptypeArtifactList().add(artifact);        
+        em.merge(parent);
     }
     
     

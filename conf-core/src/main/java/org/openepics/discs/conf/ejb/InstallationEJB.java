@@ -53,7 +53,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @Authorized
     public void saveIRecord(InstallationRecord irec) {
         entityUtility.setModified(irec);
-        em.persist(irec);        
+        em.merge(irec);        
     }
 
     @CRUDOperation(operation=EntityTypeOperation.DELETE)
@@ -70,12 +70,12 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @Audit
     @Authorized
     public void addInstallationArtifact(InstallationArtifact artifact) {
-        final InstallationArtifact mergedArtifact = em.merge(artifact);
-        final InstallationRecord parent = mergedArtifact.getInstallationRecord();
+        final InstallationRecord parent = artifact.getInstallationRecord();
         
-        entityUtility.setModified(parent, mergedArtifact);
+        entityUtility.setModified(parent, artifact);
         
-        parent.getInstallationArtifactList().add(mergedArtifact);
+        parent.getInstallationArtifactList().add(artifact);
+        em.merge(parent);
     }
 
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
