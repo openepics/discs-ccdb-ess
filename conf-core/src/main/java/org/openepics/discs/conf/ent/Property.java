@@ -70,7 +70,7 @@ public class Property extends ConfigurationEntity {
     public Property(String name, String description, PropertyAssociation association) {
         this.name = name;
         this.description = description;
-        this.association = association;        
+        this.association = association;
     }
 
     public String getName() { return name; }

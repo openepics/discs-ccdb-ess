@@ -26,12 +26,14 @@ import org.openepics.discs.conf.dl.PropertiesLoaderQualifier;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.ejb.ConfigurationEJB;
+import org.openepics.discs.conf.ent.AuditRecord;
 import org.openepics.discs.conf.ent.DataType;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyAssociation;
 import org.openepics.discs.conf.ent.Unit;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
 import org.openepics.discs.conf.util.Utility;
+import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.SelectEvent;
 
@@ -70,6 +72,10 @@ public class PropertyManager implements Serializable {
     private DataType dataType;
     private Unit unit;
     private PropertyAssociation association;
+    private Property selectedProperty;
+    private boolean unitComboEnabled;
+    private List<AuditRecord> auditRecordsForEntity;
+
 
     /**
      * Creates a new instance of PropertyManager
@@ -81,6 +87,13 @@ public class PropertyManager implements Serializable {
     public void init() {
         try {
             objects = configurationEJB.findProperties();
+            selectedProperty = null;
+            name = null;
+            description = null;
+            dataType = null;
+            unit = null;
+            association = null;
+            unitComboEnabled = true;
             // objects.add(new Property());
         } catch (Exception e) {
             System.err.println(e.getMessage());
@@ -91,20 +104,25 @@ public class PropertyManager implements Serializable {
         inputObject = selectedObject;
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Selected", "");
     }
-/*
-    public void onAdd(ActionEvent event) {
-        selectedOp = 'a';
-        inTrans = true;
-        // TODO replaced void constructor (now protected) with default values. Check!
-        inputObject = new Property("", "", PropertyAssociation.ALL);
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Add", "");
-    }*/
 
     public void onAdd() {
         final Property propertyToAdd = new Property(name, description, association);
         propertyToAdd.setDataType(dataType);
         propertyToAdd.setUnit(unit);
         configurationEJB.addProperty(propertyToAdd);
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "New property has been created");
+        init();
+    }
+
+    public void onModify() {
+        selectedProperty.setName(name);
+        selectedProperty.setDescription(description);
+        selectedProperty.setDataType(dataType);
+        selectedProperty.setAssociation(association);
+        selectedProperty.setUnit(unit);
+        configurationEJB.saveProperty(selectedProperty);
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Property was modified");
+        init();
     }
 
     public void prepareAddPopup() {
@@ -113,6 +131,17 @@ public class PropertyManager implements Serializable {
         dataType = null;
         unit = null;
         association = null;
+        unitComboEnabled = true;
+        RequestContext.getCurrentInstance().update("addPropertyForm:addProperty");
+    }
+
+    public void prepareModifyPopup() {
+        name = selectedProperty.getName();
+        description = selectedProperty.getDescription();
+        dataType = selectedProperty.getDataType();
+        unit = selectedProperty.getUnit();
+        association = selectedProperty.getAssociation();
+        RequestContext.getCurrentInstance().update("modifyPropertyForm:modifyProperty");
     }
 
     public void onEdit(ActionEvent event) {
@@ -122,18 +151,10 @@ public class PropertyManager implements Serializable {
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Edit", "");
     }
 
-    public void onDelete(ActionEvent event) {
-        try {
-            configurationEJB.deleteProperty(selectedObject);
-            objects.remove(selectedObject);
-            selectedObject = null;
-            inputObject = null;
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted", "");
-        } catch (Exception e) {
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted", "");
-        } finally {
-
-        }
+    public void onDelete() {
+        configurationEJB.deleteProperty(selectedProperty);
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Property was deleted");
+        init();
     }
 
     public void onSave(ActionEvent event) {
@@ -237,7 +258,35 @@ public class PropertyManager implements Serializable {
     public PropertyAssociation getPropertyAssociation() { return association; }
     public void setPropertyAssociation(PropertyAssociation association) { this.association = association; }
 
+    public void dataTypeChanged() {
+        if (dataType.getName().equalsIgnoreCase("integer") || dataType.getName().equalsIgnoreCase("double")) {
+            unitComboEnabled = true;
+        } else {
+            unitComboEnabled = false;
+        }
+    }
+
+    public boolean isUnitComboEnabled() { return unitComboEnabled;}
+
+    public Property getSelectedProperty() { return selectedProperty; }
+    public void setSelectedProperty(Property selectedProperty) {
+        this.selectedProperty = selectedProperty;
+        auditRecordsForEntity = configurationEJB.findAuditRecordsByEntityId(selectedProperty.getId());
+        prepareModifyPopup();
+    }
+
+    public Property getTest() { return selectedProperty; }
+    public void setTest(Property selectedProperty) {
+        this.selectedProperty = selectedProperty;
+        auditRecordsForEntity = configurationEJB.findAuditRecordsByEntityId(selectedProperty.getId());
+
+    }
+
     public DataLoaderResult getLoaderResult() { return loaderResult; }
+
+    public List<AuditRecord> getAuditRecordsForEntity() {
+        return auditRecordsForEntity;
+    }
 
     public void handleImportFileUpload(FileUploadEvent event) {
         try (InputStream inputStream = event.getFile().getInputstream()) {

@@ -4,15 +4,17 @@
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:p="http://primefaces.org/ui">
 	<h:form id="propertiesForm">
-		<p:commandButton ajax="true" actionListener="#{propertyManager.prepareAddPopup()}"
-			value="Add new" oncomplete="addProperty.show()" />
+		<p:commandButton ajax="true"
+			actionListener="#{propertyManager.prepareAddPopup()}" value="Add new"
+			filteredValue="#{propertyManager.filteredObjects}"
+			oncomplete="addProperty.show()" />
 		<p:dataTable var="property" value="#{propertyManager.objects}"
 			rows="15" paginator="true" paginatorPosition="bottom">
-			<p:column headerText="Name">
+			<p:column headerText="Name" sortBy="#{property.name}" filterBy="#{property.name}">
 				<h:outputText value="#{property.name}" />
 			</p:column>
 
-			<p:column headerText="Description">
+			<p:column headerText="Description" filterBy="#{property.description}">
 				<h:outputText value="#{property.description}" />
 			</p:column>
 
@@ -20,69 +22,71 @@
 				<h:outputText value="#{property.unit.name}" />
 			</p:column>
 
-			<p:column headerText="Data Type">
+			<p:column headerText="Data Type" filterBy="#{property.dataType.name}">
 				<h:outputText value="#{property.dataType.name}" />
 			</p:column>
 			<p:column headerText="Action">
-				<p:commandButton icon="ui-icon-trash" title="Delete"
-					actionListener="#{propertyManager.onAdd()}" ajax="false" />
-				<p:commandButton icon="ui-icon-pencil" title="Edit"
-					actionListener="#{propertyManager.onAdd()}" ajax="false" />
-				<p:commandButton icon="ui-icon-clock" title="Log"
-					actionListener="#{propertyManager.onAdd()}" ajax="false" />
+				<p:commandButton icon="ui-icon-trash" title="Delete" ajax="true" oncomplete="deleteProperty.show()">
+                    <f:setPropertyActionListener value="#{property}" target="#{propertyManager.selectedProperty}" />
+                </p:commandButton>
+				<p:commandButton icon="ui-icon-pencil" title="Edit" ajax="true"	oncomplete="modifyProperty.show()">
+					<f:setPropertyActionListener value="#{property}" target="#{propertyManager.selectedProperty}" />
+				</p:commandButton>
+				<p:commandButton icon="ui-icon-clock" update="dataDefinitions:tabview:propertiesForm:propertyAuditLogTable" title="Log" oncomplete="PF('propertyAuditLog').show()">
+				    <f:setPropertyActionListener value="#{property}" target="#{propertyManager.test}" />
+				</p:commandButton>
 			</p:column>
 		</p:dataTable>
+		
+		<p:dialog widgetVar="deleteProperty" modal="true" resizable="false">
+            <f:facet name="header">
+                <h:outputText value="Delete Property" />
+            </f:facet>
+            <h:outputText value="Are you sure you want to delete this property?" />
+            <br/>
 
-		<p:dialog widgetVar="addProperty" modal="true" resizable="false"
-			width="25%">
-			<f:facet name="header">
-				<h:outputText value="Add Property" />
-			</f:facet>
-			<h:panelGrid id="grp" layout="block" columns="2">
-				<p:outputLabel for="propertyName" value="Name" />
-				<p:inputText id="propertyName" value="#{propertyManager.name}" />
-
-				<p:outputLabel for="propertyDesc" value="Description" />
-				<p:inputText id="propertyDesc" value="#{propertyManager.description}" />
-
-				<p:outputLabel for="propertyDataType" value="Data Type" />
-				<p:selectOneMenu id="propertyDataType"
-					value="#{propertyManager.dataType}" var="dt"
-					converter="#{dataTypeConverter}" rendered="true">
-					<f:selectItem itemLabel="Select One" itemValue="" />
-					<f:selectItems value="#{dataTypeManager.dataTypes}" var="dataType"
-						itemLabel="#{dataType.name}" itemValue="#{dataType}" />
-						<p:column>  
-                            #{dt.name}
-                        </p:column>            
-				</p:selectOneMenu>
-
-				<p:outputLabel for="propertyUnit" value="Unit" />
-                <p:selectOneMenu id="propertyUnit"
-                    value="#{propertyManager.unit}" var="u"
-                    converter="#{unitConverter}" rendered="true">
-                    <f:selectItem itemLabel="Select One" itemValue="" />
-                    <f:selectItems value="#{unitManager.units}" var="unit"
-                        itemLabel="#{unit.name}" itemValue="#{unit}" />
-                        <p:column>  
-                            #{u.name}
-                        </p:column>            
-                </p:selectOneMenu>
+            <p:commandButton value="No" style="float: right"
+                onclick="deleteProperty.hide();" />
+            <p:commandButton value="Yes" style="float: right"
+                oncomplete="deleteProperty.hide()" ajax="true"
+                action="#{propertyManager.onDelete}" update=":dataDefinitions" />
+        </p:dialog>
+        
+        <p:dialog widgetVar="propertyAuditLog" modal="true" resizable="false">
+             <p:dataTable var="auditRecord" id="propertyAuditLogTable" value="#{propertyManager.auditRecordsForEntity}">
+                <p:column headerText="Entity Name">
+                    <h:outputText value="#{auditRecord.entityKey}" />
+                </p:column>
                 
-                <p:outputLabel for="propertyAssociation" value="Association" />
-                <p:selectOneMenu id="propertyAssociation"
-                    value="#{propertyManager.propertyAssociation}" rendered="true">
-                    <f:selectItem itemLabel="Select One" itemValue="" />
-                    <f:selectItems value="#{propertyManager.propertyAssociations}" />            
-                </p:selectOneMenu>
-			</h:panelGrid>
-			
-			<p:commandButton value="Cancel" style="float: right"
-                    onclick="addProperty.hide();" />
-                <p:commandButton value="Import" style="float: right"
-                    update="@form" oncomplete="addProperty.hide()"
-                    action="#{propertyManager.onAdd()}" />
-		</p:dialog>
+                <p:column headerText="Action">
+                    <h:outputText value="#{auditRecord.oper}" />
+                </p:column>
 
+                <p:column headerText="User">
+                    <h:outputText value="#{auditRecord.user}" />
+                </p:column>
+                
+                <p:column headerText="Timestamp">
+                    <h:outputText value="#{auditRecord.logTime}">
+                        <f:convertDateTime pattern="#{msgs.dateFormat}"/>
+                    </h:outputText>
+                </p:column>
+                
+                <p:column headerText="Entity Type">
+                    <h:outputText value="#{auditRecord.entityType}" />
+                </p:column>
+                
+                <p:column headerText="Change">
+                    <h:outputText value="#{auditRecord.entry}" />
+                </p:column>
+            </p:dataTable>
+        </p:dialog>
+        
 	</h:form>
+	
+	
+
+	
+
+
 </ui:composition>

@@ -31,7 +31,7 @@ public class AuditManager implements Serializable {
     private static final Logger logger = Logger.getLogger(AuditManager.class.getCanonicalName());
 
     @EJB private ConfigurationEJB configurationEJB;
-    
+
     private List<AuditRecord> objects;
     private List<AuditRecord> filteredObjects;
 

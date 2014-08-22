@@ -1,0 +1,70 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html">
+
+	<h:form id="#{formId}">
+		<p:dialog widgetVar="#{widgetName}" id="#{widgetName}" modal="true" resizable="false"
+			width="25%">
+			<f:facet name="header">
+				<h:outputText value="#{dialogTitle}" />
+			</f:facet>
+			<h:panelGrid id="grp" style="text-align: left" columns="2">
+			
+				<p:outputLabel for="propertyName" value="Name:" />
+				<h:panelGroup>
+				    <p:inputText id="propertyName" value="#{propertyManager.name}" required="true" requiredMessage="Please enter a name"/>
+				    <p:message for="propertyName"/>
+                </h:panelGroup>
+                
+				<p:outputLabel for="propertyDesc" value="Description:" />
+				<h:panelGroup>
+					<p:inputTextarea id="propertyDesc" rows="5" cols="60" counter="icounter" maxlength="254" counterTemplate="{0} characters remaining." required="true" requiredMessage="Please enter a description" value="#{propertyManager.description}" />
+					<br/>
+	                <h:outputText id="icounter" />
+	                <p:message for="propertyDesc"/>
+                </h:panelGroup>
+
+				<p:outputLabel for="propertyDataType" value="Data Type:" />
+				<h:panelGroup>
+					<p:selectOneMenu id="propertyDataType" value="#{propertyManager.dataType}" var="dt"	converter="#{dataTypeConverter}" rendered="true" required="true" requiredMessage="Please select data type" >
+						<p:ajax update=":#{formId}:propertyUnit" listener="#{propertyManager.dataTypeChanged}"/>
+						<f:selectItem itemLabel="Select One" itemValue="" />
+						<f:selectItems value="#{dataTypeManager.dataTypes}" var="dataType" itemLabel="#{dataType.name}" itemValue="#{dataType}" />
+						<p:column>  
+	                        #{dt.name}
+	                    </p:column>                    
+					</p:selectOneMenu>
+					<p:message for="propertyDataType"/>
+				</h:panelGroup>
+
+				<p:outputLabel for="propertyUnit" value="Unit:" />
+				<h:panelGroup>
+					<p:selectOneMenu id="propertyUnit" value="#{propertyManager.unit}" var="u" converter="#{unitConverter}" rendered="true" disabled="#{!propertyManager.unitComboEnabled}">
+						<f:selectItem itemLabel="Select One" itemValue="" />
+						<f:selectItems value="#{unitManager.units}" var="unit" itemLabel="#{unit.name}" itemValue="#{unit}" />
+						<p:column>  
+	                        #{u.name}
+	                    </p:column>
+					</p:selectOneMenu>
+				</h:panelGroup>
+
+				<p:outputLabel for="propertyAssociation" value="Association:" />
+				<h:panelGroup>
+					<p:selectOneMenu id="propertyAssociation" value="#{propertyManager.propertyAssociation}" rendered="true" required="true" requiredMessage="Please select association">
+						<f:selectItem itemLabel="Select One" itemValue="" />
+						<f:selectItems value="#{propertyManager.propertyAssociations}" />
+					</p:selectOneMenu>
+					<p:message for="propertyAssociation"/>
+				</h:panelGroup>
+			</h:panelGrid>
+            
+			<p:commandButton value="Cancel" style="float: right" onclick="#{widgetName}.hide();" update="grp" resetValues="true" />
+			<p:commandButton value="Submit" style="float: right" update=":dataDefinitions grp" oncomplete="if (args &amp;&amp; !args.validationFailed) #{widgetName}.hide()" action="#{propertyManager[submitHandler]}"/>
+		</p:dialog>
+
+	</h:form>
+</ui:composition>

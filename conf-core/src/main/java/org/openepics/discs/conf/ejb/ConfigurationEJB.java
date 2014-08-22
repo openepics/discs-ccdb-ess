@@ -1,5 +1,6 @@
 package org.openepics.discs.conf.ejb;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -36,7 +37,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
 
     // -------------------- Property ---------------------
 
-    public List<Property> findProperties() {        
+    public List<Property> findProperties() {
         final CriteriaQuery<Property> cq = em.getCriteriaBuilder().createQuery(Property.class);
         final Root<Property> prop = cq.from(Property.class);
         cq.select(prop);
@@ -63,15 +64,15 @@ import org.openepics.discs.conf.util.CRUDOperation;
 
     @CRUDOperation(operation=EntityTypeOperation.CREATE)
     @Audit
-    @Authorized 
+    @Authorized
     public void addProperty(Property property) {
         entityUtility.setModified(property);
         em.persist(property);
     }
-    
+
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
-    @Authorized 
+    @Authorized
     public void saveProperty(Property property) {
         entityUtility.setModified(property);
         em.merge(property);
@@ -81,7 +82,9 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @Audit
     @Authorized
     public void deleteProperty(Property property) {
-        final Property mergedProp = em.merge(property);
+        final Property mergedProp = em.find(Property.class, property.getId());
+        //mergedProp.getUnit().getPropertyList().remove(mergedProp);
+        //mergedProp.getDataType().getPropertyList().remove(mergedProp);
         em.remove(mergedProp);
     }
 
@@ -91,7 +94,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
         final CriteriaQuery<Unit> cq = em.getCriteriaBuilder().createQuery(Unit.class);
         cq.from(Unit.class);
         final List<Unit> units = em.createQuery(cq).getResultList();
-        
+
         logger.log(Level.INFO, "Number of units: {0}", units.size());
 
         return units;
@@ -141,8 +144,8 @@ import org.openepics.discs.conf.util.CRUDOperation;
         final CriteriaQuery<DataType> cq = em.getCriteriaBuilder().createQuery(DataType.class);
         cq.from(DataType.class);
         final List<DataType> dataTypes = em.createQuery(cq).getResultList();
-        
-        
+
+
         logger.log(Level.INFO, "Number of data-types: {0}", dataTypes.size());
 
         return dataTypes;
@@ -168,7 +171,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
         final CriteriaQuery<SlotRelation> cq = em.getCriteriaBuilder().createQuery(SlotRelation.class);
         cq.from(SlotRelation.class);
         final List<SlotRelation> slotRelations = em.createQuery(cq).getResultList();
-                
+
         logger.log(Level.INFO, "Number of slot relations: {0}", slotRelations.size());
 
         return slotRelations;
@@ -184,11 +187,16 @@ import org.openepics.discs.conf.util.CRUDOperation;
         final CriteriaQuery<AuditRecord> cq = em.getCriteriaBuilder().createQuery(AuditRecord.class);
         cq.from(AuditRecord.class);
         final List<AuditRecord> auditRecords = em.createQuery(cq).getResultList();
-        
-        
+
+
         logger.log(Level.INFO, "Number of audit records: {0}", auditRecords.size());
 
         return auditRecords;
+    }
+
+    public List<AuditRecord> findAuditRecordsByEntityId(Long entityId) {
+        final List<AuditRecord> auditRecords = em.createNamedQuery("AuditRecord.findByEntityId", AuditRecord.class).setParameter("entityId", entityId).getResultList();
+        return auditRecords == null ? new ArrayList<AuditRecord>() : auditRecords;
     }
 
     public AuditRecord findDAuditRecord(int id) {
