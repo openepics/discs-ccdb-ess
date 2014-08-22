@@ -30,10 +30,10 @@
                     <f:setPropertyActionListener value="#{property}" target="#{propertyManager.selectedProperty}" />
                 </p:commandButton>
 				<p:commandButton icon="ui-icon-pencil" title="Edit" ajax="true"	oncomplete="modifyProperty.show()">
-					<f:setPropertyActionListener value="#{property}" target="#{propertyManager.selectedProperty}" />
+					<f:setPropertyActionListener value="#{property}" target="#{propertyManager.selectedPropertyToModify}" />
 				</p:commandButton>
 				<p:commandButton icon="ui-icon-clock" update="dataDefinitions:tabview:propertiesForm:propertyAuditLogTable" title="Log" oncomplete="PF('propertyAuditLog').show()">
-				    <f:setPropertyActionListener value="#{property}" target="#{propertyManager.test}" />
+				    <f:setPropertyActionListener value="#{property}" target="#{propertyManager.selectedPropertyForLog}" />
 				</p:commandButton>
 			</p:column>
 		</p:dataTable>

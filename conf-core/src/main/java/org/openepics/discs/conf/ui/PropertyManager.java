@@ -271,15 +271,18 @@ public class PropertyManager implements Serializable {
     public Property getSelectedProperty() { return selectedProperty; }
     public void setSelectedProperty(Property selectedProperty) {
         this.selectedProperty = selectedProperty;
-        auditRecordsForEntity = configurationEJB.findAuditRecordsByEntityId(selectedProperty.getId());
+    }
+
+    public Property getSelectedPropertyToModify() { return selectedProperty; }
+    public void setSelectedPropertyToModify(Property selectedProperty) {
+        this.selectedProperty = selectedProperty;
         prepareModifyPopup();
     }
 
-    public Property getTest() { return selectedProperty; }
-    public void setTest(Property selectedProperty) {
+    public Property getSelectedPropertyForLog() { return selectedProperty; }
+    public void setSelectedPropertyForLog(Property selectedProperty) {
         this.selectedProperty = selectedProperty;
         auditRecordsForEntity = configurationEJB.findAuditRecordsByEntityId(selectedProperty.getId());
-
     }
 
     public DataLoaderResult getLoaderResult() { return loaderResult; }
