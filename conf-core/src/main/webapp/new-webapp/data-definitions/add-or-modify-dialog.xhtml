@@ -8,11 +8,11 @@
 
 	<h:form id="#{formId}">
 		<p:dialog widgetVar="#{widgetName}" id="#{widgetName}" modal="true" resizable="false" closable="false"
-			width="25%">
+			width="45em">
 			<f:facet name="header">
 				<h:outputText value="#{dialogTitle}" />
 			</f:facet>
-			<h:panelGrid id="grp" style="text-align: left" columns="2">
+			<h:panelGrid id="grp" style="text-align: left" columns="2" width="100%">
 			
 				<p:outputLabel for="propertyName" value="Name:" />
 				<h:panelGroup>
@@ -21,8 +21,8 @@
                 </h:panelGroup>
                 
 				<p:outputLabel for="propertyDesc" value="Description:" />
-				<h:panelGroup>
-					<p:inputTextarea id="propertyDesc" rows="5" cols="60" counter="icounter" maxlength="254" counterTemplate="{0} characters remaining." required="true" requiredMessage="Please enter a description" value="#{propertyManager.description}" />
+				<h:panelGroup style="width: 100%">
+					<p:inputTextarea id="propertyDesc" rows="5" style="width: 100%" counter="icounter" maxlength="254" counterTemplate="{0} characters remaining." required="true" requiredMessage="Please enter a description" value="#{propertyManager.description}" />
 					<br/>
 	                <h:outputText id="icounter" />
 	                <p:message for="propertyDesc"/>
