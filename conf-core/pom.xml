@@ -302,8 +302,8 @@
             </activation>
             <dependencies>
                 <dependency>
-                    <groupId>se.lu.esss.ics.rbac.loginmodules</groupId>
-                	<artifactId>wildfly81</artifactId>
+                    <groupId>se.lu.esss.ics.rbac</groupId>
+                	<artifactId>loginmodules</artifactId>
                 	<version>1.0.0</version>                
                 </dependency>
             </dependencies>

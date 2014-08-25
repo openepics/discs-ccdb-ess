@@ -29,7 +29,7 @@ import javax.inject.Named;
 import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
 
-import se.lu.esss.ics.rbac.loginmodules.common.RBACPrincipal;
+import se.lu.esss.ics.rbac.loginmodules.RBACPrincipal;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
