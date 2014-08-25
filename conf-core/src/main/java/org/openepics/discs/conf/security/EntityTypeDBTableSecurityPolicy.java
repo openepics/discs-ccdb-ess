@@ -13,18 +13,14 @@ import java.io.Serializable;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.Alternative;
-import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.servlet.http.HttpServletRequest;
 
 import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
@@ -34,125 +30,31 @@ import com.google.common.base.Preconditions;
 
 
 /**
- * Implementation of simple security policy (checking for entity-type access only) using the DB {@link Privilege} table
+ * Implementation of simple security policy (checking for entity-type access only) using the DB {@link Privilege} table 
  * and the Java EE security module, as was in Configuration Module v. 1.0.
- *
- * Stateful EJB, caches all permissions from database on first access.
- *
+ * 
+ * Stateful EJB, caches all permissions from database on first access. 
+ * 
  * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
  *
  */
 @SessionScoped
 @Named("securityPolicy")
 @Alternative
-public class EntityTypeDBTableSecurityPolicy implements SecurityPolicy, Serializable {
+public class EntityTypeDBTableSecurityPolicy extends AbstractEnityTypeSecurityPolicy implements SecurityPolicy, Serializable {
     private static final Logger logger = Logger.getLogger(EntityTypeDBTableSecurityPolicy.class.getCanonicalName());
-
+    
     @PersistenceContext private EntityManager em;
-    @Inject private HttpServletRequest servletRequest;
-
-    /**
-     * Contains cached permissions
-     */
-    private Map<EntityType, Set<EntityTypeOperation> > cachedPermissions;
 
     public EntityTypeDBTableSecurityPolicy() {
-        logger.log(Level.INFO, "Creating " + this.getClass().getCanonicalName());
+        super();
     }
-
+ 
     @Override
-    public void login(String userName, String password) {
-        try {
-            if (servletRequest.getUserPrincipal() == null) {
-                servletRequest.login(userName, password);
-                logger.log(Level.INFO, "Login successful for " + userName);
-            }
-        } catch (Exception e) {
-            throw new SecurityException("Login Failed !", e);
-        }
-    }
-
-    @Override
-    public void logout() {
-        try {
-            servletRequest.logout();
-            servletRequest.getSession().invalidate();
-        } catch (Exception e) {
-            throw new SecurityException("Error while logging out!", e);
-        }
-    }
-
-    @Override
-    public String getUserId() {
-        return servletRequest.getUserPrincipal()!=null ? servletRequest.getUserPrincipal().getName() : null;
-    }
-
-    @Override
-    public void checkAuth(Object entity, EntityTypeOperation operationType) {
-        final EntityType entityType = EntityTypeResolver.resolveEntityType(entity);
-
-        if (!hasPermission(entityType , operationType)) {
-            throw SecurityException.generateExceptionMessage(entity, entityType, operationType);
-        }
-    }
-
-
-    @Override
-    public boolean getUIHint(String param) {
-        return hasAnyModifyPermission( EntityType.valueOf(param) );
-    }
-
-
-    /**
-     * Will allow UI element to be shown for given entity type
-     *
-     * @param entityType
-     * @return
-     */
-    private boolean hasAnyModifyPermission(EntityType entityType) {
-        return hasPermission(entityType, EntityTypeOperation.CREATE) ||
-                hasPermission(entityType, EntityTypeOperation.DELETE) ||
-                hasPermission(entityType, EntityTypeOperation.UPDATE) ||
-                hasPermission(entityType, EntityTypeOperation.RENAME);
-    }
-
-
-    /**
-     * Checks if the user has access to the given entityType using operation operationType
-     *
-     * @param entityType
-     * @param operationType
-     * @return true if permission exists
-     */
-    private boolean hasPermission(EntityType entityType, EntityTypeOperation operationType) {
-
-        final String principal = getUserId();
-
-        // Handle the non-logged case
-        if (principal == null) {
-            return false;
-        }
-
-        if (cachedPermissions == null)
-            populateCachedPermissions();
-
-        final Set<EntityTypeOperation> entityTypeOperations = cachedPermissions.get(entityType);
-
-        if (entityTypeOperations == null) {
-            return false;
-        } else {
-            return entityTypeOperations.contains(operationType);
-        }
-    }
-
-
-    /**
-     * Populates the map of cached privileges from the database
-     */
-    private void populateCachedPermissions() {
-        Preconditions.checkArgument(cachedPermissions==null,
+    protected void populateCachedPermissions() {
+        Preconditions.checkArgument(cachedPermissions==null, 
                 "EntityTypeDBTableSecurityPolicy.populateCachedPermissions called when cached data was already available");
-
+        
         cachedPermissions = new EnumMap<EntityType, Set<EntityTypeOperation>>(EntityType.class);
 
         final String principal = getUserId();
@@ -169,14 +71,14 @@ public class EntityTypeDBTableSecurityPolicy implements SecurityPolicy, Serializ
 
         for (Privilege p : privs) {
             final EntityType entityType = p.getResource();
-
+            
             Set<EntityTypeOperation> operationTypeSet = cachedPermissions.get(entityType);
             if (operationTypeSet == null) {
                 operationTypeSet = EnumSet.noneOf(EntityTypeOperation.class);
                 cachedPermissions.put(entityType, operationTypeSet);
             }
-
-            operationTypeSet.add(p.getOper());
-        }
+            
+            operationTypeSet.add(p.getOper());            
+        }   
     }
 }
