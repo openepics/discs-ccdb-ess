@@ -9,7 +9,6 @@
  */
 package org.openepics.discs.conf.auditlog;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +17,6 @@ import java.util.TreeMap;
 import org.openepics.discs.conf.ent.AuditRecord;
 import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
-import org.openepics.discs.conf.ent.InstallationRecord;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotArtifact;
 import org.openepics.discs.conf.ent.SlotPair;
@@ -69,13 +67,6 @@ public class SlotEntityLogger implements EntityLogger {
             }
         }
 
-        final List<String> installationRecordsList = new ArrayList<>();
-        if (slot.getInstallationRecordList() != null) {
-            for (InstallationRecord installationRecord : slot.getInstallationRecordList()) {
-                installationRecordsList.add(installationRecord.getDevice().getSerialNumber());
-            }
-        }
-
         return ImmutableList.of((new AuditLogUtil(slot).
                 removeTopProperties(Arrays.asList("id", "modifiedAt", "modifiedBy", "version", "name", "componentType")).
                 addStringProperty("componentType", slot.getComponentType().getName()).
@@ -83,7 +74,6 @@ public class SlotEntityLogger implements EntityLogger {
                 addArrayOfMappedProperties("slotArtifactList", artifactsMap).
                 addArrayOfMappedProperties("childrenSlots", childrenMap).
                 addArrayOfMappedProperties("parentSlots", parentsMap).
-                addArrayOfProperties("installationRecordList", installationRecordsList).
                 auditEntry(operation, EntityType.SLOT, slot.getName(), slot.getId())));
     }
 

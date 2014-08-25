@@ -60,7 +60,6 @@ public class SlotEntityLoggerTest {
         slot.getChildrenSlotsPairList().add(new SlotPair(new Slot("childSlot", false), slot, contains));
         slot.getParentSlotsPairList().add(new SlotPair(slot, new Slot("parentSlot", false), contains));
         installRecord.setDevice(new Device("installRecordDevice"));
-        slot.getInstallationRecordList().add(installRecord);
         slot.setComponentType(new ComponentType("slotCompType"));
     }
 
@@ -71,7 +70,7 @@ public class SlotEntityLoggerTest {
 
     @Test
     public void testSerializeEntity() {
-        final String RESULT = "{\"isHostingSlot\":true,\"positionInformation\":{},\"componentType\":\"slotCompType\",\"slotPropertyList\":[{\"APERTURE\":\"20\"},{\"DETER\":\"10\"}],\"slotArtifactList\":[{\"CAT Image\":\"/var/usr/images/CAT\"},{\"Manual\":\"www.deteriorator.com/user-manual\"}],\"childrenSlots\":[{\"childSlot\":\"CONTAINS\"}],\"parentSlots\":[{\"parentSlot\":\"CONTAINS\"}],\"installationRecordList\":[\"installRecordDevice\"]}";
+        final String RESULT = "{\"isHostingSlot\":true,\"positionInformation\":{},\"componentType\":\"slotCompType\",\"slotPropertyList\":[{\"APERTURE\":\"20\"},{\"DETER\":\"10\"}],\"slotArtifactList\":[{\"CAT Image\":\"/var/usr/images/CAT\"},{\"Manual\":\"www.deteriorator.com/user-manual\"}],\"childrenSlots\":[{\"childSlot\":\"CONTAINS\"}],\"parentSlots\":[{\"parentSlot\":\"CONTAINS\"}]}";
         
         assertEquals(RESULT, sel.auditEntries(slot, EntityTypeOperation.CREATE).get(0).getEntry());
     }

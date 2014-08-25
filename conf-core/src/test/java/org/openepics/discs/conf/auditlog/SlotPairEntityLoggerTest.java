@@ -52,9 +52,9 @@ public class SlotPairEntityLoggerTest {
     @Test
     public void testSerializeEntity() {
         final List<AuditRecord> auditRecords = spel.auditEntries(slotPair, EntityTypeOperation.CREATE);
-        
-        final String RESULT_1 = "{\"isHostingSlot\":false,\"positionInformation\":{},\"componentType\":null,\"slotPropertyList\":[],\"slotArtifactList\":[],\"childrenSlots\":[],\"parentSlots\":[{\"parentSlot\":\"CONTAINS\"}],\"installationRecordList\":[]}";
-        final String RESULT_2 = "{\"isHostingSlot\":false,\"positionInformation\":{},\"componentType\":null,\"slotPropertyList\":[],\"slotArtifactList\":[],\"childrenSlots\":[{\"childSlot\":\"CONTAINS\"}],\"parentSlots\":[],\"installationRecordList\":[]}";
+  
+        final String RESULT_1 = "{\"isHostingSlot\":false,\"positionInformation\":{},\"componentType\":null,\"slotPropertyList\":[],\"slotArtifactList\":[],\"childrenSlots\":[],\"parentSlots\":[{\"parentSlot\":\"CONTAINS\"}]}";
+        final String RESULT_2 = "{\"isHostingSlot\":false,\"positionInformation\":{},\"componentType\":null,\"slotPropertyList\":[],\"slotArtifactList\":[],\"childrenSlots\":[{\"childSlot\":\"CONTAINS\"}],\"parentSlots\":[]}";
         
         assertEquals(RESULT_1, auditRecords.get(0).getEntry());
         assertEquals(RESULT_2, auditRecords.get(1).getEntry());        

@@ -67,9 +67,6 @@ public class ComponentType extends ConfigurationEntity {
     private ComponentType superComponentType;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentType")
-    private List<Device> deviceList;
-
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentType")
     private List<ComptypeArtifact> comptypeArtifactList;
 
     @ManyToMany
@@ -118,10 +115,6 @@ public class ComponentType extends ConfigurationEntity {
 
     public ComponentType getSuperComponentType() { return superComponentType; }
     public void setSuperComponentType(ComponentType superComponentType) { this.superComponentType = superComponentType; }
-
-    @XmlTransient
-    @JsonIgnore
-    public List<Device> getDeviceList() { return deviceList; }
 
     @XmlTransient
     @JsonIgnore
