@@ -22,22 +22,22 @@ import org.openepics.discs.conf.util.CRUDOperation;
  *
  * @author vuppala
  * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
- * 
+ *
  */
 @Stateless public class AlignmentEJB {
-    private static final Logger logger = Logger.getLogger(AlignmentEJB.class.getCanonicalName());   
+    private static final Logger logger = Logger.getLogger(AlignmentEJB.class.getCanonicalName());
     @PersistenceContext private EntityManager em;
     @Inject private ConfigurationEntityUtility entityUtility;
-    
+
     // ---------------- Alignment Record -------------------------
-    
+
     public List<AlignmentRecord> findAlignmentRec() {
         final CriteriaQuery<AlignmentRecord> cq =  em.getCriteriaBuilder().
                 createQuery(AlignmentRecord.class);
         cq.from(AlignmentRecord.class);
-                
+
         final List<AlignmentRecord> records = em.createQuery(cq).getResultList();
-        logger.log(Level.INFO, "Number of alignment records: {0}", records.size());
+        logger.log(Level.FINE, "Number of alignment records: {0}", records.size());
 
         return records;
     }
@@ -52,8 +52,8 @@ import org.openepics.discs.conf.util.CRUDOperation;
     public void addAlignment(AlignmentRecord record) {
         entityUtility.setModified(record);
         em.persist(record);
-    }    
-        
+    }
+
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
     @Authorized
@@ -61,7 +61,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
         entityUtility.setModified(record);
         em.merge(record);
     }
-    
+
     @CRUDOperation(operation=EntityTypeOperation.DELETE)
     @Audit
     @Authorized
@@ -69,22 +69,22 @@ import org.openepics.discs.conf.util.CRUDOperation;
         final AlignmentRecord mergedRecord = em.merge(record);
         em.remove(mergedRecord);
     }
-    
-    
+
+
     // ------------------ Alignment Property ---------------
-    
+
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
     @Authorized
     public void addAlignmentProp(AlignmentPropertyValue propertyValue) {
         final AlignmentRecord parent = propertyValue.getAlignmentRecord();
-        
+
         entityUtility.setModified(parent, propertyValue);
 
         parent.getAlignmentPropertyList().add(propertyValue);
         em.merge(parent);
-    }        
-    
+    }
+
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
     @Authorized
@@ -92,7 +92,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
         final AlignmentPropertyValue mergedPropValue = em.merge(prop);
 
         entityUtility.setModified(mergedPropValue.getAlignmentRecord(), mergedPropValue);
-        
+
         logger.log(Level.INFO, "Alignment Record Property: id " + mergedPropValue.getId() + " name " + mergedPropValue.getProperty().getName());
     }
 
@@ -101,13 +101,13 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @Authorized
     public void deleteAlignmentProp(AlignmentPropertyValue prop) {
         logger.log(Level.INFO, "deleting alignment type property id " + prop.getId() + " name " + prop.getProperty().getName());
-                
+
         final AlignmentPropertyValue mergedProperty = em.merge(prop);
         final AlignmentRecord parent = prop.getAlignmentRecord();
-        
+
         entityUtility.setModified(parent);
-        
-        parent.getAlignmentPropertyList().remove(mergedProperty);        
+
+        parent.getAlignmentPropertyList().remove(mergedProperty);
         em.remove(mergedProperty);
     }
 
@@ -119,19 +119,19 @@ import org.openepics.discs.conf.util.CRUDOperation;
         final AlignmentRecord parent = artifact.getAlignmentRecord();
 
         entityUtility.setModified(parent, artifact);
-        
+
         parent.getAlignmentArtifactList().add(artifact);
         em.merge(parent);
     }
-    
+
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
     @Authorized
     public void saveAlignmentArtifact(AlignmentArtifact artifact) {
         final AlignmentArtifact mergedArtifact = em.merge(artifact);
-        
+
         entityUtility.setModified(mergedArtifact.getAlignmentRecord(), mergedArtifact);
-        
+
         logger.log(Level.INFO, "Artifact: name " + mergedArtifact.getName() + " description " + mergedArtifact.getDescription() + " uri " + mergedArtifact.getUri() + "is int " + mergedArtifact.isInternal());
     }
 
@@ -141,9 +141,9 @@ import org.openepics.discs.conf.util.CRUDOperation;
     public void deleteAlignmentArtifact(AlignmentArtifact artifact) {
         final AlignmentArtifact mergedArtifact = em.merge(artifact);
         final AlignmentRecord parent = mergedArtifact.getAlignmentRecord();
-        
+
         entityUtility.setModified(parent);
-        
+
         parent.getAlignmentArtifactList().remove(mergedArtifact);
         em.remove(mergedArtifact);
     }

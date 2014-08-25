@@ -6,7 +6,6 @@
 
 package org.openepics.discs.conf.ui;
 
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.ejb.EJB;
@@ -38,7 +37,7 @@ public class PropertyConverter implements Converter {
         Property prop;
 
         if (value == null || value.equals("")) {
-            logger.log(Level.INFO, "PropertyConverter: empty property id");
+            logger.fine("PropertyConverter: empty property id");
             return null;
         } else {
             prop = configurationEJB.findProperty(Long.parseLong(value));
@@ -49,7 +48,7 @@ public class PropertyConverter implements Converter {
     @Override
     public String getAsString(FacesContext context, UIComponent component, Object value) {
         if (value == null || value.equals("")) {
-            logger.log(Level.INFO, "PropertyConverter: empty property object");
+            logger.fine("PropertyConverter: empty property object");
             return "";
         } else {
             // logger.log(Level.INFO, "Exp number: " + ((Experiment) value).getId().toString());

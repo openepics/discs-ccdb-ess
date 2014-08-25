@@ -6,7 +6,6 @@
 
 package org.openepics.discs.conf.ui;
 
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.ejb.EJB;
@@ -41,7 +40,7 @@ public class DataTypeConverter implements Converter {
         DataType dtype;
 
         if (value == null || value.equals("")) {
-            logger.log(Level.INFO, "exp converter: empty experiemnt id");
+            logger.fine("exp converter: empty experiemnt id");
             return null;
         } else {
             dtype = configurationEJB.findDataType(Long.valueOf(value));
@@ -52,7 +51,7 @@ public class DataTypeConverter implements Converter {
     @Override
     public String getAsString(FacesContext context, UIComponent component, Object value) {
         if (value == null || value.equals("")) {
-            logger.log(Level.INFO, "Null object");
+            logger.fine("Null object");
             return "";
         } else {
             // logger.log(Level.INFO, "Exp number: " + ((Experiment) value).getId().toString());
