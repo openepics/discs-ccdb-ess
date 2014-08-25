@@ -1,3 +1,14 @@
+/**
+ * Copyright (c) 2014 European Spallation Source
+ * Copyright (c) 2014 Cosylab d.d.
+ * Copyright (c) 2041 FRIB
+ *
+ * This file is part of Controls Configuration Database.
+ * Controls Configuration Database is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 2 of the License, or any newer version.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
+ */
+
 package org.openepics.discs.conf.ejb;
 
 import java.util.ArrayList;
@@ -27,6 +38,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
  *
  * @author vuppala
  * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
+ * @author Andraz Pozar <andraz.pozar@cosylab.com>
  */
 
 @Stateless public class ConfigurationEJB {
@@ -140,7 +152,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
 
     // ---------------- Data Types -------------------------
 
-    public List<DataType> findDataType() {
+    public List<DataType> findDataTypes() {
         final CriteriaQuery<DataType> cq = em.getCriteriaBuilder().createQuery(DataType.class);
         cq.from(DataType.class);
         final List<DataType> dataTypes = em.createQuery(cq).getResultList();
@@ -167,7 +179,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
 
     // ---------------- Slot Relations -------------------------
 
-    public List<SlotRelation> findSlotRelation() {
+    public List<SlotRelation> findSlotRelations() {
         final CriteriaQuery<SlotRelation> cq = em.getCriteriaBuilder().createQuery(SlotRelation.class);
         cq.from(SlotRelation.class);
         final List<SlotRelation> slotRelations = em.createQuery(cq).getResultList();
@@ -183,7 +195,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
 
     // ---------------- Audit Records -------------------------
 
-    public List<AuditRecord> findAuditRecord() {
+    public List<AuditRecord> findAuditRecords() {
         final CriteriaQuery<AuditRecord> cq = em.getCriteriaBuilder().createQuery(AuditRecord.class);
         cq.from(AuditRecord.class);
         final List<AuditRecord> auditRecords = em.createQuery(cq).getResultList();

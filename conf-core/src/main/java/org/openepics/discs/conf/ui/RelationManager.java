@@ -42,7 +42,7 @@ public class RelationManager implements Serializable {
     @PostConstruct
     public void init() {
         try {
-            objects = configurationEJB.findSlotRelation();
+            objects = configurationEJB.findSlotRelations();
         } catch (Exception e) {
             System.err.println(e.getMessage());
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Error in getting slot relationships", " ");

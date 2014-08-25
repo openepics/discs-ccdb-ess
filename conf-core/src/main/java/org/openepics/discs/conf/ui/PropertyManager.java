@@ -1,9 +1,13 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Copyright (c) 2014 European Spallation Source
+ * Copyright (c) 2014 Cosylab d.d.
+ * Copyright (c) 2041 FRIB
+ *
+ * This file is part of Controls Configuration Database.
+ * Controls Configuration Database is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 2 of the License, or any newer version.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-
 package org.openepics.discs.conf.ui;
 
 import java.io.ByteArrayInputStream;
@@ -12,11 +16,9 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
-import javax.faces.event.ActionEvent;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -35,7 +37,6 @@ import org.openepics.discs.conf.ui.common.DataLoaderHandler;
 import org.openepics.discs.conf.util.Utility;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
-import org.primefaces.event.SelectEvent;
 
 import com.google.common.io.ByteStreams;
 
@@ -43,6 +44,7 @@ import com.google.common.io.ByteStreams;
  *
  * @author vuppala
  * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
+ * @author Andraz Pozar <andraz.pozar@cosylab.com>
  *
  */
 @Named
@@ -52,20 +54,14 @@ public class PropertyManager implements Serializable {
 
     @Inject private DataLoaderHandler dataLoaderHandler;
     @Inject @PropertiesLoaderQualifier private DataLoader propertiesDataLoader;
-    private static final Logger logger = Logger.getLogger(PropertyManager.class.getCanonicalName());
 
-    private List<Property> objects;
-    private List<Property> sortedObjects;
-    private List<Property> filteredObjects;
-    private Property selectedObject;
-    private Property inputObject;
+    private List<Property> properties;
+    private List<Property> sortedProperties;
+    private List<Property> filteredProperties;
 
     private byte[] importData;
     private String importFileName;
     private DataLoaderResult loaderResult;
-
-    private boolean inTrans = false; // in the middle of an operations
-    private char selectedOp = 'n'; // selected operation: [a]dd, [e]dit, [d]elete, [n]one
 
     private String name;
     private String description;
@@ -85,24 +81,9 @@ public class PropertyManager implements Serializable {
 
     @PostConstruct
     public void init() {
-        try {
-            objects = configurationEJB.findProperties();
-            selectedProperty = null;
-            name = null;
-            description = null;
-            dataType = null;
-            unit = null;
-            association = null;
-            unitComboEnabled = true;
-            // objects.add(new Property());
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-        }
-    }
-
-    public void onRowSelect(SelectEvent event) {
-        inputObject = selectedObject;
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Selected", "");
+        properties = configurationEJB.findProperties();
+        selectedProperty = null;
+        resetFields();
     }
 
     public void onAdd() {
@@ -126,12 +107,7 @@ public class PropertyManager implements Serializable {
     }
 
     public void prepareAddPopup() {
-        name = null;
-        description = null;
-        dataType = null;
-        unit = null;
-        association = null;
-        unitComboEnabled = true;
+        resetFields();
         RequestContext.getCurrentInstance().update("addPropertyForm:addProperty");
     }
 
@@ -141,14 +117,8 @@ public class PropertyManager implements Serializable {
         dataType = selectedProperty.getDataType();
         unit = selectedProperty.getUnit();
         association = selectedProperty.getAssociation();
+        setIsUnitComboEnabled();
         RequestContext.getCurrentInstance().update("modifyPropertyForm:modifyProperty");
-    }
-
-    public void onEdit(ActionEvent event) {
-        selectedOp = 'e';
-        inTrans = true;
-        inputObject = selectedObject;
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Edit", "");
     }
 
     public void onDelete() {
@@ -157,74 +127,24 @@ public class PropertyManager implements Serializable {
         init();
     }
 
-    public void onSave(ActionEvent event) {
-        try {
-            inputObject.setAssociation(PropertyAssociation.TYPE);
-            inputObject.setModifiedBy("test-user");
-
-            if (selectedOp == 'a') {
-                configurationEJB.addProperty(inputObject);
-                selectedObject = inputObject;
-                objects.add(selectedObject);
-            } else if (selectedOp == 'e') {
-                configurationEJB.saveProperty(inputObject);
-            }
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Saved", "");
-        } catch (Exception e) {
-            logger.severe(e.getMessage());
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Error", "");
-        } finally {
-            inTrans = false;
-            selectedOp = 'n';
-        }
+    public List<Property> getSortedProperties() {
+        return sortedProperties;
     }
 
-    public void onCancel(ActionEvent event) {
-        selectedOp = 'n';
-        inputObject = selectedObject;
-        inTrans = false;
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Cancelled", "");
+    public void setSortedOProperties(List<Property> sortedObjects) {
+        this.sortedProperties = sortedObjects;
     }
 
-    // ---------------------------------
-    public List<Property> getSortedObjects() {
-        return sortedObjects;
+    public List<Property> getFilteredProperties() {
+        return filteredProperties;
     }
 
-    public void setSortedObjects(List<Property> sortedObjects) {
-        this.sortedObjects = sortedObjects;
-    }
-
-    public List<Property> getFilteredObjects() {
-        return filteredObjects;
-    }
-
-    public void setFilteredObjects(List<Property> filteredObjects) {
-        this.filteredObjects = filteredObjects;
-    }
-
-    public Property getSelectedObject() {
-        return selectedObject;
-    }
-
-    public void setSelectedObject(Property selectedObject) {
-        this.selectedObject = selectedObject;
-    }
-
-    public Property getInputObject() {
-        return inputObject;
-    }
-
-    public void setInputObject(Property inputObject) {
-        this.inputObject = inputObject;
+    public void setFilteredProperties(List<Property> filteredObjects) {
+        this.filteredProperties = filteredObjects;
     }
 
     public List<Property> getObjects() {
-        return objects;
-    }
-
-    public boolean isInTrans() {
-        return inTrans;
+        return properties;
     }
 
     public String getImportFileName() { return importFileName; }
@@ -258,8 +178,8 @@ public class PropertyManager implements Serializable {
     public PropertyAssociation getPropertyAssociation() { return association; }
     public void setPropertyAssociation(PropertyAssociation association) { this.association = association; }
 
-    public void dataTypeChanged() {
-        if (dataType.getName().equalsIgnoreCase("integer") || dataType.getName().equalsIgnoreCase("double")) {
+    public void setIsUnitComboEnabled() {
+        if (dataType.getName().equalsIgnoreCase("integer") || dataType.getName().equalsIgnoreCase("double") || dataType.getName().equalsIgnoreCase("integers vector") || dataType.getName().equalsIgnoreCase("doubles vector" ) || dataType.getName().equalsIgnoreCase("doubles table")) {
             unitComboEnabled = true;
         } else {
             unitComboEnabled = false;
@@ -299,5 +219,14 @@ public class PropertyManager implements Serializable {
         } catch (IOException e) {
             throw new RuntimeException();
         }
+    }
+
+    private void resetFields() {
+        name = null;
+        description = null;
+        dataType = null;
+        unit = null;
+        association = null;
+        unitComboEnabled = true;
     }
 }

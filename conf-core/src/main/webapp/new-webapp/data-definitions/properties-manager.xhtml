@@ -6,7 +6,7 @@
 	<h:form id="propertiesForm">
 		<p:commandButton ajax="true"
 			actionListener="#{propertyManager.prepareAddPopup()}" value="Add new"
-			filteredValue="#{propertyManager.filteredObjects}"
+			filteredValue="#{propertyManager.filteredProperties}"
 			oncomplete="addProperty.show()" />
 		<p:dataTable var="property" value="#{propertyManager.objects}"
 			rows="15" paginator="true" paginatorPosition="bottom">
@@ -38,7 +38,7 @@
 			</p:column>
 		</p:dataTable>
 		
-		<p:dialog widgetVar="deleteProperty" modal="true" resizable="false">
+		<p:dialog widgetVar="deleteProperty" modal="true" resizable="false" closable="false">
             <f:facet name="header">
                 <h:outputText value="Delete Property" />
             </f:facet>

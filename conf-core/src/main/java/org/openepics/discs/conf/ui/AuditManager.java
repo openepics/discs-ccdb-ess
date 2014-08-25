@@ -44,7 +44,7 @@ public class AuditManager implements Serializable {
     @PostConstruct
     public void init() {
         try {
-            objects = configurationEJB.findAuditRecord();
+            objects = configurationEJB.findAuditRecords();
         } catch (Exception e) {
             System.err.println(e.getMessage());
             logger.log(Level.SEVERE, "Cannot retrieve audit records");

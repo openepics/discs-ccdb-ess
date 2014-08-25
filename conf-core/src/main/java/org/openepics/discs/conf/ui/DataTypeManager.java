@@ -43,7 +43,7 @@ public class DataTypeManager implements Serializable {
     @PostConstruct
     public void init() {
         try {
-            dataTypes = configurationEJB.findDataType();
+            dataTypes = configurationEJB.findDataTypes();
         } catch (Exception e) {
             System.err.println(e.getMessage());
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Error in getting data types", " ");

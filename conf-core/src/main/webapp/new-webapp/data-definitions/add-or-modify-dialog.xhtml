@@ -7,7 +7,7 @@
 	xmlns:h="http://java.sun.com/jsf/html">
 
 	<h:form id="#{formId}">
-		<p:dialog widgetVar="#{widgetName}" id="#{widgetName}" modal="true" resizable="false"
+		<p:dialog widgetVar="#{widgetName}" id="#{widgetName}" modal="true" resizable="false" closable="false"
 			width="25%">
 			<f:facet name="header">
 				<h:outputText value="#{dialogTitle}" />
@@ -31,7 +31,7 @@
 				<p:outputLabel for="propertyDataType" value="Data Type:" />
 				<h:panelGroup>
 					<p:selectOneMenu id="propertyDataType" value="#{propertyManager.dataType}" var="dt"	converter="#{dataTypeConverter}" rendered="true" required="true" requiredMessage="Please select data type" >
-						<p:ajax update=":#{formId}:propertyUnit" listener="#{propertyManager.dataTypeChanged}"/>
+						<p:ajax update=":#{formId}:propertyUnit" listener="#{propertyManager.setIsUnitComboEnabled}"/>
 						<f:selectItem itemLabel="Select One" itemValue="" />
 						<f:selectItems value="#{dataTypeManager.dataTypes}" var="dataType" itemLabel="#{dataType.name}" itemValue="#{dataType}" />
 						<p:column>  
