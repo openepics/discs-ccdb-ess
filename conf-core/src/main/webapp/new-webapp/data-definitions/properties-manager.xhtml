@@ -32,7 +32,7 @@
 				<p:commandButton icon="ui-icon-pencil" title="Edit" ajax="true"	oncomplete="modifyProperty.show()">
 					<f:setPropertyActionListener value="#{property}" target="#{propertyManager.selectedPropertyToModify}" />
 				</p:commandButton>
-				<p:commandButton icon="ui-icon-clock" update="dataDefinitions:tabview:propertiesForm:propertyAuditLogTable" title="Log" oncomplete="PF('propertyAuditLog').show()">
+				<p:commandButton icon="ui-icon-clock" title="Log" ajax="true" oncomplete="PF('propertyLog').show()">
 				    <f:setPropertyActionListener value="#{property}" target="#{propertyManager.selectedPropertyForLog}" />
 				</p:commandButton>
 			</p:column>
@@ -51,37 +51,6 @@
                 oncomplete="deleteProperty.hide()" ajax="true"
                 action="#{propertyManager.onDelete}" update=":dataDefinitions" />
         </p:dialog>
-        
-        <p:dialog widgetVar="propertyAuditLog" modal="true" resizable="false">
-             <p:dataTable var="auditRecord" id="propertyAuditLogTable" value="#{propertyManager.auditRecordsForEntity}">
-                <p:column headerText="Entity Name">
-                    <h:outputText value="#{auditRecord.entityKey}" />
-                </p:column>
-                
-                <p:column headerText="Action">
-                    <h:outputText value="#{auditRecord.oper}" />
-                </p:column>
-
-                <p:column headerText="User">
-                    <h:outputText value="#{auditRecord.user}" />
-                </p:column>
-                
-                <p:column headerText="Timestamp">
-                    <h:outputText value="#{auditRecord.logTime}">
-                        <f:convertDateTime pattern="#{msgs.dateFormat}"/>
-                    </h:outputText>
-                </p:column>
-                
-                <p:column headerText="Entity Type">
-                    <h:outputText value="#{auditRecord.entityType}" />
-                </p:column>
-                
-                <p:column headerText="Change">
-                    <h:outputText value="#{auditRecord.entry}" />
-                </p:column>
-            </p:dataTable>
-        </p:dialog>
-        
 	</h:form>
 	
 	

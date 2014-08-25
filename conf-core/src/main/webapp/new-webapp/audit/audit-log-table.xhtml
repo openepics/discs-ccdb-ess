@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html">
+
+    <h:form id="#{formId}">
+        <p:dialog widgetVar="#{widgetName}" id="#{widgetName}" modal="true" resizable="false">
+            <f:facet name="header">
+                <h:outputText value="#{dialogTitle}" />
+            </f:facet>
+             <p:dataTable var="auditRecord" id="auditLogTable" value="#{managedBean.auditRecordsForEntity}">
+                <p:column headerText="Entity Name">
+                    <h:outputText value="#{auditRecord.entityKey}" />
+                </p:column>
+                
+                <p:column headerText="Action">
+                    <h:outputText value="#{auditRecord.oper}" />
+                </p:column>
+
+                <p:column headerText="User">
+                    <h:outputText value="#{auditRecord.user}" />
+                </p:column>
+                
+                <p:column headerText="Timestamp">
+                    <h:outputText value="#{auditRecord.logTime}">
+                        <f:convertDateTime pattern="#{msgs.dateFormat}"/>
+                    </h:outputText>
+                </p:column>
+                
+                <p:column headerText="Entity Type">
+                    <h:outputText value="#{auditRecord.entityType}" />
+                </p:column>
+                
+                <p:column headerText="Change">
+                    <h:outputText value="#{auditRecord.entry}" />
+                </p:column>
+            </p:dataTable>
+        </p:dialog>
+    </h:form>
+</ui:composition>

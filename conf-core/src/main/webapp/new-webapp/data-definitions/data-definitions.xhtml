@@ -5,6 +5,8 @@
 	template="/new-webapp/template/template.xhtml"
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:h="http://java.sun.com/jsf/html">
+	
+	
 
 	<ui:define name="content">
 		<h:form id="dataDefinitions">
@@ -22,7 +24,7 @@
 		</h:form>
 		
 		  
-       <ui:include src="add-or-modify-dialog.xhtml">
+    <ui:include src="add-or-modify-dialog.xhtml">
         <ui:param name="formId" value="modifyPropertyForm" />
         <ui:param name="dialogTitle" value="Modify Property" />
         <ui:param name="widgetName" value="modifyProperty" />
@@ -36,5 +38,12 @@
         <ui:param name="submitHandler" value="onAdd" />
     </ui:include>
     
+     <ui:include src="/new-webapp/audit/audit-log-table.xhtml">
+        <ui:param name="formId" value="propertyLogForm" />
+        <ui:param name="dialogTitle" value="Property Log" />
+        <ui:param name="widgetName" value="propertyLog" />
+        <ui:param name="managedBean" value="#{propertyManager}" />
+    </ui:include>
+        
 	</ui:define>
 </ui:composition>
