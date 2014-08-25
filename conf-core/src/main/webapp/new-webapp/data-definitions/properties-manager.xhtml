@@ -32,7 +32,7 @@
 				<p:commandButton icon="ui-icon-pencil" title="Edit" ajax="true"	oncomplete="modifyProperty.show()">
 					<f:setPropertyActionListener value="#{property}" target="#{propertyManager.selectedPropertyToModify}" />
 				</p:commandButton>
-				<p:commandButton icon="ui-icon-clock" title="Log" ajax="true" oncomplete="PF('propertyLog').show()">
+				<p:commandButton icon="ui-icon-clock" title="Log" ajax="true" update=":propertyLogForm" oncomplete="PF('propertyLog').show()">
 				    <f:setPropertyActionListener value="#{property}" target="#{propertyManager.selectedPropertyForLog}" />
 				</p:commandButton>
 			</p:column>

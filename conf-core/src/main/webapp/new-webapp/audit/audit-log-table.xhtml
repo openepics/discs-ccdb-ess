@@ -35,7 +35,7 @@
                 </p:column>
                 
                 <p:column headerText="Change">
-                    <h:outputText value="#{auditRecord.entry}" />
+                    <h:outputText value="#{auditRecord.entry.length() lt 46 ? auditRecord.entry : auditRecord.entry.substring(0,45) += '...'}" />
                 </p:column>
             </p:dataTable>
             <p:commandButton value="Close" style="float: right" onclick="#{widgetName}.hide();" />

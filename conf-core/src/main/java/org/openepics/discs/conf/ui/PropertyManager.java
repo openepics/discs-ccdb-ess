@@ -203,7 +203,7 @@ public class PropertyManager implements Serializable {
     public void setSelectedPropertyForLog(Property selectedProperty) {
         this.selectedProperty = selectedProperty;
         auditRecordsForEntity = configurationEJB.findAuditRecordsByEntityId(selectedProperty.getId());
-        RequestContext.getCurrentInstance().update("propertyLogForm:propertyLog");
+        //RequestContext.getCurrentInstance().update("propertyLogForm:propertyLog");
     }
 
     public DataLoaderResult getLoaderResult() { return loaderResult; }
