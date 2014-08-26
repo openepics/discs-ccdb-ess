@@ -3,7 +3,7 @@
     xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/beans_1_0.xsd">
     <alternatives>
         <class>org.openepics.discs.conf.util.AppPropertiesJBoss</class>
-        <class>org.openepics.discs.conf.security.EntityTypeDBTableSecurityPolicy</class>
+        <class>org.openepics.discs.conf.security.DBTableEntityTypeSecurityPolicy</class>
     </alternatives>
 
     <interceptors>
