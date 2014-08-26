@@ -6,7 +6,6 @@
 
 package org.openepics.discs.conf.ui;
 
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.ejb.EJB;
@@ -40,7 +39,7 @@ public class RelationConverter implements Converter  {
         SlotRelation dtype;
 
         if (value == null || value.equals("")) {
-            logger.log(Level.INFO, "relation converter: empty key");
+            logger.fine("relation converter: empty key");
             return null;
         } else {
             dtype = configurationEJB.findSlotRelation(Long.valueOf(value));
@@ -51,7 +50,7 @@ public class RelationConverter implements Converter  {
     @Override
     public String getAsString(FacesContext context, UIComponent component, Object value) {
         if (value == null || value.equals("")) {
-            logger.log(Level.INFO, "relation converter: empty object");
+            logger.fine("relation converter: empty object");
             return "";
         } else {
             // logger.log(Level.INFO, "Exp number: " + ((Experiment) value).getId().toString());

@@ -4,9 +4,13 @@
  * Copyright (c) 2041 FRIB
  *
  * This file is part of Controls Configuration Database.
- * Controls Configuration Database is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 2 of the License, or any newer version.
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License along with this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
+ * Controls Configuration Database is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU General Public License as published by the Free Software Foundation, either version 2 of the License, or any newer
+ * version.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with this program. If not, see
+ * https://www.gnu.org/licenses/gpl-2.0.txt
  */
 
 package org.openepics.discs.conf.ejb;
@@ -56,7 +60,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
         cq.select(prop);
 
         final List<Property> props= em.createQuery(cq).getResultList();
-        logger.log(Level.INFO, "Number of properties: {0}", props.size());
+        logger.log(Level.FINE, "Number of properties: {0}", props.size());
 
         return props;
     }
@@ -106,7 +110,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
         cq.from(Unit.class);
         final List<Unit> units = em.createQuery(cq).getResultList();
 
-        logger.log(Level.INFO, "Number of units: {0}", units.size());
+        logger.log(Level.FINE, "Number of units: {0}", units.size());
 
         return units;
     }
@@ -157,7 +161,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
         final List<DataType> dataTypes = em.createQuery(cq).getResultList();
 
 
-        logger.log(Level.INFO, "Number of data-types: {0}", dataTypes.size());
+        logger.log(Level.FINE, "Number of data-types: {0}", dataTypes.size());
 
         return dataTypes;
     }

@@ -26,13 +26,13 @@ import org.openepics.discs.conf.util.CRUDOperation;
  *
  * @author vuppala
  * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
- * 
+ *
  */
 @Stateless public class SlotEJB {
     private static final Logger logger = Logger.getLogger(SlotEJB.class.getCanonicalName());
     @PersistenceContext private EntityManager em;
     @Inject private ConfigurationEntityUtility entityUtility;
-    
+
     // ---------------- Layout Slot -------------------------
 
     public List<Slot> findLayoutSlot() {
@@ -40,7 +40,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
         cq.from(Slot.class);
 
         final List<Slot> slots = em.createQuery(cq).getResultList();
-        logger.log(Level.INFO, "Number of installation slots: {0}", slots.size());
+        logger.log(Level.FINE, "Number of installation slots: {0}", slots.size());
 
         return slots;
     }
@@ -76,7 +76,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
     public List<SlotPair> findSlotPairsByParentChildRelation(String childName, String parentName, SlotRelationName relationName) {
         return em.createNamedQuery("SlotPair.findByParentChildRelation", SlotPair.class).setParameter("childName", childName).setParameter("parentName", parentName).setParameter("relationName", relationName).getResultList();
     }
-    
+
     @CRUDOperation(operation=EntityTypeOperation.CREATE)
     @Audit
     @Authorized
@@ -100,7 +100,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
         final Slot mergedSlot = em.merge(slot);
         em.remove(mergedSlot);
     }
-    
+
 
     // ------------------ Slot Property ---------------
 
@@ -109,21 +109,21 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @Authorized
     public void addSlotProperty(SlotPropertyValue propertyValue) {
         final Slot parent = propertyValue.getSlot();
-        
+
         entityUtility.setModified(parent, propertyValue);
-        
-        parent.getSlotPropertyList().add(propertyValue);        
+
+        parent.getSlotPropertyList().add(propertyValue);
         em.merge(parent);
     }
-    
+
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
     @Authorized
     public void saveSlotProp(SlotPropertyValue propertyValue) {
         final SlotPropertyValue mergedPropertyValue = em.merge(propertyValue);
-        
+
         entityUtility.setModified(mergedPropertyValue.getSlot(), mergedPropertyValue);
-        
+
         logger.log(Level.INFO, "Slot Property: id " + mergedPropertyValue.getId() + " name " + mergedPropertyValue.getProperty().getName());
     }
 
@@ -132,12 +132,12 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @Authorized
     public void deleteSlotProp(SlotPropertyValue propertyValue) {
         logger.log(Level.INFO, "deleting slot property id " + propertyValue.getId() + " name " + propertyValue.getProperty().getName());
-        
+
         final SlotPropertyValue mergedPropertyValue = em.merge(propertyValue);
         final Slot parent = mergedPropertyValue.getSlot();
-        
+
         entityUtility.setModified(parent);
-        
+
         parent.getSlotPropertyList().remove(mergedPropertyValue);
         em.remove(mergedPropertyValue);
     }
@@ -149,38 +149,38 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @Authorized
     public void addSlotArtifact(SlotArtifact artifact) {
         final Slot parent = artifact.getSlot();
-        
+
         entityUtility.setModified(parent, artifact);
-        
+
         parent.getSlotArtifactList().add(artifact);
         em.merge(parent);
     }
-    
+
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
     @Authorized
     public void saveSlotArtifact(SlotArtifact artifact) {
         final SlotArtifact mergedArtifact = em.merge(artifact);
-        
+
         entityUtility.setModified(mergedArtifact.getSlot(), mergedArtifact);
-        
+
         logger.log(Level.INFO, "Slot Artifact: name " + mergedArtifact.getName() + " description " + mergedArtifact.getDescription() + " uri " + mergedArtifact.getUri() + "is int " + mergedArtifact.isInternal());
     }
 
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
     @Authorized
-    public void deleteSlotArtifact(SlotArtifact artifact) { 
+    public void deleteSlotArtifact(SlotArtifact artifact) {
         final SlotArtifact mergedArtifact = em.merge(artifact);
         final Slot parent = mergedArtifact.getSlot();
 
         entityUtility.setModified(parent);
-        
+
         parent.getSlotArtifactList().remove(mergedArtifact);
         em.remove(mergedArtifact);
     }
-    
-   
+
+
     // ---------------- Related Slots ---------------------
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
@@ -188,7 +188,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
     public void addSlotPair(SlotPair slotPair) {
         em.persist(slotPair);
     }
-    
+
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
     @Authorized
@@ -215,7 +215,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
     public List<Slot> getRootNodes(SlotRelationName relationName) {
         return em.createQuery("SELECT cp.childSlot FROM SlotPair cp "
                 + "WHERE cp.parentSlot.componentType.name = :ctype AND cp.slotRelation.name = :relname "
-                + "ORDER BY cp.childSlot.name", 
+                + "ORDER BY cp.childSlot.name",
                 Slot.class).
                 setParameter("ctype", ROOT_COMPONENT_TYPE).
                 setParameter("relname", relationName).getResultList();
