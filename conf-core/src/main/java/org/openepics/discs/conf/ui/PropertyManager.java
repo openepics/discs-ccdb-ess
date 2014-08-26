@@ -30,6 +30,7 @@ import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.ejb.ConfigurationEJB;
 import org.openepics.discs.conf.ent.AuditRecord;
 import org.openepics.discs.conf.ent.DataType;
+import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyAssociation;
 import org.openepics.discs.conf.ent.Unit;
@@ -143,7 +144,7 @@ public class PropertyManager implements Serializable {
         this.filteredProperties = filteredObjects;
     }
 
-    public List<Property> getObjects() {
+    public List<Property> getProperties() {
         return properties;
     }
 
@@ -202,7 +203,7 @@ public class PropertyManager implements Serializable {
     public Property getSelectedPropertyForLog() { return selectedProperty; }
     public void setSelectedPropertyForLog(Property selectedProperty) {
         this.selectedProperty = selectedProperty;
-        auditRecordsForEntity = configurationEJB.findAuditRecordsByEntityId(selectedProperty.getId());
+        auditRecordsForEntity = configurationEJB.findAuditRecordsByEntityIdAndType(selectedProperty.getId(), EntityType.PROPERTY);
         RequestContext.getCurrentInstance().update("propertyLogForm:propertyLog");
     }
 

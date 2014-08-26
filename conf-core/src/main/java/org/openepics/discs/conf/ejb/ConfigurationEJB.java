@@ -27,6 +27,7 @@ import javax.persistence.criteria.Root;
 import org.openepics.discs.conf.auditlog.Audit;
 import org.openepics.discs.conf.ent.AuditRecord;
 import org.openepics.discs.conf.ent.DataType;
+import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.SlotRelation;
@@ -95,8 +96,6 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @Authorized
     public void deleteProperty(Property property) {
         final Property mergedProp = em.find(Property.class, property.getId());
-        //mergedProp.getUnit().getPropertyList().remove(mergedProp);
-        //mergedProp.getDataType().getPropertyList().remove(mergedProp);
         em.remove(mergedProp);
     }
 
@@ -206,8 +205,8 @@ import org.openepics.discs.conf.util.CRUDOperation;
         return auditRecords;
     }
 
-    public List<AuditRecord> findAuditRecordsByEntityId(Long entityId) {
-        final List<AuditRecord> auditRecords = em.createNamedQuery("AuditRecord.findByEntityId", AuditRecord.class).setParameter("entityId", entityId).getResultList();
+    public List<AuditRecord> findAuditRecordsByEntityIdAndType(Long entityId, EntityType entityType) {
+        final List<AuditRecord> auditRecords = em.createNamedQuery("AuditRecord.findByEntityIdAndType", AuditRecord.class).setParameter("entityId", entityId).setParameter("entityType", entityType).getResultList();
         return auditRecords == null ? new ArrayList<AuditRecord>() : auditRecords;
     }
 

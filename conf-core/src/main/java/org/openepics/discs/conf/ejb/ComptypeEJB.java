@@ -24,19 +24,19 @@ import org.openepics.discs.conf.util.CRUDOperation;
  *
  * @author vuppala
  * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
- * 
+ *
  */
 @Stateless public class ComptypeEJB {
     private static final Logger logger = Logger.getLogger(ComptypeEJB.class.getCanonicalName());
     @PersistenceContext private EntityManager em;
     @Inject private ConfigurationEntityUtility entityUtility;
-    
+
     // ---------------- Component Type ---------------------
-    
+
     public List<ComponentType> findComponentType() {
         final CriteriaQuery<ComponentType> cq = em.getCriteriaBuilder().createQuery(ComponentType.class);
         cq.from(ComponentType.class);
-       
+
         final List<ComponentType> comptypes = em.createQuery(cq).getResultList();
         logger.log(Level.INFO, "Number of component types: {0}", comptypes.size());
 
@@ -64,7 +64,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
         entityUtility.setModified(componentType);
         em.persist(componentType);
     }
-    
+
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
     @Authorized
@@ -77,33 +77,33 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @Audit
     @Authorized
     public void deleteComponentType(ComponentType componentType) {
-        final ComponentType mergedComponentType = em.merge(componentType);
+        final ComponentType mergedComponentType = em.find(ComponentType.class, componentType.getId());
         em.remove(mergedComponentType);
     }
-    
+
 
     // ---------------- Component Type Property ---------------------
-    
+
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
     @Authorized
     public void addCompTypeProp(ComptypePropertyValue propertyValue) {
         final ComponentType parent = propertyValue.getComponentType();
-        
+
         entityUtility.setModified(parent, propertyValue);
-        
+
         parent.getComptypePropertyList().add(propertyValue);
         em.merge(parent);
     }
-    
+
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
     @Authorized
     public void saveCompTypeProp(ComptypePropertyValue propertyValue) {
         final ComptypePropertyValue mergedPropertyValue = em.merge(propertyValue);
-        
+
         entityUtility.setModified(mergedPropertyValue.getComponentType(), mergedPropertyValue);
-        
+
         logger.log(Level.INFO, "Comp Type Property: id " + mergedPropertyValue.getId() + " name " + mergedPropertyValue.getProperty().getName());
     }
 
@@ -112,19 +112,19 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @Authorized
     public void deleteCompTypeProp(ComptypePropertyValue propertyValue) {
         logger.log(Level.INFO, "deleting comp type property id " + propertyValue.getId() + " name " + propertyValue.getProperty().getName());
-        
+
         final ComptypePropertyValue mergedPropertyValue = em.merge(propertyValue);
         final ComponentType parent = mergedPropertyValue.getComponentType();
-        
+
         entityUtility.setModified(parent);
-        
+
         parent.getComptypePropertyList().remove(mergedPropertyValue);
         em.remove(mergedPropertyValue);
     }
 
 
     // ---------------- Component Type Artifact ---------------------
-    
+
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
     @Authorized
@@ -132,12 +132,12 @@ import org.openepics.discs.conf.util.CRUDOperation;
         final ComponentType parent = artifact.getComponentType();
 
         entityUtility.setModified(parent, artifact);
-        
-        parent.getComptypeArtifactList().add(artifact);        
+
+        parent.getComptypeArtifactList().add(artifact);
         em.merge(parent);
     }
-    
-    
+
+
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
     @Authorized
@@ -145,7 +145,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
         final ComptypeArtifact mergedArtifact = em.merge(artifact);
 
         entityUtility.setModified(mergedArtifact.getComponentType(), mergedArtifact);
-        
+
         logger.log(Level.INFO, "Component Type Artifact: name " + mergedArtifact.getName() + " description " + mergedArtifact.getDescription() + " uri " + mergedArtifact.getUri() + "is int " + mergedArtifact.isInternal());
     }
 
@@ -153,11 +153,11 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @Audit
     @Authorized
     public void deleteCompTypeArtifact(ComptypeArtifact artifact) {
-        final ComptypeArtifact mergedArtifact = em.merge(artifact);                       
+        final ComptypeArtifact mergedArtifact = em.merge(artifact);
         final ComponentType parent = mergedArtifact.getComponentType();
 
         entityUtility.setModified(parent);
-        
+
         parent.getComptypeArtifactList().remove(mergedArtifact);
         em.remove(mergedArtifact);
     }
@@ -169,21 +169,21 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @Authorized
     public void saveComptypeAsm(ComponentType componentType, ComptypeAsm assembly) {
         entityUtility.setModified(componentType, assembly);
-            
+
         assembly.setParentType(componentType);
-        
+
         em.merge(assembly);
-        em.merge(componentType);   
+        em.merge(componentType);
     }
 
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
     @Authorized
-    public void deleteComptypeAsm(ComponentType componentType, ComptypeAsm assembly) {        
+    public void deleteComptypeAsm(ComponentType componentType, ComptypeAsm assembly) {
         final ComptypeAsm mergedAssembly = em.merge(assembly);
-        
+
         entityUtility.setModified(componentType);
-        
+
         em.remove(mergedAssembly);
         em.merge(componentType);
     }

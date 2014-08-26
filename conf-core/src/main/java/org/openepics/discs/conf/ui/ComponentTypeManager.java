@@ -27,10 +27,13 @@ import org.openepics.discs.conf.dl.ComponentTypesLoaderQualifier;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.ejb.ComptypeEJB;
+import org.openepics.discs.conf.ejb.ConfigurationEJB;
+import org.openepics.discs.conf.ent.AuditRecord;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypeArtifact;
 import org.openepics.discs.conf.ent.ComptypeAsm;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
+import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
 import org.openepics.discs.conf.util.BlobStore;
 import org.openepics.discs.conf.util.Utility;
@@ -53,13 +56,14 @@ import com.google.common.io.ByteStreams;
 @ViewScoped
 public class ComponentTypeManager implements Serializable {
     private static final Logger logger = Logger.getLogger(ComponentTypeManager.class.getCanonicalName());
-    
+
     @EJB private ComptypeEJB comptypeEJB;
-  
+
     @Inject private BlobStore blobStore;
+    @Inject private ConfigurationEJB configurationEJB;
     @Inject private DataLoaderHandler dataLoaderHandler;
     @Inject @ComponentTypesLoaderQualifier private DataLoader compTypesDataLoader;
-    
+
     private byte[] importData;
     private String importFileName;
     private DataLoaderResult loaderResult;
@@ -93,6 +97,12 @@ public class ComponentTypeManager implements Serializable {
     private boolean inTrans = false; // in the middle of an operations
     private char selectedOp = 'n'; // selected operation: [a]dd, [e]dit, [d]elete, [n]one
 
+    private String name;
+    private String description;
+    private List<ComptypePropertyValue> propertyValues;
+    private ComponentType selectedDeviceType;
+    private List<AuditRecord> auditRecordsForEntity;
+
     /**
      * Creates a new instance of ComponentTypeMananger
      */
@@ -101,14 +111,48 @@ public class ComponentTypeManager implements Serializable {
 
     @PostConstruct
     public void init() {
-        try {
-            objects = comptypeEJB.findComponentType();
-            logger.log(Level.INFO, "Property org.openepics.discs.conf.prop.RepoPath {0}", blobStore.getBlobStoreRoot());
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-            logger.log(Level.SEVERE, "Cannot retrieve component types");
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Error in getting component types", " ");
-        }
+        objects = comptypeEJB.findComponentType();
+        resetFields();
+    }
+
+    public void prepareAddPopup() {
+        resetFields();
+        RequestContext.getCurrentInstance().update("addDeviceTypeForm:addDeviceType");
+    }
+
+    public void prepareModifyPopup() {
+        name = selectedDeviceType.getName();
+        description = selectedDeviceType.getDescription();
+        propertyValues = selectedDeviceType.getComptypePropertyList();
+        RequestContext.getCurrentInstance().update("modifyDeviceTypeForm:modifyDeviceType");
+    }
+
+    private void resetFields() {
+        name = null;
+        description = null;
+        propertyValues = null;
+    }
+
+    public void onAdd() {
+        final ComponentType componentTypeToAdd = new ComponentType(name);
+        componentTypeToAdd.setDescription(description);
+        comptypeEJB.addComponentType(componentTypeToAdd);
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "New device type has been created");
+        init();
+    }
+
+    public void onModify() {
+        selectedDeviceType.setName(name);
+        selectedDeviceType.setDescription(description);
+        comptypeEJB.saveComponentType(selectedDeviceType);
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Device type was modified");
+        init();
+    }
+
+    public void onDelete() {
+        comptypeEJB.deleteComponentType(selectedDeviceType);
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Device type was deleted");
+        init();
     }
 
     // ----------------- Component Type ------------------------------
@@ -445,7 +489,7 @@ public class ComponentTypeManager implements Serializable {
             ComptypeAsm prt = new ComptypeAsm("");
 
             prt.setParentType(selectedObject);
-            
+
             selectedParts.add(prt);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "New assembly element", "");
         } catch (Exception e) {
@@ -525,6 +569,35 @@ public class ComponentTypeManager implements Serializable {
     }
 
     // -------------------- Getters and Setters ---------------------------------------
+
+    public ComponentType getSelectedDeviceType() { return selectedDeviceType; }
+    public void setSelectedDeviceType(ComponentType selectedDeviceType) {
+        this.selectedDeviceType = selectedDeviceType;
+    }
+
+    public ComponentType getSelectedDeviceTypeToModify() { return selectedDeviceType; }
+    public void setSelectedDeviceTypeToModify(ComponentType selectedDeviceType) {
+        this.selectedDeviceType = selectedDeviceType;
+        prepareModifyPopup();
+    }
+
+    public ComponentType getSelectedDeviceTypeForLog() { return selectedDeviceType; }
+    public void setSelectedDeviceTypeForLog(ComponentType selectedDeviceType) {
+        this.selectedDeviceType = selectedDeviceType;
+        auditRecordsForEntity = configurationEJB.findAuditRecordsByEntityIdAndType(selectedDeviceType.getId(), EntityType.COMPONENT_TYPE);
+        RequestContext.getCurrentInstance().update("deviceTypeLogForm:deviceTypeLog");
+    }
+
+    public List<AuditRecord> getAuditRecordsForEntity() {
+        return auditRecordsForEntity;
+    }
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+
     public List<ComponentType> getSortedObjects() {
         return sortedObjects;
     }

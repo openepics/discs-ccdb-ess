@@ -6,9 +6,8 @@
 	<h:form id="propertiesForm">
 		<p:commandButton ajax="true"
 			actionListener="#{propertyManager.prepareAddPopup()}" value="Add new"
-			filteredValue="#{propertyManager.filteredProperties}"
 			oncomplete="addProperty.show()" />
-		<p:dataTable var="property" value="#{propertyManager.objects}"
+		<p:dataTable var="property" value="#{propertyManager.properties}" filteredValue="#{propertyManager.filteredProperties}"
 			rows="15" paginator="true" paginatorPosition="bottom">
 			<p:column headerText="Name" sortBy="#{property.name}" filterBy="#{property.name}">
 				<h:outputText value="#{property.name}" />

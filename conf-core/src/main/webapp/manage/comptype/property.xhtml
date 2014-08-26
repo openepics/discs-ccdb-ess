@@ -60,7 +60,7 @@
                     <p:column>
                         <p:selectOneMenu value="#{componentTypeManager.inputProperty.property}" style="width:100%"
                                          var="p" filter="true"  converter="#{propertyConverter}">                        
-                            <f:selectItems value="#{propertyManager.objects}" var="prop" itemLabel="#{prop.name}" itemValue="#{prop}" />
+                            <f:selectItems value="#{propertyManager.properties}" var="prop" itemLabel="#{prop.name}" itemValue="#{prop}" />
                             <p:column>
                                 #{p.name}
                             </p:column>
