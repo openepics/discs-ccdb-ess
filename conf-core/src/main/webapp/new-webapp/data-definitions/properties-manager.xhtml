@@ -26,14 +26,14 @@
 				<h:outputText value="#{property.dataType.name}" />
 			</p:column>
 			<p:column headerText="Action">
-				<p:commandButton icon="ui-icon-trash" title="Delete" ajax="true" oncomplete="deleteProperty.show()">
+				<p:commandButton icon="ui-icon-trash" title="Delete" oncomplete="deleteProperty.show()">
                     <f:setPropertyActionListener value="#{property}" target="#{propertyManager.selectedProperty}" />
                 </p:commandButton>
-				<p:commandButton icon="ui-icon-pencil" title="Edit" ajax="true"	oncomplete="modifyProperty.show()">
+				<p:commandButton icon="ui-icon-pencil" title="Edit" oncomplete="modifyProperty.show()">
 					<f:setPropertyActionListener value="#{property}" target="#{propertyManager.selectedPropertyToModify}" />
 				</p:commandButton>
-				<p:commandButton icon="ui-icon-clock" title="Log" ajax="true" oncomplete="PF('propertyLog').show()">
-				    <f:setPropertyActionListener value="#{property}" target="#{propertyManager.selectedPropertyForLog}" />
+				<p:commandButton icon="ui-icon-clock" title="Log" update=":propertyLogForm" oncomplete="propertyLog.show()">
+				    <f:ajax event="click" listener="#{auditManager.selectEntityForLog(property, 'PROPERTY')}" />
 				</p:commandButton>
 			</p:column>
 		</p:dataTable>
@@ -52,10 +52,5 @@
                 action="#{propertyManager.onDelete}" update=":dataDefinitions" />
         </p:dialog>
 	</h:form>
-	
-	
-
-	
-
 
 </ui:composition>

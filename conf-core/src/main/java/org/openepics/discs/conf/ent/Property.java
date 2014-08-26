@@ -38,7 +38,7 @@ public class Property extends ConfigurationEntity {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)
-    @Column(name = "name")
+    @Column(name = "name", unique = true)
     private String name;
 
     @Basic(optional = false)
