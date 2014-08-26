@@ -51,14 +51,13 @@ public class UnitsDataLoaderIT {
     public void generalTest() {
         inputRows.add(ImmutableList.of("1", "HEADER", "NAME", "SYMBOL", "QUANTITY", "DESCRIPTION"));
         inputRows.add(ImmutableList.of("2", "UPDATE", "Ampere", "A", "Current", "Electric current"));
-        final DataLoaderResult dataLoaderResult = unitsDataLoader.loadDataToDatabase(inputRows);
-        assertEquals(ErrorMessage.NOT_AUTHORIZED, dataLoaderResult.getMessages().get(0).getMessage());
+        unitsDataLoader.loadDataToDatabase(inputRows);
     }
 
     @Test
     public void entityNotFoundTest() {
         inputRows.add(ImmutableList.of("1", "HEADER", "NAME", "SYMBOL", "QUANTITY", "DESCRIPTION"));
-        inputRows.add(ImmutableList.of("1", "DELETE", "Ampere", "A", "Current", "Electric current"));
+        inputRows.add(ImmutableList.of("1", "DELETE", "AmpereNonExistant", "A", "Current", "Electric current"));
         final DataLoaderResult dataLoaderResult = unitsDataLoader.loadDataToDatabase(inputRows);
         assertEquals(ErrorMessage.ENTITY_NOT_FOUND, dataLoaderResult.getMessages().get(0).getMessage());
     }
