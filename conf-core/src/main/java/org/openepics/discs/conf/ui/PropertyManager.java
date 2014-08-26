@@ -1,13 +1,9 @@
 /*
- * Copyright (c) 2014 European Spallation Source
- * Copyright (c) 2014 Cosylab d.d.
- * Copyright (c) 2041 FRIB
- *
- * This file is part of Controls Configuration Database.
- * Controls Configuration Database is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 2 of the License, or any newer version.
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License along with this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
+
 package org.openepics.discs.conf.ui;
 
 import java.io.ByteArrayInputStream;
@@ -44,6 +40,7 @@ import com.google.common.io.ByteStreams;
  * @author vuppala
  * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
  * @author Andraz Pozar <andraz.pozar@cosylab.com>
+ * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  *
  */
 @Named

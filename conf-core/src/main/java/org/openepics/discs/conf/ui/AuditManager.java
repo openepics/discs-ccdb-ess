@@ -1,16 +1,7 @@
 /*
- * Copyright (c) 2014 European Spallation Source
- * Copyright (c) 2014 Cosylab d.d.
- * Copyright (c) 2041 FRIB
- *
- * This file is part of Controls Configuration Database.
- * Controls Configuration Database is free software: you can redistribute it and/or modify it under the terms of the
- * GNU General Public License as published by the Free Software Foundation, either version 2 of the License, or any newer
- * version.
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License along with this program. If not, see
- * https://www.gnu.org/licenses/gpl-2.0.txt
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
 
 package org.openepics.discs.conf.ui;
@@ -36,8 +27,8 @@ import org.openepics.discs.conf.util.Utility;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- *
  * @author vuppala
+ * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  */
 @Named(value = "auditManager")
 @ViewScoped
@@ -85,26 +76,47 @@ public class AuditManager implements Serializable {
         this.filteredObjects = filteredObjects;
     }
 
-    public void chooseDisplayRecord(Long id) { this.displayRecord = configurationEJB.findAuditRecord(id); }
+    /**
+     * This method is called from xhtml to set the audit record for which the details will be shown in the dialog.
+     * The audit record is selected by its database ID.
+     * @param id - the database id of the audit log record
+     */
+    public void chooseDisplayRecord(final Long id) { this.displayRecord = configurationEJB.findAuditRecord(id); }
 
+    /**
+     * @return The audit record used in the <i>display details</i> dialog.
+     */
     public AuditRecord getDisplayRecord() { return displayRecord; }
 
+    /**
+     * @return A pretty printed representation of the log entry JSON.
+     */
     public String getDisplayRecordEntry() {
         if (displayRecord == null) return "";
 
-        ObjectMapper mapper = new ObjectMapper();
         try {
-            Object json = mapper.readValue(displayRecord.getEntry(), Object.class);
+            final ObjectMapper mapper = new ObjectMapper();
+            final Object json = mapper.readValue(displayRecord.getEntry(), Object.class);
             return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(json);
         } catch (IOException e) {
             return "";
         }
     }
 
-    public void selectEntityForLog(ConfigurationEntity selectedEntity, EntityType entityType) {
+    /**
+     * The method sets the audit log list for the selected entity. This method is called from the table button "i" in
+     * the xhtml file.
+     * @param selectedEntity - the entity to set the audit log list for.
+     * @param entityType - the type of the entity. To set this parameter from xhtml, use a string representation of
+     * the enumeration constant.
+     */
+    public void selectEntityForLog(final ConfigurationEntity selectedEntity, final EntityType entityType) {
         auditRecordsForEntity = configurationEJB.findAuditRecordsByEntityId(selectedEntity.getId(), entityType);
     }
 
+    /**
+     * @return A list of audit log entries for a selected entity to show in the table.
+     */
     public List<AuditRecord> getAuditRecordsForEntity() { return auditRecordsForEntity; }
 
 
