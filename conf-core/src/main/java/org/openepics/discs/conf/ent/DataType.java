@@ -26,7 +26,7 @@ public class DataType extends ConfigurationEntity {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)
-    @Column(name = "name")
+    @Column(name = "name", unique = true)
     private String name;
 
     @Basic(optional = false)
@@ -51,7 +51,7 @@ public class DataType extends ConfigurationEntity {
         this.scalar = scalar;
         this.definition = definition;
     }
-    
+
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 
