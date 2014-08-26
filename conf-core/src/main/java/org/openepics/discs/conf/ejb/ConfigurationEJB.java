@@ -31,6 +31,7 @@ import javax.persistence.criteria.Root;
 import org.openepics.discs.conf.auditlog.Audit;
 import org.openepics.discs.conf.ent.AuditRecord;
 import org.openepics.discs.conf.ent.DataType;
+import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.SlotRelation;
@@ -211,7 +212,8 @@ import org.openepics.discs.conf.util.CRUDOperation;
     }
 
     public List<AuditRecord> findAuditRecordsByEntityId(Long entityId) {
-        final List<AuditRecord> auditRecords = em.createNamedQuery("AuditRecord.findByEntityId", AuditRecord.class).setParameter("entityId", entityId).getResultList();
+        final List<AuditRecord> auditRecords = em.createNamedQuery("AuditRecord.findByEntity", AuditRecord.class)
+                .setParameter("entityId", entityId).setParameter("entityType", EntityType.PROPERTY).getResultList();
         return auditRecords == null ? new ArrayList<AuditRecord>() : auditRecords;
     }
 
