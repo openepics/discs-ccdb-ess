@@ -217,7 +217,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
         return auditRecords == null ? new ArrayList<AuditRecord>() : auditRecords;
     }
 
-    public AuditRecord findDAuditRecord(int id) {
+    public AuditRecord findAuditRecord(Long id) {
         return em.find(AuditRecord.class, id);
     }
 }

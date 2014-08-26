@@ -11,7 +11,7 @@
             <f:facet name="header">
                 <h:outputText value="#{dialogTitle}" />
             </f:facet>
-             <p:dataTable var="auditRecord" id="auditLogTable" value="#{managedBean.auditRecordsForEntity}">
+             <p:dataTable var="auditRecord" id="auditLogTable" value="#{managedBean.auditRecordsForEntity}" style="margin-bottom: 1em;">
                 <p:column headerText="Entity Name">
                     <h:outputText value="#{auditRecord.entityKey}" />
                 </p:column>
@@ -36,6 +36,11 @@
                 
                 <p:column headerText="Change">
                     <h:outputText value="#{auditRecord.entry.length() lt 46 ? auditRecord.entry : auditRecord.entry.substring(0,45) += '...'}" />
+                </p:column>
+                
+                <p:column headerText="Action">
+                    <p:commandButton icon="ui-icon-info" title="Details" update=":logDetailsForm" 
+                        action="#{auditManager.chooseDisplayRecord(auditRecord.id)}" oncomplete="logDetails.show()" />
                 </p:column>
             </p:dataTable>
             <p:commandButton value="Close" style="float: right" onclick="#{widgetName}.hide();" />

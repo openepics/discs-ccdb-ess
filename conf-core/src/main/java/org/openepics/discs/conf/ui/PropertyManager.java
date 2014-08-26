@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2014 European Spallation Source
  * Copyright (c) 2014 Cosylab d.d.
  * Copyright (c) 2041 FRIB
