@@ -1,60 +1,57 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+<ui:composition template="../template.xhtml" 
+    xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:p="http://primefaces.org/ui">
-	<h:form id="propertiesForm">
-		<p:commandButton ajax="true"
-			actionListener="#{propertyManager.prepareAddPopup()}" value="Add new"
-			oncomplete="addProperty.show()" />
-		<p:dataTable var="property" value="#{propertyManager.properties}" filteredValue="#{propertyManager.filteredProperties}"
-			rows="15" paginator="true" paginatorPosition="bottom">
-			<p:column headerText="Name" sortBy="#{property.name}" filterBy="#{property.name}">
-				<h:outputText value="#{property.name}" />
-			</p:column>
-
-			<p:column headerText="Description" filterBy="#{property.description}">
-				<h:outputText value="#{property.description}" />
-			</p:column>
-
-			<p:column headerText="Unit">
-				<h:outputText value="#{property.unit.name}" />
-			</p:column>
-
-			<p:column headerText="Data Type" filterBy="#{property.dataType.name}">
-				<h:outputText value="#{property.dataType.name}" />
-			</p:column>
-			<p:column headerText="Action">
-				<p:commandButton icon="ui-icon-trash" title="Delete" ajax="true" oncomplete="deleteProperty.show()">
-                    <f:setPropertyActionListener value="#{property}" target="#{propertyManager.selectedProperty}" />
-                </p:commandButton>
-				<p:commandButton icon="ui-icon-pencil" title="Edit" ajax="true"	oncomplete="modifyProperty.show()">
-					<f:setPropertyActionListener value="#{property}" target="#{propertyManager.selectedPropertyToModify}" />
-				</p:commandButton>
-				<p:commandButton icon="ui-icon-clock" title="Log" ajax="true" oncomplete="PF('propertyLog').show()">
-				    <f:setPropertyActionListener value="#{property}" target="#{propertyManager.selectedPropertyForLog}" />
-				</p:commandButton>
-			</p:column>
-		</p:dataTable>
-		
-		<p:dialog widgetVar="deleteProperty" modal="true" resizable="false" closable="false">
-            <f:facet name="header">
-                <h:outputText value="Delete Property" />
-            </f:facet>
-            <h:outputText value="Are you sure you want to delete this property?" />
-            <br/>
-
-            <p:commandButton value="No" style="float: right"
-                onclick="deleteProperty.hide();" />
-            <p:commandButton value="Yes" style="float: right"
-                oncomplete="deleteProperty.hide()" ajax="true"
-                action="#{propertyManager.onDelete}" update=":dataDefinitions" />
-        </p:dialog>
-	</h:form>
+	<ui:define name="dataDefContent">
+		<h:form id="propertiesForm">
+			<p:commandButton ajax="true"
+				actionListener="#{propertyManager.prepareAddPopup()}" value="Add new"
+				oncomplete="addProperty.show()" />
+			<p:dataTable var="property" value="#{propertyManager.properties}" filteredValue="#{propertyManager.filteredProperties}"
+				rows="15" paginator="true" paginatorPosition="bottom">
+				<p:column headerText="Name" sortBy="#{property.name}" filterBy="#{property.name}">
+					<h:outputText value="#{property.name}" />
+				</p:column>
 	
+				<p:column headerText="Description" filterBy="#{property.description}">
+					<h:outputText value="#{property.description}" />
+				</p:column>
 	
-
+				<p:column headerText="Unit">
+					<h:outputText value="#{property.unit.name}" />
+				</p:column>
 	
-
-
+				<p:column headerText="Data Type" filterBy="#{property.dataType.name}">
+					<h:outputText value="#{property.dataType.name}" />
+				</p:column>
+				<p:column headerText="Action">
+					<p:commandButton icon="ui-icon-trash" title="Delete" ajax="true" oncomplete="deleteProperty.show()">
+	                    <f:setPropertyActionListener value="#{property}" target="#{propertyManager.selectedProperty}" />
+	                </p:commandButton>
+					<p:commandButton icon="ui-icon-pencil" title="Edit" ajax="true"	oncomplete="modifyProperty.show()">
+						<f:setPropertyActionListener value="#{property}" target="#{propertyManager.selectedPropertyToModify}" />
+					</p:commandButton>
+					<p:commandButton icon="ui-icon-clock" title="Log" ajax="true" oncomplete="PF('propertyLog').show()">
+					    <f:setPropertyActionListener value="#{property}" target="#{propertyManager.selectedPropertyForLog}" />
+					</p:commandButton>
+				</p:column>
+			</p:dataTable>
+			
+			<p:dialog widgetVar="deleteProperty" modal="true" resizable="false" closable="false">
+	            <f:facet name="header">
+	                <h:outputText value="Delete Property" />
+	            </f:facet>
+	            <h:outputText value="Are you sure you want to delete this property?" />
+	            <br/>
+	
+	            <p:commandButton value="No" style="float: right"
+	                onclick="deleteProperty.hide();" />
+	            <p:commandButton value="Yes" style="float: right"
+	                oncomplete="deleteProperty.hide()" ajax="true"
+	                action="#{propertyManager.onDelete}" update="propertiesForm" />
+	        </p:dialog>
+		</h:form>
+	</ui:define>
 </ui:composition>

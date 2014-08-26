@@ -11,10 +11,12 @@ package org.openepics.discs.conf.ui;
 
 import java.io.Serializable;
 
-import javax.faces.bean.ManagedProperty;
+import javax.annotation.PostConstruct;
 import javax.faces.bean.RequestScoped;
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.servlet.http.HttpServletRequest;
 
 import org.openepics.discs.conf.ejb.ComptypeEJB;
 import org.openepics.discs.conf.ent.ComponentType;
@@ -28,13 +30,16 @@ import org.openepics.discs.conf.ent.ComponentType;
 public class ComptypePropertiesController implements Serializable {
 
     @Inject private ComptypeEJB comptypeEJB;
-    @ManagedProperty("#{param.id}")
-    private String id;
+    private ComponentType compType;
 
-    private ComponentType deviceType;
+    @PostConstruct
+    public void init() {
+        final Long id = Long.parseLong(((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest()).getParameter("id"));
+        compType = comptypeEJB.findComponentType(id);
+    }
 
     public ComponentType getDeviceType() {
-        return null;
+        return compType;
     }
 
 

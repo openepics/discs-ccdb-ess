@@ -54,6 +54,16 @@ body {
     /* box-shadow: 0 0 7px 2px #888888; */
 }
 
+.content {
+    margin-left: 200px;
+    position: relative;
+}
+
+.navigation {
+	height: 100%;
+    float: left;
+    width: 180px;
+}
 
 .menu {
     background-color: transparent; 

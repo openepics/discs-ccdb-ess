@@ -1,58 +1,53 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+<ui:composition template="../template.xhtml" 
+    xmlns="http://www.w3.org/1999/xhtml"
     xmlns:f="http://java.sun.com/jsf/core"
     xmlns:h="http://java.sun.com/jsf/html"
     xmlns:ui="http://java.sun.com/jsf/facelets"
     xmlns:p="http://primefaces.org/ui">
-    <h:form id="deviceTypesForm">
-        <p:commandButton ajax="true"
-            actionListener="#{componentTypeManager.prepareAddPopup()}" value="Add new"
-            oncomplete="addDeviceType.show()" />
-        <p:dataTable var="deviceType" value="#{componentTypeManager.objects}" filteredValue="#{componentTypeManager.filteredObjects}"
-            rows="15" paginator="true" paginatorPosition="bottom">
-            <p:column headerText="Name" sortBy="#{deviceType.name}" filterBy="#{deviceType.name}">
-                <h:outputText value="#{deviceType.name}" />
-            </p:column>
-
-            <p:column headerText="Description" filterBy="#{deviceType.description}">
-                <h:outputText value="#{deviceType.description}" />
-            </p:column>
-
-            <p:column headerText="Actions">
-                <p:commandButton icon="ui-icon-trash" title="Delete" ajax="true" oncomplete="deleteDeviceType.show()">
-                    <f:setPropertyActionListener value="#{deviceType}" target="#{componentTypeManager.selectedDeviceType}" />
-                </p:commandButton>
-                <p:commandButton icon="ui-icon-plus" ajax="false" title="Add Property" action="/new-webapp/data-definitions/device-types/device-type-property-manager.xhtml?faces-recirect=true">
-	               <f:metadata>
-	               <f:viewParam name="id" value="#{deviceType.id}" />
-	               </f:metadata>
-                </p:commandButton>
-                <p:commandButton icon="ui-icon-pencil" title="Edit" ajax="true" oncomplete="modifyDeviceType.show()">
-                    <f:setPropertyActionListener value="#{deviceType}" target="#{componentTypeManager.selectedDeviceTypeToModify}" />
-                </p:commandButton>
-                <p:commandButton icon="ui-icon-clock" title="Log" ajax="true" oncomplete="deviceTypeLog.show()">
-                    <f:setPropertyActionListener value="#{deviceType}" target="#{componentTypeManager.selectedDeviceTypeForLog}" />
-                </p:commandButton>
-                <p:commandButton icon="ui-icon-copy" title="Create copy" ajax="true" oncomplete="deviceTypeLog.show()">
-                    <f:setPropertyActionListener value="#{deviceType}" target="#{componentTypeManager.selectedDeviceTypeForLog}" />
-                </p:commandButton>
-            </p:column>
-        </p:dataTable>
-        
-        <p:dialog widgetVar="deleteDeviceType" modal="true" resizable="false" closable="false">
-            <f:facet name="header">
-                <h:outputText value="Delete Device Type" />
-            </f:facet>
-            <h:outputText value="Are you sure you want to delete this device type?" />
-            <br/>
-
-            <p:commandButton value="No" style="float: right" onclick="deleteDeviceType.hide();" />
-            <p:commandButton value="Yes" style="float: right" oncomplete="deleteDeviceType.hide()" ajax="true" action="#{componentTypeManager.onDelete}" update=":dataDefinitions" />
-        </p:dialog>
-    </h:form>
-    
-    
-
-    
-
-
+    <ui:define name="dataDefContent">
+	    <h:form id="deviceTypesForm">
+	        <p:commandButton ajax="true"
+	            actionListener="#{componentTypeManager.prepareAddPopup()}" value="Add new"
+	            oncomplete="addDeviceType.show()" />
+	        <p:dataTable var="deviceType" value="#{componentTypeManager.objects}" filteredValue="#{componentTypeManager.filteredObjects}"
+	            rows="15" paginator="true" paginatorPosition="bottom">
+	            <p:column headerText="Name" sortBy="#{deviceType.name}" filterBy="#{deviceType.name}">
+	                <h:outputText value="#{deviceType.name}" />
+	            </p:column>
+	
+	            <p:column headerText="Description" filterBy="#{deviceType.description}">
+	                <h:outputText value="#{deviceType.description}" />
+	            </p:column>
+	
+	            <p:column headerText="Actions">
+	                <p:commandButton icon="ui-icon-trash" title="Delete" ajax="true" oncomplete="deleteDeviceType.show()">
+	                    <f:setPropertyActionListener value="#{deviceType}" target="#{componentTypeManager.selectedDeviceType}" />
+	                </p:commandButton>
+	                <p:commandButton icon="ui-icon-plus" title="Add Property">
+	                   <f:ajax event="click" listener="#{componentTypeManager.deviceTypePropertyRedirect(deviceType.id)}" />
+	                </p:commandButton>
+	                <p:commandButton icon="ui-icon-pencil" title="Edit" ajax="true" oncomplete="modifyDeviceType.show()">
+	                    <f:setPropertyActionListener value="#{deviceType}" target="#{componentTypeManager.selectedDeviceTypeToModify}" />
+	                </p:commandButton>
+	                <p:commandButton icon="ui-icon-clock" title="Log" ajax="true" oncomplete="deviceTypeLog.show()">
+	                    <f:setPropertyActionListener value="#{deviceType}" target="#{componentTypeManager.selectedDeviceTypeForLog}" />
+	                </p:commandButton>
+	                <p:commandButton icon="ui-icon-copy" title="Create copy" ajax="true" oncomplete="deviceTypeLog.show()">
+	                    <f:setPropertyActionListener value="#{deviceType}" target="#{componentTypeManager.selectedDeviceTypeForLog}" />
+	                </p:commandButton>
+	            </p:column>
+	        </p:dataTable>
+	        
+	        <p:dialog widgetVar="deleteDeviceType" modal="true" resizable="false" closable="false">
+	            <f:facet name="header">
+	                <h:outputText value="Delete Device Type" />
+	            </f:facet>
+	            <h:outputText value="Are you sure you want to delete this device type?" />
+	            <br/>
+	
+	            <p:commandButton value="No" style="float: right" onclick="deleteDeviceType.hide();" />
+	            <p:commandButton value="Yes" style="float: right" oncomplete="deleteDeviceType.hide()" ajax="true" action="#{componentTypeManager.onDelete}" update="deviceTypesForm" />
+	        </p:dialog>
+	    </h:form>
+	</ui:define>
 </ui:composition>
