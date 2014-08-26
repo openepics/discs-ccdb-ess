@@ -28,7 +28,6 @@ import org.openepics.discs.conf.dl.PropertiesLoaderQualifier;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.ejb.ConfigurationEJB;
-import org.openepics.discs.conf.ent.AuditRecord;
 import org.openepics.discs.conf.ent.DataType;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyAssociation;
@@ -70,7 +69,6 @@ public class PropertyManager implements Serializable {
     private PropertyAssociation association;
     private Property selectedProperty;
     private boolean unitComboEnabled;
-    private List<AuditRecord> auditRecordsForEntity;
 
 
     /**
@@ -199,18 +197,7 @@ public class PropertyManager implements Serializable {
         prepareModifyPopup();
     }
 
-    public Property getSelectedPropertyForLog() { return selectedProperty; }
-    public void setSelectedPropertyForLog(Property selectedProperty) {
-        this.selectedProperty = selectedProperty;
-        auditRecordsForEntity = configurationEJB.findAuditRecordsByEntityId(selectedProperty.getId());
-        //RequestContext.getCurrentInstance().update("propertyLogForm:propertyLog");
-    }
-
     public DataLoaderResult getLoaderResult() { return loaderResult; }
-
-    public List<AuditRecord> getAuditRecordsForEntity() {
-        return auditRecordsForEntity;
-    }
 
     public void handleImportFileUpload(FileUploadEvent event) {
         try (InputStream inputStream = event.getFile().getInputstream()) {

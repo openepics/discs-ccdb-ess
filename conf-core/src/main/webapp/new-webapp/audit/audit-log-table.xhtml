@@ -11,7 +11,7 @@
             <f:facet name="header">
                 <h:outputText value="#{dialogTitle}" />
             </f:facet>
-             <p:dataTable var="auditRecord" id="auditLogTable" value="#{managedBean.auditRecordsForEntity}" style="margin-bottom: 1em;">
+             <p:dataTable var="auditRecord" id="auditLogTable" value="#{auditManager.auditRecordsForEntity}" style="margin-bottom: 1em;">
                 <p:column headerText="Entity Name">
                     <h:outputText value="#{auditRecord.entityKey}" />
                 </p:column>

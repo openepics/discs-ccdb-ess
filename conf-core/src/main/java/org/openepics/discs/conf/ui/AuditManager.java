@@ -29,6 +29,8 @@ import javax.inject.Named;
 
 import org.openepics.discs.conf.ejb.ConfigurationEJB;
 import org.openepics.discs.conf.ent.AuditRecord;
+import org.openepics.discs.conf.ent.ConfigurationEntity;
+import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.util.Utility;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -47,6 +49,7 @@ public class AuditManager implements Serializable {
     private List<AuditRecord> objects;
     private List<AuditRecord> filteredObjects;
 
+    private List<AuditRecord> auditRecordsForEntity;
     private AuditRecord displayRecord;
 
     /**
@@ -97,5 +100,12 @@ public class AuditManager implements Serializable {
             return "";
         }
     }
+
+    public void selectEntityForLog(ConfigurationEntity selectedEntity, EntityType entityType) {
+        auditRecordsForEntity = configurationEJB.findAuditRecordsByEntityId(selectedEntity.getId(), entityType);
+    }
+
+    public List<AuditRecord> getAuditRecordsForEntity() { return auditRecordsForEntity; }
+
 
 }

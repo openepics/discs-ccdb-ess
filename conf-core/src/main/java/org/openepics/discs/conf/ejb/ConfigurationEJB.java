@@ -211,9 +211,9 @@ import org.openepics.discs.conf.util.CRUDOperation;
         return auditRecords;
     }
 
-    public List<AuditRecord> findAuditRecordsByEntityId(Long entityId) {
+    public List<AuditRecord> findAuditRecordsByEntityId(Long entityId, EntityType entityType) {
         final List<AuditRecord> auditRecords = em.createNamedQuery("AuditRecord.findByEntity", AuditRecord.class)
-                .setParameter("entityId", entityId).setParameter("entityType", EntityType.PROPERTY).getResultList();
+                .setParameter("entityId", entityId).setParameter("entityType", entityType).getResultList();
         return auditRecords == null ? new ArrayList<AuditRecord>() : auditRecords;
     }
 
