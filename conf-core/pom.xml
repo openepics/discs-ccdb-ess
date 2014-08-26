@@ -7,8 +7,14 @@
     <artifactId>confmgr</artifactId>
     <version>1.0.0</version>
     <packaging>war</packaging>
-
+    
     <name>confmgr</name>
+                
+    <parent>
+        <groupId>se.lu.esss.ics</groupId>
+        <artifactId>ess-java-config</artifactId>
+        <version>1.1.0</version>
+    </parent>
 
     <properties>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
