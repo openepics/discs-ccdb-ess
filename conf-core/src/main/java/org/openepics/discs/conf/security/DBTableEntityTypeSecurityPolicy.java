@@ -41,12 +41,12 @@ import com.google.common.base.Preconditions;
 @SessionScoped
 @Named("securityPolicy")
 @Alternative
-public class EntityTypeDBTableSecurityPolicy extends AbstractEnityTypeSecurityPolicy implements SecurityPolicy, Serializable {
-    private static final Logger logger = Logger.getLogger(EntityTypeDBTableSecurityPolicy.class.getCanonicalName());
+public class DBTableEntityTypeSecurityPolicy extends AbstractEnityTypeSecurityPolicy implements SecurityPolicy, Serializable {
+    private static final Logger logger = Logger.getLogger(DBTableEntityTypeSecurityPolicy.class.getCanonicalName());
     
     @PersistenceContext private EntityManager em;
 
-    public EntityTypeDBTableSecurityPolicy() {
+    public DBTableEntityTypeSecurityPolicy() {
         super();
     }
  
