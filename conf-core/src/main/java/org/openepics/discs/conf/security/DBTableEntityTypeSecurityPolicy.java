@@ -17,7 +17,6 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.enterprise.context.SessionScoped;
-import javax.enterprise.inject.Alternative;
 import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -40,7 +39,6 @@ import com.google.common.base.Preconditions;
  */
 @SessionScoped
 @Named("securityPolicy")
-@Alternative
 public class DBTableEntityTypeSecurityPolicy extends AbstractEnityTypeSecurityPolicy implements SecurityPolicy, Serializable {
     private static final Logger logger = Logger.getLogger(DBTableEntityTypeSecurityPolicy.class.getCanonicalName());
     
