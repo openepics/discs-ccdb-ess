@@ -9,7 +9,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 @Entity
-@Table(name = "tags")
+@Table(name = "tag")
 public class Tag extends ConfigurationEntity {
     @Basic(optional = false)
     @NotNull

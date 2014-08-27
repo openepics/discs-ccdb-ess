@@ -11,7 +11,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 @Entity
-@Table(name = "property_values")
+@Table(name = "property_value")
 @Inheritance(strategy = InheritanceType.JOINED)
 abstract public class PropertyValue extends ConfigurationEntity {
     @Column(name = "prop_value", columnDefinition = "TEXT")

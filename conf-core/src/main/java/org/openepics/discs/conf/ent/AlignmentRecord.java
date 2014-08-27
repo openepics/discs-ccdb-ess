@@ -70,7 +70,7 @@ public class AlignmentRecord extends ConfigurationEntity {
     private Device device;
 
     @ManyToMany
-    @JoinTable(name = "alignment_tags",
+    @JoinTable(name = "alignment_tag",
         joinColumns = { @JoinColumn(name = "alignment_id") }, inverseJoinColumns = { @JoinColumn(name = "tag_id") })
     private Set<Tag> tags;
 

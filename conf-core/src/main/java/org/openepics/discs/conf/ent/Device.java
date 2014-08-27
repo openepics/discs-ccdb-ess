@@ -108,7 +108,7 @@ public class Device extends ConfigurationEntity {
     private Device asmParent;
 
     @ManyToMany
-    @JoinTable(name = "device_tags",
+    @JoinTable(name = "device_tag",
         joinColumns = { @JoinColumn(name = "device_id") }, inverseJoinColumns = { @JoinColumn(name = "tag_id") })
     private Set<Tag> tags;
 

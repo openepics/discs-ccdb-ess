@@ -30,7 +30,7 @@ public class Report extends ConfigurationEntity {
     private String name;
 
     @ManyToMany
-    @JoinTable(name = "filter_by_types", joinColumns = { @JoinColumn(name = "report_id", referencedColumnName = "id") }, inverseJoinColumns = { @JoinColumn(name = "type_id", referencedColumnName = "id") })
+    @JoinTable(name = "filter_by_type", joinColumns = { @JoinColumn(name = "report_id", referencedColumnName = "id") }, inverseJoinColumns = { @JoinColumn(name = "type_id", referencedColumnName = "id") })
     private List<ComponentType> typeFilters;
 
     @OneToMany(mappedBy = "parentReport")

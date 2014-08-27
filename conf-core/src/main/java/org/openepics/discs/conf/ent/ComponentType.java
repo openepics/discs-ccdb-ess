@@ -70,7 +70,7 @@ public class ComponentType extends ConfigurationEntity {
     private List<ComptypeArtifact> comptypeArtifactList;
 
     @ManyToMany
-    @JoinTable(name = "comptype_tags",
+    @JoinTable(name = "comptype_tag",
         joinColumns = { @JoinColumn(name = "comptype_id") }, inverseJoinColumns = { @JoinColumn(name = "tag_id") })
     private Set<Tag> tags;
 

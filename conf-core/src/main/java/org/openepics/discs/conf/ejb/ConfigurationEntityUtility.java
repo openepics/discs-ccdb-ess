@@ -24,11 +24,14 @@ public class ConfigurationEntityUtility implements Serializable {
      * 
      * @param entity
      */
-    public void setModified(ConfigurationEntity entity) {
+    public <T> void setModified(T entity) {
         final Date now = new Date();
-                    
-        entity.setModifiedAt(now);
-        entity.setModifiedBy(getUserId());
+        
+        if (entity instanceof ConfigurationEntity) {
+            final ConfigurationEntity configEntity = (ConfigurationEntity) entity;
+            configEntity.setModifiedAt(now);
+            configEntity.setModifiedBy(getUserId());
+        }
     }
     
     
@@ -38,15 +41,21 @@ public class ConfigurationEntityUtility implements Serializable {
      * @param parent
      * @param child
      */
-    public void setModified(ConfigurationEntity parent, ConfigurationEntity child) {
+    public <T,S> void setModified(T parent, S child) {
         final Date now = new Date();
         final String username = getUserId();
-            
-        parent.setModifiedAt(now);
-        parent.setModifiedBy(username);
         
-        child.setModifiedAt(now);
-        child.setModifiedBy(username);
+        if (parent instanceof ConfigurationEntity) {
+            final ConfigurationEntity configParent = (ConfigurationEntity) parent;
+            configParent.setModifiedAt(now);
+            configParent.setModifiedBy(username);
+        }
+        
+        if (child instanceof ConfigurationEntity) {
+            final ConfigurationEntity configChild = (ConfigurationEntity) child;
+            configChild.setModifiedAt(now);
+            configChild.setModifiedBy(username);
+        }
     }
 
     /**

@@ -18,7 +18,7 @@ public class CCDBPackager {
 	public static WebArchive createWebArchive() {
 
 	    final File[] libraries = Maven.resolver().loadPomFromFile("pom.xml").importRuntimeDependencies().resolve().withTransitivity().asFile();
-	    WebArchive war = ShrinkWrap.create(WebArchive.class, "confmgr_test.war")
+	    final WebArchive war = ShrinkWrap.create(WebArchive.class, "confmgr_test.war")
             .addAsLibraries(libraries)
             .addPackages(true, 
                     "org.openepics.discs.conf.ent", 
@@ -32,8 +32,13 @@ public class CCDBPackager {
             .addAsWebInfResource("beans.xml")
             .addAsWebInfResource("jboss-web.xml")
             .addAsWebInfResource("web.xml");
+	    
+//	    // Add all files in datasets 
+//	    final File datasetsDir = new File("src/test/resources/datasets");
+//	    for (File f : datasetsDir.listFiles()) {
+//	        war.addAsResource(f, "datasets/" + f.getName());
+//	    }
             
-
         return war;
 	}
 }

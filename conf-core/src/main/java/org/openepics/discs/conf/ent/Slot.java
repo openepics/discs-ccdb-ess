@@ -98,7 +98,7 @@ public class Slot extends ConfigurationEntity {
     private List<SlotPropertyValue> slotPropertyList;
 
     @ManyToMany
-    @JoinTable(name = "slot_tags",
+    @JoinTable(name = "slot_tag",
         joinColumns = { @JoinColumn(name = "slot_id") }, inverseJoinColumns = { @JoinColumn(name = "tag_id") })
     private Set<Tag> tags;
 
