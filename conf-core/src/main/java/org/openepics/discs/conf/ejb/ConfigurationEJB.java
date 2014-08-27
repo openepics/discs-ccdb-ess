@@ -44,6 +44,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
  * @author vuppala
  * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
  * @author Andraz Pozar <andraz.pozar@cosylab.com>
+ * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  */
 
 @Stateless public class ConfigurationEJB {
@@ -95,14 +96,20 @@ import org.openepics.discs.conf.util.CRUDOperation;
         em.merge(property);
     }
 
+    /** Deletes the property and returns <code>true</code> if deletion was successful.
+     * @param property - the property definition to delete.
+     * @return <code>true</code> indicates that deletion was possible and executed, <code>false</code> indicates
+     * that the property is referenced by some other entity and deletion was blocked.
+     */
     @CRUDOperation(operation=EntityTypeOperation.DELETE)
     @Audit
     @Authorized
-    public void deleteProperty(Property property) {
-        final Property mergedProp = em.find(Property.class, property.getId());
+    public boolean deleteProperty(Property property) {
+        final Property propToDelete = em.find(Property.class, property.getId());
         //mergedProp.getUnit().getPropertyList().remove(mergedProp);
         //mergedProp.getDataType().getPropertyList().remove(mergedProp);
-        em.remove(mergedProp);
+        em.remove(propToDelete);
+        return true;
     }
 
     // -------------------- Unit ---------------------
@@ -147,12 +154,18 @@ import org.openepics.discs.conf.util.CRUDOperation;
         em.merge(unit);
     }
 
+    /** Deletes the unit and returns <code>true</code> if deletion was successful.
+     * @param unit - the unit to delete.
+     * @return <code>true</code> indicates that deletion was possible and executed, <code>false</code> indicates
+     * that the unit is referenced by some other entity and deletion was blocked.
+     */
     @CRUDOperation(operation=EntityTypeOperation.DELETE)
     @Audit
     @Authorized
-    public void deleteUnit(Unit unit) {
-        final Unit mergedUnit = em.merge(unit);
-        em.remove(mergedUnit);
+    public boolean deleteUnit(Unit unit) {
+        final Unit unitToDelete = em.find(Unit.class, unit.getId());
+        em.remove(unitToDelete);
+        return true;
     }
 
     // ---------------- Data Types -------------------------

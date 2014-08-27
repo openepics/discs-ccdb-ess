@@ -26,7 +26,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
  *
  * @author vuppala
  * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
- *
+ * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  */
 @Stateless public class SlotEJB {
     private static final Logger logger = Logger.getLogger(SlotEJB.class.getCanonicalName());
@@ -93,12 +93,18 @@ import org.openepics.discs.conf.util.CRUDOperation;
         em.merge(slot);
     }
 
+    /** Deletes the slot and returns <code>true</code> if deletion was successful.
+     * @param slot - the slot to delete.
+     * @return <code>true</code> indicates that deletion was possible and executed, <code>false</code> indicates
+     * that the slot is referenced by some other entity and deletion was blocked.
+     */
     @CRUDOperation(operation=EntityTypeOperation.DELETE)
     @Audit
     @Authorized
-    public void deleteLayoutSlot(Slot slot) {
-        final Slot mergedSlot = em.merge(slot);
-        em.remove(mergedSlot);
+    public boolean deleteLayoutSlot(Slot slot) {
+        final Slot slotToDelete = em.find(Slot.class, slot.getId());
+        em.remove(slotToDelete);
+        return true;
     }
 
 
@@ -124,22 +130,28 @@ import org.openepics.discs.conf.util.CRUDOperation;
 
         entityUtility.setModified(mergedPropertyValue.getSlot(), mergedPropertyValue);
 
-        logger.log(Level.INFO, "Slot Property: id " + mergedPropertyValue.getId() + " name " + mergedPropertyValue.getProperty().getName());
+        logger.log(Level.FINE, "Slot Property: id " + mergedPropertyValue.getId() + " name " + mergedPropertyValue.getProperty().getName());
     }
 
+    /** Deletes the slot property value and returns <code>true</code> if deletion was successful.
+     * @param propertyValue - the slot property value to delete.
+     * @return <code>true</code> indicates that deletion was possible and executed, <code>false</code> indicates
+     * that the slot property value is referenced by some other entity and deletion was blocked.
+     */
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
     @Authorized
-    public void deleteSlotProp(SlotPropertyValue propertyValue) {
-        logger.log(Level.INFO, "deleting slot property id " + propertyValue.getId() + " name " + propertyValue.getProperty().getName());
+    public boolean deleteSlotProp(SlotPropertyValue propertyValue) {
+        logger.log(Level.FINE, "deleting slot property id " + propertyValue.getId() + " name " + propertyValue.getProperty().getName());
 
-        final SlotPropertyValue mergedPropertyValue = em.merge(propertyValue);
-        final Slot parent = mergedPropertyValue.getSlot();
+        final SlotPropertyValue propertyValueToDelete = em.find(SlotPropertyValue.class, propertyValue.getId());
+        final Slot parent = propertyValueToDelete.getSlot();
 
         entityUtility.setModified(parent);
 
-        parent.getSlotPropertyList().remove(mergedPropertyValue);
-        em.remove(mergedPropertyValue);
+        parent.getSlotPropertyList().remove(propertyValueToDelete);
+        em.remove(propertyValueToDelete);
+        return true;
     }
 
 
@@ -164,20 +176,26 @@ import org.openepics.discs.conf.util.CRUDOperation;
 
         entityUtility.setModified(mergedArtifact.getSlot(), mergedArtifact);
 
-        logger.log(Level.INFO, "Slot Artifact: name " + mergedArtifact.getName() + " description " + mergedArtifact.getDescription() + " uri " + mergedArtifact.getUri() + "is int " + mergedArtifact.isInternal());
+        logger.log(Level.FINE, "Slot Artifact: name " + mergedArtifact.getName() + " description " + mergedArtifact.getDescription() + " uri " + mergedArtifact.getUri() + "is int " + mergedArtifact.isInternal());
     }
 
+    /** Deletes the slot artifact and returns <code>true</code> if deletion was successful.
+     * @param artifact - the slot artifact to delete.
+     * @return <code>true</code> indicates that deletion was possible and executed, <code>false</code> indicates
+     * that the slot artifact is referenced by some other entity and deletion was blocked.
+     */
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
     @Authorized
-    public void deleteSlotArtifact(SlotArtifact artifact) {
-        final SlotArtifact mergedArtifact = em.merge(artifact);
-        final Slot parent = mergedArtifact.getSlot();
+    public boolean deleteSlotArtifact(SlotArtifact artifact) {
+        final SlotArtifact artifactToDelete = em.find(SlotArtifact.class, artifact.getId());
+        final Slot parent = artifactToDelete.getSlot();
 
         entityUtility.setModified(parent);
 
-        parent.getSlotArtifactList().remove(mergedArtifact);
-        em.remove(mergedArtifact);
+        parent.getSlotArtifactList().remove(artifactToDelete);
+        em.remove(artifactToDelete);
+        return true;
     }
 
 
@@ -195,15 +213,21 @@ import org.openepics.discs.conf.util.CRUDOperation;
     public void saveSlotPair(SlotPair slotPair) {
         em.merge(slotPair);
 
-        logger.log(Level.INFO, "saved slot pair: child " + slotPair.getChildSlot().getName() + " parent " + slotPair.getParentSlot().getName() + " relation ");
+        logger.log(Level.FINE, "saved slot pair: child " + slotPair.getChildSlot().getName() + " parent " + slotPair.getParentSlot().getName() + " relation ");
     }
 
+    /** Deletes the slot pair and returns <code>true</code> if deletion was successful.
+     * @param slotPair - the slot pair to delete.
+     * @return <code>true</code> indicates that deletion was possible and executed, <code>false</code> indicates
+     * that the slot pair is referenced by some other entity and deletion was blocked.
+     */
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
     @Authorized
-    public void deleteSlotPair(SlotPair slotPair) {
-        final SlotPair mergedSlotPair = em.merge(slotPair);
-        em.remove(mergedSlotPair);
+    public boolean deleteSlotPair(SlotPair slotPair) {
+        final SlotPair slotPairToDelete = em.find(SlotPair.class, slotPair.getId());
+        em.remove(slotPairToDelete);
+        return true;
     }
 
 

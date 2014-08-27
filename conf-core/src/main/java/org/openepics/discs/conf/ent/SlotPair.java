@@ -30,7 +30,7 @@ public class SlotPair implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Integer id;
+    private Long id;
 
     @Version
     private Long version;
@@ -56,7 +56,7 @@ public class SlotPair implements Serializable {
         this.slotRelation = slotRelation;
     }
 
-    public Integer getId() { return id; }
+    public Long getId() { return id; }
 
     public Slot getChildSlot() { return childSlot; }
     public void setChildSlot(Slot childSlot) { this.childSlot = childSlot; }

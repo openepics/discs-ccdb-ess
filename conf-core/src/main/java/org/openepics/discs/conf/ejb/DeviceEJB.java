@@ -22,6 +22,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
 /**
  * @author vuppala
  * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
+ * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  */
 @Stateless public class DeviceEJB {
     private static final Logger logger = Logger.getLogger(DeviceEJB.class.getCanonicalName());
@@ -34,8 +35,8 @@ import org.openepics.discs.conf.util.CRUDOperation;
         final CriteriaQuery<Device> cq = em.getCriteriaBuilder().createQuery(Device.class);
         cq.from(Device.class);
         final List<Device> comps = em.createQuery(cq).getResultList();
-        
-        logger.log(Level.INFO, "Number of devices: {0}", comps.size());
+
+        logger.log(Level.FINE, "Number of devices: {0}", comps.size());
 
         return comps;
     }
@@ -53,7 +54,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
         }
         return device;
     }
-    
+
     @CRUDOperation(operation=EntityTypeOperation.CREATE)
     @Audit
     @Authorized
@@ -70,12 +71,18 @@ import org.openepics.discs.conf.util.CRUDOperation;
         em.merge(device);
     }
 
+    /** Deletes the device and returns <code>true</code> if deletion was successful.
+     * @param device - the device to delete.
+     * @return <code>true</code> indicates that deletion was possible and executed, <code>false</code> indicates
+     * that the device is referenced by some other entity and deletion was blocked.
+     */
     @CRUDOperation(operation=EntityTypeOperation.DELETE)
     @Audit
     @Authorized
-    public void deleteDevice(Device device) {
-        final Device mergedDevice = em.merge(device);
-        em.remove(mergedDevice);
+    public boolean deleteDevice(Device device) {
+        final Device deviceToDelete = em.find(Device.class, device.getId());
+        em.remove(deviceToDelete);
+        return true;
     }
 
     // ------------------ Device Property ---------------
@@ -85,37 +92,43 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @Authorized
     public void addDeviceProperty(DevicePropertyValue propertyValue) {
         final Device parent = propertyValue.getDevice();
-        
+
         entityUtility.setModified(parent, propertyValue);
-        
+
         parent.getDevicePropertyList().add(propertyValue);
         em.merge(parent);
-    }
-    
-    @CRUDOperation(operation=EntityTypeOperation.UPDATE)
-    @Audit
-    @Authorized
-    public void saveDeviceProp(DevicePropertyValue propertyValue) {
-        final DevicePropertyValue mergedPropertyValue = em.merge(propertyValue);
-        
-        entityUtility.setModified(mergedPropertyValue.getDevice(), mergedPropertyValue);
-        
-        logger.log(Level.INFO, "Device Property: id " + mergedPropertyValue.getId() + " name " + mergedPropertyValue.getProperty().getName());
     }
 
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
     @Authorized
-    public void deleteDeviceProp(DevicePropertyValue propertyValue) {
-        logger.log(Level.INFO, "deleting comp type property id " + propertyValue.getId() + " name " + propertyValue.getProperty().getName());
-        
-        final DevicePropertyValue mergedPropertyvalue = em.merge(propertyValue);
-        final Device parent = mergedPropertyvalue.getDevice();
-        
+    public void saveDeviceProp(DevicePropertyValue propertyValue) {
+        final DevicePropertyValue mergedPropertyValue = em.merge(propertyValue);
+
+        entityUtility.setModified(mergedPropertyValue.getDevice(), mergedPropertyValue);
+
+        logger.log(Level.FINE, "Device Property: id " + mergedPropertyValue.getId() + " name " + mergedPropertyValue.getProperty().getName());
+    }
+
+    /** Deletes the device property value and returns <code>true</code> if deletion was successful.
+     * @param propertyValue - the device property value to delete.
+     * @return <code>true</code> indicates that deletion was possible and executed, <code>false</code> indicates
+     * that the device property value is referenced by some other entity and deletion was blocked.
+     */
+    @CRUDOperation(operation=EntityTypeOperation.UPDATE)
+    @Audit
+    @Authorized
+    public boolean deleteDeviceProp(DevicePropertyValue propertyValue) {
+        logger.log(Level.FINE, "deleting comp type property id " + propertyValue.getId() + " name " + propertyValue.getProperty().getName());
+
+        final DevicePropertyValue propertyValueToDelete = em.find(DevicePropertyValue.class, propertyValue.getId());
+        final Device parent = propertyValueToDelete.getDevice();
+
         entityUtility.setModified(parent);
-        
-        parent.getDevicePropertyList().remove(mergedPropertyvalue);
-        em.remove(mergedPropertyvalue);
+
+        parent.getDevicePropertyList().remove(propertyValueToDelete);
+        em.remove(propertyValueToDelete);
+        return true;
     }
 
 
@@ -125,9 +138,9 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @Authorized
     public void addDeviceArtifact(DeviceArtifact artifact) {
         final Device parent = artifact.getDevice();
-        
+
         entityUtility.setModified(parent, artifact);
-        
+
         parent.getDeviceArtifactList().add(artifact);
         em.merge(parent);
     }
@@ -137,22 +150,28 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @Authorized
     public void saveDeviceArtifact(DeviceArtifact artifact) {
         final DeviceArtifact mergedArtifact = em.merge(artifact);
-        
+
         entityUtility.setModified(mergedArtifact.getDevice(), mergedArtifact);
-        
-        logger.log(Level.INFO, "Device Type Artifact: name " + mergedArtifact.getName() + " description " + mergedArtifact.getDescription() + " uri " + mergedArtifact.getUri() + "is int " + mergedArtifact.isInternal());
+
+        logger.log(Level.FINE, "Device Type Artifact: name " + mergedArtifact.getName() + " description " + mergedArtifact.getDescription() + " uri " + mergedArtifact.getUri() + "is int " + mergedArtifact.isInternal());
     }
 
+    /** Deletes the device artifact and returns <code>true</code> if deletion was successful.
+     * @param artifact - the device artifact to delete.
+     * @return <code>true</code> indicates that deletion was possible and executed, <code>false</code> indicates
+     * that the device artifact is referenced by some other entity and deletion was blocked.
+     */
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
     @Authorized
-    public void deleteDeviceArtifact(DeviceArtifact artifact) {
-        final DeviceArtifact mergedArtifact = em.merge(artifact);        
-        final Device parent = mergedArtifact.getDevice();
-        
+    public boolean deleteDeviceArtifact(DeviceArtifact artifact) {
+        final DeviceArtifact artifactToDelete = em.find(DeviceArtifact.class, artifact.getId());
+        final Device parent = artifactToDelete.getDevice();
+
         entityUtility.setModified(parent);
-        
-        parent.getDeviceArtifactList().remove(mergedArtifact);
-        em.remove(mergedArtifact);
+
+        parent.getDeviceArtifactList().remove(artifactToDelete);
+        em.remove(artifactToDelete);
+        return true;
     }
 }
