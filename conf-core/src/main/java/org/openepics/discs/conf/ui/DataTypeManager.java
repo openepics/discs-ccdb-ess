@@ -12,24 +12,23 @@ import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
-import javax.faces.application.FacesMessage;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import org.openepics.discs.conf.ejb.ConfigurationEJB;
 import org.openepics.discs.conf.ent.DataType;
-import org.openepics.discs.conf.util.Utility;
 
 /**
  *
  * @author vuppala
+ * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  */
 @Named
 @ViewScoped
 public class DataTypeManager implements Serializable {
     @SuppressWarnings("unused")
-    private static final Logger logger = Logger.getLogger(DataTypeManager.class.getCanonicalName());    
-    
+    private static final Logger logger = Logger.getLogger(DataTypeManager.class.getCanonicalName());
+
     @EJB private ConfigurationEJB configurationEJB;
 
     private List<DataType> dataTypes;
@@ -42,15 +41,11 @@ public class DataTypeManager implements Serializable {
 
     @PostConstruct
     public void init() {
-        try {
-            dataTypes = configurationEJB.findDataTypes();
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Error in getting data types", " ");
-        }
+        dataTypes = null;
     }
 
     public List<DataType> getDataTypes() {
+        if (dataTypes == null) dataTypes = configurationEJB.findDataTypes();
         return dataTypes;
     }
 

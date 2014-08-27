@@ -48,18 +48,19 @@ import com.google.common.io.ByteStreams;
  *
  * @author vuppala
  * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
+ * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  */
 @Named
 @ViewScoped
 public class ComponentTypeManager implements Serializable {
     private static final Logger logger = Logger.getLogger(ComponentTypeManager.class.getCanonicalName());
-    
+
     @EJB private ComptypeEJB comptypeEJB;
-  
+
     @Inject private BlobStore blobStore;
     @Inject private DataLoaderHandler dataLoaderHandler;
     @Inject @ComponentTypesLoaderQualifier private DataLoader compTypesDataLoader;
-    
+
     private byte[] importData;
     private String importFileName;
     private DataLoaderResult loaderResult;
@@ -101,14 +102,8 @@ public class ComponentTypeManager implements Serializable {
 
     @PostConstruct
     public void init() {
-        try {
-            objects = comptypeEJB.findComponentType();
-            logger.log(Level.INFO, "Property org.openepics.discs.conf.prop.RepoPath {0}", blobStore.getBlobStoreRoot());
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-            logger.log(Level.SEVERE, "Cannot retrieve component types");
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Error in getting component types", " ");
-        }
+        objects = null;
+        logger.log(Level.INFO, "Property org.openepics.discs.conf.prop.RepoPath {0}", blobStore.getBlobStoreRoot());
     }
 
     // ----------------- Component Type ------------------------------
@@ -139,7 +134,7 @@ public class ComponentTypeManager implements Serializable {
     public void onCompTypeDelete(ActionEvent event) {
         try {
             comptypeEJB.deleteComponentType(selectedObject);
-            objects.remove(selectedObject);
+            getObjects().remove(selectedObject);
             selectedObject = null;
             inputObject = null;
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted", "");
@@ -164,7 +159,7 @@ public class ComponentTypeManager implements Serializable {
 
             if (selectedOp == 'a') {
                 selectedObject = inputObject;
-                objects.add(selectedObject);
+                getObjects().add(selectedObject);
             }
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Saved", "");
         } catch (Exception e) {
@@ -445,7 +440,7 @@ public class ComponentTypeManager implements Serializable {
             ComptypeAsm prt = new ComptypeAsm("");
 
             prt.setParentType(selectedObject);
-            
+
             selectedParts.add(prt);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "New assembly element", "");
         } catch (Exception e) {
@@ -558,6 +553,7 @@ public class ComponentTypeManager implements Serializable {
     }
 
     public List<ComponentType> getObjects() {
+        if (objects == null) objects = comptypeEJB.findComponentType();
         return objects;
     }
 

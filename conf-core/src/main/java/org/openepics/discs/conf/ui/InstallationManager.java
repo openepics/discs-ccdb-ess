@@ -37,12 +37,13 @@ import org.primefaces.model.UploadedFile;
 /**
  *
  * @author vuppala
+ * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  */
 @Named
 @ViewScoped
 public class InstallationManager implements Serializable {
     private static final Logger logger = Logger.getLogger(InstallationManager.class.getCanonicalName());
-    
+
     @EJB private InstallationEJB installationEJB;
     @Inject private BlobStore blobStore;
 
@@ -88,7 +89,7 @@ public class InstallationManager implements Serializable {
     }
 
     public void onIRecAdd(ActionEvent event) {
-        selectedOp = 'a';        
+        selectedOp = 'a';
         inputObject = new InstallationRecord("1", new Date());
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Add", "");
     }
@@ -101,7 +102,7 @@ public class InstallationManager implements Serializable {
 
     public void onIRecDelete(ActionEvent event) {
         installationEJB.deleteIRecord(selectedObject);
-        objects.remove(selectedObject);
+        getObjects().remove(selectedObject);
         selectedObject = null;
         inputObject = null;
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted", "");
@@ -119,7 +120,7 @@ public class InstallationManager implements Serializable {
 
         if (selectedOp == 'a') {
             selectedObject = inputObject;
-            objects.add(selectedObject);
+            getObjects().add(selectedObject);
         }
 
         // tell the client if the operation was a success so that it can hide
@@ -241,6 +242,7 @@ public class InstallationManager implements Serializable {
     // -------------------------- Getter/Setters -----------------------
 
     public List<InstallationRecord> getObjects() {
+        if (objects == null) objects = installationEJB.findInstallationRec();
         return objects;
     }
 

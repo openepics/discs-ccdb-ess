@@ -48,7 +48,8 @@ import com.google.common.io.ByteStreams;
  *
  * @author vuppala
  * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
- * 
+ * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
+ *
  */
 @Named
 @ViewScoped
@@ -107,13 +108,7 @@ public class DeviceManager implements Serializable {
 
     @PostConstruct
     public void init() {
-        try {
-            objects = deviceEJB.findDevice();
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-            logger.log(Level.SEVERE, "Cannot retrieve component types");
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Error in getting component types", " ");
-        }
+        objects = null;
     }
 
 
@@ -144,7 +139,7 @@ public class DeviceManager implements Serializable {
     public void onDeviceDelete(ActionEvent event) {
         try {
             deviceEJB.deleteDevice(selectedObject);
-            objects.remove(selectedObject);
+            getObjects().remove(selectedObject);
             selectedObject = null;
             inputObject = null;
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted", "");
@@ -162,7 +157,7 @@ public class DeviceManager implements Serializable {
             if (selectedOp == 'a') {
                 deviceEJB.addDevice(inputObject);
                 selectedObject = inputObject;
-                objects.add(selectedObject);
+                getObjects().add(selectedObject);
             } else {
                 deviceEJB.saveDevice(inputObject);
             }
@@ -255,13 +250,13 @@ public class DeviceManager implements Serializable {
                 }
                 inputProperty.setPropValue(repoFileId);
             }
-            
+
             if (propertyOperation == 'a') {
                 deviceEJB.addDeviceProperty(inputProperty);
             } else {
                 deviceEJB.saveDeviceProp(inputProperty);
             }
-         
+
             logger.log(Level.INFO, "returned artifact id is " + inputProperty.getId());
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Property saved", "");
             RequestContext.getCurrentInstance().addCallbackParam("success", true);
@@ -328,7 +323,7 @@ public class DeviceManager implements Serializable {
             if (selectedArtifacts == null) {
                 selectedArtifacts = new ArrayList<>();
             }
-            
+
             inputArtifact = new DeviceArtifact("", false, "", "");
             inputArtifact.setDevice(selectedObject);
             fileUploaded = false;
@@ -358,7 +353,7 @@ public class DeviceManager implements Serializable {
             } else {
                 deviceEJB.saveDeviceArtifact(inputArtifact);
             }
-            
+
             logger.log(Level.INFO,"returned artifact id is " + inputArtifact.getId());
 
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Artifact saved", "");
@@ -597,6 +592,7 @@ public class DeviceManager implements Serializable {
     }
 
     public List<Device> getObjects() {
+        if (objects == null) objects = deviceEJB.findDevice();
         return objects;
     }
 

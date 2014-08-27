@@ -12,21 +12,20 @@ import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
-import javax.faces.application.FacesMessage;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import org.openepics.discs.conf.ejb.ConfigurationEJB;
 import org.openepics.discs.conf.ent.SlotRelation;
-import org.openepics.discs.conf.util.Utility;
 
 /**
  *
  * @author vuppala
+ * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  */
 @Named
 @ViewScoped
-public class RelationManager implements Serializable {    
+public class RelationManager implements Serializable {
     @SuppressWarnings("unused")
     private static final Logger logger = Logger.getLogger(RelationManager.class.getCanonicalName());
 
@@ -41,15 +40,11 @@ public class RelationManager implements Serializable {
 
     @PostConstruct
     public void init() {
-        try {
-            objects = configurationEJB.findSlotRelations();
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Error in getting slot relationships", " ");
-        }
+        objects = null;
     }
 
     public List<SlotRelation> getObjects() {
+        if (objects == null) objects = configurationEJB.findSlotRelations();
         return objects;
     }
 
