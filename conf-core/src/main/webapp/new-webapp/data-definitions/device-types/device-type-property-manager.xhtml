@@ -4,8 +4,79 @@
     xmlns:h="http://java.sun.com/jsf/html"
     xmlns:ui="http://java.sun.com/jsf/facelets"
     xmlns:p="http://primefaces.org/ui">
-    <h:form id="test">
-        <h:outputText value="#{comptypePropertiesController.deviceType.name}" />
-        <h:outputText value="blah" />          
-    </h:form>
+    <ui:define name="content">
+	      <h:panelGroup id="deviceTypePropertiesManagerContainer" layout="block" class="container">
+	           <h:form id="deviceTypePropertiesManagerForm">
+		           <h:panelGroup class="properties-parent-info" layout="block">
+		               <h:panelGrid columns="2" style="width: 100%; text-align: top;" border="0">  
+		                   
+		                   <h:outputLabel style="font-size: 12px" value="Device type name:" />
+		                   <h:outputText style="font-size: 12px" value="#{comptypeAttributesController.deviceType.name}" />
+	                   		                   		                   
+		                   <h:outputLabel style="font-size: 12px" value="Description:" />
+	                       <p:inputTextarea value="#{comptypeAttributesController.deviceType.description}"  rows="5" readonly="true" style="width: 100%; font-size: 12px"/>
+	                   </h:panelGrid>
+	               </h:panelGroup>
+		           
+		           <h:panelGroup class="property-values" layout="block">
+		              <p:commandButton id="addButton" value="Add" type="button" icon="ui-icon-extlink"/>
+                      <p:menu overlay="true" trigger="addButton" my="left top" at="left bottom">
+                            <p:menuitem value="Type Property" oncomplete="deviceTypeProperty.show()" actionListener="#{comptypeAttributesController.prepareForAdd}" />
+                            <p:menuitem value="Property Definition" oncomplete="deviceTypePropertyDefinition.show()" actionListener="#{comptypeAttributesController.prepareForAdd}" />
+                            <p:menuitem value="Tag" oncomplete="deviceTypeTag.show()" actionListener="#{comptypeAttributesController.prepareForAdd}"/>
+                            <p:menuitem value="Artifact"/>
+		               </p:menu>
+		               <p:dataTable var="attribute" value="#{comptypeAttributesController.attributes}" rows="15" paginator="true" paginatorPosition="bottom">
+			                <p:column headerText="Name" sortBy="#{attribute.name}">
+			                    <h:outputText value="#{attribute.name}" />
+			                </p:column>
+			    
+			                <p:column headerText="Type">
+			                    <h:outputText value="#{attribute.type.name}" />
+			                </p:column>
+			                
+			                <p:column headerText="Kind">
+			                    <h:outputText value="#{attribute.kind}" />
+			                </p:column>
+			                
+			                <p:column headerText="Unit" >
+			                    <h:outputText value="#{attribute.unit.name}" />
+			                </p:column>
+			    
+			                <p:column headerText="Actions">
+			                    <p:commandButton icon="ui-icon-trash" title="Delete" ajax="true" >
+			                    </p:commandButton>
+			                    <p:commandButton icon="ui-icon-pencil" title="Edit" ajax="true" rendered="#{attribute.kind != 'Definition'}" >
+			                    </p:commandButton>
+			                </p:column>
+	                    </p:dataTable>
+	               </h:panelGroup>
+                </h:form>
+                
+	        <ui:include src="../add-or-modify-dialogs/property-value.xhtml" >
+	            <ui:param name="formId" value="deviceTypePropertyForm" />
+	            <ui:param name="dialogTitle" value="Add new device type property" />
+	            <ui:param name="widgetName" value="deviceTypeProperty" />
+	            <ui:param name="controller" value="#{comptypeAttributesController}" />
+	            <ui:param name="parentForm" value=":deviceTypePropertiesManagerContainer" />
+	        </ui:include>
+	        
+	        <ui:include src="../add-or-modify-dialogs/property-definition.xhtml" >
+                <ui:param name="formId" value="deviceTypePropertyDefinitionForm" />
+                <ui:param name="dialogTitle" value="Add new device type property definition" />
+                <ui:param name="widgetName" value="deviceTypePropertyDefinition" />
+                <ui:param name="controller" value="#{comptypeAttributesController}" />
+                <ui:param name="parentForm" value=":deviceTypePropertiesManagerContainer" />
+            </ui:include>
+            
+            <ui:include src="../add-or-modify-dialogs/tag.xhtml" >
+                <ui:param name="formId" value="deviceTypeTagForm" />
+                <ui:param name="dialogTitle" value="Add new device type tag" />
+                <ui:param name="widgetName" value="deviceTypeTag" />
+                <ui:param name="controller" value="#{comptypeAttributesController}" />
+                <ui:param name="parentForm" value=":deviceTypePropertiesManagerContainer" />
+            </ui:include>
+            
+        </h:panelGroup>   
+    </ui:define>
 </ui:composition>

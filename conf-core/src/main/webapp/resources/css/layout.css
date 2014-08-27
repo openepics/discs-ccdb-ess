@@ -60,9 +60,23 @@ body {
 }
 
 .navigation {
-	height: 100%;
     float: left;
     width: 180px;
+}
+
+.container {
+    margin: 0 auto;
+    width: 100%;
+}
+
+.properties-parent-info {
+	float: left;
+	width: 20%;
+}
+
+.property-values {
+    float: right;
+    width: 75%;
 }
 
 .menu {
@@ -127,8 +141,8 @@ body {
     /* background-color: #FFFFFF;  */
 }
 
-#bottom {
-    position: relative;
+.bottom {
+    position: bottom;
     color:  #009999;
     padding: 5px;
     /* margin: 10px 0px 0px 0px; */
