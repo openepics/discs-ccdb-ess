@@ -9,12 +9,10 @@ package org.openepics.discs.conf.ui;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
-import javax.faces.application.FacesMessage;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
@@ -22,7 +20,6 @@ import org.openepics.discs.conf.ejb.ConfigurationEJB;
 import org.openepics.discs.conf.ent.AuditRecord;
 import org.openepics.discs.conf.ent.ConfigurationEntity;
 import org.openepics.discs.conf.ent.EntityType;
-import org.openepics.discs.conf.util.Utility;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -52,17 +49,12 @@ public class AuditManager implements Serializable {
     @PostConstruct
     public void init() {
         // TODO remove after new-webapp becomes the only user.
-        try {
-            objects = configurationEJB.findAuditRecords();
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-            logger.log(Level.SEVERE, "Cannot retrieve audit records");
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Error in getting audit records", " ");
-        }
+        objects = null;
     }
 
     // TODO remove after new-webapp becomes the only user.
     public List<AuditRecord> getObjects() {
+        if (objects == null) objects = configurationEJB.findAuditRecords();
         return objects;
     }
 

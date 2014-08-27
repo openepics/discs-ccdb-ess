@@ -76,7 +76,7 @@ public class PropertyManager implements Serializable {
 
     @PostConstruct
     public void init() {
-        properties = configurationEJB.findProperties();
+        properties = null;
         selectedProperty = null;
         resetFields();
     }
@@ -139,6 +139,7 @@ public class PropertyManager implements Serializable {
     }
 
     public List<Property> getObjects() {
+        if (properties == null) properties = configurationEJB.findProperties();
         return properties;
     }
 

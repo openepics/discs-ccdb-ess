@@ -40,12 +40,13 @@ import org.primefaces.model.UploadedFile;
 /**
  *
  * @author vuppala
+ * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  */
 @Named
 @ViewScoped
 public class AlignmentManager implements Serializable{
     private static final Logger logger = Logger.getLogger(AlignmentManager.class.getCanonicalName());
-    
+
     @EJB private AlignmentEJB alignmentEJB;
     @Inject private BlobStore blobStore;
 
@@ -83,13 +84,7 @@ public class AlignmentManager implements Serializable{
 
     @PostConstruct
     public void init() {
-        try {
-            objects = alignmentEJB.findAlignmentRec();
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-            logger.log(Level.SEVERE, "Cannot retrieve alignment records");
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Error in getting alignment records", " ");
-        }
+        objects = null;
     }
 
     // ----------------- Alignment Record  ------------------------------
@@ -118,7 +113,7 @@ public class AlignmentManager implements Serializable{
     public void onAlignRecDelete(ActionEvent event) {
         try {
             alignmentEJB.deleteAlignment(selectedObject);
-            objects.remove(selectedObject);
+            getObjects().remove(selectedObject);
             selectedObject = null;
             inputObject = null;
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted", "");
@@ -138,7 +133,7 @@ public class AlignmentManager implements Serializable{
 
             if (selectedOp == 'a') {
                 selectedObject = inputObject;
-                objects.add(selectedObject);
+                getObjects().add(selectedObject);
             }
             // tell the client if the operation was a success so that it can hide
             RequestContext.getCurrentInstance().addCallbackParam("success", true);
@@ -483,6 +478,7 @@ public class AlignmentManager implements Serializable{
     }
 
     public List<AlignmentRecord> getObjects() {
+        if (objects == null) objects = alignmentEJB.findAlignmentRec();
         return objects;
     }
 

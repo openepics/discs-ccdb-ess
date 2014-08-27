@@ -44,6 +44,7 @@ import com.google.common.io.ByteStreams;
 /**
  *
  * @author vuppala
+ * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  */
 @Named
 @ViewScoped
@@ -53,7 +54,7 @@ public class SlotManager implements Serializable {
     @EJB private SlotEJB slotEJB;
     @Inject private BlobStore blobStore;
     @Inject private DataLoaderHandler dataLoaderHandler;
-   
+
     private List<Slot> objects;
     private List<Slot> sortedObjects;
     private List<Slot> filteredObjects;
@@ -103,14 +104,7 @@ public class SlotManager implements Serializable {
 
     @PostConstruct
     private void init() {
-        try {
-            objects = slotEJB.findLayoutSlot();
-            // inputPartSlot = new Slot();
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-            logger.log(Level.SEVERE, "Cannot retrieve component types");
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Error in getting component types", " ");
-        }
+        objects = null;
     }
 
     // ----------------- Slot  ------------------------------
@@ -141,7 +135,7 @@ public class SlotManager implements Serializable {
 
     public void onSlotDelete(ActionEvent event) {
         slotEJB.deleteLayoutSlot(selectedObject);
-        objects.remove(selectedObject);
+        getObjects().remove(selectedObject);
         selectedObject = null;
         inputObject = null;
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted", "");
@@ -154,7 +148,7 @@ public class SlotManager implements Serializable {
 
         if (selectedOp == 'a') {
             selectedObject = inputObject;
-            objects.add(selectedObject);
+            getObjects().add(selectedObject);
         }
         // tell the dialog panel if the operation was a success so that it can hide
         RequestContext.getCurrentInstance().addCallbackParam("success", true);
@@ -526,6 +520,7 @@ public class SlotManager implements Serializable {
 
     // --------------------- Setters and getters --------------------
     public List<Slot> getObjects() {
+        if (objects == null) objects = slotEJB.findLayoutSlot();
         return objects;
     }
 

@@ -14,7 +14,6 @@ import java.util.List;
 
 import javax.annotation.ManagedBean;
 import javax.annotation.PostConstruct;
-import javax.faces.application.FacesMessage;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -26,7 +25,6 @@ import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.ejb.ConfigurationEJB;
 import org.openepics.discs.conf.ent.Unit;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
-import org.openepics.discs.conf.util.Utility;
 import org.primefaces.event.FileUploadEvent;
 
 import com.google.common.io.ByteStreams;
@@ -34,6 +32,7 @@ import com.google.common.io.ByteStreams;
 /**
  *
  * @author vuppala
+ * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  */
 @Named
 @ManagedBean
@@ -58,15 +57,11 @@ public class UnitManager implements Serializable {
 
     @PostConstruct
     public void init() {
-        try {
-            units = configurationEJB.findUnits();
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Error in getting units", " ");
-        }
+        units = null;
     }
 
     public List<Unit> getUnits() {
+        if (units == null) units = configurationEJB.findUnits();
         return units;
     }
 
