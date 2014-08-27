@@ -33,9 +33,9 @@
 					<p:commandButton icon="ui-icon-pencil" title="Edit" ajax="true"	oncomplete="modifyProperty.show()">
 						<f:setPropertyActionListener value="#{property}" target="#{propertyManager.selectedPropertyToModify}" />
 					</p:commandButton>
-					<p:commandButton icon="ui-icon-clock" title="Log" ajax="true" oncomplete="PF('propertyLog').show()">
-					    <f:setPropertyActionListener value="#{property}" target="#{propertyManager.selectedPropertyForLog}" />
-					</p:commandButton>
+					<p:commandButton icon="ui-icon-clock" title="Log" update=":propertyLogForm" oncomplete="propertyLog.show()">
+                    <f:ajax event="click" listener="#{auditManager.selectEntityForLog(property, 'PROPERTY')}" />
+                </p:commandButton>
 				</p:column>
 			</p:dataTable>
 			

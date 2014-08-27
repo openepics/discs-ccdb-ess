@@ -209,12 +209,13 @@ import org.openepics.discs.conf.util.CRUDOperation;
         return auditRecords;
     }
 
-    public List<AuditRecord> findAuditRecordsByEntityIdAndType(Long entityId, EntityType entityType) {
-        final List<AuditRecord> auditRecords = em.createNamedQuery("AuditRecord.findByEntityIdAndType", AuditRecord.class).setParameter("entityId", entityId).setParameter("entityType", entityType).getResultList();
+    public List<AuditRecord> findAuditRecordsByEntityId(Long entityId, EntityType entityType) {
+        final List<AuditRecord> auditRecords = em.createNamedQuery("AuditRecord.findByEntity", AuditRecord.class)
+                .setParameter("entityId", entityId).setParameter("entityType", entityType).getResultList();
         return auditRecords == null ? new ArrayList<AuditRecord>() : auditRecords;
     }
 
-    public AuditRecord findDAuditRecord(int id) {
+    public AuditRecord findAuditRecord(Long id) {
         return em.find(AuditRecord.class, id);
     }
 }

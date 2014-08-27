@@ -594,7 +594,7 @@ public class ComponentTypeManager implements Serializable {
     public ComponentType getSelectedDeviceTypeForLog() { return selectedDeviceType; }
     public void setSelectedDeviceTypeForLog(ComponentType selectedDeviceType) {
         this.selectedDeviceType = selectedDeviceType;
-        auditRecordsForEntity = configurationEJB.findAuditRecordsByEntityIdAndType(selectedDeviceType.getId(), EntityType.COMPONENT_TYPE);
+        auditRecordsForEntity = configurationEJB.findAuditRecordsByEntityId(selectedDeviceType.getId(), EntityType.COMPONENT_TYPE);
         RequestContext.getCurrentInstance().update("deviceTypeLogForm:deviceTypeLog");
     }
 

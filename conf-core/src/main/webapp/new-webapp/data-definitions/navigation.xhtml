@@ -50,4 +50,10 @@
         <ui:param name="widgetName" value="deviceTypeLog" />
         <ui:param name="managedBean" value="#{componentTypeManager}" />
     </ui:include>
+    
+    <ui:include src="/new-webapp/audit/audit-log-details.xhtml">
+        <ui:param name="formId" value="logDetailsForm" />
+        <ui:param name="dialogTitle" value="Long Entry Details" />
+        <ui:param name="widgetName" value="logDetails" />
+    </ui:include>
 </ui:composition>
