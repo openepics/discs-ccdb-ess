@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.faces.event.ActionEvent;
@@ -100,11 +99,6 @@ public class SlotManager implements Serializable {
      * Creates a new instance of SlotManager
      */
     public SlotManager() {
-    }
-
-    @PostConstruct
-    private void init() {
-        objects = null;
     }
 
     // ----------------- Slot  ------------------------------

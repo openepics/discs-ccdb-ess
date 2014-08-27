@@ -11,7 +11,6 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.logging.Logger;
 
-import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
@@ -44,12 +43,6 @@ public class AuditManager implements Serializable {
      * Creates a new instance of AuditManager
      */
     public AuditManager() {
-    }
-
-    @PostConstruct
-    public void init() {
-        // TODO remove after new-webapp becomes the only user.
-        objects = null;
     }
 
     // TODO remove after new-webapp becomes the only user.

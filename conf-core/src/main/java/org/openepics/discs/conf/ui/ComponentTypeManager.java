@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.faces.event.ActionEvent;
@@ -98,12 +97,6 @@ public class ComponentTypeManager implements Serializable {
      * Creates a new instance of ComponentTypeMananger
      */
     public ComponentTypeManager() {
-    }
-
-    @PostConstruct
-    public void init() {
-        objects = null;
-        logger.log(Level.INFO, "Property org.openepics.discs.conf.prop.RepoPath {0}", blobStore.getBlobStoreRoot());
     }
 
     // ----------------- Component Type ------------------------------

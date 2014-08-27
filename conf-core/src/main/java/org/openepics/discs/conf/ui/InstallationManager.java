@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.faces.event.ActionEvent;
@@ -65,17 +64,6 @@ public class InstallationManager implements Serializable {
      * Creates a new instance of InstallationManager
      */
     public InstallationManager() {
-    }
-
-    @PostConstruct
-    public void init() {
-        try {
-            objects = installationEJB.findInstallationRec();
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-            logger.log(Level.SEVERE, "Cannot retrieve installation records");
-            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error in getting installation records", e.getMessage());
-        }
     }
 
     // ----------------- Installation  ------------------------------

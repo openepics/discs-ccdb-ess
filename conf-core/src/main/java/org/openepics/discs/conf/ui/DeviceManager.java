@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.faces.event.ActionEvent;
@@ -105,12 +104,6 @@ public class DeviceManager implements Serializable {
      */
     public DeviceManager() {
     }
-
-    @PostConstruct
-    public void init() {
-        objects = null;
-    }
-
 
     // ----------------- Device  ------------------------------
     public void onDeviceSelect(SelectEvent event) {

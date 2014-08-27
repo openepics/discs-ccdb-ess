@@ -10,7 +10,6 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.logging.Logger;
 
-import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
@@ -32,15 +31,8 @@ public class RelationManager implements Serializable {
     @EJB private ConfigurationEJB configurationEJB;
 
     private List<SlotRelation> objects;
-    /**
-     * Creates a new instance of RelationManager
-     */
-    public RelationManager() {
-    }
 
-    @PostConstruct
-    public void init() {
-        objects = null;
+    public RelationManager() {
     }
 
     public List<SlotRelation> getObjects() {

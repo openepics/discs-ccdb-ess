@@ -10,7 +10,6 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.logging.Logger;
 
-import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
@@ -37,11 +36,6 @@ public class DataTypeManager implements Serializable {
      * Creates a new instance of DataTypeManager
      */
     public DataTypeManager() {
-    }
-
-    @PostConstruct
-    public void init() {
-        dataTypes = null;
     }
 
     public List<DataType> getDataTypes() {
