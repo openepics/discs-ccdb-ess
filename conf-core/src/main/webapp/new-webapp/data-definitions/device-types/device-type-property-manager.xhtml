@@ -6,6 +6,7 @@
     xmlns:p="http://primefaces.org/ui">
     <ui:define name="content">
 	      <h:panelGroup id="deviceTypePropertiesManagerContainer" layout="block" class="container">
+	           <p:growl showDetail="true" globalOnly="true" />
 	           <h:form id="deviceTypePropertiesManagerForm">
 		           <h:panelGroup class="properties-parent-info" layout="block">
 		               <h:panelGrid columns="2" style="width: 100%; text-align: top;" border="0">  
@@ -21,10 +22,10 @@
 		           <h:panelGroup class="property-values" layout="block">
 		              <p:commandButton id="addButton" value="Add" type="button" icon="ui-icon-extlink"/>
                       <p:menu overlay="true" trigger="addButton" my="left top" at="left bottom">
-                            <p:menuitem value="Type Property" oncomplete="deviceTypeProperty.show()" actionListener="#{comptypeAttributesController.prepareForAdd}" />
-                            <p:menuitem value="Property Definition" oncomplete="deviceTypePropertyDefinition.show()" actionListener="#{comptypeAttributesController.prepareForAdd}" />
+                            <p:menuitem value="Type Property" oncomplete="deviceTypeProperty.show()" actionListener="#{comptypeAttributesController.prepareForAdd}" update=":deviceTypePropertyForm:deviceTypeProperty"/>
+                            <p:menuitem value="Property Definition" oncomplete="deviceTypePropertyDefinition.show()" actionListener="#{comptypeAttributesController.prepareForAdd}" update=":deviceTypePropertyDefinitionForm:deviceTypePropertyDefinition"/>
                             <p:menuitem value="Tag" oncomplete="deviceTypeTag.show()" actionListener="#{comptypeAttributesController.prepareForAdd}"/>
-                            <p:menuitem value="Artifact"/>
+                            <p:menuitem value="Artifact" oncomplete="deviceTypeArtifact.show()" actionListener="#{comptypeAttributesController.prepareForAdd}" update=":deviceTypeArtifactForm:deviceTypeArtifact"/>
 		               </p:menu>
 		               <p:dataTable var="attribute" value="#{comptypeAttributesController.attributes}" rows="15" paginator="true" paginatorPosition="bottom">
 			                <p:column headerText="Name" sortBy="#{attribute.name}">
@@ -58,7 +59,6 @@
 	            <ui:param name="dialogTitle" value="Add new device type property" />
 	            <ui:param name="widgetName" value="deviceTypeProperty" />
 	            <ui:param name="controller" value="#{comptypeAttributesController}" />
-	            <ui:param name="parentForm" value=":deviceTypePropertiesManagerContainer" />
 	        </ui:include>
 	        
 	        <ui:include src="../add-or-modify-dialogs/property-definition.xhtml" >
@@ -66,7 +66,6 @@
                 <ui:param name="dialogTitle" value="Add new device type property definition" />
                 <ui:param name="widgetName" value="deviceTypePropertyDefinition" />
                 <ui:param name="controller" value="#{comptypeAttributesController}" />
-                <ui:param name="parentForm" value=":deviceTypePropertiesManagerContainer" />
             </ui:include>
             
             <ui:include src="../add-or-modify-dialogs/tag.xhtml" >
@@ -74,7 +73,13 @@
                 <ui:param name="dialogTitle" value="Add new device type tag" />
                 <ui:param name="widgetName" value="deviceTypeTag" />
                 <ui:param name="controller" value="#{comptypeAttributesController}" />
-                <ui:param name="parentForm" value=":deviceTypePropertiesManagerContainer" />
+            </ui:include>
+            
+            <ui:include src="../add-or-modify-dialogs/artifact.xhtml" >
+                <ui:param name="formId" value="deviceTypeArtifactForm" />
+                <ui:param name="dialogTitle" value="Add new device type artifact" />
+                <ui:param name="widgetName" value="deviceTypeArtifact" />
+                <ui:param name="controller" value="#{comptypeAttributesController}" />
             </ui:include>
             
         </h:panelGroup>   

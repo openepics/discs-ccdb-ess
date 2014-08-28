@@ -9,17 +9,21 @@
  */
 package org.openepics.discs.conf.ui;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.io.FilenameUtils;
 import org.openepics.discs.conf.ejb.ComptypeEJB;
 import org.openepics.discs.conf.ejb.ConfigurationEJB;
 import org.openepics.discs.conf.ent.ComponentType;
@@ -30,11 +34,14 @@ import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyAssociation;
 import org.openepics.discs.conf.ent.Tag;
 import org.openepics.discs.conf.ui.common.EntityAttributeView;
+import org.openepics.discs.conf.util.Utility;
 import org.primefaces.context.RequestContext;
+import org.primefaces.event.FileUploadEvent;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableList;
+import com.google.common.io.ByteStreams;
 
 /**
  * @author Andraz Pozar <andraz.pozar@cosylab.com>
@@ -50,8 +57,14 @@ public class ComptypeAttributesController implements Serializable {
     private Property property;
     private String propertyValue;
     private String tag;
+    private String artifactName;
+    private String artifactDescription;
+    private boolean isArtifactInternal;
+    private String artifactURI;
     private List<EntityAttributeView> attributes;
     private List<Property> filteredProperties;
+    private byte[] importData;
+    private String importFileName;
 
     @PostConstruct
     public void init() {
@@ -96,6 +109,10 @@ public class ComptypeAttributesController implements Serializable {
         property = null;
         propertyValue = null;
         tag = null;
+        artifactDescription = null;
+        isArtifactInternal = false;
+        artifactName = null;
+        artifactURI = null;
     }
 
     public ComponentType getDeviceType() {
@@ -104,7 +121,6 @@ public class ComptypeAttributesController implements Serializable {
 
     public void prepareForAdd() {
         resetFields();
-        RequestContext.getCurrentInstance().update("deviceTypePropertyForm:deviceTypeProperty");
     }
 
     public void addNewPropertyValue() {
@@ -113,11 +129,35 @@ public class ComptypeAttributesController implements Serializable {
         compTypePropertyValue.setProperty(property);
         compTypePropertyValue.setPropValue(propertyValue);
         comptypeEJB.addCompTypeProp(compTypePropertyValue);
+        RequestContext.getCurrentInstance().update("deviceTypePropertiesManagerContainer");
+        if (propertyValue == null) {
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "New device type property definition has been created");
+        } else {
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "New device type property value has been created");
+        }
         populateAttributesList();
     }
 
     public void addNewTag() {
+        RequestContext.getCurrentInstance().update("deviceTypePropertiesManagerContainer");
+        Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Failure", "Not yet implemented");
         populateAttributesList();
+    }
+
+    public String getImportFileName() { return importFileName; }
+
+    public void prepareImportPopup() {
+        importData = null;
+        importFileName = null;
+    }
+
+    public void handleImportFileUpload(FileUploadEvent event) {
+        try (InputStream inputStream = event.getFile().getInputstream()) {
+            this.importData = ByteStreams.toByteArray(inputStream);
+            this.importFileName = FilenameUtils.getName(event.getFile().getFileName());
+        } catch (IOException e) {
+            throw new RuntimeException();
+        }
     }
 
     public void setProperty(Property property) { this.property = property; }
@@ -130,4 +170,21 @@ public class ComptypeAttributesController implements Serializable {
     public void setTag(String tag) { this.tag = tag; }
 
     public List<Property> getFilteredProperties() { return filteredProperties; }
+
+    public String getArtifactName() { return artifactName; }
+    public void setArtifactName(String artifactName) { this.artifactName = artifactName; }
+
+    public String getArtifactDescription() { return artifactDescription; }
+    public void setArtifactDescription(String artifactDescription) { this.artifactDescription = artifactDescription; }
+
+    public boolean getIsArtifactInternal() { return isArtifactInternal; }
+    public void setIsArtifactInternal(boolean isArtifactInternal) { this.isArtifactInternal = isArtifactInternal; }
+
+    public String getArtifactURI() { return artifactURI; }
+    public void setArtifactURI(String artifactURI) { this.artifactURI = artifactURI; }
+
+
+
+
+
 }

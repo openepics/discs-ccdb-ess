@@ -86,6 +86,7 @@ public class PropertyManager implements Serializable {
         propertyToAdd.setDataType(dataType);
         propertyToAdd.setUnit(unit);
         configurationEJB.addProperty(propertyToAdd);
+        RequestContext.getCurrentInstance().update("dataDefinitionsContainer");
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "New property has been created");
         init();
     }
@@ -97,6 +98,7 @@ public class PropertyManager implements Serializable {
         selectedProperty.setAssociation(association);
         selectedProperty.setUnit(unit);
         configurationEJB.saveProperty(selectedProperty);
+        RequestContext.getCurrentInstance().update("dataDefinitionsContainer");
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Property was modified");
         init();
     }

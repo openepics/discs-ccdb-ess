@@ -1,0 +1,97 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html">
+
+	<h:form id="#{formId}" enctype="multipart/form-data">
+		<p:dialog widgetVar="#{widgetName}" id="#{widgetName}" modal="true"
+			resizable="false" closable="false" width="45em">
+			<f:facet name="header">
+				<h:outputText value="#{dialogTitle}" />
+			</f:facet>
+			<h:panelGroup id="group" display="block">
+				<p:panelGrid id="grp" style="text-align: left; width: 100%;">
+					<p:row>
+						<p:column>
+							<p:outputLabel for="artifactName" value="Name:" />
+						</p:column>
+						<p:column>
+							<h:panelGroup>
+								<p:inputText id="artifactName" styleClass="inputTextField" value="#{controller.artifactName}"
+									required="true" requiredMessage="Please an artifact name" />
+								<p:message for="artifactName" />
+							</h:panelGroup>
+						</p:column>
+					</p:row>
+	
+					<p:row>
+						<p:column>
+							<p:outputLabel for="artifactDesc" value="Description:" />
+						</p:column>
+						<p:column>
+							<h:panelGroup style="width: 100%">
+								<p:inputTextarea id="artifactDesc" rows="5" style="width: 100%"
+									counter="icounter" maxlength="254"
+									counterTemplate="{0} characters remaining." required="true"
+									requiredMessage="Please enter a description"
+									value="#{controller.artifactDescription}" />
+								<br />
+								<h:outputText id="icounter" />
+								<p:message for="artifactDesc" />
+							</h:panelGroup>
+						</p:column>
+					</p:row>
+	
+	           
+					<p:row>
+						<p:column>
+							<p:outputLabel value="File :" />
+						</p:column>
+						<p:column>
+							<p:selectBooleanCheckbox id="options" value="#{controller.isArtifactInternal}">
+								<p:ajax process="@this" update="#{formId}:urlLabel #{formId}:urlValue #{formId}:uploader" />
+							</p:selectBooleanCheckbox>
+						</p:column>
+					</p:row>
+	
+					<p:row>
+						<p:column>
+						    <h:panelGroup id="urlLabel">
+							 <h:outputLabel value="URL :" rendered="#{!controller.isArtifactInternal}"/>
+							</h:panelGroup>
+						</p:column>
+						<p:column>
+						    <h:panelGroup style="width: 100%" id="urlValue" >
+							  <p:inputTextarea id="artifactURI" rows="5" style="width: 100%" required="true" value="#{controller.artifactURI}" requiredMessage="Please enter an URL" rendered="#{!controller.isArtifactInternal}"/>
+							  <p:message for="artifactURI" />
+	                        </h:panelGroup>
+						</p:column>
+					</p:row>
+	
+					<p:row>
+						<p:column colspan="2">
+						    <h:panelGroup id="uploader">
+								<p:fileUpload
+									fileUploadListener="#{controller.handleImportFileUpload}" update="#{formId}:uploader #{formId}:uploadFile" mode="advanced" auto="false" fileLimit="1" dragDropSupport="true"
+									rendered="#{controller.importFileName == null and controller.isArtifactInternal}" />
+						      </h:panelGroup>
+						      <h:panelGroup id="uploadFile">
+						          <h:outputLabel value="#{controller.importFileName} was successfully uploaded" rendered="#{controller.importFileName != null}"/>
+						      </h:panelGroup>
+						</p:column>
+					</p:row>
+				</p:panelGrid>
+	
+				<p:commandButton value="Cancel" style="float: right"
+					onclick="#{widgetName}.hide();" update="grp" resetValues="true" />
+				<p:commandButton value="Submit" style="float: right" update="grp"
+					oncomplete="if (args &amp;&amp; !args.validationFailed) #{widgetName}.hide()"
+					action="#{controller.addNewTag}" disabled="#{controller.isArtifactInternal and controller.importFileName == null}"/>
+			</h:panelGroup>
+		</p:dialog>
+
+	</h:form>
+</ui:composition>

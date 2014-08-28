@@ -79,8 +79,17 @@ body {
     width: 75%;
 }
 
+.ui-panelgrid tr,
+.ui-panelgrid td {
+    border: none !important;
+}
+
 .menu {
     background-color: transparent; 
+}
+
+.inputTextField {
+	width: 100%;
 }
 
 .export-grid  img {

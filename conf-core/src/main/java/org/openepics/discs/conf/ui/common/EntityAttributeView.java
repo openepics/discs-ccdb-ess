@@ -33,11 +33,11 @@ public class EntityAttributeView {
     private @Nullable Unit unit;
     private @Nullable String value;
     private @Nullable String kind;
-    private Object object;
+    private Object entity;
     private EntityType entityType;
 
-    public EntityAttributeView(Object object, EntityType entityType) {
-        this.object = object;
+    public EntityAttributeView(Object entity, EntityType entityType) {
+        this.entity = entity;
         this.entityType = entityType;
         setParameters();
     }
@@ -55,8 +55,8 @@ public class EntityAttributeView {
     }
 
     private void setComponentTypeParameters() {
-        if (object instanceof ComptypePropertyValue) {
-            final ComptypePropertyValue compTypePropertyValue = (ComptypePropertyValue) object;
+        if (entity instanceof ComptypePropertyValue) {
+            final ComptypePropertyValue compTypePropertyValue = (ComptypePropertyValue) entity;
             name = compTypePropertyValue.getProperty().getName();
             type = compTypePropertyValue.getProperty().getDataType();
             unit = compTypePropertyValue.getProperty().getUnit();
@@ -66,10 +66,10 @@ public class EntityAttributeView {
             } else {
                 kind = "Type property";
             }
-        } else if (object instanceof ComptypeArtifact) {
-            final ComptypeArtifact compTypeArtifact = (ComptypeArtifact) object;
+        } else if (entity instanceof ComptypeArtifact) {
+            final ComptypeArtifact compTypeArtifact = (ComptypeArtifact) entity;
             name = compTypeArtifact.getName();
-        } else if (object instanceof Tag) {
+        } else if (entity instanceof Tag) {
             setTagParameters();
         } else {
             throw new UnhandledCaseException();
@@ -77,16 +77,16 @@ public class EntityAttributeView {
     }
 
     private void setDeviceParameters() {
-        if (object instanceof DevicePropertyValue) {
-            final DevicePropertyValue devicePropertyValue = (DevicePropertyValue) object;
+        if (entity instanceof DevicePropertyValue) {
+            final DevicePropertyValue devicePropertyValue = (DevicePropertyValue) entity;
             name = devicePropertyValue.getProperty().getName();
             type = devicePropertyValue.getProperty().getDataType();
             unit = devicePropertyValue.getProperty().getUnit();
             value = devicePropertyValue.getPropValue();
-        } else if (object instanceof DeviceArtifact) {
-            final DeviceArtifact deviceArtifact = (DeviceArtifact) object;
+        } else if (entity instanceof DeviceArtifact) {
+            final DeviceArtifact deviceArtifact = (DeviceArtifact) entity;
             name = deviceArtifact.getName();
-        } else if (object instanceof Tag) {
+        } else if (entity instanceof Tag) {
             setTagParameters();
         } else {
             throw new UnhandledCaseException();
@@ -94,27 +94,28 @@ public class EntityAttributeView {
     }
 
     private void setSlotParameters() {
-        if (object instanceof SlotPropertyValue) {
-            final SlotPropertyValue slotPropertyValue = (SlotPropertyValue) object;
+        if (entity instanceof SlotPropertyValue) {
+            final SlotPropertyValue slotPropertyValue = (SlotPropertyValue) entity;
             name = slotPropertyValue.getProperty().getName();
             type = slotPropertyValue.getProperty().getDataType();
             unit = slotPropertyValue.getProperty().getUnit();
             value = slotPropertyValue.getPropValue();
-        } else if (object instanceof DeviceArtifact) {
-            final SlotArtifact slotArtifact = (SlotArtifact) object;
+        } else if (entity instanceof DeviceArtifact) {
+            final SlotArtifact slotArtifact = (SlotArtifact) entity;
             name = slotArtifact.getName();
-        } else if (object instanceof Tag) {
+        } else if (entity instanceof Tag) {
             setTagParameters();
         } else {
             throw new UnhandledCaseException();
         }
     }
 
-    private void setTagParameters() { name = ((Tag) object).getName(); }
+    private void setTagParameters() { name = ((Tag) entity).getName(); }
 
     public String getName() { return name; }
     public DataType getType() { return type; }
     public Unit getUnit() { return unit; }
     public String getValue() { return value; }
     public String getKind() { return kind; }
+    public Object getObject() {return entity; }
 }
