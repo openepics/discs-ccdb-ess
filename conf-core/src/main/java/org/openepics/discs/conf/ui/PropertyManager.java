@@ -73,7 +73,7 @@ public class PropertyManager implements Serializable {
     public PropertyManager() {
     }
 
-    public void init() {
+    private void init() {
         properties = configurationEJB.findProperties();
         selectedProperty = null;
         resetFields();
