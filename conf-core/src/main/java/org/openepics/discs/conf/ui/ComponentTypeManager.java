@@ -132,9 +132,10 @@ public class ComponentTypeManager implements Serializable {
             inputObject = null;
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted", "");
         } catch (Exception e) {
-            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Deleted", e.getMessage());
-        } finally {
-
+            if (Utility.causedByPersistenceException(e))
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Deletion failed", "The component type could not be deleted because it is used.");
+            else
+                throw e;
         }
     }
 
@@ -187,15 +188,17 @@ public class ComponentTypeManager implements Serializable {
     public void onPropertyDelete(ComptypePropertyValue ctp) {
         try {
             if (ctp == null) {
-                Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "No property selected");
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Strange", "No property selected");
                 return;
             }
             comptypeEJB.deleteCompTypeProp(ctp);
             selectedProperties.remove(ctp);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted property", "");
         } catch (Exception e) {
-            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error in deleting property", e.getMessage());
-            logger.severe(e.getMessage());
+            if (Utility.causedByPersistenceException(e))
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Deletion failed", "The property value could not be deleted because it is used.");
+            else
+                throw e;
         }
 
     }
@@ -346,7 +349,7 @@ public class ComponentTypeManager implements Serializable {
     public void onArtifactDelete(ComptypeArtifact art) {
         try {
             if (art == null) {
-                Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "No artifact selected");
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Strange", "No artifact selected");
                 return;
             }
 
@@ -354,8 +357,10 @@ public class ComponentTypeManager implements Serializable {
             selectedArtifacts.remove(art);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted Artifact", "");
         } catch (Exception e) {
-            Utility.showMessage(FacesMessage.SEVERITY_FATAL, "Error in deleting artifact", "Refresh the page");
-            logger.severe(e.getMessage());
+            if (Utility.causedByPersistenceException(e))
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Deletion failed", "The artifact could not be deleted because it is used.");
+            else
+                throw e;
         }
     }
 
@@ -446,16 +451,18 @@ public class ComponentTypeManager implements Serializable {
     public void onAsmDelete(ComptypeAsm prt) {
         try {
             if (prt == null) {
-                Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "No assembly element selected");
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Strange", "No assembly element selected");
                 return;
             }
-            selectedParts.remove(prt); // ToDo: should this be done before or after delete from db?
+            selectedParts.remove(prt); // TODO should this be done before or after delete from db?
             comptypeEJB.deleteComptypeAsm(selectedObject, prt);
 
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted assembly element", "");
         } catch (Exception e) {
-            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error in deleting assembly element", e.getMessage());
-            logger.severe(e.getMessage());
+            if (Utility.causedByPersistenceException(e))
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Deletion failed", "The assembly element could not be deleted because it is used.");
+            else
+                throw e;
         }
 
     }

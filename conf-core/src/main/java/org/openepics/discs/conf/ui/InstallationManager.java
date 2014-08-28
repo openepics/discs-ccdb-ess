@@ -89,11 +89,18 @@ public class InstallationManager implements Serializable {
     }
 
     public void onIRecDelete(ActionEvent event) {
-        installationEJB.deleteIRecord(selectedObject);
-        getObjects().remove(selectedObject);
-        selectedObject = null;
-        inputObject = null;
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted", "");
+        try {
+            installationEJB.deleteIRecord(selectedObject);
+            getObjects().remove(selectedObject);
+            selectedObject = null;
+            inputObject = null;
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted", "");
+        } catch (Exception e) {
+            if (Utility.causedByPersistenceException(e))
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Deletion failed", "The installation record could not be deleted because it is used.");
+            else
+                throw e;
+        }
     }
 
     public void onIRecSave(ActionEvent event) {
@@ -154,14 +161,21 @@ public class InstallationManager implements Serializable {
     }
 
     public void onArtifactDelete(InstallationArtifact art) {
-        if (art == null) {
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "No artifact selected");
-            return;
-        }
+        try {
+            if (art == null) {
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Strange", "No artifact selected");
+                return;
+            }
 
-        installationEJB.deleteInstallationArtifact(art);
-        selectedArtifacts.remove(art);
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted Artifact", "");
+            installationEJB.deleteInstallationArtifact(art);
+            selectedArtifacts.remove(art);
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted Artifact", "");
+        } catch (Exception e) {
+            if (Utility.causedByPersistenceException(e))
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Deletion failed", "The artifact could not be deleted because it is used.");
+            else
+                throw e;
+        }
     }
 
     public void onArtifactEdit(InstallationArtifact art) {

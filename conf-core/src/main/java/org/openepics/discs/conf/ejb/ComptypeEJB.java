@@ -73,18 +73,15 @@ import org.openepics.discs.conf.util.CRUDOperation;
         em.merge(componentType);
     }
 
-    /** Deletes the component type and returns <code>true</code> if deletion was successful.
+    /** Deletes the component type.
      * @param componentType - the component type to delete.
-     * @return <code>true</code> indicates that deletion was possible and executed, <code>false</code> indicates
-     * that the component type is referenced by some other entity and deletion was blocked.
      */
     @CRUDOperation(operation=EntityTypeOperation.DELETE)
     @Audit
     @Authorized
-    public boolean deleteComponentType(ComponentType componentType) {
+    public void deleteComponentType(ComponentType componentType) {
         final ComponentType componentTypeToDelete = em.find(ComponentType.class, componentType.getId());
         em.remove(componentTypeToDelete);
-        return true;
     }
 
 
@@ -113,15 +110,13 @@ import org.openepics.discs.conf.util.CRUDOperation;
         logger.log(Level.FINE, "Comp Type Property: id " + mergedPropertyValue.getId() + " name " + mergedPropertyValue.getProperty().getName());
     }
 
-    /** Deletes the component type property value and returns <code>true</code> if deletion was successful.
+    /** Deletes the component type property value.
      * @param propertyValue - the component type property value to delete.
-     * @return <code>true</code> indicates that deletion was possible and executed, <code>false</code> indicates
-     * that the component type property value is referenced by some other entity and deletion was blocked.
      */
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
     @Authorized
-    public boolean deleteCompTypeProp(ComptypePropertyValue propertyValue) {
+    public void deleteCompTypeProp(ComptypePropertyValue propertyValue) {
         logger.log(Level.FINE, "deleting comp type property id " + propertyValue.getId() + " name " + propertyValue.getProperty().getName());
 
         final ComptypePropertyValue propertyValueToDelete = em.find(ComptypePropertyValue.class, propertyValue.getId());
@@ -131,7 +126,6 @@ import org.openepics.discs.conf.util.CRUDOperation;
 
         parent.getComptypePropertyList().remove(propertyValueToDelete);
         em.remove(propertyValueToDelete);
-        return true;
     }
 
 
@@ -161,15 +155,13 @@ import org.openepics.discs.conf.util.CRUDOperation;
         logger.log(Level.FINE, "Component Type Artifact: name " + mergedArtifact.getName() + " description " + mergedArtifact.getDescription() + " uri " + mergedArtifact.getUri() + "is int " + mergedArtifact.isInternal());
     }
 
-    /** Deletes the component type artifact and returns <code>true</code> if deletion was successful.
+    /** Deletes the component type artifact.
      * @param artifact - the component type artifact to delete.
-     * @return <code>true</code> indicates that deletion was possible and executed, <code>false</code> indicates
-     * that the component type artifact is referenced by some other entity and deletion was blocked.
      */
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
     @Authorized
-    public boolean deleteCompTypeArtifact(ComptypeArtifact artifact) {
+    public void deleteCompTypeArtifact(ComptypeArtifact artifact) {
         final ComptypeArtifact artifactToDelete = em.find(ComptypeArtifact.class, artifact.getId());
         final ComponentType parent = artifactToDelete.getComponentType();
 
@@ -177,7 +169,6 @@ import org.openepics.discs.conf.util.CRUDOperation;
 
         parent.getComptypeArtifactList().remove(artifactToDelete);
         em.remove(artifactToDelete);
-        return true;
     }
 
 
@@ -194,21 +185,18 @@ import org.openepics.discs.conf.util.CRUDOperation;
         em.merge(componentType);
     }
 
-    /** Deletes the component type assembly and returns <code>true</code> if deletion was successful.
+    /** Deletes the component type assembly.
      * @param assembly - the component type assembly to delete.
-     * @return <code>true</code> indicates that deletion was possible and executed, <code>false</code> indicates
-     * that the component type assembly is referenced by some other entity and deletion was blocked.
      */
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
     @Authorized
-    public boolean deleteComptypeAsm(ComponentType componentType, ComptypeAsm assembly) {
+    public void deleteComptypeAsm(ComponentType componentType, ComptypeAsm assembly) {
         final ComptypeAsm assemblyToDelete = em.find(ComptypeAsm.class, assembly.getId());
 
         entityUtility.setModified(componentType);
 
         em.remove(assemblyToDelete);
         em.merge(componentType);
-        return true;
     }
 }

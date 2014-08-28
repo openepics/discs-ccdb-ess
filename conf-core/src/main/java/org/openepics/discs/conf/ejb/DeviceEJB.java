@@ -71,18 +71,15 @@ import org.openepics.discs.conf.util.CRUDOperation;
         em.merge(device);
     }
 
-    /** Deletes the device and returns <code>true</code> if deletion was successful.
+    /** Deletes the device.
      * @param device - the device to delete.
-     * @return <code>true</code> indicates that deletion was possible and executed, <code>false</code> indicates
-     * that the device is referenced by some other entity and deletion was blocked.
      */
     @CRUDOperation(operation=EntityTypeOperation.DELETE)
     @Audit
     @Authorized
-    public boolean deleteDevice(Device device) {
+    public void deleteDevice(Device device) {
         final Device deviceToDelete = em.find(Device.class, device.getId());
         em.remove(deviceToDelete);
-        return true;
     }
 
     // ------------------ Device Property ---------------
@@ -110,15 +107,13 @@ import org.openepics.discs.conf.util.CRUDOperation;
         logger.log(Level.FINE, "Device Property: id " + mergedPropertyValue.getId() + " name " + mergedPropertyValue.getProperty().getName());
     }
 
-    /** Deletes the device property value and returns <code>true</code> if deletion was successful.
+    /** Deletes the device property value.
      * @param propertyValue - the device property value to delete.
-     * @return <code>true</code> indicates that deletion was possible and executed, <code>false</code> indicates
-     * that the device property value is referenced by some other entity and deletion was blocked.
      */
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
     @Authorized
-    public boolean deleteDeviceProp(DevicePropertyValue propertyValue) {
+    public void deleteDeviceProp(DevicePropertyValue propertyValue) {
         logger.log(Level.FINE, "deleting comp type property id " + propertyValue.getId() + " name " + propertyValue.getProperty().getName());
 
         final DevicePropertyValue propertyValueToDelete = em.find(DevicePropertyValue.class, propertyValue.getId());
@@ -128,7 +123,6 @@ import org.openepics.discs.conf.util.CRUDOperation;
 
         parent.getDevicePropertyList().remove(propertyValueToDelete);
         em.remove(propertyValueToDelete);
-        return true;
     }
 
 
@@ -156,15 +150,13 @@ import org.openepics.discs.conf.util.CRUDOperation;
         logger.log(Level.FINE, "Device Type Artifact: name " + mergedArtifact.getName() + " description " + mergedArtifact.getDescription() + " uri " + mergedArtifact.getUri() + "is int " + mergedArtifact.isInternal());
     }
 
-    /** Deletes the device artifact and returns <code>true</code> if deletion was successful.
+    /** Deletes the device artifact.
      * @param artifact - the device artifact to delete.
-     * @return <code>true</code> indicates that deletion was possible and executed, <code>false</code> indicates
-     * that the device artifact is referenced by some other entity and deletion was blocked.
      */
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
     @Authorized
-    public boolean deleteDeviceArtifact(DeviceArtifact artifact) {
+    public void deleteDeviceArtifact(DeviceArtifact artifact) {
         final DeviceArtifact artifactToDelete = em.find(DeviceArtifact.class, artifact.getId());
         final Device parent = artifactToDelete.getDevice();
 
@@ -172,6 +164,5 @@ import org.openepics.discs.conf.util.CRUDOperation;
 
         parent.getDeviceArtifactList().remove(artifactToDelete);
         em.remove(artifactToDelete);
-        return true;
     }
 }

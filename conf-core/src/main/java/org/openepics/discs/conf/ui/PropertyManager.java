@@ -120,7 +120,7 @@ public class PropertyManager implements Serializable {
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Property was deleted");
         } catch (Exception e) {
             if (Utility.causedByPersistenceException(e))
-                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error", "The property could not be deleted, because it is used.");
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Deletion failed", "The property could not be deleted because it is used.");
             else
                 throw e;
         }

@@ -65,7 +65,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @CRUDOperation(operation=EntityTypeOperation.DELETE)
     @Audit
     @Authorized
-    public void deleteAlignment(AlignmentRecord record) throws Exception {
+    public void deleteAlignment(AlignmentRecord record) {
         final AlignmentRecord mergedRecord = em.merge(record);
         em.remove(mergedRecord);
     }
@@ -100,7 +100,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @Audit
     @Authorized
     public void deleteAlignmentProp(AlignmentPropertyValue prop) {
-        logger.log(Level.INFO, "deleting alignment type property id " + prop.getId() + " name " + prop.getProperty().getName());
+        logger.log(Level.FINE, "deleting alignment type property id " + prop.getId() + " name " + prop.getProperty().getName());
 
         final AlignmentPropertyValue mergedProperty = em.merge(prop);
         final AlignmentRecord parent = prop.getAlignmentRecord();

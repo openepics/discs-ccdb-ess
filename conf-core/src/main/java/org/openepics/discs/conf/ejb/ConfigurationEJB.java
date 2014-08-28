@@ -151,18 +151,15 @@ import org.openepics.discs.conf.util.CRUDOperation;
         em.merge(unit);
     }
 
-    /** Deletes the unit and returns <code>true</code> if deletion was successful.
+    /** Deletes the unit.
      * @param unit - the unit to delete.
-     * @return <code>true</code> indicates that deletion was possible and executed, <code>false</code> indicates
-     * that the unit is referenced by some other entity and deletion was blocked.
      */
     @CRUDOperation(operation=EntityTypeOperation.DELETE)
     @Audit
     @Authorized
-    public boolean deleteUnit(Unit unit) {
+    public void deleteUnit(Unit unit) {
         final Unit unitToDelete = em.find(Unit.class, unit.getId());
         em.remove(unitToDelete);
-        return true;
     }
 
     // ---------------- Data Types -------------------------

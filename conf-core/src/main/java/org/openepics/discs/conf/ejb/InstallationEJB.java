@@ -56,18 +56,15 @@ import org.openepics.discs.conf.util.CRUDOperation;
         em.merge(irec);
     }
 
-    /** Deletes the installation record and returns <code>true</code> if deletion was successful.
+    /** Deletes the installation record.
      * @param irec - the installation record to delete.
-     * @return <code>true</code> indicates that deletion was possible and executed, <code>false</code> indicates
-     * that the installation record is referenced by some other entity and deletion was blocked.
      */
     @CRUDOperation(operation=EntityTypeOperation.DELETE)
     @Audit
     @Authorized
-    public boolean deleteIRecord(InstallationRecord irec) {
+    public void deleteIRecord(InstallationRecord irec) {
         final InstallationRecord iRecordToDelete = em.find(InstallationRecord.class, irec.getId());
         em.remove(iRecordToDelete);
-        return true;
     }
 
     // ---------------- Installation Record Artifact ---------------------
@@ -97,15 +94,13 @@ import org.openepics.discs.conf.util.CRUDOperation;
                 + ", uri: " + mergedArtifact.getUri() + ", is_internal: " + mergedArtifact.isInternal());
     }
 
-    /** Deletes the installation record artifact and returns <code>true</code> if deletion was successful.
+    /** Deletes the installation record artifact.
      * @param artifact - the installation record artifact to delete.
-     * @return <code>true</code> indicates that deletion was possible and executed, <code>false</code> indicates
-     * that the installation record artifact is referenced by some other entity and deletion was blocked.
      */
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
     @Authorized
-    public boolean deleteInstallationArtifact(InstallationArtifact artifact) {
+    public void deleteInstallationArtifact(InstallationArtifact artifact) {
         final InstallationArtifact artifactToDelete = em.find(InstallationArtifact.class, artifact.getId());
         final InstallationRecord parent = artifactToDelete.getInstallationRecord();
 
@@ -113,6 +108,5 @@ import org.openepics.discs.conf.util.CRUDOperation;
 
         parent.getInstallationArtifactList().remove(artifactToDelete);
         em.remove(artifactToDelete);
-        return true;
     }
 }

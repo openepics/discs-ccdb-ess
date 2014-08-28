@@ -93,18 +93,15 @@ import org.openepics.discs.conf.util.CRUDOperation;
         em.merge(slot);
     }
 
-    /** Deletes the slot and returns <code>true</code> if deletion was successful.
+    /** Deletes the slot.
      * @param slot - the slot to delete.
-     * @return <code>true</code> indicates that deletion was possible and executed, <code>false</code> indicates
-     * that the slot is referenced by some other entity and deletion was blocked.
      */
     @CRUDOperation(operation=EntityTypeOperation.DELETE)
     @Audit
     @Authorized
-    public boolean deleteLayoutSlot(Slot slot) {
+    public void deleteLayoutSlot(Slot slot) {
         final Slot slotToDelete = em.find(Slot.class, slot.getId());
         em.remove(slotToDelete);
-        return true;
     }
 
 
@@ -133,15 +130,13 @@ import org.openepics.discs.conf.util.CRUDOperation;
         logger.log(Level.FINE, "Slot Property: id " + mergedPropertyValue.getId() + " name " + mergedPropertyValue.getProperty().getName());
     }
 
-    /** Deletes the slot property value and returns <code>true</code> if deletion was successful.
+    /** Deletes the slot property value.
      * @param propertyValue - the slot property value to delete.
-     * @return <code>true</code> indicates that deletion was possible and executed, <code>false</code> indicates
-     * that the slot property value is referenced by some other entity and deletion was blocked.
      */
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
     @Authorized
-    public boolean deleteSlotProp(SlotPropertyValue propertyValue) {
+    public void deleteSlotProp(SlotPropertyValue propertyValue) {
         logger.log(Level.FINE, "deleting slot property id " + propertyValue.getId() + " name " + propertyValue.getProperty().getName());
 
         final SlotPropertyValue propertyValueToDelete = em.find(SlotPropertyValue.class, propertyValue.getId());
@@ -151,7 +146,6 @@ import org.openepics.discs.conf.util.CRUDOperation;
 
         parent.getSlotPropertyList().remove(propertyValueToDelete);
         em.remove(propertyValueToDelete);
-        return true;
     }
 
 
@@ -179,15 +173,13 @@ import org.openepics.discs.conf.util.CRUDOperation;
         logger.log(Level.FINE, "Slot Artifact: name " + mergedArtifact.getName() + " description " + mergedArtifact.getDescription() + " uri " + mergedArtifact.getUri() + "is int " + mergedArtifact.isInternal());
     }
 
-    /** Deletes the slot artifact and returns <code>true</code> if deletion was successful.
+    /** Deletes the slot artifact.
      * @param artifact - the slot artifact to delete.
-     * @return <code>true</code> indicates that deletion was possible and executed, <code>false</code> indicates
-     * that the slot artifact is referenced by some other entity and deletion was blocked.
      */
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
     @Authorized
-    public boolean deleteSlotArtifact(SlotArtifact artifact) {
+    public void deleteSlotArtifact(SlotArtifact artifact) {
         final SlotArtifact artifactToDelete = em.find(SlotArtifact.class, artifact.getId());
         final Slot parent = artifactToDelete.getSlot();
 
@@ -195,7 +187,6 @@ import org.openepics.discs.conf.util.CRUDOperation;
 
         parent.getSlotArtifactList().remove(artifactToDelete);
         em.remove(artifactToDelete);
-        return true;
     }
 
 
@@ -216,18 +207,15 @@ import org.openepics.discs.conf.util.CRUDOperation;
         logger.log(Level.FINE, "saved slot pair: child " + slotPair.getChildSlot().getName() + " parent " + slotPair.getParentSlot().getName() + " relation ");
     }
 
-    /** Deletes the slot pair and returns <code>true</code> if deletion was successful.
+    /** Deletes the slot pair.
      * @param slotPair - the slot pair to delete.
-     * @return <code>true</code> indicates that deletion was possible and executed, <code>false</code> indicates
-     * that the slot pair is referenced by some other entity and deletion was blocked.
      */
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
     @Authorized
-    public boolean deleteSlotPair(SlotPair slotPair) {
+    public void deleteSlotPair(SlotPair slotPair) {
         final SlotPair slotPairToDelete = em.find(SlotPair.class, slotPair.getId());
         em.remove(slotPairToDelete);
-        return true;
     }
 
 
