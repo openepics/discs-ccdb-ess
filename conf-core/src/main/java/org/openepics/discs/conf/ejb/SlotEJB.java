@@ -100,8 +100,8 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @Audit
     @Authorized
     public void deleteLayoutSlot(Slot slot) {
-        final Slot slotToDelete = em.find(Slot.class, slot.getId());
-        em.remove(slotToDelete);
+        final Slot mergedSlot = em.merge(slot);
+        em.remove(mergedSlot);
     }
 
 
@@ -139,13 +139,13 @@ import org.openepics.discs.conf.util.CRUDOperation;
     public void deleteSlotProp(SlotPropertyValue propertyValue) {
         logger.log(Level.FINE, "deleting slot property id " + propertyValue.getId() + " name " + propertyValue.getProperty().getName());
 
-        final SlotPropertyValue propertyValueToDelete = em.find(SlotPropertyValue.class, propertyValue.getId());
-        final Slot parent = propertyValueToDelete.getSlot();
+        final SlotPropertyValue mergedPropertyValue = em.merge(propertyValue);
+        final Slot parent = mergedPropertyValue.getSlot();
 
         entityUtility.setModified(parent);
 
-        parent.getSlotPropertyList().remove(propertyValueToDelete);
-        em.remove(propertyValueToDelete);
+        parent.getSlotPropertyList().remove(mergedPropertyValue);
+        em.remove(mergedPropertyValue);
     }
 
 
@@ -180,13 +180,13 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @Audit
     @Authorized
     public void deleteSlotArtifact(SlotArtifact artifact) {
-        final SlotArtifact artifactToDelete = em.find(SlotArtifact.class, artifact.getId());
-        final Slot parent = artifactToDelete.getSlot();
+        final SlotArtifact mergedArtifact = em.merge(artifact);
+        final Slot parent = mergedArtifact.getSlot();
 
         entityUtility.setModified(parent);
 
-        parent.getSlotArtifactList().remove(artifactToDelete);
-        em.remove(artifactToDelete);
+        parent.getSlotArtifactList().remove(mergedArtifact);
+        em.remove(mergedArtifact);
     }
 
 
@@ -214,8 +214,8 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @Audit
     @Authorized
     public void deleteSlotPair(SlotPair slotPair) {
-        final SlotPair slotPairToDelete = em.find(SlotPair.class, slotPair.getId());
-        em.remove(slotPairToDelete);
+        final SlotPair mergedSlotPair = em.merge(slotPair);
+        em.remove(mergedSlotPair);
     }
 
 

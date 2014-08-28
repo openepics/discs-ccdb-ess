@@ -80,8 +80,8 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @Audit
     @Authorized
     public void deleteComponentType(ComponentType componentType) {
-        final ComponentType componentTypeToDelete = em.find(ComponentType.class, componentType.getId());
-        em.remove(componentTypeToDelete);
+        final ComponentType mergedComponentType = em.merge(componentType);
+        em.remove(mergedComponentType);
     }
 
 
@@ -119,13 +119,13 @@ import org.openepics.discs.conf.util.CRUDOperation;
     public void deleteCompTypeProp(ComptypePropertyValue propertyValue) {
         logger.log(Level.FINE, "deleting comp type property id " + propertyValue.getId() + " name " + propertyValue.getProperty().getName());
 
-        final ComptypePropertyValue propertyValueToDelete = em.find(ComptypePropertyValue.class, propertyValue.getId());
-        final ComponentType parent = propertyValueToDelete.getComponentType();
+        final ComptypePropertyValue mergedPropertyValue = em.merge(propertyValue);
+        final ComponentType parent = mergedPropertyValue.getComponentType();
 
         entityUtility.setModified(parent);
 
-        parent.getComptypePropertyList().remove(propertyValueToDelete);
-        em.remove(propertyValueToDelete);
+        parent.getComptypePropertyList().remove(mergedPropertyValue);
+        em.remove(mergedPropertyValue);
     }
 
 
@@ -162,13 +162,13 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @Audit
     @Authorized
     public void deleteCompTypeArtifact(ComptypeArtifact artifact) {
-        final ComptypeArtifact artifactToDelete = em.find(ComptypeArtifact.class, artifact.getId());
-        final ComponentType parent = artifactToDelete.getComponentType();
+        final ComptypeArtifact mergedArtifact = em.merge(artifact);
+        final ComponentType parent = mergedArtifact.getComponentType();
 
         entityUtility.setModified(parent);
 
-        parent.getComptypeArtifactList().remove(artifactToDelete);
-        em.remove(artifactToDelete);
+        parent.getComptypeArtifactList().remove(mergedArtifact);
+        em.remove(mergedArtifact);
     }
 
 
@@ -192,11 +192,11 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @Audit
     @Authorized
     public void deleteComptypeAsm(ComponentType componentType, ComptypeAsm assembly) {
-        final ComptypeAsm assemblyToDelete = em.find(ComptypeAsm.class, assembly.getId());
+        final ComptypeAsm mergedAssembly = em.merge(assembly);
 
         entityUtility.setModified(componentType);
 
-        em.remove(assemblyToDelete);
+        em.remove(mergedAssembly);
         em.merge(componentType);
     }
 }

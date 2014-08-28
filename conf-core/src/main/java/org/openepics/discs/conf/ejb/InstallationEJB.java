@@ -63,8 +63,8 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @Audit
     @Authorized
     public void deleteIRecord(InstallationRecord irec) {
-        final InstallationRecord iRecordToDelete = em.find(InstallationRecord.class, irec.getId());
-        em.remove(iRecordToDelete);
+        final InstallationRecord mergedIRec = em.merge(irec);
+        em.remove(mergedIRec);
     }
 
     // ---------------- Installation Record Artifact ---------------------
@@ -101,12 +101,12 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @Audit
     @Authorized
     public void deleteInstallationArtifact(InstallationArtifact artifact) {
-        final InstallationArtifact artifactToDelete = em.find(InstallationArtifact.class, artifact.getId());
-        final InstallationRecord parent = artifactToDelete.getInstallationRecord();
+        final InstallationArtifact mergedArtifact = em.merge(artifact);
+        final InstallationRecord parent = mergedArtifact.getInstallationRecord();
 
         entityUtility.setModified(parent);
 
-        parent.getInstallationArtifactList().remove(artifactToDelete);
-        em.remove(artifactToDelete);
+        parent.getInstallationArtifactList().remove(mergedArtifact);
+        em.remove(mergedArtifact);
     }
 }

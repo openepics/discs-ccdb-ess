@@ -158,8 +158,8 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @Audit
     @Authorized
     public void deleteUnit(Unit unit) {
-        final Unit unitToDelete = em.find(Unit.class, unit.getId());
-        em.remove(unitToDelete);
+        final Unit mergedUnit = em.merge(unit);
+        em.remove(mergedUnit);
     }
 
     // ---------------- Data Types -------------------------
