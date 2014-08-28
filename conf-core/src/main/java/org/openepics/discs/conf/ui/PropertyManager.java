@@ -13,7 +13,6 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -74,9 +73,8 @@ public class PropertyManager implements Serializable {
     public PropertyManager() {
     }
 
-    @PostConstruct
     public void init() {
-        properties = null;
+        properties = configurationEJB.findProperties();
         selectedProperty = null;
         resetFields();
     }

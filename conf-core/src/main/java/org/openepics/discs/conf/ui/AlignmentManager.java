@@ -15,7 +15,6 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.faces.event.ActionEvent;
@@ -80,11 +79,6 @@ public class AlignmentManager implements Serializable{
      * Creates a new instance of AlignmentManager
      */
     public AlignmentManager() {
-    }
-
-    @PostConstruct
-    public void init() {
-        objects = null;
     }
 
     // ----------------- Alignment Record  ------------------------------

@@ -13,7 +13,6 @@ import java.io.Serializable;
 import java.util.List;
 
 import javax.annotation.ManagedBean;
-import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -55,11 +54,6 @@ public class UnitManager implements Serializable {
     public UnitManager() {
     }
 
-    @PostConstruct
-    public void init() {
-        units = null;
-    }
-
     public List<Unit> getUnits() {
         if (units == null) units = configurationEJB.findUnits();
         return units;
@@ -96,6 +90,4 @@ public class UnitManager implements Serializable {
             throw new RuntimeException();
         }
     }
-
-
 }
