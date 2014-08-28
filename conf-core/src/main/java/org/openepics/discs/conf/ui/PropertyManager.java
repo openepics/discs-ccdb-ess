@@ -117,8 +117,15 @@ public class PropertyManager implements Serializable {
     }
 
     public void onDelete() {
-        configurationEJB.deleteProperty(selectedProperty);
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Property was deleted");
+        try {
+            configurationEJB.deleteProperty(selectedProperty);
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Property was deleted");
+        } catch (Exception e) {
+            if (Utility.causedByPersistenceException(e))
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error", "The property could not be deleted, because it is used.");
+            else
+                throw e;
+        }
         init();
     }
 

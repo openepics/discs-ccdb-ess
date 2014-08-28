@@ -96,20 +96,17 @@ import org.openepics.discs.conf.util.CRUDOperation;
         em.merge(property);
     }
 
-    /** Deletes the property and returns <code>true</code> if deletion was successful.
+    /** Deletes the property.
      * @param property - the property definition to delete.
-     * @return <code>true</code> indicates that deletion was possible and executed, <code>false</code> indicates
-     * that the property is referenced by some other entity and deletion was blocked.
      */
     @CRUDOperation(operation=EntityTypeOperation.DELETE)
     @Audit
     @Authorized
-    public boolean deleteProperty(Property property) {
+    public void deleteProperty(Property property) {
         final Property propToDelete = em.find(Property.class, property.getId());
         //mergedProp.getUnit().getPropertyList().remove(mergedProp);
         //mergedProp.getDataType().getPropertyList().remove(mergedProp);
         em.remove(propToDelete);
-        return true;
     }
 
     // -------------------- Unit ---------------------
