@@ -7,7 +7,7 @@
     <ui:define name="content">
 	      <h:panelGroup id="deviceTypePropertiesManagerContainer" layout="block" class="container">
 	           <p:growl showDetail="true" globalOnly="true" />
-	           <h:form id="deviceTypePropertiesManagerForm">
+	           <h:form id="deviceTypePropertiesManagerForm" enctype="multipart/form-data">
 		           <h:panelGroup class="properties-parent-info" layout="block">
 		               <h:panelGrid columns="2" style="width: 100%; text-align: top;" border="0">  
 		                   
@@ -20,14 +20,14 @@
 	               </h:panelGroup>
 		           
 		           <h:panelGroup class="property-values" layout="block">
-		              <p:commandButton id="addButton" value="Add" type="button" icon="ui-icon-extlink"/>
+		              <p:commandButton id="addButton" value="Add" type="button" icon="ui-icon-plus"/>
                       <p:menu overlay="true" trigger="addButton" my="left top" at="left bottom">
-                            <p:menuitem value="Type Property" oncomplete="deviceTypeProperty.show()" actionListener="#{comptypeAttributesController.prepareForAdd}" update=":deviceTypePropertyForm:deviceTypeProperty"/>
-                            <p:menuitem value="Property Definition" oncomplete="deviceTypePropertyDefinition.show()" actionListener="#{comptypeAttributesController.prepareForAdd}" update=":deviceTypePropertyDefinitionForm:deviceTypePropertyDefinition"/>
-                            <p:menuitem value="Tag" oncomplete="deviceTypeTag.show()" actionListener="#{comptypeAttributesController.prepareForAdd}"/>
-                            <p:menuitem value="Artifact" oncomplete="deviceTypeArtifact.show()" actionListener="#{comptypeAttributesController.prepareForAdd}" update=":deviceTypeArtifactForm:deviceTypeArtifact"/>
+                            <p:menuitem value="Type Property" oncomplete="addDeviceTypeProperty.show()" actionListener="#{comptypeAttributesController.prepareForPropertyValueAdd}" update=":addDeviceTypePropertyForm:addDeviceTypeProperty"/>
+                            <p:menuitem value="Property Definition" oncomplete="deviceTypePropertyDefinition.show()" actionListener="#{comptypeAttributesController.prepareForPropertyValueAdd}" update=":deviceTypePropertyDefinitionForm:deviceTypePropertyDefinition"/>
+                            <p:menuitem value="Tag" oncomplete="deviceTypeTag.show()" actionListener="#{comptypeAttributesController.prepareForPropertyValueAdd}"/>
+                            <p:menuitem value="Artifact" oncomplete="deviceTypeArtifact.show()" actionListener="#{comptypeAttributesController.prepareForArtifactAdd}" update=":deviceTypeArtifactForm:deviceTypeArtifact"/>
 		               </p:menu>
-		               <p:dataTable var="attribute" value="#{comptypeAttributesController.attributes}" rows="15" paginator="true" paginatorPosition="bottom">
+		               <p:dataTable id="attributesDataTable" var="attribute" value="#{comptypeAttributesController.attributes}" rows="15" paginator="true" paginatorPosition="bottom">
 			                <p:column headerText="Name" sortBy="#{attribute.name}">
 			                    <h:outputText value="#{attribute.name}" />
 			                </p:column>
@@ -45,43 +45,68 @@
 			                </p:column>
 			    
 			                <p:column headerText="Actions">
-			                    <p:commandButton icon="ui-icon-trash" title="Delete" ajax="true" >
+			                    <p:commandButton icon="ui-icon-trash" title="Delete" ajax="true" oncomplete="deleteAttribute.show()">
+			                         <f:setPropertyActionListener value="#{attribute}" target="#{comptypeAttributesController.selectedAttribute}" />
 			                    </p:commandButton>
-			                    <p:commandButton icon="ui-icon-pencil" title="Edit" ajax="true" rendered="#{attribute.kind != 'Definition'}" >
+			                    <p:commandButton icon="ui-icon-pencil" title="Edit" ajax="true" rendered="#{attribute.kind != 'Definition'}" />
+			                    <p:commandButton icon="ui-icon-arrowthick-1-s" title="Download" ajax="true" rendered="#{attribute.hasFile}">
+			                         <f:setPropertyActionListener value="#{attribute}" target="#{comptypeAttributesController.selectedAttribute}" />
+			                         <p:fileDownload value="#{comptypeAttributesController.downloadFile}" />
 			                    </p:commandButton>
+			                    <p:commandButton icon="ui-icon-extlink" title="Got to URL" ajax="true" rendered="#{attribute.hasURL}" />
 			                </p:column>
 	                    </p:dataTable>
 	               </h:panelGroup>
                 </h:form>
-                
-	        <ui:include src="../add-or-modify-dialogs/property-value.xhtml" >
-	            <ui:param name="formId" value="deviceTypePropertyForm" />
-	            <ui:param name="dialogTitle" value="Add new device type property" />
-	            <ui:param name="widgetName" value="deviceTypeProperty" />
-	            <ui:param name="controller" value="#{comptypeAttributesController}" />
-	        </ui:include>
-	        
-	        <ui:include src="../add-or-modify-dialogs/property-definition.xhtml" >
-                <ui:param name="formId" value="deviceTypePropertyDefinitionForm" />
-                <ui:param name="dialogTitle" value="Add new device type property definition" />
-                <ui:param name="widgetName" value="deviceTypePropertyDefinition" />
-                <ui:param name="controller" value="#{comptypeAttributesController}" />
-            </ui:include>
+        </h:panelGroup>
+        
+        <ui:include src="../add-or-modify-dialogs/delete-confirmation.xhtml" >
+            <ui:param name="formId" value="deleteAttributeForm" />
+            <ui:param name="dialogTitle" value="Delete attribute" />
+            <ui:param name="widgetName" value="deleteAttribute" />
+            <ui:param name="controller" value="#{comptypeAttributesController}" />
+            <ui:param name="submitHandler" value="deleteAttribute" />
+            <ui:param name="formToUpdate" value=":deviceTypePropertiesManagerContainer" />
+        </ui:include>
             
-            <ui:include src="../add-or-modify-dialogs/tag.xhtml" >
-                <ui:param name="formId" value="deviceTypeTagForm" />
-                <ui:param name="dialogTitle" value="Add new device type tag" />
-                <ui:param name="widgetName" value="deviceTypeTag" />
-                <ui:param name="controller" value="#{comptypeAttributesController}" />
-            </ui:include>
-            
-            <ui:include src="../add-or-modify-dialogs/artifact.xhtml" >
-                <ui:param name="formId" value="deviceTypeArtifactForm" />
-                <ui:param name="dialogTitle" value="Add new device type artifact" />
-                <ui:param name="widgetName" value="deviceTypeArtifact" />
-                <ui:param name="controller" value="#{comptypeAttributesController}" />
-            </ui:include>
-            
-        </h:panelGroup>   
+        <ui:include src="../add-or-modify-dialogs/property-value.xhtml" >
+            <ui:param name="formId" value="addDeviceTypePropertyForm" />
+            <ui:param name="dialogTitle" value="Add new device type property" />
+            <ui:param name="widgetName" value="addDeviceTypeProperty" />
+            <ui:param name="controller" value="#{comptypeAttributesController}" />
+            <ui:param name="submitHandler" value="addNewPropertyValue" />
+        </ui:include>
+        
+        <ui:include src="../add-or-modify-dialogs/property-value.xhtml" >
+            <ui:param name="formId" value="modifyDeviceTypePropertyForm" />
+            <ui:param name="dialogTitle" value="Modify device type property" />
+            <ui:param name="widgetName" value="modifyDeviceTypeProperty" />
+            <ui:param name="controller" value="#{comptypeAttributesController}" />
+            <ui:param name="submitHandler" value="modifyPropertyValue" />
+        </ui:include>
+        
+        <ui:include src="../add-or-modify-dialogs/property-definition.xhtml" >
+            <ui:param name="formId" value="deviceTypePropertyDefinitionForm" />
+            <ui:param name="dialogTitle" value="Add new device type property definition" />
+            <ui:param name="widgetName" value="deviceTypePropertyDefinition" />
+            <ui:param name="controller" value="#{comptypeAttributesController}" />
+            <ui:param name="submitHandler" value="addNewPropertyValue" />
+        </ui:include>
+        
+        <ui:include src="../add-or-modify-dialogs/tag.xhtml" >
+            <ui:param name="formId" value="deviceTypeTagForm" />
+            <ui:param name="dialogTitle" value="Add new device type tag" />
+            <ui:param name="widgetName" value="deviceTypeTag" />
+            <ui:param name="controller" value="#{comptypeAttributesController}" />
+            <ui:param name="submitHandler" value="addNewTag" />
+        </ui:include>
+        
+        <ui:include src="../add-or-modify-dialogs/artifact.xhtml" >
+            <ui:param name="formId" value="deviceTypeArtifactForm" />
+            <ui:param name="dialogTitle" value="Add new device type artifact" />
+            <ui:param name="widgetName" value="deviceTypeArtifact" />
+            <ui:param name="controller" value="#{comptypeAttributesController}" />
+            <ui:param name="submitHandler" value="addNewArtifact" />
+        </ui:include>   
     </ui:define>
 </ui:composition>

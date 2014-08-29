@@ -52,7 +52,7 @@
 						</p:column>
 						<p:column>
 							<p:selectBooleanCheckbox id="options" value="#{controller.isArtifactInternal}">
-								<p:ajax process="@this" update="#{formId}:urlLabel #{formId}:urlValue #{formId}:uploader" />
+								<p:ajax process="@this" update="#{formId}:urlLabel #{formId}:urlValue #{formId}:uploader #{formId}:uploadFile #{formId}:saveButton" listener="#{controller.artifactTypeChanged}"/>
 							</p:selectBooleanCheckbox>
 						</p:column>
 					</p:row>
@@ -75,21 +75,25 @@
 						<p:column colspan="2">
 						    <h:panelGroup id="uploader">
 								<p:fileUpload
-									fileUploadListener="#{controller.handleImportFileUpload}" update="#{formId}:uploader #{formId}:uploadFile" mode="advanced" auto="false" fileLimit="1" dragDropSupport="true"
-									rendered="#{controller.importFileName == null and controller.isArtifactInternal}" />
+									fileUploadListener="#{controller.handleImportFileUpload}" update="#{formId}:uploader #{formId}:uploadFile #{formId}:saveButton" mode="advanced" auto="false" fileLimit="1" dragDropSupport="true"
+									rendered="#{controller.isArtifactInternal}" />
 						      </h:panelGroup>
 						      <h:panelGroup id="uploadFile">
-						          <h:outputLabel value="#{controller.importFileName} was successfully uploaded" rendered="#{controller.importFileName != null}"/>
+							      <h:panelGroup rendered="#{controller.importFileName != null}">
+							          <div class="ui-message ui-message-warn ui-widget ui-corner-all">
+							             <span class="ui-message-info-icon"></span>
+                                         <span class="ui-message-info-detail">
+                                            <h:outputLabel value="#{controller.importFileName} was successfully uploaded" />
+                                         </span>
+                                      </div>
+							      </h:panelGroup>
 						      </h:panelGroup>
 						</p:column>
 					</p:row>
 				</p:panelGrid>
 	
-				<p:commandButton value="Cancel" style="float: right"
-					onclick="#{widgetName}.hide();" update="grp" resetValues="true" />
-				<p:commandButton value="Submit" style="float: right" update="grp"
-					oncomplete="if (args &amp;&amp; !args.validationFailed) #{widgetName}.hide()"
-					action="#{controller.addNewTag}" disabled="#{controller.isArtifactInternal and controller.importFileName == null}"/>
+				<p:commandButton value="Cancel" style="float: right" onclick="#{widgetName}.hide();" update="grp" resetValues="true" />
+				<p:commandButton value="Save" style="float: right" update="grp" id="saveButton"	oncomplete="if (args &amp;&amp; !args.validationFailed) #{widgetName}.hide()" action="#{controller[submitHandler]}" disabled="#{controller.isArtifactInternal and controller.importFileName == null}"/>
 			</h:panelGroup>
 		</p:dialog>
 

@@ -33,6 +33,8 @@ public class EntityAttributeView {
     private @Nullable Unit unit;
     private @Nullable String value;
     private @Nullable String kind;
+    private boolean hasFile;
+    private boolean hasURL;
     private Object entity;
     private EntityType entityType;
 
@@ -69,8 +71,12 @@ public class EntityAttributeView {
         } else if (entity instanceof ComptypeArtifact) {
             final ComptypeArtifact compTypeArtifact = (ComptypeArtifact) entity;
             name = compTypeArtifact.getName();
+            hasFile = compTypeArtifact.isInternal();
+            hasURL = !compTypeArtifact.isInternal();
+            kind = "Artifact";
         } else if (entity instanceof Tag) {
             setTagParameters();
+            kind = "Tag";
         } else {
             throw new UnhandledCaseException();
         }
@@ -86,6 +92,8 @@ public class EntityAttributeView {
         } else if (entity instanceof DeviceArtifact) {
             final DeviceArtifact deviceArtifact = (DeviceArtifact) entity;
             name = deviceArtifact.getName();
+            hasFile = deviceArtifact.isInternal();
+            hasURL = !deviceArtifact.isInternal();
         } else if (entity instanceof Tag) {
             setTagParameters();
         } else {
@@ -103,6 +111,8 @@ public class EntityAttributeView {
         } else if (entity instanceof DeviceArtifact) {
             final SlotArtifact slotArtifact = (SlotArtifact) entity;
             name = slotArtifact.getName();
+            hasFile = slotArtifact.isInternal();
+            hasURL = !slotArtifact.isInternal();
         } else if (entity instanceof Tag) {
             setTagParameters();
         } else {
@@ -113,9 +123,18 @@ public class EntityAttributeView {
     private void setTagParameters() { name = ((Tag) entity).getName(); }
 
     public String getName() { return name; }
+
     public DataType getType() { return type; }
+
     public Unit getUnit() { return unit; }
+
     public String getValue() { return value; }
+
     public String getKind() { return kind; }
-    public Object getObject() {return entity; }
+
+    public Object getEntity() { return entity; }
+
+    public boolean getHasFile() { return hasFile; }
+
+    public boolean getHasURL() { return hasURL; }
 }

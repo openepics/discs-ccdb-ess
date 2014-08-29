@@ -37,17 +37,16 @@
 	                </p:commandButton>
 	            </p:column>
 	        </p:dataTable>
-	        
-	        <p:dialog widgetVar="deleteDeviceType" modal="true" resizable="false" closable="false">
-	            <f:facet name="header">
-	                <h:outputText value="Delete Device Type" />
-	            </f:facet>
-	            <h:outputText value="Are you sure you want to delete this device type?" />
-	            <br/>
-	
-	            <p:commandButton value="No" style="float: right" onclick="deleteDeviceType.hide();" />
-	            <p:commandButton value="Yes" style="float: right" oncomplete="deleteDeviceType.hide()" ajax="true" action="#{componentTypeManager.onDelete}" update="deviceTypesForm" />
-	        </p:dialog>
 	    </h:form>
+	    
+	    <ui:include src="../add-or-modify-dialogs/delete-confirmation.xhtml" >
+                <ui:param name="formId" value="deleteDeviceTypeForm" />
+                <ui:param name="dialogTitle" value="Delete device type" />
+                <ui:param name="widgetName" value="deleteDeviceType" />
+                <ui:param name="controller" value="#{componentTypeManager}" />
+                <ui:param name="submitHandler" value="onDelete" />
+                <ui:param name="formToUpdate" value=":deviceTypesForm" />
+        </ui:include>
+	    
 	</ui:define>
 </ui:composition>
