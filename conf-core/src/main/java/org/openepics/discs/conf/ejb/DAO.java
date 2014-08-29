@@ -19,24 +19,24 @@ import org.openepics.discs.conf.util.CRUDOperation;
 import com.google.common.base.Preconditions;
 
 /**
- * Abstract generic DAO used for all entities. 
- * 
+ * Abstract generic DAO used for all entities.
+ *
  * It uses the concept of Parent and optional Child entities in {@link List} collections.
- * 
+ *
  * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
  *
  * @param <T>
  */
 abstract public class DAO<T> {
-    @Inject private ConfigurationEntityUtility entityUtility;    
+    @Inject private ConfigurationEntityUtility entityUtility;
     @PersistenceContext protected EntityManager em;
-    
+
     @SuppressWarnings("rawtypes")
     private Map<Class, ParentChildInterface> interfaces = new HashMap<Class, ParentChildInterface>(3);
     private Class<T> entityClass;
-        
-    public DAO() {        
-        defineEntity();   
+
+    public DAO() {
+        defineEntity();
         Preconditions.checkNotNull(entityClass);
     }
 
@@ -46,21 +46,21 @@ abstract public class DAO<T> {
 
     public T findByName(Object name) {
         try {
-            return em.createNamedQuery(entityClass.getName()+".findByName", entityClass).setParameter("name", name).getSingleResult();
+            return em.createNamedQuery(entityClass.getSimpleName()+".findByName", entityClass).setParameter("name", name).getSingleResult();
         } catch (IllegalArgumentException e) {
-            throw new RuntimeException("findByName query has not been defined for the entity "+entityClass.getName(), e);
+            throw new RuntimeException("findByName query has not been defined for the entity "+entityClass.getSimpleName(), e);
         } catch (NoResultException e) {
             return null;
         }
     }
-    
+
     public List<T> findAll() {
         final CriteriaQuery<T> cq = em.getCriteriaBuilder().createQuery(entityClass);
         cq.from(ComponentType.class);
-       
+
         return em.createQuery(cq).getResultList();
     }
-    
+
     @CRUDOperation(operation=EntityTypeOperation.CREATE)
     @Audit
     @Authorized
@@ -69,7 +69,7 @@ abstract public class DAO<T> {
         entityUtility.setModified(entity);
         em.persist(entity);
     }
-    
+
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
     @Authorized
@@ -78,7 +78,7 @@ abstract public class DAO<T> {
         entityUtility.setModified(entity);
         em.merge(entity);
     }
-    
+
     @CRUDOperation(operation=EntityTypeOperation.DELETE)
     @Audit
     @Authorized
@@ -86,43 +86,43 @@ abstract public class DAO<T> {
         Preconditions.checkNotNull(entity);
         em.remove( em.merge(entity) );
     }
-    
+
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
     @Authorized
     public <S> void addChild(S child) {
         Preconditions.checkNotNull(child);
-        final T parent = getParent(child);        
-        
+        final T parent = getParent(child);
+
         entityUtility.setModified(parent, child);
-        
+
         getChildrenFromParent(child).add(child);
         em.merge(parent);
     }
-    
+
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
     @Authorized
     public <S> void saveChild(S child) {
         Preconditions.checkNotNull(child);
-        final S mergedChild = em.merge( child );        
-        entityUtility.setModified(getParent(mergedChild), mergedChild);        
+        final S mergedChild = em.merge( child );
+        entityUtility.setModified(getParent(mergedChild), mergedChild);
     }
-    
+
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
     @Authorized
     public <S> void deleteChild(S child) {
         Preconditions.checkNotNull(child);
-        
-        final S mergedChild = em.merge(child) ;        
+
+        final S mergedChild = em.merge(child) ;
         getChildrenFromParent(mergedChild).remove(mergedChild);
-        em.remove(mergedChild);        
+        em.remove(mergedChild);
     }
 
-    
-    
-    /** 
+
+
+    /**
      * Implementation classes must define this method to call the defineEntityClass and
      * optional defineParentChildInterface methods
      */
@@ -130,18 +130,18 @@ abstract public class DAO<T> {
 
     /**
      * Defines the class of the entity managed by this DAO
-     * 
+     *
      * @param clazz
      */
     protected void defineEntityClass(Class<T> clazz) {
         this.entityClass = clazz;
     }
-    
+
     /**
      * Defines a calling interface between the parent and a child collection
-     * 
+     *
      * @param childClass the child collection
-     * @param iface the interface 
+     * @param iface the interface
      */
     protected <S> void defineParentChildInterface(Class<S> childClass, ParentChildInterface<T, S> iface) {
         Preconditions.checkNotNull(childClass);
@@ -158,12 +158,12 @@ abstract public class DAO<T> {
         }
         return resolver;
     }
-    
+
     private <S> T getParent(S child) {
         Preconditions.checkNotNull(child);
         return getResolver(child).getParentFromChild(child);
     }
-   
+
     private <S> List<S> getChildrenFromParent(S child) {
         Preconditions.checkNotNull(child);
         return getResolver(child).getChildCollection(getParent(child));
