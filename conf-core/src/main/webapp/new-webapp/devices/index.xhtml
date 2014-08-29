@@ -1,0 +1,50 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    template="/new-webapp/template/template.xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html">
+
+    <ui:define name="content">
+        <h:form id="deviceTypes">
+            <p:panelGrid styleClass="devicesView">
+                <p:row>
+                    <p:column style="width: 20%">
+            
+        	            <p:dataTable selection="#{devicesByTypeManager.selectedComponentType}" selectionMode="single" rowKey="#{devType.id}"
+        	                    scrollable="true" value="#{devicesByTypeManager.deviceTypes}" var="devType" scrollHeight="600" 
+        	                    emptyMessage="No device types defined.">
+                            <p:ajax event="rowSelect" update=":deviceTypes:devicesTable" />
+        	                <p:column headerText="Type">
+        	                    <h:outputText value="#{devType.name}" />
+        	                </p:column>
+        	            </p:dataTable>
+                    </p:column>            
+                    <p:column style="width: 80%">
+                        <p:dataTable id="devicesTable" scrollable="true" scrollHeight="600" 
+                                value="#{devicesByTypeManager.devices}" var="device" emptyMessage="No devices.">
+                                
+                            <p:column headerText="Serial #" width="30%">
+                                <h:outputText value="#{device.serialNumber}" />
+                            </p:column>
+                            
+                            <p:column headerText="Status">
+                                <h:outputText value="#{device.status}" />
+                            </p:column>
+                   
+                            <p:column headerText="Installed in" width="30%">
+                                <h:outputText value="-" />
+                            </p:column>
+                   
+                            <p:column headerText="Actions">
+                                <h:outputText value="-" />
+                            </p:column>
+                        </p:dataTable>
+    	            </p:column>
+                </p:row>
+            </p:panelGrid>    
+        </h:form>
+    </ui:define>
+    
+</ui:composition>

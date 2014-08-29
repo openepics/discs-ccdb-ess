@@ -29,6 +29,9 @@ import org.openepics.discs.conf.util.CRUDOperation;
  * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  */
 @Stateless public class SlotEJB {
+    public static final String ROOT_COMPONENT_TYPE = "_ROOT"; // TODO Get the root type from configuration (JNDI, config table etc)
+    public static final String GRP_COMPONENT_TYPE = "_GRP";
+
     private static final Logger logger = Logger.getLogger(SlotEJB.class.getCanonicalName());
     @PersistenceContext private EntityManager em;
     @Inject private ConfigurationEntityUtility entityUtility;
@@ -217,12 +220,6 @@ import org.openepics.discs.conf.util.CRUDOperation;
         final SlotPair mergedSlotPair = em.merge(slotPair);
         em.remove(mergedSlotPair);
     }
-
-
-    private final String ROOT_COMPONENT_TYPE = "_ROOT"; // ToDo: Get the root
-                                                        // type from
-                                                        // configuration (JNDI,
-                                                        // config table etc)
 
     public List<Slot> getRootNodes(SlotRelationName relationName) {
         return em.createQuery("SELECT cp.childSlot FROM SlotPair cp "
