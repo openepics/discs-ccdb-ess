@@ -17,15 +17,17 @@
 
 package org.openepics.discs.conf.ui;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.logging.Logger;
 
 import javax.ejb.EJB;
-import javax.faces.bean.ViewScoped;
+import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import org.openepics.discs.conf.ejb.ComptypeEJB;
+import org.openepics.discs.conf.ejb.DeviceEJB;
 import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.Device;
@@ -37,14 +39,18 @@ import org.openepics.discs.conf.ent.Device;
  */
 @Named
 @ViewScoped
-public class DevicesByTypeManager {
+public class DevicesByTypeManager implements Serializable {
     private static final Logger logger = Logger.getLogger(DevicesByTypeManager.class.getCanonicalName());
 
     @EJB private ComptypeEJB componentTypesEJB;
+    @EJB private DeviceEJB deviceEJB;
 
     private List<ComponentType> deviceTypes;
     private ComponentType selectedComponentType;
     private List<Device> devices;
+
+    public DevicesByTypeManager() {
+    }
 
     /**
      * Removes the component types from the devices based on name. Used to remove "_ROOT" and "_GRP"
@@ -64,7 +70,7 @@ public class DevicesByTypeManager {
 
     public List<ComponentType> getDeviceTypes() {
         if (deviceTypes == null) {
-            deviceTypes = componentTypesEJB.findComponentType();
+            deviceTypes = componentTypesEJB.findComponentTypeOrderedByName();
             removeInternalTypes();
         }
         return deviceTypes;
@@ -73,6 +79,10 @@ public class DevicesByTypeManager {
 
     public ComponentType getSelectedComponentType() { return selectedComponentType; }
     public void setSelectedComponentType(ComponentType selectedComponentType) { this.selectedComponentType = selectedComponentType; }
+
+    public void prepareDevicesForDisplay() {
+        this.devices = deviceEJB.findDevicesByComponentType(selectedComponentType);
+    }
 
     public List<Device> getDevices() { return devices; }
 

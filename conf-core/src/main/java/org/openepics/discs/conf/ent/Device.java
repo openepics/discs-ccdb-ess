@@ -42,6 +42,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
     @NamedQuery(name = "Device.findByManufSerialNumber", query = "SELECT d FROM Device d WHERE d.manufSerialNumber = :manufSerialNumber"),
     @NamedQuery(name = "Device.findByLocation", query = "SELECT d FROM Device d WHERE d.location = :location"),
     @NamedQuery(name = "Device.findByPurchaseOrder", query = "SELECT d FROM Device d WHERE d.purchaseOrder = :purchaseOrder"),
+    @NamedQuery(name = "Device.findByComponentType", query = "SELECT d FROM Device d WHERE d.componentType = :componentType"),
     @NamedQuery(name = "Device.findByModifiedBy", query = "SELECT d FROM Device d WHERE d.modifiedBy = :modifiedBy")})
 public class Device extends ConfigurationEntity {
     @Basic(optional = false)

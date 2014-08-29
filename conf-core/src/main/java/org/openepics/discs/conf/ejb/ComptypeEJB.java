@@ -43,6 +43,13 @@ import org.openepics.discs.conf.util.CRUDOperation;
         return comptypes;
     }
 
+    public List<ComponentType> findComponentTypeOrderedByName() {
+        final List<ComponentType> compTypes = em.createNamedQuery("ComponentType.findAllOrdered", ComponentType.class).getResultList();
+
+        return compTypes;
+    }
+
+
     public ComponentType findComponentType(Long id) {
         return em.find(ComponentType.class, id);
     }

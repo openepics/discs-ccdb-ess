@@ -7,25 +7,25 @@
     xmlns:h="http://java.sun.com/jsf/html">
 
     <ui:define name="content">
-        <h:form id="deviceTypes">
+        <h:form id="deviceTypesForm">
             <p:panelGrid styleClass="devicesView">
                 <p:row>
                     <p:column style="width: 20%">
-            
-        	            <p:dataTable selection="#{devicesByTypeManager.selectedComponentType}" selectionMode="single" rowKey="#{devType.id}"
-        	                    scrollable="true" value="#{devicesByTypeManager.deviceTypes}" var="devType" scrollHeight="600" 
-        	                    emptyMessage="No device types defined.">
-                            <p:ajax event="rowSelect" update=":deviceTypes:devicesTable" />
+        	            <p:dataTable id="typesTable" var="devType" selection="#{devicesByTypeManager.selectedComponentType}"
+                                selectionMode="single" rowKey="#{devType.id}" scrollable="true" 
+                                value="#{devicesByTypeManager.deviceTypes}" scrollHeight="600" emptyMessage="No device types defined.">
+                            <p:ajax event="rowSelect" listener="#{devicesByTypeManager.prepareDevicesForDisplay()}"  update=":deviceTypesForm:devicesTable" />
         	                <p:column headerText="Type">
         	                    <h:outputText value="#{devType.name}" />
         	                </p:column>
         	            </p:dataTable>
                     </p:column>            
                     <p:column style="width: 80%">
-                        <p:dataTable id="devicesTable" scrollable="true" scrollHeight="600" 
-                                value="#{devicesByTypeManager.devices}" var="device" emptyMessage="No devices.">
+                        <p:dataTable id="devicesTable" var="device" rows="20"
+                                paginator="true"
+                                value="#{devicesByTypeManager.devices}" emptyMessage="No devices.">
                                 
-                            <p:column headerText="Serial #" width="30%">
+                            <p:column headerText="Serial #" width="40%">
                                 <h:outputText value="#{device.serialNumber}" />
                             </p:column>
                             
@@ -43,7 +43,7 @@
                         </p:dataTable>
     	            </p:column>
                 </p:row>
-            </p:panelGrid>    
+            </p:panelGrid>
         </h:form>
     </ui:define>
     

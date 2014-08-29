@@ -35,6 +35,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
         @NamedQuery(name = "ComponentType.findAll", query = "SELECT c FROM ComponentType c"),
         @NamedQuery(name = "ComponentType.findByComponentTypeId", query = "SELECT c FROM ComponentType c WHERE c.id = :id"),
         @NamedQuery(name = "ComponentType.findByName", query = "SELECT c FROM ComponentType c WHERE c.name = :name"),
+        @NamedQuery(name = "ComponentType.findAllOrdered", query = "SELECT c FROM ComponentType c ORDER BY c.name"),
         @NamedQuery(name = "ComponentType.findByModifiedBy", query = "SELECT c FROM ComponentType c WHERE c.modifiedBy = :modifiedBy") })
 public class ComponentType extends ConfigurationEntity {
     @Basic(optional = false)
