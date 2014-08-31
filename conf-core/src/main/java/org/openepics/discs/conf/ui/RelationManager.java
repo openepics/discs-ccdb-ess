@@ -16,7 +16,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
-import org.openepics.discs.conf.ejb.ConfigurationEJB;
+import org.openepics.discs.conf.ejb.SlotRelationEJB;
 import org.openepics.discs.conf.ent.SlotRelation;
 import org.openepics.discs.conf.util.Utility;
 
@@ -26,11 +26,11 @@ import org.openepics.discs.conf.util.Utility;
  */
 @Named
 @ViewScoped
-public class RelationManager implements Serializable {    
+public class RelationManager implements Serializable {
     @SuppressWarnings("unused")
     private static final Logger logger = Logger.getLogger(RelationManager.class.getCanonicalName());
 
-    @EJB private ConfigurationEJB configurationEJB;
+    @EJB private SlotRelationEJB slotRelationEJB;
 
     private List<SlotRelation> objects;
     /**
@@ -42,7 +42,7 @@ public class RelationManager implements Serializable {
     @PostConstruct
     public void init() {
         try {
-            objects = configurationEJB.findSlotRelations();
+            objects = slotRelationEJB.findAll();
         } catch (Exception e) {
             System.err.println(e.getMessage());
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Error in getting slot relationships", " ");

@@ -34,11 +34,12 @@ public class DataLoaderHandler {
 
     /**
      * Loads data from import file to {@link List} and calls method on certain data loader
-     * to save the data in the database. If the result of save is not {@link SuccessDataLoaderResult}
+     * to save the data in the database. If the result of save is {@link DataLoaderResult#isError()}
      * then the transaction is rolled back. In any case, the notification is shown to the user.
      *
      * @param inputStream input file from which the data should be loaded
      * @param dataLoader depending on which entity is to be loaded to database, different implementation of {@link DataLoader} interface is passed
+     * @return a {@link DataLoaderResult} containing information about the operation completion status
      */
     public DataLoaderResult loadData(InputStream inputStream, DataLoader dataLoader) {
         final List<List<String>> inputRows = ExcelImportFileReader.importExcelFile(inputStream);

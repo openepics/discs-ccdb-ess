@@ -1,19 +1,11 @@
 package org.openepics.discs.conf.ejb;
 
-import static org.junit.Assert.*;
-
-import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Before;
-import org.junit.Test;
-import org.openepics.discs.conf.util.CCDBPackager;
-
 public class AlignmentEJBIT {
 //    @Deployment
 //    public static WebArchive createDeployment() {
 //        return CCDBPackager.createWebArchive();
-//    }    
-//    
+//    }
+//
 //    @Before
 //    public void setUp() throws Exception {
 //    }

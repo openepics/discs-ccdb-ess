@@ -53,13 +53,13 @@ import com.google.common.io.ByteStreams;
 @ViewScoped
 public class ComponentTypeManager implements Serializable {
     private static final Logger logger = Logger.getLogger(ComponentTypeManager.class.getCanonicalName());
-    
+
     @EJB private ComptypeEJB comptypeEJB;
-  
+
     @Inject private BlobStore blobStore;
     @Inject private DataLoaderHandler dataLoaderHandler;
     @Inject @ComponentTypesLoaderQualifier private DataLoader compTypesDataLoader;
-    
+
     private byte[] importData;
     private String importFileName;
     private DataLoaderResult loaderResult;
@@ -102,7 +102,7 @@ public class ComponentTypeManager implements Serializable {
     @PostConstruct
     public void init() {
         try {
-            objects = comptypeEJB.findComponentType();
+            objects = comptypeEJB.findAll();
             logger.log(Level.INFO, "Property org.openepics.discs.conf.prop.RepoPath {0}", blobStore.getBlobStoreRoot());
         } catch (Exception e) {
             System.err.println(e.getMessage());
@@ -138,7 +138,7 @@ public class ComponentTypeManager implements Serializable {
 
     public void onCompTypeDelete(ActionEvent event) {
         try {
-            comptypeEJB.deleteComponentType(selectedObject);
+            comptypeEJB.delete(selectedObject);
             objects.remove(selectedObject);
             selectedObject = null;
             inputObject = null;
@@ -157,9 +157,9 @@ public class ComponentTypeManager implements Serializable {
             // inputObject.setSuperComponentType(null);
             // Utility.showMessage(FacesMessage.SEVERITY_INFO, "Saved 2", "");
             if (selectedOp == 'a') {
-                comptypeEJB.addComponentType(inputObject);
+                comptypeEJB.add(inputObject);
             } else {
-                comptypeEJB.saveComponentType(inputObject);
+                comptypeEJB.save(inputObject);
             }
 
             if (selectedOp == 'a') {
@@ -202,7 +202,7 @@ public class ComponentTypeManager implements Serializable {
                 Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "No property selected");
                 return;
             }
-            comptypeEJB.deleteCompTypeProp(ctp);
+            comptypeEJB.deleteChild(ctp);
             selectedProperties.remove(ctp);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted property", "");
         } catch (Exception e) {
@@ -243,9 +243,9 @@ public class ComponentTypeManager implements Serializable {
             }
 
             if (propertyOperation == 'a') {
-                comptypeEJB.addCompTypeProp(inputProperty);
+                comptypeEJB.addChild(inputProperty);
             } else {
-                comptypeEJB.saveCompTypeProp(inputProperty);
+                comptypeEJB.saveChild(inputProperty);
             }
             logger.log(Level.INFO, "returned artifact id is " + inputProperty.getId());
 
@@ -340,9 +340,9 @@ public class ComponentTypeManager implements Serializable {
             }
 
             if (artifactOperation == 'a') {
-                comptypeEJB.addCompTypeArtifact(inputArtifact);
+                comptypeEJB.addChild(inputArtifact);
             } else {
-                comptypeEJB.saveCompTypeArtifact(inputArtifact);
+                comptypeEJB.saveChild(inputArtifact);
             }
             logger.log(Level.INFO, "returned artifact id is " + inputArtifact.getId());
 
@@ -362,7 +362,7 @@ public class ComponentTypeManager implements Serializable {
                 return;
             }
 
-            comptypeEJB.deleteCompTypeArtifact(art);
+            comptypeEJB.deleteChild(art);
             selectedArtifacts.remove(art);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted Artifact", "");
         } catch (Exception e) {
@@ -445,7 +445,7 @@ public class ComponentTypeManager implements Serializable {
             ComptypeAsm prt = new ComptypeAsm("");
 
             prt.setParentType(selectedObject);
-            
+
             selectedParts.add(prt);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "New assembly element", "");
         } catch (Exception e) {
@@ -462,7 +462,7 @@ public class ComponentTypeManager implements Serializable {
                 return;
             }
             selectedParts.remove(prt); // ToDo: should this be done before or after delete from db?
-            comptypeEJB.deleteComptypeAsm(selectedObject, prt);
+            comptypeEJB.deleteChild(prt);
 
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted assembly element", "");
         } catch (Exception e) {
@@ -491,7 +491,7 @@ public class ComponentTypeManager implements Serializable {
         ComptypeAsm prt = (ComptypeAsm) event.getObject();
 
         try {
-            comptypeEJB.saveComptypeAsm(selectedObject, prt);
+            comptypeEJB.saveChild(prt);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Assembly item saved", "");
 
         } catch (Exception e) {

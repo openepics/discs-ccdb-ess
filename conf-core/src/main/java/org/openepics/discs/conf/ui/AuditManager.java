@@ -17,7 +17,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
-import org.openepics.discs.conf.ejb.ConfigurationEJB;
+import org.openepics.discs.conf.ejb.AuditRecordEJB;
 import org.openepics.discs.conf.ent.AuditRecord;
 import org.openepics.discs.conf.util.Utility;
 
@@ -30,7 +30,7 @@ import org.openepics.discs.conf.util.Utility;
 public class AuditManager implements Serializable {
     private static final Logger logger = Logger.getLogger(AuditManager.class.getCanonicalName());
 
-    @EJB private ConfigurationEJB configurationEJB;
+    @EJB private AuditRecordEJB auditRecordEJB;
 
     private List<AuditRecord> objects;
     private List<AuditRecord> filteredObjects;
@@ -44,7 +44,7 @@ public class AuditManager implements Serializable {
     @PostConstruct
     public void init() {
         try {
-            objects = configurationEJB.findAuditRecords();
+            objects = auditRecordEJB.findAll();
         } catch (Exception e) {
             System.err.println(e.getMessage());
             logger.log(Level.SEVERE, "Cannot retrieve audit records");
