@@ -1,30 +1,47 @@
 package org.openepics.discs.conf.ent;
 
-import java.util.Date;
-
-import javax.persistence.Basic;
-import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
+import javax.persistence.Version;
 
 @Entity
 @Table(name = "tag")
-public class Tag extends ConfigurationEntity {
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "name", unique = true)
+public class Tag {
+    @Id
     private String name;
 
-    protected Tag() {
-    }
+    @Version
+    protected Long version;
 
-    public Tag(String name, String modifiedBy) {
+    protected Tag() {}
+
+    public Tag(String name) {
         this.name = name;
-        this.modifiedBy = modifiedBy;
-        this.modifiedAt = new Date();
     }
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
+
+	@Override
+	public int hashCode() {
+		return name != null ? name.hashCode() : 0;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Tag other = (Tag) obj;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		return true;
+	}
 }

@@ -13,7 +13,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author vuppala
  */
 @Entity
-@Table(name = "slot_property_values")
+@Table(name = "slot_property_value")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "SlotPropertyValue.findAll", query = "SELECT s FROM SlotPropertyValue s"),

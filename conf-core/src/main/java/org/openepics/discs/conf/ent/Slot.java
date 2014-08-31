@@ -1,6 +1,7 @@
 package org.openepics.discs.conf.ent;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -60,7 +61,7 @@ public class Slot extends ConfigurationEntity {
     private Double beamlinePosition;
 
     @Embedded
-    private AlignmentInformation positionInfo;
+    private AlignmentInformation positionInfo = new AlignmentInformation();
 
     @Size(max = 255)
     @Column(name = "asm_comment")
@@ -75,39 +76,37 @@ public class Slot extends ConfigurationEntity {
     private String comment;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "slot")
-    private List<SlotArtifact> slotArtifactList;
+    private List<SlotArtifact> slotArtifactList = new ArrayList<>();
 
     @JoinColumn(name = "component_type")
     @ManyToOne(optional = false)
     private ComponentType componentType;
 
     @OneToMany(mappedBy = "asmSlot")
-    private List<Slot> slotList;
+    private List<Slot> slotList = new ArrayList<>();
 
     @JoinColumn(name = "asm_slot")
     @ManyToOne
     private Slot asmSlot;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "childSlot")
-    private List<SlotPair> childrenSlots;
+    private List<SlotPair> childrenSlots = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "parentSlot")
-    private List<SlotPair> parentSlots;
+    private List<SlotPair> parentSlots = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "slot")
-    private List<SlotPropertyValue> slotPropertyList;
+    private List<SlotPropertyValue> slotPropertyList = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(name = "slot_tag",
         joinColumns = { @JoinColumn(name = "slot_id") }, inverseJoinColumns = { @JoinColumn(name = "tag_id") })
-    private Set<Tag> tags;
-
+    private Set<Tag> tags = new HashSet<>();
 
     protected Slot() {
     }
 
     public Slot(String name, boolean isHostingSlot) {
-        this.positionInfo = new AlignmentInformation();
         this.name = name;
         this.isHostingSlot = isHostingSlot;
     }
@@ -124,13 +123,7 @@ public class Slot extends ConfigurationEntity {
     public Double getBeamlinePosition() { return beamlinePosition; }
     public void setBeamlinePosition(Double beamlinePosition) { this.beamlinePosition = beamlinePosition; }
 
-    public AlignmentInformation getPositionInformation() {
-        if (positionInfo == null) {
-            positionInfo = new AlignmentInformation();
-        }
-        
-        return positionInfo; 
-    }
+    public AlignmentInformation getPositionInformation() { return positionInfo; }
 
     public String getAssemblyComment() { return asmComment; }
     public void setAssemblyComment(String asmComment) { this.asmComment = asmComment; }
@@ -143,12 +136,7 @@ public class Slot extends ConfigurationEntity {
 
     @XmlTransient
     @JsonIgnore
-    public List<SlotArtifact> getSlotArtifactList() {
-        if (slotArtifactList == null) {
-            slotArtifactList = new ArrayList<>();
-        }
-        return slotArtifactList;
-    }
+    public List<SlotArtifact> getSlotArtifactList() { return slotArtifactList; }
 
     public ComponentType getComponentType() { return componentType; }
     public void setComponentType(ComponentType componentType) { this.componentType = componentType; }
@@ -162,30 +150,15 @@ public class Slot extends ConfigurationEntity {
 
     @XmlTransient
     @JsonIgnore
-    public List<SlotPair> getChildrenSlotsPairList() {
-        if (childrenSlots == null) {
-            childrenSlots = new ArrayList<>();
-        }
-        return childrenSlots;
-    }
+    public List<SlotPair> getChildrenSlotsPairList() { return childrenSlots; }
 
     @XmlTransient
     @JsonIgnore
-    public List<SlotPair> getParentSlotsPairList() {
-        if (parentSlots == null) {
-            parentSlots = new ArrayList<>();
-        }
-        return parentSlots;
-    }
+    public List<SlotPair> getParentSlotsPairList() { return parentSlots; }
 
     @XmlTransient
     @JsonIgnore
-    public List<SlotPropertyValue> getSlotPropertyList() {
-        if (slotPropertyList == null) {
-            slotPropertyList = new ArrayList<>();
-        }
-        return slotPropertyList;
-    }
+    public List<SlotPropertyValue> getSlotPropertyList() { return slotPropertyList; }
 
     @XmlTransient
     @JsonIgnore

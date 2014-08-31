@@ -23,7 +23,7 @@ import javax.validation.constraints.Size;
 @MappedSuperclass
 public class ConfigurationEntity implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     protected Long id;
 

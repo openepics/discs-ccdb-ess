@@ -37,7 +37,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "AuditRecord.findByEntityKey", query = "SELECT a FROM AuditRecord a WHERE a.entityKey = :entityKey")})
 public class AuditRecord implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private Long id;
 

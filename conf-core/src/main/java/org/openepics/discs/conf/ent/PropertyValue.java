@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "property_value")
-@Inheritance(strategy = InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 abstract public class PropertyValue extends ConfigurationEntity {
     @Column(name = "prop_value", columnDefinition = "TEXT")
     private String propValue;
@@ -35,7 +35,7 @@ abstract public class PropertyValue extends ConfigurationEntity {
     public PropertyValue(boolean inRepository) {
         this.inRepository = inRepository;
     }
-    
+
     public String getPropValue() { return propValue; }
     public void setPropValue(String propValue) { this.propValue = propValue; }
 
