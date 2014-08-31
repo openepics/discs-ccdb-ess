@@ -9,8 +9,6 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaQuery;
 
-import org.openepics.discs.conf.ent.ComponentType;
-
 import com.google.common.base.Preconditions;
 
 /**
@@ -65,7 +63,7 @@ abstract public class ReadOnlyDAO<T> {
      */
     public List<T> findAll() {
         final CriteriaQuery<T> cq = em.getCriteriaBuilder().createQuery(entityClass);
-        cq.from(ComponentType.class);
+        cq.from(entityClass);
 
         final List<T> result = em.createQuery(cq).getResultList();
         return result != null ? result : new ArrayList<T>();
