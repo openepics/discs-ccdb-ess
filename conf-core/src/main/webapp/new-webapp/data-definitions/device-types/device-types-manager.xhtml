@@ -29,8 +29,8 @@
 	                <p:commandButton icon="ui-icon-pencil" title="Edit" ajax="true" oncomplete="modifyDeviceType.show()">
 	                    <f:setPropertyActionListener value="#{deviceType}" target="#{componentTypeManager.selectedDeviceTypeToModify}" />
 	                </p:commandButton>
-	                <p:commandButton icon="ui-icon-clock" title="Log" ajax="true" oncomplete="deviceTypeLog.show()">
-	                    <f:setPropertyActionListener value="#{deviceType}" target="#{componentTypeManager.selectedDeviceTypeForLog}" />
+	                <p:commandButton icon="ui-icon-clock" title="Log" update=":deviceTypeLogForm" oncomplete="deviceTypeLog.show()">
+	                    <f:ajax event="click" listener="#{auditManager.selectEntityForLog(deviceType, 'COMPONENT_TYPE')}" />
 	                </p:commandButton>
 	                <p:commandButton icon="ui-icon-copy" title="Create copy" ajax="true" oncomplete="deviceTypeLog.show()">
 	                    <f:setPropertyActionListener value="#{deviceType}" target="#{componentTypeManager.selectedDeviceTypeForLog}" />
