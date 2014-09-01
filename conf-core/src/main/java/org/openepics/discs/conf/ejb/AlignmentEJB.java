@@ -22,8 +22,8 @@ public class AlignmentEJB extends DAO<AlignmentRecord> {
 
         defineParentChildInterface(AlignmentPropertyValue.class, new ParentChildInterface<AlignmentRecord, AlignmentPropertyValue>() {
             @Override
-            public List<AlignmentPropertyValue> getChildCollection(AlignmentRecord type) {
-                return type.getAlignmentPropertyList();
+            public List<AlignmentPropertyValue> getChildCollection(AlignmentRecord record) {
+                return record.getAlignmentPropertyList();
             }
             @Override
             public AlignmentRecord getParentFromChild(AlignmentPropertyValue child) {
@@ -33,8 +33,8 @@ public class AlignmentEJB extends DAO<AlignmentRecord> {
 
         defineParentChildInterface(AlignmentArtifact.class, new ParentChildInterface<AlignmentRecord, AlignmentArtifact>() {
             @Override
-            public List<AlignmentArtifact> getChildCollection(AlignmentRecord type) {
-                return type.getAlignmentArtifactList();
+            public List<AlignmentArtifact> getChildCollection(AlignmentRecord record) {
+                return record.getAlignmentArtifactList();
             }
             @Override
             public AlignmentRecord getParentFromChild(AlignmentArtifact child) {

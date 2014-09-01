@@ -128,7 +128,9 @@ abstract public class DAO<T> extends ReadOnlyDAO<T> {
 
     private <S> T getParent(S child) {
         Preconditions.checkNotNull(child);
-        return getResolverInterface(child).getParentFromChild(child);
+        final T parent = getResolverInterface(child).getParentFromChild(child);
+        Preconditions.checkNotNull(parent);
+        return parent;
     }
 
     private <S> List<S> getChildrenFromParent(S child) {
