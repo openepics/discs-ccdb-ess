@@ -9,7 +9,6 @@
  */
 package org.openepics.discs.conf.ui.common;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,11 +19,9 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 
 import org.apache.commons.io.FilenameUtils;
-import org.openepics.discs.conf.ent.ComptypeArtifact;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.util.BlobStore;
 import org.primefaces.event.FileUploadEvent;
-import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 
 import com.google.common.io.ByteStreams;
@@ -118,10 +115,8 @@ public abstract class AbstractAttributesController implements Serializable {
         importFileName = null;
     }
 
-    public StreamedContent getDownloadFile() throws FileNotFoundException {
-        final ComptypeArtifact compTypeArtifact = (ComptypeArtifact) selectedAttribute.getEntity();
-        return new DefaultStreamedContent(new FileInputStream(blobStore.getBlobStoreRoot() + "/" + compTypeArtifact.getUri()));
-    }
+
+    public abstract StreamedContent getDownloadFile() throws FileNotFoundException;
 
     public void setProperty(Property property) { this.property = property; }
     public Property getProperty() { return property; }

@@ -351,6 +351,7 @@ public class ComponentTypeManager implements Serializable {
             InputStream istream = blobStore.retreiveFile(selectedProperty.getPropValue());
             file = new DefaultStreamedContent(istream, "application/octet-stream", selectedProperty.getProperty().getName());
 
+
             // InputStream stream = new FileInputStream(pathName);
             // downloadedFile = new DefaultStreamedContent(stream, "application/octet-stream", "file.jpg"); //ToDo" replace with actual filename
         } catch (Exception e) {

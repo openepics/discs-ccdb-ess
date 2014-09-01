@@ -73,6 +73,7 @@ public class EntityAttributeView {
             name = compTypeArtifact.getName();
             hasFile = compTypeArtifact.isInternal();
             hasURL = !compTypeArtifact.isInternal();
+            value = compTypeArtifact.getUri();
             kind = "Artifact";
         } else if (entity instanceof Tag) {
             setTagParameters();
@@ -94,6 +95,7 @@ public class EntityAttributeView {
             name = deviceArtifact.getName();
             hasFile = deviceArtifact.isInternal();
             hasURL = !deviceArtifact.isInternal();
+            value = deviceArtifact.getUri();
         } else if (entity instanceof Tag) {
             setTagParameters();
         } else {
@@ -113,6 +115,7 @@ public class EntityAttributeView {
             name = slotArtifact.getName();
             hasFile = slotArtifact.isInternal();
             hasURL = !slotArtifact.isInternal();
+            value = slotArtifact.getUri();
         } else if (entity instanceof Tag) {
             setTagParameters();
         } else {

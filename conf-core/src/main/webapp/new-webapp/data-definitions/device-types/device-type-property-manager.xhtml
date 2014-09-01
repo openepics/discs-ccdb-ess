@@ -49,11 +49,11 @@
 			                         <f:setPropertyActionListener value="#{attribute}" target="#{comptypeAttributesController.selectedAttribute}" />
 			                    </p:commandButton>
 			                    <p:commandButton icon="ui-icon-pencil" title="Edit" ajax="true" rendered="#{attribute.kind != 'Definition'}" />
-			                    <p:commandButton icon="ui-icon-arrowthick-1-s" title="Download" ajax="true" rendered="#{attribute.hasFile}">
+			                    <p:commandButton icon="ui-icon-arrowthick-1-s" title="Download" ajax="false" rendered="#{attribute.hasFile}">
 			                         <f:setPropertyActionListener value="#{attribute}" target="#{comptypeAttributesController.selectedAttribute}" />
 			                         <p:fileDownload value="#{comptypeAttributesController.downloadFile}" />
 			                    </p:commandButton>
-			                    <p:commandButton icon="ui-icon-extlink" title="Got to URL" ajax="true" rendered="#{attribute.hasURL}" />
+			                    <p:button icon="ui-icon-extlink" target="_blank" title="Got to URL" ajax="true" rendered="#{attribute.hasURL}" href="#{attribute.value}"/>
 			                </p:column>
 	                    </p:dataTable>
 	               </h:panelGroup>

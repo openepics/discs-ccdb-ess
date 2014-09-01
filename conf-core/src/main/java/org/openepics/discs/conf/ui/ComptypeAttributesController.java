@@ -10,6 +10,8 @@
 package org.openepics.discs.conf.ui;
 
 import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -35,6 +37,8 @@ import org.openepics.discs.conf.ui.common.EntityAttributeView;
 import org.openepics.discs.conf.util.UnhandledCaseException;
 import org.openepics.discs.conf.util.Utility;
 import org.primefaces.context.RequestContext;
+import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.StreamedContent;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
@@ -149,5 +153,21 @@ public class ComptypeAttributesController extends AbstractAttributesController {
             throw new UnhandledCaseException();
         }
         populateAttributesList();
+    }
+
+    @Override
+    public StreamedContent getDownloadFile() throws FileNotFoundException {
+        final ComptypeArtifact compTypeArtifact = (ComptypeArtifact) selectedAttribute.getEntity();
+
+        final String fileType;
+        if (compTypeArtifact.getUri().split(".").length > 1) {
+            fileType = compTypeArtifact.getUri().split(".")[compTypeArtifact.getUri().split(".").length - 1];
+        } else {
+            fileType = "";
+        }
+
+        final String fileName = compTypeArtifact.getName();
+
+        return new DefaultStreamedContent(new FileInputStream(blobStore.getBlobStoreRoot() + "/" + compTypeArtifact.getUri()), fileType, fileName);
     }
 }

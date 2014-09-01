@@ -17,6 +17,7 @@ import org.openepics.discs.conf.ent.ComptypeArtifact;
 import org.openepics.discs.conf.ent.ComptypeAsm;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
+import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.security.Authorized;
 import org.openepics.discs.conf.util.CRUDOperation;
 
@@ -115,10 +116,13 @@ import org.openepics.discs.conf.util.CRUDOperation;
 
         final ComptypePropertyValue mergedPropertyValue = em.merge(propertyValue);
         final ComponentType parent = mergedPropertyValue.getComponentType();
+        final Property property = mergedPropertyValue.getProperty();
 
         entityUtility.setModified(parent);
 
         parent.getComptypePropertyList().remove(mergedPropertyValue);
+        property.getPropertyValuesList().remove(mergedPropertyValue);
+
         em.remove(mergedPropertyValue);
     }
 
