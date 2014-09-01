@@ -1,1 +1,1 @@
-mvn failsafe:integration-test -P jboss,integration-test
+mvn failsafe:integration-test -P jboss

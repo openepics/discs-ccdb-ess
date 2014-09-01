@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+  <property id="84" modified_at="2014-08-29 22:01:29.766" modified_by="admin" version="0" association="SLOT" description="Accumulated Center Position" name="ACENPOS" data_type="35" unit="48"/>
+  <property id="86" modified_at="2014-08-29 22:01:29.782" modified_by="admin" version="0" association="SLOT" description="Accumulated End Position" name="AENDPOS" data_type="35" unit="48"/>
+  <property id="88" modified_at="2014-08-29 22:01:29.782" modified_by="admin" version="0" association="ALL" description="Another Name" name="ALIAS" data_type="36"/>
+  <property id="90" modified_at="2014-08-29 22:01:29.798" modified_by="admin" version="0" association="TYPE_DEVICE" description="Radius Aperture" name="APERTURE" data_type="35" unit="48"/>
+  <property id="92" modified_at="2014-08-29 22:01:29.813" modified_by="admin" version="0" association="TYPE_DEVICE" description="Bending Angle" name="BANGLE" data_type="35" unit="76"/>
+  <property id="94" modified_at="2014-08-29 22:01:29.813" modified_by="admin" version="0" association="ALL" description="B-pole" name="BPOLE" data_type="35" unit="66"/>
+  <property id="96" modified_at="2014-08-29 22:01:29.829" modified_by="admin" version="0" association="ALL" description="Bending Radius" name="BRADIUS" data_type="35" unit="48"/>
+  <property id="98" modified_at="2014-08-29 22:01:29.845" modified_by="admin" version="0" association="TYPE" description="Conductor Size" name="CDTRSIZE" data_type="41" unit="54"/>
+  <property id="100" modified_at="2014-08-29 22:01:29.86" modified_by="admin" version="0" association="TYPE" description="Current" name="CURRENT" data_type="35" unit="68"/>
+  <property id="102" modified_at="2014-08-29 22:01:29.876" modified_by="admin" version="0" association="TYPE" description="Distance from Artemis Source" name="DFAS" data_type="35" unit="48"/>
+  <property id="104" modified_at="2014-08-29 22:01:29.876" modified_by="admin" version="0" association="TYPE" description="Edge Angle" name="EANGLE" data_type="35" unit="76"/>
+  <property id="106" modified_at="2014-08-29 22:01:29.891" modified_by="admin" version="0" association="SLOT" description="Effective Flange to flange length" name="EF2FLEN" data_type="35" unit="48"/>
+  <property id="108" modified_at="2014-08-29 22:01:29.907" modified_by="admin" version="0" association="TYPE_DEVICE" description="Effective Length" name="EFFLENGTH" data_type="35" unit="48"/>
+  <property id="110" modified_at="2014-08-29 22:01:29.923" modified_by="admin" version="0" association="TYPE" description="Length" name="LENGTH" data_type="35" unit="48"/>
+  <property id="112" modified_at="2014-08-29 22:01:29.938" modified_by="admin" version="0" association="TYPE" description="Maximum Field" name="MAXFIELD" data_type="35" unit="66"/>
+  <property id="114" modified_at="2014-08-29 22:01:29.954" modified_by="admin" version="0" association="SLOT" description="Minimum Beampipe Inner Diameter" name="MINBPID" data_type="35" unit="48"/>
+  <property id="116" modified_at="2014-08-29 22:01:29.954" modified_by="admin" version="0" association="TYPE" description="Number Required" name="NUMREQ" data_type="34"/>
+  <property id="118" modified_at="2014-08-29 22:01:29.97" modified_by="admin" version="0" association="TYPE" description="Power" name="POWER" data_type="35" unit="62"/>
+  <property id="120" modified_at="2014-08-29 22:01:29.985" modified_by="admin" version="0" association="TYPE" description="Resistance" name="RESISTNC" data_type="35" unit="74"/>
+  <property id="122" modified_at="2014-08-29 22:01:30.001" modified_by="admin" version="0" association="TYPE" description="Temprature Rise" name="TEMPRISE" data_type="35" unit="56"/>
+  <property id="124" modified_at="2014-08-29 22:01:30.016" modified_by="admin" version="0" association="TYPE" description="Vaccum Pipe O.D." name="VACPOD" data_type="35" unit="50"/>
+  <property id="126" modified_at="2014-08-29 22:01:30.032" modified_by="admin" version="0" association="TYPE" description="Voltage" name="VOLTAGE" data_type="35" unit="70"/>
+  <property id="128" modified_at="2014-08-29 22:01:30.048" modified_by="admin" version="0" association="ALL" description="Quad Gradient" name="QUADGRAD" data_type="35" unit="80"/>
+  <property id="130" modified_at="2014-08-29 22:01:30.063" modified_by="admin" version="0" association="ALL" description="Quad Bpole" name="QUADBPOL" data_type="35" unit="66"/>
+  <property id="132" modified_at="2014-08-29 22:01:30.079" modified_by="admin" version="0" association="ALL" description="Sext Gradient" name="SEXTGRAD" data_type="35" unit="82"/>
+  <property id="134" modified_at="2014-08-29 22:01:30.095" modified_by="admin" version="0" association="ALL" description="Sext Bpole" name="SEXTBPOL" data_type="35" unit="66"/>
+  <property id="136" modified_at="2014-08-29 22:01:30.11" modified_by="admin" version="0" association="ALL" description="Dipole B" name="DIPOLEB" data_type="35" unit="66"/>
+  <property id="138" modified_at="2014-08-29 22:01:30.11" modified_by="admin" version="0" association="ALL" description="Field Measurement Polynomia" name="FIELDPOLY" data_type="36"/>
+  <property id="140" modified_at="2014-08-29 22:01:30.126" modified_by="admin" version="0" association="ALL" description="External Document" name="DOC01" data_type="38"/>
+  <property id="142" modified_at="2014-08-29 22:01:30.141" modified_by="admin" version="0" association="SLOT" description="Distance to center from L-Line Extension Origin" name="DCFLEO" data_type="35" unit="48"/>
+  <property id="144" modified_at="2014-08-29 22:01:30.157" modified_by="admin" version="0" association="SLOT" description="Length from Element before (c2c) " name="LFELB" data_type="35" unit="48"/>
+</dataset>
