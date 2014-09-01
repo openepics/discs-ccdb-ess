@@ -16,7 +16,7 @@
                     <h:outputText value="#{auditRecord.entityKey}" />
                 </p:column>
                 
-                <p:column headerText="Action">
+                <p:column headerText="Operation">
                     <h:outputText value="#{auditRecord.oper}" />
                 </p:column>
 
@@ -38,7 +38,7 @@
                     <h:outputText value="#{auditRecord.entry.length() lt 46 ? auditRecord.entry : auditRecord.entry.substring(0,45) += '...'}" />
                 </p:column>
                 
-                <p:column headerText="Action" width="50"  >
+                <p:column headerText="Action" width="50" style="text-align: center;" >
                     <p:commandButton icon="ui-icon-info" title="Details" update=":logDetailsForm" 
                         action="#{auditManager.chooseDisplayRecord(auditRecord.id)}" oncomplete="logDetails.show()" />
                 </p:column>

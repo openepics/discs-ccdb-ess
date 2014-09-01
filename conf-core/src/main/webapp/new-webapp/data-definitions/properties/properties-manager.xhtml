@@ -9,24 +9,24 @@
 			<p:commandButton ajax="true"
 				actionListener="#{propertyManager.prepareAddPopup()}" value="Add new"
 				oncomplete="addProperty.show()" />
-			<p:dataTable var="property" value="#{propertyManager.properties}" filteredValue="#{propertyManager.filteredProperties}"
+			<p:dataTable var="property" value="#{propertyManager.properties}" resizableColumns="true" style="table-layout: fixed; word-wrap: break-word;" filteredValue="#{propertyManager.filteredProperties}"
 				rows="15" paginator="true" paginatorPosition="bottom">
-				<p:column headerText="Name" sortBy="#{property.name}" filterBy="#{property.name}">
+				<p:column headerText="Name" sortBy="#{property.name}" filterBy="#{property.name}" width="20%">
 					<h:outputText value="#{property.name}" />
 				</p:column>
 	
-				<p:column headerText="Description" filterBy="#{property.description}">
+				<p:column headerText="Description" filterBy="#{property.description}" width="50%">
 					<h:outputText value="#{property.description}" />
 				</p:column>
 	
 				<p:column headerText="Unit">
-					<h:outputText value="#{property.unit.name}" />
+					<h:outputText value="#{property.unit.name}" width="10%"/>
 				</p:column>
 	
-				<p:column headerText="Data Type" filterBy="#{property.dataType.name}">
+				<p:column headerText="Data Type" filterBy="#{property.dataType.name}" width="10%">
 					<h:outputText value="#{property.dataType.name}" />
 				</p:column>
-				<p:column headerText="Action">
+				<p:column headerText="Action" style="text-align: center;" width="10%">
 					<p:commandButton icon="ui-icon-trash" title="Delete" ajax="true" oncomplete="deleteProperty.show()">
 	                    <f:setPropertyActionListener value="#{property}" target="#{propertyManager.selectedProperty}" />
 	                </p:commandButton>

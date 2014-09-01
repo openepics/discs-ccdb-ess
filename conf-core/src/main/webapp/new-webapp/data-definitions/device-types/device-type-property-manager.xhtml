@@ -8,15 +8,27 @@
 	      <h:panelGroup id="deviceTypePropertiesManagerContainer" layout="block" class="container">
 	           <p:growl showDetail="true" globalOnly="true" />
 	           <h:form id="deviceTypePropertiesManagerForm" enctype="multipart/form-data">
-		           <h:panelGroup class="properties-parent-info" layout="block">
-		               <h:panelGrid columns="2" style="width: 100%; text-align: top;" border="0">  
-		                   
-		                   <h:outputLabel style="font-size: 12px" value="Device type name:" />
-		                   <h:outputText style="font-size: 12px" value="#{comptypeAttributesController.deviceType.name}" />
+	           
+		           <h:panelGroup class="properties-parent-info" layout="block" style="border: 1px solid #a8a8a8;">
+		               <p:panelGrid columns="2" style="width: 100%;" columnClasses="alignTop, alignTop"> 
+		               		                   
+		                   <h:outputLabel value="Device type name:" />
+		                   <h:outputText value="#{comptypeAttributesController.deviceType.name}" style="width: 100%;" />
 	                   		                   		                   
-		                   <h:outputLabel style="font-size: 12px" value="Description:" />
-	                       <p:inputTextarea value="#{comptypeAttributesController.deviceType.description}"  rows="5" readonly="true" style="width: 100%; font-size: 12px"/>
-	                   </h:panelGrid>
+		                   <h:outputLabel value="Description:" />
+	                       <p:inputTextarea value="#{comptypeAttributesController.deviceType.description}"  rows="5" cols="51" readonly="true" style="width: 100%;"/>
+	                   </p:panelGrid>
+	                   
+	                   <br/>
+	                   <br/>
+	                   
+	                   <p:commandButton value="History" icon="ui-icon-clock" style="float: right; margin: 10px 10px " update=":deviceTypeLogForm" oncomplete="deviceTypeLog.show()" >
+	                      <f:ajax event="click" listener="#{auditManager.selectEntityForLog(comptypeAttributesController.deviceType, 'COMPONENT_TYPE')}" />
+	                   </p:commandButton>
+	                   <p:commandButton value="Back" style="float: right; margin: 10px 0px 10px 10px" ajax="false" >
+	                       <f:ajax event="click" listener="#{comptypeAttributesController.deviceTypeRedirect()}" />
+	                   </p:commandButton>
+	                   
 	               </h:panelGroup>
 		           
 		           <h:panelGroup class="property-values" layout="block">
@@ -27,7 +39,7 @@
                             <p:menuitem value="Tag" oncomplete="deviceTypeTag.show()" actionListener="#{comptypeAttributesController.prepareForPropertyValueAdd}"/>
                             <p:menuitem value="Artifact" oncomplete="deviceTypeArtifact.show()" actionListener="#{comptypeAttributesController.prepareForArtifactAdd}" update=":deviceTypeArtifactForm:deviceTypeArtifact"/>
 		               </p:menu>
-		               <p:dataTable id="attributesDataTable" var="attribute" value="#{comptypeAttributesController.attributes}" rows="15" paginator="true" paginatorPosition="bottom">
+		               <p:dataTable id="attributesDataTable" var="attribute" value="#{comptypeAttributesController.attributes}" style="table-layout: fixed; word-wrap: break-word;" rows="15" paginator="true" paginatorPosition="bottom">
 			                <p:column headerText="Name" sortBy="#{attribute.name}">
 			                    <h:outputText value="#{attribute.name}" />
 			                </p:column>
@@ -44,7 +56,7 @@
 			                    <h:outputText value="#{attribute.unit.name}" />
 			                </p:column>
 			    
-			                <p:column headerText="Actions">
+			                <p:column headerText="Actions" width="10%">
 			                    <p:commandButton icon="ui-icon-trash" title="Delete" ajax="true" oncomplete="deleteAttribute.show()">
 			                         <f:setPropertyActionListener value="#{attribute}" target="#{comptypeAttributesController.selectedAttribute}" />
 			                    </p:commandButton>
@@ -59,6 +71,19 @@
 	               </h:panelGroup>
                 </h:form>
         </h:panelGroup>
+        
+        <ui:include src="/new-webapp/audit/audit-log-table.xhtml">
+	        <ui:param name="formId" value="deviceTypeLogForm" />
+	        <ui:param name="dialogTitle" value="Device Type Log" />
+	        <ui:param name="widgetName" value="deviceTypeLog" />
+	        <ui:param name="managedBean" value="#{componentTypeManager}" />
+	    </ui:include>
+	    
+	    <ui:include src="/new-webapp/audit/audit-log-details.xhtml">
+	        <ui:param name="formId" value="logDetailsForm" />
+	        <ui:param name="dialogTitle" value="Long Entry Details" />
+	        <ui:param name="widgetName" value="logDetails" />
+	    </ui:include>
         
         <ui:include src="../add-or-modify-dialogs/delete-confirmation.xhtml" >
             <ui:param name="formId" value="deleteAttributeForm" />

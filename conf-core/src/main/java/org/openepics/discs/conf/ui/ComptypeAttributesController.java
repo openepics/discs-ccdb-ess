@@ -65,6 +65,15 @@ public class ComptypeAttributesController extends AbstractAttributesController {
         filterProperties();
     }
 
+    public void deviceTypeRedirect() {
+        try {
+            FacesContext.getCurrentInstance().getExternalContext().redirect("device-types-manager.xhtml");
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
     @Override
     protected void populateAttributesList() {
         attributes = new ArrayList<>();

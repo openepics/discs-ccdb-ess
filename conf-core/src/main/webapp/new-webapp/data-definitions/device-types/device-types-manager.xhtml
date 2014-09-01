@@ -9,17 +9,17 @@
 	        <p:commandButton ajax="true"
 	            actionListener="#{componentTypeManager.prepareAddPopup()}" value="Add new"
 	            oncomplete="addDeviceType.show()" />
-	        <p:dataTable var="deviceType" value="#{componentTypeManager.objects}" filteredValue="#{componentTypeManager.filteredObjects}"
+	        <p:dataTable var="deviceType" value="#{componentTypeManager.objects}" resizableColumns="true" style="table-layout: fixed; word-wrap: break-word;" filteredValue="#{componentTypeManager.filteredObjects}"
 	            rows="15" paginator="true" paginatorPosition="bottom">
-	            <p:column headerText="Name" sortBy="#{deviceType.name}" filterBy="#{deviceType.name}">
+	            <p:column headerText="Name" sortBy="#{deviceType.name}" filterBy="#{deviceType.name}" width="20%">
 	                <h:outputText value="#{deviceType.name}" />
 	            </p:column>
 	
-	            <p:column headerText="Description" filterBy="#{deviceType.description}">
+	            <p:column headerText="Description" filterBy="#{deviceType.description}" width="65%">
 	                <h:outputText value="#{deviceType.description}" />
 	            </p:column>
 	
-	            <p:column headerText="Actions">
+	            <p:column headerText="Actions" width="15%" style="text-align: center;">
 	                <p:commandButton icon="ui-icon-trash" title="Delete" ajax="true" oncomplete="deleteDeviceType.show()">
 	                    <f:setPropertyActionListener value="#{deviceType}" target="#{componentTypeManager.selectedDeviceType}" />
 	                </p:commandButton>

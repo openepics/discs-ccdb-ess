@@ -71,12 +71,12 @@ body {
 
 .properties-parent-info {
 	float: left;
-	width: 20%;
+	width: 25%;
 }
 
 .property-values {
     float: right;
-    width: 75%;
+    width: 74%;
 }
 
 .ui-panelgrid tr,
@@ -88,6 +88,9 @@ body {
     background-color: transparent; 
 }
 
+.alignTop {
+    vertical-align: top;
+}
 .inputTextField {
 	width: 100%;
 }
