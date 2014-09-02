@@ -54,8 +54,6 @@ public class ComptypeAttributesController extends AbstractAttributesController {
 
     @Inject private ComptypeEJB comptypeEJB;
     @Inject private PropertyEJB propertyEJB;
-    private ComptypePropertyValue selectedComptypePropertyValue;
-    private ComptypeArtifact selectedCompTypeArtifact;
 
     private ComponentType compType;
 
@@ -71,8 +69,7 @@ public class ComptypeAttributesController extends AbstractAttributesController {
         try {
             FacesContext.getCurrentInstance().getExternalContext().redirect("device-types-manager.xhtml");
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
@@ -91,7 +88,6 @@ public class ComptypeAttributesController extends AbstractAttributesController {
         for (Tag tag : compType.getTags()) {
             attributes.add(new EntityAttributeView(tag, EntityType.COMPONENT_TYPE));
         }
-
     }
 
     @Override
@@ -129,7 +125,6 @@ public class ComptypeAttributesController extends AbstractAttributesController {
     @Override
     public void addNewTag() {
         Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Failure", "Not yet implemented");
-        populateAttributesList();
         RequestContext.getCurrentInstance().update("deviceTypePropertiesManagerContainer");
     }
 
@@ -168,17 +163,17 @@ public class ComptypeAttributesController extends AbstractAttributesController {
     }
 
     @Override
-    protected void preparedModifyPropertyPopUp() {
+    protected void prepareModifyPropertyPopUp() {
         if (selectedAttribute.getEntity() instanceof ComptypePropertyValue) {
-            this.selectedComptypePropertyValue = (ComptypePropertyValue) selectedAttribute.getEntity();
-            this.property = selectedComptypePropertyValue.getProperty();
-            this.propertyValue = selectedComptypePropertyValue.getPropValue();
+            final ComptypePropertyValue selectedPropertyValue = (ComptypePropertyValue) selectedAttribute.getEntity();
+            this.property = selectedPropertyValue.getProperty();
+            this.propertyValue = selectedPropertyValue.getPropValue();
             RequestContext.getCurrentInstance().update("modifyDeviceTypePropertyForm:modifyDeviceTypeProperty");
             RequestContext.getCurrentInstance().execute("PF('modifyDeviceTypeProperty').show()");
         } else if (selectedAttribute.getEntity() instanceof ComptypeArtifact) {
             importData = null;
             importFileName = null;
-            this.selectedCompTypeArtifact = (ComptypeArtifact) selectedAttribute.getEntity();
+            final ComptypeArtifact selectedCompTypeArtifact = (ComptypeArtifact) selectedAttribute.getEntity();
             this.artifactDescription = selectedCompTypeArtifact.getDescription();
             this.isArtifactInternal = selectedCompTypeArtifact.isInternal();
             this.artifactURI = selectedCompTypeArtifact.getUri();
@@ -193,9 +188,10 @@ public class ComptypeAttributesController extends AbstractAttributesController {
 
     @Override
     public void modifyPropertyValue() {
-        selectedComptypePropertyValue.setProperty(property);
-        selectedComptypePropertyValue.setPropValue(propertyValue);
-        comptypeEJB.saveChild(selectedComptypePropertyValue);
+        final ComptypePropertyValue selectedPropertyValue = (ComptypePropertyValue) selectedAttribute.getEntity();
+        selectedPropertyValue.setProperty(property);
+        selectedPropertyValue.setPropValue(propertyValue);
+        comptypeEJB.saveChild(selectedPropertyValue);
         RequestContext.getCurrentInstance().update("deviceTypePropertiesManagerContainer");
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Device type property value has been modified");
         populateAttributesList();
@@ -203,6 +199,7 @@ public class ComptypeAttributesController extends AbstractAttributesController {
 
     @Override
     public void modifyArtifact() {
+        final ComptypeArtifact selectedCompTypeArtifact = (ComptypeArtifact) selectedAttribute.getEntity();
         selectedCompTypeArtifact.setDescription(artifactDescription);
         selectedCompTypeArtifact.setUri(artifactURI);
         selectedCompTypeArtifact.setName(artifactURI);

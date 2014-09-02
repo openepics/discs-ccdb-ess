@@ -77,7 +77,7 @@ public abstract class AbstractAttributesController implements Serializable {
 
     public abstract void deleteAttribute();
 
-    protected abstract void preparedModifyPropertyPopUp();
+    protected abstract void prepareModifyPropertyPopUp();
 
     public abstract void modifyPropertyValue();
 
@@ -115,7 +115,6 @@ public abstract class AbstractAttributesController implements Serializable {
         importFileName = null;
     }
 
-
     public abstract StreamedContent getDownloadFile() throws FileNotFoundException;
 
     public String getImportFileName() { return importFileName; }
@@ -150,6 +149,6 @@ public abstract class AbstractAttributesController implements Serializable {
     public EntityAttributeView getSelectedAttributeToModify() { return selectedAttribute; }
     public void setSelectedAttributeToModify(EntityAttributeView selectedAttribute) {
         this.selectedAttribute = selectedAttribute;
-        preparedModifyPropertyPopUp();
+        prepareModifyPropertyPopUp();
     }
 }
