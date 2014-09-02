@@ -27,6 +27,8 @@ import org.openepics.discs.conf.ent.SlotPropertyValue;
 @Named(value = "reportManager")
 @ViewScoped
 public class ReportManager implements Serializable {
+	@SuppressWarnings("unused")
+	private static final Logger logger = Logger.getLogger(ReportManager.class.getCanonicalName());
 
     static public class ColumnModel implements Serializable {
 
@@ -47,9 +49,7 @@ public class ReportManager implements Serializable {
         }
     }
 
-    @EJB
-    private SlotEJB slotEJB;
-    private static final Logger logger = Logger.getLogger(ReportManager.class.getCanonicalName());
+    @EJB private SlotEJB slotEJB;
 
     private List<Slot> layoutSlots;
     private List<Slot> filteredObjects;
