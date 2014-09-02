@@ -25,11 +25,12 @@ import org.openepics.discs.conf.util.As;
 public class Report extends ConfigurationEntity {
     @Basic(optional = false)
     @Nonnull
-    @Column(name = "name")
+    @Column(name = "name", unique = true)
     private String name;
 
     @ManyToMany
-    @JoinTable(name = "filter_by_type", joinColumns = { @JoinColumn(name = "report_id", referencedColumnName = "id") }, inverseJoinColumns = { @JoinColumn(name = "type_id", referencedColumnName = "id") })
+    @JoinTable(name = "filter_by_type", joinColumns = { @JoinColumn(name = "report_id", referencedColumnName = "id") },
+        inverseJoinColumns = { @JoinColumn(name = "type_id", referencedColumnName = "id") })
     private List<ComponentType> typeFilters = new ArrayList<>();
 
     @OneToMany(mappedBy = "parentReport")

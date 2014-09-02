@@ -5,11 +5,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaQuery;
 
 import org.openepics.discs.conf.auditlog.Audit;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
@@ -26,34 +22,13 @@ import org.openepics.discs.conf.util.CRUDOperation;
  *
  * @author vuppala
  * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
- *
+ * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  */
-@Stateless public class SlotEJB {
+@Stateless
+public class SlotEJB extends DAO<Slot> {
     private static final Logger logger = Logger.getLogger(SlotEJB.class.getCanonicalName());
-    @PersistenceContext private EntityManager em;
-    @Inject private ConfigurationEntityUtility entityUtility;
 
     // ---------------- Layout Slot -------------------------
-
-    public List<Slot> findLayoutSlot() {
-        final CriteriaQuery<Slot> cq = em.getCriteriaBuilder().createQuery(Slot.class);
-        cq.from(Slot.class);
-
-        final List<Slot> slots = em.createQuery(cq).getResultList();
-        logger.log(Level.FINE, "Number of installation slots: {0}", slots.size());
-
-        return slots;
-    }
-
-    public Slot findSlotByName(String name) {
-        Slot slot;
-        try {
-            slot = em.createNamedQuery("Slot.findByName", Slot.class).setParameter("name", name).getSingleResult();
-        } catch (NoResultException e) {
-            slot = null;
-        }
-        return slot;
-    }
 
     public List<Slot> findSlotByNameContainingString(String namePart) {
         return em.createNamedQuery("Slot.findByNameContaining", Slot.class).setParameter("name", namePart).getResultList();
@@ -69,117 +44,10 @@ import org.openepics.discs.conf.util.CRUDOperation;
         return slotRelation;
     }
 
-    public Slot findLayoutSlot(Long id) {
-        return em.find(Slot.class, id);
-    }
-
     public List<SlotPair> findSlotPairsByParentChildRelation(String childName, String parentName, SlotRelationName relationName) {
-        return em.createNamedQuery("SlotPair.findByParentChildRelation", SlotPair.class).setParameter("childName", childName).setParameter("parentName", parentName).setParameter("relationName", relationName).getResultList();
+        return em.createNamedQuery("SlotPair.findByParentChildRelation", SlotPair.class).setParameter("childName", childName)
+                .setParameter("parentName", parentName).setParameter("relationName", relationName).getResultList();
     }
-
-    @CRUDOperation(operation=EntityTypeOperation.CREATE)
-    @Audit
-    @Authorized
-    public void addSlot(Slot slot) {
-        entityUtility.setModified(slot);
-        em.persist(slot);
-    }
-
-    @CRUDOperation(operation=EntityTypeOperation.UPDATE)
-    @Audit
-    @Authorized
-    public void saveLayoutSlot(Slot slot) {
-        entityUtility.setModified(slot);
-        em.merge(slot);
-    }
-
-    @CRUDOperation(operation=EntityTypeOperation.DELETE)
-    @Audit
-    @Authorized
-    public void deleteLayoutSlot(Slot slot) {
-        final Slot mergedSlot = em.merge(slot);
-        em.remove(mergedSlot);
-    }
-
-
-    // ------------------ Slot Property ---------------
-
-    @CRUDOperation(operation=EntityTypeOperation.UPDATE)
-    @Audit
-    @Authorized
-    public void addSlotProperty(SlotPropertyValue propertyValue) {
-        final Slot parent = propertyValue.getSlot();
-
-        entityUtility.setModified(parent, propertyValue);
-
-        parent.getSlotPropertyList().add(propertyValue);
-        em.merge(parent);
-    }
-
-    @CRUDOperation(operation=EntityTypeOperation.UPDATE)
-    @Audit
-    @Authorized
-    public void saveSlotProp(SlotPropertyValue propertyValue) {
-        final SlotPropertyValue mergedPropertyValue = em.merge(propertyValue);
-
-        entityUtility.setModified(mergedPropertyValue.getSlot(), mergedPropertyValue);
-
-        logger.log(Level.INFO, "Slot Property: id " + mergedPropertyValue.getId() + " name " + mergedPropertyValue.getProperty().getName());
-    }
-
-    @CRUDOperation(operation=EntityTypeOperation.UPDATE)
-    @Audit
-    @Authorized
-    public void deleteSlotProp(SlotPropertyValue propertyValue) {
-        logger.log(Level.INFO, "deleting slot property id " + propertyValue.getId() + " name " + propertyValue.getProperty().getName());
-
-        final SlotPropertyValue mergedPropertyValue = em.merge(propertyValue);
-        final Slot parent = mergedPropertyValue.getSlot();
-
-        entityUtility.setModified(parent);
-
-        parent.getSlotPropertyList().remove(mergedPropertyValue);
-        em.remove(mergedPropertyValue);
-    }
-
-
-    // ---------------- Slot Artifact ---------------------
-    @CRUDOperation(operation=EntityTypeOperation.UPDATE)
-    @Audit
-    @Authorized
-    public void addSlotArtifact(SlotArtifact artifact) {
-        final Slot parent = artifact.getSlot();
-
-        entityUtility.setModified(parent, artifact);
-
-        parent.getSlotArtifactList().add(artifact);
-        em.merge(parent);
-    }
-
-    @CRUDOperation(operation=EntityTypeOperation.UPDATE)
-    @Audit
-    @Authorized
-    public void saveSlotArtifact(SlotArtifact artifact) {
-        final SlotArtifact mergedArtifact = em.merge(artifact);
-
-        entityUtility.setModified(mergedArtifact.getSlot(), mergedArtifact);
-
-        logger.log(Level.INFO, "Slot Artifact: name " + mergedArtifact.getName() + " description " + mergedArtifact.getDescription() + " uri " + mergedArtifact.getUri() + "is int " + mergedArtifact.isInternal());
-    }
-
-    @CRUDOperation(operation=EntityTypeOperation.UPDATE)
-    @Audit
-    @Authorized
-    public void deleteSlotArtifact(SlotArtifact artifact) {
-        final SlotArtifact mergedArtifact = em.merge(artifact);
-        final Slot parent = mergedArtifact.getSlot();
-
-        entityUtility.setModified(parent);
-
-        parent.getSlotArtifactList().remove(mergedArtifact);
-        em.remove(mergedArtifact);
-    }
-
 
     // ---------------- Related Slots ---------------------
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
@@ -195,9 +63,12 @@ import org.openepics.discs.conf.util.CRUDOperation;
     public void saveSlotPair(SlotPair slotPair) {
         em.merge(slotPair);
 
-        logger.log(Level.INFO, "saved slot pair: child " + slotPair.getChildSlot().getName() + " parent " + slotPair.getParentSlot().getName() + " relation ");
+        logger.log(Level.FINE, "saved slot pair: child " + slotPair.getChildSlot().getName() + " parent " + slotPair.getParentSlot().getName() + " relation ");
     }
 
+    /** Deletes the slot pair.
+     * @param slotPair - the slot pair to delete.
+     */
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
     @Authorized
@@ -207,10 +78,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
     }
 
 
-    private final String ROOT_COMPONENT_TYPE = "_ROOT"; // ToDo: Get the root
-                                                        // type from
-                                                        // configuration (JNDI,
-                                                        // config table etc)
+    private final String ROOT_COMPONENT_TYPE = "_ROOT"; // ToDo: Get the root type from configuration (JNDI, config table etc)
 
     public List<Slot> getRootNodes(SlotRelationName relationName) {
         return em.createQuery("SELECT cp.childSlot FROM SlotPair cp "
@@ -222,8 +90,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
     }
 
     public List<Slot> getRootNodes() {
-        return getRootNodes(SlotRelationName.CONTAINS); // ToDo: get the relation name from
-                                         // configuration
+        return getRootNodes(SlotRelationName.CONTAINS);
     }
 
     public List<Slot> relatedChildren(String compName) {
@@ -231,5 +98,34 @@ import org.openepics.discs.conf.util.CRUDOperation;
                 + "WHERE cp.parentSlot.name = :compname AND cp.slotRelation.name = :relname", Slot.class).
                 setParameter("compname", compName).
                 setParameter("relname", SlotRelationName.CONTAINS).getResultList();
+    }
+
+    @Override
+    protected void defineEntity() {
+        defineEntityClass(Slot.class);
+
+        defineParentChildInterface(SlotPropertyValue.class, new ParentChildInterface<Slot, SlotPropertyValue>() {
+            @Override
+            public List<SlotPropertyValue> getChildCollection(Slot slot) {
+                return slot.getSlotPropertyList();
+            }
+
+            @Override
+            public Slot getParentFromChild(SlotPropertyValue child) {
+                return child.getSlot();
+            }
+        });
+
+        defineParentChildInterface(SlotArtifact.class, new ParentChildInterface<Slot, SlotArtifact>() {
+            @Override
+            public List<SlotArtifact> getChildCollection(Slot slot) {
+                return slot.getSlotArtifactList();
+            }
+
+            @Override
+            public Slot getParentFromChild(SlotArtifact child) {
+                return child.getSlot();
+            }
+        });
     }
 }

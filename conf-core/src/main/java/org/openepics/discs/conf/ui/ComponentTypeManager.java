@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.faces.event.ActionEvent;
@@ -48,6 +47,7 @@ import com.google.common.io.ByteStreams;
  *
  * @author vuppala
  * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
+ * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  */
 @Named
 @ViewScoped
@@ -99,18 +99,6 @@ public class ComponentTypeManager implements Serializable {
     public ComponentTypeManager() {
     }
 
-    @PostConstruct
-    public void init() {
-        try {
-            objects = comptypeEJB.findAll();
-            logger.log(Level.INFO, "Property org.openepics.discs.conf.prop.RepoPath {0}", blobStore.getBlobStoreRoot());
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-            logger.log(Level.SEVERE, "Cannot retrieve component types");
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Error in getting component types", " ");
-        }
-    }
-
     // ----------------- Component Type ------------------------------
     public void onCompTypeSelect(SelectEvent event) {
         inputObject = selectedObject;
@@ -139,14 +127,15 @@ public class ComponentTypeManager implements Serializable {
     public void onCompTypeDelete(ActionEvent event) {
         try {
             comptypeEJB.delete(selectedObject);
-            objects.remove(selectedObject);
+            getObjects().remove(selectedObject);
             selectedObject = null;
             inputObject = null;
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted", "");
         } catch (Exception e) {
-            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Deleted", e.getMessage());
-        } finally {
-
+            if (Utility.causedByPersistenceException(e))
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Deletion failed", "The component type could not be deleted because it is used.");
+            else
+                throw e;
         }
     }
 
@@ -164,7 +153,7 @@ public class ComponentTypeManager implements Serializable {
 
             if (selectedOp == 'a') {
                 selectedObject = inputObject;
-                objects.add(selectedObject);
+                getObjects().add(selectedObject);
             }
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Saved", "");
         } catch (Exception e) {
@@ -199,15 +188,17 @@ public class ComponentTypeManager implements Serializable {
     public void onPropertyDelete(ComptypePropertyValue ctp) {
         try {
             if (ctp == null) {
-                Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "No property selected");
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Strange", "No property selected");
                 return;
             }
             comptypeEJB.deleteChild(ctp);
             selectedProperties.remove(ctp);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted property", "");
         } catch (Exception e) {
-            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error in deleting property", e.getMessage());
-            logger.severe(e.getMessage());
+            if (Utility.causedByPersistenceException(e))
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Deletion failed", "The property value could not be deleted because it is used.");
+            else
+                throw e;
         }
 
     }
@@ -358,7 +349,7 @@ public class ComponentTypeManager implements Serializable {
     public void onArtifactDelete(ComptypeArtifact art) {
         try {
             if (art == null) {
-                Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "No artifact selected");
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Strange", "No artifact selected");
                 return;
             }
 
@@ -366,8 +357,10 @@ public class ComponentTypeManager implements Serializable {
             selectedArtifacts.remove(art);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted Artifact", "");
         } catch (Exception e) {
-            Utility.showMessage(FacesMessage.SEVERITY_FATAL, "Error in deleting artifact", "Refresh the page");
-            logger.severe(e.getMessage());
+            if (Utility.causedByPersistenceException(e))
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Deletion failed", "The artifact could not be deleted because it is used.");
+            else
+                throw e;
         }
     }
 
@@ -458,16 +451,18 @@ public class ComponentTypeManager implements Serializable {
     public void onAsmDelete(ComptypeAsm prt) {
         try {
             if (prt == null) {
-                Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "No assembly element selected");
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Strange", "No assembly element selected");
                 return;
             }
-            selectedParts.remove(prt); // ToDo: should this be done before or after delete from db?
+            selectedParts.remove(prt); // TODO should this be done before or after delete from db?
             comptypeEJB.deleteChild(prt);
 
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted assembly element", "");
         } catch (Exception e) {
-            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error in deleting assembly element", e.getMessage());
-            logger.severe(e.getMessage());
+            if (Utility.causedByPersistenceException(e))
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Deletion failed", "The assembly element could not be deleted because it is used.");
+            else
+                throw e;
         }
 
     }
@@ -558,6 +553,7 @@ public class ComponentTypeManager implements Serializable {
     }
 
     public List<ComponentType> getObjects() {
+        if (objects == null) objects = comptypeEJB.findAll();
         return objects;
     }
 

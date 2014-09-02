@@ -13,14 +13,13 @@ import org.openepics.discs.conf.ent.ComptypePropertyValue;
  *
  * @author vuppala
  * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
- * 
  */
-@Stateless 
+@Stateless
 public class ComptypeEJB extends DAO<ComponentType> {
     @Override
     protected void defineEntity() {
         defineEntityClass(ComponentType.class);
-        
+
         defineParentChildInterface(ComptypePropertyValue.class, new ParentChildInterface<ComponentType, ComptypePropertyValue>() {
             @Override
             public List<ComptypePropertyValue> getChildCollection(ComponentType type) {
@@ -31,7 +30,7 @@ public class ComptypeEJB extends DAO<ComponentType> {
                 return child.getComponentType();
             }
         });
-        
+
         defineParentChildInterface(ComptypeArtifact.class, new ParentChildInterface<ComponentType, ComptypeArtifact>() {
             @Override
             public List<ComptypeArtifact> getChildCollection(ComponentType type) {
@@ -42,7 +41,7 @@ public class ComptypeEJB extends DAO<ComponentType> {
                 return child.getComponentType();
             }
         });
-        
+
         defineParentChildInterface(ComptypeAsm.class, new ParentChildInterface<ComponentType, ComptypeAsm>() {
             @Override
             public List<ComptypeAsm> getChildCollection(ComponentType type) {
@@ -52,6 +51,6 @@ public class ComptypeEJB extends DAO<ComponentType> {
             public ComponentType getParentFromChild(ComptypeAsm child) {
                 return child.getParentType();
             }
-        });        
-    }       
+        });
+    }
 }

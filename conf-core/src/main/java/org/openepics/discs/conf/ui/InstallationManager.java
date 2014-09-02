@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.faces.event.ActionEvent;
@@ -37,12 +36,13 @@ import org.primefaces.model.UploadedFile;
 /**
  *
  * @author vuppala
+ * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  */
 @Named
 @ViewScoped
 public class InstallationManager implements Serializable {
     private static final Logger logger = Logger.getLogger(InstallationManager.class.getCanonicalName());
-    
+
     @EJB private InstallationEJB installationEJB;
     @Inject private BlobStore blobStore;
 
@@ -66,17 +66,6 @@ public class InstallationManager implements Serializable {
     public InstallationManager() {
     }
 
-    @PostConstruct
-    public void init() {
-        try {
-            objects = installationEJB.findInstallationRec();
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-            logger.log(Level.SEVERE, "Cannot retrieve installation records");
-            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error in getting installation records", e.getMessage());
-        }
-    }
-
     // ----------------- Installation  ------------------------------
     public void onIRecSelect(SelectEvent event) {
         inputObject = selectedObject;
@@ -88,7 +77,7 @@ public class InstallationManager implements Serializable {
     }
 
     public void onIRecAdd(ActionEvent event) {
-        selectedOp = 'a';        
+        selectedOp = 'a';
         inputObject = new InstallationRecord("1", new Date());
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Add", "");
     }
@@ -100,11 +89,18 @@ public class InstallationManager implements Serializable {
     }
 
     public void onIRecDelete(ActionEvent event) {
-        installationEJB.deleteIRecord(selectedObject);
-        objects.remove(selectedObject);
-        selectedObject = null;
-        inputObject = null;
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted", "");
+        try {
+            installationEJB.delete(selectedObject);
+            getObjects().remove(selectedObject);
+            selectedObject = null;
+            inputObject = null;
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted", "");
+        } catch (Exception e) {
+            if (Utility.causedByPersistenceException(e))
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Deletion failed", "The installation record could not be deleted because it is used.");
+            else
+                throw e;
+        }
     }
 
     public void onIRecSave(ActionEvent event) {
@@ -112,14 +108,14 @@ public class InstallationManager implements Serializable {
         inputObject.setModifiedBy("test-user");
 
         if (selectedOp == 'a') {
-            installationEJB.addIRecord(inputObject);
+            installationEJB.add(inputObject);
         } else {
-            installationEJB.saveIRecord(inputObject);
+            installationEJB.save(inputObject);
         }
 
         if (selectedOp == 'a') {
             selectedObject = inputObject;
-            objects.add(selectedObject);
+            getObjects().add(selectedObject);
         }
 
         // tell the client if the operation was a success so that it can hide
@@ -154,9 +150,9 @@ public class InstallationManager implements Serializable {
         }
 
         if (artifactOperation == 'a') {
-            installationEJB.addInstallationArtifact(inputArtifact);
+            installationEJB.addChild(inputArtifact);
         } else {
-            installationEJB.saveInstallationArtifact(inputArtifact);
+            installationEJB.saveChild(inputArtifact);
         }
 
         logger.log(Level.INFO,"returned artifact id is " + inputArtifact.getId());
@@ -165,14 +161,21 @@ public class InstallationManager implements Serializable {
     }
 
     public void onArtifactDelete(InstallationArtifact art) {
-        if (art == null) {
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "No artifact selected");
-            return;
-        }
+        try {
+            if (art == null) {
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Strange", "No artifact selected");
+                return;
+            }
 
-        installationEJB.deleteInstallationArtifact(art);
-        selectedArtifacts.remove(art);
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted Artifact", "");
+            installationEJB.deleteChild(art);
+            selectedArtifacts.remove(art);
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted Artifact", "");
+        } catch (Exception e) {
+            if (Utility.causedByPersistenceException(e))
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Deletion failed", "The artifact could not be deleted because it is used.");
+            else
+                throw e;
+        }
     }
 
     public void onArtifactEdit(InstallationArtifact art) {
@@ -241,6 +244,7 @@ public class InstallationManager implements Serializable {
     // -------------------------- Getter/Setters -----------------------
 
     public List<InstallationRecord> getObjects() {
+        if (objects == null) objects = installationEJB.findAll();
         return objects;
     }
 

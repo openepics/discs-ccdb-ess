@@ -30,24 +30,13 @@ public class Tag {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (getClass() != obj.getClass()) return false;
+
 		Tag other = (Tag) obj;
-		if (name == null) {
-			if (other.name != null) {
-				return false;
-			} else {
-				return true;
-			}
-		} else {
-			return name.equals(other);
-		}
+		if (name == null) return other.name == null;
+
+		return name.equals(other);
 	}
 }

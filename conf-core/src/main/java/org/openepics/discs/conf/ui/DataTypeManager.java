@@ -10,19 +10,17 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.logging.Logger;
 
-import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
-import javax.faces.application.FacesMessage;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import org.openepics.discs.conf.ejb.DataTypeEJB;
 import org.openepics.discs.conf.ent.DataType;
-import org.openepics.discs.conf.util.Utility;
 
 /**
  *
  * @author vuppala
+ * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  */
 @Named
 @ViewScoped
@@ -40,17 +38,8 @@ public class DataTypeManager implements Serializable {
     public DataTypeManager() {
     }
 
-    @PostConstruct
-    public void init() {
-        try {
-            dataTypes = dataTypeEJB.findAll();
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Error in getting data types", " ");
-        }
-    }
-
     public List<DataType> getDataTypes() {
+        if (dataTypes == null) dataTypes = dataTypeEJB.findAll();
         return dataTypes;
     }
 
@@ -61,7 +50,5 @@ public class DataTypeManager implements Serializable {
     public void setFileteredDataTypes(List<DataType> fileteredDataTypes) {
         this.fileteredDataTypes = fileteredDataTypes;
     }
-
-
 
 }

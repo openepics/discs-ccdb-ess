@@ -1,13 +1,9 @@
-/**
- * Copyright (c) 2014 European Spallation Source
- * Copyright (c) 2014 Cosylab d.d.
- * Copyright (c) 2041 FRIB
- *
- * This file is part of Controls Configuration Database.
- * Controls Configuration Database is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 2 of the License, or any newer version.
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License along with this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
+
 package org.openepics.discs.conf.ui;
 
 import java.io.ByteArrayInputStream;
@@ -17,7 +13,6 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -27,11 +22,8 @@ import org.apache.commons.io.FilenameUtils;
 import org.openepics.discs.conf.dl.PropertiesLoaderQualifier;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
-import org.openepics.discs.conf.ejb.AuditRecordEJB;
 import org.openepics.discs.conf.ejb.PropertyEJB;
-import org.openepics.discs.conf.ent.AuditRecord;
 import org.openepics.discs.conf.ent.DataType;
-import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyAssociation;
 import org.openepics.discs.conf.ent.Unit;
@@ -47,14 +39,14 @@ import com.google.common.io.ByteStreams;
  * @author vuppala
  * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
  * @author Andraz Pozar <andraz.pozar@cosylab.com>
+ * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  *
  */
 @Named
 @ViewScoped
 public class PropertyManager implements Serializable {
     @Inject private PropertyEJB propertyEJB;
-    @Inject private AuditRecordEJB auditRecordEJB;
-
+    // @Inject private AuditRecordEJB auditRecordEJB; TODO merge conflict piece
 
     @Inject private DataLoaderHandler dataLoaderHandler;
     @Inject @PropertiesLoaderQualifier private DataLoader propertiesDataLoader;
@@ -74,7 +66,6 @@ public class PropertyManager implements Serializable {
     private PropertyAssociation association;
     private Property selectedProperty;
     private boolean unitComboEnabled;
-    private List<AuditRecord> auditRecordsForEntity;
 
 
     /**
@@ -83,8 +74,7 @@ public class PropertyManager implements Serializable {
     public PropertyManager() {
     }
 
-    @PostConstruct
-    public void init() {
+    private void init() {
         properties = propertyEJB.findAll();
         selectedProperty = null;
         resetFields();
@@ -126,8 +116,15 @@ public class PropertyManager implements Serializable {
     }
 
     public void onDelete() {
-        propertyEJB.delete(selectedProperty);
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Property was deleted");
+        try {
+        	propertyEJB.delete(selectedProperty);
+        	Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Property was deleted");
+        } catch (Exception e) {
+            if (Utility.causedByPersistenceException(e))
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Deletion failed", "The property could not be deleted because it is used.");
+            else
+                throw e;
+        }
         init();
     }
 
@@ -148,6 +145,7 @@ public class PropertyManager implements Serializable {
     }
 
     public List<Property> getObjects() {
+        if (properties == null) properties = propertyEJB.findAll();
         return properties;
     }
 
@@ -203,18 +201,16 @@ public class PropertyManager implements Serializable {
         prepareModifyPopup();
     }
 
+    /* TODO chekc what is with this. Part of merge conflict.
     public Property getSelectedPropertyForLog() { return selectedProperty; }
     public void setSelectedPropertyForLog(Property selectedProperty) {
         this.selectedProperty = selectedProperty;
         auditRecordsForEntity = auditRecordEJB.findByEntityIdAndType(selectedProperty.getId(), EntityType.PROPERTY);
         RequestContext.getCurrentInstance().update("propertyLogForm:propertyLog");
     }
+    */
 
     public DataLoaderResult getLoaderResult() { return loaderResult; }
-
-    public List<AuditRecord> getAuditRecordsForEntity() {
-        return auditRecordsForEntity;
-    }
 
     public void handleImportFileUpload(FileUploadEvent event) {
         try (InputStream inputStream = event.getFile().getInputstream()) {

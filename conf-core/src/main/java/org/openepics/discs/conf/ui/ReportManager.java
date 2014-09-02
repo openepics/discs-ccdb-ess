@@ -8,23 +8,21 @@ package org.openepics.discs.conf.ui;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
-import javax.faces.application.FacesMessage;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
-import org.openepics.discs.conf.util.Utility;
 
 /**
  *
  * @author vuppala
+ * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  */
 @Named(value = "reportManager")
 @ViewScoped
@@ -68,14 +66,8 @@ public class ReportManager implements Serializable {
 
     @PostConstruct
     private void init() {
-        try {
-            layoutSlots = slotEJB.findLayoutSlot();
-            createDynamicColumns();
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-            logger.log(Level.SEVERE, "Cannot retrieve slots");
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Error in getting slots", " ");
-        }
+        layoutSlots = null;
+        createDynamicColumns();
     }
 
     private void createDynamicColumns() {
@@ -112,6 +104,7 @@ public class ReportManager implements Serializable {
     }
 
     public List<Slot> getLayoutSlots() {
+        if (layoutSlots == null) layoutSlots = slotEJB.findAll();
         return layoutSlots;
     }
 

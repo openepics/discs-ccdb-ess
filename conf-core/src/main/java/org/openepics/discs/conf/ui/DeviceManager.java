@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.faces.event.ActionEvent;
@@ -48,7 +47,8 @@ import com.google.common.io.ByteStreams;
  *
  * @author vuppala
  * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
- * 
+ * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
+ *
  */
 @Named
 @ViewScoped
@@ -105,18 +105,6 @@ public class DeviceManager implements Serializable {
     public DeviceManager() {
     }
 
-    @PostConstruct
-    public void init() {
-        try {
-            objects = deviceEJB.findDevice();
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-            logger.log(Level.SEVERE, "Cannot retrieve component types");
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Error in getting component types", " ");
-        }
-    }
-
-
     // ----------------- Device  ------------------------------
     public void onDeviceSelect(SelectEvent event) {
         inputObject = selectedObject;
@@ -143,15 +131,16 @@ public class DeviceManager implements Serializable {
 
     public void onDeviceDelete(ActionEvent event) {
         try {
-            deviceEJB.deleteDevice(selectedObject);
-            objects.remove(selectedObject);
+            deviceEJB.delete(selectedObject);
+            getObjects().remove(selectedObject);
             selectedObject = null;
             inputObject = null;
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted", "");
         } catch (Exception e) {
-            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Device not deleted", e.getMessage());
-        } finally {
-
+            if (Utility.causedByPersistenceException(e))
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Deletion failed", "The device could not be deleted because it is used.");
+            else
+                throw e;
         }
     }
 
@@ -160,11 +149,11 @@ public class DeviceManager implements Serializable {
 
         try {
             if (selectedOp == 'a') {
-                deviceEJB.addDevice(inputObject);
+                deviceEJB.add(inputObject);
                 selectedObject = inputObject;
-                objects.add(selectedObject);
+                getObjects().add(selectedObject);
             } else {
-                deviceEJB.saveDevice(inputObject);
+                deviceEJB.save(inputObject);
             }
             // tell the client if the operation was a success so that it can hide
             RequestContext.getCurrentInstance().addCallbackParam("success", true);
@@ -203,17 +192,18 @@ public class DeviceManager implements Serializable {
     public void onPropertyDelete(DevicePropertyValue ctp) {
         try {
             if (ctp == null) {
-                Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "No property selected");
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Strange", "No property selected");
                 return;
             }
-            deviceEJB.deleteDeviceProp(ctp);
+            deviceEJB.deleteChild(ctp);
             selectedProperties.remove(ctp);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted property", "");
         } catch (Exception e) {
-            Utility.showMessage(FacesMessage.SEVERITY_FATAL, "Error in deleting property", "Refresh the page");
-            logger.severe(e.getMessage());
+            if (Utility.causedByPersistenceException(e))
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Deletion failed", "The property value could not be deleted because it is used.");
+            else
+                throw e;
         }
-
     }
 
     public void onPropertyInit(RowEditEvent event) {
@@ -255,13 +245,13 @@ public class DeviceManager implements Serializable {
                 }
                 inputProperty.setPropValue(repoFileId);
             }
-            
+
             if (propertyOperation == 'a') {
-                deviceEJB.addDeviceProperty(inputProperty);
+                deviceEJB.addChild(inputProperty);
             } else {
-                deviceEJB.saveDeviceProp(inputProperty);
+                deviceEJB.saveChild(inputProperty);
             }
-         
+
             logger.log(Level.INFO, "returned artifact id is " + inputProperty.getId());
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Property saved", "");
             RequestContext.getCurrentInstance().addCallbackParam("success", true);
@@ -328,7 +318,7 @@ public class DeviceManager implements Serializable {
             if (selectedArtifacts == null) {
                 selectedArtifacts = new ArrayList<>();
             }
-            
+
             inputArtifact = new DeviceArtifact("", false, "", "");
             inputArtifact.setDevice(selectedObject);
             fileUploaded = false;
@@ -354,11 +344,11 @@ public class DeviceManager implements Serializable {
             }
 
             if (artifactOperation == 'a') {
-                deviceEJB.addDeviceArtifact(inputArtifact);
+                deviceEJB.addChild(inputArtifact);
             } else {
-                deviceEJB.saveDeviceArtifact(inputArtifact);
+                deviceEJB.saveChild(inputArtifact);
             }
-            
+
             logger.log(Level.INFO,"returned artifact id is " + inputArtifact.getId());
 
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Artifact saved", "");
@@ -373,16 +363,18 @@ public class DeviceManager implements Serializable {
     public void onArtifactDelete(DeviceArtifact art) {
         try {
             if (art == null) {
-                Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "No artifact selected");
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Strange", "No artifact selected");
                 return;
             }
 
-            deviceEJB.deleteDeviceArtifact(art);
+            deviceEJB.deleteChild(art);
             selectedArtifacts.remove(art);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted Artifact", "");
         } catch (Exception e) {
-            Utility.showMessage(FacesMessage.SEVERITY_FATAL, "Error in deleting artifact", "Refresh the page");
-            logger.severe(e.getMessage());
+            if (Utility.causedByPersistenceException(e))
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Deletion failed", "The artifact could not be deleted because it is used.");
+            else
+                throw e;
         }
     }
 
@@ -472,10 +464,10 @@ public class DeviceManager implements Serializable {
             inputAsmDevice.setAssemblyPosition(inputAsmPosition);
             inputAsmDevice.setAssemblyDescription(inputAsmComment);
             inputAsmDevice.setAssemblyParent(selectedObject);
-            deviceEJB.saveDevice(inputAsmDevice);
+            deviceEJB.save(inputAsmDevice);
             selectedObject.getDeviceList().add(inputAsmDevice);
 
-            deviceEJB.saveDevice(selectedObject);
+            deviceEJB.save(selectedObject);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Part saved", "");
             RequestContext.getCurrentInstance().addCallbackParam("success", true);
         } catch (Exception e) {
@@ -495,9 +487,9 @@ public class DeviceManager implements Serializable {
             device.setAssemblyPosition(null);
             device.setAssemblyDescription(null);
             device.setAssemblyParent(null);
-            deviceEJB.saveDevice(device);
+            deviceEJB.save(device);
             selectedObject.getDeviceList().remove(device);
-            deviceEJB.saveDevice(selectedObject);
+            deviceEJB.save(selectedObject);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted Artifact", "");
         } catch (Exception e) {
             Utility.showMessage(FacesMessage.SEVERITY_FATAL, "Error in deleting artifact", "Refresh the page");
@@ -540,144 +532,62 @@ public class DeviceManager implements Serializable {
 
     // ------------Getters/Setters -------------
 
-    public List<Device> getSortedObjects() {
-        return sortedObjects;
-    }
+    public List<Device> getSortedObjects() { return sortedObjects; }
+    public void setSortedObjects(List<Device> sortedObjects) { this.sortedObjects = sortedObjects; }
 
-    public void setSortedObjects(List<Device> sortedObjects) {
-        this.sortedObjects = sortedObjects;
-    }
+    public List<Device> getFilteredObjects() { return filteredObjects; }
+    public void setFilteredObjects(List<Device> filteredObjects) { this.filteredObjects = filteredObjects; }
 
-    public List<Device> getFilteredObjects() {
-        return filteredObjects;
-    }
+    public Device getSelectedObject() { return selectedObject; }
+    public void setSelectedObject(Device selectedObject) { this.selectedObject = selectedObject; }
 
-    public void setFilteredObjects(List<Device> filteredObjects) {
-        this.filteredObjects = filteredObjects;
-    }
+    public Device getInputObject() { return inputObject; }
+    public void setInputObject(Device inputObject) { this.inputObject = inputObject; }
 
-    public Device getSelectedObject() {
-        return selectedObject;
-    }
+    public DeviceArtifact getInputArtifact() { return inputArtifact; }
+    public void setInputArtifact(DeviceArtifact inputArtifact) { this.inputArtifact = inputArtifact; }
 
-    public void setSelectedObject(Device selectedObject) {
-        this.selectedObject = selectedObject;
-    }
+    public char getSelectedOp() { return selectedOp; }
+    public void setSelectedOp(char selectedOp) { this.selectedOp = selectedOp; }
 
-    public Device getInputObject() {
-        return inputObject;
-    }
-
-    public void setInputObject(Device inputObject) {
-        this.inputObject = inputObject;
-    }
-
-    public DeviceArtifact getInputArtifact() {
-        return inputArtifact;
-    }
-
-    public void setInputArtifact(DeviceArtifact inputArtifact) {
-        this.inputArtifact = inputArtifact;
-    }
-
-    public char getSelectedOp() {
-        return selectedOp;
-    }
-
-    public void setSelectedOp(char selectedOp) {
-        this.selectedOp = selectedOp;
-    }
-
-    public boolean isInternalArtifact() {
-        return internalArtifact;
-    }
-
-    public void setInternalArtifact(boolean internalArtifact) {
-        this.internalArtifact = internalArtifact;
-    }
+    public boolean isInternalArtifact() { return internalArtifact; }
+    public void setInternalArtifact(boolean internalArtifact) { this.internalArtifact = internalArtifact; }
 
     public List<Device> getObjects() {
+        if (objects == null) objects = deviceEJB.findAll();
         return objects;
     }
+    public List<DevicePropertyValue> getSelectedProperties() { return selectedProperties; }
 
-    public List<DevicePropertyValue> getSelectedProperties() {
-        return selectedProperties;
-    }
+    public List<DeviceArtifact> getSelectedArtifacts() { return selectedArtifacts; }
 
-    public List<DeviceArtifact> getSelectedArtifacts() {
-        return selectedArtifacts;
-    }
+    public char getArtifactOperation() { return artifactOperation; }
 
-    public char getArtifactOperation() {
-        return artifactOperation;
-    }
+    public String getUploadedFileName() { return uploadedFileName; }
 
-    public String getUploadedFileName() {
-        return uploadedFileName;
-    }
+    public DeviceArtifact getSelectedArtifact() { return selectedArtifact; }
+    public void setSelectedArtifact(DeviceArtifact selectedArtifact) { this.selectedArtifact = selectedArtifact; }
 
-    public DeviceArtifact getSelectedArtifact() {
-        return selectedArtifact;
-    }
+    public Device getInputAsmDevice() { return inputAsmDevice; }
+    public void setInputAsmDevice(Device inputAsmDevice) { this.inputAsmDevice = inputAsmDevice; }
 
-    public void setSelectedArtifact(DeviceArtifact selectedArtifact) {
-        this.selectedArtifact = selectedArtifact;
-    }
+    public String getInputAsmComment() { return inputAsmComment; }
+    public void setInputAsmComment(String inputAsmComment) { this.inputAsmComment = inputAsmComment; }
 
-    public Device getInputAsmDevice() {
-        return inputAsmDevice;
-    }
+    public String getInputAsmPosition() { return inputAsmPosition; }
+    public void setInputAsmPosition(String inputAsmPosition) { this.inputAsmPosition = inputAsmPosition; }
 
-    public void setInputAsmDevice(Device inputAsmDevice) {
-        this.inputAsmDevice = inputAsmDevice;
-    }
+    public List<Device> getAsmDevices() { return asmDevices; }
 
-    public String getInputAsmComment() {
-        return inputAsmComment;
-    }
+    public DevicePropertyValue getSelectedProperty() { return selectedProperty; }
+    public void setSelectedProperty(DevicePropertyValue selectedProperty) { this.selectedProperty = selectedProperty; }
 
-    public void setInputAsmComment(String inputAsmComment) {
-        this.inputAsmComment = inputAsmComment;
-    }
+    public DevicePropertyValue getInputProperty() { return inputProperty; }
+    public void setInputProperty(DevicePropertyValue inputProperty) { this.inputProperty = inputProperty; }
 
-    public String getInputAsmPosition() {
-        return inputAsmPosition;
-    }
+    public boolean isInRepository() { return inRepository; }
+    public void setInRepository(boolean inRepository) { this.inRepository = inRepository; }
 
-    public void setInputAsmPosition(String inputAsmPosition) {
-        this.inputAsmPosition = inputAsmPosition;
-    }
-
-    public List<Device> getAsmDevices() {
-        return asmDevices;
-    }
-
-    public DevicePropertyValue getSelectedProperty() {
-        return selectedProperty;
-    }
-
-    public void setSelectedProperty(DevicePropertyValue selectedProperty) {
-        this.selectedProperty = selectedProperty;
-    }
-
-    public DevicePropertyValue getInputProperty() {
-        return inputProperty;
-    }
-
-    public void setInputProperty(DevicePropertyValue inputProperty) {
-        this.inputProperty = inputProperty;
-    }
-
-    public boolean isInRepository() {
-        return inRepository;
-    }
-
-    public void setInRepository(boolean inRepository) {
-        this.inRepository = inRepository;
-    }
-
-    public char getPropertyOperation() {
-        return propertyOperation;
-    }
+    public char getPropertyOperation() { return propertyOperation; }
 
 }

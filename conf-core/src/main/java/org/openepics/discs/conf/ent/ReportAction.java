@@ -16,7 +16,6 @@ import javax.persistence.Table;
 import org.openepics.discs.conf.util.As;
 
 /**
- * ToDo: Check why logic is added in entity;
  *
  * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  *

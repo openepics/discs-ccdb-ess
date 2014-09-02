@@ -33,7 +33,6 @@ public class ConfigurationEntityUtility implements Serializable {
         }
     }
 
-
     /**
      * Updates modifiedBy and modifiedAt of two entities
      *
@@ -65,6 +64,6 @@ public class ConfigurationEntityUtility implements Serializable {
     private String getUserId() {
         final String username = securityPolicy.getUserId();
 
-        return username!=null ? username : "system";
+        return username != null ? username : "system";
     }
 }
