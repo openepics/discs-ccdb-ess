@@ -10,10 +10,10 @@
         <h:form id="deviceTypesForm">
             <p:panelGrid styleClass="devicesView">
                 <p:row>
-                    <p:column style="width: 20%">
+                    <p:column style="width: 20%; vertical-align: top;">
         	            <p:dataTable id="typesTable" var="devType" selection="#{devicesByTypeManager.selectedComponentType}"
                                 selectionMode="single" rowKey="#{devType.id}" scrollable="true" 
-                                value="#{devicesByTypeManager.deviceTypes}" scrollHeight="550" emptyMessage="No device types defined.">
+                                value="#{devicesByTypeManager.deviceTypes}" scrollHeight="600" emptyMessage="No device types defined.">
                             <p:ajax event="rowSelect" listener="#{devicesByTypeManager.prepareDevicesForDisplay()}"  update=":deviceTypesForm:devicesTable" />
         	                <p:column headerText="Type">
         	                    <h:outputText value="#{devType.name}" />
@@ -38,13 +38,28 @@
                             </p:column>
                    
                             <p:column headerText="Actions">
-                                <h:outputText value="-" />
+                                <p:commandButton icon="ui-icon-clock" title="Log" update=":deviceLogForm" oncomplete="deviceLog.show()">
+                                    <f:ajax event="click" listener="#{auditManager.selectEntityForLog(device, 'DEVICE')}" />
+                                </p:commandButton>
                             </p:column>
                         </p:dataTable>
     	            </p:column>
                 </p:row>
             </p:panelGrid>
         </h:form>
+        
+    <ui:include src="/new-webapp/audit/audit-log-table.xhtml">
+        <ui:param name="formId" value="deviceLogForm" />
+        <ui:param name="dialogTitle" value="Property Log" />
+        <ui:param name="widgetName" value="deviceLog" />
+    </ui:include>
+
+    <ui:include src="/new-webapp/audit/audit-log-details.xhtml">
+        <ui:param name="formId" value="logDetailsForm" />
+        <ui:param name="dialogTitle" value="Long Entry Details" />
+        <ui:param name="widgetName" value="logDetails" />
+    </ui:include>
+        
     </ui:define>
     
 </ui:composition>
