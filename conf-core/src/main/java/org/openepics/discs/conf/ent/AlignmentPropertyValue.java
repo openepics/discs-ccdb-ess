@@ -13,7 +13,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author vuppala
  */
 @Entity
-@Table(name = "alignment_property_values")
+@Table(name = "alignment_property_value")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "AlignmentPropertyValue.findAll", query = "SELECT a FROM AlignmentPropertyValue a"),

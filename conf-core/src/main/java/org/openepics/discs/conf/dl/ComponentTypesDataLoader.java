@@ -16,7 +16,7 @@ import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.dl.common.ErrorMessage;
 import org.openepics.discs.conf.dl.common.ValidationMessage;
 import org.openepics.discs.conf.ejb.ComptypeEJB;
-import org.openepics.discs.conf.ejb.ConfigurationEJB;
+import org.openepics.discs.conf.ejb.PropertyEJB;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.Property;
@@ -30,7 +30,7 @@ import com.google.common.collect.ImmutableList;
 @ComponentTypesLoaderQualifier
 public class ComponentTypesDataLoader extends AbstractDataLoader implements DataLoader {
     @Inject private ComptypeEJB comptypeEJB;
-    @Inject private ConfigurationEJB configurationEJB;
+    @Inject private PropertyEJB propertyEJB;
     private int nameIndex, descriptionIndex;
 
     @Override
@@ -91,7 +91,7 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
 
                 switch (command) {
                 case CMD_UPDATE:
-                    final ComponentType componentTypeToUpdate = comptypeEJB.findComponentTypeByName(name);
+                    final ComponentType componentTypeToUpdate = comptypeEJB.findByName(name);
                     if (componentTypeToUpdate != null) {
                         try {
                             componentTypeToUpdate.setDescription(description);
@@ -106,7 +106,7 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
                         try {
                             final ComponentType compTypeToAdd = new ComponentType(name);
                             compTypeToAdd.setDescription(description);
-                            comptypeEJB.addComponentType(compTypeToAdd);
+                            comptypeEJB.add(compTypeToAdd);
                             addOrUpdateProperties(compTypeToAdd, indexByPropertyName, row, rowNumber);
                             if (rowResult.isError()) {
                                 continue;
@@ -117,13 +117,13 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
                     }
                     break;
                 case CMD_DELETE:
-                    final ComponentType componentTypeToDelete = comptypeEJB.findComponentTypeByName(name);
+                    final ComponentType componentTypeToDelete = comptypeEJB.findByName(name);
                     try {
                         if (componentTypeToDelete == null) {
                             rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
                             continue;
                         } else {
-                            comptypeEJB.deleteComponentType(componentTypeToDelete);
+                            comptypeEJB.delete(componentTypeToDelete);
                         }
                     } catch (Exception e) {
                         rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
@@ -141,14 +141,14 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
                         final String oldName = name.substring(startOldNameMarkerIndex + 1, endOldNameMarkerIndex).trim();
                         final String newName = name.substring(endOldNameMarkerIndex + 1).trim();
 
-                        final ComponentType componentTypeToRename = comptypeEJB.findComponentTypeByName(oldName);
+                        final ComponentType componentTypeToRename = comptypeEJB.findByName(oldName);
                         if (componentTypeToRename != null) {
-                            if (comptypeEJB.findComponentTypeByName(newName) != null) {
+                            if (comptypeEJB.findByName(newName) != null) {
                                 rowResult.addMessage(new ValidationMessage(ErrorMessage.NAME_ALREADY_EXISTS, rowNumber, headerRow.get(nameIndex)));
                                 continue;
                             } else {
                                 componentTypeToRename.setName(newName);
-                                comptypeEJB.saveComponentType(componentTypeToRename);
+                                comptypeEJB.save(componentTypeToRename);
                             }
                         } else {
                             rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
@@ -186,7 +186,7 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
         final Iterator<String> propertiesIterator = properties.keySet().iterator();
         while (propertiesIterator.hasNext()) {
             final String propertyName = propertiesIterator.next();
-            final @Nullable Property property = configurationEJB.findPropertyByName(propertyName);
+            final @Nullable Property property = propertyEJB.findByName(propertyName);
             if (property == null) {
                 rowResult.addMessage(new ValidationMessage(ErrorMessage.PROPERTY_NOT_FOUND, rowNumber, propertyName));
             } else {
@@ -213,15 +213,15 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
         while (propertiesIterator.hasNext()) {
             final String propertyName = propertiesIterator.next();
             final int propertyIndex = properties.get(propertyName);
-            final @Nullable Property property = configurationEJB.findPropertyByName(propertyName);
+            final @Nullable Property property = propertyEJB.findByName(propertyName);
             final @Nullable String propertyValue = row.get(propertyIndex);
             if (compTypePropertyByProperty.containsKey(property)) {
                 final ComptypePropertyValue compTypePropertyToUpdate = compTypePropertyByProperty.get(property);
                 if (propertyValue == null) {
-                    comptypeEJB.deleteCompTypeProp(compTypePropertyToUpdate);
+                    comptypeEJB.deleteChild(compTypePropertyToUpdate);
                 } else {
                     compTypePropertyToUpdate.setPropValue(propertyValue);
-                    comptypeEJB.saveCompTypeProp(compTypePropertyToUpdate);
+                    comptypeEJB.saveChild(compTypePropertyToUpdate);
                 }
 
             } else if (propertyValue != null) {
@@ -229,7 +229,7 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
                 comptypePropertyToAdd.setProperty(property);
                 comptypePropertyToAdd.setPropValue(propertyValue);
                 comptypePropertyToAdd.setComponentType(compType);
-                comptypeEJB.addCompTypeProp(comptypePropertyToAdd);
+                comptypeEJB.addChild(comptypePropertyToAdd);
             }
         }
     }

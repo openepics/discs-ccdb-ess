@@ -106,7 +106,7 @@ public class AlignmentManager implements Serializable{
 
     public void onAlignRecDelete(ActionEvent event) {
         try {
-            alignmentEJB.deleteAlignment(selectedObject);
+            alignmentEJB.delete(selectedObject);
             getObjects().remove(selectedObject);
             selectedObject = null;
             inputObject = null;
@@ -124,7 +124,7 @@ public class AlignmentManager implements Serializable{
         try {
             // inputObject.setAssociation("T");
             inputObject.setModifiedBy("test-user");
-            alignmentEJB.saveAlignment(inputObject);
+            alignmentEJB.save(inputObject);
 
             if (selectedOp == 'a') {
                 selectedObject = inputObject;
@@ -170,7 +170,7 @@ public class AlignmentManager implements Serializable{
                 Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Strange", "No property selected");
                 return;
             }
-            alignmentEJB.deleteAlignmentProp(prop);
+            alignmentEJB.deleteChild(prop);
             selectedProperties.remove(prop);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted property", "");
         } catch (Exception e) {
@@ -223,9 +223,9 @@ public class AlignmentManager implements Serializable{
             }
 
             if (propertyOperation == 'a') {
-                alignmentEJB.addAlignmentProp(inputProperty);
+                alignmentEJB.addChild(inputProperty);
             } else {
-                alignmentEJB.saveAlignmentProp(inputProperty);
+                alignmentEJB.saveChild(inputProperty);
             }
 
             logger.log(Level.INFO, "returned artifact id is " + inputProperty.getId());
@@ -319,9 +319,9 @@ public class AlignmentManager implements Serializable{
             }
 
             if (artifactOperation == 'a') {
-                alignmentEJB.addAlignmentArtifact(inputArtifact);
+                alignmentEJB.addChild(inputArtifact);
             } else {
-                alignmentEJB.saveAlignmentArtifact(inputArtifact);
+                alignmentEJB.saveChild(inputArtifact);
             }
 
             logger.log(Level.INFO,"returned artifact id is " + inputArtifact.getId());
@@ -342,7 +342,7 @@ public class AlignmentManager implements Serializable{
                 return;
             }
 
-            alignmentEJB.deleteAlignmentArtifact(art);
+            alignmentEJB.deleteChild(art);
             selectedArtifacts.remove(art);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted Artifact", "");
         } catch (Exception e) {
@@ -477,7 +477,7 @@ public class AlignmentManager implements Serializable{
     }
 
     public List<AlignmentRecord> getObjects() {
-        if (objects == null) objects = alignmentEJB.findAlignmentRec();
+        if (objects == null) objects = alignmentEJB.findAll();
         return objects;
     }
 

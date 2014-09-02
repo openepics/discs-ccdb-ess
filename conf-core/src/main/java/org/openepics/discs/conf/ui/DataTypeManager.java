@@ -14,7 +14,7 @@ import javax.ejb.EJB;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
-import org.openepics.discs.conf.ejb.ConfigurationEJB;
+import org.openepics.discs.conf.ejb.DataTypeEJB;
 import org.openepics.discs.conf.ent.DataType;
 
 /**
@@ -28,7 +28,7 @@ public class DataTypeManager implements Serializable {
     @SuppressWarnings("unused")
     private static final Logger logger = Logger.getLogger(DataTypeManager.class.getCanonicalName());
 
-    @EJB private ConfigurationEJB configurationEJB;
+    @EJB private DataTypeEJB dataTypeEJB;
 
     private List<DataType> dataTypes;
     private List<DataType> fileteredDataTypes;
@@ -39,7 +39,7 @@ public class DataTypeManager implements Serializable {
     }
 
     public List<DataType> getDataTypes() {
-        if (dataTypes == null) dataTypes = configurationEJB.findDataTypes();
+        if (dataTypes == null) dataTypes = dataTypeEJB.findAll();
         return dataTypes;
     }
 
@@ -50,7 +50,5 @@ public class DataTypeManager implements Serializable {
     public void setFileteredDataTypes(List<DataType> fileteredDataTypes) {
         this.fileteredDataTypes = fileteredDataTypes;
     }
-
-
 
 }

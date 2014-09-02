@@ -126,7 +126,7 @@ public class ComponentTypeManager implements Serializable {
 
     public void onCompTypeDelete(ActionEvent event) {
         try {
-            comptypeEJB.deleteComponentType(selectedObject);
+            comptypeEJB.delete(selectedObject);
             getObjects().remove(selectedObject);
             selectedObject = null;
             inputObject = null;
@@ -146,9 +146,9 @@ public class ComponentTypeManager implements Serializable {
             // inputObject.setSuperComponentType(null);
             // Utility.showMessage(FacesMessage.SEVERITY_INFO, "Saved 2", "");
             if (selectedOp == 'a') {
-                comptypeEJB.addComponentType(inputObject);
+                comptypeEJB.add(inputObject);
             } else {
-                comptypeEJB.saveComponentType(inputObject);
+                comptypeEJB.save(inputObject);
             }
 
             if (selectedOp == 'a') {
@@ -191,7 +191,7 @@ public class ComponentTypeManager implements Serializable {
                 Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Strange", "No property selected");
                 return;
             }
-            comptypeEJB.deleteCompTypeProp(ctp);
+            comptypeEJB.deleteChild(ctp);
             selectedProperties.remove(ctp);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted property", "");
         } catch (Exception e) {
@@ -234,9 +234,9 @@ public class ComponentTypeManager implements Serializable {
             }
 
             if (propertyOperation == 'a') {
-                comptypeEJB.addCompTypeProp(inputProperty);
+                comptypeEJB.addChild(inputProperty);
             } else {
-                comptypeEJB.saveCompTypeProp(inputProperty);
+                comptypeEJB.saveChild(inputProperty);
             }
             logger.log(Level.INFO, "returned artifact id is " + inputProperty.getId());
 
@@ -331,9 +331,9 @@ public class ComponentTypeManager implements Serializable {
             }
 
             if (artifactOperation == 'a') {
-                comptypeEJB.addCompTypeArtifact(inputArtifact);
+                comptypeEJB.addChild(inputArtifact);
             } else {
-                comptypeEJB.saveCompTypeArtifact(inputArtifact);
+                comptypeEJB.saveChild(inputArtifact);
             }
             logger.log(Level.INFO, "returned artifact id is " + inputArtifact.getId());
 
@@ -353,7 +353,7 @@ public class ComponentTypeManager implements Serializable {
                 return;
             }
 
-            comptypeEJB.deleteCompTypeArtifact(art);
+            comptypeEJB.deleteChild(art);
             selectedArtifacts.remove(art);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted Artifact", "");
         } catch (Exception e) {
@@ -455,7 +455,7 @@ public class ComponentTypeManager implements Serializable {
                 return;
             }
             selectedParts.remove(prt); // TODO should this be done before or after delete from db?
-            comptypeEJB.deleteComptypeAsm(selectedObject, prt);
+            comptypeEJB.deleteChild(prt);
 
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted assembly element", "");
         } catch (Exception e) {
@@ -486,7 +486,7 @@ public class ComponentTypeManager implements Serializable {
         ComptypeAsm prt = (ComptypeAsm) event.getObject();
 
         try {
-            comptypeEJB.saveComptypeAsm(selectedObject, prt);
+            comptypeEJB.saveChild(prt);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Assembly item saved", "");
 
         } catch (Exception e) {
@@ -553,7 +553,7 @@ public class ComponentTypeManager implements Serializable {
     }
 
     public List<ComponentType> getObjects() {
-        if (objects == null) objects = comptypeEJB.findComponentType();
+        if (objects == null) objects = comptypeEJB.findAll();
         return objects;
     }
 

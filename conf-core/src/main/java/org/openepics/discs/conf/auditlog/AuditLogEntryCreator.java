@@ -17,7 +17,7 @@ import org.openepics.discs.conf.ent.EntityTypeOperation;
  * Use this class to serialize Object contents to JSON for the Entry string in the AuditRecord
  * The class is EJB Singleton, initialized at startup and reused at Injection points.
  *
- * @author mpavleski
+ * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
  *
  */
 @Singleton
@@ -30,6 +30,7 @@ public class AuditLogEntryCreator {
     /**
      * Constructs the item. Expects injected iterator of all EntityLogger implementations
      *
+     * @param allLoggers CDI will inject all logger types in this constructor parameter
      */
     @Inject
     public AuditLogEntryCreator(@Any Instance<EntityLogger> allLoggers) {
@@ -42,6 +43,7 @@ public class AuditLogEntryCreator {
      * Serialize a supported entity to a JSON String and creates {@link AuditRecord}
      *
      * @param entity Entity to be serialized. Supported Unit, DataType, Property etc
+     * @param operation The {@link EntityTypeOperation} for which this audit record is being created
      * @return List of {@link AuditRecord}s for the entities that are supported / implemented.
      */
     public List<AuditRecord> auditRecords(Object entity, EntityTypeOperation operation) {

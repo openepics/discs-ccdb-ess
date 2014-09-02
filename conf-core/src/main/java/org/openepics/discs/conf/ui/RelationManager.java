@@ -14,7 +14,7 @@ import javax.ejb.EJB;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
-import org.openepics.discs.conf.ejb.ConfigurationEJB;
+import org.openepics.discs.conf.ejb.SlotRelationEJB;
 import org.openepics.discs.conf.ent.SlotRelation;
 
 /**
@@ -28,7 +28,7 @@ public class RelationManager implements Serializable {
     @SuppressWarnings("unused")
     private static final Logger logger = Logger.getLogger(RelationManager.class.getCanonicalName());
 
-    @EJB private ConfigurationEJB configurationEJB;
+    @EJB private SlotRelationEJB slotRelationEJB;
 
     private List<SlotRelation> objects;
 
@@ -36,7 +36,7 @@ public class RelationManager implements Serializable {
     }
 
     public List<SlotRelation> getObjects() {
-        if (objects == null) objects = configurationEJB.findSlotRelations();
+        if (objects == null) objects = slotRelationEJB.findAll();
         return objects;
     }
 

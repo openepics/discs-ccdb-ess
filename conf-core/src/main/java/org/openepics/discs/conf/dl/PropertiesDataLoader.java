@@ -17,7 +17,9 @@ import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.dl.common.ErrorMessage;
 import org.openepics.discs.conf.dl.common.ValidationMessage;
-import org.openepics.discs.conf.ejb.ConfigurationEJB;
+import org.openepics.discs.conf.ejb.DataTypeEJB;
+import org.openepics.discs.conf.ejb.PropertyEJB;
+import org.openepics.discs.conf.ejb.UnitEJB;
 import org.openepics.discs.conf.ent.DataType;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyAssociation;
@@ -35,7 +37,10 @@ import com.google.common.base.Objects;
 @Stateless
 @PropertiesLoaderQualifier
 public class PropertiesDataLoader extends AbstractDataLoader implements DataLoader {
-    @Inject private ConfigurationEJB configurationEJB;
+    @Inject private PropertyEJB propertyEJB;
+    @Inject private DataTypeEJB dataTypeEJB;
+    @Inject private UnitEJB unitEJB;
+
     private Map<String, Property> propertyByName;
     private int nameIndex, associationIndex, unitIndex, dataTypeIndex, descriptionIndex;
 
@@ -88,7 +93,7 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
                 final @Nullable String description = row.get(descriptionIndex);
                 final @Nullable String association = row.get(associationIndex);
                 final Date modifiedAt = new Date();
-                
+
                 if (name == null) {
                     rowResult.addMessage(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, rowNumber, headerRow.get(nameIndex)));
                 } else if (dataType == null && !command.equals(CMD_RENAME) && !command.equals(CMD_DELETE)) {
@@ -112,7 +117,7 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
                                 if (rowResult.isError()) {
                                     continue;
                                 } else {
-                                    configurationEJB.saveProperty(propertyToUpdate);
+                                    propertyEJB.save(propertyToUpdate);
                                 }
                             } catch (Exception e) {
                                 if (e instanceof SecurityException)
@@ -125,7 +130,7 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
                                 if (rowResult.isError()) {
                                     continue;
                                 } else {
-                                    configurationEJB.addProperty(propertyToAdd);
+                                    propertyEJB.add(propertyToAdd);
                                     propertyByName.put(propertyToAdd.getName(), propertyToAdd);
                                 }
                             } catch (Exception e) {
@@ -141,7 +146,7 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
                                 rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
                                 continue;
                             } else {
-                                configurationEJB.deleteProperty(propertyToDelete);
+                                propertyEJB.delete(propertyToDelete);
                                 propertyByName.remove(propertyToDelete.getName());
                             }
                         } catch (Exception e) {
@@ -168,7 +173,7 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
                                 } else {
                                     final Property propertyToRename = propertyByName.get(oldName);
                                     propertyToRename.setName(newName);
-                                    configurationEJB.saveProperty(propertyToRename);
+                                    propertyEJB.save(propertyToRename);
                                     propertyByName.remove(oldName);
                                     propertyByName.put(newName, propertyToRename);
                                 }
@@ -220,14 +225,14 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
     private void init() {
         loaderResult = new DataLoaderResult();
         propertyByName = new HashMap<>();
-        for (Property property : configurationEJB.findProperties()) {
+        for (Property property : propertyEJB.findAll()) {
             propertyByName.put(property.getName(), property);
         }
     }
 
     private void setPropertyFields(Property property, @Nullable String unit, String dataType, String rowNumber) {
         if (unit != null) {
-            final Unit newUnit = configurationEJB.findUnitByName(unit);
+            final Unit newUnit = unitEJB.findByName(unit);
             if (newUnit != null) {
                 property.setUnit(newUnit);
             } else {
@@ -237,7 +242,7 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
             property.setUnit(null);
         }
 
-        final DataType newDataType = configurationEJB.findDataTypeByName(dataType);
+        final DataType newDataType = dataTypeEJB.findByName(dataType);
         if (newDataType != null) {
             property.setDataType(newDataType);
         } else {

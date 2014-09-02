@@ -1,6 +1,7 @@
 package org.openepics.discs.conf.ent;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -86,32 +87,32 @@ public class Device extends ConfigurationEntity {
     private String manufModel;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "device")
-    private List<DevicePropertyValue> devicePropertyList;
+    private List<DevicePropertyValue> devicePropertyList = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "device")
-    private List<AlignmentRecord> alignmentRecordList;
+    private List<AlignmentRecord> alignmentRecordList = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "device")
-    private List<InstallationRecord> installationRecordList;
+    private List<InstallationRecord> installationRecordList = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "device")
-    private List<DeviceArtifact> deviceArtifactList;
+    private List<DeviceArtifact> deviceArtifactList = new ArrayList<>();
 
     @JoinColumn(name = "component_type")
     @ManyToOne(optional = false)
     private ComponentType componentType;
 
     @OneToMany(mappedBy = "asmParent")
-    private List<Device> deviceList;
+    private List<Device> deviceList = new ArrayList<>();
 
     @JoinColumn(name = "asm_parent")
     @ManyToOne
     private Device asmParent;
 
     @ManyToMany
-    @JoinTable(name = "device_tags",
+    @JoinTable(name = "device_tag",
         joinColumns = { @JoinColumn(name = "device_id") }, inverseJoinColumns = { @JoinColumn(name = "tag_id") })
-    private Set<Tag> tags;
+    private Set<Tag> tags = new HashSet<>();
 
     protected Device() {
     }
@@ -152,12 +153,7 @@ public class Device extends ConfigurationEntity {
 
     @XmlTransient
     @JsonIgnore
-    public List<DevicePropertyValue> getDevicePropertyList() {
-        if (devicePropertyList == null) {
-            devicePropertyList = new ArrayList<>();
-        }
-        return devicePropertyList;
-    }
+    public List<DevicePropertyValue> getDevicePropertyList() { return devicePropertyList; }
 
     @XmlTransient
     @JsonIgnore
@@ -169,12 +165,7 @@ public class Device extends ConfigurationEntity {
 
     @XmlTransient
     @JsonIgnore
-    public List<DeviceArtifact> getDeviceArtifactList() {
-        if (deviceArtifactList == null) {
-            deviceArtifactList = new ArrayList<>();
-        }
-        return deviceArtifactList;
-    }
+    public List<DeviceArtifact> getDeviceArtifactList() { return deviceArtifactList; }
 
     public ComponentType getComponentType() { return componentType; }
     public void setComponentType(ComponentType componentType) { this.componentType = componentType; }

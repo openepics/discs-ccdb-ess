@@ -14,7 +14,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 
-import org.openepics.discs.conf.ejb.ConfigurationEJB;
+import org.openepics.discs.conf.ejb.DataTypeEJB;
 import org.openepics.discs.conf.ent.DataType;
 
 /**
@@ -27,7 +27,7 @@ import org.openepics.discs.conf.ent.DataType;
 public class DataTypeConverter implements Converter {
 
     @EJB
-    private ConfigurationEJB configurationEJB;
+    private DataTypeEJB dataTypeEJB;
     private static final Logger logger = Logger.getLogger(DataTypeConverter.class.getCanonicalName());
     /**
      * Creates a new instance of DataTypeConverter
@@ -43,7 +43,7 @@ public class DataTypeConverter implements Converter {
             logger.fine("exp converter: empty experiemnt id");
             return null;
         } else {
-            dtype = configurationEJB.findDataType(Long.valueOf(value));
+            dtype = dataTypeEJB.findById(Long.valueOf(value));
             return dtype;
         }
     }

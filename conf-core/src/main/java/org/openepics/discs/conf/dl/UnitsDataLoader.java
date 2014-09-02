@@ -14,7 +14,7 @@ import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.dl.common.ErrorMessage;
 import org.openepics.discs.conf.dl.common.ValidationMessage;
-import org.openepics.discs.conf.ejb.ConfigurationEJB;
+import org.openepics.discs.conf.ejb.UnitEJB;
 import org.openepics.discs.conf.ent.Unit;
 import org.openepics.discs.conf.util.As;
 
@@ -27,7 +27,7 @@ import org.openepics.discs.conf.util.As;
 @Stateless
 @UnitLoaderQualifier
 public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
-    @Inject private ConfigurationEJB configurationEJB;
+    @Inject private UnitEJB unitEJB;
 
     private Map<String, Unit> unitByName;
     private int nameIndex, quantityIndex, symbolIndex, descriptionIndex;
@@ -101,7 +101,7 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
                                 unitToUpdate.setQuantity(quantity);
                                 unitToUpdate.setSymbol(symbol);
                                 unitToUpdate.setModifiedAt(modifiedAt);
-                                configurationEJB.saveUnit(unitToUpdate);
+                                unitEJB.save(unitToUpdate);
                             } catch (Exception e) {
                                 if (e instanceof SecurityException)
                                     rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
@@ -110,7 +110,7 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
                         } else {
                             try {
                                 final Unit unitToAdd = new Unit(name, quantity, symbol, description);
-                                configurationEJB.addUnit(unitToAdd);
+                                unitEJB.add(unitToAdd);
                                 unitByName.put(unitToAdd.getName(), unitToAdd);
                             } catch (Exception e) {
                                 if (e instanceof SecurityException)
@@ -126,7 +126,7 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
                                rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
                                continue;
                             } else {
-                                configurationEJB.deleteUnit(unitToDelete);
+                                unitEJB.delete(unitToDelete);
                                 unitByName.remove(unitToDelete.getName());
                             }
                         } catch (Exception e) {
@@ -154,7 +154,7 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
                                 } else {
                                     final Unit unitToRename = unitByName.get(oldName);
                                     unitToRename.setName(newName);
-                                    configurationEJB.saveUnit(unitToRename);
+                                    unitEJB.save(unitToRename);
                                     unitByName.remove(oldName);
                                     unitByName.put(newName, unitToRename);
                                 }
@@ -184,7 +184,7 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
     private void init() {
         loaderResult = new DataLoaderResult();
         unitByName = new HashMap<>();
-        for (Unit unit : configurationEJB.findUnits()) {
+        for (Unit unit : unitEJB.findAll()) {
             unitByName.put(unit.getName(), unit);
         }
     }

@@ -18,6 +18,11 @@ public class ExcelCell {
     /**
      * Creating a String from Excel file cell. If cell contains numeric value, this value is cast to String. If there is no
      * value for this cell, null is returned.
+     *
+     * @param cell the Excel {@link Cell}
+     * @param workbook the Excel {@link Workbook}
+     *
+     * @return the {@link String} result
      */
     public static String asStringOrNull(@Nullable Cell cell, Workbook workbook) {
         if (cell != null) {
@@ -53,6 +58,10 @@ public class ExcelCell {
 
     /**
      * Reading Excel file cell with numeric value and returning its value
+     *
+     * @param cell the Excel {@link Cell}
+     *
+     * @return the numeric {@link Double} value
      */
     public static double asNumber(Cell cell) {
         return cell.getNumericCellValue();

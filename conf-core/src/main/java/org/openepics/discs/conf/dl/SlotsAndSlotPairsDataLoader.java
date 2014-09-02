@@ -18,7 +18,7 @@ import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.dl.common.ErrorMessage;
 import org.openepics.discs.conf.dl.common.ValidationMessage;
 import org.openepics.discs.conf.ejb.ComptypeEJB;
-import org.openepics.discs.conf.ejb.ConfigurationEJB;
+import org.openepics.discs.conf.ejb.PropertyEJB;
 import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.AlignmentInformation;
 import org.openepics.discs.conf.ent.ComponentType;
@@ -38,7 +38,9 @@ import com.google.common.collect.ImmutableList;
 @Stateless
 public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
     @Inject private SlotEJB slotEJB;
-    @Inject private ConfigurationEJB configurationEJB;
+    @Inject private PropertyEJB propertyEJB;
+
+
     @Inject private ComptypeEJB comptypeEJB;
     private List<Slot> newSlots;
     private Set<Slot> newSlotPairChildren;
@@ -167,7 +169,7 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                     switch (command) {
                     case CMD_UPDATE:
                         if (slotEJB.findSlotByName(name) != null) {
-                            final @Nullable ComponentType compType = comptypeEJB.findComponentTypeByName(componentType);
+                            final @Nullable ComponentType compType = comptypeEJB.findByName(componentType);
                             if (compType == null) {
                                 rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(compTypeIndex)));
                                 continue;
@@ -184,7 +186,7 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                                 }
                             }
                         } else {
-                            final @Nullable ComponentType compType = comptypeEJB.findComponentTypeByName(componentType);
+                            final @Nullable ComponentType compType = comptypeEJB.findByName(componentType);
                             if (compType == null) {
                                 rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(compTypeIndex)));
                                 continue;
@@ -488,7 +490,7 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
         final Iterator<String> propertiesIterator = properties.keySet().iterator();
         while (propertiesIterator.hasNext()) {
             final String propertyName = propertiesIterator.next();
-            final @Nullable Property property = configurationEJB.findPropertyByName(propertyName);
+            final @Nullable Property property = propertyEJB.findByName(propertyName);
             if (property == null) {
                 rowResult.addMessage(new ValidationMessage(ErrorMessage.PROPERTY_NOT_FOUND, rowNumber, propertyName));
             } else {
@@ -515,7 +517,7 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
         while (propertiesIterator.hasNext()) {
             final String propertyName = propertiesIterator.next();
             final int propertyIndex = properties.get(propertyName);
-            final @Nullable Property property = configurationEJB.findPropertyByName(propertyName);
+            final @Nullable Property property = propertyEJB.findByName(propertyName);
             final @Nullable String propertyValue = row.get(propertyIndex);
             if (slotPropertyByProperty.containsKey(property)) {
                 final SlotPropertyValue slotPropertyToUpdate = slotPropertyByProperty.get(property);

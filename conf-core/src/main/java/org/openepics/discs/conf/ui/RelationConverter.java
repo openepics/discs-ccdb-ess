@@ -14,7 +14,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 
-import org.openepics.discs.conf.ejb.ConfigurationEJB;
+import org.openepics.discs.conf.ejb.SlotRelationEJB;
 import org.openepics.discs.conf.ent.SlotRelation;
 
 /**
@@ -26,7 +26,7 @@ import org.openepics.discs.conf.ent.SlotRelation;
 // @ViewScoped
 public class RelationConverter implements Converter  {
 @EJB
-    private ConfigurationEJB configurationEJB;
+    private SlotRelationEJB slotRelationEJB;
     private static final Logger logger = Logger.getLogger(RelationConverter.class.getCanonicalName());
     /**
      * Creates a new instance of RelationConverter
@@ -42,7 +42,7 @@ public class RelationConverter implements Converter  {
             logger.fine("relation converter: empty key");
             return null;
         } else {
-            dtype = configurationEJB.findSlotRelation(Long.valueOf(value));
+            dtype = slotRelationEJB.findById(Long.valueOf(value));
             return dtype;
         }
     }

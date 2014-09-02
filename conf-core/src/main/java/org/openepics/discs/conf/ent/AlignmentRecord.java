@@ -1,6 +1,7 @@
 package org.openepics.discs.conf.ent;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -53,7 +54,7 @@ public class AlignmentRecord extends ConfigurationEntity {
     private Date alignmentDate;
 
     @Embedded
-    private AlignmentInformation alignmentInfo;
+    private AlignmentInformation alignmentInfo = new AlignmentInformation();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "alignmentRecord")
     private List<AlignmentArtifact> alignmentArtifactList;
@@ -70,15 +71,14 @@ public class AlignmentRecord extends ConfigurationEntity {
     private Device device;
 
     @ManyToMany
-    @JoinTable(name = "alignment_tags",
+    @JoinTable(name = "alignment_tag",
         joinColumns = { @JoinColumn(name = "alignment_id") }, inverseJoinColumns = { @JoinColumn(name = "tag_id") })
-    private Set<Tag> tags;
+    private Set<Tag> tags = new HashSet<>();
 
     protected AlignmentRecord() {
     }
 
     public AlignmentRecord(String recordNumber, Date alignmentDate) {
-        this.alignmentInfo = new AlignmentInformation();
         this.recordNumber = recordNumber;
         this.alignmentDate = alignmentDate;
     }
@@ -89,12 +89,7 @@ public class AlignmentRecord extends ConfigurationEntity {
     public Date getAlignmentDate() { return alignmentDate; }
     public void setAlignmentDate(Date alignmentDate) { this.alignmentDate = alignmentDate; }
 
-    public AlignmentInformation getAlignmentInformation() { 
-        if (alignmentInfo == null) {
-            alignmentInfo = new AlignmentInformation();
-        }
-        return alignmentInfo; 
-    }
+    public AlignmentInformation getAlignmentInformation() { return alignmentInfo; }
 
     @XmlTransient
     @JsonIgnore

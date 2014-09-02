@@ -8,7 +8,6 @@ import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -29,15 +28,15 @@ public class LoginManager implements Serializable {
 
     private String userId;
     private String password;
-    
+
     private boolean loggedIn = false;
-    
+
     @Inject private SecurityPolicy securityPolicy;
-    
+
 
     public String onLogin() {
         try {
-            securityPolicy.login(userId, password);            
+            securityPolicy.login(userId, password);
             showMessage(FacesMessage.SEVERITY_INFO, "You are logged in. Welcome!", userId);
             loggedIn = true;
         } catch (Exception e) {
@@ -47,7 +46,7 @@ public class LoginManager implements Serializable {
         } finally {
             password = "xxxxxx"; // ToDo implement a better way destroy the password (from JVM)
         }
-        return null;                        
+        return null;
     }
 
     public String onLogout() {
@@ -58,8 +57,8 @@ public class LoginManager implements Serializable {
             showMessage(FacesMessage.SEVERITY_INFO, "You have been logged out.", "Thank you!");
         } catch (Exception e) {
             showMessage(FacesMessage.SEVERITY_ERROR, "Strangely, logout has failed", "That's odd!");
-        } 
-        
+        }
+
         return "logout"; // ToDo: replace with null
     }
 

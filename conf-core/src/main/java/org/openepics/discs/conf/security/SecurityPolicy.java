@@ -15,46 +15,47 @@ import org.openepics.discs.conf.ent.EntityTypeOperation;
 
 /**
  * Abstract SecurityPolicy interface. Implementations should contain all needed a&a functionality.
- * 
+ *
  * @author mpavleski
  *
  */
 public interface SecurityPolicy {
     /**
      * Returns the user id (user-name) for the current user
-     * 
-     * @return
+     *
+     * @return the user-name
      */
     public String getUserId();
 
 
     /**
      * Method used to login (authenticate)
-     * 
-     * @return
+     *
+     * @param userName the username of the user being logged-in
+     * @param password the password of the user being logged-in
      */
     public void login(String userName, String password);
 
-    
+
     /**
      * Method used for logout
      */
     public void logout();
-    
-    
+
+
     /**
-     * Checks if user is authorized to do opeeration operationType on entity of entityType
-     * 
+     * Checks if user is authorized to do operation operationType on entity of entityType
+     *
      * @param entity The target entity
      * @param operationType The operation type
      */
     public void checkAuth(Object entity, EntityTypeOperation operationType);
-    
+
     /**
      * Returns UI hints for the JSF/ManagedBeans layer
-     * 
+     *
      * @param param
-     * @return
+     * @return a {@link Boolean} value for the hint
      */
-    public boolean getUIHint(String param);            
+    public boolean getUIHint(String param);
 }
