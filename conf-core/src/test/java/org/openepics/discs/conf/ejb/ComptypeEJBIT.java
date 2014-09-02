@@ -194,9 +194,6 @@ public class ComptypeEJBIT {
         final ComponentType compType = compTypesService.findByName(SEARCH_COMP_TYPE_NAME);
         final ComptypePropertyValue compValue = compType.getComptypePropertyList().get(0);
 
-        // Force loading of dependent
-        compValue.getProperty().getPropertyValuesList();
-
         compTypesService.deleteChild(compValue);
 
         final ComponentType newCompType = compTypesService.findByName(SEARCH_COMP_TYPE_NAME);

@@ -24,6 +24,7 @@ import javax.inject.Named;
 import org.apache.commons.io.FilenameUtils;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.ejb.SlotEJB;
+import org.openepics.discs.conf.ejb.SlotPairEJB;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotArtifact;
 import org.openepics.discs.conf.ent.SlotPair;
@@ -51,6 +52,8 @@ public class SlotManager implements Serializable {
     private static final Logger logger = Logger.getLogger(SlotManager.class.getCanonicalName());
 
     @EJB private SlotEJB slotEJB;
+    @EJB private SlotPairEJB slotPairEJB;
+
     @Inject private BlobStore blobStore;
     @Inject private DataLoaderHandler dataLoaderHandler;
 
@@ -356,9 +359,9 @@ public class SlotManager implements Serializable {
 
     public void onRelSlotSave(ActionEvent event) {
         if (relationOperation == 'a') {
-            slotEJB.addSlotPair(inputSlotPair);
+            slotPairEJB.add(inputSlotPair);
         } else {
-            slotEJB.saveSlotPair(inputSlotPair);
+            slotPairEJB.save(inputSlotPair);
         }
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Related slot saved", "");
         RequestContext.getCurrentInstance().addCallbackParam("success", true);
@@ -371,7 +374,7 @@ public class SlotManager implements Serializable {
                 return;
             }
 
-            slotEJB.deleteSlotPair(art);
+            slotPairEJB.delete(art);
             relatedSlots.remove(art);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted installation slot pair", "");
         } catch (Exception e) {
