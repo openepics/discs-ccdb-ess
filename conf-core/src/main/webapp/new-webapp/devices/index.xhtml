@@ -13,14 +13,14 @@
                     <p:column style="width: 20%">
         	            <p:dataTable id="typesTable" var="devType" selection="#{devicesByTypeManager.selectedComponentType}"
                                 selectionMode="single" rowKey="#{devType.id}" scrollable="true" 
-                                value="#{devicesByTypeManager.deviceTypes}" scrollHeight="600" emptyMessage="No device types defined.">
+                                value="#{devicesByTypeManager.deviceTypes}" scrollHeight="570" emptyMessage="No device types defined.">
                             <p:ajax event="rowSelect" listener="#{devicesByTypeManager.prepareDevicesForDisplay()}"  update=":deviceTypesForm:devicesTable" />
         	                <p:column headerText="Type">
         	                    <h:outputText value="#{devType.name}" />
         	                </p:column>
         	            </p:dataTable>
                     </p:column>            
-                    <p:column style="width: 80%">
+                    <p:column style="width: 80%; vertical-align: top;">
                         <p:dataTable id="devicesTable" var="device" rows="20"
                                 paginator="true"
                                 value="#{devicesByTypeManager.devices}" emptyMessage="No devices.">
