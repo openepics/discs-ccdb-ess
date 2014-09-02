@@ -3,6 +3,7 @@ package org.openepics.discs.conf.dl;
 import static org.junit.Assert.*;
 
 import java.io.InputStream;
+
 import javax.inject.Inject;
 
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -13,9 +14,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
-import org.openepics.discs.conf.security.SecurityPolicy;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
-import org.openepics.discs.conf.util.CCDBPackager;
+import org.openepics.discs.conf.util.TestUtility;
 
 /**
  * Integration tests for {@link UnitsDataLoader}
@@ -33,16 +33,16 @@ public class IntegralDataLoaderIT {
 
     @Inject private DataLoaderHandler dataLoaderHandler;
 
-    @Inject private SecurityPolicy securityPolicy;
+    @Inject private TestUtility testUtility;
 
     @Deployment
     public static WebArchive createDeployment() {
-        return CCDBPackager.createWebArchive();
+        return TestUtility.createWebArchive();
     }
 
     @Before
     public void setUpBeforeTest() {
-    	securityPolicy.login("admin", "admin");
+    	testUtility.loginForTests();
     }
 
     @Test
@@ -54,6 +54,7 @@ public class IntegralDataLoaderIT {
     	testLoadData("conf-data-devices.xlsx", devicesDataLoader, null, null);
     }
 
+    // ToDo review the interface wierdness of slot data loader with Andraz
 	private void testLoadData(String fileName, Object dataLoader, String secondFileName, Object secondDataLoader) {
 		final InputStream stream = this.getClass().getResourceAsStream("/dataloader/"+fileName);
 

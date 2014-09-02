@@ -16,8 +16,7 @@ import org.junit.runner.RunWith;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.dl.common.ErrorMessage;
-import org.openepics.discs.conf.security.SecurityPolicy;
-import org.openepics.discs.conf.util.CCDBPackager;
+import org.openepics.discs.conf.util.TestUtility;
 
 import com.google.common.collect.ImmutableList;
 
@@ -31,20 +30,20 @@ import com.google.common.collect.ImmutableList;
 public class UnitsDataLoaderIT {
 
     @Inject @UnitLoaderQualifier private DataLoader unitsDataLoader;
-    @Inject private SecurityPolicy securityPolicy;
-    
+    @Inject private TestUtility testUtility;
+
     private List<List<String>> inputRows;
 
     @Deployment
     public static WebArchive createDeployment() {
-        return CCDBPackager.createWebArchive();
+        return TestUtility.createWebArchive();
     }
 
     @Before
     public void setUpBeforeTest() {
         inputRows = new ArrayList<>();
 
-        securityPolicy.login("admin", "admin");
+        testUtility.loginForTests();
     }
 
     @Test
