@@ -41,7 +41,7 @@ public class ComptypeDetail {
         // logger.entering(DeviceDetail.class.getName(), "init", this);
         // logger.log(Level.INFO, "entering init {0}", id);
         try {
-            selectedObject = comptypeEJB.findComponentType(id);
+            selectedObject = comptypeEJB.findById(id);
             if ( selectedObject == null ) {
                 Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Component Type with given ID not found"," Type ID: " + id);
             }

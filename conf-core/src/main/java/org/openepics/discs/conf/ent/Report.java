@@ -1,7 +1,6 @@
 package org.openepics.discs.conf.ent;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Nonnull;
@@ -26,25 +25,22 @@ import org.openepics.discs.conf.util.As;
 public class Report extends ConfigurationEntity {
     @Basic(optional = false)
     @Nonnull
-    @Column(name = "name")
+    @Column(name = "name", unique = true)
     private String name;
 
     @ManyToMany
-    @JoinTable(name = "filter_by_types", joinColumns = { @JoinColumn(name = "report_id", referencedColumnName = "id") }, inverseJoinColumns = { @JoinColumn(name = "type_id", referencedColumnName = "id") })
-    private List<ComponentType> typeFilters;
+    @JoinTable(name = "filter_by_type", joinColumns = { @JoinColumn(name = "report_id", referencedColumnName = "id") },
+        inverseJoinColumns = { @JoinColumn(name = "type_id", referencedColumnName = "id") })
+    private List<ComponentType> typeFilters = new ArrayList<>();
 
     @OneToMany(mappedBy = "parentReport")
-    private List<ReportAction> filters;
+    private List<ReportAction> filters = new ArrayList<>();
 
     protected Report() {
     }
 
-    public Report(String name, String modifiedBy) {
+    public Report(String name) {
         this.name = As.notNull(name);
-        this.typeFilters = new ArrayList<>();
-        this.filters = new ArrayList<>();
-        this.modifiedAt = new Date();
-        this.modifiedBy = modifiedBy;
     }
 
     public String getName() { return name; }

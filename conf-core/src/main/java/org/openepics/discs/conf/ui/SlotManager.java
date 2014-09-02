@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.faces.event.ActionEvent;
@@ -44,6 +43,7 @@ import com.google.common.io.ByteStreams;
 /**
  *
  * @author vuppala
+ * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  */
 @Named
 @ViewScoped
@@ -53,7 +53,7 @@ public class SlotManager implements Serializable {
     @EJB private SlotEJB slotEJB;
     @Inject private BlobStore blobStore;
     @Inject private DataLoaderHandler dataLoaderHandler;
-   
+
     private List<Slot> objects;
     private List<Slot> sortedObjects;
     private List<Slot> filteredObjects;
@@ -101,18 +101,6 @@ public class SlotManager implements Serializable {
     public SlotManager() {
     }
 
-    @PostConstruct
-    private void init() {
-        try {
-            objects = slotEJB.findLayoutSlot();
-            // inputPartSlot = new Slot();
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-            logger.log(Level.SEVERE, "Cannot retrieve component types");
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Error in getting component types", " ");
-        }
-    }
-
     // ----------------- Slot  ------------------------------
     public void onSlotSelect(SelectEvent event) {
         inputObject = selectedObject;
@@ -140,11 +128,18 @@ public class SlotManager implements Serializable {
     }
 
     public void onSlotDelete(ActionEvent event) {
-        slotEJB.deleteLayoutSlot(selectedObject);
-        objects.remove(selectedObject);
-        selectedObject = null;
-        inputObject = null;
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted", "");
+        try {
+            slotEJB.deleteLayoutSlot(selectedObject);
+            getObjects().remove(selectedObject);
+            selectedObject = null;
+            inputObject = null;
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted", "");
+        } catch (Exception e) {
+            if (Utility.causedByPersistenceException(e))
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Deletion failed", "The slot could not be deleted because it is used.");
+            else
+                throw e;
+        }
     }
 
     public void onSlotSave(ActionEvent event) {
@@ -154,7 +149,7 @@ public class SlotManager implements Serializable {
 
         if (selectedOp == 'a') {
             selectedObject = inputObject;
-            objects.add(selectedObject);
+            getObjects().add(selectedObject);
         }
         // tell the dialog panel if the operation was a success so that it can hide
         RequestContext.getCurrentInstance().addCallbackParam("success", true);
@@ -178,13 +173,20 @@ public class SlotManager implements Serializable {
     }
 
     public void onPropertyDelete(SlotPropertyValue ctp) {
-        if (ctp == null) {
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "No property selected");
-            return;
+        try {
+            if (ctp == null) {
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Strange", "No property selected");
+                return;
+            }
+            slotEJB.deleteSlotProp(ctp);
+            selectedProperties.remove(ctp);
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted property", "");
+        } catch (Exception e) {
+            if (Utility.causedByPersistenceException(e))
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Deletion failed", "The property value could not be deleted because it is used.");
+            else
+                throw e;
         }
-        slotEJB.deleteSlotProp(ctp);
-        selectedProperties.remove(ctp);
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted property", "");
     }
 
     public void onPropertyEdit(SlotPropertyValue prop) {
@@ -309,13 +311,20 @@ public class SlotManager implements Serializable {
     }
 
     public void onArtifactDelete(SlotArtifact art) {
-        if (art == null) {
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "No artifact selected");
-            return;
+        try {
+            if (art == null) {
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Strange", "No artifact selected");
+                return;
+            }
+            selectedArtifacts.remove(art); // ToDo: should this be done before or after delete from db?
+            slotEJB.deleteSlotArtifact(art);
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted Artifact", "");
+        } catch (Exception e) {
+            if (Utility.causedByPersistenceException(e))
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Deletion failed", "The artifact could not be deleted because it is used.");
+            else
+                throw e;
         }
-        selectedArtifacts.remove(art); // ToDo: should this be done before or after delete from db?
-        slotEJB.deleteSlotArtifact(art);
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted Artifact", "");
     }
 
     public void onArtifactEdit(SlotArtifact art) {
@@ -356,14 +365,21 @@ public class SlotManager implements Serializable {
     }
 
     public void onRelSlotDelete(SlotPair art) {
-        if (art == null) {
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "No slot pair selected");
-            return;
-        }
+        try {
+            if (art == null) {
+                Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "No slot pair selected");
+                return;
+            }
 
-        slotEJB.deleteSlotPair(art);
-        relatedSlots.remove(art);
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted Artifact", "");
+            slotEJB.deleteSlotPair(art);
+            relatedSlots.remove(art);
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted installation slot pair", "");
+        } catch (Exception e) {
+            if (Utility.causedByPersistenceException(e))
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Deletion failed", "The installation slot pair could not be deleted because it is used.");
+            else
+                throw e;
+        }
     }
 
     public void onRelSlotEdit(SlotPair art) {
@@ -526,6 +542,7 @@ public class SlotManager implements Serializable {
 
     // --------------------- Setters and getters --------------------
     public List<Slot> getObjects() {
+        if (objects == null) objects = slotEJB.findLayoutSlot();
         return objects;
     }
 

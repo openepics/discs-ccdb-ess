@@ -36,7 +36,6 @@ public class ExcelImportFileReader {
 	 *         value. Lines with the empty first cell are not part of the return
 	 *         set. The first element of each row is a string representation of
 	 *         its index (starting with 1).
-	 * @throws IllegalImportFileFormatException
 	 */
 	public static List<List<String>> importExcelFile(InputStream inputStream) {
 		boolean headerRowFound = false;

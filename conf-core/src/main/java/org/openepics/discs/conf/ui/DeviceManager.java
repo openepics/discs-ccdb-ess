@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.faces.event.ActionEvent;
@@ -48,7 +47,8 @@ import com.google.common.io.ByteStreams;
  *
  * @author vuppala
  * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
- * 
+ * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
+ *
  */
 @Named
 @ViewScoped
@@ -105,18 +105,6 @@ public class DeviceManager implements Serializable {
     public DeviceManager() {
     }
 
-    @PostConstruct
-    public void init() {
-        try {
-            objects = deviceEJB.findDevice();
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-            logger.log(Level.SEVERE, "Cannot retrieve component types");
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Error in getting component types", " ");
-        }
-    }
-
-
     // ----------------- Device  ------------------------------
     public void onDeviceSelect(SelectEvent event) {
         inputObject = selectedObject;
@@ -144,14 +132,15 @@ public class DeviceManager implements Serializable {
     public void onDeviceDelete(ActionEvent event) {
         try {
             deviceEJB.deleteDevice(selectedObject);
-            objects.remove(selectedObject);
+            getObjects().remove(selectedObject);
             selectedObject = null;
             inputObject = null;
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted", "");
         } catch (Exception e) {
-            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Device not deleted", e.getMessage());
-        } finally {
-
+            if (Utility.causedByPersistenceException(e))
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Deletion failed", "The device could not be deleted because it is used.");
+            else
+                throw e;
         }
     }
 
@@ -162,7 +151,7 @@ public class DeviceManager implements Serializable {
             if (selectedOp == 'a') {
                 deviceEJB.addDevice(inputObject);
                 selectedObject = inputObject;
-                objects.add(selectedObject);
+                getObjects().add(selectedObject);
             } else {
                 deviceEJB.saveDevice(inputObject);
             }
@@ -203,17 +192,18 @@ public class DeviceManager implements Serializable {
     public void onPropertyDelete(DevicePropertyValue ctp) {
         try {
             if (ctp == null) {
-                Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "No property selected");
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Strange", "No property selected");
                 return;
             }
             deviceEJB.deleteDeviceProp(ctp);
             selectedProperties.remove(ctp);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted property", "");
         } catch (Exception e) {
-            Utility.showMessage(FacesMessage.SEVERITY_FATAL, "Error in deleting property", "Refresh the page");
-            logger.severe(e.getMessage());
+            if (Utility.causedByPersistenceException(e))
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Deletion failed", "The property value could not be deleted because it is used.");
+            else
+                throw e;
         }
-
     }
 
     public void onPropertyInit(RowEditEvent event) {
@@ -255,13 +245,13 @@ public class DeviceManager implements Serializable {
                 }
                 inputProperty.setPropValue(repoFileId);
             }
-            
+
             if (propertyOperation == 'a') {
                 deviceEJB.addDeviceProperty(inputProperty);
             } else {
                 deviceEJB.saveDeviceProp(inputProperty);
             }
-         
+
             logger.log(Level.INFO, "returned artifact id is " + inputProperty.getId());
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Property saved", "");
             RequestContext.getCurrentInstance().addCallbackParam("success", true);
@@ -328,7 +318,7 @@ public class DeviceManager implements Serializable {
             if (selectedArtifacts == null) {
                 selectedArtifacts = new ArrayList<>();
             }
-            
+
             inputArtifact = new DeviceArtifact("", false, "", "");
             inputArtifact.setDevice(selectedObject);
             fileUploaded = false;
@@ -358,7 +348,7 @@ public class DeviceManager implements Serializable {
             } else {
                 deviceEJB.saveDeviceArtifact(inputArtifact);
             }
-            
+
             logger.log(Level.INFO,"returned artifact id is " + inputArtifact.getId());
 
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Artifact saved", "");
@@ -373,7 +363,7 @@ public class DeviceManager implements Serializable {
     public void onArtifactDelete(DeviceArtifact art) {
         try {
             if (art == null) {
-                Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "No artifact selected");
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Strange", "No artifact selected");
                 return;
             }
 
@@ -381,8 +371,10 @@ public class DeviceManager implements Serializable {
             selectedArtifacts.remove(art);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted Artifact", "");
         } catch (Exception e) {
-            Utility.showMessage(FacesMessage.SEVERITY_FATAL, "Error in deleting artifact", "Refresh the page");
-            logger.severe(e.getMessage());
+            if (Utility.causedByPersistenceException(e))
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Deletion failed", "The artifact could not be deleted because it is used.");
+            else
+                throw e;
         }
     }
 
@@ -597,6 +589,7 @@ public class DeviceManager implements Serializable {
     }
 
     public List<Device> getObjects() {
+        if (objects == null) objects = deviceEJB.findDevice();
         return objects;
     }
 

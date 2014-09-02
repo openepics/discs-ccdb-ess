@@ -33,7 +33,7 @@ public class AuditInterceptor {
      * Creates audit log after the method annotated with this interceptor has finished executing.
      *
      * @param context
-     * @return
+     * @return the return value from invoking {@link InvocationContext#proceed()}
      * @throws Exception
      */
     @AroundInvoke
@@ -43,16 +43,16 @@ public class AuditInterceptor {
 
         final Object entity = context.getParameters()[0];
         if (context.getMethod().getAnnotation(CRUDOperation.class) != null) {
-            
+
             final String username = securityPolicy.getUserId();
             final Date now = new Date();
-            
+
             final List<AuditRecord>  auditRecords = auditLogEntryCreator.auditRecords(ParentEntityResolver.resolveParentEntity(entity), context.getMethod().getAnnotation(CRUDOperation.class).operation());
             if (auditRecords != null) {
                 for (AuditRecord auditRecord : auditRecords) {
                     auditRecord.setUser(username);
                     auditRecord.setLogTime(now);
-                    
+
                     em.persist(auditRecord);
                 }
             }

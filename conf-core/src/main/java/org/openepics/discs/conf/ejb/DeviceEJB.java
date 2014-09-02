@@ -22,6 +22,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
 /**
  * @author vuppala
  * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
+ * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  */
 @Stateless public class DeviceEJB {
     private static final Logger logger = Logger.getLogger(DeviceEJB.class.getCanonicalName());
@@ -34,8 +35,8 @@ import org.openepics.discs.conf.util.CRUDOperation;
         final CriteriaQuery<Device> cq = em.getCriteriaBuilder().createQuery(Device.class);
         cq.from(Device.class);
         final List<Device> comps = em.createQuery(cq).getResultList();
-        
-        logger.log(Level.INFO, "Number of devices: {0}", comps.size());
+
+        logger.log(Level.FINE, "Number of devices: {0}", comps.size());
 
         return comps;
     }
@@ -53,7 +54,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
         }
         return device;
     }
-    
+
     @CRUDOperation(operation=EntityTypeOperation.CREATE)
     @Audit
     @Authorized
@@ -70,6 +71,9 @@ import org.openepics.discs.conf.util.CRUDOperation;
         em.merge(device);
     }
 
+    /** Deletes the device.
+     * @param device - the device to delete.
+     */
     @CRUDOperation(operation=EntityTypeOperation.DELETE)
     @Audit
     @Authorized
@@ -85,37 +89,40 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @Authorized
     public void addDeviceProperty(DevicePropertyValue propertyValue) {
         final Device parent = propertyValue.getDevice();
-        
+
         entityUtility.setModified(parent, propertyValue);
-        
+
         parent.getDevicePropertyList().add(propertyValue);
         em.merge(parent);
-    }
-    
-    @CRUDOperation(operation=EntityTypeOperation.UPDATE)
-    @Audit
-    @Authorized
-    public void saveDeviceProp(DevicePropertyValue propertyValue) {
-        final DevicePropertyValue mergedPropertyValue = em.merge(propertyValue);
-        
-        entityUtility.setModified(mergedPropertyValue.getDevice(), mergedPropertyValue);
-        
-        logger.log(Level.INFO, "Device Property: id " + mergedPropertyValue.getId() + " name " + mergedPropertyValue.getProperty().getName());
     }
 
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
     @Authorized
+    public void saveDeviceProp(DevicePropertyValue propertyValue) {
+        final DevicePropertyValue mergedPropertyValue = em.merge(propertyValue);
+
+        entityUtility.setModified(mergedPropertyValue.getDevice(), mergedPropertyValue);
+
+        logger.log(Level.FINE, "Device Property: id " + mergedPropertyValue.getId() + " name " + mergedPropertyValue.getProperty().getName());
+    }
+
+    /** Deletes the device property value.
+     * @param propertyValue - the device property value to delete.
+     */
+    @CRUDOperation(operation=EntityTypeOperation.UPDATE)
+    @Audit
+    @Authorized
     public void deleteDeviceProp(DevicePropertyValue propertyValue) {
-        logger.log(Level.INFO, "deleting comp type property id " + propertyValue.getId() + " name " + propertyValue.getProperty().getName());
-        
-        final DevicePropertyValue mergedPropertyvalue = em.merge(propertyValue);
-        final Device parent = mergedPropertyvalue.getDevice();
-        
+        logger.log(Level.FINE, "deleting comp type property id " + propertyValue.getId() + " name " + propertyValue.getProperty().getName());
+
+        final DevicePropertyValue mergedPropertyValue = em.merge(propertyValue);
+        final Device parent = mergedPropertyValue.getDevice();
+
         entityUtility.setModified(parent);
-        
-        parent.getDevicePropertyList().remove(mergedPropertyvalue);
-        em.remove(mergedPropertyvalue);
+
+        parent.getDevicePropertyList().remove(mergedPropertyValue);
+        em.remove(mergedPropertyValue);
     }
 
 
@@ -125,9 +132,9 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @Authorized
     public void addDeviceArtifact(DeviceArtifact artifact) {
         final Device parent = artifact.getDevice();
-        
+
         entityUtility.setModified(parent, artifact);
-        
+
         parent.getDeviceArtifactList().add(artifact);
         em.merge(parent);
     }
@@ -137,21 +144,24 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @Authorized
     public void saveDeviceArtifact(DeviceArtifact artifact) {
         final DeviceArtifact mergedArtifact = em.merge(artifact);
-        
+
         entityUtility.setModified(mergedArtifact.getDevice(), mergedArtifact);
-        
-        logger.log(Level.INFO, "Device Type Artifact: name " + mergedArtifact.getName() + " description " + mergedArtifact.getDescription() + " uri " + mergedArtifact.getUri() + "is int " + mergedArtifact.isInternal());
+
+        logger.log(Level.FINE, "Device Type Artifact: name " + mergedArtifact.getName() + " description " + mergedArtifact.getDescription() + " uri " + mergedArtifact.getUri() + "is int " + mergedArtifact.isInternal());
     }
 
+    /** Deletes the device artifact.
+     * @param artifact - the device artifact to delete.
+     */
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
     @Authorized
     public void deleteDeviceArtifact(DeviceArtifact artifact) {
-        final DeviceArtifact mergedArtifact = em.merge(artifact);        
+        final DeviceArtifact mergedArtifact = em.merge(artifact);
         final Device parent = mergedArtifact.getDevice();
-        
+
         entityUtility.setModified(parent);
-        
+
         parent.getDeviceArtifactList().remove(mergedArtifact);
         em.remove(mergedArtifact);
     }

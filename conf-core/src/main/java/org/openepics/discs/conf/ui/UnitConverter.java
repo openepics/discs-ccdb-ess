@@ -14,7 +14,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 
-import org.openepics.discs.conf.ejb.ConfigurationEJB;
+import org.openepics.discs.conf.ejb.UnitEJB;
 import org.openepics.discs.conf.ent.Unit;
 
 /**
@@ -27,7 +27,7 @@ import org.openepics.discs.conf.ent.Unit;
 public class UnitConverter implements Converter{
 
     @EJB
-    private ConfigurationEJB configurationEJB;
+    private UnitEJB unitEJB;
     private static final Logger logger = Logger.getLogger(UnitConverter.class.getCanonicalName());
     /**
      * Creates a new instance of UnitConverter
@@ -43,7 +43,7 @@ public class UnitConverter implements Converter{
             logger.finer("exp converter: empty experiemnt id");
             return null;
         } else {
-            unit = configurationEJB.findUnit(Long.valueOf(value));
+            unit = unitEJB.findById(Long.valueOf(value));
             return unit;
         }
     }

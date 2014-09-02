@@ -24,7 +24,7 @@ import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
 import org.openepics.discs.conf.ejb.ComptypeEJB;
-import org.openepics.discs.conf.ejb.ConfigurationEJB;
+import org.openepics.discs.conf.ejb.PropertyEJB;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypeArtifact;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
@@ -53,7 +53,7 @@ import com.google.common.collect.ImmutableList;
 public class ComptypeAttributesController extends AbstractAttributesController {
 
     @Inject private ComptypeEJB comptypeEJB;
-    @Inject private ConfigurationEJB configurationEJB;
+    @Inject private PropertyEJB propertyEJB;
     private ComptypePropertyValue selectedComptypePropertyValue;
     private ComptypeArtifact selectedCompTypeArtifact;
 
@@ -62,7 +62,7 @@ public class ComptypeAttributesController extends AbstractAttributesController {
     @PostConstruct
     public void init() {
         final Long id = Long.parseLong(((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest()).getParameter("id"));
-        compType = comptypeEJB.findComponentType(id);
+        compType = comptypeEJB.findById(id);
         populateAttributesList();
         filterProperties();
     }
@@ -79,7 +79,7 @@ public class ComptypeAttributesController extends AbstractAttributesController {
     @Override
     protected void populateAttributesList() {
         attributes = new ArrayList<>();
-        compType = comptypeEJB.findComponentType(this.compType.getId());
+        compType = comptypeEJB.findById(this.compType.getId());
         for (ComptypePropertyValue prop : compType.getComptypePropertyList()) {
             attributes.add(new EntityAttributeView(prop, EntityType.COMPONENT_TYPE));
         }
@@ -96,7 +96,7 @@ public class ComptypeAttributesController extends AbstractAttributesController {
 
     @Override
     protected void filterProperties() {
-        filteredProperties = ImmutableList.copyOf(Collections2.filter(configurationEJB.findProperties(), new Predicate<Property>() {
+        filteredProperties = ImmutableList.copyOf(Collections2.filter(propertyEJB.findAll(), new Predicate<Property>() {
             @Override
             public boolean apply(Property property) {
                 final PropertyAssociation propertyAssociation = property.getAssociation();
@@ -111,7 +111,7 @@ public class ComptypeAttributesController extends AbstractAttributesController {
         compTypePropertyValue.setComponentType(compType);
         compTypePropertyValue.setProperty(property);
         compTypePropertyValue.setPropValue(propertyValue);
-        comptypeEJB.addCompTypeProp(compTypePropertyValue);
+        comptypeEJB.addChild(compTypePropertyValue);
 
         if (propertyValue == null) {
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "New device type property definition has been created");
@@ -130,6 +130,7 @@ public class ComptypeAttributesController extends AbstractAttributesController {
     public void addNewTag() {
         Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Failure", "Not yet implemented");
         populateAttributesList();
+        RequestContext.getCurrentInstance().update("deviceTypePropertiesManagerContainer");
     }
 
     @Override
@@ -140,7 +141,7 @@ public class ComptypeAttributesController extends AbstractAttributesController {
 
         final ComptypeArtifact compTypeArtifact = new ComptypeArtifact(importData != null ? importFileName : artifactURI, isArtifactInternal, artifactDescription, artifactURI);
         compTypeArtifact.setComponentType(compType);
-        comptypeEJB.addCompTypeArtifact(compTypeArtifact);
+        comptypeEJB.addChild(compTypeArtifact);
         RequestContext.getCurrentInstance().update("deviceTypePropertiesManagerContainer");
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "New artifact has been created");
         populateAttributesList();
@@ -150,11 +151,11 @@ public class ComptypeAttributesController extends AbstractAttributesController {
     public void deleteAttribute() {
         if (selectedAttribute.getEntity() instanceof ComptypePropertyValue) {
             final ComptypePropertyValue compTypePropValue = (ComptypePropertyValue) selectedAttribute.getEntity();
-            comptypeEJB.deleteCompTypeProp(compTypePropValue);
+            comptypeEJB.deleteChild(compTypePropValue);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Device type property has been deleted");
         } else if (selectedAttribute.getEntity() instanceof ComptypeArtifact) {
             final ComptypeArtifact compTypeArtifact = (ComptypeArtifact) selectedAttribute.getEntity();
-            comptypeEJB.deleteCompTypeArtifact(compTypeArtifact);
+            comptypeEJB.deleteChild(compTypeArtifact);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Device type artifact has been deleted");
         } else if (selectedAttribute.getEntity() instanceof Tag) {
             final Tag tag = (Tag) selectedAttribute.getEntity();
@@ -194,7 +195,7 @@ public class ComptypeAttributesController extends AbstractAttributesController {
     public void modifyPropertyValue() {
         selectedComptypePropertyValue.setProperty(property);
         selectedComptypePropertyValue.setPropValue(propertyValue);
-        comptypeEJB.saveCompTypeProp(selectedComptypePropertyValue);
+        comptypeEJB.saveChild(selectedComptypePropertyValue);
         RequestContext.getCurrentInstance().update("deviceTypePropertiesManagerContainer");
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Device type property value has been modified");
         populateAttributesList();
@@ -205,7 +206,7 @@ public class ComptypeAttributesController extends AbstractAttributesController {
         selectedCompTypeArtifact.setDescription(artifactDescription);
         selectedCompTypeArtifact.setUri(artifactURI);
         selectedCompTypeArtifact.setName(artifactURI);
-        comptypeEJB.saveCompTypeArtifact(selectedCompTypeArtifact);
+        comptypeEJB.saveChild(selectedCompTypeArtifact);
         RequestContext.getCurrentInstance().update("deviceTypePropertiesManagerContainer");
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Device type artifact has been modified");
         populateAttributesList();

@@ -21,7 +21,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
  *
  * @author vuppala
  * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
- * 
+ * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  */
 @Stateless public class InstallationEJB {
     private static final Logger logger = Logger.getLogger(InstallationEJB.class.getCanonicalName());
@@ -35,17 +35,17 @@ import org.openepics.discs.conf.util.CRUDOperation;
         cq.from(InstallationRecord.class);
 
         final List<InstallationRecord> installationRecs = em.createQuery(cq).getResultList();
-        logger.log(Level.INFO, "Number of installation records: {0}", installationRecs.size());
+        logger.log(Level.FINE, "Number of installation records: {0}", installationRecs.size());
 
         return installationRecs;
     }
-    
+
     @CRUDOperation(operation=EntityTypeOperation.CREATE)
     @Audit
     @Authorized
     public void addIRecord(InstallationRecord irec) {
         entityUtility.setModified(irec);
-        em.persist(irec);        
+        em.persist(irec);
     }
 
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
@@ -53,9 +53,12 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @Authorized
     public void saveIRecord(InstallationRecord irec) {
         entityUtility.setModified(irec);
-        em.merge(irec);        
+        em.merge(irec);
     }
 
+    /** Deletes the installation record.
+     * @param irec - the installation record to delete.
+     */
     @CRUDOperation(operation=EntityTypeOperation.DELETE)
     @Audit
     @Authorized
@@ -71,9 +74,9 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @Authorized
     public void addInstallationArtifact(InstallationArtifact artifact) {
         final InstallationRecord parent = artifact.getInstallationRecord();
-        
+
         entityUtility.setModified(parent, artifact);
-        
+
         parent.getInstallationArtifactList().add(artifact);
         em.merge(parent);
     }
@@ -83,21 +86,26 @@ import org.openepics.discs.conf.util.CRUDOperation;
     @Authorized
     public void saveInstallationArtifact(InstallationArtifact artifact) {
         final InstallationArtifact mergedArtifact = em.merge(artifact);
-        
+
         entityUtility.setModified(mergedArtifact.getInstallationRecord(), mergedArtifact);
-        
-        logger.log(Level.INFO, "Installation Artifact: name " + mergedArtifact.getName() + " description " + mergedArtifact.getDescription() + " uri " + mergedArtifact.getUri() + "is int " + mergedArtifact.isInternal());
+
+        logger.log(Level.FINE, "Installation Artifact: name: " + mergedArtifact.getName()
+                + ", description: " + mergedArtifact.getDescription()
+                + ", uri: " + mergedArtifact.getUri() + ", is_internal: " + mergedArtifact.isInternal());
     }
 
+    /** Deletes the installation record artifact.
+     * @param artifact - the installation record artifact to delete.
+     */
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
     @Authorized
     public void deleteInstallationArtifact(InstallationArtifact artifact) {
         final InstallationArtifact mergedArtifact = em.merge(artifact);
         final InstallationRecord parent = mergedArtifact.getInstallationRecord();
-        
+
         entityUtility.setModified(parent);
-        
+
         parent.getInstallationArtifactList().remove(mergedArtifact);
         em.remove(mergedArtifact);
     }

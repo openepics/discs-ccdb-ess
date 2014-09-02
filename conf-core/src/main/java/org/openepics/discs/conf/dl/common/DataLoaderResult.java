@@ -7,8 +7,6 @@ import java.util.List;
  * This represents a result of load operation, consisting of the error status,
  * load {@link ValidationMessage}s, and the list of objects affected by the load.
  *
- * @param <T> Class of the objects affected by the load.
- *
  * @author Sunil Sah <sunil.sah@cosylab.com>
  */
 public class DataLoaderResult {

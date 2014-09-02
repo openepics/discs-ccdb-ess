@@ -15,7 +15,6 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.faces.event.ActionEvent;
@@ -40,12 +39,13 @@ import org.primefaces.model.UploadedFile;
 /**
  *
  * @author vuppala
+ * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  */
 @Named
 @ViewScoped
 public class AlignmentManager implements Serializable{
     private static final Logger logger = Logger.getLogger(AlignmentManager.class.getCanonicalName());
-    
+
     @EJB private AlignmentEJB alignmentEJB;
     @Inject private BlobStore blobStore;
 
@@ -81,17 +81,6 @@ public class AlignmentManager implements Serializable{
     public AlignmentManager() {
     }
 
-    @PostConstruct
-    public void init() {
-        try {
-            objects = alignmentEJB.findAlignmentRec();
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-            logger.log(Level.SEVERE, "Cannot retrieve alignment records");
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Error in getting alignment records", " ");
-        }
-    }
-
     // ----------------- Alignment Record  ------------------------------
     public void onAlignRecSelect(SelectEvent event) {
         inputObject = selectedObject;
@@ -117,15 +106,16 @@ public class AlignmentManager implements Serializable{
 
     public void onAlignRecDelete(ActionEvent event) {
         try {
-            alignmentEJB.deleteAlignment(selectedObject);
-            objects.remove(selectedObject);
+            alignmentEJB.delete(selectedObject);
+            getObjects().remove(selectedObject);
             selectedObject = null;
             inputObject = null;
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted", "");
         } catch (Exception e) {
-            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error", e.getMessage());
-        } finally {
-
+            if (Utility.causedByPersistenceException(e))
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Deletion failed", "The alignment could not be deleted because it is used.");
+            else
+                throw e;
         }
     }
 
@@ -134,11 +124,11 @@ public class AlignmentManager implements Serializable{
         try {
             // inputObject.setAssociation("T");
             inputObject.setModifiedBy("test-user");
-            alignmentEJB.saveAlignment(inputObject);
+            alignmentEJB.save(inputObject);
 
             if (selectedOp == 'a') {
                 selectedObject = inputObject;
-                objects.add(selectedObject);
+                getObjects().add(selectedObject);
             }
             // tell the client if the operation was a success so that it can hide
             RequestContext.getCurrentInstance().addCallbackParam("success", true);
@@ -177,15 +167,17 @@ public class AlignmentManager implements Serializable{
     public void onPropertyDelete(AlignmentPropertyValue prop) {
         try {
             if (prop == null) {
-                Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "No property selected");
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Strange", "No property selected");
                 return;
             }
-            alignmentEJB.deleteAlignmentProp(prop);
+            alignmentEJB.deleteChild(prop);
             selectedProperties.remove(prop);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted property", "");
         } catch (Exception e) {
-            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error in deleting property", e.getMessage());
-            logger.severe(e.getMessage());
+            if (Utility.causedByPersistenceException(e))
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Deletion failed", "The property could not be deleted because it is used.");
+            else
+                throw e;
         }
 
     }
@@ -231,9 +223,9 @@ public class AlignmentManager implements Serializable{
             }
 
             if (propertyOperation == 'a') {
-                alignmentEJB.addAlignmentProp(inputProperty);
+                alignmentEJB.addChild(inputProperty);
             } else {
-                alignmentEJB.saveAlignmentProp(inputProperty);
+                alignmentEJB.saveChild(inputProperty);
             }
 
             logger.log(Level.INFO, "returned artifact id is " + inputProperty.getId());
@@ -327,9 +319,9 @@ public class AlignmentManager implements Serializable{
             }
 
             if (artifactOperation == 'a') {
-                alignmentEJB.addAlignmentArtifact(inputArtifact);
+                alignmentEJB.addChild(inputArtifact);
             } else {
-                alignmentEJB.saveAlignmentArtifact(inputArtifact);
+                alignmentEJB.saveChild(inputArtifact);
             }
 
             logger.log(Level.INFO,"returned artifact id is " + inputArtifact.getId());
@@ -346,16 +338,18 @@ public class AlignmentManager implements Serializable{
     public void onArtifactDelete(AlignmentArtifact art) {
         try {
             if (art == null) {
-                Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "No artifact selected");
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Strange", "No artifact selected");
                 return;
             }
 
-            alignmentEJB.deleteAlignmentArtifact(art);
+            alignmentEJB.deleteChild(art);
             selectedArtifacts.remove(art);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted Artifact", "");
         } catch (Exception e) {
-            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error in deleting artifact", e.getMessage());
-            logger.severe(e.getMessage());
+            if (Utility.causedByPersistenceException(e))
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Deletion failed", "The artifact could not be deleted because it is used.");
+            else
+                throw e;
         }
     }
 
@@ -483,6 +477,7 @@ public class AlignmentManager implements Serializable{
     }
 
     public List<AlignmentRecord> getObjects() {
+        if (objects == null) objects = alignmentEJB.findAll();
         return objects;
     }
 

@@ -74,14 +74,14 @@
                 </h:form>
         </h:panelGroup>
         
-        <ui:include src="../audit/audit-log-table.xhtml">
+        <ui:include src="../../audit/audit-log-table.xhtml">
 	        <ui:param name="formId" value="deviceTypeLogForm" />
 	        <ui:param name="dialogTitle" value="Device Type Log" />
 	        <ui:param name="widgetName" value="deviceTypeLog" />
 	        <ui:param name="managedBean" value="#{componentTypeManager}" />
 	    </ui:include>
 	    
-	    <ui:include src="../audit/audit-log-details.xhtml">
+	    <ui:include src="../../audit/audit-log-details.xhtml">
 	        <ui:param name="formId" value="logDetailsForm" />
 	        <ui:param name="dialogTitle" value="Long Entry Details" />
 	        <ui:param name="widgetName" value="logDetails" />
