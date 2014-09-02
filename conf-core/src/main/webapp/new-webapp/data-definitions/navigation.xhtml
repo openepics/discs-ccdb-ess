@@ -37,21 +37,21 @@
         <ui:param name="submitHandler" value="onAdd" />
     </ui:include>
     
-     <ui:include src="/new-webapp/audit/audit-log-table.xhtml">
+     <ui:include src="../audit/audit-log-table.xhtml">
         <ui:param name="formId" value="propertyLogForm" />
         <ui:param name="dialogTitle" value="Property Log" />
         <ui:param name="widgetName" value="propertyLog" />
         <ui:param name="managedBean" value="#{propertyManager}" />
     </ui:include>
     
-    <ui:include src="/new-webapp/audit/audit-log-table.xhtml">
+    <ui:include src="../audit/audit-log-table.xhtml">
         <ui:param name="formId" value="deviceTypeLogForm" />
         <ui:param name="dialogTitle" value="Device Type Log" />
         <ui:param name="widgetName" value="deviceTypeLog" />
         <ui:param name="managedBean" value="#{componentTypeManager}" />
     </ui:include>
     
-    <ui:include src="/new-webapp/audit/audit-log-details.xhtml">
+    <ui:include src="../audit/audit-log-details.xhtml">
         <ui:param name="formId" value="logDetailsForm" />
         <ui:param name="dialogTitle" value="Long Entry Details" />
         <ui:param name="widgetName" value="logDetails" />
