@@ -14,7 +14,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 
-import org.openepics.discs.conf.ejb.ConfigurationEJB;
+import org.openepics.discs.conf.ejb.PropertyEJB;
 import org.openepics.discs.conf.ent.Property;
 
 /**
@@ -26,7 +26,7 @@ import org.openepics.discs.conf.ent.Property;
 // @ViewScoped
 public class PropertyConverter implements Converter {
     @EJB
-    private ConfigurationEJB configurationEJB;
+    private PropertyEJB propertyEJB;
     private static final Logger logger = Logger.getLogger(PropertyConverter.class.getCanonicalName());
 
     public PropertyConverter() {
@@ -40,7 +40,7 @@ public class PropertyConverter implements Converter {
             logger.fine("PropertyConverter: empty property id");
             return null;
         } else {
-            prop = configurationEJB.findProperty(Long.parseLong(value));
+            prop = propertyEJB.findById(Long.parseLong(value));
             return prop;
         }
     }

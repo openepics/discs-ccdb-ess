@@ -13,7 +13,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author vuppala
  */
 @Entity
-@Table(name = "comptype_property_values")
+@Table(name = "comptype_property_value")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "ComptypePropertyValue.findAll", query = "SELECT c FROM ComptypePropertyValue c"),

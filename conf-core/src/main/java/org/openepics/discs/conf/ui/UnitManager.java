@@ -21,7 +21,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.openepics.discs.conf.dl.UnitLoaderQualifier;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
-import org.openepics.discs.conf.ejb.ConfigurationEJB;
+import org.openepics.discs.conf.ejb.UnitEJB;
 import org.openepics.discs.conf.ent.Unit;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
 import org.primefaces.event.FileUploadEvent;
@@ -37,7 +37,7 @@ import com.google.common.io.ByteStreams;
 @ManagedBean
 @ViewScoped
 public class UnitManager implements Serializable {
-    @Inject private ConfigurationEJB configurationEJB;
+    @Inject private UnitEJB unitEJB;
     @Inject private DataLoaderHandler dataLoaderHandler;
     @Inject @UnitLoaderQualifier private DataLoader unitsDataLoader;
 
@@ -55,7 +55,7 @@ public class UnitManager implements Serializable {
     }
 
     public List<Unit> getUnits() {
-        if (units == null) units = configurationEJB.findUnits();
+        if (units == null) units = unitEJB.findAll();
         return units;
     }
 

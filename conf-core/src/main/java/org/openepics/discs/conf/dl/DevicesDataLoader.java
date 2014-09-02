@@ -17,8 +17,8 @@ import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.dl.common.ErrorMessage;
 import org.openepics.discs.conf.dl.common.ValidationMessage;
 import org.openepics.discs.conf.ejb.ComptypeEJB;
-import org.openepics.discs.conf.ejb.ConfigurationEJB;
 import org.openepics.discs.conf.ejb.DeviceEJB;
+import org.openepics.discs.conf.ejb.PropertyEJB;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
@@ -33,7 +33,7 @@ import com.google.common.collect.ImmutableList;
 @Stateless
 @DevicesLoaderQualifier
 public class DevicesDataLoader extends AbstractDataLoader implements DataLoader  {
-    @Inject private ConfigurationEJB configurationEJB;
+    @Inject private PropertyEJB propertyEJB;
     @Inject private ComptypeEJB comptypeEJB;
     @Inject private DeviceEJB deviceEJB;
     private int serialIndex, compTypeIndex, descriptionIndex, statusIndex, manufSerialIndex, locationIndex, purchaseOrderIndex, asmPositionIndex, asmDescriptionIndex, manufacturerIndex, manufModelIndex;
@@ -111,7 +111,7 @@ public class DevicesDataLoader extends AbstractDataLoader implements DataLoader 
                     switch (command) {
                     case CMD_UPDATE:
                         if (deviceEJB.findDeviceBySerialNumber(serial) != null) {
-                            final @Nullable ComponentType compType = comptypeEJB.findComponentTypeByName(componentType);
+                            final @Nullable ComponentType compType = comptypeEJB.findByName(componentType);
                             if (compType == null) {
                                 rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(compTypeIndex)));
                                 continue;
@@ -125,7 +125,7 @@ public class DevicesDataLoader extends AbstractDataLoader implements DataLoader 
                                 }
                             }
                         } else {
-                            final @Nullable ComponentType compType = comptypeEJB.findComponentTypeByName(componentType);
+                            final @Nullable ComponentType compType = comptypeEJB.findByName(componentType);
                             if (compType == null) {
                                 rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(compTypeIndex)));
                                 continue;
@@ -203,7 +203,7 @@ public class DevicesDataLoader extends AbstractDataLoader implements DataLoader 
         final Iterator<String> propertiesIterator = properties.keySet().iterator();
         while (propertiesIterator.hasNext()) {
             final String propertyName = propertiesIterator.next();
-            final @Nullable Property property = configurationEJB.findPropertyByName(propertyName);
+            final @Nullable Property property = propertyEJB.findByName(propertyName);
             if (property == null) {
                 rowResult.addMessage(new ValidationMessage(ErrorMessage.PROPERTY_NOT_FOUND, rowNumber, propertyName));
             } else {
@@ -249,7 +249,7 @@ public class DevicesDataLoader extends AbstractDataLoader implements DataLoader 
         while (propertiesIterator.hasNext()) {
             final String propertyName = propertiesIterator.next();
             final int propertyIndex = properties.get(propertyName);
-            final @Nullable Property property = configurationEJB.findPropertyByName(propertyName);
+            final @Nullable Property property = propertyEJB.findByName(propertyName);
             final @Nullable String propertyValue = row.get(propertyIndex);
             if (devicePropertyByProperty.containsKey(property)) {
                 final DevicePropertyValue devicePropertyToUpdate = devicePropertyByProperty.get(property);

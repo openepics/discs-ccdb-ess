@@ -1,202 +1,56 @@
 package org.openepics.discs.conf.ejb;
 
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaQuery;
 
-import org.openepics.discs.conf.auditlog.Audit;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypeArtifact;
 import org.openepics.discs.conf.ent.ComptypeAsm;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
-import org.openepics.discs.conf.ent.EntityTypeOperation;
-import org.openepics.discs.conf.security.Authorized;
-import org.openepics.discs.conf.util.CRUDOperation;
 
 /**
  *
  * @author vuppala
  * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
- * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  */
-@Stateless public class ComptypeEJB {
-    private static final Logger logger = Logger.getLogger(ComptypeEJB.class.getCanonicalName());
-    @PersistenceContext private EntityManager em;
-    @Inject private ConfigurationEntityUtility entityUtility;
+@Stateless
+public class ComptypeEJB extends DAO<ComponentType> {
+    @Override
+    protected void defineEntity() {
+        defineEntityClass(ComponentType.class);
 
-    // ---------------- Component Type ---------------------
+        defineParentChildInterface(ComptypePropertyValue.class, new ParentChildInterface<ComponentType, ComptypePropertyValue>() {
+            @Override
+            public List<ComptypePropertyValue> getChildCollection(ComponentType type) {
+                return type.getComptypePropertyList();
+            }
+            @Override
+            public ComponentType getParentFromChild(ComptypePropertyValue child) {
+                return child.getComponentType();
+            }
+        });
 
-    public List<ComponentType> findComponentType() {
-        final CriteriaQuery<ComponentType> cq = em.getCriteriaBuilder().createQuery(ComponentType.class);
-        cq.from(ComponentType.class);
+        defineParentChildInterface(ComptypeArtifact.class, new ParentChildInterface<ComponentType, ComptypeArtifact>() {
+            @Override
+            public List<ComptypeArtifact> getChildCollection(ComponentType type) {
+                return type.getComptypeArtifactList();
+            }
+            @Override
+            public ComponentType getParentFromChild(ComptypeArtifact child) {
+                return child.getComponentType();
+            }
+        });
 
-        final List<ComponentType> comptypes = em.createQuery(cq).getResultList();
-        logger.log(Level.FINE, "Number of component types: {0}", comptypes.size());
-
-        return comptypes;
-    }
-
-    public ComponentType findComponentType(Long id) {
-        return em.find(ComponentType.class, id);
-    }
-
-    public ComponentType findComponentTypeByName(String name) {
-        ComponentType componentType;
-        try {
-            componentType = em.createNamedQuery("ComponentType.findByName", ComponentType.class).setParameter("name", name).getSingleResult();
-        } catch (NoResultException e) {
-            componentType = null;
-        }
-        return componentType;
-    }
-
-    @CRUDOperation(operation=EntityTypeOperation.CREATE)
-    @Audit
-    @Authorized
-    public void addComponentType(ComponentType componentType) {
-        entityUtility.setModified(componentType);
-        em.persist(componentType);
-    }
-
-    @CRUDOperation(operation=EntityTypeOperation.UPDATE)
-    @Audit
-    @Authorized
-    public void saveComponentType(ComponentType componentType) {
-        entityUtility.setModified(componentType);
-        em.merge(componentType);
-    }
-
-    /** Deletes the component type.
-     * @param componentType - the component type to delete.
-     */
-    @CRUDOperation(operation=EntityTypeOperation.DELETE)
-    @Audit
-    @Authorized
-    public void deleteComponentType(ComponentType componentType) {
-        final ComponentType mergedComponentType = em.merge(componentType);
-        em.remove(mergedComponentType);
-    }
-
-
-    // ---------------- Component Type Property ---------------------
-
-    @CRUDOperation(operation=EntityTypeOperation.UPDATE)
-    @Audit
-    @Authorized
-    public void addCompTypeProp(ComptypePropertyValue propertyValue) {
-        final ComponentType parent = propertyValue.getComponentType();
-
-        entityUtility.setModified(parent, propertyValue);
-
-        parent.getComptypePropertyList().add(propertyValue);
-        em.merge(parent);
-    }
-
-    @CRUDOperation(operation=EntityTypeOperation.UPDATE)
-    @Audit
-    @Authorized
-    public void saveCompTypeProp(ComptypePropertyValue propertyValue) {
-        final ComptypePropertyValue mergedPropertyValue = em.merge(propertyValue);
-
-        entityUtility.setModified(mergedPropertyValue.getComponentType(), mergedPropertyValue);
-
-        logger.log(Level.FINE, "Comp Type Property: id " + mergedPropertyValue.getId() + " name " + mergedPropertyValue.getProperty().getName());
-    }
-
-    /** Deletes the component type property value.
-     * @param propertyValue - the component type property value to delete.
-     */
-    @CRUDOperation(operation=EntityTypeOperation.UPDATE)
-    @Audit
-    @Authorized
-    public void deleteCompTypeProp(ComptypePropertyValue propertyValue) {
-        logger.log(Level.FINE, "deleting comp type property id " + propertyValue.getId() + " name " + propertyValue.getProperty().getName());
-
-        final ComptypePropertyValue mergedPropertyValue = em.merge(propertyValue);
-        final ComponentType parent = mergedPropertyValue.getComponentType();
-
-        entityUtility.setModified(parent);
-
-        parent.getComptypePropertyList().remove(mergedPropertyValue);
-        em.remove(mergedPropertyValue);
-    }
-
-
-    // ---------------- Component Type Artifact ---------------------
-
-    @CRUDOperation(operation=EntityTypeOperation.UPDATE)
-    @Audit
-    @Authorized
-    public void addCompTypeArtifact(ComptypeArtifact artifact) {
-        final ComponentType parent = artifact.getComponentType();
-
-        entityUtility.setModified(parent, artifact);
-
-        parent.getComptypeArtifactList().add(artifact);
-        em.merge(parent);
-    }
-
-
-    @CRUDOperation(operation=EntityTypeOperation.UPDATE)
-    @Audit
-    @Authorized
-    public void saveCompTypeArtifact(ComptypeArtifact artifact) {
-        final ComptypeArtifact mergedArtifact = em.merge(artifact);
-
-        entityUtility.setModified(mergedArtifact.getComponentType(), mergedArtifact);
-
-        logger.log(Level.FINE, "Component Type Artifact: name " + mergedArtifact.getName() + " description " + mergedArtifact.getDescription() + " uri " + mergedArtifact.getUri() + "is int " + mergedArtifact.isInternal());
-    }
-
-    /** Deletes the component type artifact.
-     * @param artifact - the component type artifact to delete.
-     */
-    @CRUDOperation(operation=EntityTypeOperation.UPDATE)
-    @Audit
-    @Authorized
-    public void deleteCompTypeArtifact(ComptypeArtifact artifact) {
-        final ComptypeArtifact mergedArtifact = em.merge(artifact);
-        final ComponentType parent = mergedArtifact.getComponentType();
-
-        entityUtility.setModified(parent);
-
-        parent.getComptypeArtifactList().remove(mergedArtifact);
-        em.remove(mergedArtifact);
-    }
-
-
-    // ---------------- Component Type Assmebly ---------------------
-    @CRUDOperation(operation=EntityTypeOperation.UPDATE)
-    @Audit
-    @Authorized
-    public void saveComptypeAsm(ComponentType componentType, ComptypeAsm assembly) {
-        entityUtility.setModified(componentType, assembly);
-
-        assembly.setParentType(componentType);
-
-        em.merge(assembly);
-        em.merge(componentType);
-    }
-
-    /** Deletes the component type assembly.
-     * @param assembly - the component type assembly to delete.
-     */
-    @CRUDOperation(operation=EntityTypeOperation.UPDATE)
-    @Audit
-    @Authorized
-    public void deleteComptypeAsm(ComponentType componentType, ComptypeAsm assembly) {
-        final ComptypeAsm mergedAssembly = em.merge(assembly);
-
-        entityUtility.setModified(componentType);
-
-        em.remove(mergedAssembly);
-        em.merge(componentType);
+        defineParentChildInterface(ComptypeAsm.class, new ParentChildInterface<ComponentType, ComptypeAsm>() {
+            @Override
+            public List<ComptypeAsm> getChildCollection(ComponentType type) {
+                return type.getComptypeAsmList();
+            }
+            @Override
+            public ComponentType getParentFromChild(ComptypeAsm child) {
+                return child.getParentType();
+            }
+        });
     }
 }

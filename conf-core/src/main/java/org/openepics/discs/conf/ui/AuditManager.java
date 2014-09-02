@@ -15,7 +15,7 @@ import javax.ejb.EJB;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
-import org.openepics.discs.conf.ejb.ConfigurationEJB;
+import org.openepics.discs.conf.ejb.AuditRecordEJB;
 import org.openepics.discs.conf.ent.AuditRecord;
 import org.openepics.discs.conf.ent.ConfigurationEntity;
 import org.openepics.discs.conf.ent.EntityType;
@@ -31,7 +31,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class AuditManager implements Serializable {
     private static final Logger logger = Logger.getLogger(AuditManager.class.getCanonicalName());
 
-    @EJB private ConfigurationEJB configurationEJB;
+    @EJB private AuditRecordEJB auditRecordEJB;
 
     private List<AuditRecord> objects;
     private List<AuditRecord> filteredObjects;
@@ -47,7 +47,7 @@ public class AuditManager implements Serializable {
 
     // TODO remove after new-webapp becomes the only user.
     public List<AuditRecord> getObjects() {
-        if (objects == null) objects = configurationEJB.findAuditRecords();
+        if (objects == null) objects = auditRecordEJB.findAll();
         return objects;
     }
 
@@ -66,7 +66,7 @@ public class AuditManager implements Serializable {
      * The audit record is selected by its database ID.
      * @param id - the database id of the audit log record
      */
-    public void chooseDisplayRecord(final Long id) { this.displayRecord = configurationEJB.findAuditRecord(id); }
+    public void chooseDisplayRecord(final Long id) { this.displayRecord = auditRecordEJB.findById(id); }
 
     /**
      * @return The audit record used in the <i>display details</i> dialog.
@@ -96,7 +96,7 @@ public class AuditManager implements Serializable {
      * the enumeration constant.
      */
     public void selectEntityForLog(final ConfigurationEntity selectedEntity, final EntityType entityType) {
-        auditRecordsForEntity = configurationEJB.findAuditRecordsByEntityId(selectedEntity.getId(), entityType);
+        auditRecordsForEntity = auditRecordEJB.findByEntityIdAndType(selectedEntity.getId(), entityType);
     }
 
     /**

@@ -4,8 +4,6 @@
     <alternatives>
         <class>org.openepics.discs.conf.util.AppPropertiesJBoss</class>
 
-        <class>org.openepics.discs.conf.security.DBTableEntityTypeSecurityPolicy</class>
-		
 		<!-- To Enable RBAC Replace with the alternative bellow 
         <class>org.openepics.discs.conf.security.RBACEntityTypeSecurityPolicy</class>
         -->

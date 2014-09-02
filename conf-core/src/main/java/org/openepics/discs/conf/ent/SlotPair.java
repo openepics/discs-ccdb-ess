@@ -28,7 +28,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "SlotPair.findById", query = "SELECT s FROM SlotPair s WHERE s.id = :id")})
 public class SlotPair implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private Long id;
 

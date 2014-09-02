@@ -11,7 +11,7 @@ import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "artifacts")
-@Inheritance(strategy = InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Artifact extends ConfigurationEntity {
     @Basic(optional = false)
     @NotNull

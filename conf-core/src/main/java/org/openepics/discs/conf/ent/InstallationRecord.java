@@ -65,7 +65,7 @@ public class InstallationRecord extends ConfigurationEntity {
     private Device device;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "installationRecord")
-    private List<InstallationArtifact> installationArtifactList;
+    private List<InstallationArtifact> installationArtifactList = new ArrayList<>();
 
     protected InstallationRecord() {
     }
@@ -95,12 +95,7 @@ public class InstallationRecord extends ConfigurationEntity {
 
     @XmlTransient
     @JsonIgnore
-    public List<InstallationArtifact> getInstallationArtifactList() {
-        if (installationArtifactList == null) {
-            installationArtifactList = new ArrayList<>();
-        }
-        return installationArtifactList;
-    }
+    public List<InstallationArtifact> getInstallationArtifactList() { return installationArtifactList; }
 
     @Override
     public String toString() { return "InstallationRecord[ installationRecordId=" + id + " ]"; }

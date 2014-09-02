@@ -19,10 +19,10 @@ import org.openepics.discs.conf.util.CRUDOperation;
  */
 @Authorized
 @Interceptor
-public class AuthorizationInterceptor {    
+public class AuthorizationInterceptor {
     @SuppressWarnings("unused")
     private static final Logger logger = Logger.getLogger(AuthorizationInterceptor.class.getCanonicalName());
-           
+
     @Inject private SecurityPolicy securityPolicy;
 
     /**
@@ -31,18 +31,18 @@ public class AuthorizationInterceptor {
      * method executes normally.
      *
      * @param context {@link InvocationContext}
-     * @return
+     * @return the return value from invoking {@link InvocationContext#proceed()}
      * @throws Exception
      */
     @AroundInvoke
     public Object authorizationCheck(InvocationContext context) throws Exception {
         final Object entity = context.getParameters()[0];
         final EntityTypeOperation entityOperationType = context.getMethod().getAnnotation(CRUDOperation.class).operation();
-                      
+
         if (entityOperationType == null) {
             throw new SecurityException("EntityOperation not specified around a authorize entry!");
         }
-        
+
         securityPolicy.checkAuth(entity, entityOperationType);
         return context.proceed();
     }

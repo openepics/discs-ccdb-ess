@@ -29,8 +29,6 @@ public abstract class AbstractDataLoader {
      * Sets up index for each necessary field.
      *
      * @param header List containing all header row column values
-     *
-     * @return {@link DataLoaderResult} result of setting up fields indexes
      */
     protected abstract void setUpIndexesForFields(List<String> header);
 

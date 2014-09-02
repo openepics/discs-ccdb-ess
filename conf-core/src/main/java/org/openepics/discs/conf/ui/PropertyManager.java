@@ -22,7 +22,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.openepics.discs.conf.dl.PropertiesLoaderQualifier;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
-import org.openepics.discs.conf.ejb.ConfigurationEJB;
+import org.openepics.discs.conf.ejb.PropertyEJB;
 import org.openepics.discs.conf.ent.DataType;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyAssociation;
@@ -45,7 +45,8 @@ import com.google.common.io.ByteStreams;
 @Named
 @ViewScoped
 public class PropertyManager implements Serializable {
-    @Inject private ConfigurationEJB configurationEJB;
+    @Inject private PropertyEJB propertyEJB;
+    // @Inject private AuditRecordEJB auditRecordEJB; TODO merge conflict piece
 
     @Inject private DataLoaderHandler dataLoaderHandler;
     @Inject @PropertiesLoaderQualifier private DataLoader propertiesDataLoader;
@@ -74,7 +75,7 @@ public class PropertyManager implements Serializable {
     }
 
     private void init() {
-        properties = configurationEJB.findProperties();
+        properties = propertyEJB.findAll();
         selectedProperty = null;
         resetFields();
     }
@@ -83,7 +84,7 @@ public class PropertyManager implements Serializable {
         final Property propertyToAdd = new Property(name, description, association);
         propertyToAdd.setDataType(dataType);
         propertyToAdd.setUnit(unit);
-        configurationEJB.addProperty(propertyToAdd);
+        propertyEJB.add(propertyToAdd);
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "New property has been created");
         init();
     }
@@ -94,7 +95,7 @@ public class PropertyManager implements Serializable {
         selectedProperty.setDataType(dataType);
         selectedProperty.setAssociation(association);
         selectedProperty.setUnit(unit);
-        configurationEJB.saveProperty(selectedProperty);
+        propertyEJB.save(selectedProperty);
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Property was modified");
         init();
     }
@@ -116,8 +117,8 @@ public class PropertyManager implements Serializable {
 
     public void onDelete() {
         try {
-            configurationEJB.deleteProperty(selectedProperty);
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Property was deleted");
+        	propertyEJB.delete(selectedProperty);
+        	Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Property was deleted");
         } catch (Exception e) {
             if (Utility.causedByPersistenceException(e))
                 Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Deletion failed", "The property could not be deleted because it is used.");
@@ -144,7 +145,7 @@ public class PropertyManager implements Serializable {
     }
 
     public List<Property> getObjects() {
-        if (properties == null) properties = configurationEJB.findProperties();
+        if (properties == null) properties = propertyEJB.findAll();
         return properties;
     }
 
@@ -199,6 +200,15 @@ public class PropertyManager implements Serializable {
         this.selectedProperty = selectedProperty;
         prepareModifyPopup();
     }
+
+    /* TODO chekc what is with this. Part of merge conflict.
+    public Property getSelectedPropertyForLog() { return selectedProperty; }
+    public void setSelectedPropertyForLog(Property selectedProperty) {
+        this.selectedProperty = selectedProperty;
+        auditRecordsForEntity = auditRecordEJB.findByEntityIdAndType(selectedProperty.getId(), EntityType.PROPERTY);
+        RequestContext.getCurrentInstance().update("propertyLogForm:propertyLog");
+    }
+    */
 
     public DataLoaderResult getLoaderResult() { return loaderResult; }
 

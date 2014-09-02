@@ -2,6 +2,7 @@ package org.openepics.discs.conf.ent;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -48,7 +49,7 @@ public class ComponentType extends ConfigurationEntity {
     private String description;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentType")
-    private List<ComptypePropertyValue> comptypePropertyList;
+    private List<ComptypePropertyValue> comptypePropertyList = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentType")
     private List<Slot> slotList;
@@ -67,12 +68,12 @@ public class ComponentType extends ConfigurationEntity {
     private ComponentType superComponentType;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentType")
-    private List<ComptypeArtifact> comptypeArtifactList;
+    private List<ComptypeArtifact> comptypeArtifactList = new ArrayList<>();
 
-    @ManyToMany
-    @JoinTable(name = "comptype_tags",
+    @ManyToMany(cascade=CascadeType.ALL)
+    @JoinTable(name = "comptype_tag",
         joinColumns = { @JoinColumn(name = "comptype_id") }, inverseJoinColumns = { @JoinColumn(name = "tag_id") })
-    private Set<Tag> tags;
+    private Set<Tag> tags = new HashSet<>();
 
     public ComponentType() {
         this.modifiedAt = new Date();
@@ -91,9 +92,6 @@ public class ComponentType extends ConfigurationEntity {
     @XmlTransient
     @JsonIgnore
     public List<ComptypePropertyValue> getComptypePropertyList() {
-        if (comptypePropertyList == null) {
-            comptypePropertyList = new ArrayList<>();
-        }
         return comptypePropertyList;
     }
 
@@ -119,9 +117,6 @@ public class ComponentType extends ConfigurationEntity {
     @XmlTransient
     @JsonIgnore
     public List<ComptypeArtifact> getComptypeArtifactList() {
-        if (comptypeArtifactList == null) {
-            comptypeArtifactList = new ArrayList<>();
-        }
         return comptypeArtifactList;
     }
 
@@ -132,5 +127,4 @@ public class ComponentType extends ConfigurationEntity {
 
     @Override
     public String toString() { return "ComponentType[ componentTypeId=" + id + " ]"; }
-
 }
