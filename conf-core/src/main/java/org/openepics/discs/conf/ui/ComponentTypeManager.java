@@ -118,7 +118,7 @@ public class ComponentTypeManager implements Serializable {
 
     public void deviceTypePropertyRedirect(Long propertyId) {
         try {
-            FacesContext.getCurrentInstance().getExternalContext().redirect("device-type-property-manager.xhtml?id=" + propertyId);
+            FacesContext.getCurrentInstance().getExternalContext().redirect("device-type-attributes-manager.xhtml?id=" + propertyId);
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
