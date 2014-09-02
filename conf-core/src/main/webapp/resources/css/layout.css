@@ -79,6 +79,11 @@ body {
     width: 74%;
 }
 
+.dialog-grid-panel {
+	text-align: left; 
+	width: 100%;
+}
+
 .ui-panelgrid tr,
 .ui-panelgrid td {
     border: none !important;

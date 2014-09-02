@@ -37,7 +37,7 @@
                             <p:menuitem value="Type Property" oncomplete="addDeviceTypeProperty.show()" actionListener="#{comptypeAttributesController.prepareForPropertyValueAdd}" update=":addDeviceTypePropertyForm:addDeviceTypeProperty"/>
                             <p:menuitem value="Property Definition" oncomplete="deviceTypePropertyDefinition.show()" actionListener="#{comptypeAttributesController.prepareForPropertyValueAdd}" update=":deviceTypePropertyDefinitionForm:deviceTypePropertyDefinition"/>
                             <p:menuitem value="Tag" oncomplete="deviceTypeTag.show()" actionListener="#{comptypeAttributesController.prepareForPropertyValueAdd}"/>
-                            <p:menuitem value="Artifact" oncomplete="deviceTypeArtifact.show()" actionListener="#{comptypeAttributesController.prepareForArtifactAdd}" update=":deviceTypeArtifactForm:deviceTypeArtifact"/>
+                            <p:menuitem value="Artifact" oncomplete="addDeviceTypeArtifact.show()" actionListener="#{comptypeAttributesController.prepareForArtifactAdd}" update=":addDeviceTypeArtifactForm:addDeviceTypeArtifact"/>
 		               </p:menu>
 		               <p:dataTable id="attributesDataTable" var="attribute" value="#{comptypeAttributesController.attributes}" style="table-layout: fixed; word-wrap: break-word;" rows="15" paginator="true" paginatorPosition="bottom">
 			                <p:column headerText="Name" sortBy="#{attribute.name}">
@@ -60,7 +60,9 @@
 			                    <p:commandButton icon="ui-icon-trash" title="Delete" ajax="true" oncomplete="deleteAttribute.show()">
 			                         <f:setPropertyActionListener value="#{attribute}" target="#{comptypeAttributesController.selectedAttribute}" />
 			                    </p:commandButton>
-			                    <p:commandButton icon="ui-icon-pencil" title="Edit" ajax="true" rendered="#{attribute.kind != 'Definition'}" />
+			                    <p:commandButton icon="ui-icon-pencil" title="Edit" ajax="true" rendered="#{attribute.kind != 'Definition'}">
+			                         <f:setPropertyActionListener value="#{attribute}" target="#{comptypeAttributesController.selectedAttributeToModify}" />
+			                    </p:commandButton>
 			                    <p:commandButton icon="ui-icon-arrowthick-1-s" title="Download" ajax="false" rendered="#{attribute.hasFile}">
 			                         <f:setPropertyActionListener value="#{attribute}" target="#{comptypeAttributesController.selectedAttribute}" />
 			                         <p:fileDownload value="#{comptypeAttributesController.downloadFile}" />
@@ -127,11 +129,19 @@
         </ui:include>
         
         <ui:include src="../add-or-modify-dialogs/artifact.xhtml" >
-            <ui:param name="formId" value="deviceTypeArtifactForm" />
+            <ui:param name="formId" value="addDeviceTypeArtifactForm" />
             <ui:param name="dialogTitle" value="Add new device type artifact" />
-            <ui:param name="widgetName" value="deviceTypeArtifact" />
+            <ui:param name="widgetName" value="addDeviceTypeArtifact" />
             <ui:param name="controller" value="#{comptypeAttributesController}" />
             <ui:param name="submitHandler" value="addNewArtifact" />
+        </ui:include>
+        
+        <ui:include src="../add-or-modify-dialogs/artifact.xhtml" >
+            <ui:param name="formId" value="modifyDeviceTypeArtifactForm" />
+            <ui:param name="dialogTitle" value="Modify device type artifact" />
+            <ui:param name="widgetName" value="modifyDeviceTypeArtifact" />
+            <ui:param name="controller" value="#{comptypeAttributesController}" />
+            <ui:param name="submitHandler" value="modifyArtifact" />
         </ui:include>   
     </ui:define>
 </ui:composition>

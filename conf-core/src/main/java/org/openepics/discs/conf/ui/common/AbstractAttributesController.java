@@ -43,10 +43,10 @@ public abstract class AbstractAttributesController implements Serializable {
 
     protected String tag;
 
-    protected String artifactName;
     protected String artifactDescription;
     protected boolean isArtifactInternal;
     protected String artifactURI;
+    protected boolean isArtifactBeingModified;
 
     protected List<EntityAttributeView> attributes;
     protected EntityAttributeView selectedAttribute;
@@ -60,7 +60,6 @@ public abstract class AbstractAttributesController implements Serializable {
         tag = null;
         artifactDescription = null;
         isArtifactInternal = false;
-        artifactName = null;
         artifactURI = null;
         importData = null;
         importFileName = null;
@@ -78,6 +77,12 @@ public abstract class AbstractAttributesController implements Serializable {
 
     public abstract void deleteAttribute();
 
+    protected abstract void preparedModifyPropertyPopUp();
+
+    public abstract void modifyPropertyValue();
+
+    public abstract void modifyArtifact();
+
     public List<EntityAttributeView> getAttributes() {
         return attributes;
     }
@@ -90,13 +95,8 @@ public abstract class AbstractAttributesController implements Serializable {
     public void prepareForArtifactAdd() {
         artifactDescription = null;
         isArtifactInternal = false;
-        artifactName = null;
         artifactURI = null;
-    }
-
-    public String getImportFileName() { return importFileName; }
-
-    public void prepareImportPopup() {
+        isArtifactBeingModified = false;
         importData = null;
         importFileName = null;
     }
@@ -118,6 +118,8 @@ public abstract class AbstractAttributesController implements Serializable {
 
     public abstract StreamedContent getDownloadFile() throws FileNotFoundException;
 
+    public String getImportFileName() { return importFileName; }
+
     public void setProperty(Property property) { this.property = property; }
     public Property getProperty() { return property; }
 
@@ -129,9 +131,6 @@ public abstract class AbstractAttributesController implements Serializable {
 
     public List<Property> getFilteredProperties() { return filteredProperties; }
 
-    public String getArtifactName() { return artifactName; }
-    public void setArtifactName(String artifactName) { this.artifactName = artifactName; }
-
     public String getArtifactDescription() { return artifactDescription; }
     public void setArtifactDescription(String artifactDescription) { this.artifactDescription = artifactDescription; }
 
@@ -141,6 +140,16 @@ public abstract class AbstractAttributesController implements Serializable {
     public String getArtifactURI() { return artifactURI; }
     public void setArtifactURI(String artifactURI) { this.artifactURI = artifactURI; }
 
+    public boolean getIsArtifactBeingModified() { return isArtifactBeingModified; }
+    public void setIsArtifactBeingModified(boolean isArtifactBeingModified) { this.isArtifactBeingModified = isArtifactBeingModified; }
+
     public EntityAttributeView getSelectedAttribute() { return selectedAttribute; }
     public void setSelectedAttribute(EntityAttributeView selectedAttribute) { this.selectedAttribute = selectedAttribute; }
+
+
+    public EntityAttributeView getSelectedAttributeToModify() { return selectedAttribute; }
+    public void setSelectedAttributeToModify(EntityAttributeView selectedAttribute) {
+        this.selectedAttribute = selectedAttribute;
+        preparedModifyPropertyPopUp();
+    }
 }

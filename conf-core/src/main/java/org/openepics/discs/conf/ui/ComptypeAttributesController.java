@@ -54,6 +54,8 @@ public class ComptypeAttributesController extends AbstractAttributesController {
 
     @Inject private ComptypeEJB comptypeEJB;
     @Inject private ConfigurationEJB configurationEJB;
+    private ComptypePropertyValue selectedComptypePropertyValue;
+    private ComptypeArtifact selectedCompTypeArtifact;
 
     private ComponentType compType;
 
@@ -136,7 +138,7 @@ public class ComptypeAttributesController extends AbstractAttributesController {
             artifactURI = blobStore.storeFile(new ByteArrayInputStream(importData));
         }
 
-        final ComptypeArtifact compTypeArtifact = new ComptypeArtifact(artifactName, isArtifactInternal, artifactDescription, artifactURI);
+        final ComptypeArtifact compTypeArtifact = new ComptypeArtifact(importData != null ? importFileName : artifactURI, isArtifactInternal, artifactDescription, artifactURI);
         compTypeArtifact.setComponentType(compType);
         comptypeEJB.addCompTypeArtifact(compTypeArtifact);
         RequestContext.getCurrentInstance().update("deviceTypePropertiesManagerContainer");
@@ -165,18 +167,63 @@ public class ComptypeAttributesController extends AbstractAttributesController {
     }
 
     @Override
+    protected void preparedModifyPropertyPopUp() {
+        if (selectedAttribute.getEntity() instanceof ComptypePropertyValue) {
+            this.selectedComptypePropertyValue = (ComptypePropertyValue) selectedAttribute.getEntity();
+            this.property = selectedComptypePropertyValue.getProperty();
+            this.propertyValue = selectedComptypePropertyValue.getPropValue();
+            RequestContext.getCurrentInstance().update("modifyDeviceTypePropertyForm:modifyDeviceTypeProperty");
+            RequestContext.getCurrentInstance().execute("PF('modifyDeviceTypeProperty').show()");
+        } else if (selectedAttribute.getEntity() instanceof ComptypeArtifact) {
+            importData = null;
+            importFileName = null;
+            this.selectedCompTypeArtifact = (ComptypeArtifact) selectedAttribute.getEntity();
+            this.artifactDescription = selectedCompTypeArtifact.getDescription();
+            this.isArtifactInternal = selectedCompTypeArtifact.isInternal();
+            this.artifactURI = selectedCompTypeArtifact.getUri();
+            this.isArtifactBeingModified = true;
+            RequestContext.getCurrentInstance().update("modifyDeviceTypeArtifactForm:modifyDeviceTypeArtifact");
+            RequestContext.getCurrentInstance().execute("PF('modifyDeviceTypeArtifact').show()");
+        } else {
+            throw new UnhandledCaseException();
+        }
+
+    }
+
+    @Override
+    public void modifyPropertyValue() {
+        selectedComptypePropertyValue.setProperty(property);
+        selectedComptypePropertyValue.setPropValue(propertyValue);
+        comptypeEJB.saveCompTypeProp(selectedComptypePropertyValue);
+        RequestContext.getCurrentInstance().update("deviceTypePropertiesManagerContainer");
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Device type property value has been modified");
+        populateAttributesList();
+    }
+
+    @Override
+    public void modifyArtifact() {
+        selectedCompTypeArtifact.setDescription(artifactDescription);
+        selectedCompTypeArtifact.setUri(artifactURI);
+        selectedCompTypeArtifact.setName(artifactURI);
+        comptypeEJB.saveCompTypeArtifact(selectedCompTypeArtifact);
+        RequestContext.getCurrentInstance().update("deviceTypePropertiesManagerContainer");
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Device type artifact has been modified");
+        populateAttributesList();
+    }
+
+    @Override
     public StreamedContent getDownloadFile() throws FileNotFoundException {
         final ComptypeArtifact compTypeArtifact = (ComptypeArtifact) selectedAttribute.getEntity();
 
         final String fileType;
-        if (compTypeArtifact.getUri().split(".").length > 1) {
-            fileType = compTypeArtifact.getUri().split(".")[compTypeArtifact.getUri().split(".").length - 1];
+        if (compTypeArtifact.getName().split(".").length > 1) {
+            fileType = compTypeArtifact.getName().split(".")[compTypeArtifact.getName().split(".").length - 1];
         } else {
             fileType = "";
         }
 
-        final String fileName = compTypeArtifact.getName();
-
-        return new DefaultStreamedContent(new FileInputStream(blobStore.getBlobStoreRoot() + "/" + compTypeArtifact.getUri()), fileType, fileName);
+        return new DefaultStreamedContent(new FileInputStream(blobStore.getBlobStoreRoot() + "/" + compTypeArtifact.getUri()), fileType, compTypeArtifact.getName());
     }
+
+
 }

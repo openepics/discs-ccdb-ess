@@ -12,7 +12,7 @@
             <f:facet name="header">
                 <h:outputText value="#{dialogTitle}" />
             </f:facet>
-            <h:panelGrid id="grp" style="text-align: left" columns="2" width="100%">
+            <p:panelGrid id="grp" styleClass="dialog-grid-panel" columns="2">
             
                 <p:outputLabel for="propertySelect" value="Property:" />
                 <h:panelGroup>
@@ -34,12 +34,12 @@
                 </h:panelGroup>
                 
                 <p:outputLabel value="Data type:" />
-                <p:outputLabel id="propertyDataType" value="#{controller.property.dataType.name}"/>
+                <p:inputText readonly="true" id="propertyDataType" value="#{controller.property.dataType.name}"/>
                 
                 <p:outputLabel value="Unit:" />
-                <p:outputLabel id="propertyUnit" value="#{controller.property.unit.name}"/>
+                <p:inputText readonly="true" id="propertyUnit" value="#{controller.property.unit.name}"/>
                
-            </h:panelGrid>
+            </p:panelGrid>
             
             <p:commandButton value="Cancel" style="float: right" onclick="#{widgetName}.hide();" update="grp" resetValues="true" />
             <p:commandButton value="Submit" style="float: right" update="grp" oncomplete="if (args &amp;&amp; !args.validationFailed) #{widgetName}.hide()" action="#{controller[submitHandler]}"/>
