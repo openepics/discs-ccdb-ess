@@ -104,7 +104,7 @@ public class ReportManager implements Serializable {
     }
 
     public List<Slot> getLayoutSlots() {
-        if (layoutSlots == null) layoutSlots = slotEJB.findLayoutSlot();
+        if (layoutSlots == null) layoutSlots = slotEJB.findAll();
         return layoutSlots;
     }
 

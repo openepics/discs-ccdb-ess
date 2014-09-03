@@ -129,7 +129,7 @@ public class SlotManager implements Serializable {
 
     public void onSlotDelete(ActionEvent event) {
         try {
-            slotEJB.deleteLayoutSlot(selectedObject);
+            slotEJB.delete(selectedObject);
             getObjects().remove(selectedObject);
             selectedObject = null;
             inputObject = null;
@@ -145,7 +145,7 @@ public class SlotManager implements Serializable {
     public void onSlotSave(ActionEvent event) {
         logger.info("Saving slot");
 
-        slotEJB.saveLayoutSlot(inputObject);
+        slotEJB.save(inputObject);
 
         if (selectedOp == 'a') {
             selectedObject = inputObject;
@@ -178,7 +178,7 @@ public class SlotManager implements Serializable {
                 Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Strange", "No property selected");
                 return;
             }
-            slotEJB.deleteSlotProp(ctp);
+            slotEJB.deleteChild(ctp);
             selectedProperties.remove(ctp);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted property", "");
         } catch (Exception e) {
@@ -212,9 +212,9 @@ public class SlotManager implements Serializable {
         }
 
         if (propertyOperation == 'a') {
-            slotEJB.addSlotProperty(inputProperty);
+            slotEJB.addChild(inputProperty);
         } else {
-            slotEJB.saveSlotProp(inputProperty);
+            slotEJB.saveChild(inputProperty);
         }
 
         logger.log(Level.INFO, "returned artifact id is " + inputProperty.getId());
@@ -301,9 +301,9 @@ public class SlotManager implements Serializable {
         }
 
         if (artifactOperation == 'a') {
-            slotEJB.addSlotArtifact(inputArtifact);
+            slotEJB.addChild(inputArtifact);
         } else {
-            slotEJB.saveSlotArtifact(inputArtifact);
+            slotEJB.saveChild(inputArtifact);
         }
 
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Artifact saved", "");
@@ -317,7 +317,7 @@ public class SlotManager implements Serializable {
                 return;
             }
             selectedArtifacts.remove(art); // ToDo: should this be done before or after delete from db?
-            slotEJB.deleteSlotArtifact(art);
+            slotEJB.deleteChild(art);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted Artifact", "");
         } catch (Exception e) {
             if (Utility.causedByPersistenceException(e))
@@ -413,9 +413,9 @@ public class SlotManager implements Serializable {
             inputAsmSlot.setAssemblyPosition(inputAsmPosition);
             inputAsmSlot.setAssemblyComment(inputAsmComment);
             inputAsmSlot.setAssemblySlot(selectedObject);
-            slotEJB.saveLayoutSlot(inputAsmSlot);
+            slotEJB.save(inputAsmSlot);
             selectedObject.getSlotList().add(inputAsmSlot);
-            slotEJB.saveLayoutSlot(selectedObject);
+            slotEJB.save(selectedObject);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Part saved", "");
             RequestContext.getCurrentInstance().addCallbackParam("success", true);
         } catch (Exception e) {
@@ -435,9 +435,9 @@ public class SlotManager implements Serializable {
             slot.setAssemblyPosition(null);
             slot.setAssemblyComment(null);
             slot.setAssemblySlot(null);
-            slotEJB.saveLayoutSlot(slot);
+            slotEJB.save(slot);
             selectedObject.getSlotList().remove(slot);
-            slotEJB.saveLayoutSlot(selectedObject);
+            slotEJB.save(selectedObject);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted Artifact", "");
         } catch (Exception e) {
             Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error in deleting artifact", e.getMessage());
@@ -542,7 +542,7 @@ public class SlotManager implements Serializable {
 
     // --------------------- Setters and getters --------------------
     public List<Slot> getObjects() {
-        if (objects == null) objects = slotEJB.findLayoutSlot();
+        if (objects == null) objects = slotEJB.findAll();
         return objects;
     }
 

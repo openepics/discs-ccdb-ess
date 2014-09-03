@@ -168,14 +168,14 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                 if (!rowResult.isError()) {
                     switch (command) {
                     case CMD_UPDATE:
-                        if (slotEJB.findSlotByName(name) != null) {
+                        if (slotEJB.findByName(name) != null) {
                             final @Nullable ComponentType compType = comptypeEJB.findByName(componentType);
                             if (compType == null) {
                                 rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(compTypeIndex)));
                                 continue;
                             } else {
                                 try {
-                                    final Slot slotToUpdate = slotEJB.findSlotByName(name);
+                                    final Slot slotToUpdate = slotEJB.findByName(name);
                                     addOrUpdateSlot(slotToUpdate, compType, isHosting, description, blp, globalX, globalY, globalZ, globalRoll, globalPitch, globalYaw, asmComment, asmPosition, comment);
                                     addOrUpdateProperties(slotToUpdate, indexByPropertyName, row, rowNumber);
                                     if (rowResult.isError()) {
@@ -194,7 +194,7 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                                 try {
                                     final Slot newSlot = new Slot(name, isHosting);
                                     addOrUpdateSlot(newSlot, compType, isHosting, description, blp, globalX, globalY, globalZ, globalRoll, globalPitch, globalYaw, asmComment, asmPosition, comment);
-                                    slotEJB.addSlot(newSlot);
+                                    slotEJB.add(newSlot);
                                     addOrUpdateProperties(newSlot, indexByPropertyName, row, rowNumber);
                                     newSlots.add(newSlot);
                                     if (rowResult.isError()) {
@@ -207,13 +207,13 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                         }
                         break;
                     case CMD_DELETE:
-                        final @Nullable Slot slotToDelete = slotEJB.findSlotByName(name);
+                        final @Nullable Slot slotToDelete = slotEJB.findByName(name);
                         try {
                             if (slotToDelete == null) {
                                 rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
                                 continue;
                             } else {
-                                slotEJB.deleteLayoutSlot(slotToDelete);
+                                slotEJB.delete(slotToDelete);
                             }
                         } catch (Exception e) {
                             rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
@@ -231,14 +231,14 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                             final String oldName = name.substring(startOldNameMarkerIndex + 1, endOldNameMarkerIndex).trim();
                             final String newName = name.substring(endOldNameMarkerIndex + 1).trim();
 
-                            final Slot slotToRename = slotEJB.findSlotByName(oldName);
+                            final Slot slotToRename = slotEJB.findByName(oldName);
                             if (slotToRename != null) {
-                                if (slotEJB.findSlotByName(newName) != null) {
+                                if (slotEJB.findByName(newName) != null) {
                                     rowResult.addMessage(new ValidationMessage(ErrorMessage.NAME_ALREADY_EXISTS, rowNumber, headerRow.get(nameIndex)));
                                     continue;
                                 } else {
                                     slotToRename.setName(newName);
-                                    slotEJB.saveLayoutSlot(slotToRename);
+                                    slotEJB.save(slotToRename);
                                 }
                             } else {
                                 rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
@@ -329,7 +329,7 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
 
                 if (!rowResult.isError()) {
                     final List<Slot> childrenSlots = slotEJB.findSlotByNameContainingString(child);
-                    final Slot parentSlot = slotEJB.findSlotByName(parent);
+                    final Slot parentSlot = slotEJB.findByName(parent);
                     final SlotRelationName slotRelationName;
 
                     if (childrenSlots == null || childrenSlots.size() == 0) {
@@ -522,10 +522,10 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
             if (slotPropertyByProperty.containsKey(property)) {
                 final SlotPropertyValue slotPropertyToUpdate = slotPropertyByProperty.get(property);
                 if (propertyValue == null) {
-                    slotEJB.deleteSlotProp(slotPropertyToUpdate);
+                    slotEJB.deleteChild(slotPropertyToUpdate);
                 } else {
                     slotPropertyToUpdate.setPropValue(propertyValue);
-                    slotEJB.saveSlotProp(slotPropertyToUpdate);
+                    slotEJB.saveChild(slotPropertyToUpdate);
                 }
 
             } else if (propertyValue != null) {
@@ -533,7 +533,7 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                 slotPropertyToAdd.setProperty(property);
                 slotPropertyToAdd.setPropValue(propertyValue);
                 slotPropertyToAdd.setSlot(slot);
-                slotEJB.addSlotProperty(slotPropertyToAdd);
+                slotEJB.addChild(slotPropertyToAdd);
             }
         }
     }
