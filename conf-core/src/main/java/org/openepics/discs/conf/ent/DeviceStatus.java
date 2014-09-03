@@ -7,5 +7,20 @@ package org.openepics.discs.conf.ent;
  *
  */
 public enum DeviceStatus {
-    IN_FABRICATION, UNDER_TESTING, UNDER_REPAIR, READY, SPARE
+    IN_FABRICATION("In fabrication"),
+    UNDER_TESTING("Under testing"),
+    UNDER_REPAIR("Under repair"),
+    READY("Ready"),
+    SPARE("Spare");
+
+    private String label;
+
+    private DeviceStatus(String label) {
+        this.label = label;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
 }

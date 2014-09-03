@@ -55,7 +55,16 @@ public class ComptypeEJB extends DAO<ComponentType> {
         });
     }
 
+    /**
+     * @return A list of all device types ordered by name.
+     */
     public List<ComponentType> findComponentTypeOrderedByName() {
         return em.createNamedQuery("ComponentType.findAllOrdered", ComponentType.class).getResultList();
     }
+
+    public List<ComptypePropertyValue> findPropertyDefinitions(ComponentType componentType) {
+        return em.createNamedQuery("ComptypePropertyValue.findPropertyDefs", ComptypePropertyValue.class)
+                .setParameter("componentType", componentType).getResultList();
+    }
+
 }

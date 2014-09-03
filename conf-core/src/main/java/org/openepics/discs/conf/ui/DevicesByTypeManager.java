@@ -23,6 +23,8 @@ import java.util.ListIterator;
 import java.util.logging.Logger;
 
 import javax.ejb.EJB;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
@@ -30,7 +32,10 @@ import org.openepics.discs.conf.ejb.ComptypeEJB;
 import org.openepics.discs.conf.ejb.DeviceEJB;
 import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.ComponentType;
+import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.Device;
+import org.openepics.discs.conf.ent.DevicePropertyValue;
+import org.openepics.discs.conf.ent.DeviceStatus;
 
 
 /**
@@ -48,6 +53,15 @@ public class DevicesByTypeManager implements Serializable {
     private List<ComponentType> deviceTypes;
     private ComponentType selectedComponentType;
     private List<Device> devices;
+
+    private String serialNumber;
+    private String location;
+    private String purchaseOrder;
+    private DeviceStatus status;
+    private String description;
+    private String manufacturer;
+    private String manufModel;
+    private String manufSerialNumber;
 
     public DevicesByTypeManager() {
     }
@@ -68,6 +82,48 @@ public class DevicesByTypeManager implements Serializable {
         }
     }
 
+    /**
+     * Creates a new device instance and adds all properties to it which are defined device type.
+     */
+    public void onDeviceAdd() {
+        final Device newDevice = new Device(serialNumber);
+        newDevice.setComponentType(selectedComponentType);
+        newDevice.setLocation(location);
+        newDevice.setPurchaseOrder(purchaseOrder);
+        newDevice.setStatus(status);
+        newDevice.setDescription(description);
+        newDevice.setManufacturer(manufacturer);
+        newDevice.setManufacturerModel(manufModel);
+        newDevice.setManufacturerSerialNumber(manufSerialNumber);
+
+        deviceEJB.add(newDevice);
+
+        // Get all property definitions and create device properties
+        List<ComptypePropertyValue> propertyDefinitions = componentTypesEJB.findPropertyDefinitions(selectedComponentType);
+        for (ComptypePropertyValue propertyDefinition : propertyDefinitions) {
+            final DevicePropertyValue devicePropertyValue = new DevicePropertyValue(false);
+            devicePropertyValue.setProperty(propertyDefinition.getProperty());
+            devicePropertyValue.setDevice(newDevice);
+            deviceEJB.addChild(devicePropertyValue);
+        }
+
+        resetDeviceDialogFields();
+
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Device saved.", null));
+    }
+
+    private void resetDeviceDialogFields() {
+        serialNumber = null;
+        location = null;
+        purchaseOrder = null;
+        status = null;
+        description = null;
+        manufacturer = null;
+        manufModel = null;
+        manufSerialNumber = null;
+
+    }
+
     public List<ComponentType> getDeviceTypes() {
         if (deviceTypes == null) {
             deviceTypes = componentTypesEJB.findComponentTypeOrderedByName();
@@ -85,7 +141,33 @@ public class DevicesByTypeManager implements Serializable {
     }
 
     public List<Device> getDevices() { return devices; }
-
     public void setDevices(List<Device> devices) { this.devices = devices; }
+
+    public String getSerialNumber() { return serialNumber; }
+    public void setSerialNumber(String serialNumber) { this.serialNumber = serialNumber; }
+
+    public String getLocation() { return location; }
+    public void setLocation(String location) { this.location = location; }
+
+    public String getPurchaseOrder() { return purchaseOrder; }
+    public void setPurchaseOrder(String purchaseOrder) { this.purchaseOrder = purchaseOrder; }
+
+    public DeviceStatus getStatus() { return status; }
+    public void setStatus(DeviceStatus status) { this.status = status; }
+    public DeviceStatus[] getStatuses() {
+        return DeviceStatus.values();
+    }
+
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+
+    public String getManufacturer() { return manufacturer; }
+    public void setManufacturer(String manufacturer) { this.manufacturer = manufacturer; }
+
+    public String getManufModel() { return manufModel; }
+    public void setManufModel(String manufModel) { this.manufModel = manufModel; }
+
+    public String getManufSerialNumber() { return manufSerialNumber; }
+    public void setManufSerialNumber(String manufSerialNumber) { this.manufSerialNumber = manufSerialNumber;  }
 
 }
