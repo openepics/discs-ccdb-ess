@@ -16,7 +16,7 @@
                                 selectionMode="single" rowKey="#{devType.id}" scrollable="true" 
                                 value="#{devicesByTypeManager.deviceTypes}" scrollHeight="600" emptyMessage="No device types defined.">
                             <p:ajax event="rowSelect" listener="#{devicesByTypeManager.prepareDevicesForDisplay()}" 
-                                update=":deviceTypesForm:devicesTable :deviceTypesForm:addDeviceButton :deviceAddModDialog:addDeviceDialog" />
+                                update=":deviceTypesForm:devicesTable :deviceTypesForm:addDeviceButton :deviceAddForm:addDeviceDialog" />
         	                <p:column headerText="Type">
         	                    <h:outputText value="#{devType.name}" />
         	                </p:column>
@@ -35,7 +35,7 @@
                             </p:column>
                             
                             <p:column headerText="Status">
-                                <h:outputText value="#{device.status}" />
+                                <h:outputText value="#{device.status.label}" />
                             </p:column>
                    
                             <p:column headerText="Installed in" width="30%">
@@ -43,6 +43,10 @@
                             </p:column>
                    
                             <p:column headerText="Actions">
+                                <p:commandButton icon="ui-icon-pencil" title="Edit" ajax="true" oncomplete="modifyDeviceDialog.show()"
+                                        action="#{devicesByTypeManager.prepareForModify()}">
+                                    <f:setPropertyActionListener value="#{device}" target="#{devicesByTypeManager.selectedDevice}" />
+                                </p:commandButton>
                                 <p:commandButton icon="ui-icon-trash" title="Delete" ajax="true" oncomplete="deleteDevice.show()">
                                     <f:setPropertyActionListener value="#{device}" target="#{devicesByTypeManager.selectedDevice}" />
                                 </p:commandButton>
@@ -64,22 +68,31 @@
     
         <ui:include src="/new-webapp/audit/audit-log-details.xhtml">
             <ui:param name="formId" value="logDetailsForm" />
-            <ui:param name="dialogTitle" value="Long Entry Details" />
+            <ui:param name="dialogTitle" value="Log Entry Details" />
             <ui:param name="widgetName" value="logDetails" />
         </ui:include>
         
         <ui:include src="/new-webapp/devices/device-add-or-modify-dialog.xhtml">
+            <ui:param name="formId" value="deviceAddForm" />
             <ui:param name="widgetName" value="addDeviceDialog" />
             <ui:param name="dialogTitle" value="Add device" />
+            <ui:param name="submitHandler" value="onDeviceAdd" />
+        </ui:include>
+
+        <ui:include src="/new-webapp/devices/device-add-or-modify-dialog.xhtml">
+            <ui:param name="formId" value="deviceModifyForm" />
+            <ui:param name="widgetName" value="modifyDeviceDialog" />
+            <ui:param name="dialogTitle" value="Modifiy device" />
+            <ui:param name="submitHandler" value="onDeviceModify" />
         </ui:include>
         
         <ui:include src="/new-webapp/data-definitions/add-or-modify-dialogs/delete-confirmation.xhtml" >
-                <ui:param name="formId" value="deleteDeviceForm" />
-                <ui:param name="dialogTitle" value="Delete device" />
-                <ui:param name="widgetName" value="deleteDevice" />
-                <ui:param name="controller" value="#{devicesByTypeManager}" />
-                <ui:param name="submitHandler" value="onDelete" />
-                <ui:param name="formToUpdate" value=":deviceTypesForm:devicesTable" />
+            <ui:param name="formId" value="deleteDeviceForm" />
+            <ui:param name="dialogTitle" value="Delete device" />
+            <ui:param name="widgetName" value="deleteDevice" />
+            <ui:param name="controller" value="#{devicesByTypeManager}" />
+            <ui:param name="submitHandler" value="onDeviceDelete" />
+            <ui:param name="formToUpdate" value=":deviceTypesForm:devicesTable" />
         </ui:include>
         
     </ui:define>

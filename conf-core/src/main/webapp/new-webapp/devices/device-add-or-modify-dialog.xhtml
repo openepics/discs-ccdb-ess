@@ -6,7 +6,7 @@
     xmlns:f="http://java.sun.com/jsf/core"
     xmlns:h="http://java.sun.com/jsf/html">
 
-    <h:form id="deviceAddModDialog">
+    <h:form id="#{formId}">
         <p:dialog id="#{widgetName}" widgetVar="#{widgetName}" modal="true" resizable="false" closable="false"
             width="55em" dynamic="true">
             <f:facet name="header">
@@ -122,7 +122,7 @@
             
             <p:commandButton value="Cancel" style="float: right" onclick="#{widgetName}.hide();" update="grp" resetValues="true" />
             <p:commandButton value="Save" style="float: right;" oncomplete="if (args &amp;&amp; !args.validationFailed) #{widgetName}.hide()"
-                action="#{devicesByTypeManager.onDeviceAdd()}" update=":deviceTypesForm:devicesTable grp" />
+                action="#{devicesByTypeManager[submitHandler]}" update=":deviceTypesForm:devicesTable grp" />
             
         </p:dialog>
     </h:form>

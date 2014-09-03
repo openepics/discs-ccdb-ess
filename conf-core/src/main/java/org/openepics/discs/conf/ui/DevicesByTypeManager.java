@@ -88,7 +88,7 @@ public class DevicesByTypeManager implements Serializable {
     }
 
     /**
-     * Creates a new device instance and adds all properties to it which are defined device type.
+     * Creates a new device instance and adds all properties to it which are defined by device type.
      */
     public void onDeviceAdd() {
         final Device newDevice = new Device(serialNumber);
@@ -118,7 +118,10 @@ public class DevicesByTypeManager implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Device saved.", null));
     }
 
-    public void onDelete() {
+    /**
+     * Event handler which handles the device delete
+     */
+    public void onDeviceDelete() {
         Preconditions.checkNotNull(selectedDevice);
 
         try {
@@ -138,6 +141,29 @@ public class DevicesByTypeManager implements Serializable {
         }
     }
 
+    /**
+     * The event handler which saves the modifications to the device.
+     */
+    public void onDeviceModify() {
+        Preconditions.checkNotNull(selectedDevice);
+
+        selectedDevice.setSerialNumber(serialNumber);
+        selectedDevice.setLocation(location);
+        selectedDevice.setPurchaseOrder(purchaseOrder);
+        selectedDevice.setStatus(status);
+        selectedDevice.setDescription(description);
+        selectedDevice.setManufacturer(manufacturer);
+        selectedDevice.setManufacturerModel(manufModel);
+        selectedDevice.setManufacturerSerialNumber(manufSerialNumber);
+
+        deviceEJB.save(selectedDevice);
+
+        resetDeviceDialogFields();
+        prepareDevicesForDisplay();
+
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Device updated.", null));
+    }
+
     private void resetDeviceDialogFields() {
         serialNumber = null;
         location = null;
@@ -147,7 +173,22 @@ public class DevicesByTypeManager implements Serializable {
         manufacturer = null;
         manufModel = null;
         manufSerialNumber = null;
+    }
 
+    /**
+     * This method sets the fields for to values that are displayed in the device modify dialog.
+     */
+    public void prepareForModify() {
+        Preconditions.checkNotNull(selectedDevice);
+
+        serialNumber = selectedDevice.getSerialNumber();
+        location = selectedDevice.getLocation();
+        purchaseOrder = selectedDevice.getPurchaseOrder();
+        status = selectedDevice.getStatus();
+        description = selectedDevice.getDescription();
+        manufacturer = selectedDevice.getManufacturer();
+        manufModel = selectedDevice.getManufacturerModel();
+        manufSerialNumber = selectedDevice.getManufacturerSerialNumber();
     }
 
     public List<ComponentType> getDeviceTypes() {
