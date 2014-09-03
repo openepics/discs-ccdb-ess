@@ -1,9 +1,6 @@
 package org.openepics.discs.conf.ent;
 
-import java.util.List;
-
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -12,14 +9,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  *
@@ -53,9 +46,6 @@ public class Property extends ConfigurationEntity {
     @Column(name = "association", length = 12)
     private PropertyAssociation association;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "property")
-    private List<PropertyValue> propertyValuesList;
-
     @JoinColumn(name = "data_type")
     @ManyToOne(optional = false)
     private DataType dataType;
@@ -81,10 +71,6 @@ public class Property extends ConfigurationEntity {
 
     public PropertyAssociation getAssociation() { return association; }
     public void setAssociation(PropertyAssociation association) { this.association = association; }
-
-    @XmlTransient
-    @JsonIgnore
-    public List<PropertyValue> getPropertyValuesList() { return propertyValuesList; }
 
     public DataType getDataType() { return dataType; }
     public void setDataType(DataType dataType) { this.dataType = dataType; }

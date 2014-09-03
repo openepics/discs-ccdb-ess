@@ -54,9 +54,50 @@ body {
     /* box-shadow: 0 0 7px 2px #888888; */
 }
 
+.content {
+    margin-left: 200px;
+    position: relative;
+}
+
+.navigation {
+    float: left;
+    width: 180px;
+}
+
+.container {
+    margin: 0 auto;
+    width: 100%;
+}
+
+.properties-parent-info {
+	float: left;
+	width: 25%;
+}
+
+.property-values {
+    float: right;
+    width: 74%;
+}
+
+.dialog-grid-panel {
+	text-align: left; 
+	width: 100%;
+}
+
+.ui-panelgrid tr,
+.ui-panelgrid td {
+    border: none !important;
+}
 
 .menu {
     background-color: transparent; 
+}
+
+.alignTop {
+    vertical-align: top;
+}
+.inputTextField {
+	width: 100%;
 }
 
 .export-grid  img {
@@ -117,8 +158,8 @@ body {
     /* background-color: #FFFFFF;  */
 }
 
-#bottom {
-    position: relative;
+.bottom {
+    position: bottom;
     color:  #009999;
     padding: 5px;
     /* margin: 10px 0px 0px 0px; */

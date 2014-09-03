@@ -25,7 +25,7 @@ public class ComptypePropertyValue extends PropertyValue {
     @ManyToOne(optional = false)
     private ComponentType componentType;
 
-    protected ComptypePropertyValue() { }
+    public ComptypePropertyValue() { }
 
     public ComptypePropertyValue(boolean inRepository) {
         super(inRepository);

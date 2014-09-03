@@ -9,7 +9,7 @@
             <!-- Standard JPA properties WERE NOT creating the schema
                  Please test before pushing to master in future.
              -->
-            <!-- property name="hibernate.hbm2ddl.auto" value="update"/-->   
+            <!-- property name="hibernate.hbm2ddl.auto" value="update"/ -->   
             <property name="hibernate.enable_lazy_load_no_trans" value="true"/>
         </properties>
     </persistence-unit>

@@ -10,7 +10,7 @@
     <ui:define name="content">
 
         <h:form id="searchForm"  prependId="false"> 
-            <p:dataTable id="searchTable" var="item" value="#{propertyManager.objects}" 
+            <p:dataTable id="searchTable" var="item" value="#{propertyManager.properties}" 
                          scrollRows="25" scrollable="true" liveScroll="true"   scrollHeight="500"                                         
                          filteredValue="#{propertyManager.filteredProperties}"
                          emptyMessage="No properties found!" 
