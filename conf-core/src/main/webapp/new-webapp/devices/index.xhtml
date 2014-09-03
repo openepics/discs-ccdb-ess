@@ -43,6 +43,9 @@
                             </p:column>
                    
                             <p:column headerText="Actions">
+                                <p:commandButton icon="ui-icon-trash" title="Delete" ajax="true" oncomplete="deleteDevice.show()">
+                                    <f:setPropertyActionListener value="#{device}" target="#{devicesByTypeManager.selectedDevice}" />
+                                </p:commandButton>
                                 <p:commandButton icon="ui-icon-clock" title="Log" update=":deviceLogForm" oncomplete="deviceLog.show()">
                                     <f:ajax event="click" listener="#{auditManager.selectEntityForLog(device, 'DEVICE')}" />
                                 </p:commandButton>
@@ -68,6 +71,15 @@
         <ui:include src="/new-webapp/devices/device-add-or-modify-dialog.xhtml">
             <ui:param name="widgetName" value="addDeviceDialog" />
             <ui:param name="dialogTitle" value="Add device" />
+        </ui:include>
+        
+        <ui:include src="/new-webapp/data-definitions/add-or-modify-dialogs/delete-confirmation.xhtml" >
+                <ui:param name="formId" value="deleteDeviceForm" />
+                <ui:param name="dialogTitle" value="Delete device" />
+                <ui:param name="widgetName" value="deleteDevice" />
+                <ui:param name="controller" value="#{devicesByTypeManager}" />
+                <ui:param name="submitHandler" value="onDelete" />
+                <ui:param name="formToUpdate" value=":deviceTypesForm:devicesTable" />
         </ui:include>
         
     </ui:define>

@@ -36,6 +36,9 @@ import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ent.DeviceStatus;
+import org.openepics.discs.conf.util.Utility;
+
+import com.google.common.base.Preconditions;
 
 
 /**
@@ -52,7 +55,9 @@ public class DevicesByTypeManager implements Serializable {
 
     private List<ComponentType> deviceTypes;
     private ComponentType selectedComponentType;
+
     private List<Device> devices;
+    private Device selectedDevice;
 
     private String serialNumber;
     private String location;
@@ -108,8 +113,29 @@ public class DevicesByTypeManager implements Serializable {
         }
 
         resetDeviceDialogFields();
+        prepareDevicesForDisplay();
 
         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Device saved.", null));
+    }
+
+    public void onDelete() {
+        Preconditions.checkNotNull(selectedDevice);
+
+        try {
+            // TODO check if the device is installed. Prevent deletion if yes.
+            deviceEJB.delete(selectedDevice);
+
+            selectedDevice = null;
+            prepareDevicesForDisplay();
+
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Device deleted.", null));
+        } catch (Exception e) {
+            if (Utility.causedByPersistenceException(e)) {
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Deletion failed", "The property could not be deleted because it is used.");
+            } else {
+                throw e;
+            }
+        }
     }
 
     private void resetDeviceDialogFields() {
@@ -143,6 +169,9 @@ public class DevicesByTypeManager implements Serializable {
     public List<Device> getDevices() { return devices; }
     public void setDevices(List<Device> devices) { this.devices = devices; }
 
+    public Device getSelectedDevice() { return selectedDevice; }
+    public void setSelectedDevice(Device selectedDevice) { this.selectedDevice = selectedDevice; }
+
     public String getSerialNumber() { return serialNumber; }
     public void setSerialNumber(String serialNumber) { this.serialNumber = serialNumber; }
 
@@ -168,6 +197,6 @@ public class DevicesByTypeManager implements Serializable {
     public void setManufModel(String manufModel) { this.manufModel = manufModel; }
 
     public String getManufSerialNumber() { return manufSerialNumber; }
-    public void setManufSerialNumber(String manufSerialNumber) { this.manufSerialNumber = manufSerialNumber;  }
+    public void setManufSerialNumber(String manufSerialNumber) { this.manufSerialNumber = manufSerialNumber; }
 
 }
