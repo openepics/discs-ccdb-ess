@@ -65,7 +65,7 @@
         <ui:include src="/new-webapp/devices/device-add-or-modify-dialog.xhtml">
             <ui:param name="widgetName" value="addDeviceDialog" />
             <ui:param name="dialogTitle" value="Add device" />
-            <ui:param name="deviceType" value="#{devicesByTypeManager.selectedComponentType}" />
+            <ui:param name="deviceType" value="#{devicesByTypeManager.selectedComponentType.name}" />
         </ui:include>
         
     </ui:define>
