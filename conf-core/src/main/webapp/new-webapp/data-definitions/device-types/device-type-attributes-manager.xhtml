@@ -6,7 +6,7 @@
     xmlns:p="http://primefaces.org/ui">
     <ui:define name="content">
 	      <h:panelGroup id="deviceTypePropertiesManagerContainer" layout="block" class="container">
-	           <p:growl showDetail="true" globalOnly="true" />
+	           <p:growl showDetail="true" globalOnly="true" autoUpdate="true"/>
 	           <h:form id="deviceTypePropertiesManagerForm" enctype="multipart/form-data">
 	           
 		           <h:panelGroup class="properties-parent-info" layout="block" style="border: 1px solid #a8a8a8;">
@@ -16,7 +16,7 @@
 		                   <h:outputText value="#{comptypeAttributesController.deviceType.name}" style="width: 100%;" />
 	                   		                   		                   
 		                   <h:outputLabel value="Description:" />
-	                       <p:inputTextarea value="#{comptypeAttributesController.deviceType.description}"  rows="5" cols="51" readonly="true" style="width: 100%;"/>
+	                       <p:inputTextarea value="#{comptypeAttributesController.deviceType.description}"  rows="5" cols="51" disabled="true" style="width: 100%;"/>
 	                   </p:panelGrid>
 	                   
 	                   <br/>
@@ -102,6 +102,7 @@
             <ui:param name="widgetName" value="addDeviceTypeProperty" />
             <ui:param name="controller" value="#{comptypeAttributesController}" />
             <ui:param name="submitHandler" value="addNewPropertyValue" />
+            <ui:param name="componentToUpdate" value=":deviceTypePropertiesManagerForm:attributesDataTable" />
         </ui:include>
         
         <ui:include src="../add-or-modify-dialogs/property-value.xhtml" >
@@ -110,6 +111,7 @@
             <ui:param name="widgetName" value="modifyDeviceTypeProperty" />
             <ui:param name="controller" value="#{comptypeAttributesController}" />
             <ui:param name="submitHandler" value="modifyPropertyValue" />
+            <ui:param name="componentToUpdate" value=":deviceTypePropertiesManagerForm:attributesDataTable" />
         </ui:include>
         
         <ui:include src="../add-or-modify-dialogs/property-definition.xhtml" >
@@ -118,6 +120,7 @@
             <ui:param name="widgetName" value="deviceTypePropertyDefinition" />
             <ui:param name="controller" value="#{comptypeAttributesController}" />
             <ui:param name="submitHandler" value="addNewPropertyValue" />
+            <ui:param name="componentToUpdate" value=":deviceTypePropertiesManagerForm:attributesDataTable" />
         </ui:include>
         
         <ui:include src="../add-or-modify-dialogs/tag.xhtml" >
@@ -126,6 +129,7 @@
             <ui:param name="widgetName" value="deviceTypeTag" />
             <ui:param name="controller" value="#{comptypeAttributesController}" />
             <ui:param name="submitHandler" value="addNewTag" />
+            <ui:param name="componentToUpdate" value=":deviceTypePropertiesManagerForm:attributesDataTable" />
         </ui:include>
         
         <ui:include src="../add-or-modify-dialogs/artifact.xhtml" >
@@ -134,6 +138,7 @@
             <ui:param name="widgetName" value="addDeviceTypeArtifact" />
             <ui:param name="controller" value="#{comptypeAttributesController}" />
             <ui:param name="submitHandler" value="addNewArtifact" />
+            <ui:param name="componentToUpdate" value=":deviceTypePropertiesManagerForm:attributesDataTable" />
         </ui:include>
         
         <ui:include src="../add-or-modify-dialogs/artifact.xhtml" >
@@ -142,6 +147,7 @@
             <ui:param name="widgetName" value="modifyDeviceTypeArtifact" />
             <ui:param name="controller" value="#{comptypeAttributesController}" />
             <ui:param name="submitHandler" value="modifyArtifact" />
+            <ui:param name="componentToUpdate" value=":deviceTypePropertiesManagerForm:attributesDataTable" />
         </ui:include>   
     </ui:define>
 </ui:composition>

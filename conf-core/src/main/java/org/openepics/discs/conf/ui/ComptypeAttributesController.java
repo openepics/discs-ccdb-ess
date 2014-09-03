@@ -9,14 +9,10 @@
  */
 package org.openepics.discs.conf.ui;
 
-import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.annotation.PostConstruct;
-import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -28,29 +24,26 @@ import org.openepics.discs.conf.ejb.PropertyEJB;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypeArtifact;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
-import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyAssociation;
 import org.openepics.discs.conf.ent.Tag;
 import org.openepics.discs.conf.ui.common.AbstractAttributesController;
 import org.openepics.discs.conf.ui.common.EntityAttributeView;
-import org.openepics.discs.conf.util.UnhandledCaseException;
-import org.openepics.discs.conf.util.Utility;
 import org.primefaces.context.RequestContext;
-import org.primefaces.model.DefaultStreamedContent;
-import org.primefaces.model.StreamedContent;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableList;
 
 /**
+ * Controller bean for manipulation of {@link ComponentType} attributes
+ *
  * @author Andraz Pozar <andraz.pozar@cosylab.com>
  *
  */
 @Named
 @ViewScoped
-public class ComptypeAttributesController extends AbstractAttributesController {
+public class ComptypeAttributesController extends AbstractAttributesController<ComptypePropertyValue, ComptypeArtifact> {
 
     @Inject private ComptypeEJB comptypeEJB;
     @Inject private PropertyEJB propertyEJB;
@@ -61,10 +54,16 @@ public class ComptypeAttributesController extends AbstractAttributesController {
     public void init() {
         final Long id = Long.parseLong(((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest()).getParameter("id"));
         compType = comptypeEJB.findById(id);
+        super.setArtifactClass(ComptypeArtifact.class);
+        super.setPropertyValueClass(ComptypePropertyValue.class);
+        super.setDao(comptypeEJB);
         populateAttributesList();
         filterProperties();
     }
 
+    /**
+     * Redirection back to view of all {@link ComponentType}s
+     */
     public void deviceTypeRedirect() {
         try {
             FacesContext.getCurrentInstance().getExternalContext().redirect("device-types-manager.xhtml");
@@ -78,15 +77,15 @@ public class ComptypeAttributesController extends AbstractAttributesController {
         attributes = new ArrayList<>();
         compType = comptypeEJB.findById(this.compType.getId());
         for (ComptypePropertyValue prop : compType.getComptypePropertyList()) {
-            attributes.add(new EntityAttributeView(prop, EntityType.COMPONENT_TYPE));
+            attributes.add(new EntityAttributeView(prop));
         }
 
         for (ComptypeArtifact art : compType.getComptypeArtifactList()) {
-            attributes.add(new EntityAttributeView(art, EntityType.COMPONENT_TYPE));
+            attributes.add(new EntityAttributeView(art));
         }
 
         for (Tag tag : compType.getTags()) {
-            attributes.add(new EntityAttributeView(tag, EntityType.COMPONENT_TYPE));
+            attributes.add(new EntityAttributeView(tag));
         }
     }
 
@@ -101,127 +100,35 @@ public class ComptypeAttributesController extends AbstractAttributesController {
         }));
     }
 
-    @Override
-    public void addNewPropertyValue() {
-        final ComptypePropertyValue compTypePropertyValue = new ComptypePropertyValue(false);
-        compTypePropertyValue.setComponentType(compType);
-        compTypePropertyValue.setProperty(property);
-        compTypePropertyValue.setPropValue(propertyValue);
-        comptypeEJB.addChild(compTypePropertyValue);
-
-        if (propertyValue == null) {
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "New device type property definition has been created");
-        } else {
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "New device type property value has been created");
-        }
-        populateAttributesList();
-        RequestContext.getCurrentInstance().update("deviceTypePropertiesManagerContainer");
-    }
-
+    /**
+     * Returns {@link ComponentType} for which attributes are being manipulated
+     */
     public ComponentType getDeviceType() {
         return compType;
     }
 
     @Override
-    public void addNewTag() {
-        Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Failure", "Not yet implemented");
-        RequestContext.getCurrentInstance().update("deviceTypePropertiesManagerContainer");
+    protected void setPropertyValueParent(ComptypePropertyValue child) {
+        child.setComponentType(compType);
     }
 
     @Override
-    public void addNewArtifact() throws IOException {
-        if (importData != null) {
-            artifactURI = blobStore.storeFile(new ByteArrayInputStream(importData));
-        }
-
-        final ComptypeArtifact compTypeArtifact = new ComptypeArtifact(importData != null ? importFileName : artifactURI, isArtifactInternal, artifactDescription, artifactURI);
-        compTypeArtifact.setComponentType(compType);
-        comptypeEJB.addChild(compTypeArtifact);
-        RequestContext.getCurrentInstance().update("deviceTypePropertiesManagerContainer");
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "New artifact has been created");
-        populateAttributesList();
+    protected void setArtifactParent(ComptypeArtifact child) {
+        child.setComponentType(compType);
     }
 
     @Override
-    public void deleteAttribute() {
-        if (selectedAttribute.getEntity() instanceof ComptypePropertyValue) {
-            final ComptypePropertyValue compTypePropValue = (ComptypePropertyValue) selectedAttribute.getEntity();
-            comptypeEJB.deleteChild(compTypePropValue);
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Device type property has been deleted");
-        } else if (selectedAttribute.getEntity() instanceof ComptypeArtifact) {
-            final ComptypeArtifact compTypeArtifact = (ComptypeArtifact) selectedAttribute.getEntity();
-            comptypeEJB.deleteChild(compTypeArtifact);
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Device type artifact has been deleted");
-        } else if (selectedAttribute.getEntity() instanceof Tag) {
-            final Tag tag = (Tag) selectedAttribute.getEntity();
-            //TODO yet to come
-            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Failure", "Not yet implemented");
-        } else {
-            throw new UnhandledCaseException();
-        }
-        populateAttributesList();
+    protected void updateAndOpenArtifactModifyDialog() {
+        //TODO move to abstract if possible
+        RequestContext.getCurrentInstance().update("modifyDeviceTypeArtifactForm:modifyDeviceTypeArtifact");
+        RequestContext.getCurrentInstance().execute("PF('modifyDeviceTypeArtifact').show()");
     }
 
     @Override
-    protected void prepareModifyPropertyPopUp() {
-        if (selectedAttribute.getEntity() instanceof ComptypePropertyValue) {
-            final ComptypePropertyValue selectedPropertyValue = (ComptypePropertyValue) selectedAttribute.getEntity();
-            this.property = selectedPropertyValue.getProperty();
-            this.propertyValue = selectedPropertyValue.getPropValue();
-            RequestContext.getCurrentInstance().update("modifyDeviceTypePropertyForm:modifyDeviceTypeProperty");
-            RequestContext.getCurrentInstance().execute("PF('modifyDeviceTypeProperty').show()");
-        } else if (selectedAttribute.getEntity() instanceof ComptypeArtifact) {
-            importData = null;
-            importFileName = null;
-            final ComptypeArtifact selectedCompTypeArtifact = (ComptypeArtifact) selectedAttribute.getEntity();
-            this.artifactDescription = selectedCompTypeArtifact.getDescription();
-            this.isArtifactInternal = selectedCompTypeArtifact.isInternal();
-            this.artifactURI = selectedCompTypeArtifact.getUri();
-            this.isArtifactBeingModified = true;
-            RequestContext.getCurrentInstance().update("modifyDeviceTypeArtifactForm:modifyDeviceTypeArtifact");
-            RequestContext.getCurrentInstance().execute("PF('modifyDeviceTypeArtifact').show()");
-        } else {
-            throw new UnhandledCaseException();
-        }
-
+    protected void updateAndOpenPropertyValueModifyDialog() {
+        //TODO move to abstract if possible
+        RequestContext.getCurrentInstance().update("modifyDeviceTypePropertyForm:modifyDeviceTypeProperty");
+        RequestContext.getCurrentInstance().execute("PF('modifyDeviceTypeProperty').show()");
     }
-
-    @Override
-    public void modifyPropertyValue() {
-        final ComptypePropertyValue selectedPropertyValue = (ComptypePropertyValue) selectedAttribute.getEntity();
-        selectedPropertyValue.setProperty(property);
-        selectedPropertyValue.setPropValue(propertyValue);
-        comptypeEJB.saveChild(selectedPropertyValue);
-        RequestContext.getCurrentInstance().update("deviceTypePropertiesManagerContainer");
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Device type property value has been modified");
-        populateAttributesList();
-    }
-
-    @Override
-    public void modifyArtifact() {
-        final ComptypeArtifact selectedCompTypeArtifact = (ComptypeArtifact) selectedAttribute.getEntity();
-        selectedCompTypeArtifact.setDescription(artifactDescription);
-        selectedCompTypeArtifact.setUri(artifactURI);
-        selectedCompTypeArtifact.setName(artifactURI);
-        comptypeEJB.saveChild(selectedCompTypeArtifact);
-        RequestContext.getCurrentInstance().update("deviceTypePropertiesManagerContainer");
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Device type artifact has been modified");
-        populateAttributesList();
-    }
-
-    @Override
-    public StreamedContent getDownloadFile() throws FileNotFoundException {
-        final ComptypeArtifact compTypeArtifact = (ComptypeArtifact) selectedAttribute.getEntity();
-
-        final String fileType;
-        if (compTypeArtifact.getName().split(".").length > 1) {
-            fileType = compTypeArtifact.getName().split(".")[compTypeArtifact.getName().split(".").length - 1];
-        } else {
-            fileType = "";
-        }
-
-        return new DefaultStreamedContent(new FileInputStream(blobStore.getBlobStoreRoot() + "/" + compTypeArtifact.getUri()), fileType, compTypeArtifact.getName());
-    }
-
 
 }

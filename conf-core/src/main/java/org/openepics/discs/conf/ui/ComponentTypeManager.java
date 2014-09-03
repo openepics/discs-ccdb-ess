@@ -104,23 +104,39 @@ public class ComponentTypeManager implements Serializable {
     public void onAdd() {
         final ComponentType componentTypeToAdd = new ComponentType(name);
         componentTypeToAdd.setDescription(description);
-        comptypeEJB.add(componentTypeToAdd);
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "New device type has been created");
-        init();
+        try {
+            comptypeEJB.add(componentTypeToAdd);
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "New device type has been created");
+        } finally {
+            init();
+        }
     }
 
     public void onModify() {
         selectedDeviceType.setName(name);
         selectedDeviceType.setDescription(description);
-        comptypeEJB.save(selectedDeviceType);
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Device type was modified");
-        init();
+
+        try {
+            comptypeEJB.save(selectedDeviceType);
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Device type was modified");
+        } finally {
+            init();
+        }
     }
 
     public void onDelete() {
-        comptypeEJB.delete(selectedDeviceType);
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Device type was deleted");
-        init();
+        try {
+            comptypeEJB.delete(selectedDeviceType);
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Device type was deleted");
+        } catch (Exception e) {
+            if (Utility.causedByPersistenceException(e)) {
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Deletion failed", "The device type could not be deleted because it is used.");
+            } else {
+                throw e;
+            }
+        } finally {
+            init();
+        }
     }
 
     public String getImportFileName() { return importFileName; }

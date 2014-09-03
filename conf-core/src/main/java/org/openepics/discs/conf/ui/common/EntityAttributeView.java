@@ -16,7 +16,6 @@ import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.DataType;
 import org.openepics.discs.conf.ent.DeviceArtifact;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
-import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.SlotArtifact;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.ent.Tag;
@@ -36,21 +35,21 @@ public class EntityAttributeView {
     private boolean hasFile;
     private boolean hasURL;
     private Object entity;
-    private EntityType entityType;
 
-    public EntityAttributeView(Object entity, EntityType entityType) {
+    public EntityAttributeView(Object entity) {
         this.entity = entity;
-        this.entityType = entityType;
         setParameters();
     }
 
     private void setParameters() {
-        if (entityType == EntityType.COMPONENT_TYPE) {
+        if (entity instanceof ComptypePropertyValue || entity instanceof ComptypeArtifact) {
             setComponentTypeParameters();
-        } else if (entityType == EntityType.DEVICE) {
+        } else if (entity instanceof DevicePropertyValue || entity instanceof DeviceArtifact) {
             setDeviceParameters();
-        } else if (entityType == EntityType.SLOT) {
+        } else if (entity instanceof SlotPropertyValue || entity instanceof SlotArtifact) {
             setSlotParameters();
+        } else if (entity instanceof Tag) {
+            setTagParameters();
         } else {
             throw new UnhandledCaseException();
         }
@@ -75,9 +74,6 @@ public class EntityAttributeView {
             hasURL = !compTypeArtifact.isInternal();
             value = compTypeArtifact.getUri();
             kind = "Artifact";
-        } else if (entity instanceof Tag) {
-            setTagParameters();
-            kind = "Tag";
         } else {
             throw new UnhandledCaseException();
         }
@@ -96,8 +92,6 @@ public class EntityAttributeView {
             hasFile = deviceArtifact.isInternal();
             hasURL = !deviceArtifact.isInternal();
             value = deviceArtifact.getUri();
-        } else if (entity instanceof Tag) {
-            setTagParameters();
         } else {
             throw new UnhandledCaseException();
         }
@@ -116,14 +110,15 @@ public class EntityAttributeView {
             hasFile = slotArtifact.isInternal();
             hasURL = !slotArtifact.isInternal();
             value = slotArtifact.getUri();
-        } else if (entity instanceof Tag) {
-            setTagParameters();
         } else {
             throw new UnhandledCaseException();
         }
     }
 
-    private void setTagParameters() { name = ((Tag) entity).getName(); }
+    private void setTagParameters() {
+        name = ((Tag) entity).getName();
+        kind = "Tag";
+    }
 
     public String getName() { return name; }
 

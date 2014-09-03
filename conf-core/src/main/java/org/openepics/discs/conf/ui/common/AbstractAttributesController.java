@@ -9,19 +9,31 @@
  */
 package org.openepics.discs.conf.ui.common;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.List;
 
-import javax.faces.view.ViewScoped;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 
 import org.apache.commons.io.FilenameUtils;
+import org.openepics.discs.conf.ejb.DAO;
+import org.openepics.discs.conf.ent.Artifact;
+import org.openepics.discs.conf.ent.ConfigurationEntity;
 import org.openepics.discs.conf.ent.Property;
+import org.openepics.discs.conf.ent.PropertyValue;
+import org.openepics.discs.conf.ent.Tag;
 import org.openepics.discs.conf.util.BlobStore;
+import org.openepics.discs.conf.util.UnhandledCaseException;
+import org.openepics.discs.conf.util.Utility;
 import org.primefaces.event.FileUploadEvent;
+import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 
 import com.google.common.io.ByteStreams;
@@ -32,8 +44,7 @@ import com.google.common.io.ByteStreams;
  * @author Andraz Pozar <andraz.pozar@cosylab.com>
  *
  */
-@ViewScoped
-public abstract class AbstractAttributesController implements Serializable {
+public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 extends Artifact> implements Serializable{
 
     @Inject protected BlobStore blobStore;
 
@@ -54,6 +65,10 @@ public abstract class AbstractAttributesController implements Serializable {
     protected byte[] importData;
     protected String importFileName;
 
+    private DAO<? extends ConfigurationEntity> dao;
+    private Class<T1> propertyValueClass;
+    private Class<T2> artifactClass;
+
     protected void resetFields() {
         property = null;
         propertyValue = null;
@@ -65,33 +80,209 @@ public abstract class AbstractAttributesController implements Serializable {
         importFileName = null;
     }
 
+    /**
+     * Adds new {@link PropertyValue} to parent {@link ConfigurationEntity} defined in {@link AbstractAttributesController#setPropertyValueParent(PropertyValue)}
+     */
+    public void addNewPropertyValue() {
+        final T1 propertyValueInstance;
+        try {
+            propertyValueInstance = propertyValueClass.newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+        propertyValueInstance.setInRepository(false);
+        propertyValueInstance.setProperty(property);
+        propertyValueInstance.setPropValue(propertyValue);
+        setPropertyValueParent(propertyValueInstance);
+
+        try {
+            dao.addChild(propertyValueInstance);
+
+            if (propertyValue == null) {
+                Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "New property definition has been created");
+            } else {
+                Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "New property value has been created");
+            }
+        } finally {
+            populateAttributesList();
+        }
+    }
+
+    /**
+     * Adds new {@link PropertyValue} to parent {@link ConfigurationEntity} defined in {@link AbstractAttributesController#setArtifactParent(PropertyValue)}
+     *
+     * @throws IOException thrown if file in the artifact could not be stored on the file system
+     */
+    public void addNewArtifact() throws IOException {
+        if (importData != null) {
+            artifactURI = blobStore.storeFile(new ByteArrayInputStream(importData));
+        }
+
+        final T2 artifactInstance;
+        try {
+            artifactInstance = artifactClass.newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+
+        artifactInstance.setName(importData != null ? importFileName : artifactURI);
+        artifactInstance.setInternal(isArtifactInternal);
+        artifactInstance.setDescription(artifactDescription);
+        artifactInstance.setUri(artifactURI);
+
+        setArtifactParent(artifactInstance);
+
+        try {
+            dao.addChild(artifactInstance);
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "New artifact has been created");
+        } finally {
+            populateAttributesList();
+        }
+    }
+
+    /**
+     * Adds new {@link Tag} to parent {@link ConfigurationEntity}
+     */
+    public void addNewTag() {
+        Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Failure", "Not yet implemented");
+    }
+
+    /**
+     * Deletes attribute from parent {@link ConfigurationEntity}. This attribute can be {@link Tag}, {@link PropertyValue} or {@link Artifact}
+     * @throws IOException
+     */
+    @SuppressWarnings("unchecked")
+    public void deleteAttribute() throws IOException {
+        try {
+            if (selectedAttribute.getEntity().getClass().equals(propertyValueClass)) {
+                final T1 propValue = (T1) selectedAttribute.getEntity();
+                dao.deleteChild(propValue);
+                Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Property value has been deleted");
+            } else if (selectedAttribute.getEntity().getClass().equals(artifactClass)) {
+                final T2 artifact = (T2) selectedAttribute.getEntity();
+                if (artifact.isInternal()) {
+                    blobStore.deleteFile(artifact.getUri());
+                }
+                dao.deleteChild(artifact);
+                Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Device type artifact has been deleted");
+            } else if (selectedAttribute.getEntity().getClass().equals(Tag.class)) {
+                final Tag tag = (Tag) selectedAttribute.getEntity();
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Failure", "Not yet implemented");
+                return;
+            } else {
+                throw new UnhandledCaseException();
+            }
+        } finally {
+            populateAttributesList();
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    protected void prepareModifyPropertyPopUp() {
+        if (selectedAttribute.getEntity().getClass().equals(propertyValueClass)) {
+            final T1 selectedPropertyValue = (T1) selectedAttribute.getEntity();
+            property = selectedPropertyValue.getProperty();
+            propertyValue = selectedPropertyValue.getPropValue();
+            updateAndOpenPropertyValueModifyDialog();
+        } else if (selectedAttribute.getEntity().getClass().equals(artifactClass)) {
+            final T2 selectedArtifact = (T2) selectedAttribute.getEntity();
+            if (selectedArtifact.isInternal()) {
+                importFileName = selectedArtifact.getName();
+            }
+            importData = null;
+            artifactDescription = selectedArtifact.getDescription();
+            isArtifactInternal = selectedArtifact.isInternal();
+            artifactURI = selectedArtifact.getUri();
+            isArtifactBeingModified = true;
+            updateAndOpenArtifactModifyDialog();
+        } else {
+            throw new UnhandledCaseException();
+        }
+    }
+
+    /**
+     * Modifies {@link PropertyValue}
+     */
+    @SuppressWarnings("unchecked")
+    public void modifyPropertyValue() {
+        final T1 selectedPropertyValue = (T1) selectedAttribute.getEntity();
+        selectedPropertyValue.setProperty(property);
+        selectedPropertyValue.setPropValue(propertyValue);
+
+        try {
+            dao.saveChild(selectedPropertyValue);
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Property value has been modified");
+        } finally {
+            populateAttributesList();
+        }
+    }
+
+    /**
+     * Modifies {@link Artifact}
+     */
+    @SuppressWarnings("unchecked")
+    public void modifyArtifact() {
+        final T2 selectedArtifact = (T2) selectedAttribute.getEntity();
+        selectedArtifact.setDescription(artifactDescription);
+        selectedArtifact.setUri(artifactURI);
+        if (!selectedArtifact.isInternal()) {
+            selectedArtifact.setName(artifactURI);
+        }
+
+        try {
+            dao.saveChild(selectedArtifact);
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Artifact has been modified");
+        } finally {
+            populateAttributesList();
+        }
+
+    }
+
+    /**
+     * Finds artifact file that was uploaded on the file system and returns it to be downloaded
+     *
+     * @return Artifact file to be downloaded
+     * @throws FileNotFoundException Thrown if file was not found on file system
+     */
+    @SuppressWarnings("unchecked")
+    public StreamedContent getDownloadFile() throws FileNotFoundException {
+        final T2 selectedArtifact = (T2) selectedAttribute.getEntity();
+        final String filePath = blobStore.getBlobStoreRoot() + File.separator + selectedArtifact.getUri();
+        final String contentType = FacesContext.getCurrentInstance().getExternalContext().getMimeType(filePath);
+
+        return new DefaultStreamedContent(new FileInputStream(filePath), contentType, selectedArtifact.getName());
+    }
+
+    protected abstract void setPropertyValueParent(T1 child);
+
+    protected abstract void setArtifactParent(T2 child);
+
+    protected abstract void updateAndOpenArtifactModifyDialog();
+
+    protected abstract void updateAndOpenPropertyValueModifyDialog();
+
     protected abstract void filterProperties();
 
     protected abstract void populateAttributesList();
 
-    public abstract void addNewPropertyValue();
-
-    public abstract void addNewTag();
-
-    public abstract void addNewArtifact() throws IOException;
-
-    public abstract void deleteAttribute();
-
-    protected abstract void prepareModifyPropertyPopUp();
-
-    public abstract void modifyPropertyValue();
-
-    public abstract void modifyArtifact();
-
+    /**
+     * Returns list of all attributes for current {@link ConfigurationEntity}
+     */
     public List<EntityAttributeView> getAttributes() {
         return attributes;
     }
 
+    /**
+     * Prepares data for addition of {@link PropertyValue}
+     */
     public void prepareForPropertyValueAdd() {
         property = null;
         propertyValue = null;
     }
 
+    /**
+     * Prepares data for addition of {@link Artifact}
+     */
     public void prepareForArtifactAdd() {
         artifactDescription = null;
         isArtifactInternal = false;
@@ -101,6 +292,9 @@ public abstract class AbstractAttributesController implements Serializable {
         importFileName = null;
     }
 
+    /**
+     * Uploads file to be saved in the {@link Artifact}
+     */
     public void handleImportFileUpload(FileUploadEvent event) {
         try (InputStream inputStream = event.getFile().getInputstream()) {
             this.importData = ByteStreams.toByteArray(inputStream);
@@ -110,12 +304,13 @@ public abstract class AbstractAttributesController implements Serializable {
         }
     }
 
+    /**
+     * If user changes the type of the artifact, any previously uploaded file gets deleted
+     */
     public void artifactTypeChanged() {
         importData = null;
         importFileName = null;
     }
-
-    public abstract StreamedContent getDownloadFile() throws FileNotFoundException;
 
     public String getImportFileName() { return importFileName; }
 
@@ -151,4 +346,10 @@ public abstract class AbstractAttributesController implements Serializable {
         this.selectedAttribute = selectedAttribute;
         prepareModifyPropertyPopUp();
     }
+
+    protected void setDao(DAO<? extends ConfigurationEntity> dao) { this.dao = dao; }
+
+    protected void setPropertyValueClass(Class<T1> propertyValueClass) { this.propertyValueClass = propertyValueClass; }
+
+    protected void setArtifactClass(Class<T2> artifactClass) { this.artifactClass = artifactClass; }
 }

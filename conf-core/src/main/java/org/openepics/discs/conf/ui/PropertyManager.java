@@ -84,10 +84,12 @@ public class PropertyManager implements Serializable {
         final Property propertyToAdd = new Property(name, description, association);
         propertyToAdd.setDataType(dataType);
         propertyToAdd.setUnit(unit);
-        propertyEJB.add(propertyToAdd);
-        RequestContext.getCurrentInstance().update("dataDefinitionsContainer");
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "New property has been created");
-        init();
+        try {
+            propertyEJB.add(propertyToAdd);
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "New property has been created");
+        } finally {
+            init();
+        }
     }
 
     public void onModify() {
@@ -96,10 +98,13 @@ public class PropertyManager implements Serializable {
         selectedProperty.setDataType(dataType);
         selectedProperty.setAssociation(association);
         selectedProperty.setUnit(unit);
-        propertyEJB.save(selectedProperty);
-        RequestContext.getCurrentInstance().update("dataDefinitionsContainer");
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Property was modified");
-        init();
+
+        try{
+            propertyEJB.save(selectedProperty);
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Property was modified");
+        } finally {
+            init();
+        }
     }
 
     public void prepareAddPopup() {
@@ -122,12 +127,14 @@ public class PropertyManager implements Serializable {
         	propertyEJB.delete(selectedProperty);
         	Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Property was deleted");
         } catch (Exception e) {
-            if (Utility.causedByPersistenceException(e))
+            if (Utility.causedByPersistenceException(e)) {
                 Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Deletion failed", "The property could not be deleted because it is used.");
-            else
+            } else {
                 throw e;
+            }
+        } finally {
+            init();
         }
-        init();
     }
 
     public List<Property> getSortedProperties() {
