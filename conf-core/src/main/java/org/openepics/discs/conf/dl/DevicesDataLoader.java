@@ -133,7 +133,7 @@ public class DevicesDataLoader extends AbstractDataLoader implements DataLoader 
                                 try {
                                     final Device newDevice = new Device(serial);
                                     addOrUpdateDevice(newDevice, compType, description, status, manufSerial, location, purchaseOrder, asmPosition, asmDescription, manufacturer, manufModel);
-                                    deviceEJB.addDevice(newDevice);
+                                    deviceEJB.add(newDevice);
                                     addOrUpdateProperties(newDevice, indexByPropertyName, row, rowNumber);
                                 } catch (Exception e) {
                                     rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
@@ -147,7 +147,7 @@ public class DevicesDataLoader extends AbstractDataLoader implements DataLoader 
                             rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(serialIndex)));
                         } else {
                             try {
-                                deviceEJB.deleteDevice(deviceToDelete);
+                                deviceEJB.delete(deviceToDelete);
                             } catch (Exception e) {
                                 rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                             }
@@ -255,10 +255,10 @@ public class DevicesDataLoader extends AbstractDataLoader implements DataLoader 
                 final DevicePropertyValue devicePropertyToUpdate = devicePropertyByProperty.get(property);
 
                 if (propertyValue == null) {
-                    deviceEJB.deleteDeviceProp(devicePropertyToUpdate);
+                    deviceEJB.deleteChild(devicePropertyToUpdate);
                 } else {
                     devicePropertyToUpdate.setPropValue(propertyValue);
-                    deviceEJB.saveDeviceProp(devicePropertyToUpdate);
+                    deviceEJB.saveChild(devicePropertyToUpdate);
                 }
 
             } else if (propertyValue != null) {
@@ -266,7 +266,7 @@ public class DevicesDataLoader extends AbstractDataLoader implements DataLoader 
                 devicePropertyToAdd.setProperty(property);
                 devicePropertyToAdd.setPropValue(propertyValue);
                 devicePropertyToAdd.setDevice(device);
-                deviceEJB.addDeviceProperty(devicePropertyToAdd);
+                deviceEJB.addChild(devicePropertyToAdd);
             }
         }
     }

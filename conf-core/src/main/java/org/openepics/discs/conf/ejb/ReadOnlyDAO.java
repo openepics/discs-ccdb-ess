@@ -46,7 +46,7 @@ abstract public class ReadOnlyDAO<T> {
      * @param name the name of the searched entity
      * @return the entity found or null
      */
-    public T findByName(Object name) {
+    public T findByName(String name) {
         try {
             return em.createNamedQuery(entityClass.getSimpleName()+".findByName", entityClass).setParameter("name", name).getSingleResult();
         } catch (IllegalArgumentException e) {
