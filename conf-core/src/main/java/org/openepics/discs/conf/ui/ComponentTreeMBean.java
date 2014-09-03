@@ -168,7 +168,7 @@ public class ComponentTreeMBean implements Serializable {
      */
     public void onNodeSelect(NodeSelectEvent event) {
         NodeData ndata = (NodeData) selectedNode.getData();
-        selectedComponent = slotBean.findLayoutSlot(ndata.id);
+        selectedComponent = slotBean.findById(ndata.id);
     }
 
     public void setSelectedComponent(Slot selectedComponent) {

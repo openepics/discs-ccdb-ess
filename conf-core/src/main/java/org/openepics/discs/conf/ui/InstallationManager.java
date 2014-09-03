@@ -90,7 +90,7 @@ public class InstallationManager implements Serializable {
 
     public void onIRecDelete(ActionEvent event) {
         try {
-            installationEJB.deleteIRecord(selectedObject);
+            installationEJB.delete(selectedObject);
             getObjects().remove(selectedObject);
             selectedObject = null;
             inputObject = null;
@@ -108,9 +108,9 @@ public class InstallationManager implements Serializable {
         inputObject.setModifiedBy("test-user");
 
         if (selectedOp == 'a') {
-            installationEJB.addIRecord(inputObject);
+            installationEJB.add(inputObject);
         } else {
-            installationEJB.saveIRecord(inputObject);
+            installationEJB.save(inputObject);
         }
 
         if (selectedOp == 'a') {
@@ -150,9 +150,9 @@ public class InstallationManager implements Serializable {
         }
 
         if (artifactOperation == 'a') {
-            installationEJB.addInstallationArtifact(inputArtifact);
+            installationEJB.addChild(inputArtifact);
         } else {
-            installationEJB.saveInstallationArtifact(inputArtifact);
+            installationEJB.saveChild(inputArtifact);
         }
 
         logger.log(Level.INFO,"returned artifact id is " + inputArtifact.getId());
@@ -167,7 +167,7 @@ public class InstallationManager implements Serializable {
                 return;
             }
 
-            installationEJB.deleteInstallationArtifact(art);
+            installationEJB.deleteChild(art);
             selectedArtifacts.remove(art);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted Artifact", "");
         } catch (Exception e) {
@@ -244,7 +244,7 @@ public class InstallationManager implements Serializable {
     // -------------------------- Getter/Setters -----------------------
 
     public List<InstallationRecord> getObjects() {
-        if (objects == null) objects = installationEJB.findInstallationRec();
+        if (objects == null) objects = installationEJB.findAll();
         return objects;
     }
 

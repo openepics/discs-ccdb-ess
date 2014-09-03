@@ -26,7 +26,7 @@ import org.openepics.discs.conf.util.Utility;
 @ViewScoped
 public class DeviceDetail implements Serializable {
     private static final Logger logger = Logger.getLogger(DeviceDetail.class.getCanonicalName());
-    
+
     @EJB private DeviceEJB deviceEJB;
     private Device selectedObject;
     private long id = 0; // given identifier
@@ -38,7 +38,7 @@ public class DeviceDetail implements Serializable {
         // logger.entering(DeviceDetail.class.getName(), "init", this);
         // logger.log(Level.INFO, "entering init {0}", id);
         try {
-            selectedObject = deviceEJB.findDevice(id);
+            selectedObject = deviceEJB.findById(id);
             if ( selectedObject == null ) {
                 Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Device with given ID not found"," Device ID: " + id);
             }
