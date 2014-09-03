@@ -21,6 +21,8 @@
         	            </p:dataTable>
                     </p:column>            
                     <p:column style="width: 80%; vertical-align: top;">
+                        <p:commandButton  value="Add new" oncomplete="addDeviceDialog.show()" />                        
+                        
                         <p:dataTable id="devicesTable" var="device" rows="20"
                                 paginator="true"
                                 value="#{devicesByTypeManager.devices}" emptyMessage="No devices.">
@@ -48,17 +50,23 @@
             </p:panelGrid>
         </h:form>
         
-    <ui:include src="/new-webapp/audit/audit-log-table.xhtml">
-        <ui:param name="formId" value="deviceLogForm" />
-        <ui:param name="dialogTitle" value="Property Log" />
-        <ui:param name="widgetName" value="deviceLog" />
-    </ui:include>
-
-    <ui:include src="/new-webapp/audit/audit-log-details.xhtml">
-        <ui:param name="formId" value="logDetailsForm" />
-        <ui:param name="dialogTitle" value="Long Entry Details" />
-        <ui:param name="widgetName" value="logDetails" />
-    </ui:include>
+        <ui:include src="/new-webapp/audit/audit-log-table.xhtml">
+            <ui:param name="formId" value="deviceLogForm" />
+            <ui:param name="dialogTitle" value="Property Log" />
+            <ui:param name="widgetName" value="deviceLog" />
+        </ui:include>
+    
+        <ui:include src="/new-webapp/audit/audit-log-details.xhtml">
+            <ui:param name="formId" value="logDetailsForm" />
+            <ui:param name="dialogTitle" value="Long Entry Details" />
+            <ui:param name="widgetName" value="logDetails" />
+        </ui:include>
+        
+        <ui:include src="/new-webapp/devices/device-add-or-modify-dialog.xhtml">
+            <ui:param name="widgetName" value="addDeviceDialog" />
+            <ui:param name="dialogTitle" value="Add device" />
+            <ui:param name="deviceType" value="#{devicesByTypeManager.selectedComponentType}" />
+        </ui:include>
         
     </ui:define>
     

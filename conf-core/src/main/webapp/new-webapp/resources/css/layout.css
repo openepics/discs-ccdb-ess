@@ -161,6 +161,10 @@ a {
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#cedce7', endColorstr='#596a72',GradientType=1 ); /* IE6-9 */
 }
 
+.borderlessPanelGrid tr, .borderlessPanelGrid td {
+    border: none !important;
+}
+
 .devicesView tr, .devicesView td {
     border: none !important;
 } 
