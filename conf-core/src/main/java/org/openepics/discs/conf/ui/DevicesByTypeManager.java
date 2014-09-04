@@ -191,6 +191,8 @@ public class DevicesByTypeManager implements Serializable {
         manufSerialNumber = selectedDevice.getManufacturerSerialNumber();
     }
 
+    public String deviceDetailsRedirect(Long id) { return "device-details.xhtml?faces-redirect=true&id=" + id; }
+
     public List<ComponentType> getDeviceTypes() {
         if (deviceTypes == null) {
             deviceTypes = componentTypesEJB.findComponentTypeOrderedByName();

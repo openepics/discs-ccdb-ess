@@ -76,7 +76,7 @@ public class ComponentTypeManager implements Serializable {
     }
 
     public String deviceTypePropertyRedirect(Long id) {
-        return "device-type-attributes-manager.xhtml?id=" + id;
+        return "device-type-attributes-manager.xhtml?faces-redirect=true&id=" + id;
     }
 
     public void prepareAddPopup() {
@@ -186,29 +186,14 @@ public class ComponentTypeManager implements Serializable {
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
 
-    public List<ComponentType> getSortedObjects() {
-        return sortedObjects;
-    }
+    public List<ComponentType> getSortedObjects() { return sortedObjects; }
+    public void setSortedObjects(List<ComponentType> sortedObjects) { this.sortedObjects = sortedObjects; }
 
-    public void setSortedObjects(List<ComponentType> sortedObjects) {
-        this.sortedObjects = sortedObjects;
-    }
+    public List<ComponentType> getFilteredObjects() { return filteredObjects; }
+    public void setFilteredObjects(List<ComponentType> filteredObjects) { this.filteredObjects = filteredObjects; }
 
-    public List<ComponentType> getFilteredObjects() {
-        return filteredObjects;
-    }
-
-    public void setFilteredObjects(List<ComponentType> filteredObjects) {
-        this.filteredObjects = filteredObjects;
-    }
-
-    public ComponentType getSelectedObject() {
-        return selectedObject;
-    }
-
-    public void setSelectedObject(ComponentType selectedObject) {
-        this.selectedObject = selectedObject;
-    }
+    public ComponentType getSelectedObject() { return selectedObject; }
+    public void setSelectedObject(ComponentType selectedObject) { this.selectedObject = selectedObject; }
 
     public List<ComponentType> getObjects() {
         if (objects == null) objects = comptypeEJB.findAll();

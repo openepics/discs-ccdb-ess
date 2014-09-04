@@ -43,6 +43,7 @@
                             </p:column>
                    
                             <p:column headerText="Actions">
+                                <p:commandButton icon="ui-icon-plus" title="Add Property" action="#{devicesByTypeManager.deviceDetailsRedirect(device.id)}" />
                                 <p:commandButton icon="ui-icon-pencil" title="Edit" ajax="true" oncomplete="modifyDeviceDialog.show()"
                                         action="#{devicesByTypeManager.prepareForModify()}">
                                     <f:setPropertyActionListener value="#{device}" target="#{devicesByTypeManager.selectedDevice}" />

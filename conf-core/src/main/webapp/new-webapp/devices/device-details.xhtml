@@ -1,0 +1,127 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    template="/new-webapp/template/template.xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html">
+
+    <ui:define name="content">
+        <h:form id="deviceDetailsForm">
+
+            <h2>Device details</h2>
+            
+            <p:panelGrid columns="2" styleClass="borderlessPanelGrid">
+                <p:row>
+                
+                    <p:column style="vertical-align: top;">
+                        <p:panelGrid id="deviceDetails" styleClass="borderlessPanelGrid">
+                            <p:row>
+                                <p:column style="text-align: right;">
+                                    Inventory ID:
+                                </p:column>
+                                <p:column>
+                                    <h:outputText value="#{deviceDetailsAttributesController.device.serialNumber}" />
+                                </p:column>
+                            </p:row>
+                            <p:row>
+                                <p:column style="text-align: right;">
+                                    Device type:
+                                </p:column>
+                                <p:column>
+                                    <h:outputText vallue="#{deviceDetailsAttributesController.device.componentType.name}" />
+                                </p:column>
+                            </p:row>
+                            <p:row>
+                                <p:column style="text-align: right;">
+                                    Location:
+                                </p:column>
+                                <p:column>
+                                    <h:outputText value="#{deviceDetailsAttributesController.device.location}" />
+                                </p:column>
+                            </p:row>
+                            <p:row>
+                                <p:column style="text-align: right;">
+                                    Manufacturer:
+                                </p:column>
+                                <p:column>
+                                    <h:outputText value="#{deviceDetailsAttributesController.device.manufacturer}" />
+                                </p:column>
+                            </p:row>
+                            <p:row>
+                                <p:column style="text-align: right;">
+                                    Manufacturer model:
+                                </p:column>
+                                <p:column>
+                                    <h:outputText value="#{deviceDetailsAttributesController.device.manufacturerModel}" />
+                                </p:column>
+                            </p:row>
+                            <p:row>
+                                <p:column style="text-align: right;">
+                                    Manufacturer serial #:
+                                </p:column>
+                                <p:column>
+                                    <h:outputText value="#{deviceDetailsAttributesController.device.manufacturerSerialNumber}" />
+                                </p:column>
+                            </p:row>
+                            <p:row>
+                                <p:column style="text-align: right;">
+                                    Purchase order reference:
+                                </p:column>
+                                <p:column>
+                                    <h:outputText value="#{deviceDetailsAttributesController.device.purchaseOrder}" />
+                                </p:column>
+                            </p:row>
+                            <p:row>
+                                <p:column style="text-align: right;">
+                                    Status:
+                                </p:column>
+                                <p:column>
+                                    <h:outputText value="#{deviceDetailsAttributesController.device.status.label}" />
+                                </p:column>
+                            </p:row>
+                            <p:row>
+                                <p:column style="text-align: right;">
+                                    Description:
+                                </p:column>
+                                <p:column>
+                                    <p:inputTextarea value="#{deviceDetailsAttributesController.device.description}" rows="7" cols="70"
+                                        readonly="true" disabled="true" style="width=100%" />
+                                </p:column>
+                            </p:row>
+                            <p:row style="margin-top: 20px;">
+                                <p:column colspan="2">
+                                    <p:commandButton value="History" icon="ui-icon-clock" style="float: right; margin: 10px 10px " 
+                                            update=":deviceLogForm" oncomplete="deviceLog.show()" >
+                                        <f:ajax event="click" listener="#{auditManager.selectEntityForLog(deviceDetailsAttributesController.device, 'DEVICE')}" />
+                                    </p:commandButton>
+                                    <p:commandButton value="Back" style="float: right; margin: 10px 0px 10px 10px" ajax="false" action="index.html?faces-redirect=true" />
+                                </p:column>
+                            </p:row>
+                        </p:panelGrid>
+                    </p:column>
+                    
+                    <p:column>
+                        <p:panelGrid id="deviceAttributes">
+                            <h:outputText value="Hello world" />
+                        </p:panelGrid>
+                    </p:column>
+                    
+                </p:row>
+            </p:panelGrid>
+        </h:form>
+        
+        <ui:include src="../audit/audit-log-table.xhtml">
+            <ui:param name="formId" value="deviceLogForm" />
+            <ui:param name="dialogTitle" value="Device Log" />
+            <ui:param name="widgetName" value="deviceLog" />
+        </ui:include>
+        
+        <ui:include src="../audit/audit-log-details.xhtml">
+            <ui:param name="formId" value="logDetailsForm" />
+            <ui:param name="dialogTitle" value="Long Entry Details" />
+            <ui:param name="widgetName" value="logDetails" />
+        </ui:include>
+        
+    </ui:define>
+</ui:composition>
