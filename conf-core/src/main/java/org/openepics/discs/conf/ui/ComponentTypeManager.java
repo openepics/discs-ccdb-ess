@@ -14,7 +14,6 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -76,13 +75,8 @@ public class ComponentTypeManager implements Serializable {
         resetFields();
     }
 
-    public void deviceTypePropertyRedirect(Long propertyId) {
-        try {
-            FacesContext.getCurrentInstance().getExternalContext().redirect("device-type-attributes-manager.xhtml?id=" + propertyId);
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+    public String deviceTypePropertyRedirect(Long id) {
+        return "device-type-attributes-manager.xhtml?id=" + id;
     }
 
     public void prepareAddPopup() {
