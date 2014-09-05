@@ -27,7 +27,7 @@
                             disabled="#{empty devicesByTypeManager.selectedComponentType}" />                        
                         
                         <p:dataTable id="devicesTable" var="device" rows="15"
-                                paginator="true"
+                                paginator="true" paginatorPosition="bottom"
                                 value="#{devicesByTypeManager.devices}" emptyMessage="No devices.">
                                 
                             <p:column headerText="Serial #" width="40%">

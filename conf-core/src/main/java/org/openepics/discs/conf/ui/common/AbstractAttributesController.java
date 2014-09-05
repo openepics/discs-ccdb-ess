@@ -261,6 +261,9 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
 
     protected abstract void updateAndOpenPropertyValueModifyDialog();
 
+    /**
+     * Filters a list of possible properties to attach to the entity based on the association type.
+     */
     protected abstract void filterProperties();
 
     protected abstract void populateAttributesList();

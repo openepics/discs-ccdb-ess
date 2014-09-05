@@ -75,7 +75,6 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
     @Override
     protected void populateAttributesList() {
         attributes = new ArrayList<>();
-        compType = comptypeEJB.findById(this.compType.getId());
         for (ComptypePropertyValue prop : compType.getComptypePropertyList()) {
             attributes.add(new EntityAttributeView(prop));
         }

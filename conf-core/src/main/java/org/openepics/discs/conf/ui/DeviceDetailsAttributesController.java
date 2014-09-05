@@ -14,6 +14,8 @@
 
 package org.openepics.discs.conf.ui;
 
+import java.util.ArrayList;
+
 import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
@@ -22,10 +24,19 @@ import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
 import org.openepics.discs.conf.ejb.DeviceEJB;
+import org.openepics.discs.conf.ejb.PropertyEJB;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.DeviceArtifact;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
+import org.openepics.discs.conf.ent.Property;
+import org.openepics.discs.conf.ent.PropertyAssociation;
+import org.openepics.discs.conf.ent.Tag;
 import org.openepics.discs.conf.ui.common.AbstractAttributesController;
+import org.openepics.discs.conf.ui.common.EntityAttributeView;
+
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.ImmutableList;
 
 /**
  * Controller bean for manipulation of {@link Device} attributes
@@ -38,6 +49,7 @@ import org.openepics.discs.conf.ui.common.AbstractAttributesController;
 public class DeviceDetailsAttributesController extends AbstractAttributesController<DevicePropertyValue, DeviceArtifact> {
 
     @Inject private DeviceEJB deviceEJB;
+    @Inject private PropertyEJB propertyEJB;
 
     private Device device;
 
@@ -50,8 +62,8 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
         super.setPropertyValueClass(DevicePropertyValue.class);
         super.setDao(deviceEJB);
         populateAttributesList();
+        filterProperties();
     }
-
 
     @Override
     protected void setPropertyValueParent(DevicePropertyValue child) {
@@ -77,14 +89,32 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
 
     @Override
     protected void filterProperties() {
-        // TODO Auto-generated method stub
-
+        filteredProperties = ImmutableList.copyOf(Collections2.filter(propertyEJB.findAll(), new Predicate<Property>() {
+            @Override
+            public boolean apply(Property property) {
+                final PropertyAssociation propertyAssociation = property.getAssociation();
+                return propertyAssociation == PropertyAssociation.ALL || propertyAssociation == PropertyAssociation.DEVICE
+                        || propertyAssociation == PropertyAssociation.SLOT_DEVICE
+                        || propertyAssociation == PropertyAssociation.TYPE_DEVICE;
+            }
+        }));
     }
 
     @Override
     protected void populateAttributesList() {
-        // TODO Auto-generated method stub
+        attributes = new ArrayList<EntityAttributeView>();
 
+        for (DevicePropertyValue propVal : device.getDevicePropertyList()) {
+            attributes.add(new EntityAttributeView(propVal));
+        }
+
+        for (DeviceArtifact artf : device.getDeviceArtifactList()) {
+            attributes.add(new EntityAttributeView(artf));
+        }
+
+        for (Tag tag : device.getTags()) {
+            attributes.add(new EntityAttributeView(tag));
+        }
     }
 
     public Device getDevice() { return device; }

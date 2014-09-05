@@ -13,6 +13,7 @@ import org.openepics.discs.conf.ent.ComptypePropertyValue;
  *
  * @author vuppala
  * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
+ * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  */
 
 @Stateless
@@ -62,6 +63,10 @@ public class ComptypeEJB extends DAO<ComponentType> {
         return em.createNamedQuery("ComponentType.findAllOrdered", ComponentType.class).getResultList();
     }
 
+    /**
+     * @param componentType - the device type
+     * @return A list of all property definitions for the selected device type.
+     */
     public List<ComptypePropertyValue> findPropertyDefinitions(ComponentType componentType) {
         return em.createNamedQuery("ComptypePropertyValue.findPropertyDefs", ComptypePropertyValue.class)
                 .setParameter("componentType", componentType).getResultList();
