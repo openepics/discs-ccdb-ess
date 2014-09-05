@@ -16,7 +16,8 @@
             
                 <p:outputLabel for="propertySelect" value="Property:" />
                 <h:panelGroup>
-                    <p:selectOneMenu id="propertySelect" value="#{controller.property}" var="prop" converter="#{propertyConverter}" rendered="true" required="true" requiredMessage="Please select a property" >
+                    <p:selectOneMenu id="propertySelect" value="#{controller.property}" var="prop" converter="#{propertyConverter}" 
+                            rendered="true" required="true" requiredMessage="Please select a property" disabled="#{controller.propertyNameChangeDisabled}" >
                         <p:ajax update=":#{formId}:propertyUnit :#{formId}:propertyDataType"/>
                         <f:selectItem itemLabel="Select One" itemValue="" />
                         <f:selectItems value="#{controller.filteredProperties}" var="property" itemLabel="#{property.name}" itemValue="#{property}" />

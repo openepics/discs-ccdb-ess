@@ -51,6 +51,7 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
     protected Property property;
     protected String propertyValue;
     protected List<Property> filteredProperties;
+    private boolean propertyNameChangeDisabled;
 
     protected String tag;
 
@@ -279,6 +280,7 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
      * Prepares data for addition of {@link PropertyValue}
      */
     public void prepareForPropertyValueAdd() {
+        propertyNameChangeDisabled = false;
         property = null;
         propertyValue = null;
     }
@@ -355,4 +357,8 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
     protected void setPropertyValueClass(Class<T1> propertyValueClass) { this.propertyValueClass = propertyValueClass; }
 
     protected void setArtifactClass(Class<T2> artifactClass) { this.artifactClass = artifactClass; }
+
+    public boolean isPropertyNameChangeDisabled() { return propertyNameChangeDisabled; }
+    /** Only an inherited class can set this */
+    protected void setPropertyNameChangeDisabled(boolean propertyNameChangeDisabled) { this.propertyNameChangeDisabled = propertyNameChangeDisabled; }
 }

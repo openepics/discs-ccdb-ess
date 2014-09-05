@@ -133,6 +133,10 @@
                             </p:column>
 
                             <p:column headerText="Actions" width="10%">
+                                <p:commandButton icon="ui-icon-pencil" title="Edit" ajax="true" 
+                                        rendered="#{deviceDetailsAttributesController.canEdit(attribute.entity)}">
+                                     <f:setPropertyActionListener value="#{attribute}" target="#{deviceDetailsAttributesController.selectedAttributeToModify}" />
+                                </p:commandButton>
                                 <p:commandButton icon="ui-icon-trash" title="Delete" ajax="true" oncomplete="deleteAttribute.show()"
                                         rendered="#{deviceDetailsAttributesController.canDelete(attribute.entity)}">
                                      <f:setPropertyActionListener value="#{attribute}" target="#{deviceDetailsAttributesController.selectedAttribute}" />
@@ -182,6 +186,15 @@
             <ui:param name="componentToUpdate" value=":deviceDetailsForm:devAttribs" />
         </ui:include>
 
+        <ui:include src="../data-definitions/add-or-modify-dialogs/property-value.xhtml" >
+            <ui:param name="formId" value="modifyDevicePropertyForm" />
+            <ui:param name="dialogTitle" value="Modify device property" />
+            <ui:param name="widgetName" value="modifyDeviceProperty" />
+            <ui:param name="controller" value="#{deviceDetailsAttributesController}" />
+            <ui:param name="submitHandler" value="modifyPropertyValue" />
+            <ui:param name="componentToUpdate" value=":deviceDetailsForm:devAttribs" />
+        </ui:include>
+
         <ui:include src="../data-definitions/add-or-modify-dialogs/tag.xhtml" >
             <ui:param name="formId" value="addDeviceTagForm" />
             <ui:param name="dialogTitle" value="Add new device tag" />
@@ -200,5 +213,13 @@
             <ui:param name="componentToUpdate" value=":deviceDetailsForm:devAttribs" />
         </ui:include>
 
+        <ui:include src="../data-definitions/add-or-modify-dialogs/artifact.xhtml" >
+            <ui:param name="formId" value="modifyDeviceArtifactForm" />
+            <ui:param name="dialogTitle" value="Modify device artifact" />
+            <ui:param name="widgetName" value="modifyDeviceArtifact" />
+            <ui:param name="controller" value="#{deviceDetailsAttributesController}" />
+            <ui:param name="submitHandler" value="modifyArtifact" />
+            <ui:param name="componentToUpdate" value=":deviceDetailsForm:devAttribs" />
+        </ui:include>   
     </ui:define>
 </ui:composition>

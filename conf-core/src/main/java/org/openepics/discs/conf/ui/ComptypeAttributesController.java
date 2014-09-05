@@ -75,6 +75,8 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
     @Override
     protected void populateAttributesList() {
         attributes = new ArrayList<>();
+        // refresh the component type from database. This refreshes all related collections as well.
+        compType = comptypeEJB.findById(this.compType.getId());
         for (ComptypePropertyValue prop : compType.getComptypePropertyList()) {
             attributes.add(new EntityAttributeView(prop));
         }

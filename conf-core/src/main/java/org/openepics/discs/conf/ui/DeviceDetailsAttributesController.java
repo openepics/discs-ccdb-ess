@@ -37,6 +37,7 @@ import org.openepics.discs.conf.ent.PropertyValue;
 import org.openepics.discs.conf.ent.Tag;
 import org.openepics.discs.conf.ui.common.AbstractAttributesController;
 import org.openepics.discs.conf.ui.common.EntityAttributeView;
+import org.primefaces.context.RequestContext;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
@@ -73,6 +74,7 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
     }
 
     public boolean canDelete(Object attribute) {
+        // TODO check whether to show inherited artifacts and prevent their deletion
         return attribute instanceof Artifact || (attribute instanceof PropertyValue && !isInherited((PropertyValue)attribute));
     }
 
@@ -82,6 +84,11 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
             if (propertyName.equals(inheritedPropVal.getProperty().getName())) return true;
         }
         return false;
+    }
+
+    public boolean canEdit(Object attribute) {
+        // TODO check whether to show inherited artifacts and prevent their editing
+        return attribute instanceof Artifact || attribute instanceof DevicePropertyValue;
     }
 
     @Override
@@ -96,14 +103,19 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
 
     @Override
     protected void updateAndOpenArtifactModifyDialog() {
-        // TODO Auto-generated method stub
-
+        // TODO move to abstract if possible
+        RequestContext.getCurrentInstance().update("modifyDeviceArtifactForm:modifyDeviceArtifact");
+        RequestContext.getCurrentInstance().execute("PF('modifyDeviceArtifact').show()");
     }
 
     @Override
     protected void updateAndOpenPropertyValueModifyDialog() {
-        // TODO Auto-generated method stub
-
+        // TODO move to abstract if possible
+        if (selectedAttribute.getEntity() instanceof PropertyValue) {
+            setPropertyNameChangeDisabled(isInherited((PropertyValue)selectedAttribute.getEntity()));
+        }
+        RequestContext.getCurrentInstance().update("modifyDevicePropertyForm:modifyDeviceProperty");
+        RequestContext.getCurrentInstance().execute("PF('modifyDeviceProperty').show()");
     }
 
     @Override
@@ -123,6 +135,9 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
     protected void populateAttributesList() {
         attributes = new ArrayList<EntityAttributeView>();
 
+        // refresh the device from database. This refreshes all related collections as well.
+        device = deviceEJB.findById(device.getId());
+
         for (ComptypePropertyValue parentProp : parentProperties) {
             if (parentProp.getPropValue() != null) attributes.add(new EntityAttributeView(parentProp));
         }
@@ -131,6 +146,7 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
             attributes.add(new EntityAttributeView(propVal));
         }
 
+        // TODO check whether to show inherited artifacts and prevent their deletion
         for (DeviceArtifact artf : device.getDeviceArtifactList()) {
             attributes.add(new EntityAttributeView(artf));
         }
