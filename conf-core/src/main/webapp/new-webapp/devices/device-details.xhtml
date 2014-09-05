@@ -11,10 +11,10 @@
         <h:form id="deviceDetailsForm">
 
             <h2>Device details</h2>
-            
+
             <p:panelGrid styleClass="borderlessPanelGrid">
                 <p:row>
-                
+
                     <p:column style="vertical-align: top;">
                         <p:panelGrid id="deviceDetails" styleClass="borderlessPanelGrid">
                             <p:row>
@@ -101,7 +101,7 @@
                             </p:row>
                         </p:panelGrid>
                     </p:column>
-                    
+
                     <p:column style="width: 60%; vertical-align: top;">
 
                       <p:commandButton id="addButton" value="Add" type="button" icon="ui-icon-plus"/>
@@ -112,49 +112,67 @@
                             <p:menuitem value="Artifact" oncomplete="addDeviceArtifact.show()"
                                     actionListener="#{deviceDetailsAttributesController.prepareForArtifactAdd}" update=":addDeviceArtifactForm:addDeviceArtifact"/>
                        </p:menu>
-    
+
                        <p:dataTable id="devAttribs" var="attribute" value="#{deviceDetailsAttributesController.attributes}" 
                                emptyMessage="No attributes.">
-                               
+
                             <p:column headerText="Name" sortBy="#{attribute.name}">
                                 <h:outputText value="#{attribute.name}" />
                             </p:column>
-                
+
                             <p:column headerText="Kind">
                                 <h:outputText value="#{attribute.kind}" />
                             </p:column>
-                            
+
                             <p:column headerText="Unit" style="text-align: center;">
                                 <h:outputText value="#{empty attribute.unit.name ? '-' : attribute.unit.name}" />
                             </p:column>
-    
+
                             <p:column headerText="Value" >
                                 <h:outputText value="#{attribute.value}" />
                             </p:column>
-                
+
                             <p:column headerText="Actions" width="10%">
-                                <p:button icon="ui-icon-extlink" target="_blank" title="Got to URL" ajax="true" rendered="#{attribute.hasURL}" href="#{attribute.value}"/>
+                                <p:commandButton icon="ui-icon-trash" title="Delete" ajax="true" oncomplete="deleteAttribute.show()"
+                                        rendered="#{deviceDetailsAttributesController.canDelete(attribute.entity)}">
+                                     <f:setPropertyActionListener value="#{attribute}" target="#{deviceDetailsAttributesController.selectedAttribute}" />
+                                </p:commandButton>
+                                <p:commandButton icon="ui-icon-arrowthick-1-s" title="Download" ajax="false" rendered="#{attribute.hasFile}">
+                                     <f:setPropertyActionListener value="#{attribute}" target="#{deviceDetailsAttributesController.selectedAttribute}" />
+                                     <p:fileDownload value="#{deviceDetailsAttributesController.downloadFile}" />
+                                </p:commandButton>
+                                <p:button icon="ui-icon-extlink" target="_blank" title="Got to URL" ajax="true"
+                                        rendered="#{attribute.hasURL}" href="#{attribute.value}"/>
                             </p:column>
                         </p:dataTable>
 
                     </p:column>
-                    
+
                 </p:row>
             </p:panelGrid>
         </h:form>
-        
+
         <ui:include src="../audit/audit-log-table.xhtml">
             <ui:param name="formId" value="deviceLogForm" />
             <ui:param name="dialogTitle" value="Device Log" />
             <ui:param name="widgetName" value="deviceLog" />
         </ui:include>
-        
+
         <ui:include src="../audit/audit-log-details.xhtml">
             <ui:param name="formId" value="logDetailsForm" />
             <ui:param name="dialogTitle" value="Long Entry Details" />
             <ui:param name="widgetName" value="logDetails" />
         </ui:include>
-        
+
+        <ui:include src="../data-definitions/add-or-modify-dialogs/delete-confirmation.xhtml" >
+            <ui:param name="formId" value="deleteAttributeForm" />
+            <ui:param name="dialogTitle" value="Delete attribute" />
+            <ui:param name="widgetName" value="deleteAttribute" />
+            <ui:param name="controller" value="#{deviceDetailsAttributesController}" />
+            <ui:param name="submitHandler" value="deleteAttribute" />
+            <ui:param name="formToUpdate" value=":deviceDetailsForm" />
+        </ui:include>
+
         <ui:include src="../data-definitions/add-or-modify-dialogs/property-value.xhtml" >
             <ui:param name="formId" value="addDevicePropertyForm" />
             <ui:param name="dialogTitle" value="Add new device property" />
@@ -163,7 +181,7 @@
             <ui:param name="submitHandler" value="addNewPropertyValue" />
             <ui:param name="componentToUpdate" value=":deviceDetailsForm:devAttribs" />
         </ui:include>
-        
+
         <ui:include src="../data-definitions/add-or-modify-dialogs/tag.xhtml" >
             <ui:param name="formId" value="addDeviceTagForm" />
             <ui:param name="dialogTitle" value="Add new device tag" />
@@ -172,7 +190,7 @@
             <ui:param name="submitHandler" value="addNewTag" />
             <ui:param name="componentToUpdate" value=":deviceDetailsForm:devAttribs" />
         </ui:include>
-        
+
         <ui:include src="../data-definitions/add-or-modify-dialogs/artifact.xhtml" >
             <ui:param name="formId" value="addDeviceArtifactForm" />
             <ui:param name="dialogTitle" value="Add new device artifact" />
@@ -181,6 +199,6 @@
             <ui:param name="submitHandler" value="addNewArtifact" />
             <ui:param name="componentToUpdate" value=":deviceDetailsForm:devAttribs" />
         </ui:include>
-        
+
     </ui:define>
 </ui:composition>

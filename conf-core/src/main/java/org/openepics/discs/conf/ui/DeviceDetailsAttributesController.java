@@ -26,12 +26,14 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.openepics.discs.conf.ejb.DeviceEJB;
 import org.openepics.discs.conf.ejb.PropertyEJB;
+import org.openepics.discs.conf.ent.Artifact;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.DeviceArtifact;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyAssociation;
+import org.openepics.discs.conf.ent.PropertyValue;
 import org.openepics.discs.conf.ent.Tag;
 import org.openepics.discs.conf.ui.common.AbstractAttributesController;
 import org.openepics.discs.conf.ui.common.EntityAttributeView;
@@ -68,6 +70,18 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
 
         populateAttributesList();
         filterProperties();
+    }
+
+    public boolean canDelete(Object attribute) {
+        return attribute instanceof Artifact || (attribute instanceof PropertyValue && !isInherited((PropertyValue)attribute));
+    }
+
+    private boolean isInherited(PropertyValue propertyValue) {
+        final String propertyName = propertyValue.getProperty().getName();
+        for (PropertyValue inheritedPropVal : parentProperties) {
+            if (propertyName.equals(inheritedPropVal.getProperty().getName())) return true;
+        }
+        return false;
     }
 
     @Override
