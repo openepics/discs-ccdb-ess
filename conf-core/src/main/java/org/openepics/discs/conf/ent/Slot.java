@@ -98,7 +98,7 @@ public class Slot extends ConfigurationEntity {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "slot")
     private List<SlotPropertyValue> slotPropertyList = new ArrayList<>();
 
-    @ManyToMany
+    @ManyToMany(cascade=CascadeType.ALL)
     @JoinTable(name = "slot_tag",
         joinColumns = { @JoinColumn(name = "slot_id") }, inverseJoinColumns = { @JoinColumn(name = "tag_id") })
     private Set<Tag> tags = new HashSet<>();
@@ -123,7 +123,15 @@ public class Slot extends ConfigurationEntity {
     public Double getBeamlinePosition() { return beamlinePosition; }
     public void setBeamlinePosition(Double beamlinePosition) { this.beamlinePosition = beamlinePosition; }
 
-    public AlignmentInformation getPositionInformation() { return positionInfo; }
+    public AlignmentInformation getPositionInformation()
+    {
+    	// Due to some weirdness Hibernate clears the initialized field when loading data
+    	// Added this lazy initialization as convenience
+    	if (positionInfo==null) {
+    		positionInfo = new AlignmentInformation();
+    	}
+    	return positionInfo;
+    }
 
     public String getAssemblyComment() { return asmComment; }
     public void setAssemblyComment(String asmComment) { this.asmComment = asmComment; }

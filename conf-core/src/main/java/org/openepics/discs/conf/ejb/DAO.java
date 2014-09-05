@@ -120,8 +120,8 @@ abstract public class DAO<T> extends ReadOnlyDAO<T> {
         @SuppressWarnings("unchecked")
         final ParentChildInterface<T,S> resolver = getResolverInterfaces().get(child.getClass());
         if (resolver == null) {
-            throw new RuntimeException("No child interface defined for the class "+
-                    child.getClass().getCanonicalName()+" in "+this.getClass().getName()+" DAO.");
+            throw new UnsupportedOperationException("No child interface defined for the class "+
+                    child.getClass().getCanonicalName()+" in "+this.getClass().getSimpleName()+" DAO.");
         }
         return resolver;
     }
