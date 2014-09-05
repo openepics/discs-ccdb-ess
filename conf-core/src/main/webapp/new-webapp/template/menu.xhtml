@@ -44,9 +44,9 @@
                 
             </p:submenu>
 
-			<p:menuitem value="Data Definitions" icon="ui-icon-home" title="Data Definitions" url="/new-webapp/data-definitions/data-definitions.xhtml" />
-			<p:menuitem value="Deleted" icon="ui-icon-home" title="Deleted" url="/" disabled="true" />
-			<p:menuitem value="Help" icon="ui-icon-home" title="Help" url="/" disabled="true" />	
+			<p:menuitem value="Data Definitions" icon="ui-icon-home" title="Data Definitions" url="/new-webapp/data-definitions/properties/properties-manager.xhtml"/>
+			<p:menuitem value="Deleted" icon="ui-icon-home" title="Deleted" url="/" disabled="true"/>
+			<p:menuitem value="Help" icon="ui-icon-home" title="Help" url="/" disabled="true"/>	
 			
 			<f:facet name="options">
                 <fc:logincomp ajax="false" />
@@ -54,7 +54,7 @@
 		</p:menubar>	   
 	</h:form>
 	
-	<ui:include src="/new-webapp/loaders/single-file-DL.xhtml">
+	<ui:include src="../loaders/single-file-DL.xhtml">
         <ui:param name="formId" value="importUnitsForm" />
         <ui:param name="dialogTitle" value="Units Import" />
         <ui:param name="widgetName" value="importUnits" />
@@ -62,21 +62,21 @@
     </ui:include>
     
     
-    <ui:include src="/new-webapp/loaders/single-file-DL.xhtml">
+    <ui:include src="../loaders/single-file-DL.xhtml">
         <ui:param name="formId" value="importPropertiesForm" />
         <ui:param name="dialogTitle" value="Properties Import" />
         <ui:param name="widgetName" value="importProperties" />
         <ui:param name="controller" value="#{propertyManager}" />
     </ui:include>
 
-    <ui:include src="/new-webapp/loaders/single-file-DL.xhtml">
+    <ui:include src="../loaders/single-file-DL.xhtml">
         <ui:param name="formId" value="importCompTypesForm" />
         <ui:param name="dialogTitle" value="Component Types Import" />
         <ui:param name="widgetName" value="importCompTypes" />
         <ui:param name="controller" value="#{componentTypeManager}" />
     </ui:include>
     
-    <ui:include src="/new-webapp/loaders/multiple-files-DL.xhtml">
+    <ui:include src="../loaders/multiple-files-DL.xhtml">
         <ui:param name="formId" value="importSlotsForm" />
         <ui:param name="dialogTitle" value="Slots and Slot Relationships Import" />
         <ui:param name="widgetName" value="importSlots" />
@@ -85,7 +85,7 @@
         <ui:param name="secondFileContents" value="slot pairs" />
     </ui:include>
     
-    <ui:include src="/new-webapp/loaders/single-file-DL.xhtml">
+    <ui:include src="../loaders/single-file-DL.xhtml">
         <ui:param name="formId" value="importDevicesForm" />
         <ui:param name="dialogTitle" value="Devices Import" />
         <ui:param name="widgetName" value="importDevices" />

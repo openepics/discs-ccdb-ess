@@ -1,0 +1,59 @@
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui">
+	<h:form>
+		<p:menu style="width:100%">
+			<p:menuitem value="Device Types" url="../device-types/device-types-manager.xhtml" ajax="true" />
+			<p:menuitem value="Properties" url="../properties/properties-manager.xhtml" ajax="true" />
+		</p:menu>
+	</h:form>
+	
+	 <ui:include src="add-or-modify-dialogs/property.xhtml">
+        <ui:param name="formId" value="modifyPropertyForm" />
+        <ui:param name="dialogTitle" value="Modify Property" />
+        <ui:param name="widgetName" value="modifyProperty" />
+        <ui:param name="submitHandler" value="onModify" />
+    </ui:include>
+
+    <ui:include src="add-or-modify-dialogs/property.xhtml">
+        <ui:param name="formId" value="addPropertyForm" />
+        <ui:param name="dialogTitle" value="Add Property" />
+        <ui:param name="widgetName" value="addProperty" />
+        <ui:param name="submitHandler" value="onAdd" />
+    </ui:include>
+    
+    <ui:include src="add-or-modify-dialogs/device-type.xhtml">
+        <ui:param name="formId" value="modifyDeviceTypeForm" />
+        <ui:param name="dialogTitle" value="Modify Device Type" />
+        <ui:param name="widgetName" value="modifyDeviceType" />
+        <ui:param name="submitHandler" value="onModify" />
+    </ui:include>
+    
+    <ui:include src="add-or-modify-dialogs/device-type.xhtml">
+        <ui:param name="formId" value="addDeviceTypeForm" />
+        <ui:param name="dialogTitle" value="Add Device Type" />
+        <ui:param name="widgetName" value="addDeviceType" />
+        <ui:param name="submitHandler" value="onAdd" />
+    </ui:include>
+    
+     <ui:include src="../audit/audit-log-table.xhtml">
+        <ui:param name="formId" value="propertyLogForm" />
+        <ui:param name="dialogTitle" value="Property Log" />
+        <ui:param name="widgetName" value="propertyLog" />
+        <ui:param name="managedBean" value="#{propertyManager}" />
+    </ui:include>
+    
+    <ui:include src="../audit/audit-log-table.xhtml">
+        <ui:param name="formId" value="deviceTypeLogForm" />
+        <ui:param name="dialogTitle" value="Device Type Log" />
+        <ui:param name="widgetName" value="deviceTypeLog" />
+        <ui:param name="managedBean" value="#{componentTypeManager}" />
+    </ui:include>
+    
+    <ui:include src="../audit/audit-log-details.xhtml">
+        <ui:param name="formId" value="logDetailsForm" />
+        <ui:param name="dialogTitle" value="Long Entry Details" />
+        <ui:param name="widgetName" value="logDetails" />
+    </ui:include>
+</ui:composition>

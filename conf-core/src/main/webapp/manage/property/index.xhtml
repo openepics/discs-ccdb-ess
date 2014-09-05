@@ -25,7 +25,7 @@
 
             <ui:remove> -------------------------- Search  ------------------- </ui:remove>    
             <p:panel id="searchPanel" header="Search Properties">
-                <p:dataTable id="searchTable" var="obj" value="#{propertyManager.objects}" 
+                <p:dataTable id="searchTable" var="obj" value="#{propertyManager.properties}" 
                              scrollRows="25" scrollable="true" liveScroll="true"   scrollHeight="200"                  
                              selectionMode="single" selection="#{propertyManager.selectedObject}" 
                              filteredValue="#{propertyManager.filteredProperties}"

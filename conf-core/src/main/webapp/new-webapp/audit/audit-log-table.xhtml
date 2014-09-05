@@ -7,16 +7,16 @@
     xmlns:h="http://java.sun.com/jsf/html">
 
     <h:form id="#{formId}">
-        <p:dialog widgetVar="#{widgetName}" id="#{widgetName}" modal="true" resizable="false" closable="false">
+        <p:dialog widgetVar="#{widgetName}" id="#{widgetName}" width="900" modal="true" resizable="false" closable="false" dynamic="true">
             <f:facet name="header">
                 <h:outputText value="#{dialogTitle}" />
             </f:facet>
-             <p:dataTable var="auditRecord" id="auditLogTable" value="#{auditManager.auditRecordsForEntity}" style="margin-bottom: 1em;">
+             <p:dataTable var="auditRecord" id="auditLogTable" value="#{auditManager.auditRecordsForEntity}" style="table-layout: fixed; word-wrap: break-word;margin-bottom: 1em;" resizableColumns="true" paginator="false" scrollable="true" scrollHeight="300">
                 <p:column headerText="Entity Name">
                     <h:outputText value="#{auditRecord.entityKey}" />
                 </p:column>
                 
-                <p:column headerText="Action">
+                <p:column headerText="Operation">
                     <h:outputText value="#{auditRecord.oper}" />
                 </p:column>
 
@@ -38,7 +38,7 @@
                     <h:outputText value="#{auditRecord.entry.length() lt 46 ? auditRecord.entry : auditRecord.entry.substring(0,45) += '...'}" />
                 </p:column>
                 
-                <p:column headerText="Action">
+                <p:column headerText="Action" width="50" style="text-align: center;" >
                     <p:commandButton icon="ui-icon-info" title="Details" update=":logDetailsForm" 
                         action="#{auditManager.chooseDisplayRecord(auditRecord.id)}" oncomplete="logDetails.show()" />
                 </p:column>

@@ -20,8 +20,6 @@ import javax.annotation.PostConstruct;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
-import org.apache.commons.lang.NotImplementedException;
-
 /**
  *
  * @author vuppala
@@ -29,9 +27,9 @@ import org.apache.commons.lang.NotImplementedException;
 @Stateless
 public class BlobStore {
     private static final Logger logger = Logger.getLogger(BlobStore.class.getCanonicalName());
-    
+
     private static String blobStoreRoot = "/var/confmgr";
-    
+
     private boolean validStore = true; // is the blob store valid?
 
     @Inject private AppProperties appProps;
@@ -123,7 +121,8 @@ public class BlobStore {
     }
 
     public void deleteFile(String fileId) throws IOException {
-        throw new NotImplementedException();
+        final File fileToDelete = new File(blobStoreRoot + File.separator + fileId);
+        fileToDelete.delete();
     }
 
     public String getBlobStoreRoot() {

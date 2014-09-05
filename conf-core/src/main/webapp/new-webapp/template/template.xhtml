@@ -14,30 +14,23 @@
         <title>Controls Configuration Database</title>
     </h:head>
 
-    <h:body>
-        <ui:debug hotkey="d" />   <ui:remove> ---Use ctrl-shift-d to debug--- </ui:remove>
-
-        <div id="top">
+    <h:body style="overflow-x: hidden">
+        <h:panelGroup id="top" layout="block">
             <ui:insert name="top">
-                <div id="header">
+                <h:panelGroup id="header" layout="block">
                     <ui:include src="header.xhtml" />
-                </div>
-                <div id="menu" >  
+                </h:panelGroup>
+                <h:panelGroup id="menu" layout="block">
                     <ui:include src="menu.xhtml" />
-                </div>
+                </h:panelGroup>
             </ui:insert>
 
-        </div>
+        </h:panelGroup>
 
-        <div id="content" class="center_content">
+        <h:panelGroup layout="block" >
             <ui:insert name="content">Content</ui:insert>
-        </div>
-
-        <div id="bottom">
-            <ui:insert name="bottom">
-                <h:outputText value="#{msgs.copyright}" escape="false"/>
-            </ui:insert>
-        </div>
+        </h:panelGroup>
+        
         <p:dialog modal="true" widgetVar="statusDialog" showHeader="false" draggable="false" closable="false" resizable="false">  
             <p:graphicImage value="/resources/images/ajax-loader.gif" />  
         </p:dialog>

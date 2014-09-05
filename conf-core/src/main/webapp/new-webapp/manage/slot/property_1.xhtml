@@ -41,7 +41,7 @@
                             <p:selectOneMenu value="#{entProp.property}" style="width:100%"
                                              var="p" filter="true"  converter="#{propertyConverter}" >
                                 <f:selectItem itemLabel="Select One" itemValue="" />
-                                <f:selectItems value="#{propertyManager.objects}" var="prop" itemLabel="#{prop.name}" itemValue="#{prop}" />
+                                <f:selectItems value="#{propertyManager.properties}" var="prop" itemLabel="#{prop.name}" itemValue="#{prop}" />
                                 <p:column>
                                     #{p.name}
                                 </p:column>

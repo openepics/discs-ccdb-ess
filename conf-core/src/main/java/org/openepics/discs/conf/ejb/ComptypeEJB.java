@@ -14,6 +14,7 @@ import org.openepics.discs.conf.ent.ComptypePropertyValue;
  * @author vuppala
  * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
  */
+
 @Stateless
 public class ComptypeEJB extends DAO<ComponentType> {
     @Override
