@@ -25,7 +25,7 @@ public class SlotArtifact extends Artifact {
     @ManyToOne(optional = false)
     private Slot slot;
 
-    protected SlotArtifact() { }
+    public SlotArtifact() { }
 
     public SlotArtifact(String name, boolean isInternal, String description, String uri) {
         super(name, isInternal, description, uri);

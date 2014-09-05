@@ -32,6 +32,8 @@ import org.openepics.discs.conf.ent.Tag;
 import org.openepics.discs.conf.util.BlobStore;
 import org.openepics.discs.conf.util.UnhandledCaseException;
 import org.openepics.discs.conf.util.Utility;
+import org.openepics.discs.conf.views.EntityAttributeView;
+import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
@@ -144,7 +146,7 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
      * Adds new {@link Tag} to parent {@link ConfigurationEntity}
      */
     public void addNewTag() {
-        Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Failure", "Not yet implemented");
+
     }
 
     /**
@@ -183,7 +185,9 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
             final T1 selectedPropertyValue = (T1) selectedAttribute.getEntity();
             property = selectedPropertyValue.getProperty();
             propertyValue = selectedPropertyValue.getPropValue();
-            updateAndOpenPropertyValueModifyDialog();
+
+            RequestContext.getCurrentInstance().update("modifyPropertyValueForm:modifyPropertyValue");
+            RequestContext.getCurrentInstance().execute("PF('modifyPropertyValue').show()");
         } else if (selectedAttribute.getEntity().getClass().equals(artifactClass)) {
             final T2 selectedArtifact = (T2) selectedAttribute.getEntity();
             if (selectedArtifact.isInternal()) {
@@ -194,7 +198,9 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
             isArtifactInternal = selectedArtifact.isInternal();
             artifactURI = selectedArtifact.getUri();
             isArtifactBeingModified = true;
-            updateAndOpenArtifactModifyDialog();
+
+            RequestContext.getCurrentInstance().update("modifyArtifactForm:modifyArtifact");
+            RequestContext.getCurrentInstance().execute("PF('modifyArtifact').show()");
         } else {
             throw new UnhandledCaseException();
         }
@@ -256,10 +262,6 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
     protected abstract void setPropertyValueParent(T1 child);
 
     protected abstract void setArtifactParent(T2 child);
-
-    protected abstract void updateAndOpenArtifactModifyDialog();
-
-    protected abstract void updateAndOpenPropertyValueModifyDialog();
 
     protected abstract void filterProperties();
 

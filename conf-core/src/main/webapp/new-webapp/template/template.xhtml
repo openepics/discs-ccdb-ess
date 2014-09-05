@@ -12,6 +12,23 @@
         <h:outputStylesheet name="./css/layout.css"/>
         <link rel="shortcut icon" href="resources/images/proteus.ico" />
         <title>Controls Configuration Database</title>
+        <script type="text/javascript">
+            function resizePanel() {
+                var menusHeight = $('#top').outerHeight()+50;
+                var headerHeight = $('#containersForm\\:containersTree\\:name').outerHeight();
+                
+                menusHeight = menusHeight+$('#addContainer').outerHeight() + headerHeight + 7;
+                $('.ui-treetable-scrollable-body').css({"height":window.innerHeight-menusHeight});  
+            }
+
+            $(window).resize(function() {
+                resizePanel();
+                });
+
+            $(window).ready(function() {
+                resizePanel();
+            });
+        </script>
     </h:head>
 
     <h:body style="overflow-x: hidden">
