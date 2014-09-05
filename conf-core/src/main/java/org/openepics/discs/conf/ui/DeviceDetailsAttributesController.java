@@ -15,6 +15,7 @@
 package org.openepics.discs.conf.ui;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
@@ -25,6 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.openepics.discs.conf.ejb.DeviceEJB;
 import org.openepics.discs.conf.ejb.PropertyEJB;
+import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.DeviceArtifact;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
@@ -52,7 +54,7 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
     @Inject private PropertyEJB propertyEJB;
 
     private Device device;
-
+    private List<ComptypePropertyValue> parentProperties;
 
     @PostConstruct
     public void init() {
@@ -61,6 +63,9 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
         super.setArtifactClass(DeviceArtifact.class);
         super.setPropertyValueClass(DevicePropertyValue.class);
         super.setDao(deviceEJB);
+
+        parentProperties = device.getComponentType().getComptypePropertyList();
+
         populateAttributesList();
         filterProperties();
     }
@@ -104,6 +109,10 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
     protected void populateAttributesList() {
         attributes = new ArrayList<EntityAttributeView>();
 
+        for (ComptypePropertyValue parentProp : parentProperties) {
+            if (parentProp.getPropValue() != null) attributes.add(new EntityAttributeView(parentProp));
+        }
+
         for (DevicePropertyValue propVal : device.getDevicePropertyList()) {
             attributes.add(new EntityAttributeView(propVal));
         }
@@ -112,6 +121,7 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
             attributes.add(new EntityAttributeView(artf));
         }
 
+        // TODO solve and add inherited tags.
         for (Tag tag : device.getTags()) {
             attributes.add(new EntityAttributeView(tag));
         }

@@ -25,7 +25,7 @@ public class DevicePropertyValue extends PropertyValue {
     @ManyToOne(optional = false)
     private Device device;
 
-    protected DevicePropertyValue() { }
+    public DevicePropertyValue() { }
 
     public DevicePropertyValue(boolean inRepository) {
         super(inRepository);

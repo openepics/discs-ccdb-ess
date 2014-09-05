@@ -7,6 +7,7 @@
     xmlns:h="http://java.sun.com/jsf/html">
 
     <ui:define name="content">
+        <p:growl showDetail="true" globalOnly="true" autoUpdate="true" />
         <h:form id="deviceDetailsForm">
 
             <h2>Device details</h2>
@@ -103,29 +104,38 @@
                     
                     <p:column style="width: 60%; vertical-align: top;">
 
-                            <p:dataTable id="devAttribs" var="attribute" value="#{deviceDetailsAttributesController.attributes}" 
-                                    emptyMessage="No attributes.">
-                                    
-                                 <p:column headerText="Name" sortBy="#{attribute.name}">
-                                     <h:outputText value="#{attribute.name}" />
-                                 </p:column>
-                     
-                                 <p:column headerText="Kind">
-                                     <h:outputText value="#{attribute.kind}" />
-                                 </p:column>
-                                 
-                                 <p:column headerText="Unit" style="text-align: center;">
-                                     <h:outputText value="#{empty attribute.unit.name ? '-' : attribute.unit.name}" />
-                                 </p:column>
-
-                                 <p:column headerText="Value" >
-                                     <h:outputText value="#{attribute.value}" />
-                                 </p:column>
-                     
-                                 <p:column headerText="Actions" width="10%">
-                                     <p:button icon="ui-icon-extlink" target="_blank" title="Got to URL" ajax="true" rendered="#{attribute.hasURL}" href="#{attribute.value}"/>
-                                 </p:column>
-                             </p:dataTable>
+                      <p:commandButton id="addButton" value="Add" type="button" icon="ui-icon-plus"/>
+                      <p:menu overlay="true" trigger="addButton" my="left top" at="left bottom">
+                            <p:menuitem value="Property" oncomplete="addDeviceProperty.show()"
+                                    actionListener="#{deviceDetailsAttributesController.prepareForPropertyValueAdd}" update=":addDevicePropertyForm:addDeviceProperty"/>
+                            <p:menuitem value="Tag" oncomplete="addDeviceTag.show()" actionListener="#{deviceDetailsAttributesController.prepareForPropertyValueAdd}"/>
+                            <p:menuitem value="Artifact" oncomplete="addDeviceArtifact.show()"
+                                    actionListener="#{deviceDetailsAttributesController.prepareForArtifactAdd}" update=":addDeviceArtifactForm:addDeviceArtifact"/>
+                       </p:menu>
+    
+                       <p:dataTable id="devAttribs" var="attribute" value="#{deviceDetailsAttributesController.attributes}" 
+                               emptyMessage="No attributes.">
+                               
+                            <p:column headerText="Name" sortBy="#{attribute.name}">
+                                <h:outputText value="#{attribute.name}" />
+                            </p:column>
+                
+                            <p:column headerText="Kind">
+                                <h:outputText value="#{attribute.kind}" />
+                            </p:column>
+                            
+                            <p:column headerText="Unit" style="text-align: center;">
+                                <h:outputText value="#{empty attribute.unit.name ? '-' : attribute.unit.name}" />
+                            </p:column>
+    
+                            <p:column headerText="Value" >
+                                <h:outputText value="#{attribute.value}" />
+                            </p:column>
+                
+                            <p:column headerText="Actions" width="10%">
+                                <p:button icon="ui-icon-extlink" target="_blank" title="Got to URL" ajax="true" rendered="#{attribute.hasURL}" href="#{attribute.value}"/>
+                            </p:column>
+                        </p:dataTable>
 
                     </p:column>
                     
@@ -143,6 +153,33 @@
             <ui:param name="formId" value="logDetailsForm" />
             <ui:param name="dialogTitle" value="Long Entry Details" />
             <ui:param name="widgetName" value="logDetails" />
+        </ui:include>
+        
+        <ui:include src="../data-definitions/add-or-modify-dialogs/property-value.xhtml" >
+            <ui:param name="formId" value="addDevicePropertyForm" />
+            <ui:param name="dialogTitle" value="Add new device property" />
+            <ui:param name="widgetName" value="addDeviceProperty" />
+            <ui:param name="controller" value="#{deviceDetailsAttributesController}" />
+            <ui:param name="submitHandler" value="addNewPropertyValue" />
+            <ui:param name="componentToUpdate" value=":deviceDetailsForm:devAttribs" />
+        </ui:include>
+        
+        <ui:include src="../data-definitions/add-or-modify-dialogs/tag.xhtml" >
+            <ui:param name="formId" value="addDeviceTagForm" />
+            <ui:param name="dialogTitle" value="Add new device tag" />
+            <ui:param name="widgetName" value="addDeviceTag" />
+            <ui:param name="controller" value="#{deviceDetailsAttributesController}" />
+            <ui:param name="submitHandler" value="addNewTag" />
+            <ui:param name="componentToUpdate" value=":deviceDetailsForm:devAttribs" />
+        </ui:include>
+        
+        <ui:include src="../data-definitions/add-or-modify-dialogs/artifact.xhtml" >
+            <ui:param name="formId" value="addDeviceArtifactForm" />
+            <ui:param name="dialogTitle" value="Add new device artifact" />
+            <ui:param name="widgetName" value="addDeviceArtifact" />
+            <ui:param name="controller" value="#{deviceDetailsAttributesController}" />
+            <ui:param name="submitHandler" value="addNewArtifact" />
+            <ui:param name="componentToUpdate" value=":deviceDetailsForm:devAttribs" />
         </ui:include>
         
     </ui:define>
