@@ -84,10 +84,12 @@ body {
 	width: 100%;
 }
 
+/*
 .ui-panelgrid tr,
 .ui-panelgrid td {
     border: none !important;
 }
+*/
 
 .menu {
     background-color: transparent; 
@@ -202,7 +204,7 @@ a {
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#cedce7', endColorstr='#596a72',GradientType=1 ); /* IE6-9 */
 }
 
-.borderlessPanelGrid tr, .borderlessPanelGrid td {
+.borderlessPanelGrid>tr, .borderlessPanelGrid>td {
     border: none !important;
 } 
 
