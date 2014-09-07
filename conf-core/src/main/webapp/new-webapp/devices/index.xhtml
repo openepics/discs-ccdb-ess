@@ -24,7 +24,7 @@
                     </p:column>            
                     <p:column style="width: 80%; vertical-align: top;">
                         <p:commandButton value="Add new" oncomplete="addDeviceDialog.show()" id="addDeviceButton" 
-                            disabled="#{empty devicesByTypeManager.selectedComponentType}" />                        
+                            disabled="#{empty devicesByTypeManager.selectedComponentType}"  update=":deviceAddForm" />                        
                         
                         <p:dataTable id="devicesTable" var="device" rows="15"
                                 paginator="true" paginatorPosition="bottom"
