@@ -54,6 +54,7 @@ public class DevicesByTypeManager implements Serializable {
     @EJB private DeviceEJB deviceEJB;
 
     private List<ComponentType> deviceTypes;
+    private List<ComponentType> filteredComponentTypes;
     private ComponentType selectedComponentType;
 
     private List<Device> devices;
@@ -241,5 +242,8 @@ public class DevicesByTypeManager implements Serializable {
 
     public String getManufSerialNumber() { return manufSerialNumber; }
     public void setManufSerialNumber(String manufSerialNumber) { this.manufSerialNumber = manufSerialNumber; }
+
+    public List<ComponentType> getFilteredComponentTypes() { return filteredComponentTypes; }
+    public void setFilteredComponentTypes(List<ComponentType> filteredComponentTypes) { this.filteredComponentTypes = filteredComponentTypes; }
 
 }

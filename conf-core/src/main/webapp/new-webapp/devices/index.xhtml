@@ -14,20 +14,20 @@
                     <p:column style="width: 20%; vertical-align: top;">
         	            <p:dataTable id="typesTable" var="devType" selection="#{devicesByTypeManager.selectedComponentType}"
                                 selectionMode="single" rowKey="#{devType.id}" scrollable="true" 
-                                value="#{devicesByTypeManager.deviceTypes}" scrollHeight="600" emptyMessage="No device types defined.">
+                                value="#{devicesByTypeManager.deviceTypes}" scrollHeight="600" 
+                                filteredValue="#{devicesByTypeManager.filteredComponentTypes}" emptyMessage="No device types defined.">
                             <p:ajax event="rowSelect" listener="#{devicesByTypeManager.prepareDevicesForDisplay()}" 
                                 update=":deviceTypesForm:devicesTable :deviceTypesForm:addDeviceButton :deviceAddForm:addDeviceDialog" />
-        	                <p:column headerText="Type">
+        	                <p:column headerText="Type" filterBy="#{devType.name}">
         	                    <h:outputText value="#{devType.name}" />
         	                </p:column>
         	            </p:dataTable>
                     </p:column>            
                     <p:column style="width: 80%; vertical-align: top;">
                         <p:commandButton value="Add new" oncomplete="addDeviceDialog.show()" id="addDeviceButton" 
-                            disabled="#{empty devicesByTypeManager.selectedComponentType}"  update=":deviceAddForm" />                        
+                            disabled="#{empty devicesByTypeManager.selectedComponentType}" update=":deviceAddForm" />                        
                         
-                        <p:dataTable id="devicesTable" var="device" rows="15"
-                                paginator="true" paginatorPosition="bottom"
+                        <p:dataTable id="devicesTable" var="device" rows="15" paginator="true" paginatorPosition="bottom"
                                 value="#{devicesByTypeManager.devices}" emptyMessage="No devices.">
                                 
                             <p:column headerText="Serial #" width="40%">
