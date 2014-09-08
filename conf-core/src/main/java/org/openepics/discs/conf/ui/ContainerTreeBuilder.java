@@ -33,6 +33,8 @@ import org.primefaces.model.TreeNode;
 import com.google.common.collect.Lists;
 
 /**
+ * Tree builder for tree presentation of {@link Slot}s
+ *
  * @author Andraz Pozar <andraz.pozar@cosylab.com>
  *
  */
@@ -41,11 +43,10 @@ import com.google.common.collect.Lists;
 public class ContainerTreeBuilder implements Serializable {
 
     /**
-     * Builds a tree of NamePartViews from the provided lists of revisions.
+     * Builds a tree of {@link ContainerView}s from the provided lists of containers.
      *
-     * @param containers the list of approved NamePart revisions
-     * @param pending the list of pending NamePart revisions
-     * @param expandedTree true if the constructed tree should be fully expanded
+     * @param containers the list of all containers
+     * @param collapsedNodes set of collapsed nodes
      * @return the root node of the tree
      */
     public TreeNode newContainerTree(List<Slot> containers, Set<Long> collapsedNodes) {
@@ -53,26 +54,12 @@ public class ContainerTreeBuilder implements Serializable {
     }
 
     /**
-     * Builds a tree of NamePartViews from the provided lists of revisions.
+     * Builds a tree of {@link ContainerView}s from the provided lists of containers.
      *
-     * @param approved the list of approved NamePart revisions
-     * @param pending the list of pending NamePart revisions
-     * @param expandedTree true if the constructed tree should be fully expanded
+     * @param containers the list of all containers
      * @param selectableLevel the depth level starting from 0 below which (inclusively) node selection is made possible
-     * @return the root node of the tree
-     */
-    public TreeNode newContainerTree(List<Slot> containers, int selectableLevel) {
-        return newContainerTree(containers, selectableLevel, null, null);
-    }
-
-    /**
-     * Builds a tree of NamePartViews from the provided lists of revisions.
-     *
-     * @param containers the list of approved NamePart revisions
-     * @param pending the list of pending NamePart revisions
-     * @param expandedTree true if the constructed tree should be fully expanded
-     * @param selectableLevel the depth level starting from 0 below which (inclusively) node selection is made possible
-     * @param selected the NamePart in the resulting tree that should be preselected and the part of the tree containing
+     * @param selected the {@link Slot} in the resulting tree that should be preselected and the part of the tree containing
+     * @param collapsedNodes set of collapsed nodes
      * expanded
      * @return the root node of the tree
      */

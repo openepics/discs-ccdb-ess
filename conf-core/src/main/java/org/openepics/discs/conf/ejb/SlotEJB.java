@@ -84,4 +84,14 @@ public class SlotEJB extends DAO<Slot> {
     public List<Slot> findByComponentType(ComponentType componentType) {
         return em.createNamedQuery("Slot.findByComponentType", Slot.class).setParameter("componentType", componentType).getResultList();
     }
+
+    /**
+     * All hosting or non-hosting {@link Slot}s.
+     *
+     * @param isHostingSlot is slot hosting or not
+     * @return List of all hosting or non-hosting {@link Slot}s
+     */
+    public List<Slot> findByIsHostingSlot(boolean isHostingSlot) {
+        return em.createNamedQuery("Slot.findByIsHostingSlot", Slot.class).setParameter("isHostingSlot", isHostingSlot).getResultList();
+    }
 }

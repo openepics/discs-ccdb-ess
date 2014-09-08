@@ -24,9 +24,7 @@
                     <p:commandButton icon="ui-icon-pencil" title="Edit" ajax="true" oncomplete="modifyContainer.show()" >
                         <f:setPropertyActionListener value="#{container}" target="#{containerController.selectedContainerToModify}" />
                     </p:commandButton>
-                    <p:commandButton icon="ui-icon-plus" title="Add Property" >
-                        <f:ajax event="click" listener="#{containerController.recirectToAttributes(container.id)}" />
-                    </p:commandButton>
+                    <p:commandButton icon="ui-icon-plus" title="Add Property" action="#{containerController.recirectToAttributes(container.id)}") />
                     <p:commandButton icon="ui-icon-trash" title="Delete" ajax="true" oncomplete="deleteContainer.show()" rendered="#{!container.hasChildren}" >
                         <f:setPropertyActionListener value="#{container}" target="#{containerController.selectedContainer}" />
                     </p:commandButton>

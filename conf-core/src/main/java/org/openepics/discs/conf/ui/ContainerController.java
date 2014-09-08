@@ -9,15 +9,12 @@
  */
 package org.openepics.discs.conf.ui;
 
-import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
-import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -38,6 +35,8 @@ import org.primefaces.event.NodeExpandEvent;
 import org.primefaces.model.TreeNode;
 
 /**
+ * Controller for manipulation of container {@link Slot}s
+ *
  * @author Andraz Pozar <andraz.pozar@cosylab.com>
  *
  */
@@ -64,21 +63,14 @@ public class ContainerController implements Serializable {
 
     @PostConstruct
     public void init() {
-        rootNode = getRootTreeNode();
+        rootNode = containerTreeBuilder.newContainerTree(slotEJB.findByIsHostingSlot(false), collapsedNodes);
     }
 
-    private TreeNode getRootTreeNode() {
-        final List<Slot> containers = new ArrayList<>();
-
-        for (Slot slot : slotEJB.findAll()) {
-            if (!slot.getIsHostingSlot()) {
-                containers.add(slot);
-            }
-        }
-
-        return containerTreeBuilder.newContainerTree(containers, collapsedNodes);
-    }
-
+    /**
+     * Returns root node of a tree of containers
+     *
+     * @return root {@link TreeNode} of tree of containers
+     */
     public TreeNode getRootNode() { return rootNode; }
 
     public TreeNode getSelectedNode() { return selectedNode; }
@@ -86,6 +78,9 @@ public class ContainerController implements Serializable {
         this.selectedNode = selectedNode;
     }
 
+    /**
+     * Prepares fields that are used in pop up for adding new container
+     */
     public void prepareAddPopup() {
         name = null;
         description = null;
@@ -98,6 +93,12 @@ public class ContainerController implements Serializable {
     }
 
     public ContainerView getSelectedContainerToModify() { return selectedContainer; }
+
+    /**
+     * Sets selected {@link ContainerView} and prepares fields that are used in pop up for container modification
+     *
+     * @param selectedContainer selected {@link ContainerView} node
+     */
     public void setSelectedContainerToModify(ContainerView selectedContainer) {
         this.selectedContainer = selectedContainer;
         prepareModifyPopup();
@@ -106,20 +107,23 @@ public class ContainerController implements Serializable {
     public ContainerView getSelectedContainer() { return selectedContainer; }
     public void setSelectedContainer(ContainerView selectedContainer) { this.selectedContainer = selectedContainer; }
 
-    public void prepareModifyPopup() {
+    private void prepareModifyPopup() {
         name = selectedContainer.getName();
         description = selectedContainer.getDescription();
         parentContainer = selectedContainer.getParentNode();
         RequestContext.getCurrentInstance().update("modifyContainerForm:modifyContainer");
     }
 
+    /**
+     * From fields populated in pop up creates new container and saves it.
+     */
     public void addContainer() {
         final Slot newContainer = new Slot(name, false);
         newContainer.setDescription(description);
         if (selectedNode != null) {
-            newContainer.setComponentType(comptypeEJB.findByName("_GRP"));
+            newContainer.setComponentType(comptypeEJB.findByName(SlotEJB.GRP_COMPONENT_TYPE));
         } else {
-            newContainer.setComponentType(comptypeEJB.findByName("_ROOT"));
+            newContainer.setComponentType(comptypeEJB.findByName(SlotEJB.ROOT_COMPONENT_TYPE));
         }
         slotEJB.add(newContainer);
 
@@ -138,6 +142,9 @@ public class ContainerController implements Serializable {
         init();
     }
 
+    /**
+     * Saves modifications to the container
+     */
     public void modifyContainer() {
         final Slot slotToModify = selectedContainer.getSlot();
         slotToModify.setName(name);
@@ -147,11 +154,20 @@ public class ContainerController implements Serializable {
         init();
     }
 
+    /**
+     * Deletes selected container
+     */
     public void onDelete() {
         slotEJB.delete(selectedContainer.getSlot());
         init();
     }
 
+    /**
+     * Adds collapsed node to the set of collapsed nodes which is used to preserve the state of tree
+     * throughout the nodes manipulation.
+     *
+     * @param event Event triggered on node collapse action
+     */
     public void onNodeCollapse(NodeCollapseEvent event) {
         if (event != null && event.getTreeNode() != null) {
             if (collapsedNodes == null) {
@@ -162,6 +178,12 @@ public class ContainerController implements Serializable {
         }
     }
 
+    /**
+     * Removes expanded node from list of collapsed nodes which is used to preserve the state of tree
+     * throughout the nodes manipulation.
+     *
+     * @param event Event triggered on node expand action
+     */
     public void onNodeExpand(NodeExpandEvent event) {
         if (event != null && event.getTreeNode() != null) {
             if (collapsedNodes != null) {
@@ -170,14 +192,13 @@ public class ContainerController implements Serializable {
         }
     }
 
-    public void recirectToAttributes(Long id) {
-        try {
-            FacesContext.getCurrentInstance().getExternalContext().redirect("container-attributes-manager.xhtml?id=" + id);
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
+    /**
+     * Returns relative path for redirection to attribute manipulation view for id of selected container
+     *
+     * @param id of selected container
+     * @return relative path to which vew should be redirected
+     */
+    public String recirectToAttributes(Long id) { return "container-attributes-manager.xhtml?faces-redirect=true&id=" + id; }
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }

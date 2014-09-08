@@ -75,9 +75,7 @@ public class ComponentTypeManager implements Serializable {
         resetFields();
     }
 
-    public String deviceTypePropertyRedirect(Long id) {
-        return "device-type-attributes-manager.xhtml?faces-redirect=true&id=" + id;
-    }
+    public String deviceTypePropertyRedirect(Long id) { return "device-type-attributes-manager.xhtml?faces-redirect=true&id=" + id; }
 
     public void prepareAddPopup() {
         resetFields();
