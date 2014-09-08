@@ -25,6 +25,7 @@ import javax.inject.Inject;
 import org.apache.commons.io.FilenameUtils;
 import org.openepics.discs.conf.ejb.DAO;
 import org.openepics.discs.conf.ent.Artifact;
+import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.ConfigurationEntity;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyValue;
@@ -32,6 +33,8 @@ import org.openepics.discs.conf.ent.Tag;
 import org.openepics.discs.conf.util.BlobStore;
 import org.openepics.discs.conf.util.UnhandledCaseException;
 import org.openepics.discs.conf.util.Utility;
+import org.openepics.discs.conf.views.EntityAttributeView;
+import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
@@ -70,6 +73,9 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
     private Class<T1> propertyValueClass;
     private Class<T2> artifactClass;
 
+    protected List<ComptypePropertyValue> parentProperties;
+    protected T1 propertyValueInstance;
+
     protected void resetFields() {
         property = null;
         propertyValue = null;
@@ -85,7 +91,6 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
      * Adds new {@link PropertyValue} to parent {@link ConfigurationEntity} defined in {@link AbstractAttributesController#setPropertyValueParent(PropertyValue)}
      */
     public void addNewPropertyValue() {
-        final T1 propertyValueInstance;
         try {
             propertyValueInstance = propertyValueClass.newInstance();
         } catch (InstantiationException | IllegalAccessException e) {
@@ -145,27 +150,20 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
      * Adds new {@link Tag} to parent {@link ConfigurationEntity}
      */
     public void addNewTag() {
-        Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Failure", "Not yet implemented");
+
     }
 
     /**
      * Deletes attribute from parent {@link ConfigurationEntity}. This attribute can be {@link Tag}, {@link PropertyValue} or {@link Artifact}
      * @throws IOException
      */
-    @SuppressWarnings("unchecked")
+
     public void deleteAttribute() throws IOException {
         try {
             if (selectedAttribute.getEntity().getClass().equals(propertyValueClass)) {
-                final T1 propValue = (T1) selectedAttribute.getEntity();
-                dao.deleteChild(propValue);
-                Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Property value has been deleted");
+                deletePropertyValue();
             } else if (selectedAttribute.getEntity().getClass().equals(artifactClass)) {
-                final T2 artifact = (T2) selectedAttribute.getEntity();
-                if (artifact.isInternal()) {
-                    blobStore.deleteFile(artifact.getUri());
-                }
-                dao.deleteChild(artifact);
-                Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Device type artifact has been deleted");
+                deleteArtifact();
             } else if (selectedAttribute.getEntity().getClass().equals(Tag.class)) {
                 final Tag tag = (Tag) selectedAttribute.getEntity();
                 Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Failure", "Not yet implemented");
@@ -179,12 +177,35 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
     }
 
     @SuppressWarnings("unchecked")
+    protected void deletePropertyValue() {
+        final T1 propValue = (T1) selectedAttribute.getEntity();
+        dao.deleteChild(propValue);
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Property value has been deleted");
+    }
+
+    @SuppressWarnings("unchecked")
+    private void deleteArtifact() throws IOException {
+        final T2 artifact = (T2) selectedAttribute.getEntity();
+        if (artifact.isInternal()) {
+            blobStore.deleteFile(artifact.getUri());
+        }
+        dao.deleteChild(artifact);
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Device type artifact has been deleted");
+    }
+
+    @SuppressWarnings("unchecked")
     protected void prepareModifyPropertyPopUp() {
         if (selectedAttribute.getEntity().getClass().equals(propertyValueClass)) {
             final T1 selectedPropertyValue = (T1) selectedAttribute.getEntity();
             property = selectedPropertyValue.getProperty();
             propertyValue = selectedPropertyValue.getPropValue();
-            updateAndOpenPropertyValueModifyDialog();
+
+            if (selectedAttribute.getEntity() instanceof PropertyValue) {
+                propertyNameChangeDisabled = isInherited((PropertyValue)selectedAttribute.getEntity());
+            }
+
+            RequestContext.getCurrentInstance().update("modifyPropertyValueForm:modifyPropertyValue");
+            RequestContext.getCurrentInstance().execute("PF('modifyPropertyValue').show()");
         } else if (selectedAttribute.getEntity().getClass().equals(artifactClass)) {
             final T2 selectedArtifact = (T2) selectedAttribute.getEntity();
             if (selectedArtifact.isInternal()) {
@@ -195,7 +216,9 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
             isArtifactInternal = selectedArtifact.isInternal();
             artifactURI = selectedArtifact.getUri();
             isArtifactBeingModified = true;
-            updateAndOpenArtifactModifyDialog();
+
+            RequestContext.getCurrentInstance().update("modifyArtifactForm:modifyArtifact");
+            RequestContext.getCurrentInstance().execute("PF('modifyArtifact').show()");
         } else {
             throw new UnhandledCaseException();
         }
@@ -254,13 +277,27 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
         return new DefaultStreamedContent(new FileInputStream(filePath), contentType, selectedArtifact.getName());
     }
 
+    public boolean canDelete(Object attribute) {
+        // TODO check whether to show inherited artifacts and prevent their deletion
+        return attribute instanceof Artifact || (attribute instanceof PropertyValue && !isInherited((PropertyValue)attribute));
+    }
+
+    private boolean isInherited(PropertyValue propertyValue) {
+        final String propertyName = propertyValue.getProperty().getName();
+        for (PropertyValue inheritedPropVal : parentProperties) {
+            if (propertyName.equals(inheritedPropVal.getProperty().getName())) return true;
+        }
+        return false;
+    }
+
+    public boolean canEdit(Object attribute) {
+        // TODO check whether to show inherited artifacts and prevent their editing
+        return attribute instanceof Artifact || attribute instanceof PropertyValue && !(attribute instanceof ComptypePropertyValue) ;
+    }
+
     protected abstract void setPropertyValueParent(T1 child);
 
     protected abstract void setArtifactParent(T2 child);
-
-    protected abstract void updateAndOpenArtifactModifyDialog();
-
-    protected abstract void updateAndOpenPropertyValueModifyDialog();
 
     /**
      * Filters a list of possible properties to attach to the entity based on the association type.
@@ -359,6 +396,4 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
     protected void setArtifactClass(Class<T2> artifactClass) { this.artifactClass = artifactClass; }
 
     public boolean isPropertyNameChangeDisabled() { return propertyNameChangeDisabled; }
-    /** Only an inherited class can set this */
-    protected void setPropertyNameChangeDisabled(boolean propertyNameChangeDisabled) { this.propertyNameChangeDisabled = propertyNameChangeDisabled; }
 }

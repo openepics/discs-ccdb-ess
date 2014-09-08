@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 
 import javax.ejb.Stateless;
 
+import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotArtifact;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
@@ -75,5 +76,22 @@ public class SlotEJB extends DAO<Slot> {
                 + "WHERE cp.parentSlot.name = :compname AND cp.slotRelation.name = :relname", Slot.class).
                 setParameter("compname", compName).
                 setParameter("relname", SlotRelationName.CONTAINS).getResultList();
+    }
+
+    /**
+     * All {@link Slot}s for given {@link ComponentType}
+     */
+    public List<Slot> findByComponentType(ComponentType componentType) {
+        return em.createNamedQuery("Slot.findByComponentType", Slot.class).setParameter("componentType", componentType).getResultList();
+    }
+
+    /**
+     * All hosting or non-hosting {@link Slot}s.
+     *
+     * @param isHostingSlot is slot hosting or not
+     * @return List of all hosting or non-hosting {@link Slot}s
+     */
+    public List<Slot> findByIsHostingSlot(boolean isHostingSlot) {
+        return em.createNamedQuery("Slot.findByIsHostingSlot", Slot.class).setParameter("isHostingSlot", isHostingSlot).getResultList();
     }
 }

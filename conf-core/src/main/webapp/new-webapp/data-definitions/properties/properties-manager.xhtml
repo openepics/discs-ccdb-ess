@@ -48,6 +48,27 @@
                 <ui:param name="submitHandler" value="onDelete" />
                 <ui:param name="formToUpdate" value=":propertiesForm" />
         </ui:include>
+        
+        <ui:include src="../add-or-modify-dialogs/property.xhtml">
+	        <ui:param name="formId" value="modifyPropertyForm" />
+	        <ui:param name="dialogTitle" value="Modify Property" />
+	        <ui:param name="widgetName" value="modifyProperty" />
+	        <ui:param name="submitHandler" value="onModify" />
+	    </ui:include>
+	
+	    <ui:include src="../add-or-modify-dialogs/property.xhtml">
+	        <ui:param name="formId" value="addPropertyForm" />
+	        <ui:param name="dialogTitle" value="Add Property" />
+	        <ui:param name="widgetName" value="addProperty" />
+	        <ui:param name="submitHandler" value="onAdd" />
+	    </ui:include>
+	    
+	    <ui:include src="../../audit/audit-log-table.xhtml">
+	        <ui:param name="formId" value="propertyLogForm" />
+	        <ui:param name="dialogTitle" value="Property Log" />
+	        <ui:param name="widgetName" value="propertyLog" />
+        <ui:param name="managedBean" value="#{propertyManager}" />
+    </ui:include>
 		
 	</ui:define>
 </ui:composition>

@@ -15,7 +15,6 @@
 package org.openepics.discs.conf.ui;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
@@ -26,18 +25,15 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.openepics.discs.conf.ejb.DeviceEJB;
 import org.openepics.discs.conf.ejb.PropertyEJB;
-import org.openepics.discs.conf.ent.Artifact;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.DeviceArtifact;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyAssociation;
-import org.openepics.discs.conf.ent.PropertyValue;
 import org.openepics.discs.conf.ent.Tag;
 import org.openepics.discs.conf.ui.common.AbstractAttributesController;
-import org.openepics.discs.conf.ui.common.EntityAttributeView;
-import org.primefaces.context.RequestContext;
+import org.openepics.discs.conf.views.EntityAttributeView;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
@@ -57,7 +53,6 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
     @Inject private PropertyEJB propertyEJB;
 
     private Device device;
-    private List<ComptypePropertyValue> parentProperties;
 
     @PostConstruct
     public void init() {
@@ -73,24 +68,6 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
         filterProperties();
     }
 
-    public boolean canDelete(Object attribute) {
-        // TODO check whether to show inherited artifacts and prevent their deletion
-        return attribute instanceof Artifact || (attribute instanceof PropertyValue && !isInherited((PropertyValue)attribute));
-    }
-
-    private boolean isInherited(PropertyValue propertyValue) {
-        final String propertyName = propertyValue.getProperty().getName();
-        for (PropertyValue inheritedPropVal : parentProperties) {
-            if (propertyName.equals(inheritedPropVal.getProperty().getName())) return true;
-        }
-        return false;
-    }
-
-    public boolean canEdit(Object attribute) {
-        // TODO check whether to show inherited artifacts and prevent their editing
-        return attribute instanceof Artifact || attribute instanceof DevicePropertyValue;
-    }
-
     @Override
     protected void setPropertyValueParent(DevicePropertyValue child) {
         child.setDevice(device);
@@ -99,23 +76,6 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
     @Override
     protected void setArtifactParent(DeviceArtifact child) {
         child.setDevice(device);
-    }
-
-    @Override
-    protected void updateAndOpenArtifactModifyDialog() {
-        // TODO move to abstract if possible
-        RequestContext.getCurrentInstance().update("modifyDeviceArtifactForm:modifyDeviceArtifact");
-        RequestContext.getCurrentInstance().execute("PF('modifyDeviceArtifact').show()");
-    }
-
-    @Override
-    protected void updateAndOpenPropertyValueModifyDialog() {
-        // TODO move to abstract if possible
-        if (selectedAttribute.getEntity() instanceof PropertyValue) {
-            setPropertyNameChangeDisabled(isInherited((PropertyValue)selectedAttribute.getEntity()));
-        }
-        RequestContext.getCurrentInstance().update("modifyDevicePropertyForm:modifyDeviceProperty");
-        RequestContext.getCurrentInstance().execute("PF('modifyDeviceProperty').show()");
     }
 
     @Override

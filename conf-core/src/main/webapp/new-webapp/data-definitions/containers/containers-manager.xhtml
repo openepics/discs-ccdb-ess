@@ -1,0 +1,69 @@
+<ui:composition template="../template.xhtml" 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui">
+    <ui:define name="dataDefContent">
+        <h:form id="containersForm">
+            <p:commandButton ajax="true" id="addContainer"
+                actionListener="#{containerController.prepareAddPopup()}" value="Add new container to parent" oncomplete="addContainer.show()"/>
+            <p:treeTable id="containersTree" value="#{containerController.rootNode}" var="container" liveResize="true" selection="#{containerController.selectedNode}" selectionMode="single" scrollable="true" scrollWidth="auto">
+                <p:ajax event="collapse" listener="#{containerController.onNodeCollapse}" />
+                <p:ajax event="expand" listener="#{containerController.onNodeExpand}" />
+                
+                <p:column id="name" headerText="Name">
+                    <h:outputText value="#{container.name}"/>
+                </p:column>
+                
+                <p:column id="desc" headerText="Description">
+                    <h:outputText value="#{container.description}"/>
+                </p:column>
+                
+                <p:column headerText="Actions" style="padding: 0px !important; width: 15%">                    
+                    <p:commandButton icon="ui-icon-pencil" title="Edit" ajax="true" oncomplete="modifyContainer.show()" >
+                        <f:setPropertyActionListener value="#{container}" target="#{containerController.selectedContainerToModify}" />
+                    </p:commandButton>
+                    <p:commandButton icon="ui-icon-plus" title="Add Property" action="#{containerController.recirectToAttributes(container.id)}") />
+                    <p:commandButton icon="ui-icon-trash" title="Delete" ajax="true" oncomplete="deleteContainer.show()" rendered="#{!container.hasChildren}" >
+                        <f:setPropertyActionListener value="#{container}" target="#{containerController.selectedContainer}" />
+                    </p:commandButton>
+                    <p:commandButton icon="ui-icon-clock" title="Log" oncomplete="containerLog.show()" >
+                        <f:ajax event="click" listener="#{auditManager.selectEntityForLog(container.slot, 'SLOT')}" />
+                    </p:commandButton>
+                </p:column>
+                
+            </p:treeTable>
+        </h:form>
+        
+        <ui:include src="add-or-modify-container.xhtml" >
+            <ui:param name="formId" value="addContainerForm" />
+            <ui:param name="dialogTitle" value="Add new container" />
+            <ui:param name="widgetName" value="addContainer" />
+            <ui:param name="submitHandler" value="addContainer" />
+        </ui:include>
+        
+        <ui:include src="add-or-modify-container.xhtml" >
+            <ui:param name="formId" value="modifyContainerForm" />
+            <ui:param name="dialogTitle" value="Modify container" />
+            <ui:param name="widgetName" value="modifyContainer" />
+            <ui:param name="submitHandler" value="modifyContainer" />
+        </ui:include>
+        
+         <ui:include src="../../audit/audit-log-table.xhtml">
+            <ui:param name="formId" value="containerLogForm" />
+            <ui:param name="dialogTitle" value="Container Log" />
+            <ui:param name="widgetName" value="containerLog" />
+            <ui:param name="managedBean" value="#{containerController}" />
+        </ui:include>
+        
+        <ui:include src="../add-or-modify-dialogs/delete-confirmation.xhtml" >
+                <ui:param name="formId" value="deleteContainerForm" />
+                <ui:param name="dialogTitle" value="Delete container" />
+                <ui:param name="widgetName" value="deleteContainer" />
+                <ui:param name="controller" value="#{containerController}" />
+                <ui:param name="submitHandler" value="onDelete" />
+                <ui:param name="formToUpdate" value=":containersForm:containersTree" />
+        </ui:include>
+    </ui:define>
+</ui:composition>
