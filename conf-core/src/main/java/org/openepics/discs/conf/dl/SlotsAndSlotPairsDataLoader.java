@@ -363,7 +363,7 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                                         try {
                                             if (!childSlot.getName().equals(parentSlot.getName())) {
                                                 if (slotRelation.getName() == SlotRelationName.CONTAINS) {
-                                                    if (childSlot.getComponentType().getName().equalsIgnoreCase("_ROOT")) {
+                                                    if (childSlot.getComponentType().getName().equalsIgnoreCase(SlotEJB.ROOT_COMPONENT_TYPE)) {
                                                         rowResult.addMessage(new ValidationMessage(ErrorMessage.CANT_ADD_PARENT_TO_ROOT, rowNumber));
                                                         continue;
                                                     } else if (parentSlot.getIsHostingSlot() && !childSlot.getIsHostingSlot()) {
@@ -424,7 +424,7 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
 
     private void checkForRelationConsistency() {
         for (Slot newSlot : newSlots) {
-            if (!newSlotPairChildren.contains(newSlot) && !newSlot.getComponentType().getName().equals("_ROOT")) {
+            if (!newSlotPairChildren.contains(newSlot) && !newSlot.getComponentType().getName().equals(SlotEJB.ROOT_COMPONENT_TYPE)) {
                 final ValidationMessage orphanSlotMessage = new ValidationMessage(ErrorMessage.ORPHAN_SLOT);
                 orphanSlotMessage.setOrphanSlotName(newSlot.getName());
                 loaderResult.addMessage(orphanSlotMessage);

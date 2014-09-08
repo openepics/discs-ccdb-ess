@@ -14,7 +14,6 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -76,13 +75,8 @@ public class ComponentTypeManager implements Serializable {
         resetFields();
     }
 
-    public void deviceTypePropertyRedirect(Long propertyId) {
-        try {
-            FacesContext.getCurrentInstance().getExternalContext().redirect("device-type-attributes-manager.xhtml?id=" + propertyId);
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+    public String deviceTypePropertyRedirect(Long id) {
+        return "device-type-attributes-manager.xhtml?faces-redirect=true&id=" + id;
     }
 
     public void prepareAddPopup() {
@@ -192,29 +186,14 @@ public class ComponentTypeManager implements Serializable {
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
 
-    public List<ComponentType> getSortedObjects() {
-        return sortedObjects;
-    }
+    public List<ComponentType> getSortedObjects() { return sortedObjects; }
+    public void setSortedObjects(List<ComponentType> sortedObjects) { this.sortedObjects = sortedObjects; }
 
-    public void setSortedObjects(List<ComponentType> sortedObjects) {
-        this.sortedObjects = sortedObjects;
-    }
+    public List<ComponentType> getFilteredObjects() { return filteredObjects; }
+    public void setFilteredObjects(List<ComponentType> filteredObjects) { this.filteredObjects = filteredObjects; }
 
-    public List<ComponentType> getFilteredObjects() {
-        return filteredObjects;
-    }
-
-    public void setFilteredObjects(List<ComponentType> filteredObjects) {
-        this.filteredObjects = filteredObjects;
-    }
-
-    public ComponentType getSelectedObject() {
-        return selectedObject;
-    }
-
-    public void setSelectedObject(ComponentType selectedObject) {
-        this.selectedObject = selectedObject;
-    }
+    public ComponentType getSelectedObject() { return selectedObject; }
+    public void setSelectedObject(ComponentType selectedObject) { this.selectedObject = selectedObject; }
 
     public List<ComponentType> getObjects() {
         if (objects == null) objects = comptypeEJB.findAll();

@@ -35,8 +35,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Device.findAll", query = "SELECT d FROM Device d"),
-    // device instance does not have a name. This named query is introduced to satisfy the ReadOnlyDAO assumption.
-    @NamedQuery(name = "Device.findByName", query = "SELECT d FROM Device d WHERE d.serialNumber = :name")})
+	// device instance does not have a name. This named query is introduced to satisfy the ReadOnlyDAO assumption.
+    @NamedQuery(name = "Device.findByName", query = "SELECT d FROM Device d WHERE d.serialNumber = :name"),
+    @NamedQuery(name = "Device.findByComponentType", query = "SELECT d FROM Device d WHERE d.componentType = :componentType")})
 public class Device extends ConfigurationEntity {
     @Basic(optional = false)
     @NotNull

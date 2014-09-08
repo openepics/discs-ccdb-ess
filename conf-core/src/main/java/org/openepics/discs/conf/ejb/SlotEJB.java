@@ -18,10 +18,11 @@ import org.openepics.discs.conf.ent.SlotRelationName;
  */
 @Stateless
 public class SlotEJB extends DAO<Slot> {
+    public static final String ROOT_COMPONENT_TYPE = "_ROOT"; // TODO Get the root type from configuration (JNDI, config table etc)
+    public static final String GRP_COMPONENT_TYPE = "_GRP";
+
     @SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(SlotEJB.class.getCanonicalName());
-
-    private final String ROOT_COMPONENT_TYPE = "_ROOT"; // ToDo: Get the root type from configuration (JNDI, config table etc)
 
     @Override
     protected void defineEntity() {

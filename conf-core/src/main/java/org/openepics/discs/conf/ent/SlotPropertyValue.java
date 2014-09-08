@@ -25,7 +25,7 @@ public class SlotPropertyValue extends PropertyValue {
     @ManyToOne(optional = false)
     private Slot slot;
 
-    protected SlotPropertyValue() { }
+    public SlotPropertyValue() { }
 
     public SlotPropertyValue(boolean inRepository) {
         super(inRepository);

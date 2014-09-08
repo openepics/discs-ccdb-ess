@@ -160,3 +160,16 @@ a {
     background: linear-gradient(to right,  rgba(206,220,231,1) 0%,rgba(89,106,114,1) 100%); /* W3C */
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#cedce7', endColorstr='#596a72',GradientType=1 ); /* IE6-9 */
 }
+
+.borderlessPanelGrid>tr, .borderlessPanelGrid>td {
+    border: none !important;
+}
+
+.devicesView tr, .devicesView td {
+    border: none !important;
+} 
+
+
+.devicesView .ui-datatable .ui-datatable-data tr, .devicesView .ui-datatable .ui-datatable-data-empty tr, .devicesView .ui-datatable .ui-datatable-data td, .devicesView .ui-datatable .ui-datatable-data-empty td{
+  border:1px solid !important;
+}
