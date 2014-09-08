@@ -12,6 +12,10 @@ import org.openepics.discs.conf.ent.Tag;
 
 import com.google.common.base.Preconditions;
 
+/**
+ * @author ess-dev
+ *
+ */
 @Stateless
 public class TagEJB {
 
@@ -59,6 +63,11 @@ public class TagEJB {
         return em.find(Tag.class, name);
     }
 
+    /**
+     * Adds a new tag to the list of existing tags.
+     *
+     * @param tag the tag to add
+     */
     public void add(Tag tag) {
         Preconditions.checkNotNull(tag);
         em.persist(tag);

@@ -11,6 +11,7 @@ package org.openepics.discs.conf.ui;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
@@ -120,8 +121,11 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
 
     @Override
     public void setTagParent(Tag tag) {
-        compType.getTags().add(tag);
-        comptypeEJB.save(compType);
+        final Set<Tag> existingTags = compType.getTags();
+        if (!existingTags.contains(tag)) {
+            existingTags.add(tag);
+            comptypeEJB.save(compType);
+        }
     }
 
     @Override

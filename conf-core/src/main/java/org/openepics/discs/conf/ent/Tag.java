@@ -41,6 +41,6 @@ public class Tag {
 		Tag other = (Tag) obj;
 		if (name == null) return other.name == null;
 
-		return name.equals(other);
+		return name.equals(other.name);
 	}
 }

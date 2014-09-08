@@ -317,11 +317,14 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
      * Prepares data for addition of {@link PropertyValue}
      */
     public void prepareForPropertyValueAdd() {
-        fillTagsAutocomplete();
-        tag = null;
         propertyNameChangeDisabled = false;
         property = null;
         propertyValue = null;
+    }
+
+    public void prepareForTagAdd() {
+        fillTagsAutocomplete();
+        tag = null;
     }
 
     /**
