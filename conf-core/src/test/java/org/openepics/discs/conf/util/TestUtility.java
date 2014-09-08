@@ -2,17 +2,21 @@ package org.openepics.discs.conf.util;
 
 import java.io.File;
 
+import javax.inject.Inject;
+
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
+import org.openepics.discs.conf.security.SecurityPolicy;
 
 /**
- * This is a static helper class that packages CCDB application into {@link WebArchive} appropriate
- * for running integration tests.
+ * A collection of helper methods for running integration tests.
  *
  * @author Andraz Pozar <andraz.pozar@cosylab.com>
+ * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
  */
-public class CCDBPackager {
+public class TestUtility {
+	@Inject private SecurityPolicy securityPoloicy;
 
 	/** @return An archive packaging the whole cable application. */
 	public static WebArchive createWebArchive() {
@@ -40,5 +44,9 @@ public class CCDBPackager {
 	    }
 
         return war;
+	}
+
+	public void loginForTests() {
+		securityPoloicy.login("admin", "admin");
 	}
 }

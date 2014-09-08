@@ -20,6 +20,8 @@ import org.openepics.discs.conf.dl.common.ValidationMessage;
 import org.openepics.discs.conf.ejb.ComptypeEJB;
 import org.openepics.discs.conf.ejb.PropertyEJB;
 import org.openepics.discs.conf.ejb.SlotEJB;
+import org.openepics.discs.conf.ejb.SlotPairEJB;
+import org.openepics.discs.conf.ejb.SlotRelationEJB;
 import org.openepics.discs.conf.ent.AlignmentInformation;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.Property;
@@ -38,8 +40,9 @@ import com.google.common.collect.ImmutableList;
 @Stateless
 public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
     @Inject private SlotEJB slotEJB;
+    @Inject private SlotRelationEJB slotRelationEJB;
+    @Inject private SlotPairEJB slotPairEJB;
     @Inject private PropertyEJB propertyEJB;
-
 
     @Inject private ComptypeEJB comptypeEJB;
     private List<Slot> newSlots;
@@ -352,7 +355,7 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                     if (rowResult.isError()) {
                         continue;
                     } else {
-                        final SlotRelation slotRelation = slotEJB.findSlotRelationByName(slotRelationName);
+                        final SlotRelation slotRelation = slotRelationEJB.findBySlotRelationName(slotRelationName);
                         switch (command) {
                             case CMD_UPDATE:
                                 for (Slot childSlot : childrenSlots) {
@@ -360,7 +363,7 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                                         try {
                                             if (!childSlot.getName().equals(parentSlot.getName())) {
                                                 if (slotRelation.getName() == SlotRelationName.CONTAINS) {
-                                                    if (childSlot.getComponentType().getName().equalsIgnoreCase("_ROOT")) {
+                                                    if (childSlot.getComponentType().getName().equalsIgnoreCase(SlotEJB.ROOT_COMPONENT_TYPE)) {
                                                         rowResult.addMessage(new ValidationMessage(ErrorMessage.CANT_ADD_PARENT_TO_ROOT, rowNumber));
                                                         continue;
                                                     } else if (parentSlot.getIsHostingSlot() && !childSlot.getIsHostingSlot()) {
@@ -368,19 +371,19 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                                                         continue;
                                                     } else {
                                                         final SlotPair newSlotPair = new SlotPair(childSlot, parentSlot, slotRelation);
-                                                        slotEJB.addSlotPair(newSlotPair);
+                                                        slotPairEJB.add(newSlotPair);
                                                         newSlotPairChildren.add(newSlotPair.getChildSlot());
                                                     }
                                                 } else if (slotRelation.getName() == SlotRelationName.POWERS) {
                                                     if (childSlot.getIsHostingSlot() && parentSlot.getIsHostingSlot()) {
-                                                        slotEJB.addSlotPair(new SlotPair(childSlot, parentSlot, slotRelation));
+                                                        slotPairEJB.add(new SlotPair(childSlot, parentSlot, slotRelation));
                                                     } else {
                                                         rowResult.addMessage(new ValidationMessage(ErrorMessage.POWER_RELATIONSHIP_RESTRICTIONS, rowNumber));
                                                         continue;
                                                     }
                                                 } else if (slotRelation.getName() == SlotRelationName.CONTROLS) {
                                                     if (childSlot.getIsHostingSlot() && parentSlot.getIsHostingSlot()) {
-                                                        slotEJB.addSlotPair(new SlotPair(childSlot, parentSlot, slotRelation));
+                                                        slotPairEJB.add(new SlotPair(childSlot, parentSlot, slotRelation));
                                                     } else {
                                                         rowResult.addMessage(new ValidationMessage(ErrorMessage.CONTROL_RELATIONSHIP_RESTRICTIONS, rowNumber));
                                                         continue;
@@ -396,11 +399,11 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                                 }
                                 break;
                             case CMD_DELETE:
-                                final List<SlotPair> slotPairs = slotEJB.findSlotPairsByParentChildRelation(child, parent, slotRelationName);
+                                final List<SlotPair> slotPairs = slotPairEJB.findSlotPairsByParentChildRelation(child, parent, slotRelationName);
                                 if (slotPairs.size() != 0) {
                                     try {
                                         for (SlotPair slotPair : slotPairs) {
-                                            slotEJB.deleteSlotPair(slotPair);
+                                            slotPairEJB.delete(slotPair);
                                         }
                                     } catch (Exception e) {
                                         rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
@@ -421,7 +424,7 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
 
     private void checkForRelationConsistency() {
         for (Slot newSlot : newSlots) {
-            if (!newSlotPairChildren.contains(newSlot) && !newSlot.getComponentType().getName().equals("_ROOT")) {
+            if (!newSlotPairChildren.contains(newSlot) && !newSlot.getComponentType().getName().equals(SlotEJB.ROOT_COMPONENT_TYPE)) {
                 final ValidationMessage orphanSlotMessage = new ValidationMessage(ErrorMessage.ORPHAN_SLOT);
                 orphanSlotMessage.setOrphanSlotName(newSlot.getName());
                 loaderResult.addMessage(orphanSlotMessage);

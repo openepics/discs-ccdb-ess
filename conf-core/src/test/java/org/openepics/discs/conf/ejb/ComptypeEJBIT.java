@@ -1,11 +1,6 @@
 package org.openepics.discs.conf.ejb;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.List;
 import java.util.UUID;
@@ -24,8 +19,7 @@ import org.junit.runner.RunWith;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.Tag;
-import org.openepics.discs.conf.security.SecurityPolicy;
-import org.openepics.discs.conf.util.CCDBPackager;
+import org.openepics.discs.conf.util.TestUtility;
 
 /**
  *
@@ -37,7 +31,7 @@ public class ComptypeEJBIT {
     @Inject ComptypeEJB compTypesService;
     @Inject PropertyEJB propertyService;
 
-    @Inject private SecurityPolicy securityPolicy;
+    @Inject private TestUtility testUtility;
 
     private static final long SEARCH_COMP_TYPE_ID_INVALID = 1000000;
 
@@ -46,12 +40,12 @@ public class ComptypeEJBIT {
 
     @Deployment()
     public static WebArchive createDeployment() {
-        return CCDBPackager.createWebArchive();
+        return TestUtility.createWebArchive();
     }
 
     @Before
     public void setUp() throws Exception {
-        securityPolicy.login("admin", "admin");
+        testUtility.loginForTests();
     }
 
     @Test
@@ -199,6 +193,7 @@ public class ComptypeEJBIT {
     public void testDeleteCompTypeProp() {
         final ComponentType compType = compTypesService.findByName(SEARCH_COMP_TYPE_NAME);
         final ComptypePropertyValue compValue = compType.getComptypePropertyList().get(0);
+
         compTypesService.deleteChild(compValue);
 
         final ComponentType newCompType = compTypesService.findByName(SEARCH_COMP_TYPE_NAME);

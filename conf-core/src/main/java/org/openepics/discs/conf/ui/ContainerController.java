@@ -24,6 +24,8 @@ import javax.inject.Named;
 
 import org.openepics.discs.conf.ejb.ComptypeEJB;
 import org.openepics.discs.conf.ejb.SlotEJB;
+import org.openepics.discs.conf.ejb.SlotPairEJB;
+import org.openepics.discs.conf.ejb.SlotRelationEJB;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotRelationName;
@@ -43,6 +45,8 @@ public class ContainerController implements Serializable {
 
     @Inject private ContainerTreeBuilder containerTreeBuilder;
     @Inject private SlotEJB slotEJB;
+    @Inject private SlotPairEJB slotPairEJB;
+    @Inject private SlotRelationEJB slotRelationEJB;
     @Inject private ComptypeEJB comptypeEJB;
 
     private TreeNode rootNode;
@@ -118,7 +122,7 @@ public class ContainerController implements Serializable {
         slotEJB.add(newContainer);
 
         if (selectedNode != null) {
-            slotEJB.addSlotPair(new SlotPair(newContainer, ((ContainerView) selectedNode.getData()).getSlot(), slotEJB.findSlotRelationByName(SlotRelationName.CONTAINS)));
+            slotPairEJB.add(new SlotPair(newContainer, ((ContainerView) selectedNode.getData()).getSlot(), slotRelationEJB.findBySlotRelationName(SlotRelationName.CONTAINS)));
         }
 
         init();

@@ -20,15 +20,14 @@
 	            </p:column>
 	
 	            <p:column headerText="Actions" width="15%" style="text-align: center;">
-	                <p:commandButton icon="ui-icon-trash" title="Delete" ajax="true" oncomplete="deleteDeviceType.show()">
-	                    <f:setPropertyActionListener value="#{deviceType}" target="#{componentTypeManager.selectedDeviceType}" />
-	                </p:commandButton>
-	                <p:commandButton icon="ui-icon-plus" title="Add Property">
-	                   <f:ajax event="click" listener="#{componentTypeManager.deviceTypePropertyRedirect(deviceType.id)}" />
-	                </p:commandButton>
+	                <p:commandButton icon="ui-icon-plus" title="Add Property"
+                            action="#{componentTypeManager.deviceTypePropertyRedirect(deviceType.id)}" />
 	                <p:commandButton icon="ui-icon-pencil" title="Edit" ajax="true" oncomplete="modifyDeviceType.show()">
 	                    <f:setPropertyActionListener value="#{deviceType}" target="#{componentTypeManager.selectedDeviceTypeToModify}" />
 	                </p:commandButton>
+                    <p:commandButton icon="ui-icon-trash" title="Delete" ajax="true" oncomplete="deleteDeviceType.show()">
+                        <f:setPropertyActionListener value="#{deviceType}" target="#{componentTypeManager.selectedDeviceType}" />
+                    </p:commandButton>
 	                <p:commandButton icon="ui-icon-clock" title="Log" update=":deviceTypeLogForm" oncomplete="deviceTypeLog.show()">
 	                    <f:ajax event="click" listener="#{auditManager.selectEntityForLog(deviceType, 'COMPONENT_TYPE')}" />
 	                </p:commandButton>

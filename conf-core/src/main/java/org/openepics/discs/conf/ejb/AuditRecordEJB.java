@@ -28,4 +28,9 @@ public class AuditRecordEJB extends ReadOnlyDAO<AuditRecord> {
 
         return auditRecords == null ? new ArrayList<AuditRecord>() : auditRecords;
     }
+
+	@Override
+	public AuditRecord findByName(String name) {
+		throw new UnsupportedOperationException("findByName method not aplicable to AuditRecord class");
+	}
 }

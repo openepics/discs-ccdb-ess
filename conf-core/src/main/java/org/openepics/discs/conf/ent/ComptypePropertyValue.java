@@ -17,7 +17,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "ComptypePropertyValue.findAll", query = "SELECT c FROM ComptypePropertyValue c"),
-    @NamedQuery(name = "ComptypePropertyValue.findByCtypePropId", query = "SELECT c FROM ComptypePropertyValue c WHERE c.id = :id"),
+    @NamedQuery(name = "ComptypePropertyValue.findById", query = "SELECT c FROM ComptypePropertyValue c WHERE c.id = :id"),
+    @NamedQuery(name = "ComptypePropertyValue.findPropertyDefs", query = "SELECT c FROM ComptypePropertyValue c WHERE c.componentType = :componentType AND c.propValue IS NULL"),
     @NamedQuery(name = "ComptypePropertyValue.findByInRepository", query = "SELECT c FROM ComptypePropertyValue c WHERE c.inRepository = :inRepository"),
     @NamedQuery(name = "ComptypePropertyValue.findByModifiedBy", query = "SELECT c FROM ComptypePropertyValue c WHERE c.modifiedBy = :modifiedBy")})
 public class ComptypePropertyValue extends PropertyValue {
@@ -30,7 +31,7 @@ public class ComptypePropertyValue extends PropertyValue {
     public ComptypePropertyValue(boolean inRepository) {
         super(inRepository);
     }
-    
+
     public ComponentType getComponentType() { return componentType; }
     public void setComponentType(ComponentType componentType) { this.componentType = componentType; }
 

@@ -26,7 +26,7 @@ public class DeviceArtifact extends Artifact {
     @ManyToOne(optional = false)
     private Device device;
 
-    protected DeviceArtifact() { }
+    public DeviceArtifact() { }
 
     public DeviceArtifact(String name, boolean isInternal, String description, String uri) {
         super(name, isInternal, description, uri);

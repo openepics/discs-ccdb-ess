@@ -25,7 +25,9 @@ import javax.inject.Inject;
 import org.apache.commons.io.FilenameUtils;
 import org.openepics.discs.conf.ejb.DAO;
 import org.openepics.discs.conf.ent.Artifact;
+import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.ConfigurationEntity;
+import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyValue;
 import org.openepics.discs.conf.ent.Tag;
@@ -53,6 +55,7 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
     protected Property property;
     protected String propertyValue;
     protected List<Property> filteredProperties;
+    private boolean propertyNameChangeDisabled;
 
     protected String tag;
 
@@ -70,6 +73,8 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
     private DAO<? extends ConfigurationEntity> dao;
     private Class<T1> propertyValueClass;
     private Class<T2> artifactClass;
+
+    protected List<ComptypePropertyValue> parentProperties;
 
     protected void resetFields() {
         property = null;
@@ -186,6 +191,10 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
             property = selectedPropertyValue.getProperty();
             propertyValue = selectedPropertyValue.getPropValue();
 
+            if (selectedAttribute.getEntity() instanceof PropertyValue) {
+                propertyNameChangeDisabled = isInherited((PropertyValue)selectedAttribute.getEntity());
+            }
+
             RequestContext.getCurrentInstance().update("modifyPropertyValueForm:modifyPropertyValue");
             RequestContext.getCurrentInstance().execute("PF('modifyPropertyValue').show()");
         } else if (selectedAttribute.getEntity().getClass().equals(artifactClass)) {
@@ -259,10 +268,31 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
         return new DefaultStreamedContent(new FileInputStream(filePath), contentType, selectedArtifact.getName());
     }
 
+    public boolean canDelete(Object attribute) {
+        // TODO check whether to show inherited artifacts and prevent their deletion
+        return attribute instanceof Artifact || (attribute instanceof PropertyValue && !isInherited((PropertyValue)attribute));
+    }
+
+    private boolean isInherited(PropertyValue propertyValue) {
+        final String propertyName = propertyValue.getProperty().getName();
+        for (PropertyValue inheritedPropVal : parentProperties) {
+            if (propertyName.equals(inheritedPropVal.getProperty().getName())) return true;
+        }
+        return false;
+    }
+
+    public boolean canEdit(Object attribute) {
+        // TODO check whether to show inherited artifacts and prevent their editing
+        return attribute instanceof Artifact || attribute instanceof DevicePropertyValue;
+    }
+
     protected abstract void setPropertyValueParent(T1 child);
 
     protected abstract void setArtifactParent(T2 child);
 
+    /**
+     * Filters a list of possible properties to attach to the entity based on the association type.
+     */
     protected abstract void filterProperties();
 
     protected abstract void populateAttributesList();
@@ -278,6 +308,7 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
      * Prepares data for addition of {@link PropertyValue}
      */
     public void prepareForPropertyValueAdd() {
+        propertyNameChangeDisabled = false;
         property = null;
         propertyValue = null;
     }
@@ -354,4 +385,6 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
     protected void setPropertyValueClass(Class<T1> propertyValueClass) { this.propertyValueClass = propertyValueClass; }
 
     protected void setArtifactClass(Class<T2> artifactClass) { this.artifactClass = artifactClass; }
+
+    public boolean isPropertyNameChangeDisabled() { return propertyNameChangeDisabled; }
 }

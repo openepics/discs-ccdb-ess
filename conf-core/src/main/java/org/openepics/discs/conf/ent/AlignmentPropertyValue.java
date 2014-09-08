@@ -25,7 +25,7 @@ public class AlignmentPropertyValue extends PropertyValue {
     @ManyToOne(optional = false)
     private AlignmentRecord alignmentRecord;
 
-    protected AlignmentPropertyValue() { }
+    public AlignmentPropertyValue() { }
 
     public AlignmentPropertyValue(boolean inRepository) {
         super(inRepository);
