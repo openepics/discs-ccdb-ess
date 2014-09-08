@@ -21,10 +21,10 @@
                 </p:column>
                 
                 <p:column headerText="Actions" style="padding: 0px !important; width: 15%">                    
+                    <p:commandButton icon="ui-icon-plus" title="Add Property" action="#{containerController.recirectToAttributes(container.id)}" />
                     <p:commandButton icon="ui-icon-pencil" title="Edit" ajax="true" oncomplete="modifyContainer.show()" >
                         <f:setPropertyActionListener value="#{container}" target="#{containerController.selectedContainerToModify}" />
                     </p:commandButton>
-                    <p:commandButton icon="ui-icon-plus" title="Add Property" action="#{containerController.recirectToAttributes(container.id)}") />
                     <p:commandButton icon="ui-icon-trash" title="Delete" ajax="true" oncomplete="deleteContainer.show()" rendered="#{!container.hasChildren}" >
                         <f:setPropertyActionListener value="#{container}" target="#{containerController.selectedContainer}" />
                     </p:commandButton>
@@ -54,7 +54,6 @@
             <ui:param name="formId" value="containerLogForm" />
             <ui:param name="dialogTitle" value="Container Log" />
             <ui:param name="widgetName" value="containerLog" />
-            <ui:param name="managedBean" value="#{containerController}" />
         </ui:include>
         
         <ui:include src="../add-or-modify-dialogs/delete-confirmation.xhtml" >

@@ -74,9 +74,7 @@ public class ContainerController implements Serializable {
     public TreeNode getRootNode() { return rootNode; }
 
     public TreeNode getSelectedNode() { return selectedNode; }
-    public void setSelectedNode(TreeNode selectedNode) {
-        this.selectedNode = selectedNode;
-    }
+    public void setSelectedNode(TreeNode selectedNode) { this.selectedNode = selectedNode; }
 
     /**
      * Prepares fields that are used in pop up for adding new container

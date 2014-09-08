@@ -26,7 +26,7 @@
                        <br/>
                        
                        <p:commandButton value="History" icon="ui-icon-clock" style="float: right; margin: 10px 10px " update=":containerLogForm" oncomplete="containerLog.show()" >
-                          <f:ajax event="click" listener="#{auditManager.selectEntityForLog(comptypeAttributesController.deviceType, 'COMPONENT_TYPE')}" />
+                          <f:ajax event="click" listener="#{auditManager.selectEntityForLog(containerAttributesController.slot, 'SLOT')}" />
                        </p:commandButton>
                        <p:commandButton value="Back" style="float: right; margin: 10px 0px 10px 10px" ajax="false" >
                            <f:ajax event="click" listener="#{containerAttributesController.containerRedirect()}" />
@@ -37,9 +37,14 @@
                    <h:panelGroup class="property-values" layout="block">
                       <p:commandButton id="addButton" value="Add" type="button" icon="ui-icon-plus"/>
                       <p:menu overlay="true" trigger="addButton" my="left top" at="left bottom">
-                            <p:menuitem value="Property" oncomplete="addPropertyValue.show()" actionListener="#{containerAttributesController.prepareForPropertyValueAdd}" update=":addPropertyValueForm:addPropertyValue"/>
-                            <p:menuitem value="Tag" oncomplete="ContainerTag.show()" actionListener="#{containerAttributesController.prepareForPropertyValueAdd}"/>
-                            <p:menuitem value="Artifact" oncomplete="addArtifact.show()" actionListener="#{containerAttributesController.prepareForArtifactAdd}" update=":addArtifactForm:addArtifact"/>
+                            <p:menuitem value="Property" oncomplete="addPropertyValue.show()" 
+                                    actionListener="#{containerAttributesController.prepareForPropertyValueAdd}" 
+                                    update=":addPropertyValueForm:addPropertyValue"/>
+                            <p:menuitem value="Tag" oncomplete="containerTag.show()" update=":containerTagForm" 
+                                    actionListener="#{containerAttributesController.prepareForTagAdd}"/>
+                            <p:menuitem value="Artifact" oncomplete="addArtifact.show()" 
+                                    actionListener="#{containerAttributesController.prepareForArtifactAdd}" 
+                                    update=":addArtifactForm:addArtifact"/>
                        </p:menu>
                        <p:dataTable id="attributesDataTable" var="attribute" value="#{containerAttributesController.attributes}" style="table-layout: fixed; word-wrap: break-word;" rows="15" paginator="true" paginatorPosition="bottom">
                             <p:column headerText="Name" sortBy="#{attribute.name}">
@@ -51,7 +56,7 @@
                             </p:column>
                                                         
                             <p:column headerText="Unit" >
-                                <h:outputText value="#{attribute.unit.name}" />
+                                <h:outputText value="#{!empty attribute.unit ? attribute.unit.name : '-'}" />
                             </p:column>
                 
                             <p:column headerText="Actions" width="10%">
@@ -113,7 +118,7 @@
         </ui:include>
         
         <ui:include src="../add-or-modify-dialogs/tag.xhtml" >
-            <ui:param name="formId" value="deviceTypeTagForm" />
+            <ui:param name="formId" value="containerTagForm" />
             <ui:param name="dialogTitle" value="Add new container tag" />
             <ui:param name="widgetName" value="containerTag" />
             <ui:param name="controller" value="#{containerAttributesController}" />

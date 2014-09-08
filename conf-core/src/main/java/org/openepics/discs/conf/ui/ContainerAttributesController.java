@@ -11,6 +11,7 @@ package org.openepics.discs.conf.ui;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
@@ -127,5 +128,20 @@ public class ContainerAttributesController extends AbstractAttributesController<
     }
 
     public String getParentContainer() { return parentContainer; }
+
+    @Override
+    protected void setTagParent(Tag tag) {
+        final Set<Tag> existingTags = slot.getTags();
+        if (!existingTags.contains(tag)) {
+            existingTags.add(tag);
+            slotEJB.save(slot);
+        }
+    }
+
+    @Override
+    protected void deleteTagFromParent(Tag tag) {
+        slot.getTags().remove(tag);
+        slotEJB.save(slot);
+    }
 
 }

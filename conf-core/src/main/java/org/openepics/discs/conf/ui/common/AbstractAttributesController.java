@@ -16,6 +16,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.faces.application.FacesMessage;
@@ -24,6 +25,7 @@ import javax.inject.Inject;
 
 import org.apache.commons.io.FilenameUtils;
 import org.openepics.discs.conf.ejb.DAO;
+import org.openepics.discs.conf.ejb.TagEJB;
 import org.openepics.discs.conf.ent.Artifact;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.ConfigurationEntity;
@@ -39,17 +41,22 @@ import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 
+import com.google.common.base.Function;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.google.common.io.ByteStreams;
 
 /**
  * Parent class for all classes that handle entity attributes manipulation
  *
  * @author Andraz Pozar <andraz.pozar@cosylab.com>
+ * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  *
  */
 public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 extends Artifact> implements Serializable{
 
     @Inject protected BlobStore blobStore;
+    @Inject protected TagEJB tagEJB;
 
     protected Property property;
     protected String propertyValue;
@@ -57,6 +64,7 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
     private boolean propertyNameChangeDisabled;
 
     protected String tag;
+    protected List<String> tagsForAutocomplete;
 
     protected String artifactDescription;
     protected boolean isArtifactInternal;
@@ -110,7 +118,7 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
                 Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "New property value has been created");
             }
         } finally {
-            populateAttributesList();
+            internalPopulateAttributesList();
         }
     }
 
@@ -142,7 +150,7 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
             dao.addChild(artifactInstance);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "New artifact has been created");
         } finally {
-            populateAttributesList();
+            internalPopulateAttributesList();
         }
     }
 
@@ -150,7 +158,16 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
      * Adds new {@link Tag} to parent {@link ConfigurationEntity}
      */
     public void addNewTag() {
+        Tag existingTag = tagEJB.findById(tag);
+        if (existingTag == null) {
+            existingTag = new Tag(tag);
+            tagEJB.add(existingTag);
+        }
 
+        setTagParent(existingTag);
+        internalPopulateAttributesList();
+
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Tag added", tag);
     }
 
     /**
@@ -166,13 +183,14 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
                 deleteArtifact();
             } else if (selectedAttribute.getEntity().getClass().equals(Tag.class)) {
                 final Tag tag = (Tag) selectedAttribute.getEntity();
-                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Failure", "Not yet implemented");
+                deleteTagFromParent(tag);
+                Utility.showMessage(FacesMessage.SEVERITY_INFO, "Tag removed", tag.getName());
                 return;
             } else {
                 throw new UnhandledCaseException();
             }
         } finally {
-            populateAttributesList();
+            internalPopulateAttributesList();
         }
     }
 
@@ -237,7 +255,7 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
             dao.saveChild(selectedPropertyValue);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Property value has been modified");
         } finally {
-            populateAttributesList();
+            internalPopulateAttributesList();
         }
     }
 
@@ -257,7 +275,7 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
             dao.saveChild(selectedArtifact);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Artifact has been modified");
         } finally {
-            populateAttributesList();
+            internalPopulateAttributesList();
         }
 
     }
@@ -279,7 +297,8 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
 
     public boolean canDelete(Object attribute) {
         // TODO check whether to show inherited artifacts and prevent their deletion
-        return attribute instanceof Artifact || (attribute instanceof PropertyValue && !isInherited((PropertyValue)attribute));
+        return attribute instanceof Artifact || (attribute instanceof PropertyValue && !isInherited((PropertyValue)attribute))
+                || attribute instanceof Tag;
     }
 
     private boolean isInherited(PropertyValue propertyValue) {
@@ -299,12 +318,32 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
 
     protected abstract void setArtifactParent(T2 child);
 
+    protected abstract void setTagParent(Tag tag);
+
+    protected abstract void deleteTagFromParent(Tag tag);
+
     /**
      * Filters a list of possible properties to attach to the entity based on the association type.
      */
     protected abstract void filterProperties();
 
     protected abstract void populateAttributesList();
+
+    private void internalPopulateAttributesList() {
+        fillTagsAutocomplete();
+
+        populateAttributesList();
+    }
+
+    private void fillTagsAutocomplete() {
+        tagsForAutocomplete = ImmutableList.copyOf(Lists.transform(tagEJB.findAllSorted(), new Function<Tag, String>() {
+
+            @Override
+            public String apply(Tag input) {
+                return input.getName();
+            }
+        }));
+    }
 
     /**
      * Returns list of all attributes for current {@link ConfigurationEntity}
@@ -320,6 +359,11 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
         propertyNameChangeDisabled = false;
         property = null;
         propertyValue = null;
+    }
+
+    public void prepareForTagAdd() {
+        fillTagsAutocomplete();
+        tag = null;
     }
 
     /**
@@ -382,7 +426,6 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
     public EntityAttributeView getSelectedAttribute() { return selectedAttribute; }
     public void setSelectedAttribute(EntityAttributeView selectedAttribute) { this.selectedAttribute = selectedAttribute; }
 
-
     public EntityAttributeView getSelectedAttributeToModify() { return selectedAttribute; }
     public void setSelectedAttributeToModify(EntityAttributeView selectedAttribute) {
         this.selectedAttribute = selectedAttribute;
@@ -396,4 +439,15 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
     protected void setArtifactClass(Class<T2> artifactClass) { this.artifactClass = artifactClass; }
 
     public boolean isPropertyNameChangeDisabled() { return propertyNameChangeDisabled; }
+
+    public List<String> tagAutocompleteText(String query) {
+        final List<String> resultList = new ArrayList<String>();
+        final String queryUpperCase = query.toUpperCase();
+        for (String element : tagsForAutocomplete) {
+            if (element.toUpperCase().startsWith(queryUpperCase))
+                resultList.add(element);
+        }
+
+        return resultList;
+   }
 }

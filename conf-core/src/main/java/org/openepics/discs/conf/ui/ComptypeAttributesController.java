@@ -11,6 +11,7 @@ package org.openepics.discs.conf.ui;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
@@ -44,6 +45,7 @@ import com.google.common.collect.ImmutableList;
  * Controller bean for manipulation of {@link ComponentType} attributes
  *
  * @author Andraz Pozar <andraz.pozar@cosylab.com>
+ * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  *
  */
 @Named
@@ -169,4 +171,20 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
     protected void setArtifactParent(ComptypeArtifact child) {
         child.setComponentType(compType);
     }
+
+    @Override
+    public void setTagParent(Tag tag) {
+        final Set<Tag> existingTags = compType.getTags();
+        if (!existingTags.contains(tag)) {
+            existingTags.add(tag);
+            comptypeEJB.save(compType);
+        }
+    }
+
+    @Override
+    protected void deleteTagFromParent(Tag tag) {
+        compType.getTags().remove(tag);
+        comptypeEJB.save(compType);
+    }
+
 }

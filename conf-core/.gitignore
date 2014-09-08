@@ -10,3 +10,4 @@
 # Eclipse EE specific
 src/main/java/resources
 /target/
+/target/

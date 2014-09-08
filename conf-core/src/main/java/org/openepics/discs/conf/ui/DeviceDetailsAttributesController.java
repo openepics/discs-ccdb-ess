@@ -15,6 +15,7 @@
 package org.openepics.discs.conf.ui;
 
 import java.util.ArrayList;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
@@ -76,6 +77,21 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
     @Override
     protected void setArtifactParent(DeviceArtifact child) {
         child.setDevice(device);
+    }
+
+    @Override
+    protected void setTagParent(Tag tag) {
+        final Set<Tag> existingTags = device.getTags();
+        if (!existingTags.contains(tag)) {
+            existingTags.add(tag);
+            deviceEJB.save(device);
+        }
+    }
+
+    @Override
+    protected void deleteTagFromParent(Tag tag) {
+        device.getTags().remove(tag);
+        deviceEJB.save(device);
     }
 
     @Override
