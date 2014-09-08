@@ -13,10 +13,10 @@
                 <h:outputText value="#{dialogTitle}" />
             </f:facet>
 
-            <p:panelGrid id="grp" width="100%">
+            <p:panelGrid id="grp" width="100%" styleClass="noBorders">
                 <p:row>
                     <p:column style="vertical-align: top;">
-                        <p:panelGrid id="deviceBasic" styleClass="borderlessPanelGrid">
+                        <p:panelGrid id="deviceBasic" styleClass="noBorders">
                             <p:row>
                                 <p:column style="text-align: right">
                                     <h:outputText value="Device type:" />
@@ -72,7 +72,7 @@
                     </p:column>
                     <p:column>
                         <p:fieldset legend="Details">
-                            <p:panelGrid id="deviceDetails" styleClass="borderlessPanelGrid">
+                            <p:panelGrid id="deviceDetails" styleClass="noBorders">
                                 <p:row>
                                     <p:column colspan="2">
                                         <h:outputText value="Description:" />

@@ -10,7 +10,7 @@
                <h:form id="containerPropertiesManagerForm" enctype="multipart/form-data">
                
                    <h:panelGroup class="properties-parent-info" layout="block" style="border-right: 1px solid #a8a8a8;">
-                       <p:panelGrid columns="2" style="width: 100%;" columnClasses="alignTop, alignTop"> 
+                       <p:panelGrid columns="2" style="width: 100%;" columnClasses="alignTop, alignTop" styleClass="noBorders"> 
                                                
                            <h:outputLabel value="Device type name:" />
                            <h:outputText value="#{containerAttributesController.slot.name}" style="width: 100%;" />
@@ -55,11 +55,11 @@
                             </p:column>
                 
                             <p:column headerText="Actions" width="10%">
-                                <p:commandButton icon="ui-icon-trash" title="Delete" ajax="true" oncomplete="deleteAttribute.show()">
-                                     <f:setPropertyActionListener value="#{attribute}" target="#{containerAttributesController.selectedAttribute}" />
-                                </p:commandButton>
-                                <p:commandButton icon="ui-icon-pencil" title="Edit" ajax="true" rendered="#{attribute.kind != 'Definition'}">
+                                <p:commandButton icon="ui-icon-pencil" title="Edit" ajax="true" rendered="#{containerAttributesController.canEdit(attribute.entity)}">
                                      <f:setPropertyActionListener value="#{attribute}" target="#{containerAttributesController.selectedAttributeToModify}" />
+                                </p:commandButton>
+                                <p:commandButton icon="ui-icon-trash" title="Delete" ajax="true" oncomplete="deleteAttribute.show()" rendered="#{containerAttributesController.canDelete(attribute.entity)}">
+                                     <f:setPropertyActionListener value="#{attribute}" target="#{containerAttributesController.selectedAttribute}" />
                                 </p:commandButton>
                                 <p:commandButton icon="ui-icon-arrowthick-1-s" title="Download" ajax="false" rendered="#{attribute.hasFile}">
                                      <f:setPropertyActionListener value="#{attribute}" target="#{containerAttributesController.selectedAttribute}" />

@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.openepics.discs.conf.ejb.PropertyEJB;
 import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.ComponentType;
+import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyAssociation;
 import org.openepics.discs.conf.ent.Slot;
@@ -56,6 +57,9 @@ public class ContainerAttributesController extends AbstractAttributesController<
         super.setArtifactClass(SlotArtifact.class);
         super.setPropertyValueClass(SlotPropertyValue.class);
         super.setDao(slotEJB);
+
+        parentProperties = slot.getComponentType().getComptypePropertyList();
+
         populateAttributesList();
         filterProperties();
         parentContainer = slot.getChildrenSlotsPairList().size() > 0 ? slot.getChildrenSlotsPairList().get(0).getParentSlot().getName() : null;
@@ -76,6 +80,11 @@ public class ContainerAttributesController extends AbstractAttributesController<
     protected void populateAttributesList() {
         attributes = new ArrayList<>();
         slot = slotEJB.findById(slot.getId());
+
+        for (ComptypePropertyValue parentProp : parentProperties) {
+            if (parentProp.getPropValue() != null) attributes.add(new EntityAttributeView(parentProp));
+        }
+
         for (SlotPropertyValue prop : slot.getSlotPropertyList()) {
             attributes.add(new EntityAttributeView(prop));
         }

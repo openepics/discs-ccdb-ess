@@ -27,7 +27,6 @@ import org.openepics.discs.conf.ejb.DAO;
 import org.openepics.discs.conf.ent.Artifact;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.ConfigurationEntity;
-import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyValue;
 import org.openepics.discs.conf.ent.Tag;
@@ -75,6 +74,7 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
     private Class<T2> artifactClass;
 
     protected List<ComptypePropertyValue> parentProperties;
+    protected T1 propertyValueInstance;
 
     protected void resetFields() {
         property = null;
@@ -91,7 +91,6 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
      * Adds new {@link PropertyValue} to parent {@link ConfigurationEntity} defined in {@link AbstractAttributesController#setPropertyValueParent(PropertyValue)}
      */
     public void addNewPropertyValue() {
-        final T1 propertyValueInstance;
         try {
             propertyValueInstance = propertyValueClass.newInstance();
         } catch (InstantiationException | IllegalAccessException e) {
@@ -158,20 +157,13 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
      * Deletes attribute from parent {@link ConfigurationEntity}. This attribute can be {@link Tag}, {@link PropertyValue} or {@link Artifact}
      * @throws IOException
      */
-    @SuppressWarnings("unchecked")
+
     public void deleteAttribute() throws IOException {
         try {
             if (selectedAttribute.getEntity().getClass().equals(propertyValueClass)) {
-                final T1 propValue = (T1) selectedAttribute.getEntity();
-                dao.deleteChild(propValue);
-                Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Property value has been deleted");
+                deletePropertyValue();
             } else if (selectedAttribute.getEntity().getClass().equals(artifactClass)) {
-                final T2 artifact = (T2) selectedAttribute.getEntity();
-                if (artifact.isInternal()) {
-                    blobStore.deleteFile(artifact.getUri());
-                }
-                dao.deleteChild(artifact);
-                Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Device type artifact has been deleted");
+                deleteArtifact();
             } else if (selectedAttribute.getEntity().getClass().equals(Tag.class)) {
                 final Tag tag = (Tag) selectedAttribute.getEntity();
                 Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Failure", "Not yet implemented");
@@ -182,6 +174,23 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
         } finally {
             populateAttributesList();
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    protected void deletePropertyValue() {
+        final T1 propValue = (T1) selectedAttribute.getEntity();
+        dao.deleteChild(propValue);
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Property value has been deleted");
+    }
+
+    @SuppressWarnings("unchecked")
+    private void deleteArtifact() throws IOException {
+        final T2 artifact = (T2) selectedAttribute.getEntity();
+        if (artifact.isInternal()) {
+            blobStore.deleteFile(artifact.getUri());
+        }
+        dao.deleteChild(artifact);
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Device type artifact has been deleted");
     }
 
     @SuppressWarnings("unchecked")
@@ -283,7 +292,7 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
 
     public boolean canEdit(Object attribute) {
         // TODO check whether to show inherited artifacts and prevent their editing
-        return attribute instanceof Artifact || attribute instanceof DevicePropertyValue;
+        return attribute instanceof Artifact || attribute instanceof PropertyValue && !(attribute instanceof ComptypePropertyValue) ;
     }
 
     protected abstract void setPropertyValueParent(T1 child);

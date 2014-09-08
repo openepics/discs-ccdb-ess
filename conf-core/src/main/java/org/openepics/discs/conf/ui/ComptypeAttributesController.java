@@ -20,12 +20,18 @@ import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
 import org.openepics.discs.conf.ejb.ComptypeEJB;
+import org.openepics.discs.conf.ejb.DeviceEJB;
 import org.openepics.discs.conf.ejb.PropertyEJB;
+import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypeArtifact;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
+import org.openepics.discs.conf.ent.Device;
+import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyAssociation;
+import org.openepics.discs.conf.ent.Slot;
+import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.ent.Tag;
 import org.openepics.discs.conf.ui.common.AbstractAttributesController;
 import org.openepics.discs.conf.views.EntityAttributeView;
@@ -46,6 +52,8 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
 
     @Inject private ComptypeEJB comptypeEJB;
     @Inject private PropertyEJB propertyEJB;
+    @Inject private SlotEJB slotEJB;
+    @Inject private DeviceEJB deviceEJB;
 
     private ComponentType compType;
 
@@ -68,6 +76,51 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
             FacesContext.getCurrentInstance().getExternalContext().redirect("device-types-manager.xhtml");
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void addNewPropertyValue() {
+        super.addNewPropertyValue();
+
+        if (propertyValue == null) {
+            for (Slot slot : slotEJB.findByComponentType(compType)) {
+                final SlotPropertyValue newSlotProperty = new SlotPropertyValue();
+                newSlotProperty.setProperty(propertyValueInstance.getProperty());
+                newSlotProperty.setSlot(slot);
+                slotEJB.addChild(newSlotProperty);
+            }
+
+            for (Device device : deviceEJB.findDevicesByComponentType(compType)) {
+                final DevicePropertyValue newDeviceProperty = new DevicePropertyValue();
+                newDeviceProperty.setProperty(propertyValueInstance.getProperty());
+                newDeviceProperty.setDevice(device);
+                deviceEJB.addChild(newDeviceProperty);
+            }
+        }
+    }
+
+    @Override
+    protected void deletePropertyValue() {
+        super.deletePropertyValue();
+
+        final ComptypePropertyValue propValue = (ComptypePropertyValue) selectedAttribute.getEntity();
+        if (propValue.getPropValue() == null) {
+            for (Slot slot : slotEJB.findByComponentType(compType)) {
+                for (SlotPropertyValue slotPropValue : slot.getSlotPropertyList()) {
+                    if (slotPropValue.getProperty().equals(propValue.getProperty()) && slotPropValue.getPropValue() == null) {
+                        slotEJB.deleteChild(slotPropValue);
+                    }
+                }
+            }
+
+            for (Device device : deviceEJB.findDevicesByComponentType(compType)) {
+                for (DevicePropertyValue devicePropValue : device.getDevicePropertyList()) {
+                    if (devicePropValue.getProperty().equals(propValue.getProperty()) && devicePropValue.getPropValue() == null) {
+                        deviceEJB.deleteChild(devicePropValue);
+                    }
+                }
+            }
         }
     }
 

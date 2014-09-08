@@ -12,7 +12,7 @@
             <f:facet name="header">
                 <h:outputText value="#{dialogTitle}" />
             </f:facet>
-            <p:panelGrid id="grp" styleClass="dialog-grid-panel" columns="2">               
+            <p:panelGrid id="grp" styleClass="dialog-grid-panel noBorders" columns="2">               
                 <p:outputLabel for="tag" value="Tag:" />
                 <h:panelGroup>
                     <p:inputText id="tag" value="#{controller.tag}" required="true" requiredMessage="Please enter tag" style="width: 100%"/>

@@ -26,8 +26,10 @@ import org.openepics.discs.conf.ejb.ComptypeEJB;
 import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ejb.SlotPairEJB;
 import org.openepics.discs.conf.ejb.SlotRelationEJB;
+import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotPair;
+import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.ent.SlotRelationName;
 import org.openepics.discs.conf.views.ContainerView;
 import org.primefaces.context.RequestContext;
@@ -123,6 +125,14 @@ public class ContainerController implements Serializable {
 
         if (selectedNode != null) {
             slotPairEJB.add(new SlotPair(newContainer, ((ContainerView) selectedNode.getData()).getSlot(), slotRelationEJB.findBySlotRelationName(SlotRelationName.CONTAINS)));
+        }
+
+        List<ComptypePropertyValue> propertyDefinitions = comptypeEJB.findPropertyDefinitions(newContainer.getComponentType());
+        for (ComptypePropertyValue propertyDefinition : propertyDefinitions) {
+            final SlotPropertyValue slotPropertyValue = new SlotPropertyValue(false);
+            slotPropertyValue.setProperty(propertyDefinition.getProperty());
+            slotPropertyValue.setSlot(newContainer);
+            slotEJB.addChild(slotPropertyValue);
         }
 
         init();
