@@ -46,6 +46,27 @@
                 <ui:param name="submitHandler" value="onDelete" />
                 <ui:param name="formToUpdate" value=":deviceTypesForm" />
         </ui:include>
+        
+        <ui:include src="../add-or-modify-dialogs/device-type.xhtml">
+	        <ui:param name="formId" value="modifyDeviceTypeForm" />
+	        <ui:param name="dialogTitle" value="Modify Device Type" />
+	        <ui:param name="widgetName" value="modifyDeviceType" />
+	        <ui:param name="submitHandler" value="onModify" />
+	    </ui:include>
+	    
+	    <ui:include src="../add-or-modify-dialogs/device-type.xhtml">
+	        <ui:param name="formId" value="addDeviceTypeForm" />
+	        <ui:param name="dialogTitle" value="Add Device Type" />
+	        <ui:param name="widgetName" value="addDeviceType" />
+	        <ui:param name="submitHandler" value="onAdd" />
+	    </ui:include>
+	    
+	    <ui:include src="../../audit/audit-log-table.xhtml">
+	        <ui:param name="formId" value="deviceTypeLogForm" />
+	        <ui:param name="dialogTitle" value="Device Type Log" />
+	        <ui:param name="widgetName" value="deviceTypeLog" />
+	        <ui:param name="managedBean" value="#{componentTypeManager}" />
+	    </ui:include>
 	    
 	</ui:define>
 </ui:composition>

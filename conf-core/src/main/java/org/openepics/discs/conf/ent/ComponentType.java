@@ -52,9 +52,6 @@ public class ComponentType extends ConfigurationEntity {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentType")
     private List<ComptypePropertyValue> comptypePropertyList = new ArrayList<>();
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentType")
-    private List<Slot> slotList;
-
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "childType")
     private List<ComptypeAsm> childrenTypes;
 
@@ -95,10 +92,6 @@ public class ComponentType extends ConfigurationEntity {
     public List<ComptypePropertyValue> getComptypePropertyList() {
         return comptypePropertyList;
     }
-
-    @XmlTransient
-    @JsonIgnore
-    public List<Slot> getSlotList() { return slotList; }
 
     @XmlTransient
     @JsonIgnore

@@ -16,7 +16,7 @@
 			<br />
 
 			<p:commandButton value="No" style="float: right" onclick="#{widgetName}.hide();" />
-			<p:commandButton value="Yes" style="float: right" oncomplete="#{widgetName}.hide()" ajax="true" action="#{controller[submitHandler]}" update="#{formToUpdate}" />
+			<p:commandButton value="Yes" style="float: right" oncomplete="#{widgetName}.hide(); resizePanel()" ajax="true" action="#{controller[submitHandler]}" update="#{formToUpdate}" />
 		</p:dialog>
 	</h:form>
 </ui:composition>
