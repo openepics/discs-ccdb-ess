@@ -2,11 +2,15 @@ package org.openepics.discs.conf.ent;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
 @Entity
 @Table(name = "tag")
+@NamedQueries({
+    @NamedQuery(name = "Tag.findAllOrdered", query = "SELECT t FROM Tag t ORDER BY t.name") })
 public class Tag {
     @Id
     private String name;

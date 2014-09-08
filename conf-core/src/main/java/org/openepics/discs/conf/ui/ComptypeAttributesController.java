@@ -119,6 +119,18 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
     }
 
     @Override
+    public void setTagParent(Tag tag) {
+        compType.getTags().add(tag);
+        comptypeEJB.save(compType);
+    }
+
+    @Override
+    protected void deleteTagFromParent(Tag tag) {
+        compType.getTags().remove(tag);
+        comptypeEJB.save(compType);
+    }
+
+    @Override
     protected void updateAndOpenArtifactModifyDialog() {
         //TODO move to abstract if possible
         RequestContext.getCurrentInstance().update("modifyDeviceTypeArtifactForm:modifyDeviceTypeArtifact");

@@ -82,6 +82,7 @@ public class EntityAttributeView {
     private void setTagParameters() {
         name = ((Tag) entity).getName();
         kind = "Tag";
+        value = "-";
     }
 
     public String getName() { return name; }

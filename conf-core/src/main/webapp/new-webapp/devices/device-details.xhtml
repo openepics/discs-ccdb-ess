@@ -108,7 +108,8 @@
                       <p:menu overlay="true" trigger="addButton" my="left top" at="left bottom">
                             <p:menuitem value="Property" oncomplete="addDeviceProperty.show()"
                                     actionListener="#{deviceDetailsAttributesController.prepareForPropertyValueAdd}" update=":addDevicePropertyForm:addDeviceProperty"/>
-                            <p:menuitem value="Tag" oncomplete="addDeviceTag.show()" actionListener="#{deviceDetailsAttributesController.prepareForPropertyValueAdd}"/>
+                            <p:menuitem value="Tag" oncomplete="addDeviceTag.show()" update=":addDeviceTagForm" 
+                                    actionListener="#{deviceDetailsAttributesController.prepareForPropertyValueAdd}"/>
                             <p:menuitem value="Artifact" oncomplete="addDeviceArtifact.show()"
                                     actionListener="#{deviceDetailsAttributesController.prepareForArtifactAdd}" update=":addDeviceArtifactForm:addDeviceArtifact"/>
                        </p:menu>

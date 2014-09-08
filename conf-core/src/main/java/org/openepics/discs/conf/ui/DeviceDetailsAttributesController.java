@@ -75,7 +75,8 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
 
     public boolean canDelete(Object attribute) {
         // TODO check whether to show inherited artifacts and prevent their deletion
-        return attribute instanceof Artifact || (attribute instanceof PropertyValue && !isInherited((PropertyValue)attribute));
+        return attribute instanceof Artifact || (attribute instanceof PropertyValue && !isInherited((PropertyValue)attribute))
+                || attribute instanceof Tag;
     }
 
     private boolean isInherited(PropertyValue propertyValue) {
@@ -99,6 +100,18 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
     @Override
     protected void setArtifactParent(DeviceArtifact child) {
         child.setDevice(device);
+    }
+
+    @Override
+    protected void setTagParent(Tag tag) {
+        device.getTags().add(tag);
+        deviceEJB.save(device);
+    }
+
+    @Override
+    protected void deleteTagFromParent(Tag tag) {
+        device.getTags().remove(tag);
+        deviceEJB.save(device);
     }
 
     @Override
