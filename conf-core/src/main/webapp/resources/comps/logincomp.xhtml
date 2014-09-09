@@ -25,7 +25,7 @@
             <p:overlayPanel id="_loginSigninPanel" for="_loginButton" 
                             widgetVar="_loginSigninWidget" style="border: 0px" 
                             rendered="#{!loginManager.loggedIn}"  dismissable="false">              
-                <p:panelGrid id="_loginSigninGrid">
+                <p:panelGrid id="_loginSigninGrid" styleClass="noBorders">
                     
                     <p:row>
                         <p:column><p:outputLabel for="userid" value="#{msgs.loginUser}" /> </p:column>

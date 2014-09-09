@@ -2,7 +2,7 @@
 <!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
     xmlns:p="http://primefaces.org/ui"
-    template="/new-webapp/template/template.xhtml"
+    template="/template/template.xhtml"
     xmlns:f="http://java.sun.com/jsf/core"
     xmlns:h="http://java.sun.com/jsf/html">
 
@@ -61,33 +61,33 @@
             </p:panelGrid>
         </h:form>
         
-        <ui:include src="/new-webapp/audit/audit-log-table.xhtml">
+        <ui:include src="/audit/audit-log-table.xhtml">
             <ui:param name="formId" value="deviceLogForm" />
             <ui:param name="dialogTitle" value="Device log" />
             <ui:param name="widgetName" value="deviceLog" />
         </ui:include>
     
-        <ui:include src="/new-webapp/audit/audit-log-details.xhtml">
+        <ui:include src="/audit/audit-log-details.xhtml">
             <ui:param name="formId" value="logDetailsForm" />
             <ui:param name="dialogTitle" value="Log entry details" />
             <ui:param name="widgetName" value="logDetails" />
         </ui:include>
         
-        <ui:include src="/new-webapp/devices/device-add-or-modify-dialog.xhtml">
+        <ui:include src="/devices/device-add-or-modify-dialog.xhtml">
             <ui:param name="formId" value="deviceAddForm" />
             <ui:param name="widgetName" value="addDeviceDialog" />
             <ui:param name="dialogTitle" value="Add device" />
             <ui:param name="submitHandler" value="onDeviceAdd" />
         </ui:include>
 
-        <ui:include src="/new-webapp/devices/device-add-or-modify-dialog.xhtml">
+        <ui:include src="/devices/device-add-or-modify-dialog.xhtml">
             <ui:param name="formId" value="deviceModifyForm" />
             <ui:param name="widgetName" value="modifyDeviceDialog" />
             <ui:param name="dialogTitle" value="Modify device" />
             <ui:param name="submitHandler" value="onDeviceModify" />
         </ui:include>
         
-        <ui:include src="/new-webapp/data-definitions/add-or-modify-dialogs/delete-confirmation.xhtml" >
+        <ui:include src="/data-definitions/add-or-modify-dialogs/delete-confirmation.xhtml" >
             <ui:param name="formId" value="deleteDeviceForm" />
             <ui:param name="dialogTitle" value="Delete device" />
             <ui:param name="widgetName" value="deleteDevice" />
