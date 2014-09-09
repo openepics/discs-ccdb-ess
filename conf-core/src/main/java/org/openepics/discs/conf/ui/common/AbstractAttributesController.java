@@ -158,12 +158,7 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
      * Adds new {@link Tag} to parent {@link ConfigurationEntity}
      */
     public void addNewTag() {
-        Tag existingTag = tagEJB.findById(tag);
-        if (existingTag == null) {
-            existingTag = new Tag(tag);
-            tagEJB.add(existingTag);
-        }
-
+        Tag existingTag = new Tag(tag);
         setTagParent(existingTag);
         internalPopulateAttributesList();
 

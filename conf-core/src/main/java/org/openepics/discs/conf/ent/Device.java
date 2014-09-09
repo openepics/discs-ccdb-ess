@@ -102,7 +102,7 @@ public class Device extends ConfigurationEntity {
     @ManyToOne
     private Device asmParent;
 
-    @ManyToMany
+    @ManyToMany(cascade=CascadeType.ALL)
     @JoinTable(name = "device_tag",
         joinColumns = { @JoinColumn(name = "device_id") }, inverseJoinColumns = { @JoinColumn(name = "tag_id") })
     private Set<Tag> tags = new HashSet<>();
