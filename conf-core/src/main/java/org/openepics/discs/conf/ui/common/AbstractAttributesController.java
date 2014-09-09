@@ -16,12 +16,17 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.faces.FacesException;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
 
 import org.apache.commons.io.FilenameUtils;
 import org.openepics.discs.conf.ejb.DAO;
@@ -33,15 +38,21 @@ import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyValue;
 import org.openepics.discs.conf.ent.Tag;
 import org.openepics.discs.conf.util.BlobStore;
+import org.openepics.discs.conf.util.PropertyDataType;
+import org.openepics.discs.conf.util.PropertyDataTypeConstants;
 import org.openepics.discs.conf.util.UnhandledCaseException;
 import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.views.EntityAttributeView;
+import org.openepics.seds.api.datatypes.SedsScalar;
+import org.openepics.seds.core.Seds;
+import org.openepics.seds.core.datatypes.SimpleSedsFactory;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 
 import com.google.common.base.Function;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.io.ByteStreams;
@@ -449,5 +460,62 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
         }
 
         return resultList;
-   }
+    }
+
+    public PropertyDataType getDataType() {
+        return getDataType(property);
+    }
+
+
+    private PropertyDataType getDataType(Property prop) {
+        Preconditions.checkNotNull(property);
+        switch (prop.getDataType().getName()) {
+        case PropertyDataTypeConstants.INT_NAME :
+            return PropertyDataType.INTEGER;
+        case PropertyDataTypeConstants.DBL_NAME :
+            return PropertyDataType.DOUBLE;
+        case PropertyDataTypeConstants.STR_NAME :
+            return PropertyDataType.STRING;
+        case PropertyDataTypeConstants.TIMESTAMP_NAME :
+            return PropertyDataType.TIMESTAMP;
+        case PropertyDataTypeConstants.URL_NAME :
+            return PropertyDataType.URL;
+        case PropertyDataTypeConstants.INT_VECTOR_NAME :
+            return PropertyDataType.INT_VECTOR;
+        case PropertyDataTypeConstants.DBL_VECTOR_NAME :
+            return PropertyDataType.DBL_VECTOR;
+        case PropertyDataTypeConstants.STRING_LIST_NAME :
+            return PropertyDataType.STRING_LIST;
+        case PropertyDataTypeConstants.DBL_TABLE_NAME :
+            return PropertyDataType.DBL_TABLE;
+        default:
+            return PropertyDataType.ENUM;
+        }
+    }
+
+    public SedsScalar<Integer> getIntValue() {
+        if (property == null) return null;
+
+        if (getDataType(property) != PropertyDataType.INTEGER) {
+            throw new FacesException("Property is not of type Integer");
+        }
+
+        if (propertyValue == null)
+            return new SimpleSedsFactory().newScalar(new Integer(0));
+
+        JsonReader reader = Json.createReader(new StringReader(propertyValue));
+
+        final SedsScalar<Integer> seds = (SedsScalar<Integer>)Seds.newDBConverter().deserialize(reader.readObject());
+        return seds;
+    }
+
+    public void setIntValue(SedsScalar<Integer> intValue) {
+        if (getDataType(property) != PropertyDataType.INTEGER) {
+            throw new FacesException("Property is not of type Integer");
+        }
+
+        final JsonObject jsonObj = Seds.newDBConverter().serialize(intValue);
+        final String jsonString = jsonObj.toString();
+        propertyValue = jsonString;
+    }
 }
