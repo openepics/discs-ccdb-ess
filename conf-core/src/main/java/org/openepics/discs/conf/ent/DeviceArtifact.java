@@ -20,7 +20,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "DeviceArtifact.findByArtifactId", query = "SELECT d FROM DeviceArtifact d WHERE d.id = :id"),
     @NamedQuery(name = "DeviceArtifact.findByName", query = "SELECT d FROM DeviceArtifact d WHERE d.name = :name"),
     @NamedQuery(name = "DeviceArtifact.findByIsInternal", query = "SELECT d FROM DeviceArtifact d WHERE d.isInternal = :isInternal"),
-    @NamedQuery(name = "DeviceArtifact.findByModifiedBy", query = "SELECT d FROM DeviceArtifact d WHERE d.modifiedBy = :modifiedBy")})
+    @NamedQuery(name = "DeviceArtifact.findByModifiedBy", query = "SELECT d FROM DeviceArtifact d WHERE d.modifiedBy = :modifiedBy")
+})
 public class DeviceArtifact extends Artifact {
     @JoinColumn(name = "device")
     @ManyToOne(optional = false)
@@ -32,8 +33,12 @@ public class DeviceArtifact extends Artifact {
         super(name, isInternal, description, uri);
     }
 
-    public Device getDevice() { return device; }
-    public void setDevice(Device device) { this.device = device; }
+    public Device getDevice() {
+        return device;
+    }
+    public void setDevice(Device device) {
+        this.device = device;
+    }
 
     @Override
     public String toString() {

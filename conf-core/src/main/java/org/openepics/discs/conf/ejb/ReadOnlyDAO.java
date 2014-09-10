@@ -90,6 +90,6 @@ abstract public class ReadOnlyDAO<T> {
      * @return
      */
     protected Class<T> getEntityClass() {
-    	return this.entityClass;
+        return this.entityClass;
     }
 }

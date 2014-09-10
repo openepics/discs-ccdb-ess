@@ -2,9 +2,9 @@ package org.openepics.discs.conf.dl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.annotation.Nullable;
 import javax.ejb.Stateless;
@@ -74,7 +74,7 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
                         return loaderResult;
                     } else {
                         continue; // skip the rest of the processing for HEADER
-                                  // row
+                        // row
                     }
                 } else if (row.get(commandIndex).equals(CMD_END)) {
                     break;
@@ -183,12 +183,11 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
     }
 
     private void checkPropertyAssociation(Map<String, Integer> properties, String rowNumber) {
-        final Iterator<String> propertiesIterator = properties.keySet().iterator();
-        while (propertiesIterator.hasNext()) {
-            final String propertyName = propertiesIterator.next();
+        for (Entry<String, Integer> entry : properties.entrySet()) {
+            final String propertyName = entry.getKey();
             final @Nullable Property property = propertyEJB.findByName(propertyName);
             if (property == null) {
-                rowResult.addMessage(new ValidationMessage(ErrorMessage.PROPERTY_NOT_FOUND, rowNumber, propertyName));
+                rowResult.addMessage(new ValidationMessage(ErrorMessage.PROPERTY_NOT_FOUND, rowNumber, entry.getKey()));
             } else {
                 final PropertyAssociation propAssociation = property.getAssociation();
                 if (propAssociation != PropertyAssociation.ALL && propAssociation != PropertyAssociation.TYPE && propAssociation != PropertyAssociation.TYPE_DEVICE && propAssociation != PropertyAssociation.TYPE_SLOT) {
@@ -199,7 +198,6 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
     }
 
     private void addOrUpdateProperties(ComponentType compType, Map<String, Integer> properties, List<String> row, String rowNumber) {
-        final Iterator<String> propertiesIterator = properties.keySet().iterator();
         final List<ComptypePropertyValue> compTypeProperties = new ArrayList<>();
         if (compType.getComptypePropertyList() != null) {
             compTypeProperties.addAll(compType.getComptypePropertyList());
@@ -210,9 +208,9 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
             compTypePropertyByProperty.put(compProperty.getProperty(), compProperty);
         }
 
-        while (propertiesIterator.hasNext()) {
-            final String propertyName = propertiesIterator.next();
-            final int propertyIndex = properties.get(propertyName);
+        for (Entry<String, Integer> entry : properties.entrySet()) {
+            final String propertyName = entry.getKey();
+            final int propertyIndex = entry.getValue();
             final @Nullable Property property = propertyEJB.findByName(propertyName);
             final @Nullable String propertyValue = row.get(propertyIndex);
             if (compTypePropertyByProperty.containsKey(property)) {

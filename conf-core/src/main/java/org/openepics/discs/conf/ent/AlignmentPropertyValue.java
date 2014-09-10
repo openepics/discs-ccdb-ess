@@ -19,7 +19,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "AlignmentPropertyValue.findAll", query = "SELECT a FROM AlignmentPropertyValue a"),
     @NamedQuery(name = "AlignmentPropertyValue.findByAlignPropId", query = "SELECT a FROM AlignmentPropertyValue a WHERE a.id = :id"),
     @NamedQuery(name = "AlignmentPropertyValue.findByInRepository", query = "SELECT a FROM AlignmentPropertyValue a WHERE a.inRepository = :inRepository"),
-    @NamedQuery(name = "AlignmentPropertyValue.findByModifiedBy", query = "SELECT a FROM AlignmentPropertyValue a WHERE a.modifiedBy = :modifiedBy")})
+    @NamedQuery(name = "AlignmentPropertyValue.findByModifiedBy", query = "SELECT a FROM AlignmentPropertyValue a WHERE a.modifiedBy = :modifiedBy")
+})
 public class AlignmentPropertyValue extends PropertyValue {
     @JoinColumn(name = "alignment_record")
     @ManyToOne(optional = false)
@@ -31,9 +32,15 @@ public class AlignmentPropertyValue extends PropertyValue {
         super(inRepository);
     }
 
-    public AlignmentRecord getAlignmentRecord() { return alignmentRecord; }
-    public void setAlignmentRecord(AlignmentRecord alignmentRecord) { this.alignmentRecord = alignmentRecord; }
+    public AlignmentRecord getAlignmentRecord() {
+        return alignmentRecord;
+    }
+    public void setAlignmentRecord(AlignmentRecord alignmentRecord) {
+        this.alignmentRecord = alignmentRecord;
+    }
 
     @Override
-    public String toString() { return "AlignmentProperty[ alignPropId=" + id + " ]"; }
+    public String toString() {
+        return "AlignmentProperty[ alignPropId=" + id + " ]";
+    }
 }

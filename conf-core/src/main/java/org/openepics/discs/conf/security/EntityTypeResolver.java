@@ -43,7 +43,8 @@ public class EntityTypeResolver {
         entityTypes.put(org.openepics.discs.conf.ent.User.class.getCanonicalName(), EntityType.USER);
         entityTypes.put(org.openepics.discs.conf.ent.Property.class.getCanonicalName(), EntityType.PROPERTY);
 
-        entityTypes.put(org.openepics.discs.conf.ent.DataType.class.getCanonicalName(), EntityType.DATA_TYPE);       }
+        entityTypes.put(org.openepics.discs.conf.ent.DataType.class.getCanonicalName(), EntityType.DATA_TYPE);
+    }
 
     /**
      * Resolves the {@link EntityType} of an entity object, for security purposes.

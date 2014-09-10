@@ -20,7 +20,7 @@ public class DataTypeEntityLoggerTest {
     public void testSerializeEntity() {
         final DataType dt = new DataType("Float", "Float", true, "Well.. a scalar float");
         final String RESULT = "{\"description\":\"Float\",\"scalar\":true,\"definition\":\"Well.. a scalar float\"}";
-        
+
         assertEquals(RESULT, entLogger.auditEntries(dt, EntityTypeOperation.CREATE).get(0).getEntry());
     }
 

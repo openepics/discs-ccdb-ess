@@ -21,7 +21,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "DataType.findAll", query = "SELECT d FROM DataType d"),
     @NamedQuery(name = "DataType.findByName", query = "SELECT d FROM DataType d WHERE d.name = :name"),
     @NamedQuery(name = "DataType.findByDataTypeId", query = "SELECT d FROM DataType d WHERE d.id = :id"),
-    @NamedQuery(name = "DataType.findByModifiedBy", query = "SELECT d FROM DataType d WHERE d.modifiedBy = :modifiedBy")})
+    @NamedQuery(name = "DataType.findByModifiedBy", query = "SELECT d FROM DataType d WHERE d.modifiedBy = :modifiedBy")
+})
 public class DataType extends ConfigurationEntity {
     @Basic(optional = false)
     @NotNull
@@ -52,18 +53,36 @@ public class DataType extends ConfigurationEntity {
         this.definition = definition;
     }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description;     }
+    public String getDescription() {
+        return description;
+    }
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-    public boolean isScalar() { return scalar; }
-    public void setScalar(boolean scalar) { this.scalar = scalar; }
+    public boolean isScalar() {
+        return scalar;
+    }
+    public void setScalar(boolean scalar) {
+        this.scalar = scalar;
+    }
 
-    public String getDefinition() { return definition; }
-    public void setDefinition(String definition) { this.definition = definition; }
+    public String getDefinition() {
+        return definition;
+    }
+    public void setDefinition(String definition) {
+        this.definition = definition;
+    }
 
     @Override
-    public String toString() { return "DataType[ dataTypeId=" + id + " ]"; }
+    public String toString() {
+        return "DataType[ dataTypeId=" + id + " ]";
+    }
 }

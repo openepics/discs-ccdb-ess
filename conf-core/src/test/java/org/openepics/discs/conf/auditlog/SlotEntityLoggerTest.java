@@ -48,7 +48,7 @@ public class SlotEntityLoggerTest {
     final private SlotEntityLogger sel = new SlotEntityLogger();
 
     @Before
-    public void setUp() throws Exception{
+    public void setUp() throws Exception {
         slotPropVal1.setProperty(prop1);
         slotPropVal2.setProperty(prop2);
         slotPropVal1.setPropValue("10");

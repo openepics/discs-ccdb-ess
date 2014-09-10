@@ -31,6 +31,7 @@ import org.openepics.discs.conf.ent.SlotArtifact;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.ent.Tag;
 import org.openepics.discs.conf.ui.common.AbstractAttributesController;
+import org.openepics.discs.conf.util.CCDBRuntimeException;
 import org.openepics.discs.conf.views.EntityAttributeView;
 
 import com.google.common.base.Predicate;
@@ -62,7 +63,7 @@ public class ContainerAttributesController extends AbstractAttributesController<
 
         populateAttributesList();
         filterProperties();
-        parentContainer = slot.getChildrenSlotsPairList().size() > 0 ? slot.getChildrenSlotsPairList().get(0).getParentSlot().getName() : null;
+        parentContainer = !slot.getChildrenSlotsPairList().isEmpty() ? slot.getChildrenSlotsPairList().get(0).getParentSlot().getName() : null;
     }
 
     /**
@@ -72,7 +73,7 @@ public class ContainerAttributesController extends AbstractAttributesController<
         try {
             FacesContext.getCurrentInstance().getExternalContext().redirect("containers-manager.xhtml");
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new CCDBRuntimeException(e);
         }
     }
 
@@ -82,7 +83,9 @@ public class ContainerAttributesController extends AbstractAttributesController<
         slot = slotEJB.findById(slot.getId());
 
         for (ComptypePropertyValue parentProp : parentProperties) {
-            if (parentProp.getPropValue() != null) attributes.add(new EntityAttributeView(parentProp));
+            if (parentProp.getPropValue() != null) {
+                attributes.add(new EntityAttributeView(parentProp));
+            }
         }
 
         for (SlotPropertyValue prop : slot.getSlotPropertyList()) {
@@ -127,7 +130,9 @@ public class ContainerAttributesController extends AbstractAttributesController<
         child.setSlot(slot);
     }
 
-    public String getParentContainer() { return parentContainer; }
+    public String getParentContainer() {
+        return parentContainer;
+    }
 
     @Override
     protected void setTagParent(Tag tag) {

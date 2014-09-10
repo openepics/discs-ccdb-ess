@@ -35,9 +35,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Device.findAll", query = "SELECT d FROM Device d"),
-	// device instance does not have a name. This named query is introduced to satisfy the ReadOnlyDAO assumption.
+    // device instance does not have a name. This named query is introduced to satisfy the ReadOnlyDAO assumption.
     @NamedQuery(name = "Device.findByName", query = "SELECT d FROM Device d WHERE d.serialNumber = :name"),
-    @NamedQuery(name = "Device.findByComponentType", query = "SELECT d FROM Device d WHERE d.componentType = :componentType")})
+    @NamedQuery(name = "Device.findByComponentType", query = "SELECT d FROM Device d WHERE d.componentType = :componentType")
+})
 public class Device extends ConfigurationEntity {
     @Basic(optional = false)
     @NotNull
@@ -104,7 +105,7 @@ public class Device extends ConfigurationEntity {
 
     @ManyToMany(cascade=CascadeType.ALL)
     @JoinTable(name = "device_tag",
-        joinColumns = { @JoinColumn(name = "device_id") }, inverseJoinColumns = { @JoinColumn(name = "tag_id") })
+               joinColumns = { @JoinColumn(name = "device_id") }, inverseJoinColumns = { @JoinColumn(name = "tag_id") })
     private Set<Tag> tags = new HashSet<>();
 
     protected Device() {
@@ -114,68 +115,132 @@ public class Device extends ConfigurationEntity {
         this.serialNumber = serialNumber;
     }
 
-    public String getSerialNumber() { return serialNumber; }
-    public void setSerialNumber(String serialNumber) { this.serialNumber = serialNumber; }
+    public String getSerialNumber() {
+        return serialNumber;
+    }
+    public void setSerialNumber(String serialNumber) {
+        this.serialNumber = serialNumber;
+    }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
+    public String getDescription() {
+        return description;
+    }
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-    public DeviceStatus getStatus() { return status; }
-    public void setStatus(DeviceStatus status) { this.status = status; }
+    public DeviceStatus getStatus() {
+        return status;
+    }
+    public void setStatus(DeviceStatus status) {
+        this.status = status;
+    }
 
-    public String getManufacturerSerialNumber() { return manufSerialNumber; }
-    public void setManufacturerSerialNumber(String manufSerialNumber) { this.manufSerialNumber = manufSerialNumber; }
+    public String getManufacturerSerialNumber() {
+        return manufSerialNumber;
+    }
+    public void setManufacturerSerialNumber(String manufSerialNumber) {
+        this.manufSerialNumber = manufSerialNumber;
+    }
 
-    public String getLocation() { return location; }
-    public void setLocation(String location) { this.location = location; }
+    public String getLocation() {
+        return location;
+    }
+    public void setLocation(String location) {
+        this.location = location;
+    }
 
-    public String getPurchaseOrder() { return purchaseOrder; }
-    public void setPurchaseOrder(String purchaseOrder) { this.purchaseOrder = purchaseOrder; }
+    public String getPurchaseOrder() {
+        return purchaseOrder;
+    }
+    public void setPurchaseOrder(String purchaseOrder) {
+        this.purchaseOrder = purchaseOrder;
+    }
 
-    public String getAssemblyPosition() { return asmPosition; }
-    public void setAssemblyPosition(String asmPosition) { this.asmPosition = asmPosition; }
+    public String getAssemblyPosition() {
+        return asmPosition;
+    }
+    public void setAssemblyPosition(String asmPosition) {
+        this.asmPosition = asmPosition;
+    }
 
-    public String getAssemblyDescription() { return asmDescription; }
-    public void setAssemblyDescription(String asmDescription) { this.asmDescription = asmDescription; }
+    public String getAssemblyDescription() {
+        return asmDescription;
+    }
+    public void setAssemblyDescription(String asmDescription) {
+        this.asmDescription = asmDescription;
+    }
 
-    public String getManufacturer() { return manufacturer; }
-    public void setManufacturer(String manufacturer) { this.manufacturer = manufacturer; }
+    public String getManufacturer() {
+        return manufacturer;
+    }
+    public void setManufacturer(String manufacturer) {
+        this.manufacturer = manufacturer;
+    }
 
-    public String getManufacturerModel() { return manufModel; }
-    public void setManufacturerModel(String manufModel) { this.manufModel = manufModel; }
+    public String getManufacturerModel() {
+        return manufModel;
+    }
+    public void setManufacturerModel(String manufModel) {
+        this.manufModel = manufModel;
+    }
 
     @XmlTransient
     @JsonIgnore
-    public List<DevicePropertyValue> getDevicePropertyList() { return devicePropertyList; }
+    public List<DevicePropertyValue> getDevicePropertyList() {
+        return devicePropertyList;
+    }
 
     @XmlTransient
     @JsonIgnore
-    public List<AlignmentRecord> getAlignmentRecordList() { return alignmentRecordList; }
+    public List<AlignmentRecord> getAlignmentRecordList() {
+        return alignmentRecordList;
+    }
 
     @XmlTransient
     @JsonIgnore
-    public List<InstallationRecord> getInstallationRecordList() { return installationRecordList; }
+    public List<InstallationRecord> getInstallationRecordList() {
+        return installationRecordList;
+    }
 
     @XmlTransient
     @JsonIgnore
-    public List<DeviceArtifact> getDeviceArtifactList() { return deviceArtifactList; }
+    public List<DeviceArtifact> getDeviceArtifactList() {
+        return deviceArtifactList;
+    }
 
-    public ComponentType getComponentType() { return componentType; }
-    public void setComponentType(ComponentType componentType) { this.componentType = componentType; }
+    public ComponentType getComponentType() {
+        return componentType;
+    }
+    public void setComponentType(ComponentType componentType) {
+        this.componentType = componentType;
+    }
 
     @XmlTransient
     @JsonIgnore
-    public List<Device> getDeviceList() { return deviceList; }
+    public List<Device> getDeviceList() {
+        return deviceList;
+    }
 
-    public Device getAssemblyParent() { return asmParent; }
-    public void setAssemblyParent(Device asmParent) { this.asmParent = asmParent; }
+    public Device getAssemblyParent() {
+        return asmParent;
+    }
+    public void setAssemblyParent(Device asmParent) {
+        this.asmParent = asmParent;
+    }
 
     @XmlTransient
     @JsonIgnore
-    public Set<Tag> getTags() { return tags; }
-    public void setTags(Set<Tag> tags) { this.tags = tags; }
+    public Set<Tag> getTags() {
+        return tags;
+    }
+    public void setTags(Set<Tag> tags) {
+        this.tags = tags;
+    }
 
     @Override
-    public String toString() { return "Device[ deviceId=" + id + " ]"; }
+    public String toString() {
+        return "Device[ deviceId=" + id + " ]";
+    }
 
 }

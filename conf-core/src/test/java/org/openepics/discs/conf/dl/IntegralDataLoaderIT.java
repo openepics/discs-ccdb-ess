@@ -42,31 +42,31 @@ public class IntegralDataLoaderIT {
 
     @Before
     public void setUpBeforeTest() {
-    	testUtility.loginForTests();
+        testUtility.loginForTests();
     }
 
     @Test
     public void testAll() {
-    	testLoadData("conf-data-units.xlsx", unitsDataLoader, null, null);
-    	testLoadData("conf-data-properties.xlsx", propertiesDataLoader, null, null);
-    	testLoadData("conf-data-ctypes.xlsx", ctypesDataLoader, null, null);
-    	testLoadData("conf-data-slots.xlsx", null, "conf-data-slot-pairs.xlsx", null);
-    	testLoadData("conf-data-devices.xlsx", devicesDataLoader, null, null);
+        testLoadData("conf-data-units.xlsx", unitsDataLoader, null, null);
+        testLoadData("conf-data-properties.xlsx", propertiesDataLoader, null, null);
+        testLoadData("conf-data-ctypes.xlsx", ctypesDataLoader, null, null);
+        testLoadData("conf-data-slots.xlsx", null, "conf-data-slot-pairs.xlsx", null);
+        testLoadData("conf-data-devices.xlsx", devicesDataLoader, null, null);
     }
 
     // ToDo review the interface wierdness of slot data loader with Andraz
-	private void testLoadData(String fileName, Object dataLoader, String secondFileName, Object secondDataLoader) {
-		final InputStream stream = this.getClass().getResourceAsStream("/dataloader/"+fileName);
+    private void testLoadData(String fileName, Object dataLoader, String secondFileName, Object secondDataLoader) {
+        final InputStream stream = this.getClass().getResourceAsStream("/dataloader/"+fileName);
 
-		if (secondFileName==null) {
-			final DataLoaderResult result = dataLoaderHandler.loadData(stream, (DataLoader) dataLoader);
-			assertFalse(fileName+" loading failed.", result.isError());
-		} else {
-			final InputStream secondStream = this.getClass().getResourceAsStream("/dataloader/"+secondFileName);
+        if (secondFileName==null) {
+            final DataLoaderResult result = dataLoaderHandler.loadData(stream, (DataLoader) dataLoader);
+            assertFalse(fileName+" loading failed.", result.isError());
+        } else {
+            final InputStream secondStream = this.getClass().getResourceAsStream("/dataloader/"+secondFileName);
 
-			final DataLoaderResult result = dataLoaderHandler.loadDataFromTwoFiles(stream, secondStream, fileName, secondFileName);
-			assertFalse(fileName+" or "+secondFileName+" loading failed.", result.isError());
-		}
-	}
+            final DataLoaderResult result = dataLoaderHandler.loadDataFromTwoFiles(stream, secondStream, fileName, secondFileName);
+            assertFalse(fileName+" or "+secondFileName+" loading failed.", result.isError());
+        }
+    }
 
 }

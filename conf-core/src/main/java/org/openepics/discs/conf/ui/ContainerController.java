@@ -71,10 +71,16 @@ public class ContainerController implements Serializable {
      *
      * @return root {@link TreeNode} of tree of containers
      */
-    public TreeNode getRootNode() { return rootNode; }
+    public TreeNode getRootNode() {
+        return rootNode;
+    }
 
-    public TreeNode getSelectedNode() { return selectedNode; }
-    public void setSelectedNode(TreeNode selectedNode) { this.selectedNode = selectedNode; }
+    public TreeNode getSelectedNode() {
+        return selectedNode;
+    }
+    public void setSelectedNode(TreeNode selectedNode) {
+        this.selectedNode = selectedNode;
+    }
 
     /**
      * Prepares fields that are used in pop up for adding new container
@@ -90,7 +96,9 @@ public class ContainerController implements Serializable {
         RequestContext.getCurrentInstance().update("addContainerForm:addContainer");
     }
 
-    public ContainerView getSelectedContainerToModify() { return selectedContainer; }
+    public ContainerView getSelectedContainerToModify() {
+        return selectedContainer;
+    }
 
     /**
      * Sets selected {@link ContainerView} and prepares fields that are used in pop up for container modification
@@ -102,8 +110,12 @@ public class ContainerController implements Serializable {
         prepareModifyPopup();
     }
 
-    public ContainerView getSelectedContainer() { return selectedContainer; }
-    public void setSelectedContainer(ContainerView selectedContainer) { this.selectedContainer = selectedContainer; }
+    public ContainerView getSelectedContainer() {
+        return selectedContainer;
+    }
+    public void setSelectedContainer(ContainerView selectedContainer) {
+        this.selectedContainer = selectedContainer;
+    }
 
     private void prepareModifyPopup() {
         name = selectedContainer.getName();
@@ -196,16 +208,30 @@ public class ContainerController implements Serializable {
      * @param id of selected container
      * @return relative path to which vew should be redirected
      */
-    public String recirectToAttributes(Long id) { return "container-attributes-manager.xhtml?faces-redirect=true&id=" + id; }
+    public String recirectToAttributes(Long id) {
+        return "container-attributes-manager.xhtml?faces-redirect=true&id=" + id;
+    }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
+    public String getDescription() {
+        return description;
+    }
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-    public ContainerView getParentContainer() { return parentContainer; }
-    public void setParentContainer(ContainerView parentContainer) { this.parentContainer = parentContainer; }
+    public ContainerView getParentContainer() {
+        return parentContainer;
+    }
+    public void setParentContainer(ContainerView parentContainer) {
+        this.parentContainer = parentContainer;
+    }
 
 
 }

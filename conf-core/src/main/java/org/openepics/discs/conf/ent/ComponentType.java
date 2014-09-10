@@ -33,11 +33,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Table(name = "component_type")
 @XmlRootElement
 @NamedQueries({
-        @NamedQuery(name = "ComponentType.findAll", query = "SELECT c FROM ComponentType c"),
-        @NamedQuery(name = "ComponentType.findById", query = "SELECT c FROM ComponentType c WHERE c.id = :id"),
-        @NamedQuery(name = "ComponentType.findByName", query = "SELECT c FROM ComponentType c WHERE c.name = :name"),
-        @NamedQuery(name = "ComponentType.findAllOrdered", query = "SELECT c FROM ComponentType c ORDER BY c.name"),
-        @NamedQuery(name = "ComponentType.findByModifiedBy", query = "SELECT c FROM ComponentType c WHERE c.modifiedBy = :modifiedBy") })
+    @NamedQuery(name = "ComponentType.findAll", query = "SELECT c FROM ComponentType c"),
+    @NamedQuery(name = "ComponentType.findById", query = "SELECT c FROM ComponentType c WHERE c.id = :id"),
+    @NamedQuery(name = "ComponentType.findByName", query = "SELECT c FROM ComponentType c WHERE c.name = :name"),
+    @NamedQuery(name = "ComponentType.findAllOrdered", query = "SELECT c FROM ComponentType c ORDER BY c.name"),
+    @NamedQuery(name = "ComponentType.findByModifiedBy", query = "SELECT c FROM ComponentType c WHERE c.modifiedBy = :modifiedBy")
+})
 public class ComponentType extends ConfigurationEntity {
     @Basic(optional = false)
     @NotNull
@@ -70,7 +71,7 @@ public class ComponentType extends ConfigurationEntity {
 
     @ManyToMany(cascade=CascadeType.ALL)
     @JoinTable(name = "comptype_tag",
-        joinColumns = { @JoinColumn(name = "comptype_id") }, inverseJoinColumns = { @JoinColumn(name = "tag_id") })
+               joinColumns = { @JoinColumn(name = "comptype_id") }, inverseJoinColumns = { @JoinColumn(name = "tag_id") })
     private Set<Tag> tags = new HashSet<>();
 
     public ComponentType() {
@@ -81,11 +82,19 @@ public class ComponentType extends ConfigurationEntity {
         this.name = name;
     }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
+    public String getDescription() {
+        return description;
+    }
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     @XmlTransient
     @JsonIgnore
@@ -95,18 +104,28 @@ public class ComponentType extends ConfigurationEntity {
 
     @XmlTransient
     @JsonIgnore
-    public List<ComptypeAsm> getChildrenComptypeAsmList() { return childrenTypes; }
+    public List<ComptypeAsm> getChildrenComptypeAsmList() {
+        return childrenTypes;
+    }
 
     @XmlTransient
     @JsonIgnore
-    public List<ComptypeAsm> getParentComptypeAsmList() { return parentTypes; }
+    public List<ComptypeAsm> getParentComptypeAsmList() {
+        return parentTypes;
+    }
 
     @XmlTransient
     @JsonIgnore
-    public List<ComponentType> getComponentTypeList() { return componentTypeList; }
+    public List<ComponentType> getComponentTypeList() {
+        return componentTypeList;
+    }
 
-    public ComponentType getSuperComponentType() { return superComponentType; }
-    public void setSuperComponentType(ComponentType superComponentType) { this.superComponentType = superComponentType; }
+    public ComponentType getSuperComponentType() {
+        return superComponentType;
+    }
+    public void setSuperComponentType(ComponentType superComponentType) {
+        this.superComponentType = superComponentType;
+    }
 
     @XmlTransient
     @JsonIgnore
@@ -116,9 +135,15 @@ public class ComponentType extends ConfigurationEntity {
 
     @XmlTransient
     @JsonIgnore
-    public Set<Tag> getTags() { return tags; }
-    public void setTags(Set<Tag> tags) { this.tags = tags; }
+    public Set<Tag> getTags() {
+        return tags;
+    }
+    public void setTags(Set<Tag> tags) {
+        this.tags = tags;
+    }
 
     @Override
-    public String toString() { return "ComponentType[ componentTypeId=" + id + " ]"; }
+    public String toString() {
+        return "ComponentType[ componentTypeId=" + id + " ]";
+    }
 }

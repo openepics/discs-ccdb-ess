@@ -60,14 +60,14 @@ public class DataLoaderHandler {
         if (firstInputStream != null) {
             firstFileInputRows = ExcelImportFileReader.importExcelFile(firstInputStream);
         } else {
-        	firstFileInputRows = null;
-      	}
+            firstFileInputRows = null;
+        }
 
         if (secondInputStream != null) {
             secondFileInputRows = ExcelImportFileReader.importExcelFile(secondInputStream);
         } else {
-        	secondFileInputRows = null;
-      	}
+            secondFileInputRows = null;
+        }
 
         if ((firstFileInputRows != null && firstFileInputRows.size() > 0) || (secondFileInputRows != null && secondFileInputRows.size() > 0)) {
             loaderResult = slotLoader.loadDataToDatabase(firstFileInputRows, secondFileInputRows, firstFileName, secondFileName);

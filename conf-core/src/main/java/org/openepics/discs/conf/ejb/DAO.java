@@ -22,10 +22,10 @@ import com.google.common.base.Preconditions;
  * @param <T> The entity type for which this DAO is defined.
  */
 abstract public class DAO<T> extends ReadOnlyDAO<T> {
-	@SuppressWarnings("rawtypes")
-	private Map<Class, ParentChildInterface> interfaces;
+    @SuppressWarnings("rawtypes")
+    private Map<Class, ParentChildInterface> interfaces;
 
-	@CRUDOperation(operation=EntityTypeOperation.CREATE)
+    @CRUDOperation(operation=EntityTypeOperation.CREATE)
     @Audit
     @Authorized
     public void add(T entity) {
@@ -90,12 +90,12 @@ abstract public class DAO<T> extends ReadOnlyDAO<T> {
      * @return
      */
     @SuppressWarnings("rawtypes")
-	protected  Map<Class, ParentChildInterface> getResolverInterfaces() {
-    	if (interfaces == null)
-    	{
-    		interfaces = new HashMap<Class, ParentChildInterface>(3);
-    	}
-    	return interfaces;
+    protected  Map<Class, ParentChildInterface> getResolverInterfaces() {
+        if (interfaces == null)
+        {
+            interfaces = new HashMap<Class, ParentChildInterface>(3);
+        }
+        return interfaces;
     }
 
     /**
@@ -121,7 +121,7 @@ abstract public class DAO<T> extends ReadOnlyDAO<T> {
         final ParentChildInterface<T,S> resolver = getResolverInterfaces().get(child.getClass());
         if (resolver == null) {
             throw new UnsupportedOperationException("No child interface defined for the class "+
-                    child.getClass().getCanonicalName()+" in "+this.getClass().getSimpleName()+" DAO.");
+                                                    child.getClass().getCanonicalName()+" in "+this.getClass().getSimpleName()+" DAO.");
         }
         return resolver;
     }

@@ -35,7 +35,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
     @NamedQuery(name = "InstallationRecord.findByInstallationRecordId", query = "SELECT i FROM InstallationRecord i WHERE i.id = :id"),
     @NamedQuery(name = "InstallationRecord.findByInstallDate", query = "SELECT i FROM InstallationRecord i WHERE i.installDate = :installDate"),
     @NamedQuery(name = "InstallationRecord.findByUninstallDate", query = "SELECT i FROM InstallationRecord i WHERE i.uninstallDate = :uninstallDate"),
-    @NamedQuery(name = "InstallationRecord.findByModifiedBy", query = "SELECT i FROM InstallationRecord i WHERE i.modifiedBy = :modifiedBy")})
+    @NamedQuery(name = "InstallationRecord.findByModifiedBy", query = "SELECT i FROM InstallationRecord i WHERE i.modifiedBy = :modifiedBy")
+})
 public class InstallationRecord extends ConfigurationEntity {
     @Basic(optional = false)
     @NotNull
@@ -75,28 +76,56 @@ public class InstallationRecord extends ConfigurationEntity {
         this.installDate = installDate;
     }
 
-    public String getRecordNumber() { return recordNumber; }
-    public void setRecordNumber(String recordNumber) { this.recordNumber = recordNumber; }
+    public String getRecordNumber() {
+        return recordNumber;
+    }
+    public void setRecordNumber(String recordNumber) {
+        this.recordNumber = recordNumber;
+    }
 
-    public Date getInstallDate() { return installDate; }
-    public void setInstallDate(Date installDate) { this.installDate = installDate; }
+    public Date getInstallDate() {
+        return installDate;
+    }
+    public void setInstallDate(Date installDate) {
+        this.installDate = installDate;
+    }
 
-    public Date getUninstallDate() { return uninstallDate; }
-    public void setUninstallDate(Date uninstallDate) { this.uninstallDate = uninstallDate; }
+    public Date getUninstallDate() {
+        return uninstallDate;
+    }
+    public void setUninstallDate(Date uninstallDate) {
+        this.uninstallDate = uninstallDate;
+    }
 
-    public String getNotes() { return notes; }
-    public void setNotes(String notes) { this.notes = notes; }
+    public String getNotes() {
+        return notes;
+    }
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
 
-    public Slot getSlot() { return slot; }
-    public void setSlot(Slot slot) { this.slot = slot; }
+    public Slot getSlot() {
+        return slot;
+    }
+    public void setSlot(Slot slot) {
+        this.slot = slot;
+    }
 
-    public Device getDevice() { return device; }
-    public void setDevice(Device device) { this.device = device; }
+    public Device getDevice() {
+        return device;
+    }
+    public void setDevice(Device device) {
+        this.device = device;
+    }
 
     @XmlTransient
     @JsonIgnore
-    public List<InstallationArtifact> getInstallationArtifactList() { return installationArtifactList; }
+    public List<InstallationArtifact> getInstallationArtifactList() {
+        return installationArtifactList;
+    }
 
     @Override
-    public String toString() { return "InstallationRecord[ installationRecordId=" + id + " ]"; }
+    public String toString() {
+        return "InstallationRecord[ installationRecordId=" + id + " ]";
+    }
 }

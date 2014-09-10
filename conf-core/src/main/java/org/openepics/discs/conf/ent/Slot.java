@@ -40,7 +40,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
     @NamedQuery(name = "Slot.findByIsHostingSlot", query = "SELECT s FROM Slot s WHERE s.isHostingSlot = :isHostingSlot"),
     @NamedQuery(name = "Slot.findByBeamlinePosition", query = "SELECT s FROM Slot s WHERE s.beamlinePosition = :beamlinePosition"),
     @NamedQuery(name = "Slot.findByModifiedBy", query = "SELECT s FROM Slot s WHERE s.modifiedBy = :modifiedBy"),
-    @NamedQuery(name = "Slot.findByComponentType", query = "SELECT s FROM Slot s WHERE s.componentType = :componentType")})
+    @NamedQuery(name = "Slot.findByComponentType", query = "SELECT s FROM Slot s WHERE s.componentType = :componentType")
+})
 public class Slot extends ConfigurationEntity {
     @Basic(optional = false)
     @NotNull
@@ -101,7 +102,7 @@ public class Slot extends ConfigurationEntity {
 
     @ManyToMany(cascade=CascadeType.ALL)
     @JoinTable(name = "slot_tag",
-        joinColumns = { @JoinColumn(name = "slot_id") }, inverseJoinColumns = { @JoinColumn(name = "tag_id") })
+               joinColumns = { @JoinColumn(name = "slot_id") }, inverseJoinColumns = { @JoinColumn(name = "tag_id") })
     private Set<Tag> tags = new HashSet<>();
 
     protected Slot() {
@@ -112,68 +113,120 @@ public class Slot extends ConfigurationEntity {
         this.isHostingSlot = isHostingSlot;
     }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    public String getDescription() { return description;    }
-    public void setDescription(String description) { this.description = description; }
+    public String getDescription() {
+        return description;
+    }
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-    public boolean getIsHostingSlot() { return isHostingSlot; }
-    public void setIsHostingSlot(boolean isHostingSlot) { this.isHostingSlot = isHostingSlot; }
+    public boolean getIsHostingSlot() {
+        return isHostingSlot;
+    }
+    public void setIsHostingSlot(boolean isHostingSlot) {
+        this.isHostingSlot = isHostingSlot;
+    }
 
-    public Double getBeamlinePosition() { return beamlinePosition; }
-    public void setBeamlinePosition(Double beamlinePosition) { this.beamlinePosition = beamlinePosition; }
+    public Double getBeamlinePosition() {
+        return beamlinePosition;
+    }
+    public void setBeamlinePosition(Double beamlinePosition) {
+        this.beamlinePosition = beamlinePosition;
+    }
 
     public AlignmentInformation getPositionInformation()
     {
-    	// Due to some weirdness Hibernate clears the initialized field when loading data
-    	// Added this lazy initialization as convenience
-    	if (positionInfo==null) {
-    		positionInfo = new AlignmentInformation();
-    	}
-    	return positionInfo;
+        // Due to some weirdness Hibernate clears the initialized field when loading data
+        // Added this lazy initialization as convenience
+        if (positionInfo==null) {
+            positionInfo = new AlignmentInformation();
+        }
+        return positionInfo;
     }
 
-    public String getAssemblyComment() { return asmComment; }
-    public void setAssemblyComment(String asmComment) { this.asmComment = asmComment; }
+    public String getAssemblyComment() {
+        return asmComment;
+    }
+    public void setAssemblyComment(String asmComment) {
+        this.asmComment = asmComment;
+    }
 
-    public String getAssemblyPosition() { return asmPosition; }
-    public void setAssemblyPosition(String asmPosition) { this.asmPosition = asmPosition; }
+    public String getAssemblyPosition() {
+        return asmPosition;
+    }
+    public void setAssemblyPosition(String asmPosition) {
+        this.asmPosition = asmPosition;
+    }
 
-    public String getComment() { return comment; }
-    public void setComment(String comment) { this.comment = comment; }
-
-    @XmlTransient
-    @JsonIgnore
-    public List<SlotArtifact> getSlotArtifactList() { return slotArtifactList; }
-
-    public ComponentType getComponentType() { return componentType; }
-    public void setComponentType(ComponentType componentType) { this.componentType = componentType; }
-
-    @XmlTransient
-    @JsonIgnore
-    public List<Slot> getSlotList() { return slotList; }
-
-    public Slot getAssemblySlot() { return asmSlot; }
-    public void setAssemblySlot(Slot asmSlot) { this.asmSlot = asmSlot; }
+    public String getComment() {
+        return comment;
+    }
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
 
     @XmlTransient
     @JsonIgnore
-    public List<SlotPair> getChildrenSlotsPairList() { return childrenSlots; }
+    public List<SlotArtifact> getSlotArtifactList() {
+        return slotArtifactList;
+    }
+
+    public ComponentType getComponentType() {
+        return componentType;
+    }
+    public void setComponentType(ComponentType componentType) {
+        this.componentType = componentType;
+    }
 
     @XmlTransient
     @JsonIgnore
-    public List<SlotPair> getParentSlotsPairList() { return parentSlots; }
+    public List<Slot> getSlotList() {
+        return slotList;
+    }
+
+    public Slot getAssemblySlot() {
+        return asmSlot;
+    }
+    public void setAssemblySlot(Slot asmSlot) {
+        this.asmSlot = asmSlot;
+    }
 
     @XmlTransient
     @JsonIgnore
-    public List<SlotPropertyValue> getSlotPropertyList() { return slotPropertyList; }
+    public List<SlotPair> getChildrenSlotsPairList() {
+        return childrenSlots;
+    }
 
     @XmlTransient
     @JsonIgnore
-    public Set<Tag> getTags() { return tags; }
-    public void setTags(Set<Tag> tags) { this.tags = tags; }
+    public List<SlotPair> getParentSlotsPairList() {
+        return parentSlots;
+    }
+
+    @XmlTransient
+    @JsonIgnore
+    public List<SlotPropertyValue> getSlotPropertyList() {
+        return slotPropertyList;
+    }
+
+    @XmlTransient
+    @JsonIgnore
+    public Set<Tag> getTags() {
+        return tags;
+    }
+    public void setTags(Set<Tag> tags) {
+        this.tags = tags;
+    }
 
     @Override
-    public String toString() { return "Slot[ slotId=" + id + " ]"; }
+    public String toString() {
+        return "Slot[ slotId=" + id + " ]";
+    }
 }

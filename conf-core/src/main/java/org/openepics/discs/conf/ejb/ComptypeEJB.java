@@ -69,7 +69,7 @@ public class ComptypeEJB extends DAO<ComponentType> {
      */
     public List<ComptypePropertyValue> findPropertyDefinitions(ComponentType componentType) {
         return em.createNamedQuery("ComptypePropertyValue.findPropertyDefs", ComptypePropertyValue.class)
-                .setParameter("componentType", componentType).getResultList();
+               .setParameter("componentType", componentType).getResultList();
     }
 
 }

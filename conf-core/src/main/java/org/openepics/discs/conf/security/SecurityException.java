@@ -15,7 +15,7 @@ import org.openepics.discs.conf.ent.EntityTypeOperation;
 
 /**
  * Exception class to be used for authentication & authorization purposes
- * 
+ *
  * @author mpavleski
  *
  */
@@ -26,8 +26,8 @@ public class SecurityException extends RuntimeException {
 
     public SecurityException(String arg0) {
         super(arg0);
-    }    
-    
+    }
+
     public static SecurityException generateExceptionMessage(Object entity, EntityType entityType, EntityTypeOperation operationType) {
         StringBuilder sb = new StringBuilder("Access Denied: No permission to access entity type ");
         sb.append(entityType.toString());
@@ -35,7 +35,7 @@ public class SecurityException extends RuntimeException {
         sb.append(((ConfigurationEntity) entity).getId());
         sb.append(" using operation ");
         sb.append(operationType.toString());
-        
+
         return new SecurityException(sb.toString());
     }
 }

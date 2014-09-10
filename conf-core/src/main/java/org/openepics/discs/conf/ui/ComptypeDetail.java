@@ -29,7 +29,7 @@ public class ComptypeDetail {
     private ComptypeEJB comptypeEJB;
     private static final Logger logger = Logger.getLogger(ComptypeDetail.class.getCanonicalName());
     private ComponentType selectedObject;
-    private Long id = new Long(0); // given identifier
+    private Long id = Long.valueOf(0); // given identifier
 
     /**
      * Creates a new instance of ComptypeDetails

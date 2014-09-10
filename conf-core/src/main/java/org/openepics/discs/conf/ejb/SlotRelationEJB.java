@@ -19,16 +19,16 @@ public class SlotRelationEJB extends ReadOnlyDAO<SlotRelation> {
         defineEntityClass(SlotRelation.class);
     }
 
-	@Override
-	public SlotRelation findByName(String name) {
-		throw new UnsupportedOperationException("findByName with String parametar method not aplicable to SlotRelation class");
-	}
+    @Override
+    public SlotRelation findByName(String name) {
+        throw new UnsupportedOperationException("findByName with String parametar method not aplicable to SlotRelation class");
+    }
 
-	public SlotRelation findBySlotRelationName(SlotRelationName name) {
-		try {
-	        return em.createNamedQuery("SlotRelation.findByName", SlotRelation.class).setParameter("name", name).getSingleResult();
-	    } catch (NoResultException e) {
-	        return null;
-	    }
-	}
+    public SlotRelation findBySlotRelationName(SlotRelationName name) {
+        try {
+            return em.createNamedQuery("SlotRelation.findByName", SlotRelation.class).setParameter("name", name).getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
 }

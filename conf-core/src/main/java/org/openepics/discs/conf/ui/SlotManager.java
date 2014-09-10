@@ -224,7 +224,7 @@ public class SlotManager implements Serializable {
 
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Property saved", "");
         RequestContext.getCurrentInstance().addCallbackParam("success", true);
-}
+    }
 
     // -------------------------- File upload/download Property ---------------------------
     // todo: merge with artifact file ops. finally put in blobStore
@@ -509,14 +509,20 @@ public class SlotManager implements Serializable {
         return file;
     }
 
-    public String getFirstFileName() { return firstFileName; }
-    public String getSecondFileName() { return secondFileName; }
+    public String getFirstFileName() {
+        return firstFileName;
+    }
+    public String getSecondFileName() {
+        return secondFileName;
+    }
 
     public void doImport() {
         loaderResult = dataLoaderHandler.loadDataFromTwoFiles(importSlotData != null ? new ByteArrayInputStream(importSlotData) : null, importSlotRelationshipsData != null ? new ByteArrayInputStream(importSlotRelationshipsData) : null, firstFileName, secondFileName);
     }
 
-    public DataLoaderResult getLoaderResult() { return loaderResult; }
+    public DataLoaderResult getLoaderResult() {
+        return loaderResult;
+    }
 
     public void prepareImportPopup() {
         importSlotData = null;

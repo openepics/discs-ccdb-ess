@@ -188,7 +188,9 @@ public class DevicesByTypeManager implements Serializable {
         manufSerialNumber = selectedDevice.getManufacturerSerialNumber();
     }
 
-    public String deviceDetailsRedirect(Long id) { return "device-details.xhtml?faces-redirect=true&id=" + id; }
+    public String deviceDetailsRedirect(Long id) {
+        return "device-details.xhtml?faces-redirect=true&id=" + id;
+    }
 
     public List<ComponentType> getDeviceTypes() {
         if (deviceTypes == null) {
@@ -197,49 +199,99 @@ public class DevicesByTypeManager implements Serializable {
         }
         return deviceTypes;
     }
-    public void setDeviceTypes(List<ComponentType> deviceTypes) { this.deviceTypes = deviceTypes; }
+    public void setDeviceTypes(List<ComponentType> deviceTypes) {
+        this.deviceTypes = deviceTypes;
+    }
 
-    public ComponentType getSelectedComponentType() { return selectedComponentType; }
-    public void setSelectedComponentType(ComponentType selectedComponentType) { this.selectedComponentType = selectedComponentType; }
+    public ComponentType getSelectedComponentType() {
+        return selectedComponentType;
+    }
+    public void setSelectedComponentType(ComponentType selectedComponentType) {
+        this.selectedComponentType = selectedComponentType;
+    }
 
     public void prepareDevicesForDisplay() {
         this.devices = deviceEJB.findDevicesByComponentType(selectedComponentType);
     }
 
-    public List<Device> getDevices() { return devices; }
-    public void setDevices(List<Device> devices) { this.devices = devices; }
+    public List<Device> getDevices() {
+        return devices;
+    }
+    public void setDevices(List<Device> devices) {
+        this.devices = devices;
+    }
 
-    public Device getSelectedDevice() { return selectedDevice; }
-    public void setSelectedDevice(Device selectedDevice) { this.selectedDevice = selectedDevice; }
+    public Device getSelectedDevice() {
+        return selectedDevice;
+    }
+    public void setSelectedDevice(Device selectedDevice) {
+        this.selectedDevice = selectedDevice;
+    }
 
-    public String getSerialNumber() { return serialNumber; }
-    public void setSerialNumber(String serialNumber) { this.serialNumber = serialNumber; }
+    public String getSerialNumber() {
+        return serialNumber;
+    }
+    public void setSerialNumber(String serialNumber) {
+        this.serialNumber = serialNumber;
+    }
 
-    public String getLocation() { return location; }
-    public void setLocation(String location) { this.location = location; }
+    public String getLocation() {
+        return location;
+    }
+    public void setLocation(String location) {
+        this.location = location;
+    }
 
-    public String getPurchaseOrder() { return purchaseOrder; }
-    public void setPurchaseOrder(String purchaseOrder) { this.purchaseOrder = purchaseOrder; }
+    public String getPurchaseOrder() {
+        return purchaseOrder;
+    }
+    public void setPurchaseOrder(String purchaseOrder) {
+        this.purchaseOrder = purchaseOrder;
+    }
 
-    public DeviceStatus getStatus() { return status; }
-    public void setStatus(DeviceStatus status) { this.status = status; }
+    public DeviceStatus getStatus() {
+        return status;
+    }
+    public void setStatus(DeviceStatus status) {
+        this.status = status;
+    }
     public DeviceStatus[] getStatuses() {
         return DeviceStatus.values();
     }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
+    public String getDescription() {
+        return description;
+    }
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-    public String getManufacturer() { return manufacturer; }
-    public void setManufacturer(String manufacturer) { this.manufacturer = manufacturer; }
+    public String getManufacturer() {
+        return manufacturer;
+    }
+    public void setManufacturer(String manufacturer) {
+        this.manufacturer = manufacturer;
+    }
 
-    public String getManufModel() { return manufModel; }
-    public void setManufModel(String manufModel) { this.manufModel = manufModel; }
+    public String getManufModel() {
+        return manufModel;
+    }
+    public void setManufModel(String manufModel) {
+        this.manufModel = manufModel;
+    }
 
-    public String getManufSerialNumber() { return manufSerialNumber; }
-    public void setManufSerialNumber(String manufSerialNumber) { this.manufSerialNumber = manufSerialNumber; }
+    public String getManufSerialNumber() {
+        return manufSerialNumber;
+    }
+    public void setManufSerialNumber(String manufSerialNumber) {
+        this.manufSerialNumber = manufSerialNumber;
+    }
 
-    public List<ComponentType> getFilteredComponentTypes() { return filteredComponentTypes; }
-    public void setFilteredComponentTypes(List<ComponentType> filteredComponentTypes) { this.filteredComponentTypes = filteredComponentTypes; }
+    public List<ComponentType> getFilteredComponentTypes() {
+        return filteredComponentTypes;
+    }
+    public void setFilteredComponentTypes(List<ComponentType> filteredComponentTypes) {
+        this.filteredComponentTypes = filteredComponentTypes;
+    }
 
 }

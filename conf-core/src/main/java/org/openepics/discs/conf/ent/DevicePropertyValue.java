@@ -19,7 +19,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "DevicePropertyValue.findAll", query = "SELECT d FROM DevicePropertyValue d"),
     @NamedQuery(name = "DevicePropertyValue.findByDevPropId", query = "SELECT d FROM DevicePropertyValue d WHERE d.id = :id"),
     @NamedQuery(name = "DevicePropertyValue.findByInRepository", query = "SELECT d FROM DevicePropertyValue d WHERE d.inRepository = :inRepository"),
-    @NamedQuery(name = "DevicePropertyValue.findByModifiedBy", query = "SELECT d FROM DevicePropertyValue d WHERE d.modifiedBy = :modifiedBy")})
+    @NamedQuery(name = "DevicePropertyValue.findByModifiedBy", query = "SELECT d FROM DevicePropertyValue d WHERE d.modifiedBy = :modifiedBy")
+})
 public class DevicePropertyValue extends PropertyValue {
     @JoinColumn(name = "device")
     @ManyToOne(optional = false)
@@ -31,9 +32,15 @@ public class DevicePropertyValue extends PropertyValue {
         super(inRepository);
     }
 
-    public Device getDevice() { return device; }
-    public void setDevice(Device device) { this.device = device; }
+    public Device getDevice() {
+        return device;
+    }
+    public void setDevice(Device device) {
+        this.device = device;
+    }
 
     @Override
-    public String toString() { return "DeviceProperty[ devPropId=" + id + " ]"; }
+    public String toString() {
+        return "DeviceProperty[ devPropId=" + id + " ]";
+    }
 }

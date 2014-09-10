@@ -20,7 +20,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "ComptypePropertyValue.findById", query = "SELECT c FROM ComptypePropertyValue c WHERE c.id = :id"),
     @NamedQuery(name = "ComptypePropertyValue.findPropertyDefs", query = "SELECT c FROM ComptypePropertyValue c WHERE c.componentType = :componentType AND c.propValue IS NULL"),
     @NamedQuery(name = "ComptypePropertyValue.findByInRepository", query = "SELECT c FROM ComptypePropertyValue c WHERE c.inRepository = :inRepository"),
-    @NamedQuery(name = "ComptypePropertyValue.findByModifiedBy", query = "SELECT c FROM ComptypePropertyValue c WHERE c.modifiedBy = :modifiedBy")})
+    @NamedQuery(name = "ComptypePropertyValue.findByModifiedBy", query = "SELECT c FROM ComptypePropertyValue c WHERE c.modifiedBy = :modifiedBy")
+})
 public class ComptypePropertyValue extends PropertyValue {
     @JoinColumn(name = "component_type")
     @ManyToOne(optional = false)
@@ -32,9 +33,15 @@ public class ComptypePropertyValue extends PropertyValue {
         super(inRepository);
     }
 
-    public ComponentType getComponentType() { return componentType; }
-    public void setComponentType(ComponentType componentType) { this.componentType = componentType; }
+    public ComponentType getComponentType() {
+        return componentType;
+    }
+    public void setComponentType(ComponentType componentType) {
+        this.componentType = componentType;
+    }
 
     @Override
-    public String toString() { return "ComptypeProperty[ ctypePropId=" + id + " ]"; }
+    public String toString() {
+        return "ComptypeProperty[ ctypePropId=" + id + " ]";
+    }
 }

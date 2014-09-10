@@ -19,7 +19,7 @@ import com.google.common.collect.ImmutableList;
 public class PropertyEntityLogger implements EntityLogger {
 
     @Override
-    public Class<?> getType() {
+    public Class<Property> getType() {
         return Property.class;
     }
 
@@ -27,11 +27,11 @@ public class PropertyEntityLogger implements EntityLogger {
     public List<AuditRecord> auditEntries(Object value, EntityTypeOperation operation) {
         final Property prop = (Property) value;
 
-        return ImmutableList.of((new AuditLogUtil(prop).
-            removeTopProperties(Arrays.asList(
-                    "id", "modifiedAt", "modifiedBy", "version", "name", "dataType", "unit")).
-            addStringProperty("dataType", (prop.getDataType() != null ? prop.getDataType().getName() : null)).
-            addStringProperty("unit", (prop.getUnit() != null ? prop.getUnit().getName() : null)).
-            auditEntry(operation, EntityType.PROPERTY, prop.getName(), prop.getId())));
+        return ImmutableList.of(new AuditLogUtil(prop)
+                                .removeTopProperties(Arrays.asList("id", "modifiedAt", "modifiedBy",
+                                        "version", "name", "dataType", "unit"))
+                                .addStringProperty("dataType", prop.getDataType() != null ? prop.getDataType().getName() : null)
+                                .addStringProperty("unit", prop.getUnit() != null ? prop.getUnit().getName() : null)
+                                .auditEntry(operation, EntityType.PROPERTY, prop.getName(), prop.getId()));
     }
 }

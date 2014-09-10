@@ -99,7 +99,7 @@ public class PropertyManager implements Serializable {
         selectedProperty.setAssociation(association);
         selectedProperty.setUnit(unit);
 
-        try{
+        try {
             propertyEJB.save(selectedProperty);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Property was modified");
         } finally {
@@ -124,8 +124,8 @@ public class PropertyManager implements Serializable {
 
     public void onDelete() {
         try {
-        	propertyEJB.delete(selectedProperty);
-        	Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Property was deleted");
+            propertyEJB.delete(selectedProperty);
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Property was deleted");
         } catch (Exception e) {
             if (Utility.causedByPersistenceException(e)) {
                 Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Deletion failed", "The property could not be deleted because it is used.");
@@ -158,7 +158,9 @@ public class PropertyManager implements Serializable {
         return properties;
     }
 
-    public String getImportFileName() { return importFileName; }
+    public String getImportFileName() {
+        return importFileName;
+    }
 
     public void doImport() {
         final InputStream inputStream = new ByteArrayInputStream(importData);
@@ -174,20 +176,40 @@ public class PropertyManager implements Serializable {
         return Arrays.asList(PropertyAssociation.values());
     }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
+    public String getDescription() {
+        return description;
+    }
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-    public DataType getDataType() { return dataType; }
-    public void setDataType(DataType dataType) { this.dataType = dataType; }
+    public DataType getDataType() {
+        return dataType;
+    }
+    public void setDataType(DataType dataType) {
+        this.dataType = dataType;
+    }
 
-    public Unit getUnit() { return unit; }
-    public void setUnit(Unit unit) { this.unit = unit; }
+    public Unit getUnit() {
+        return unit;
+    }
+    public void setUnit(Unit unit) {
+        this.unit = unit;
+    }
 
-    public PropertyAssociation getPropertyAssociation() { return association; }
-    public void setPropertyAssociation(PropertyAssociation association) { this.association = association; }
+    public PropertyAssociation getPropertyAssociation() {
+        return association;
+    }
+    public void setPropertyAssociation(PropertyAssociation association) {
+        this.association = association;
+    }
 
     public void setIsUnitComboEnabled() {
         if (dataType.getName().equalsIgnoreCase("integer") || dataType.getName().equalsIgnoreCase("double") || dataType.getName().equalsIgnoreCase("integers vector") || dataType.getName().equalsIgnoreCase("doubles vector" ) || dataType.getName().equalsIgnoreCase("doubles table")) {
@@ -197,20 +219,28 @@ public class PropertyManager implements Serializable {
         }
     }
 
-    public boolean isUnitComboEnabled() { return unitComboEnabled;}
+    public boolean isUnitComboEnabled() {
+        return unitComboEnabled;
+    }
 
-    public Property getSelectedProperty() { return selectedProperty; }
+    public Property getSelectedProperty() {
+        return selectedProperty;
+    }
     public void setSelectedProperty(Property selectedProperty) {
         this.selectedProperty = selectedProperty;
     }
 
-    public Property getSelectedPropertyToModify() { return selectedProperty; }
+    public Property getSelectedPropertyToModify() {
+        return selectedProperty;
+    }
     public void setSelectedPropertyToModify(Property selectedProperty) {
         this.selectedProperty = selectedProperty;
         prepareModifyPopup();
     }
 
-    public DataLoaderResult getLoaderResult() { return loaderResult; }
+    public DataLoaderResult getLoaderResult() {
+        return loaderResult;
+    }
 
     public void handleImportFileUpload(FileUploadEvent event) {
         try (InputStream inputStream = event.getFile().getInputstream()) {

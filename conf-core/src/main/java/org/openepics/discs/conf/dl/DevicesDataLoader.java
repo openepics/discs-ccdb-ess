@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.annotation.Nullable;
 import javax.ejb.Stateless;
@@ -79,7 +80,7 @@ public class DevicesDataLoader extends AbstractDataLoader implements DataLoader 
                         return loaderResult;
                     } else {
                         continue; // skip the rest of the processing for
-                                  // HEADER row
+                        // HEADER row
                     }
                 } else if (row.get(1).equals(CMD_END)) {
                     break;
@@ -235,7 +236,6 @@ public class DevicesDataLoader extends AbstractDataLoader implements DataLoader 
     }
 
     private void addOrUpdateProperties(Device device, Map<String, Integer> properties, List<String> row, String rowNumber) {
-        final Iterator<String> propertiesIterator = properties.keySet().iterator();
         final List<DevicePropertyValue> deviceProperties = new ArrayList<>();
         if (device.getDevicePropertyList() != null) {
             deviceProperties.addAll(device.getDevicePropertyList());
@@ -246,9 +246,9 @@ public class DevicesDataLoader extends AbstractDataLoader implements DataLoader 
             devicePropertyByProperty.put(deviceProperty.getProperty(), deviceProperty);
         }
 
-        while (propertiesIterator.hasNext()) {
-            final String propertyName = propertiesIterator.next();
-            final int propertyIndex = properties.get(propertyName);
+        for (Entry<String, Integer> entry : properties.entrySet()) {
+            final String propertyName = entry.getKey();
+            final int propertyIndex = entry.getValue();
             final @Nullable Property property = propertyEJB.findByName(propertyName);
             final @Nullable String propertyValue = row.get(propertyIndex);
             if (devicePropertyByProperty.containsKey(property)) {

@@ -20,7 +20,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "InstallationArtifact.findByArtifactId", query = "SELECT i FROM InstallationArtifact i WHERE i.id = :id"),
     @NamedQuery(name = "InstallationArtifact.findByName", query = "SELECT i FROM InstallationArtifact i WHERE i.name = :name"),
     @NamedQuery(name = "InstallationArtifact.findByIsInternal", query = "SELECT i FROM InstallationArtifact i WHERE i.isInternal = :isInternal"),
-    @NamedQuery(name = "InstallationArtifact.findByModifiedBy", query = "SELECT i FROM InstallationArtifact i WHERE i.modifiedBy = :modifiedBy")})
+    @NamedQuery(name = "InstallationArtifact.findByModifiedBy", query = "SELECT i FROM InstallationArtifact i WHERE i.modifiedBy = :modifiedBy")
+})
 public class InstallationArtifact extends Artifact {
     @JoinColumn(name = "installation_record")
     @ManyToOne(optional = false)
@@ -32,8 +33,12 @@ public class InstallationArtifact extends Artifact {
         super(name, isInternal, description, uri);
     }
 
-    public InstallationRecord getInstallationRecord() { return installationRecord; }
-    public void setInstallationRecord(InstallationRecord installationRecord) { this.installationRecord = installationRecord; }
+    public InstallationRecord getInstallationRecord() {
+        return installationRecord;
+    }
+    public void setInstallationRecord(InstallationRecord installationRecord) {
+        this.installationRecord = installationRecord;
+    }
 
     @Override
     public String toString() {

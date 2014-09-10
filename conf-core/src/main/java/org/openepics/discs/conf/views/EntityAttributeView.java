@@ -85,19 +85,35 @@ public class EntityAttributeView {
         value = "-";
     }
 
-    public String getName() { return name; }
+    public String getName() {
+        return name;
+    }
 
-    public DataType getType() { return type; }
+    public DataType getType() {
+        return type;
+    }
 
-    public Unit getUnit() { return unit; }
+    public Unit getUnit() {
+        return unit;
+    }
 
-    public String getValue() { return value; }
+    public String getValue() {
+        return value;
+    }
 
-    public String getKind() { return kind; }
+    public String getKind() {
+        return kind;
+    }
 
-    public Object getEntity() { return entity; }
+    public Object getEntity() {
+        return entity;
+    }
 
-    public boolean getHasFile() { return hasFile; }
+    public boolean getHasFile() {
+        return hasFile;
+    }
 
-    public boolean getHasURL() { return hasURL; }
+    public boolean getHasURL() {
+        return hasURL;
+    }
 }

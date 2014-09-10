@@ -26,7 +26,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Property.findByPropertyId", query = "SELECT p FROM Property p WHERE p.id = :id"),
     @NamedQuery(name = "Property.findByName", query = "SELECT p FROM Property p WHERE p.name = :name"),
     @NamedQuery(name = "Property.findByAssociation", query = "SELECT p FROM Property p WHERE p.association = :association"),
-    @NamedQuery(name = "Property.findByModifiedBy", query = "SELECT p FROM Property p WHERE p.modifiedBy = :modifiedBy")})
+    @NamedQuery(name = "Property.findByModifiedBy", query = "SELECT p FROM Property p WHERE p.modifiedBy = :modifiedBy")
+})
 public class Property extends ConfigurationEntity {
     @Basic(optional = false)
     @NotNull
@@ -63,21 +64,43 @@ public class Property extends ConfigurationEntity {
         this.association = association;
     }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
+    public String getDescription() {
+        return description;
+    }
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-    public PropertyAssociation getAssociation() { return association; }
-    public void setAssociation(PropertyAssociation association) { this.association = association; }
+    public PropertyAssociation getAssociation() {
+        return association;
+    }
+    public void setAssociation(PropertyAssociation association) {
+        this.association = association;
+    }
 
-    public DataType getDataType() { return dataType; }
-    public void setDataType(DataType dataType) { this.dataType = dataType; }
+    public DataType getDataType() {
+        return dataType;
+    }
+    public void setDataType(DataType dataType) {
+        this.dataType = dataType;
+    }
 
-    public Unit getUnit() { return unit; }
-    public void setUnit(Unit unit) { this.unit = unit; }
+    public Unit getUnit() {
+        return unit;
+    }
+    public void setUnit(Unit unit) {
+        this.unit = unit;
+    }
 
     @Override
-    public String toString() { return "Property[ propertyId=" + id + " ]"; }
+    public String toString() {
+        return "Property[ propertyId=" + id + " ]";
+    }
 }

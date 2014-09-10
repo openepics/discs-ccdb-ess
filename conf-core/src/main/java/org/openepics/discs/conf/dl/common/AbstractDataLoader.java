@@ -41,29 +41,29 @@ public abstract class AbstractDataLoader {
      *
      * @return Property index by property name map of properties in the header
      */
-	protected HashMap<String, Integer> indexByPropertyName(List<String> fields, List<String> headerRow) {
-		final HashMap<String, Integer> indexByPropertyName = new HashMap<>();
-		for (String headerEntry : headerRow.subList(2, headerRow.size())) {
-			if (!fields.contains(headerEntry) && headerEntry != null && headerEntry.length() > 0) {
-				indexByPropertyName.put(headerEntry, headerRow.indexOf(headerEntry));
-			}
-		}
-		return indexByPropertyName;
-	}
+    protected HashMap<String, Integer> indexByPropertyName(List<String> fields, List<String> headerRow) {
+        final HashMap<String, Integer> indexByPropertyName = new HashMap<>();
+        for (String headerEntry : headerRow.subList(2, headerRow.size())) {
+            if (!fields.contains(headerEntry) && headerEntry != null && headerEntry.length() > 0) {
+                indexByPropertyName.put(headerEntry, headerRow.indexOf(headerEntry));
+            }
+        }
+        return indexByPropertyName;
+    }
 
-	/**
-	 * Checks if there are multiple occurrences of same header entry in the header
-	 *
-	 * @param headerRow {@link List} containing header entries
-	 */
-	protected void checkForDuplicateHeaderEntries(List<String> headerRow) {
-	    final ArrayList<String> duplicateHeaderEntries = new ArrayList<>();
-	    rowResult = new DataLoaderResult();
-	    for (String headerEntry : headerRow.subList(2, headerRow.size())) {
-	        if (headerEntry != null && headerEntry.length() > 0 && headerRow.indexOf(headerEntry) != headerRow.lastIndexOf(headerEntry) && !duplicateHeaderEntries.contains(headerEntry)) {
-	            rowResult.addMessage(new ValidationMessage(ErrorMessage.DUPLICATES_IN_HEADER, headerRow.get(0), headerEntry));
-	            duplicateHeaderEntries.add(headerEntry);
-	        }
-	    }
-	}
+    /**
+     * Checks if there are multiple occurrences of same header entry in the header
+     *
+     * @param headerRow {@link List} containing header entries
+     */
+    protected void checkForDuplicateHeaderEntries(List<String> headerRow) {
+        final ArrayList<String> duplicateHeaderEntries = new ArrayList<>();
+        rowResult = new DataLoaderResult();
+        for (String headerEntry : headerRow.subList(2, headerRow.size())) {
+            if (headerEntry != null && headerEntry.length() > 0 && headerRow.indexOf(headerEntry) != headerRow.lastIndexOf(headerEntry) && !duplicateHeaderEntries.contains(headerEntry)) {
+                rowResult.addMessage(new ValidationMessage(ErrorMessage.DUPLICATES_IN_HEADER, headerRow.get(0), headerEntry));
+                duplicateHeaderEntries.add(headerEntry);
+            }
+        }
+    }
 }

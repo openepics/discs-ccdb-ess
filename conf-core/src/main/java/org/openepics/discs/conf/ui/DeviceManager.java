@@ -168,7 +168,7 @@ public class DeviceManager implements Serializable {
         }
     }
 
-     // --------------------------------- Property ------------------------------------------------
+    // --------------------------------- Property ------------------------------------------------
     public void onPropertyAdd(ActionEvent event) {
         try {
             if (selectedProperties == null) {
@@ -507,14 +507,18 @@ public class DeviceManager implements Serializable {
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Edit:", "Edit initiated " );
     }
 
-    public String getImportFileName() { return importFileName; }
+    public String getImportFileName() {
+        return importFileName;
+    }
 
     public void doImport() {
         final InputStream inputStream = new ByteArrayInputStream(importData);
         loaderResult = dataLoaderHandler.loadData(inputStream, devicesDataLoader);
     }
 
-    public DataLoaderResult getLoaderResult() { return loaderResult; }
+    public DataLoaderResult getLoaderResult() {
+        return loaderResult;
+    }
 
     public void prepareImportPopup() {
         importData = null;
@@ -532,62 +536,130 @@ public class DeviceManager implements Serializable {
 
     // ------------Getters/Setters -------------
 
-    public List<Device> getSortedObjects() { return sortedObjects; }
-    public void setSortedObjects(List<Device> sortedObjects) { this.sortedObjects = sortedObjects; }
+    public List<Device> getSortedObjects() {
+        return sortedObjects;
+    }
+    public void setSortedObjects(List<Device> sortedObjects) {
+        this.sortedObjects = sortedObjects;
+    }
 
-    public List<Device> getFilteredObjects() { return filteredObjects; }
-    public void setFilteredObjects(List<Device> filteredObjects) { this.filteredObjects = filteredObjects; }
+    public List<Device> getFilteredObjects() {
+        return filteredObjects;
+    }
+    public void setFilteredObjects(List<Device> filteredObjects) {
+        this.filteredObjects = filteredObjects;
+    }
 
-    public Device getSelectedObject() { return selectedObject; }
-    public void setSelectedObject(Device selectedObject) { this.selectedObject = selectedObject; }
+    public Device getSelectedObject() {
+        return selectedObject;
+    }
+    public void setSelectedObject(Device selectedObject) {
+        this.selectedObject = selectedObject;
+    }
 
-    public Device getInputObject() { return inputObject; }
-    public void setInputObject(Device inputObject) { this.inputObject = inputObject; }
+    public Device getInputObject() {
+        return inputObject;
+    }
+    public void setInputObject(Device inputObject) {
+        this.inputObject = inputObject;
+    }
 
-    public DeviceArtifact getInputArtifact() { return inputArtifact; }
-    public void setInputArtifact(DeviceArtifact inputArtifact) { this.inputArtifact = inputArtifact; }
+    public DeviceArtifact getInputArtifact() {
+        return inputArtifact;
+    }
+    public void setInputArtifact(DeviceArtifact inputArtifact) {
+        this.inputArtifact = inputArtifact;
+    }
 
-    public char getSelectedOp() { return selectedOp; }
-    public void setSelectedOp(char selectedOp) { this.selectedOp = selectedOp; }
+    public char getSelectedOp() {
+        return selectedOp;
+    }
+    public void setSelectedOp(char selectedOp) {
+        this.selectedOp = selectedOp;
+    }
 
-    public boolean isInternalArtifact() { return internalArtifact; }
-    public void setInternalArtifact(boolean internalArtifact) { this.internalArtifact = internalArtifact; }
+    public boolean isInternalArtifact() {
+        return internalArtifact;
+    }
+    public void setInternalArtifact(boolean internalArtifact) {
+        this.internalArtifact = internalArtifact;
+    }
 
     public List<Device> getObjects() {
         if (objects == null) objects = deviceEJB.findAll();
         return objects;
     }
-    public List<DevicePropertyValue> getSelectedProperties() { return selectedProperties; }
+    public List<DevicePropertyValue> getSelectedProperties() {
+        return selectedProperties;
+    }
 
-    public List<DeviceArtifact> getSelectedArtifacts() { return selectedArtifacts; }
+    public List<DeviceArtifact> getSelectedArtifacts() {
+        return selectedArtifacts;
+    }
 
-    public char getArtifactOperation() { return artifactOperation; }
+    public char getArtifactOperation() {
+        return artifactOperation;
+    }
 
-    public String getUploadedFileName() { return uploadedFileName; }
+    public String getUploadedFileName() {
+        return uploadedFileName;
+    }
 
-    public DeviceArtifact getSelectedArtifact() { return selectedArtifact; }
-    public void setSelectedArtifact(DeviceArtifact selectedArtifact) { this.selectedArtifact = selectedArtifact; }
+    public DeviceArtifact getSelectedArtifact() {
+        return selectedArtifact;
+    }
+    public void setSelectedArtifact(DeviceArtifact selectedArtifact) {
+        this.selectedArtifact = selectedArtifact;
+    }
 
-    public Device getInputAsmDevice() { return inputAsmDevice; }
-    public void setInputAsmDevice(Device inputAsmDevice) { this.inputAsmDevice = inputAsmDevice; }
+    public Device getInputAsmDevice() {
+        return inputAsmDevice;
+    }
+    public void setInputAsmDevice(Device inputAsmDevice) {
+        this.inputAsmDevice = inputAsmDevice;
+    }
 
-    public String getInputAsmComment() { return inputAsmComment; }
-    public void setInputAsmComment(String inputAsmComment) { this.inputAsmComment = inputAsmComment; }
+    public String getInputAsmComment() {
+        return inputAsmComment;
+    }
+    public void setInputAsmComment(String inputAsmComment) {
+        this.inputAsmComment = inputAsmComment;
+    }
 
-    public String getInputAsmPosition() { return inputAsmPosition; }
-    public void setInputAsmPosition(String inputAsmPosition) { this.inputAsmPosition = inputAsmPosition; }
+    public String getInputAsmPosition() {
+        return inputAsmPosition;
+    }
+    public void setInputAsmPosition(String inputAsmPosition) {
+        this.inputAsmPosition = inputAsmPosition;
+    }
 
-    public List<Device> getAsmDevices() { return asmDevices; }
+    public List<Device> getAsmDevices() {
+        return asmDevices;
+    }
 
-    public DevicePropertyValue getSelectedProperty() { return selectedProperty; }
-    public void setSelectedProperty(DevicePropertyValue selectedProperty) { this.selectedProperty = selectedProperty; }
+    public DevicePropertyValue getSelectedProperty() {
+        return selectedProperty;
+    }
+    public void setSelectedProperty(DevicePropertyValue selectedProperty) {
+        this.selectedProperty = selectedProperty;
+    }
 
-    public DevicePropertyValue getInputProperty() { return inputProperty; }
-    public void setInputProperty(DevicePropertyValue inputProperty) { this.inputProperty = inputProperty; }
+    public DevicePropertyValue getInputProperty() {
+        return inputProperty;
+    }
+    public void setInputProperty(DevicePropertyValue inputProperty) {
+        this.inputProperty = inputProperty;
+    }
 
-    public boolean isInRepository() { return inRepository; }
-    public void setInRepository(boolean inRepository) { this.inRepository = inRepository; }
+    public boolean isInRepository() {
+        return inRepository;
+    }
+    public void setInRepository(boolean inRepository) {
+        this.inRepository = inRepository;
+    }
 
-    public char getPropertyOperation() { return propertyOperation; }
+    public char getPropertyOperation() {
+        return propertyOperation;
+    }
 
 }

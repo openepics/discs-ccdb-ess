@@ -1,3 +1,22 @@
+/*
+ * Copyright (c) 2014 European Spallation Source
+ * Copyright (c) 2014 Cosylab d.d.
+ *
+ * This file is part of Controls Configuration Database.
+ *
+ * Controls Configuration Database is free software: you can redistribute it
+ * and/or modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 2 of the License,
+ * or any newer version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
+ */
 package org.openepics.discs.conf.auditlog;
 
 import java.util.Date;
@@ -47,14 +66,15 @@ public class AuditInterceptor {
             final String username = securityPolicy.getUserId();
             final Date now = new Date();
 
-            final List<AuditRecord>  auditRecords = auditLogEntryCreator.auditRecords(ParentEntityResolver.resolveParentEntity(entity), context.getMethod().getAnnotation(CRUDOperation.class).operation());
-            if (auditRecords != null) {
-                for (AuditRecord auditRecord : auditRecords) {
-                    auditRecord.setUser(username);
-                    auditRecord.setLogTime(now);
+            final List<AuditRecord> auditRecords = auditLogEntryCreator.auditRecords(
+                    ParentEntityResolver.resolveParentEntity(entity),
+                    context.getMethod().getAnnotation(CRUDOperation.class).operation());
 
-                    em.persist(auditRecord);
-                }
+            for (AuditRecord auditRecord : auditRecords) {
+                auditRecord.setUser(username);
+                auditRecord.setLogTime(now);
+
+                em.persist(auditRecord);
             }
         }
         return returnContext;

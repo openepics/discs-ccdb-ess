@@ -11,9 +11,9 @@ import javax.faces.context.FacesContext;
 import org.primefaces.component.fileupload.FileUploadRenderer;
 
 /**
- * This is a workaround to problem with p:fileupload + ajax giving 'content not 
- * in multipart/form-data exception'(from stackoverflow). 
- * 
+ * This is a workaround to problem with p:fileupload + ajax giving 'content not
+ * in multipart/form-data exception'(from stackoverflow).
+ *
  * @author BalusC
  */
 // ToDo: remove it once primfaces fixes p:fileupload

@@ -33,7 +33,7 @@ public class PropertyEntityLoggerTest {
     @Test
     public void testSerializeEntity() {
         final String RESULT = "{\"description\":\"Description of test Property\",\"association\":\"TYPE_DEVICE\",\"dataType\":\"Float\",\"unit\":\"Ampre\"}";
-        
+
         assertEquals(RESULT, pel.auditEntries(prop, EntityTypeOperation.CREATE).get(0).getEntry());
     }
 }

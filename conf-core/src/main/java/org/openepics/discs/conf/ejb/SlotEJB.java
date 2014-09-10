@@ -23,7 +23,7 @@ public class SlotEJB extends DAO<Slot> {
     public static final String GRP_COMPONENT_TYPE = "_GRP";
 
     @SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(SlotEJB.class.getCanonicalName());
+    private static final Logger logger = Logger.getLogger(SlotEJB.class.getCanonicalName());
 
     @Override
     protected void defineEntity() {
@@ -60,11 +60,11 @@ public class SlotEJB extends DAO<Slot> {
 
     public List<Slot> getRootNodes(SlotRelationName relationName) {
         return em.createQuery("SELECT cp.childSlot FROM SlotPair cp "
-                + "WHERE cp.parentSlot.componentType.name = :ctype AND cp.slotRelation.name = :relname "
-                + "ORDER BY cp.childSlot.name",
-                Slot.class).
-                setParameter("ctype", ROOT_COMPONENT_TYPE).
-                setParameter("relname", relationName).getResultList();
+                              + "WHERE cp.parentSlot.componentType.name = :ctype AND cp.slotRelation.name = :relname "
+                              + "ORDER BY cp.childSlot.name",
+                              Slot.class).
+               setParameter("ctype", ROOT_COMPONENT_TYPE).
+               setParameter("relname", relationName).getResultList();
     }
 
     public List<Slot> getRootNodes() {
@@ -73,9 +73,9 @@ public class SlotEJB extends DAO<Slot> {
 
     public List<Slot> relatedChildren(String compName) {
         return em.createQuery("SELECT cp.childSlot FROM SlotPair cp "
-                + "WHERE cp.parentSlot.name = :compname AND cp.slotRelation.name = :relname", Slot.class).
-                setParameter("compname", compName).
-                setParameter("relname", SlotRelationName.CONTAINS).getResultList();
+                              + "WHERE cp.parentSlot.name = :compname AND cp.slotRelation.name = :relname", Slot.class).
+               setParameter("compname", compName).
+               setParameter("relname", SlotRelationName.CONTAINS).getResultList();
     }
 
     /**

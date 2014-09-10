@@ -21,96 +21,96 @@ import org.openepics.discs.conf.util.TestUtility;
 
 @RunWith(Arquillian.class)
 public class UnitEJBIT {
-	@Inject private UnitEJB unitService;
-	@Inject private TestUtility testUtility;
+    @Inject private UnitEJB unitService;
+    @Inject private TestUtility testUtility;
 
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
 
-	@Deployment()
+    @Deployment()
     public static WebArchive createDeployment() {
         return TestUtility.createWebArchive();
     }
 
-	@Before
-	public void setUp() throws Exception {
-		testUtility.loginForTests();
-	}
-
-    @Test
-    @UsingDataSet(value={"unit.xml"})
-    @ApplyScriptBefore(value={"update_sequences.sql"})
-	public void testFindById() {
-    	final Unit unit = unitService.findById( unitService.findByName("meter").getId() );
-
-		assertNotNull(unit);
-		assertEquals("meter", unit.getName());
+    @Before
+    public void setUp() throws Exception {
+        testUtility.loginForTests();
     }
 
     @Test
-    @UsingDataSet(value={"unit.xml"})
-    @ApplyScriptBefore(value={"update_sequences.sql"})
-	public void testFindByName() {
-		final Unit unit = unitService.findByName("meter");
+    @UsingDataSet(value= {"unit.xml"})
+    @ApplyScriptBefore(value= {"update_sequences.sql"})
+    public void testFindById() {
+        final Unit unit = unitService.findById( unitService.findByName("meter").getId() );
 
-		assertNotNull(unit);
-		assertEquals("meter", unit.getName());
-	}
-
-    @Test
-    @UsingDataSet(value={"unit.xml"})
-    @ApplyScriptBefore(value={"update_sequences.sql"})
-	public void testFindAll() {
-		final List<Unit> units = unitService.findAll();
-
-		assertNotNull(units);
-		assertNotEquals(0, units.size());
-	}
-
-    @Test
-    @UsingDataSet(value={"unit.xml"})
-    @ApplyScriptBefore(value={"update_sequences.sql"})
-	public void testAdd() {
-    	final Unit unit = new Unit("foot", "length2", "ft", "length in feet");
-    	unitService.add(unit);
-
-    	final Unit newUnit = unitService.findByName("foot");
-    	assertNotNull(newUnit);
-		assertEquals("foot", newUnit.getName());
-		assertEquals("length in feet", newUnit.getDescription());
-		assertEquals("ft", newUnit.getSymbol());
-		assertEquals("length2", newUnit.getQuantity());
+        assertNotNull(unit);
+        assertEquals("meter", unit.getName());
     }
 
     @Test
-    @UsingDataSet(value={"unit.xml"})
-    @ApplyScriptBefore(value={"update_sequences.sql"})
-	public void testSave() {
-    	final Unit unit = unitService.findByName("meter");
-    	unit.setName("foot");
-    	unit.setDescription("length in feet");
-    	unit.setSymbol("ft");
-    	unit.setQuantity("length2");
-    	Long id = unit.getId();
-    	unitService.save(unit);
+    @UsingDataSet(value= {"unit.xml"})
+    @ApplyScriptBefore(value= {"update_sequences.sql"})
+    public void testFindByName() {
+        final Unit unit = unitService.findByName("meter");
 
-    	final Unit newUnit = unitService.findByName("foot");
-		assertNotNull(newUnit);
-		assertEquals(id, newUnit.getId());
-		assertEquals("foot", newUnit.getName());
-		assertEquals("length in feet", newUnit.getDescription());
-		assertEquals("ft", newUnit.getSymbol());
-		assertEquals("length2", newUnit.getQuantity());
+        assertNotNull(unit);
+        assertEquals("meter", unit.getName());
     }
 
     @Test
-    @UsingDataSet(value={"unit.xml"})
-    @ApplyScriptBefore(value={"update_sequences.sql"})
-	public void testDelete() {
-    	final Unit unit = unitService.findByName("meter");
-    	unitService.delete(unit);
+    @UsingDataSet(value= {"unit.xml"})
+    @ApplyScriptBefore(value= {"update_sequences.sql"})
+    public void testFindAll() {
+        final List<Unit> units = unitService.findAll();
 
-    	final Unit newUnit = unitService.findByName("meter");
-    	assertNull(newUnit);
+        assertNotNull(units);
+        assertNotEquals(0, units.size());
+    }
+
+    @Test
+    @UsingDataSet(value= {"unit.xml"})
+    @ApplyScriptBefore(value= {"update_sequences.sql"})
+    public void testAdd() {
+        final Unit unit = new Unit("foot", "length2", "ft", "length in feet");
+        unitService.add(unit);
+
+        final Unit newUnit = unitService.findByName("foot");
+        assertNotNull(newUnit);
+        assertEquals("foot", newUnit.getName());
+        assertEquals("length in feet", newUnit.getDescription());
+        assertEquals("ft", newUnit.getSymbol());
+        assertEquals("length2", newUnit.getQuantity());
+    }
+
+    @Test
+    @UsingDataSet(value= {"unit.xml"})
+    @ApplyScriptBefore(value= {"update_sequences.sql"})
+    public void testSave() {
+        final Unit unit = unitService.findByName("meter");
+        unit.setName("foot");
+        unit.setDescription("length in feet");
+        unit.setSymbol("ft");
+        unit.setQuantity("length2");
+        Long id = unit.getId();
+        unitService.save(unit);
+
+        final Unit newUnit = unitService.findByName("foot");
+        assertNotNull(newUnit);
+        assertEquals(id, newUnit.getId());
+        assertEquals("foot", newUnit.getName());
+        assertEquals("length in feet", newUnit.getDescription());
+        assertEquals("ft", newUnit.getSymbol());
+        assertEquals("length2", newUnit.getQuantity());
+    }
+
+    @Test
+    @UsingDataSet(value= {"unit.xml"})
+    @ApplyScriptBefore(value= {"update_sequences.sql"})
+    public void testDelete() {
+        final Unit unit = unitService.findByName("meter");
+        unitService.delete(unit);
+
+        final Unit newUnit = unitService.findByName("meter");
+        assertNull(newUnit);
     }
 }

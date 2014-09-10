@@ -9,6 +9,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.openepics.discs.conf.ent.Config;
 
 /**
@@ -30,7 +31,7 @@ public class ApplicationService {
     @PostConstruct
     public void init() {
         final List<Config> confList = em.createQuery("SELECT c from Config c WHERE c.name = :name", Config.class).setParameter("name", "schema_version").getResultList();
-        if (confList == null || confList.size() < 1) {
+        if (CollectionUtils.isEmpty(confList)) {
             initDB.initialPopulation();
             em.persist(new Config("schema_version", "1"));
         }

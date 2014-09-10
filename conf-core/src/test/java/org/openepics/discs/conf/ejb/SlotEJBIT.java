@@ -44,16 +44,16 @@ public class SlotEJBIT {
     }
 
     @Test
-    @UsingDataSet(value={"component_type.xml", "unit.xml", "property.xml", "comptype_property_value.xml", "slot.xml"})
-    @ApplyScriptBefore(value={"update_sequences.sql"})
+    @UsingDataSet(value= {"component_type.xml", "unit.xml", "property.xml", "comptype_property_value.xml", "slot.xml"})
+    @ApplyScriptBefore(value= {"update_sequences.sql"})
     public void testFindAll() {
         final List<Slot> slots = slotService.findAll();
         assertNotEquals(slots.size(), 0);
     }
 
     @Test
-    @UsingDataSet(value={"component_type.xml", "unit.xml", "property.xml", "comptype_property_value.xml", "slot.xml"})
-    @ApplyScriptBefore(value={"update_sequences.sql"})
+    @UsingDataSet(value= {"component_type.xml", "unit.xml", "property.xml", "comptype_property_value.xml", "slot.xml"})
+    @ApplyScriptBefore(value= {"update_sequences.sql"})
     public void testFindById() {
         final Slot slot = slotService.findById( slotService.findByName("FE").getId() );
         assertNotNull(slot);
@@ -61,16 +61,16 @@ public class SlotEJBIT {
     }
 
     @Test
-    @UsingDataSet(value={"component_type.xml", "unit.xml", "property.xml", "comptype_property_value.xml", "slot.xml"})
-    @ApplyScriptBefore(value={"update_sequences.sql"})
+    @UsingDataSet(value= {"component_type.xml", "unit.xml", "property.xml", "comptype_property_value.xml", "slot.xml"})
+    @ApplyScriptBefore(value= {"update_sequences.sql"})
     public void testByIdInvalid() {
         final Slot slot = slotService.findById(12321321321L);
         assertNull(slot);
     }
 
     @Test
-    @UsingDataSet(value={"component_type.xml", "unit.xml", "property.xml", "comptype_property_value.xml", "slot.xml"})
-    @ApplyScriptBefore(value={"update_sequences.sql"})
+    @UsingDataSet(value= {"component_type.xml", "unit.xml", "property.xml", "comptype_property_value.xml", "slot.xml"})
+    @ApplyScriptBefore(value= {"update_sequences.sql"})
     public void testFindByName() {
         final Slot slot = slotService.findByName("FE");
         assertNotNull(slot);
@@ -78,17 +78,17 @@ public class SlotEJBIT {
     }
 
     @Test
-    @UsingDataSet(value={"component_type.xml", "unit.xml", "property.xml", "comptype_property_value.xml", "slot.xml"})
-    @ApplyScriptBefore(value={"update_sequences.sql"})
+    @UsingDataSet(value= {"component_type.xml", "unit.xml", "property.xml", "comptype_property_value.xml", "slot.xml"})
+    @ApplyScriptBefore(value= {"update_sequences.sql"})
     public void testFindByNameInvalid() {
         final Slot slot = slotService.findByName("R4nd0m_Stuff");
         assertNull(slot);
     }
 
     @Test
-    @UsingDataSet(value={"component_type.xml", "unit.xml", "property.xml", "comptype_property_value.xml", "slot.xml"})
-    @ApplyScriptBefore(value={"update_sequences.sql"})
-    @ApplyScriptAfter(value={"delete_tags.sql"})
+    @UsingDataSet(value= {"component_type.xml", "unit.xml", "property.xml", "comptype_property_value.xml", "slot.xml"})
+    @ApplyScriptBefore(value= {"update_sequences.sql"})
+    @ApplyScriptAfter(value= {"delete_tags.sql"})
     public void testAdd() {
         final Slot slot = new Slot("ABrandNewSlot", true);
 
@@ -125,9 +125,9 @@ public class SlotEJBIT {
     }
 
     @Test
-    @UsingDataSet(value={"component_type.xml", "unit.xml", "property.xml", "comptype_property_value.xml", "slot.xml"})
-    @ApplyScriptBefore(value={"update_sequences.sql"})
-    @ApplyScriptAfter(value={"delete_tags.sql"})
+    @UsingDataSet(value= {"component_type.xml", "unit.xml", "property.xml", "comptype_property_value.xml", "slot.xml"})
+    @ApplyScriptBefore(value= {"update_sequences.sql"})
+    @ApplyScriptAfter(value= {"delete_tags.sql"})
     public void testSave() {
         final Slot slot = slotService.findByName("FS1_CSS");
 
@@ -163,13 +163,13 @@ public class SlotEJBIT {
     }
 
     @Test
-    @UsingDataSet(value={"component_type.xml", "unit.xml", "property.xml", "comptype_property_value.xml", "slot.xml"})
-    @ApplyScriptBefore(value={"update_sequences.sql"})
-    @ApplyScriptAfter(value={"delete_tags.sql"})
+    @UsingDataSet(value= {"component_type.xml", "unit.xml", "property.xml", "comptype_property_value.xml", "slot.xml"})
+    @ApplyScriptBefore(value= {"update_sequences.sql"})
+    @ApplyScriptAfter(value= {"delete_tags.sql"})
     public void testDelete() {
-    	final Slot slot = slotService.findByName("FS1_CSS");
+        final Slot slot = slotService.findByName("FS1_CSS");
 
-    	slotService.delete(slot);
+        slotService.delete(slot);
 
         assertNull( slotService.findByName("FS1_CSS") );
     }

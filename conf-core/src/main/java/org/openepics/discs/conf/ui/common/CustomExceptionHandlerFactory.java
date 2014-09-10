@@ -33,6 +33,8 @@ public class CustomExceptionHandlerFactory extends ExceptionHandlerFactory {
         this.parent = parent;
     }
 
-    @Override public ExceptionHandler getExceptionHandler() { return new CustomExceptionHandler(parent.getExceptionHandler()); }
+    @Override public ExceptionHandler getExceptionHandler() {
+        return new CustomExceptionHandler(parent.getExceptionHandler());
+    }
 
 }

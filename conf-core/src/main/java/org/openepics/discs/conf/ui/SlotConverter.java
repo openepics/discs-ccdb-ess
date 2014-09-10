@@ -24,7 +24,7 @@ import org.openepics.discs.conf.ent.Slot;
  */
 @ManagedBean  // workaround for injecting an EJB in a converter (for older versions of Glassfish)
 // @ViewScoped
-public class SlotConverter implements Converter{
+public class SlotConverter implements Converter {
 
     @EJB
     private SlotEJB slotEJB;

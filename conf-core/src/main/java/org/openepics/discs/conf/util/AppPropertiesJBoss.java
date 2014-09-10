@@ -9,14 +9,14 @@ import javax.enterprise.inject.Alternative;
  */
 @Alternative
 @ApplicationScoped
-public class AppPropertiesJBoss implements AppProperties {    
+public class AppPropertiesJBoss implements AppProperties {
     private static final String PREFIX = "org.openepics.discs.conf.props.";
-        
-    public String getProperty(String name) {       
+
+    public String getProperty(String name) {
         if (name == null || name.isEmpty()) {
             return null;
         }
-        
+
         return System.getProperty(PREFIX + name);
-    }  
+    }
 }

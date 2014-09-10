@@ -30,7 +30,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @ViewScoped
 public class AuditManager implements Serializable {
     @SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(AuditManager.class.getCanonicalName());
+    private static final Logger logger = Logger.getLogger(AuditManager.class.getCanonicalName());
 
     @EJB private AuditRecordEJB auditRecordEJB;
 
@@ -67,12 +67,16 @@ public class AuditManager implements Serializable {
      * The audit record is selected by its database ID.
      * @param id - the database id of the audit log record
      */
-    public void chooseDisplayRecord(final Long id) { this.displayRecord = auditRecordEJB.findById(id); }
+    public void chooseDisplayRecord(final Long id) {
+        this.displayRecord = auditRecordEJB.findById(id);
+    }
 
     /**
      * @return The audit record used in the <i>display details</i> dialog.
      */
-    public AuditRecord getDisplayRecord() { return displayRecord; }
+    public AuditRecord getDisplayRecord() {
+        return displayRecord;
+    }
 
     /**
      * @return A pretty printed representation of the log entry JSON.
@@ -103,7 +107,9 @@ public class AuditManager implements Serializable {
     /**
      * @return A list of audit log entries for a selected entity to show in the table.
      */
-    public List<AuditRecord> getAuditRecordsForEntity() { return auditRecordsForEntity; }
+    public List<AuditRecord> getAuditRecordsForEntity() {
+        return auditRecordsForEntity;
+    }
 
 
 }

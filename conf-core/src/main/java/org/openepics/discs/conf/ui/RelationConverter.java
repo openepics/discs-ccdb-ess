@@ -25,7 +25,7 @@ import org.openepics.discs.conf.ent.SlotRelation;
 // @FacesConverter(value = "experimentConverter")
 // @ViewScoped
 public class RelationConverter implements Converter  {
-@EJB
+    @EJB
     private SlotRelationEJB slotRelationEJB;
     private static final Logger logger = Logger.getLogger(RelationConverter.class.getCanonicalName());
     /**

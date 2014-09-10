@@ -22,7 +22,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "SlotRelation.findAll", query = "SELECT s FROM SlotRelation s"),
     @NamedQuery(name = "SlotRelation.findBySlotRelationId", query = "SELECT s FROM SlotRelation s WHERE s.id = :id"),
-    @NamedQuery(name = "SlotRelation.findByName", query = "SELECT s FROM SlotRelation s WHERE s.name = :name")})
+    @NamedQuery(name = "SlotRelation.findByName", query = "SELECT s FROM SlotRelation s WHERE s.name = :name")
+})
 public class SlotRelation extends ConfigurationEntity {
     @Basic(optional = false)
     @NotNull
@@ -46,8 +47,12 @@ public class SlotRelation extends ConfigurationEntity {
         setName(name);
     }
 
-    public SlotRelationName getName() { return name; }
-    public String getNameAsString() { return name.toString().toLowerCase(); }
+    public SlotRelationName getName() {
+        return name;
+    }
+    public String getNameAsString() {
+        return name.toString().toLowerCase();
+    }
 
     public void setName(SlotRelationName name) {
         this.name = name;
@@ -60,11 +65,19 @@ public class SlotRelation extends ConfigurationEntity {
         }
     }
 
-    public String getIname() { return iname; }
+    public String getIname() {
+        return iname;
+    }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
+    public String getDescription() {
+        return description;
+    }
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     @Override
-    public String toString() { return "SlotRelation[ slotRelationId=" + id + " ]"; }
+    public String toString() {
+        return "SlotRelation[ slotRelationId=" + id + " ]";
+    }
 }

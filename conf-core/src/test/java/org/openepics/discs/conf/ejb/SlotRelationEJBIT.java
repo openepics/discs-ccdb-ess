@@ -20,40 +20,40 @@ import org.openepics.discs.conf.util.TestUtility;
 
 @RunWith(Arquillian.class)
 public class SlotRelationEJBIT {
-	@Inject private SlotRelationEJB slotRelationService;
-	@Inject private TestUtility testUtility;
+    @Inject private SlotRelationEJB slotRelationService;
+    @Inject private TestUtility testUtility;
 
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
 
-	@Deployment()
+    @Deployment()
     public static WebArchive createDeployment() {
         return TestUtility.createWebArchive();
     }
 
-	@Before
-	public void setUp() throws Exception {
-		testUtility.loginForTests();
-	}
+    @Before
+    public void setUp() throws Exception {
+        testUtility.loginForTests();
+    }
 
     @Test
-	public void testFindById() {
-    	final SlotRelation slotRelation = slotRelationService.findById( slotRelationService.findBySlotRelationName(SlotRelationName.CONTAINS).getId() );
-		assertNotNull(slotRelation);
-		assertEquals(slotRelation.getName(), SlotRelationName.CONTAINS);
+    public void testFindById() {
+        final SlotRelation slotRelation = slotRelationService.findById( slotRelationService.findBySlotRelationName(SlotRelationName.CONTAINS).getId() );
+        assertNotNull(slotRelation);
+        assertEquals(slotRelation.getName(), SlotRelationName.CONTAINS);
     }
 
     @Test
     public void testFindByName() {
-    	final SlotRelation slotRelation = slotRelationService.findBySlotRelationName(SlotRelationName.CONTAINS);
-		assertNotNull(slotRelation);
-		assertEquals(slotRelation.getName(), SlotRelationName.CONTAINS);
-	}
+        final SlotRelation slotRelation = slotRelationService.findBySlotRelationName(SlotRelationName.CONTAINS);
+        assertNotNull(slotRelation);
+        assertEquals(slotRelation.getName(), SlotRelationName.CONTAINS);
+    }
 
     @Test
-	public void testFindAll() {
-    	final List<SlotRelation> slotRelations = slotRelationService.findAll();
-    	assertNotNull(slotRelations);
-		assertEquals(slotRelations.size(), 3);
-	}
+    public void testFindAll() {
+        final List<SlotRelation> slotRelations = slotRelationService.findAll();
+        assertNotNull(slotRelations);
+        assertEquals(slotRelations.size(), 3);
+    }
 }

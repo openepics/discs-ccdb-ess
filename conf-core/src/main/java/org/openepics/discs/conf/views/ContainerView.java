@@ -34,17 +34,29 @@ public class ContainerView {
         this.parentNode = parentNode;
     }
 
-    public Long getId() { return id; }
+    public Long getId() {
+        return id;
+    }
 
-    public String getName() { return name; }
+    public String getName() {
+        return name;
+    }
 
-    public String getDescription() { return description; }
+    public String getDescription() {
+        return description;
+    }
 
-    public boolean getHasChildren() { return hasChildren; }
+    public boolean getHasChildren() {
+        return hasChildren;
+    }
 
-    public ContainerView getParentNode() { return parentNode; }
+    public ContainerView getParentNode() {
+        return parentNode;
+    }
 
-    public Slot getSlot() { return slot; }
+    public Slot getSlot() {
+        return slot;
+    }
 
 
 }

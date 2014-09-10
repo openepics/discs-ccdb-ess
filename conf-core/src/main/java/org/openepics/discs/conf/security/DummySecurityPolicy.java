@@ -19,11 +19,11 @@ public class DummySecurityPolicy implements SecurityPolicy, Serializable {
     public DummySecurityPolicy() {
         logger.log(Level.INFO, "Creating " + this.getClass().getCanonicalName());
     }
-    
+
     @Override
     public String getUserId() {
         return "admin";
-    }   
+    }
 
     @Override
     public void login(String userName, String password) {

@@ -1,3 +1,22 @@
+/*
+ * Copyright (c) 2014 European Spallation Source
+ * Copyright (c) 2014 Cosylab d.d.
+ *
+ * This file is part of Controls Configuration Database.
+ *
+ * Controls Configuration Database is free software: you can redistribute it
+ * and/or modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 2 of the License,
+ * or any newer version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
+ */
 package org.openepics.discs.conf.auditlog;
 
 import java.util.Collection;
@@ -8,6 +27,7 @@ import java.util.Map.Entry;
 import org.openepics.discs.conf.ent.AuditRecord;
 import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
+import org.openepics.discs.conf.util.CCDBRuntimeException;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,17 +35,14 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-/*
- * @author mpavleski
- *
- *
+/**
  * Helper class that is used to serialize to JSON removing unnecessary properties dynamically
+ *
+ * @author mpavleski
  *
  */
 public class AuditLogUtil {
-
     private static final ObjectMapper mapper = new ObjectMapper();
-
 
     static {
         // Configure Jackson to always order entries see, http://stackoverflow.com/a/18993481
@@ -43,7 +60,6 @@ public class AuditLogUtil {
      * @param entity an Entity object to be serialized to JSon
      */
     public AuditLogUtil(Object entity) {
-        //mapper.configure(Feature.WRITE_DATES_AS_TIMESTAMPS, false);
         node = mapper.valueToTree(entity);
     }
 
@@ -103,7 +119,7 @@ public class AuditLogUtil {
     public AuditLogUtil addArrayOfProperties(String key, List<String> arrayValues) {
         final ArrayNode arrayNode = mapper.createArrayNode();
         for (String value : arrayValues) {
-           arrayNode.add(value);
+            arrayNode.add(value);
         }
         node.set(key, arrayNode);
         return this;
@@ -118,8 +134,7 @@ public class AuditLogUtil {
         try {
             return mapper.writeValueAsString(node);
         } catch (Exception e) {
-            // ToDo: Add our Runtime Exception type here
-            throw new RuntimeException("AuditLogUtil serialization to JSon failed", e);
+            throw new CCDBRuntimeException("AuditLogUtil serialization to JSon failed", e);
         }
     }
 

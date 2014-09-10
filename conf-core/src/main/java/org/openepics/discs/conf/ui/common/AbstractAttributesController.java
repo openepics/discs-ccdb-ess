@@ -56,7 +56,7 @@ import com.google.common.io.ByteStreams;
  * @param <S>
  *
  */
-public abstract class AbstractAttributesController<T extends PropertyValue,S extends Artifact> implements Serializable{
+public abstract class AbstractAttributesController<T extends PropertyValue,S extends Artifact> implements Serializable {
 
     @Inject protected BlobStore blobStore;
     @Inject protected TagEJB tagEJB;
@@ -296,7 +296,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
     public boolean canDelete(Object attribute) {
         // TODO check whether to show inherited artifacts and prevent their deletion
         return attribute instanceof Artifact || (attribute instanceof PropertyValue && !isInherited((PropertyValue)attribute))
-                || attribute instanceof Tag;
+               || attribute instanceof Tag;
     }
 
     private boolean isInherited(PropertyValue propertyValue) {
@@ -398,47 +398,93 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
         importFileName = null;
     }
 
-    public String getImportFileName() { return importFileName; }
+    public String getImportFileName() {
+        return importFileName;
+    }
 
-    public void setProperty(Property property) { this.property = property; }
-    public Property getProperty() { return property; }
+    public void setProperty(Property property) {
+        this.property = property;
+    }
+    public Property getProperty() {
+        return property;
+    }
 
-    public void setPropertyValue(String propertyValue) { this.propertyValue = propertyValue; }
-    public String getPropertyValue() { return propertyValue; }
+    public void setPropertyValue(String propertyValue) {
+        this.propertyValue = propertyValue;
+    }
+    public String getPropertyValue() {
+        return propertyValue;
+    }
 
-    public String getTag() { return tag; }
-    public void setTag(String tag) { this.tag = tag; }
+    public String getTag() {
+        return tag;
+    }
+    public void setTag(String tag) {
+        this.tag = tag;
+    }
 
-    public List<Property> getFilteredProperties() { return filteredProperties; }
+    public List<Property> getFilteredProperties() {
+        return filteredProperties;
+    }
 
-    public String getArtifactDescription() { return artifactDescription; }
-    public void setArtifactDescription(String artifactDescription) { this.artifactDescription = artifactDescription; }
+    public String getArtifactDescription() {
+        return artifactDescription;
+    }
+    public void setArtifactDescription(String artifactDescription) {
+        this.artifactDescription = artifactDescription;
+    }
 
-    public boolean getIsArtifactInternal() { return isArtifactInternal; }
-    public void setIsArtifactInternal(boolean isArtifactInternal) { this.isArtifactInternal = isArtifactInternal; }
+    public boolean getIsArtifactInternal() {
+        return isArtifactInternal;
+    }
+    public void setIsArtifactInternal(boolean isArtifactInternal) {
+        this.isArtifactInternal = isArtifactInternal;
+    }
 
-    public String getArtifactURI() { return artifactURI; }
-    public void setArtifactURI(String artifactURI) { this.artifactURI = artifactURI; }
+    public String getArtifactURI() {
+        return artifactURI;
+    }
+    public void setArtifactURI(String artifactURI) {
+        this.artifactURI = artifactURI;
+    }
 
-    public boolean getIsArtifactBeingModified() { return isArtifactBeingModified; }
-    public void setIsArtifactBeingModified(boolean isArtifactBeingModified) { this.isArtifactBeingModified = isArtifactBeingModified; }
+    public boolean getIsArtifactBeingModified() {
+        return isArtifactBeingModified;
+    }
+    public void setIsArtifactBeingModified(boolean isArtifactBeingModified) {
+        this.isArtifactBeingModified = isArtifactBeingModified;
+    }
 
-    public EntityAttributeView getSelectedAttribute() { return selectedAttribute; }
-    public void setSelectedAttribute(EntityAttributeView selectedAttribute) { this.selectedAttribute = selectedAttribute; }
+    public EntityAttributeView getSelectedAttribute() {
+        return selectedAttribute;
+    }
+    public void setSelectedAttribute(EntityAttributeView selectedAttribute) {
+        this.selectedAttribute = selectedAttribute;
+    }
 
-    public EntityAttributeView getSelectedAttributeToModify() { return selectedAttribute; }
+    public EntityAttributeView getSelectedAttributeToModify() {
+        return selectedAttribute;
+    }
     public void setSelectedAttributeToModify(EntityAttributeView selectedAttribute) {
         this.selectedAttribute = selectedAttribute;
         prepareModifyPropertyPopUp();
     }
 
-    protected void setDao(DAO<? extends ConfigurationEntity> dao) { this.dao = dao; }
+    protected void setDao(DAO<? extends ConfigurationEntity> dao) {
+        this.dao = dao;
+    }
 
-    protected void setPropertyValueClass(Class<T> propertyValueClass) { this.propertyValueClass = propertyValueClass; }
+    protected void setPropertyValueClass(Class<T> propertyValueClass) {
+        this.propertyValueClass = propertyValueClass;
+    }
 
-    protected void setArtifactClass(Class<S> artifactClass) { this.artifactClass = artifactClass; }
+    protected void setArtifactClass(Class<S> artifactClass) {
+        this.artifactClass = artifactClass;
+    }
 
-    public boolean isPropertyNameChangeDisabled() { return propertyNameChangeDisabled; }
+    public boolean isPropertyNameChangeDisabled() {
+        return propertyNameChangeDisabled;
+    }
 
     public List<String> tagAutocompleteText(String query) {
         final List<String> resultList = new ArrayList<String>();
@@ -449,5 +495,5 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
         }
 
         return resultList;
-   }
+    }
 }

@@ -43,7 +43,7 @@ import org.primefaces.model.UploadedFile;
  */
 @Named
 @ViewScoped
-public class AlignmentManager implements Serializable{
+public class AlignmentManager implements Serializable {
     private static final Logger logger = Logger.getLogger(AlignmentManager.class.getCanonicalName());
 
     @EJB private AlignmentEJB alignmentEJB;
@@ -183,13 +183,9 @@ public class AlignmentManager implements Serializable{
     }
 
     public void onPropertyInit(RowEditEvent event) {
-        // ComponentTypeProperty prop = (ComponentTypeProperty) event.getObject();
-
         try {
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Property Edit", "");
-
         } catch (Exception e) {
-            // selectedProperties.remove(prop);
             Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error: Property not saved", e.getMessage());
         }
     }
@@ -205,7 +201,6 @@ public class AlignmentManager implements Serializable{
             uploadedFileName = prop.getProperty().getName();
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Edit:", "Edit initiated " + inputProperty.getId());
         } catch (Exception e) {
-            // selectedCompProps.remove(prop);
             Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error: Property can not be edited", e.getMessage());
         }
     }
@@ -240,19 +235,14 @@ public class AlignmentManager implements Serializable{
     // -------------------------- File upload/download Property ---------------------------
     // todo: merge with artifact file ops. finally put in blobStore
     public void handlePropertyUpload(FileUploadEvent event) {
-        // String msg = event.getFile().getFileName() + " is uploaded.";
-        // Utility.showMessage(FacesMessage.SEVERITY_INFO, "Succesful", msg);
         InputStream istream;
-
         try {
             UploadedFile uploadedFile = event.getFile();
             uploadedFileName = uploadedFile.getFileName();
-            // inputArtifact.setName(uploadedFileName);
             istream = uploadedFile.getInputstream();
 
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "File ", "Name: " + uploadedFileName);
             repoFileId = blobStore.storeFile(istream);
-            // inputArtifact.setUri(fileId);
 
             istream.close();
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "File uploaded", "Name: " + uploadedFileName);
@@ -268,16 +258,10 @@ public class AlignmentManager implements Serializable{
 
     public StreamedContent getDownloadedPropertyFile() {
         StreamedContent file = null;
-
         try {
-            // return downloadedFile;
             logger.log(Level.INFO, "Opening stream from repository: " + selectedProperty.getPropValue());
-            // logger.log(Level.INFO, "download file name: 2 " + selectedProperty.getName());
             InputStream istream = blobStore.retreiveFile(selectedProperty.getPropValue());
             file = new DefaultStreamedContent(istream, "application/octet-stream", selectedProperty.getProperty().getName());
-
-            // InputStream stream = new FileInputStream(pathName);
-            // downloadedFile = new DefaultStreamedContent(stream, "application/octet-stream", "file.jpg"); //ToDo" replace with actual filename
         } catch (Exception e) {
             Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error: Downloading file", e.getMessage());
             logger.log(Level.SEVERE, "Error in downloading the file");
@@ -286,7 +270,7 @@ public class AlignmentManager implements Serializable{
 
         return file;
     }
-// --------------------------------- Artifact ------------------------------------------------
+    // --------------------------------- Artifact ------------------------------------------------
     public void onArtifactAdd(ActionEvent event) {
         try {
             artifactOperation = 'a';

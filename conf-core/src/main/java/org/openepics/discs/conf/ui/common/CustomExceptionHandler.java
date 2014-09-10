@@ -44,7 +44,9 @@ public class CustomExceptionHandler extends ExceptionHandlerWrapper {
     }
 
     @Override
-    public ExceptionHandler getWrapped() { return wrapped; }
+    public ExceptionHandler getWrapped() {
+        return wrapped;
+    }
 
     @Override public void handle() throws FacesException {
         final Iterator<ExceptionQueuedEvent> iterator = getUnhandledExceptionQueuedEvents().iterator();
@@ -64,8 +66,8 @@ public class CustomExceptionHandler extends ExceptionHandlerWrapper {
     /* Returns the nested exception cause that is not Faces or EJB exception, if it exists. */
     private Throwable getExceptionNonframeworkCause(Throwable exception) {
         return (exception instanceof FacesException || exception instanceof EJBException) && (exception.getCause() != null)
-                ? getExceptionNonframeworkCause(exception.getCause())
-                : exception;
+               ? getExceptionNonframeworkCause(exception.getCause())
+               : exception;
     }
 
 }

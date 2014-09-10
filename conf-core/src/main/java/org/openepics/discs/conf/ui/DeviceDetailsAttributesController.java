@@ -101,8 +101,8 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
             public boolean apply(Property property) {
                 final PropertyAssociation propertyAssociation = property.getAssociation();
                 return propertyAssociation == PropertyAssociation.ALL || propertyAssociation == PropertyAssociation.DEVICE
-                        || propertyAssociation == PropertyAssociation.SLOT_DEVICE
-                        || propertyAssociation == PropertyAssociation.TYPE_DEVICE;
+                       || propertyAssociation == PropertyAssociation.SLOT_DEVICE
+                       || propertyAssociation == PropertyAssociation.TYPE_DEVICE;
             }
         }));
     }
@@ -133,7 +133,11 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
         }
     }
 
-    public Device getDevice() { return device; }
-    public void setDevice(Device device) { this.device = device; }
+    public Device getDevice() {
+        return device;
+    }
+    public void setDevice(Device device) {
+        this.device = device;
+    }
 
 }

@@ -25,7 +25,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "SlotPair.findAll", query = "SELECT s FROM SlotPair s"),
     @NamedQuery(name = "SlotPair.findByParentChildRelation", query = "SELECT s FROM SlotPair s WHERE s.childSlot.name LIKE :childName AND s.parentSlot.name = :parentName AND s.slotRelation.name = :relationName"),
-    @NamedQuery(name = "SlotPair.findById", query = "SELECT s FROM SlotPair s WHERE s.id = :id")})
+    @NamedQuery(name = "SlotPair.findById", query = "SELECT s FROM SlotPair s WHERE s.id = :id")
+})
 public class SlotPair implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -56,16 +57,30 @@ public class SlotPair implements Serializable {
         this.slotRelation = slotRelation;
     }
 
-    public Long getId() { return id; }
+    public Long getId() {
+        return id;
+    }
 
-    public Slot getChildSlot() { return childSlot; }
-    public void setChildSlot(Slot childSlot) { this.childSlot = childSlot; }
+    public Slot getChildSlot() {
+        return childSlot;
+    }
+    public void setChildSlot(Slot childSlot) {
+        this.childSlot = childSlot;
+    }
 
-    public SlotRelation getSlotRelation() { return slotRelation; }
-    public void setSlotRelation(SlotRelation slotRelation) { this.slotRelation = slotRelation; }
+    public SlotRelation getSlotRelation() {
+        return slotRelation;
+    }
+    public void setSlotRelation(SlotRelation slotRelation) {
+        this.slotRelation = slotRelation;
+    }
 
-    public Slot getParentSlot() { return parentSlot; }
-    public void setParentSlot(Slot parentSlot) { this.parentSlot = parentSlot; }
+    public Slot getParentSlot() {
+        return parentSlot;
+    }
+    public void setParentSlot(Slot parentSlot) {
+        this.parentSlot = parentSlot;
+    }
 
     @Override
     public int hashCode() {
@@ -86,5 +101,7 @@ public class SlotPair implements Serializable {
     }
 
     @Override
-    public String toString() { return "SlotPair[ id=" + id + " ]"; }
+    public String toString() {
+        return "SlotPair[ id=" + id + " ]";
+    }
 }

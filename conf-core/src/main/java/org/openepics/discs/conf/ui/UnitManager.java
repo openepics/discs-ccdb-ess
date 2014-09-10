@@ -63,7 +63,9 @@ public class UnitManager implements Serializable {
         return filteredUnits;
     }
 
-    public String getImportFileName() { return importFileName; }
+    public String getImportFileName() {
+        return importFileName;
+    }
 
     public void setFilteredUnits(List<Unit> filteredUnits) {
         this.filteredUnits = filteredUnits;
@@ -80,7 +82,9 @@ public class UnitManager implements Serializable {
         importFileName = null;
     }
 
-    public DataLoaderResult getLoaderResult() { return loaderResult; }
+    public DataLoaderResult getLoaderResult() {
+        return loaderResult;
+    }
 
     public void handleImportFileUpload(FileUploadEvent event) {
         try (InputStream inputStream = event.getFile().getInputstream()) {

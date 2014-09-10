@@ -81,43 +81,57 @@ public class ReportAction extends ConfigurationEntity {
         this.modifiedAt = new Date();
     }
 
-    public ReportFilterAction getOperation() { return operation; }
+    public ReportFilterAction getOperation() {
+        return operation;
+    }
     public void setOperation(ReportFilterAction operation) {
         if (tag != null && operation != ReportFilterAction.IS)
             throw new IllegalArgumentException("Tag can only have an \"IS\" operation.");
         this.operation = operation;
     }
 
-    public String getField() { return field; }
+    public String getField() {
+        return field;
+    }
     public void setField(String field) {
         this.field = field;
         this.property = null;
         this.tag = null;
     }
 
-    public Property getProperty() { return property; }
+    public Property getProperty() {
+        return property;
+    }
     public void setProperty(Property property) {
         this.property = property;
         this.field = null;
         this.tag = null;
     }
 
-    public Tag getTag() { return tag; }
+    public Tag getTag() {
+        return tag;
+    }
     public void setTag(Tag tag) {
         this.tag = tag;
         this.field = null;
         this.property = null;
     }
 
-    public String getValue() { return value; }
+    public String getValue() {
+        return value;
+    }
     public void setValue(String value) {
         if (tag != null)
             throw new IllegalStateException("Cannot set a value on a filter by tag.");
         this.value = value;
     }
 
-    public Report getParentReport() { return parentReport; }
-    public void setParentReport(Report parentReport) { this.parentReport = parentReport; }
+    public Report getParentReport() {
+        return parentReport;
+    }
+    public void setParentReport(Report parentReport) {
+        this.parentReport = parentReport;
+    }
 
     @Override
     public String toString() {

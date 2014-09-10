@@ -36,15 +36,31 @@ abstract public class PropertyValue extends ConfigurationEntity {
         this.inRepository = inRepository;
     }
 
-    public String getPropValue() { return propValue; }
-    public void setPropValue(String propValue) { this.propValue = propValue; }
+    public String getPropValue() {
+        return propValue;
+    }
+    public void setPropValue(String propValue) {
+        this.propValue = propValue;
+    }
 
-    public boolean getInRepository() { return inRepository; }
-    public void setInRepository(boolean inRepository) { this.inRepository = inRepository; }
+    public boolean getInRepository() {
+        return inRepository;
+    }
+    public void setInRepository(boolean inRepository) {
+        this.inRepository = inRepository;
+    }
 
-    public Property getProperty() { return property; }
-    public void setProperty(Property property) { this.property = property; }
+    public Property getProperty() {
+        return property;
+    }
+    public void setProperty(Property property) {
+        this.property = property;
+    }
 
-    public Unit getUnit() { return unit; }
-    public void setUnit(Unit unit) { this.unit = unit; }
+    public Unit getUnit() {
+        return unit;
+    }
+    public void setUnit(Unit unit) {
+        this.unit = unit;
+    }
 }

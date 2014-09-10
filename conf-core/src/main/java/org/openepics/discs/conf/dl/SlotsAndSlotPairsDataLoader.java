@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.annotation.Nullable;
@@ -122,7 +123,7 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                         return;
                     } else {
                         continue; // skip the rest of the processing for
-                                  // HEADER row
+                        // HEADER row
                     }
                 } else if (row.get(1).equals(CMD_END)) {
                     break;
@@ -311,7 +312,7 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                         return;
                     } else {
                         continue; // skip the rest of the processing for
-                                  // HEADER row
+                        // HEADER row
                     }
                 } else if (row.get(1).equals(CMD_END)) {
                     break;
@@ -357,63 +358,63 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                     } else {
                         final SlotRelation slotRelation = slotRelationEJB.findBySlotRelationName(slotRelationName);
                         switch (command) {
-                            case CMD_UPDATE:
-                                for (Slot childSlot : childrenSlots) {
-                                    if (newSlots.contains(childSlot)) {
-                                        try {
-                                            if (!childSlot.getName().equals(parentSlot.getName())) {
-                                                if (slotRelation.getName() == SlotRelationName.CONTAINS) {
-                                                    if (childSlot.getComponentType().getName().equalsIgnoreCase(SlotEJB.ROOT_COMPONENT_TYPE)) {
-                                                        rowResult.addMessage(new ValidationMessage(ErrorMessage.CANT_ADD_PARENT_TO_ROOT, rowNumber));
-                                                        continue;
-                                                    } else if (parentSlot.getIsHostingSlot() && !childSlot.getIsHostingSlot()) {
-                                                        rowResult.addMessage(new ValidationMessage(ErrorMessage.INSTALL_CANT_CONTAIN_CONTAINER, rowNumber));
-                                                        continue;
-                                                    } else {
-                                                        final SlotPair newSlotPair = new SlotPair(childSlot, parentSlot, slotRelation);
-                                                        slotPairEJB.add(newSlotPair);
-                                                        newSlotPairChildren.add(newSlotPair.getChildSlot());
-                                                    }
-                                                } else if (slotRelation.getName() == SlotRelationName.POWERS) {
-                                                    if (childSlot.getIsHostingSlot() && parentSlot.getIsHostingSlot()) {
-                                                        slotPairEJB.add(new SlotPair(childSlot, parentSlot, slotRelation));
-                                                    } else {
-                                                        rowResult.addMessage(new ValidationMessage(ErrorMessage.POWER_RELATIONSHIP_RESTRICTIONS, rowNumber));
-                                                        continue;
-                                                    }
-                                                } else if (slotRelation.getName() == SlotRelationName.CONTROLS) {
-                                                    if (childSlot.getIsHostingSlot() && parentSlot.getIsHostingSlot()) {
-                                                        slotPairEJB.add(new SlotPair(childSlot, parentSlot, slotRelation));
-                                                    } else {
-                                                        rowResult.addMessage(new ValidationMessage(ErrorMessage.CONTROL_RELATIONSHIP_RESTRICTIONS, rowNumber));
-                                                        continue;
-                                                    }
-                                                }
-                                            } else {
-                                                rowResult.addMessage(new ValidationMessage(ErrorMessage.SAME_CHILD_AND_PARENT, rowNumber));
-                                            }
-                                        } catch (Exception e) {
-                                            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
-                                        }
-                                    }
-                                }
-                                break;
-                            case CMD_DELETE:
-                                final List<SlotPair> slotPairs = slotPairEJB.findSlotPairsByParentChildRelation(child, parent, slotRelationName);
-                                if (slotPairs.size() != 0) {
+                        case CMD_UPDATE:
+                            for (Slot childSlot : childrenSlots) {
+                                if (newSlots.contains(childSlot)) {
                                     try {
-                                        for (SlotPair slotPair : slotPairs) {
-                                            slotPairEJB.delete(slotPair);
+                                        if (!childSlot.getName().equals(parentSlot.getName())) {
+                                            if (slotRelation.getName() == SlotRelationName.CONTAINS) {
+                                                if (childSlot.getComponentType().getName().equalsIgnoreCase(SlotEJB.ROOT_COMPONENT_TYPE)) {
+                                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.CANT_ADD_PARENT_TO_ROOT, rowNumber));
+                                                    continue;
+                                                } else if (parentSlot.getIsHostingSlot() && !childSlot.getIsHostingSlot()) {
+                                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.INSTALL_CANT_CONTAIN_CONTAINER, rowNumber));
+                                                    continue;
+                                                } else {
+                                                    final SlotPair newSlotPair = new SlotPair(childSlot, parentSlot, slotRelation);
+                                                    slotPairEJB.add(newSlotPair);
+                                                    newSlotPairChildren.add(newSlotPair.getChildSlot());
+                                                }
+                                            } else if (slotRelation.getName() == SlotRelationName.POWERS) {
+                                                if (childSlot.getIsHostingSlot() && parentSlot.getIsHostingSlot()) {
+                                                    slotPairEJB.add(new SlotPair(childSlot, parentSlot, slotRelation));
+                                                } else {
+                                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.POWER_RELATIONSHIP_RESTRICTIONS, rowNumber));
+                                                    continue;
+                                                }
+                                            } else if (slotRelation.getName() == SlotRelationName.CONTROLS) {
+                                                if (childSlot.getIsHostingSlot() && parentSlot.getIsHostingSlot()) {
+                                                    slotPairEJB.add(new SlotPair(childSlot, parentSlot, slotRelation));
+                                                } else {
+                                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.CONTROL_RELATIONSHIP_RESTRICTIONS, rowNumber));
+                                                    continue;
+                                                }
+                                            }
+                                        } else {
+                                            rowResult.addMessage(new ValidationMessage(ErrorMessage.SAME_CHILD_AND_PARENT, rowNumber));
                                         }
                                     } catch (Exception e) {
                                         rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                                     }
-                                } else {
-                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber));
                                 }
-                                break;
-                           default:
-                               rowResult.addMessage(new ValidationMessage(ErrorMessage.COMMAND_NOT_VALID, rowNumber, headerRow.get(commandIndex)));
+                            }
+                            break;
+                        case CMD_DELETE:
+                            final List<SlotPair> slotPairs = slotPairEJB.findSlotPairsByParentChildRelation(child, parent, slotRelationName);
+                            if (slotPairs.size() != 0) {
+                                try {
+                                    for (SlotPair slotPair : slotPairs) {
+                                        slotPairEJB.delete(slotPair);
+                                    }
+                                } catch (Exception e) {
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                                }
+                            } else {
+                                rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber));
+                            }
+                            break;
+                        default:
+                            rowResult.addMessage(new ValidationMessage(ErrorMessage.COMMAND_NOT_VALID, rowNumber, headerRow.get(commandIndex)));
                         }
                     }
                 }
@@ -506,7 +507,6 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
     }
 
     private void addOrUpdateProperties(Slot slot, Map<String, Integer> properties, List<String> row, String rowNumber) {
-        final Iterator<String> propertiesIterator = properties.keySet().iterator();
         final List<SlotPropertyValue> slotProperties = new ArrayList<>();
         if (slot.getSlotPropertyList() != null) {
             slotProperties.addAll(slot.getSlotPropertyList());
@@ -517,9 +517,9 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
             slotPropertyByProperty.put(slotProperty.getProperty(), slotProperty);
         }
 
-        while (propertiesIterator.hasNext()) {
-            final String propertyName = propertiesIterator.next();
-            final int propertyIndex = properties.get(propertyName);
+        for(Entry<String, Integer> entry : properties.entrySet()) {
+            final String propertyName = entry.getKey();
+            final int propertyIndex = entry.getValue();
             final @Nullable Property property = propertyEJB.findByName(propertyName);
             final @Nullable String propertyValue = row.get(propertyIndex);
             if (slotPropertyByProperty.containsKey(property)) {

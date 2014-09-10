@@ -10,7 +10,8 @@ import javax.persistence.Version;
 @Entity
 @Table(name = "tag")
 @NamedQueries({
-    @NamedQuery(name = "Tag.findAllOrdered", query = "SELECT t FROM Tag t ORDER BY t.name") })
+    @NamedQuery(name = "Tag.findAllOrdered", query = "SELECT t FROM Tag t ORDER BY t.name")
+})
 public class Tag {
     @Id
     private String name;
@@ -24,23 +25,27 @@ public class Tag {
         this.name = name;
     }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	@Override
-	public int hashCode() {
-		return name != null ? name.hashCode() : 0;
-	}
+    @Override
+    public int hashCode() {
+        return name != null ? name.hashCode() : 0;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) return true;
-		if (obj == null) return false;
-		if (getClass() != obj.getClass()) return false;
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
 
-		Tag other = (Tag) obj;
-		if (name == null) return other.name == null;
+        Tag other = (Tag) obj;
+        if (name == null) return other.name == null;
 
-		return name.equals(other.name);
-	}
+        return name.equals(other.name);
+    }
 }

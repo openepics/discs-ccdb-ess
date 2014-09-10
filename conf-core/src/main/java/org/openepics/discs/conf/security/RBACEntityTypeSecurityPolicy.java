@@ -38,11 +38,11 @@ import com.google.common.collect.ImmutableMap.Builder;
 
 /**
  * Implementation of simple security policy (checking for entity-type access only) using DISCS RBAC.
- * 
+ *
  * Please note that RBAC Login Module is assumed configured on the Application Server.
- * 
- * Stateful EJB, caches all permissions from database on first access. 
- * 
+ *
+ * Stateful EJB, caches all permissions from database on first access.
+ *
  * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
  *
  */
@@ -52,61 +52,61 @@ import com.google.common.collect.ImmutableMap.Builder;
 public class RBACEntityTypeSecurityPolicy extends AbstractEnityTypeSecurityPolicy implements SecurityPolicy, Serializable {
     @SuppressWarnings("unused")
     private static final Logger logger = Logger.getLogger(RBACEntityTypeSecurityPolicy.class.getCanonicalName());
-   
+
     private static final String RBAC_RESOURCE = "ControlsDatabase";
 
     private static final Map<String, EntityType> permissionMapping;
-    
+
     static {
         final Builder<String , EntityType> permissionMappingBuilder = ImmutableMap.builder();
-        
+
         permissionMappingBuilder.put("WriteAlignmentRecords", EntityType.ALIGNMENT_RECORD);
-        permissionMappingBuilder.put("WriteComponentTypes", EntityType.COMPONENT_TYPE);        
+        permissionMappingBuilder.put("WriteComponentTypes", EntityType.COMPONENT_TYPE);
         permissionMappingBuilder.put("WriteDataTypes", EntityType.DATA_TYPE);
         permissionMappingBuilder.put("WriteDevices", EntityType.DEVICE);
         permissionMappingBuilder.put("WriteInstallationRecords", EntityType.INSTALLATION_RECORD);
         permissionMappingBuilder.put("WriteProperties", EntityType.PROPERTY);
         permissionMappingBuilder.put("WriteSlots", EntityType.SLOT);
         permissionMappingBuilder.put("WriteUnits", EntityType.UNIT);
-        
+
         permissionMapping = permissionMappingBuilder.build();
     }
-    
+
     public RBACEntityTypeSecurityPolicy() {
         super();
-    }   
-    
+    }
+
     @Override
-    public void login(String userName, String password) {        
+    public void login(String userName, String password) {
         super.login(userName, password);
-        
+
         final Principal principal = servletRequest.getUserPrincipal();
         if (principal==null || !(principal instanceof RBACPrincipal)) {
             throw new SecurityException(RBACEntityTypeSecurityPolicy.class.getName() + " Could not get RBAC user Principal. Is RBAC Login Module installed on the server?");
         }
-        
+
         final RBACPrincipal rbacPrincipal = (RBACPrincipal) principal;
         if (!RBAC_RESOURCE.equals(rbacPrincipal.getResource())) {
             throw new SecurityException(RBACEntityTypeSecurityPolicy.class.getName() + " ControlsDatabase resource not available in the principal. Is the RBAC login module configured properly?");
-        }        
+        }
     }
 
     @Override
     protected void populateCachedPermissions() {
-        Preconditions.checkArgument(cachedPermissions==null, 
-                "populateCachedPermissions called when cached data was already available");
-        
+        Preconditions.checkArgument(cachedPermissions==null,
+                                    "populateCachedPermissions called when cached data was already available");
+
         cachedPermissions = new EnumMap<EntityType, Set<EntityTypeOperation>>(EntityType.class);
-        
+
         RBACPrincipal principal = (RBACPrincipal) servletRequest.getUserPrincipal();
-                
+
         final EnumSet<EntityTypeOperation> allWritePermissions = EnumSet.of(UPDATE, CREATE, DELETE, RENAME);
-        
+
         for (String rbacPermission : principal.getPermissions()) {
             final EntityType entityType = permissionMapping.get(rbacPermission);
             if (entityType != null) {
                 cachedPermissions.put(entityType, allWritePermissions);
             }
-        }        
+        }
     }
 }

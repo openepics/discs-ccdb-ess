@@ -28,7 +28,7 @@ import javax.inject.Inject;
 public class BlobStore {
     private static final Logger logger = Logger.getLogger(BlobStore.class.getCanonicalName());
 
-    private static String blobStoreRoot = "/var/confmgr";
+    private String blobStoreRoot = "/var/confmgr";
 
     private boolean validStore = true; // is the blob store valid?
 
@@ -97,17 +97,20 @@ public class BlobStore {
 
     public String storeFile(InputStream istream) throws IOException {
         String fileId =  this.newBlobId();
-        OutputStream ostream;
 
         if (istream == null) {
             throw new IOException("istream is null");
         }
 
-        File ofile = new File(blobStoreRoot + File.separator + fileId);
-        ostream = new FileOutputStream(ofile);
-        copyFile(istream, ostream);
-        // repBean.putFile(folderName, fname, istream);
-        ostream.close();
+        OutputStream ostream = null;
+        try {
+            ostream = new FileOutputStream( new File(blobStoreRoot + File.separator + fileId) );
+            copyFile(istream, ostream);
+        } finally {
+            if (ostream != null) {
+                ostream.close();
+            }
+        }
 
         return fileId;
     }

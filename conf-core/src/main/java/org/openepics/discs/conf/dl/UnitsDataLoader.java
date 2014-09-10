@@ -123,8 +123,8 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
                         try {
                             final Unit unitToDelete = unitByName.get(name);
                             if (unitToDelete == null) {
-                               rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
-                               continue;
+                                rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
+                                continue;
                             } else {
                                 unitEJB.delete(unitToDelete);
                                 unitByName.remove(unitToDelete.getName());
@@ -140,7 +140,7 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
                             final int startOldNameMarkerIndex = name.indexOf("[");
                             final int endOldNameMarkerIndex = name.indexOf("]");
                             if (startOldNameMarkerIndex == -1 || endOldNameMarkerIndex == -1) {
-                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.RENAME_MISFORMAT, rowNumber, headerRow.get(nameIndex)));
+                                rowResult.addMessage(new ValidationMessage(ErrorMessage.RENAME_MISFORMAT, rowNumber, headerRow.get(nameIndex)));
                                 continue;
                             }
 

@@ -161,11 +161,11 @@ public class ComponentTreeMBean implements Serializable {
         tn.setExpanded(false);
     }
 
-     /**
-     * Handles the node selection UI event
-     *
-     * @param event event data
-     */
+    /**
+    * Handles the node selection UI event
+    *
+    * @param event event data
+    */
     public void onNodeSelect(NodeSelectEvent event) {
         NodeData ndata = (NodeData) selectedNode.getData();
         selectedComponent = slotBean.findById(ndata.id);

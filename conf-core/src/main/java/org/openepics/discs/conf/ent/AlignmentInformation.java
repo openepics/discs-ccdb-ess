@@ -24,21 +24,45 @@ public class AlignmentInformation {
     @Column(name = "global_roll")
     private Double globalRoll;
 
-    public Double getGlobalX() { return globalX; }
-    public void setGlobalX(Double globalX) { this.globalX = globalX; }
+    public Double getGlobalX() {
+        return globalX;
+    }
+    public void setGlobalX(Double globalX) {
+        this.globalX = globalX;
+    }
 
-    public Double getGlobalY() { return globalY; }
-    public void setGlobalY(Double globalY) { this.globalY = globalY; }
+    public Double getGlobalY() {
+        return globalY;
+    }
+    public void setGlobalY(Double globalY) {
+        this.globalY = globalY;
+    }
 
-    public Double getGlobalZ() { return globalZ; }
-    public void setGlobalZ(Double globalZ) { this.globalZ = globalZ; }
+    public Double getGlobalZ() {
+        return globalZ;
+    }
+    public void setGlobalZ(Double globalZ) {
+        this.globalZ = globalZ;
+    }
 
-    public Double getGlobalPitch() { return globalPitch; }
-    public void setGlobalPitch(Double globalPitch) { this.globalPitch = globalPitch; }
+    public Double getGlobalPitch() {
+        return globalPitch;
+    }
+    public void setGlobalPitch(Double globalPitch) {
+        this.globalPitch = globalPitch;
+    }
 
-    public Double getGlobalYaw() { return globalYaw; }
-    public void setGlobalYaw(Double globalYaw) { this.globalYaw = globalYaw; }
+    public Double getGlobalYaw() {
+        return globalYaw;
+    }
+    public void setGlobalYaw(Double globalYaw) {
+        this.globalYaw = globalYaw;
+    }
 
-    public Double getGlobalRoll() { return globalRoll; }
-    public void setGlobalRoll(Double globalRoll) { this.globalRoll = globalRoll; }
+    public Double getGlobalRoll() {
+        return globalRoll;
+    }
+    public void setGlobalRoll(Double globalRoll) {
+        this.globalRoll = globalRoll;
+    }
 }

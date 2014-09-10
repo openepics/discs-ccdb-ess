@@ -28,7 +28,7 @@ public class UnitEntityLoggerTest {
     @Test
     public void testSerializeEntity() {
         final String RESULT = "{\"quantity\":\"Current\",\"symbol\":\"A\",\"description\":\"BlahBlha\"}";
-        
+
         assertEquals(RESULT, entLogger.auditEntries(unit, EntityTypeOperation.CREATE).get(0).getEntry());
     }
 

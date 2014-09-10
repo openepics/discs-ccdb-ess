@@ -29,11 +29,11 @@ import com.google.common.base.Preconditions;
 
 
 /**
- * Implementation of simple security policy (checking for entity-type access only) using the DB {@link Privilege} table 
+ * Implementation of simple security policy (checking for entity-type access only) using the DB {@link Privilege} table
  * and the Java EE security module, as was in Configuration Module v. 1.0.
- * 
- * Stateful EJB, caches all permissions from database on first access. 
- * 
+ *
+ * Stateful EJB, caches all permissions from database on first access.
+ *
  * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
  *
  */
@@ -41,18 +41,18 @@ import com.google.common.base.Preconditions;
 @Named("securityPolicy")
 public class DBTableEntityTypeSecurityPolicy extends AbstractEnityTypeSecurityPolicy implements SecurityPolicy, Serializable {
     private static final Logger logger = Logger.getLogger(DBTableEntityTypeSecurityPolicy.class.getCanonicalName());
-    
+
     @PersistenceContext private EntityManager em;
 
     public DBTableEntityTypeSecurityPolicy() {
         super();
     }
- 
+
     @Override
     protected void populateCachedPermissions() {
-        Preconditions.checkArgument(cachedPermissions==null, 
-                "EntityTypeDBTableSecurityPolicy.populateCachedPermissions called when cached data was already available");
-        
+        Preconditions.checkArgument(cachedPermissions==null,
+                                    "EntityTypeDBTableSecurityPolicy.populateCachedPermissions called when cached data was already available");
+
         cachedPermissions = new EnumMap<EntityType, Set<EntityTypeOperation>>(EntityType.class);
 
         final String principal = getUserId();
@@ -62,21 +62,21 @@ public class DBTableEntityTypeSecurityPolicy extends AbstractEnityTypeSecurityPo
         }
 
         final List<Privilege> privs = em.createQuery(
-                "SELECT p FROM UserRole ur JOIN ur.role r JOIN r.privilegeList p " +
-                "WHERE ur.ccdb_user.userId = :user", Privilege.class).
-                setParameter("user", principal).getResultList();
+                                          "SELECT p FROM UserRole ur JOIN ur.role r JOIN r.privilegeList p " +
+                                          "WHERE ur.ccdb_user.userId = :user", Privilege.class).
+                                      setParameter("user", principal).getResultList();
         logger.finer("found privileges: " + privs.size());
 
         for (Privilege p : privs) {
             final EntityType entityType = p.getResource();
-            
+
             Set<EntityTypeOperation> operationTypeSet = cachedPermissions.get(entityType);
             if (operationTypeSet == null) {
                 operationTypeSet = EnumSet.noneOf(EntityTypeOperation.class);
                 cachedPermissions.put(entityType, operationTypeSet);
             }
-            
-            operationTypeSet.add(p.getOper());            
-        }   
+
+            operationTypeSet.add(p.getOper());
+        }
     }
 }

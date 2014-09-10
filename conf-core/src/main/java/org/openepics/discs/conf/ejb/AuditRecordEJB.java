@@ -23,14 +23,14 @@ public class AuditRecordEJB extends ReadOnlyDAO<AuditRecord> {
 
     public List<AuditRecord> findByEntityIdAndType(Long entityId, EntityType entityType) {
         final List<AuditRecord> auditRecords = em.createNamedQuery("AuditRecord.findByEntityIdAndType", AuditRecord.class)
-                .setParameter("entityId", entityId)
-                .setParameter("entityType", entityType).getResultList();
+                                               .setParameter("entityId", entityId)
+                                               .setParameter("entityType", entityType).getResultList();
 
         return auditRecords == null ? new ArrayList<AuditRecord>() : auditRecords;
     }
 
-	@Override
-	public AuditRecord findByName(String name) {
-		throw new UnsupportedOperationException("findByName method not aplicable to AuditRecord class");
-	}
+    @Override
+    public AuditRecord findByName(String name) {
+        throw new UnsupportedOperationException("findByName method not aplicable to AuditRecord class");
+    }
 }

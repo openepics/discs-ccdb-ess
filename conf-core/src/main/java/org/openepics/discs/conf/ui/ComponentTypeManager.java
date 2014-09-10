@@ -75,7 +75,9 @@ public class ComponentTypeManager implements Serializable {
         resetFields();
     }
 
-    public String deviceTypePropertyRedirect(Long id) { return "device-type-attributes-manager.xhtml?faces-redirect=true&id=" + id; }
+    public String deviceTypePropertyRedirect(Long id) {
+        return "device-type-attributes-manager.xhtml?faces-redirect=true&id=" + id;
+    }
 
     public void prepareAddPopup() {
         resetFields();
@@ -131,14 +133,18 @@ public class ComponentTypeManager implements Serializable {
         }
     }
 
-    public String getImportFileName() { return importFileName; }
+    public String getImportFileName() {
+        return importFileName;
+    }
 
     public void doImport() {
         final InputStream inputStream = new ByteArrayInputStream(importData);
         loaderResult = dataLoaderHandler.loadData(inputStream, compTypesDataLoader);
     }
 
-    public DataLoaderResult getLoaderResult() { return loaderResult; }
+    public DataLoaderResult getLoaderResult() {
+        return loaderResult;
+    }
 
     public void prepareImportPopup() {
         importData = null;
@@ -156,18 +162,24 @@ public class ComponentTypeManager implements Serializable {
 
     // -------------------- Getters and Setters ---------------------------------------
 
-    public ComponentType getSelectedDeviceType() { return selectedDeviceType; }
+    public ComponentType getSelectedDeviceType() {
+        return selectedDeviceType;
+    }
     public void setSelectedDeviceType(ComponentType selectedDeviceType) {
         this.selectedDeviceType = selectedDeviceType;
     }
 
-    public ComponentType getSelectedDeviceTypeToModify() { return selectedDeviceType; }
+    public ComponentType getSelectedDeviceTypeToModify() {
+        return selectedDeviceType;
+    }
     public void setSelectedDeviceTypeToModify(ComponentType selectedDeviceType) {
         this.selectedDeviceType = selectedDeviceType;
         prepareModifyPopup();
     }
 
-    public ComponentType getSelectedDeviceTypeForLog() { return selectedDeviceType; }
+    public ComponentType getSelectedDeviceTypeForLog() {
+        return selectedDeviceType;
+    }
     public void setSelectedDeviceTypeForLog(ComponentType selectedDeviceType) {
         this.selectedDeviceType = selectedDeviceType;
         auditRecordsForEntity = auditRecordEJB.findByEntityIdAndType(selectedDeviceType.getId(), EntityType.COMPONENT_TYPE);
@@ -178,20 +190,40 @@ public class ComponentTypeManager implements Serializable {
         return auditRecordsForEntity;
     }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
+    public String getDescription() {
+        return description;
+    }
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-    public List<ComponentType> getSortedObjects() { return sortedObjects; }
-    public void setSortedObjects(List<ComponentType> sortedObjects) { this.sortedObjects = sortedObjects; }
+    public List<ComponentType> getSortedObjects() {
+        return sortedObjects;
+    }
+    public void setSortedObjects(List<ComponentType> sortedObjects) {
+        this.sortedObjects = sortedObjects;
+    }
 
-    public List<ComponentType> getFilteredObjects() { return filteredObjects; }
-    public void setFilteredObjects(List<ComponentType> filteredObjects) { this.filteredObjects = filteredObjects; }
+    public List<ComponentType> getFilteredObjects() {
+        return filteredObjects;
+    }
+    public void setFilteredObjects(List<ComponentType> filteredObjects) {
+        this.filteredObjects = filteredObjects;
+    }
 
-    public ComponentType getSelectedObject() { return selectedObject; }
-    public void setSelectedObject(ComponentType selectedObject) { this.selectedObject = selectedObject; }
+    public ComponentType getSelectedObject() {
+        return selectedObject;
+    }
+    public void setSelectedObject(ComponentType selectedObject) {
+        this.selectedObject = selectedObject;
+    }
 
     public List<ComponentType> getObjects() {
         if (objects == null) objects = comptypeEJB.findAll();

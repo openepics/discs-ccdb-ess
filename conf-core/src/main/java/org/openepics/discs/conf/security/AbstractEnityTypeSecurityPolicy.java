@@ -25,23 +25,23 @@ import org.openepics.discs.conf.ent.EntityTypeOperation;
 
 /**
  * Abstract implementation of "simple" security policy
- * 
+ *
  * Simple security policy checks for access only on entity type, not per instance (e.g. check whether user can add new Properties, not whether a user can modify a particular property instance owned by her or another user).
  * Complex security policy needs additional data in the CCDB to associate CCDB entity instances with ownership and/or permission information.
- * 
- * The class assumes that an Java EE {@link LoginModule} is integrated with the Servlet Container so {@link HttpServletRequest} methods getUserPrincipal, login and logout work. 
- * 
- * Stateful EJB, caches all permissions from database on first access. 
- * 
+ *
+ * The class assumes that an Java EE {@link LoginModule} is integrated with the Servlet Container so {@link HttpServletRequest} methods getUserPrincipal, login and logout work.
+ *
+ * Stateful EJB, caches all permissions from database on first access.
+ *
  * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
  *
  */
 
 abstract public class AbstractEnityTypeSecurityPolicy implements SecurityPolicy, Serializable {
     private static final Logger logger = Logger.getLogger(AbstractEnityTypeSecurityPolicy.class.getCanonicalName());
-    
+
     @Inject protected HttpServletRequest servletRequest;
- 
+
     /**
      * Contains cached permissions
      */
@@ -50,13 +50,13 @@ abstract public class AbstractEnityTypeSecurityPolicy implements SecurityPolicy,
     public AbstractEnityTypeSecurityPolicy() {
         logger.log(Level.INFO, "Creating " + this.getClass().getCanonicalName());
     }
-    
+
     @Override
-    public void login(String userName, String password) {        
+    public void login(String userName, String password) {
         try {
             if (servletRequest.getUserPrincipal() == null) {
-                servletRequest.login(userName, password);                
-                logger.log(Level.INFO, "Login successful for " + userName);                
+                servletRequest.login(userName, password);
+                logger.log(Level.INFO, "Login successful for " + userName);
             }
         } catch (Exception e) {
             throw new SecurityException("Login Failed !", e);
@@ -67,72 +67,72 @@ abstract public class AbstractEnityTypeSecurityPolicy implements SecurityPolicy,
     public void logout() {
         try {
             servletRequest.logout();
-            servletRequest.getSession().invalidate();            
+            servletRequest.getSession().invalidate();
         } catch (Exception e) {
             throw new SecurityException("Error while logging out!", e);
         }
     }
 
     @Override
-    public String getUserId() {        
+    public String getUserId() {
         return servletRequest.getUserPrincipal()!=null ? servletRequest.getUserPrincipal().getName() : null;
     }
-    
+
     @Override
     public void checkAuth(Object entity, EntityTypeOperation operationType) {
         final EntityType entityType = EntityTypeResolver.resolveEntityType(entity);
-         
+
         if (!hasPermission(entityType , operationType)) {
             throw SecurityException.generateExceptionMessage(entity, entityType, operationType);
         }
-    } 
-  
+    }
+
     @Override
     public boolean getUIHint(String param) {
         return hasAnyModifyPermission( EntityType.valueOf(param) );
     }
-   
-    /** 
+
+    /**
      * Will allow UI element to be shown for given entity type
-     * 
+     *
      * @param entityType
      * @return
      */
     protected boolean hasAnyModifyPermission(EntityType entityType) {
         return hasPermission(entityType, EntityTypeOperation.CREATE) ||
-                hasPermission(entityType, EntityTypeOperation.DELETE) ||
-                hasPermission(entityType, EntityTypeOperation.UPDATE) ||
-                hasPermission(entityType, EntityTypeOperation.RENAME);  
-    }     
-    
-    /** 
+               hasPermission(entityType, EntityTypeOperation.DELETE) ||
+               hasPermission(entityType, EntityTypeOperation.UPDATE) ||
+               hasPermission(entityType, EntityTypeOperation.RENAME);
+    }
+
+    /**
      * Checks if the user has access to the given entityType using operation operationType
-     * 
+     *
      * @param entityType
      * @param operationType
      * @return true if permission exists
      */
     private boolean hasPermission(EntityType entityType, EntityTypeOperation operationType) {
-        
+
         final String principal = getUserId();
-        
-        // Handle the non-logged case 
+
+        // Handle the non-logged case
         if (principal == null) {
             return false;
         }
-        
+
         if (cachedPermissions == null)
-            populateCachedPermissions();       
-        
+            populateCachedPermissions();
+
         final Set<EntityTypeOperation> entityTypeOperations = cachedPermissions.get(entityType);
-        
+
         if (entityTypeOperations == null) {
             return false;
         } else {
-            return entityTypeOperations.contains(operationType);          
+            return entityTypeOperations.contains(operationType);
         }
-    }    
- 
+    }
+
     /**
      * Populates the map of cached privileges from the database
      */

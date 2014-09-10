@@ -27,7 +27,7 @@ public class ConfigurationEntityUtility implements Serializable {
     public <T> void setModified(T entity) {
         if (entity instanceof ConfigurationEntity) {
             final Date now = new Date();
-        	final ConfigurationEntity configEntity = (ConfigurationEntity) entity;
+            final ConfigurationEntity configEntity = (ConfigurationEntity) entity;
             configEntity.setModifiedAt(now);
             configEntity.setModifiedBy(getUserId());
         }

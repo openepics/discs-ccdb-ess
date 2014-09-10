@@ -24,7 +24,7 @@ import org.openepics.discs.conf.ent.Unit;
 @ManagedBean // workaround for injecting an EJB in a converter (for older versions of Glassfish)
 // @FacesConverter(value = "experimentConverter")
 // @ViewScoped
-public class UnitConverter implements Converter{
+public class UnitConverter implements Converter {
 
     @EJB
     private UnitEJB unitEJB;

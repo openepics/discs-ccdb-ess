@@ -19,7 +19,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "SlotPropertyValue.findAll", query = "SELECT s FROM SlotPropertyValue s"),
     @NamedQuery(name = "SlotPropertyValue.findBySlotPropId", query = "SELECT s FROM SlotPropertyValue s WHERE s.id = :id"),
     @NamedQuery(name = "SlotPropertyValue.findByInRepository", query = "SELECT s FROM SlotPropertyValue s WHERE s.inRepository = :inRepository"),
-    @NamedQuery(name = "SlotPropertyValue.findByModifiedBy", query = "SELECT s FROM SlotPropertyValue s WHERE s.modifiedBy = :modifiedBy")})
+    @NamedQuery(name = "SlotPropertyValue.findByModifiedBy", query = "SELECT s FROM SlotPropertyValue s WHERE s.modifiedBy = :modifiedBy")
+})
 public class SlotPropertyValue extends PropertyValue {
     @JoinColumn(name = "slot")
     @ManyToOne(optional = false)
@@ -31,9 +32,15 @@ public class SlotPropertyValue extends PropertyValue {
         super(inRepository);
     }
 
-    public Slot getSlot() { return slot; }
-    public void setSlot(Slot slot) { this.slot = slot; }
+    public Slot getSlot() {
+        return slot;
+    }
+    public void setSlot(Slot slot) {
+        this.slot = slot;
+    }
 
     @Override
-    public String toString() { return "SlotProperty[ slotPropId=" + id + " ]"; }
+    public String toString() {
+        return "SlotProperty[ slotPropId=" + id + " ]";
+    }
 }

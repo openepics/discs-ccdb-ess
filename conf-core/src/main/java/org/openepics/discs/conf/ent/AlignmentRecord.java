@@ -39,7 +39,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
     @NamedQuery(name = "AlignmentRecord.findByAlignmentRecordId", query = "SELECT a FROM AlignmentRecord a WHERE a.id = :id"),
     @NamedQuery(name = "AlignmentRecord.findByRecordNumber", query = "SELECT a FROM AlignmentRecord a WHERE a.recordNumber = :recordNumber"),
     @NamedQuery(name = "AlignmentRecord.findByAlignmentDate", query = "SELECT a FROM AlignmentRecord a WHERE a.alignmentDate = :alignmentDate"),
-    @NamedQuery(name = "AlignmentRecord.findByModifiedBy", query = "SELECT a FROM AlignmentRecord a WHERE a.modifiedBy = :modifiedBy")})
+    @NamedQuery(name = "AlignmentRecord.findByModifiedBy", query = "SELECT a FROM AlignmentRecord a WHERE a.modifiedBy = :modifiedBy")
+})
 public class AlignmentRecord extends ConfigurationEntity {
     @Basic(optional = false)
     @NotNull
@@ -72,7 +73,7 @@ public class AlignmentRecord extends ConfigurationEntity {
 
     @ManyToMany(cascade=CascadeType.ALL)
     @JoinTable(name = "alignment_tag",
-        joinColumns = { @JoinColumn(name = "alignment_id") }, inverseJoinColumns = { @JoinColumn(name = "tag_id") })
+               joinColumns = { @JoinColumn(name = "alignment_id") }, inverseJoinColumns = { @JoinColumn(name = "tag_id") })
     private Set<Tag> tags = new HashSet<>();
 
     protected AlignmentRecord() {
@@ -83,34 +84,62 @@ public class AlignmentRecord extends ConfigurationEntity {
         this.alignmentDate = alignmentDate;
     }
 
-    public String getRecordNumber() { return recordNumber; }
-    public void setRecordNumber(String recordNumber) { this.recordNumber = recordNumber; }
+    public String getRecordNumber() {
+        return recordNumber;
+    }
+    public void setRecordNumber(String recordNumber) {
+        this.recordNumber = recordNumber;
+    }
 
-    public Date getAlignmentDate() { return alignmentDate; }
-    public void setAlignmentDate(Date alignmentDate) { this.alignmentDate = alignmentDate; }
+    public Date getAlignmentDate() {
+        return alignmentDate;
+    }
+    public void setAlignmentDate(Date alignmentDate) {
+        this.alignmentDate = alignmentDate;
+    }
 
-    public AlignmentInformation getAlignmentInformation() { return alignmentInfo; }
-
-    @XmlTransient
-    @JsonIgnore
-    public List<AlignmentArtifact> getAlignmentArtifactList() { return alignmentArtifactList; }
-
-    @XmlTransient
-    @JsonIgnore
-    public List<AlignmentPropertyValue> getAlignmentPropertyList() { return alignmentPropertyList; }
-
-    public Slot getSlot() { return slot; }
-    public void setSlot(Slot slot) { this.slot = slot; }
-
-    public Device getDevice() { return device; }
-    public void setDevice(Device device) { this.device = device; }
+    public AlignmentInformation getAlignmentInformation() {
+        return alignmentInfo;
+    }
 
     @XmlTransient
     @JsonIgnore
-    public Set<Tag> getTags() { return tags; }
-    public void setTags(Set<Tag> tags) { this.tags = tags; }
+    public List<AlignmentArtifact> getAlignmentArtifactList() {
+        return alignmentArtifactList;
+    }
+
+    @XmlTransient
+    @JsonIgnore
+    public List<AlignmentPropertyValue> getAlignmentPropertyList() {
+        return alignmentPropertyList;
+    }
+
+    public Slot getSlot() {
+        return slot;
+    }
+    public void setSlot(Slot slot) {
+        this.slot = slot;
+    }
+
+    public Device getDevice() {
+        return device;
+    }
+    public void setDevice(Device device) {
+        this.device = device;
+    }
+
+    @XmlTransient
+    @JsonIgnore
+    public Set<Tag> getTags() {
+        return tags;
+    }
+    public void setTags(Set<Tag> tags) {
+        this.tags = tags;
+    }
 
     @Override
-    public String toString() { return "AlignmentRecord[ alignmentRecordId=" + id + " ]"; }
+    public String toString() {
+        return "AlignmentRecord[ alignmentRecordId=" + id + " ]";
+    }
 
 }

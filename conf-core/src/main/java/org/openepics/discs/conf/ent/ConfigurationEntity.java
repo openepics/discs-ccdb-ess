@@ -42,13 +42,23 @@ public class ConfigurationEntity implements Serializable {
     @Version
     protected Long version;
 
-    public Long getId() { return id; }
+    public Long getId() {
+        return id;
+    }
 
-    public Date getModifiedAt() { return modifiedAt; }
-    public void setModifiedAt(Date modifiedAt) { this.modifiedAt = modifiedAt; }
+    public Date getModifiedAt() {
+        return modifiedAt;
+    }
+    public void setModifiedAt(Date modifiedAt) {
+        this.modifiedAt = modifiedAt;
+    }
 
-    public String getModifiedBy() { return modifiedBy; }
-    public void setModifiedBy(String modifiedBy) { this.modifiedBy = modifiedBy; }
+    public String getModifiedBy() {
+        return modifiedBy;
+    }
+    public void setModifiedBy(String modifiedBy) {
+        this.modifiedBy = modifiedBy;
+    }
 
     @Override
     public int hashCode() {
