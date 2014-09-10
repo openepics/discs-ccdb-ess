@@ -30,7 +30,7 @@
                 
                 <p:outputLabel for="propertyValue" value="Value:" />
                 <h:panelGroup>
-                    <p:inputText id="propertyValue" converter="seds_int_converter" value="#{controller.intValue}" required="true" requiredMessage="Please enter property value"/>
+                    <p:inputText id="propertyValue" value="#{controller.propertyValue}" required="true" requiredMessage="Please enter property value" />
                     <p:message for="propertyValue"/>
                 </h:panelGroup>
                 
