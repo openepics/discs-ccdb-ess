@@ -1,11 +1,21 @@
-/**
+/*
  * Copyright (c) 2014 European Spallation Source
  * Copyright (c) 2014 Cosylab d.d.
  *
  * This file is part of Controls Configuration Database.
- * Controls Configuration Database is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 2 of the License, or any newer version.
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License along with this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
+ *
+ * Controls Configuration Database is free software: you can redistribute it
+ * and/or modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 2 of the License,
+ * or any newer version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
 package org.openepics.discs.conf.security;
 
@@ -26,10 +36,14 @@ import org.openepics.discs.conf.ent.EntityTypeOperation;
 /**
  * Abstract implementation of "simple" security policy
  *
- * Simple security policy checks for access only on entity type, not per instance (e.g. check whether user can add new Properties, not whether a user can modify a particular property instance owned by her or another user).
- * Complex security policy needs additional data in the CCDB to associate CCDB entity instances with ownership and/or permission information.
+ * Simple security policy checks for access only on entity type, not per instance (e.g. check whether user can add new
+ * Properties, not whether a user can modify a particular property instance owned by her or another user).
  *
- * The class assumes that an Java EE {@link LoginModule} is integrated with the Servlet Container so {@link HttpServletRequest} methods getUserPrincipal, login and logout work.
+ * Complex security policy needs additional data in the CCDB to associate CCDB entity instances with ownership
+ * and/or permission information.
+ *
+ * The class assumes that an Java EE {@link LoginModule} is integrated with the Servlet Container so
+ * {@link HttpServletRequest} methods getUserPrincipal, login and logout work.
  *
  * Stateful EJB, caches all permissions from database on first access.
  *
@@ -37,8 +51,8 @@ import org.openepics.discs.conf.ent.EntityTypeOperation;
  *
  */
 
-abstract public class AbstractEnityTypeSecurityPolicy implements SecurityPolicy, Serializable {
-    private static final Logger logger = Logger.getLogger(AbstractEnityTypeSecurityPolicy.class.getCanonicalName());
+public abstract class AbstractEnityTypeSecurityPolicy implements SecurityPolicy, Serializable {
+    private static final Logger LOGGER = Logger.getLogger(AbstractEnityTypeSecurityPolicy.class.getCanonicalName());
 
     @Inject protected HttpServletRequest servletRequest;
 
@@ -47,8 +61,11 @@ abstract public class AbstractEnityTypeSecurityPolicy implements SecurityPolicy,
      */
     protected Map<EntityType, Set<EntityTypeOperation> > cachedPermissions;
 
+    /**
+     * Default constructor.
+     */
     public AbstractEnityTypeSecurityPolicy() {
-        logger.log(Level.INFO, "Creating " + this.getClass().getCanonicalName());
+        LOGGER.log(Level.INFO, "Creating " + this.getClass().getCanonicalName());
     }
 
     @Override
@@ -56,7 +73,7 @@ abstract public class AbstractEnityTypeSecurityPolicy implements SecurityPolicy,
         try {
             if (servletRequest.getUserPrincipal() == null) {
                 servletRequest.login(userName, password);
-                logger.log(Level.INFO, "Login successful for " + userName);
+                LOGGER.log(Level.INFO, "Login successful for " + userName);
             }
         } catch (Exception e) {
             throw new SecurityException("Login Failed !", e);
@@ -136,5 +153,5 @@ abstract public class AbstractEnityTypeSecurityPolicy implements SecurityPolicy,
     /**
      * Populates the map of cached privileges from the database
      */
-    abstract protected void populateCachedPermissions();
+    protected abstract void populateCachedPermissions();
 }

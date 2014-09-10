@@ -1,11 +1,21 @@
-/**
+/*
  * Copyright (c) 2014 European Spallation Source
  * Copyright (c) 2014 Cosylab d.d.
  *
  * This file is part of Controls Configuration Database.
- * Controls Configuration Database is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 2 of the License, or any newer version.
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License along with this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
+ *
+ * Controls Configuration Database is free software: you can redistribute it
+ * and/or modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 2 of the License,
+ * or any newer version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
 package org.openepics.discs.conf.security;
 
@@ -20,8 +30,6 @@ import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
-
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.Alternative;
 import javax.inject.Named;
@@ -49,13 +57,12 @@ import com.google.common.collect.ImmutableMap.Builder;
 @SessionScoped
 @Named("securityPolicy")
 @Alternative
-public class RBACEntityTypeSecurityPolicy extends AbstractEnityTypeSecurityPolicy implements SecurityPolicy, Serializable {
-    @SuppressWarnings("unused")
-    private static final Logger logger = Logger.getLogger(RBACEntityTypeSecurityPolicy.class.getCanonicalName());
+public class RBACEntityTypeSecurityPolicy extends AbstractEnityTypeSecurityPolicy
+    implements SecurityPolicy, Serializable {
 
     private static final String RBAC_RESOURCE = "ControlsDatabase";
 
-    private static final Map<String, EntityType> permissionMapping;
+    private static final Map<String, EntityType> PERMISSION_MAPPING;
 
     static {
         final Builder<String , EntityType> permissionMappingBuilder = ImmutableMap.builder();
@@ -69,9 +76,12 @@ public class RBACEntityTypeSecurityPolicy extends AbstractEnityTypeSecurityPolic
         permissionMappingBuilder.put("WriteSlots", EntityType.SLOT);
         permissionMappingBuilder.put("WriteUnits", EntityType.UNIT);
 
-        permissionMapping = permissionMappingBuilder.build();
+        PERMISSION_MAPPING = permissionMappingBuilder.build();
     }
 
+    /**
+     * Default no-params constructor
+     */
     public RBACEntityTypeSecurityPolicy() {
         super();
     }
@@ -82,12 +92,14 @@ public class RBACEntityTypeSecurityPolicy extends AbstractEnityTypeSecurityPolic
 
         final Principal principal = servletRequest.getUserPrincipal();
         if (principal==null || !(principal instanceof RBACPrincipal)) {
-            throw new SecurityException(RBACEntityTypeSecurityPolicy.class.getName() + " Could not get RBAC user Principal. Is RBAC Login Module installed on the server?");
+            throw new SecurityException(RBACEntityTypeSecurityPolicy.class.getName() + " Could not get RBAC user "
+                    + "Principal. Is RBAC Login Module installed on the server?");
         }
 
         final RBACPrincipal rbacPrincipal = (RBACPrincipal) principal;
         if (!RBAC_RESOURCE.equals(rbacPrincipal.getResource())) {
-            throw new SecurityException(RBACEntityTypeSecurityPolicy.class.getName() + " ControlsDatabase resource not available in the principal. Is the RBAC login module configured properly?");
+            throw new SecurityException(RBACEntityTypeSecurityPolicy.class.getName() + " ControlsDatabase resource not "
+                    + "available in the principal. Is the RBAC login module configured properly?");
         }
     }
 
@@ -100,10 +112,10 @@ public class RBACEntityTypeSecurityPolicy extends AbstractEnityTypeSecurityPolic
 
         RBACPrincipal principal = (RBACPrincipal) servletRequest.getUserPrincipal();
 
-        final EnumSet<EntityTypeOperation> allWritePermissions = EnumSet.of(UPDATE, CREATE, DELETE, RENAME);
+        final Set<EntityTypeOperation> allWritePermissions = EnumSet.of(UPDATE, CREATE, DELETE, RENAME);
 
         for (String rbacPermission : principal.getPermissions()) {
-            final EntityType entityType = permissionMapping.get(rbacPermission);
+            final EntityType entityType = PERMISSION_MAPPING.get(rbacPermission);
             if (entityType != null) {
                 cachedPermissions.put(entityType, allWritePermissions);
             }
