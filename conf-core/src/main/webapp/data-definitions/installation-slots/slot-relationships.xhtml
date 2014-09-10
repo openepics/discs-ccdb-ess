@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html">
+
+    <h:form id="#{formId}">
+        <p:dialog id="#{widgetName}" widgetVar="#{widgetName}" modal="true" resizable="false" closable="false"
+            width="55em" dynamic="true">
+            <f:facet name="header">
+                <h:outputText value="Slot relationships" />
+            </f:facet>
+
+            <p:panelGrid id="grp" width="100%" styleClass="noBorders">
+                <p:row>
+                    <p:column style="text-align: letf">
+                        <p:commandButton label="Add relationship" />
+                    </p:column>
+                    <p:column style="text-align: letf">
+                        <p:commandButton label="Delete relationship" disabled="true"/>
+                    </p:column>
+                </p:row>
+                <p:row>
+                    <p:column colspan="2">
+                        
+                    </p:column>
+                </p:row>
+			</p:panelGrid>
+		</p:dialog>
+	</h:form>
+</ui:composition>

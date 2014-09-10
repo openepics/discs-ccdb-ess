@@ -26,7 +26,7 @@ import javax.inject.Named;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ui.common.AlphanumComparator;
-import org.openepics.discs.conf.views.ContainerView;
+import org.openepics.discs.conf.views.SlotView;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 
@@ -40,46 +40,49 @@ import com.google.common.collect.Lists;
  */
 @Named
 @ViewScoped
-public class ContainerTreeBuilder implements Serializable {
+public class SlotsTreeBuilder implements Serializable {
 
     /**
-     * Builds a tree of {@link ContainerView}s from the provided lists of containers.
+     * Builds a tree of {@link SlotView}s from the provided lists of slots.
      *
-     * @param containers the list of all containers
+     * @param slots the list of all slots
      * @param collapsedNodes set of collapsed nodes
      * @return the root node of the tree
      */
-    public TreeNode newContainerTree(List<Slot> containers, Set<Long> collapsedNodes) {
-        return newContainerTree(containers, 0, null, collapsedNodes);
+    public TreeNode newSlotsTree(List<Slot> slots, Set<Long> collapsedNodes, boolean withInstallationSlots) {
+        return newSlotsTree(slots, 0, null, collapsedNodes, withInstallationSlots);
     }
 
     /**
-     * Builds a tree of {@link ContainerView}s from the provided lists of containers.
+     * Builds a tree of {@link SlotView}s from the provided lists of slots.
      *
-     * @param containers the list of all containers
+     * @param slots the list of all slots
      * @param selectableLevel the depth level starting from 0 below which (inclusively) node selection is made possible
      * @param selected the {@link Slot} in the resulting tree that should be preselected and the part of the tree containing
      * @param collapsedNodes set of collapsed nodes
      * expanded
      * @return the root node of the tree
      */
-    public TreeNode newContainerTree(List<Slot> containers, int selectableLevel, Slot selected, Set<Long> collapsedNodes) {
-        final Map<Long, Slot> completeContainerList = new HashMap<>();
+    public TreeNode newSlotsTree(List<Slot> slots, int selectableLevel, Slot selected, Set<Long> collapsedNodes, boolean withInstallationSlots) {
+        final Map<Long, Slot> completeSlotList = new HashMap<>();
 
-        for (Slot slot : containers) {
-            completeContainerList.put(slot.getId(), slot);
+        for (Slot slot : slots) {
+            completeSlotList.put(slot.getId(), slot);
         }
 
-        final ContainerTree containerTree = new ContainerTree(selectableLevel, selected, collapsedNodes);
-        for (Slot slot : completeContainerList.values()) {
-            addContainerNode(containerTree, slot, completeContainerList);
+        final SlotTree slotsTree = new SlotTree(selectableLevel, selected, collapsedNodes);
+        for (Slot slot : completeSlotList.values()) {
+            addSlotNode(slotsTree, slot, completeSlotList, withInstallationSlots);
         }
 
-        return containerTree.asViewTree();
+        return slotsTree.asViewTree();
 
     }
 
-    private void addContainerNode(ContainerTree nprt, Slot slot, Map<Long, Slot> allSlots) {
+    private void addSlotNode(SlotTree nprt, Slot slot, Map<Long, Slot> allSlots, boolean withInstallationSlots) {
+        if (slot.getName().equals("WTF")) {
+            int i = 1;
+        }
         if (!nprt.hasNode(slot)) {
             final List<SlotPair> parentSlotPairs = slot.getChildrenSlotsPairList().size() > 0 ? slot.getChildrenSlotsPairList() : null;
             if (parentSlotPairs == null) {
@@ -87,8 +90,8 @@ public class ContainerTreeBuilder implements Serializable {
             } else {
                 for (SlotPair parentSlotPair : parentSlotPairs) {
                     final Slot parentSlot = parentSlotPair.getParentSlot();
-                    if (!parentSlot.getIsHostingSlot()) {
-                        addContainerNode(nprt, allSlots.get(parentSlot.getId()), allSlots);
+                    if (withInstallationSlots  || !withInstallationSlots && !parentSlot.getIsHostingSlot()) {
+                        addSlotNode(nprt, allSlots.get(parentSlot.getId()), allSlots, withInstallationSlots);
                         nprt.addChildToParent(parentSlot.getId(), slot);
                     }
                 }
@@ -96,26 +99,26 @@ public class ContainerTreeBuilder implements Serializable {
         }
     }
 
-    private class ContainerTree {
-        private class ContainerTreeNode {
+    private class SlotTree {
+        private class SlotTreeNode {
             private final Slot node;
-            private final List<ContainerTreeNode> children;
+            private final List<SlotTreeNode> children;
 
-            private ContainerTreeNode(Slot slot) {
+            private SlotTreeNode(Slot slot) {
                 node = slot;
                 children = new ArrayList<>();
             }
         }
 
-        private final ContainerTreeNode root;
-        private final HashMap<Long, ContainerTreeNode> inventory;
+        private final SlotTreeNode root;
+        private final HashMap<Long, SlotTreeNode> inventory;
         private final int selectableLevel;
         private final Slot selectedSlot;
         private TreeNode selectedTreeNode;
         private Set<Long> collapsedNodes;
 
-        private ContainerTree(int selectableLevel, Slot selected, Set<Long> collapsedNodes) {
-            root = new ContainerTreeNode(null);
+        private SlotTree(int selectableLevel, Slot selected, Set<Long> collapsedNodes) {
+            root = new SlotTreeNode(null);
             inventory = new HashMap<>();
             this.selectableLevel = selectableLevel;
             this.selectedSlot = selected;
@@ -131,7 +134,7 @@ public class ContainerTreeBuilder implements Serializable {
         }
 
         private void addChildToParent(@Nullable Long parentId, Slot slot) {
-            final ContainerTreeNode newNode = new ContainerTreeNode(slot);
+            final SlotTreeNode newNode = new SlotTreeNode(slot);
             if (parentId != null) {
                 inventory.get(parentId).children.add(newNode);
             } else {
@@ -154,11 +157,11 @@ public class ContainerTreeBuilder implements Serializable {
             return treeRoot;
         }
 
-        private TreeNode asViewTree(TreeNode parentNode, ContainerTreeNode nprNode, int level) {
+        private TreeNode asViewTree(TreeNode parentNode, SlotTreeNode nprNode, int level) {
             final List<TreeNode> children = Lists.newArrayList();
-            for (ContainerTreeNode child : nprNode.children) {
-                final TreeNode node = new DefaultTreeNode(new ContainerView(child.node, (ContainerView)parentNode.getData(), child.node.getParentSlotsPairList().size() > 0), parentNode);
-                node.setExpanded(!collapsedNodes.contains(((ContainerView) node.getData()).getId()));
+            for (SlotTreeNode child : nprNode.children) {
+                final TreeNode node = new DefaultTreeNode(new SlotView(child.node, (SlotView)parentNode.getData(), child.node.getParentSlotsPairList().size() > 0), parentNode);
+                node.setExpanded(!collapsedNodes.contains(((SlotView) node.getData()).getId()));
                 node.setSelectable(level >= selectableLevel);
                 if (isSelected(node)) {
                     node.setSelected(true);
@@ -169,8 +172,8 @@ public class ContainerTreeBuilder implements Serializable {
             }
             Collections.sort(children, new Comparator<TreeNode>() {
                 @Override public int compare(TreeNode left, TreeNode right) {
-                    final ContainerView leftView = (ContainerView) left.getData();
-                    final ContainerView rightView = (ContainerView) right.getData();
+                    final SlotView leftView = (SlotView) left.getData();
+                    final SlotView rightView = (SlotView) right.getData();
                     final AlphanumComparator alphanumComparator = new AlphanumComparator();
                     return alphanumComparator.compare(leftView.getName(), rightView.getName());
                 }

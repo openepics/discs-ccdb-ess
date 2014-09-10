@@ -5,7 +5,6 @@ import javax.persistence.Embeddable;
 
 @Embeddable
 public class AlignmentInformation {
-    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "global_x")
     private Double globalX;
 
