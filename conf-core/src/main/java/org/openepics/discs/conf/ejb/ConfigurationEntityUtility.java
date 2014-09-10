@@ -19,7 +19,6 @@
  */
 package org.openepics.discs.conf.ejb;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import javax.enterprise.context.Dependent;
@@ -35,7 +34,7 @@ import org.openepics.discs.conf.security.SecurityPolicy;
  *
  */
 @Dependent
-public class ConfigurationEntityUtility implements Serializable {
+public class ConfigurationEntityUtility {
     @Inject private SecurityPolicy securityPolicy;
 
     /**
@@ -76,10 +75,10 @@ public class ConfigurationEntityUtility implements Serializable {
     }
 
     /**
-     * Resolves the user-id in case the securitypolicy returns null (meaningfull for system updates such as the
-     * initial db population)
+     * Resolves the user-id in case the securitypolicy returns <code>null</code> (meaningful for system
+     * updates such as the initial db population)
      *
-     * @return
+     * @return resolved username from the {@link SecurityPolicy} implementation or "system" if none found
      */
     private String getUserId() {
         final String username = securityPolicy.getUserId();
