@@ -32,7 +32,7 @@ import org.openepics.discs.conf.ent.SlotPair;
  * @author Andraz Pozar <andraz.pozar@cosylab.com>
  *
  */
-public class SlotPairEntityLogger implements EntityLogger {
+public class SlotPairEntityLogger implements EntityLogger<SlotPair> {
 
     @Override
     public Class<SlotPair> getType() {

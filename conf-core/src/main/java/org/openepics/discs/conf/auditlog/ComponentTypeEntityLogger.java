@@ -39,7 +39,7 @@ import com.google.common.collect.ImmutableList;
  * @author Andraz Pozar <andraz.pozar@cosylab.com>
  *
  */
-public class ComponentTypeEntityLogger implements EntityLogger {
+public class ComponentTypeEntityLogger implements EntityLogger<ComponentType> {
 
     @Override
     public Class<ComponentType> getType() {
@@ -69,6 +69,7 @@ public class ComponentTypeEntityLogger implements EntityLogger {
                                 .removeTopProperties(Arrays.asList("id", "modifiedAt", "modifiedBy", "version", "name"))
                                 .addArrayOfMappedProperties("comptypePropertyList", propertiesMap)
                                 .addArrayOfMappedProperties("comptypeArtifactList", artifactsMap)
-                                .auditEntry(operation, EntityType.COMPONENT_TYPE, compType.getName(), compType.getId()));
+                                .auditEntry(operation, EntityType.COMPONENT_TYPE, compType.getName(),
+                                        compType.getId()));
     }
 }

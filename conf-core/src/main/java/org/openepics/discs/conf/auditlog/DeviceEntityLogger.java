@@ -42,7 +42,7 @@ import com.google.common.collect.ImmutableList;
  *
  */
 @Stateless
-public class DeviceEntityLogger implements EntityLogger {
+public class DeviceEntityLogger implements EntityLogger<Device> {
 
     @Override
     public Class<Device> getType() {
@@ -68,8 +68,8 @@ public class DeviceEntityLogger implements EntityLogger {
         }
 
         return ImmutableList.of(new AuditLogUtil(device)
-                                .removeTopProperties(
-                                    Arrays.asList("id", "modifiedAt", "modifiedBy", "version", "serialNumber", "componentType"))
+                                .removeTopProperties(Arrays.asList("id", "modifiedAt", "modifiedBy",
+                                        "version", "serialNumber", "componentType"))
                                 .addStringProperty("componentType",
                                         device.getComponentType() != null ? device.getComponentType().getName() : null)
                                 .addArrayOfMappedProperties("devicePropertyList", propertiesMap)

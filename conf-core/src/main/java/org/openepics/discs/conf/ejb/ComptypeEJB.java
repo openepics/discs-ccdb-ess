@@ -42,7 +42,8 @@ public class ComptypeEJB extends DAO<ComponentType> {
     protected void defineEntity() {
         defineEntityClass(ComponentType.class);
 
-        defineParentChildInterface(ComptypePropertyValue.class, new ParentChildInterface<ComponentType, ComptypePropertyValue>() {
+        defineParentChildInterface(ComptypePropertyValue.class,
+                new ParentChildInterface<ComponentType, ComptypePropertyValue>() {
             @Override
             public List<ComptypePropertyValue> getChildCollection(ComponentType type) {
                 return type.getComptypePropertyList();

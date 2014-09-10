@@ -86,7 +86,7 @@ public class EntityTypeResolver {
      * @param entity
      * @return the {@link EntityType}
      */
-    static public EntityType resolveEntityType(Object entity) {
+    public static EntityType resolveEntityType(Object entity) {
         EntityType result = entityTypes.get(entity.getClass().getCanonicalName());
         if (result == null) {
             throw new SecurityException("Unhandled or invalid entity type in the security system.");

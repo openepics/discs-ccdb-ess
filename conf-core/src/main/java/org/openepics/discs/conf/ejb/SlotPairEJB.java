@@ -46,9 +46,11 @@ public class SlotPairEJB extends DAO<SlotPair> {
      * @param relationName relation type
      * @return {@link List} of {@link SlotPair}s satisfying the query condition
      */
-    public List<SlotPair> findSlotPairsByParentChildRelation(String childName, String parentName, SlotRelationName relationName) {
-        return em.createNamedQuery("SlotPair.findByParentChildRelation", SlotPair.class).setParameter("childName", childName)
-               .setParameter("parentName", parentName).setParameter("relationName", relationName).getResultList();
+    public List<SlotPair> findSlotPairsByParentChildRelation(String childName,
+            String parentName, SlotRelationName relationName) {
+        return em.createNamedQuery("SlotPair.findByParentChildRelation", SlotPair.class)
+                .setParameter("childName", childName)
+                .setParameter("parentName", parentName).setParameter("relationName", relationName).getResultList();
     }
 
     /**

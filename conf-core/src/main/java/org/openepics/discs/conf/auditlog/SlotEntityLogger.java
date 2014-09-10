@@ -38,7 +38,7 @@ import com.google.common.collect.ImmutableList;
  * @author Andraz Pozar <andraz.pozar@cosylab.com>
  *
  */
-public class SlotEntityLogger implements EntityLogger {
+public class SlotEntityLogger implements EntityLogger<Slot> {
     @Override
     public Class<Slot> getType() {
         return Slot.class;

@@ -98,9 +98,9 @@ public class SlotEJB extends DAO<Slot> {
         return em.createQuery("SELECT cp.childSlot FROM SlotPair cp "
                               + "WHERE cp.parentSlot.componentType.name = :ctype AND cp.slotRelation.name = :relname "
                               + "ORDER BY cp.childSlot.name",
-                              Slot.class).
-               setParameter("ctype", ROOT_COMPONENT_TYPE).
-               setParameter("relname", relationName).getResultList();
+                              Slot.class)
+               .setParameter("ctype", ROOT_COMPONENT_TYPE)
+               .setParameter("relname", relationName).getResultList();
     }
 
     /**
@@ -112,9 +112,9 @@ public class SlotEJB extends DAO<Slot> {
      */
     public List<Slot> relatedChildren(String compName) {
         return em.createQuery("SELECT cp.childSlot FROM SlotPair cp "
-                              + "WHERE cp.parentSlot.name = :compname AND cp.slotRelation.name = :relname", Slot.class).
-               setParameter("compname", compName).
-               setParameter("relname", SlotRelationName.CONTAINS).getResultList();
+                              + "WHERE cp.parentSlot.name = :compname AND cp.slotRelation.name = :relname", Slot.class)
+               .setParameter("compname", compName)
+               .setParameter("relname", SlotRelationName.CONTAINS).getResultList();
     }
 
     /**
@@ -123,7 +123,8 @@ public class SlotEJB extends DAO<Slot> {
      * @return list of slots with specific {@link ComponentType}
      */
     public List<Slot> findByComponentType(ComponentType componentType) {
-        return em.createNamedQuery("Slot.findByComponentType", Slot.class).setParameter("componentType", componentType).getResultList();
+        return em.createNamedQuery("Slot.findByComponentType", Slot.class)
+                .setParameter("componentType", componentType).getResultList();
     }
 
     /**
@@ -133,6 +134,7 @@ public class SlotEJB extends DAO<Slot> {
      * @return List of all hosting or non-hosting {@link Slot}s
      */
     public List<Slot> findByIsHostingSlot(boolean isHostingSlot) {
-        return em.createNamedQuery("Slot.findByIsHostingSlot", Slot.class).setParameter("isHostingSlot", isHostingSlot).getResultList();
+        return em.createNamedQuery("Slot.findByIsHostingSlot", Slot.class)
+                .setParameter("isHostingSlot", isHostingSlot).getResultList();
     }
 }

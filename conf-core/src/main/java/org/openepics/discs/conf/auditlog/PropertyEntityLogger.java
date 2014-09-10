@@ -13,10 +13,10 @@ import com.google.common.collect.ImmutableList;
 /**
  * {@link AuditRecord} maker for {@link Property}
  *
- * @author mpavleski
+ * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
  *
  */
-public class PropertyEntityLogger implements EntityLogger {
+public class PropertyEntityLogger implements EntityLogger<Property> {
 
     @Override
     public Class<Property> getType() {
@@ -30,7 +30,8 @@ public class PropertyEntityLogger implements EntityLogger {
         return ImmutableList.of(new AuditLogUtil(prop)
                                 .removeTopProperties(Arrays.asList("id", "modifiedAt", "modifiedBy",
                                         "version", "name", "dataType", "unit"))
-                                .addStringProperty("dataType", prop.getDataType() != null ? prop.getDataType().getName() : null)
+                                .addStringProperty("dataType",
+                                        prop.getDataType() != null ? prop.getDataType().getName() : null)
                                 .addStringProperty("unit", prop.getUnit() != null ? prop.getUnit().getName() : null)
                                 .auditEntry(operation, EntityType.PROPERTY, prop.getName(), prop.getId()));
     }

@@ -48,9 +48,10 @@ public class AuditRecordEJB extends ReadOnlyDAO<AuditRecord> {
      * @return the list of {@link AuditRecord}s
      */
     public List<AuditRecord> findByEntityIdAndType(Long entityId, EntityType entityType) {
-        final List<AuditRecord> auditRecords = em.createNamedQuery("AuditRecord.findByEntityIdAndType", AuditRecord.class)
-                                               .setParameter("entityId", entityId)
-                                               .setParameter("entityType", entityType).getResultList();
+        final List<AuditRecord> auditRecords = em.createNamedQuery("AuditRecord.findByEntityIdAndType",
+                AuditRecord.class)
+                .setParameter("entityId", entityId)
+                .setParameter("entityType", entityType).getResultList();
 
         return auditRecords == null ? new ArrayList<AuditRecord>() : auditRecords;
     }

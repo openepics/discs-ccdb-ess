@@ -35,7 +35,7 @@ import com.google.common.collect.ImmutableList;
  * @author mpavleski
  *
  */
-public class UnitEntityLogger implements EntityLogger {
+public class UnitEntityLogger implements EntityLogger<Unit> {
 
     @Override
     public Class<Unit> getType() {

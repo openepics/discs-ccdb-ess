@@ -38,17 +38,17 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 /**
  * Helper class that is used to serialize to JSON removing unnecessary properties dynamically
  *
- * @author mpavleski
+ * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
  *
  */
 public class AuditLogUtil {
-    private static final ObjectMapper mapper = new ObjectMapper();
+    private static final ObjectMapper MAPPER = new ObjectMapper();
 
     static {
         // Configure Jackson to always order entries see, http://stackoverflow.com/a/18993481
-        mapper.configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true);
-        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-        mapper.setSerializationInclusion(Include.NON_NULL);
+        MAPPER.configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true);
+        MAPPER.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+        MAPPER.setSerializationInclusion(Include.NON_NULL);
 
     }
 
@@ -60,7 +60,7 @@ public class AuditLogUtil {
      * @param entity an Entity object to be serialized to JSon
      */
     public AuditLogUtil(Object entity) {
-        node = mapper.valueToTree(entity);
+        node = MAPPER.valueToTree(entity);
     }
 
 
@@ -98,10 +98,10 @@ public class AuditLogUtil {
      * @return a reference to this instance of {@link AuditLogUtil}
      */
     public AuditLogUtil addArrayOfMappedProperties(String key, Map<String, String> keyValuePairs) {
-        final ArrayNode arrayNode = mapper.createArrayNode();
+        final ArrayNode arrayNode = MAPPER.createArrayNode();
 
         for (Entry<String, String> entry : keyValuePairs.entrySet()) {
-            final ObjectNode arrayObjectNode = mapper.createObjectNode();
+            final ObjectNode arrayObjectNode = MAPPER.createObjectNode();
             arrayObjectNode.put(entry.getKey(), entry.getValue());
             arrayNode.add(arrayObjectNode);
         }
@@ -117,7 +117,7 @@ public class AuditLogUtil {
      * @return a reference to this instance of {@link AuditLogUtil}
      */
     public AuditLogUtil addArrayOfProperties(String key, List<String> arrayValues) {
-        final ArrayNode arrayNode = mapper.createArrayNode();
+        final ArrayNode arrayNode = MAPPER.createArrayNode();
         for (String value : arrayValues) {
             arrayNode.add(value);
         }
@@ -132,7 +132,7 @@ public class AuditLogUtil {
      */
     private String serialize() {
         try {
-            return mapper.writeValueAsString(node);
+            return MAPPER.writeValueAsString(node);
         } catch (Exception e) {
             throw new CCDBRuntimeException("AuditLogUtil serialization to JSon failed", e);
         }

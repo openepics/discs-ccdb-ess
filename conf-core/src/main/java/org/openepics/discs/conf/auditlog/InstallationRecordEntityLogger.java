@@ -38,7 +38,7 @@ import com.google.common.collect.ImmutableList;
  * @author Andraz Pozar <andraz.pozar@cosylab.com>
  *
  */
-public class InstallationRecordEntityLogger implements EntityLogger {
+public class InstallationRecordEntityLogger implements EntityLogger<InstallationRecord> {
 
     @Override
     public Class<InstallationRecord> getType() {
@@ -62,7 +62,7 @@ public class InstallationRecordEntityLogger implements EntityLogger {
                                 .addStringProperty("slot", installationRecord.getSlot().getName())
                                 .addStringProperty("device", installationRecord.getDevice().getSerialNumber())
                                 .addArrayOfMappedProperties("installationArtifactList", artifactsMap)
-                                .auditEntry(operation, EntityType.INSTALLATION_RECORD, installationRecord.getRecordNumber(),
-                                            installationRecord.getId()));
+                                .auditEntry(operation, EntityType.INSTALLATION_RECORD,
+                                        installationRecord.getRecordNumber(), installationRecord.getId()));
     }
 }

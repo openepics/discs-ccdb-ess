@@ -57,8 +57,8 @@ public class DeviceEJB extends DAO<Device> {
             return new ArrayList<>();
         }
 
-        final List<Device> devices = em.createNamedQuery("Device.findByComponentType", Device.class).setParameter("componentType", componentType).getResultList();
-        return devices;
+        return em.createNamedQuery("Device.findByComponentType", Device.class)
+                .setParameter("componentType", componentType).getResultList();
     }
 
     @Override

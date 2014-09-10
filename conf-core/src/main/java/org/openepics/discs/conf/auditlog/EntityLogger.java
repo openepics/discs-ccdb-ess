@@ -28,16 +28,17 @@ import org.openepics.discs.conf.ent.EntityTypeOperation;
 /**
  * Creates list of {@link AuditRecord}s for entity
  *
- * @author mpavleski
+ * @param <T> {@link Class} of the entity for which the logger is implemented
  *
+ * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
  */
-public interface EntityLogger {
+public interface EntityLogger<T> {
 
     /**
      * Returns the type of the handled logger
      * @return the type of the entity being logged by this logger
      */
-    public Class<?> getType();
+    public Class<T> getType();
 
     /**
      * Creates audit log(s) for given entity

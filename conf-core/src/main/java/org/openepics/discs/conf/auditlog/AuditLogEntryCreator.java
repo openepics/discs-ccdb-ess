@@ -43,7 +43,7 @@ import org.openepics.discs.conf.ent.EntityTypeOperation;
 @Singleton
 @Startup
 public class AuditLogEntryCreator {
-    private Map<Class<?>, EntityLogger> loggers = new ConcurrentHashMap<Class<?>, EntityLogger>();
+    private Map<Class<?>, EntityLogger<?>> loggers = new ConcurrentHashMap<Class<?>, EntityLogger<?>>();
 
     public AuditLogEntryCreator() {}
 
@@ -53,8 +53,8 @@ public class AuditLogEntryCreator {
      * @param allLoggers CDI will inject all logger types in this constructor parameter
      */
     @Inject
-    public AuditLogEntryCreator(@Any Instance<EntityLogger> allLoggers) {
-        for (EntityLogger logger : allLoggers) {
+    public AuditLogEntryCreator(@Any Instance<EntityLogger<?>> allLoggers) {
+        for (EntityLogger<?> logger : allLoggers) {
             loggers.put(logger.getType(), logger);
         }
     }
@@ -68,7 +68,7 @@ public class AuditLogEntryCreator {
      */
     public List<AuditRecord> auditRecords(Object entity, EntityTypeOperation operation) {
         // Resolve the EntityLogger by class and use it to serialize to String
-        final EntityLogger logger = loggers.get(entity.getClass());
+        final EntityLogger<?> logger = loggers.get(entity.getClass());
         if (logger == null) {
             return new ArrayList<>();
         }
