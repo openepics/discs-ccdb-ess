@@ -1,3 +1,22 @@
+/*
+ * Copyright (c) 2014 European Spallation Source
+ * Copyright (c) 2014 Cosylab d.d.
+ *
+ * This file is part of Controls Configuration Database.
+ *
+ * Controls Configuration Database is free software: you can redistribute it
+ * and/or modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 2 of the License,
+ * or any newer version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
+ */
 package org.openepics.discs.conf.ejb;
 
 import java.util.ArrayList;
@@ -19,12 +38,15 @@ import com.google.common.base.Preconditions;
  *
  * @param <T> The entity type for which this DAO is defined.
  */
-abstract public class ReadOnlyDAO<T> {
+public abstract class ReadOnlyDAO<T> {
     @Inject protected ConfigurationEntityUtility entityUtility;
     @PersistenceContext protected EntityManager em;
 
     private Class<T> entityClass;
 
+    /**
+     * Default no-parameters constructor
+     */
     public ReadOnlyDAO() {
         defineEntity();
         Preconditions.checkNotNull(entityClass);
@@ -48,9 +70,11 @@ abstract public class ReadOnlyDAO<T> {
      */
     public T findByName(String name) {
         try {
-            return em.createNamedQuery(entityClass.getSimpleName()+".findByName", entityClass).setParameter("name", name).getSingleResult();
+            return em.createNamedQuery(entityClass.getSimpleName() + ".findByName", entityClass).
+                    setParameter("name", name).getSingleResult();
         } catch (IllegalArgumentException e) {
-            throw new RuntimeException("findByName query has not been defined for the entity "+entityClass.getSimpleName(), e);
+            throw new UnsupportedOperationException("findByName query has not been defined for the entity " +
+                    entityClass.getSimpleName(), e);
         } catch (NoResultException e) {
             return null;
         }
@@ -73,7 +97,7 @@ abstract public class ReadOnlyDAO<T> {
      * Implementation classes must define this method to call the defineEntityClass and
      * optional defineParentChildInterface methods
      */
-    abstract protected void defineEntity();
+    protected abstract void defineEntity();
 
     /**
      * Defines the class of the entity managed by this DAO

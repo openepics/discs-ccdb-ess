@@ -1,8 +1,25 @@
+/*
+ * Copyright (c) 2014 European Spallation Source
+ * Copyright (c) 2014 Cosylab d.d.
+ *
+ * This file is part of Controls Configuration Database.
+ *
+ * Controls Configuration Database is free software: you can redistribute it
+ * and/or modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 2 of the License,
+ * or any newer version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
+ */
 package org.openepics.discs.conf.ejb;
 
 import java.util.List;
-import java.util.logging.Logger;
-
 import javax.ejb.Stateless;
 
 import org.openepics.discs.conf.ent.ComponentType;
@@ -12,18 +29,16 @@ import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.ent.SlotRelationName;
 
 /**
- *
+ * DAO Service for accessing Installation Slot entities ( {@link Slot} )
+ * .
  * @author vuppala
  * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
  * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  */
 @Stateless
 public class SlotEJB extends DAO<Slot> {
-    public static final String ROOT_COMPONENT_TYPE = "_ROOT"; // TODO Get the root type from configuration (JNDI, config table etc)
-    public static final String GRP_COMPONENT_TYPE = "_GRP";
-
-    @SuppressWarnings("unused")
-    private static final Logger logger = Logger.getLogger(SlotEJB.class.getCanonicalName());
+    // TODO Get the root type from configuration (JNDI, config table etc)
+    private static final String ROOT_COMPONENT_TYPE = "_ROOT";
 
     @Override
     protected void defineEntity() {
@@ -54,10 +69,23 @@ public class SlotEJB extends DAO<Slot> {
         });
     }
 
+    /**
+     * Queries database for slots by partial name
+     *
+     * @param namePart partial name
+     * @return {@link List} of slots
+     */
     public List<Slot> findSlotByNameContainingString(String namePart) {
-        return em.createNamedQuery("Slot.findByNameContaining", Slot.class).setParameter("name", namePart).getResultList();
+        return em.createNamedQuery("Slot.findByNameContaining", Slot.class)
+                .setParameter("name", namePart).getResultList();
     }
 
+    /**
+     * Retrieves special root slots from the database, given a relation type
+     *
+     * @param relationName relation type
+     * @return {@link List} of slots
+     */
     public List<Slot> getRootNodes(SlotRelationName relationName) {
         return em.createQuery("SELECT cp.childSlot FROM SlotPair cp "
                               + "WHERE cp.parentSlot.componentType.name = :ctype AND cp.slotRelation.name = :relname "
@@ -67,10 +95,13 @@ public class SlotEJB extends DAO<Slot> {
                setParameter("relname", relationName).getResultList();
     }
 
-    public List<Slot> getRootNodes() {
-        return getRootNodes(SlotRelationName.CONTAINS);
-    }
-
+    /**
+     * Queries for all parent slots with a {@link SlotRelationName#CONTAINS} of a
+     * given component type ( {@link ComponentType} ) name
+     *
+     * @param compName The {@link ComponentType} name
+     * @return {@link List} of slots matching the query
+     */
     public List<Slot> relatedChildren(String compName) {
         return em.createQuery("SELECT cp.childSlot FROM SlotPair cp "
                               + "WHERE cp.parentSlot.name = :compname AND cp.slotRelation.name = :relname", Slot.class).

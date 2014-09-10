@@ -1,3 +1,22 @@
+/*
+ * Copyright (c) 2014 European Spallation Source
+ * Copyright (c) 2014 Cosylab d.d.
+ *
+ * This file is part of Controls Configuration Database.
+ *
+ * Controls Configuration Database is free software: you can redistribute it
+ * and/or modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 2 of the License,
+ * or any newer version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
+ */
 package org.openepics.discs.conf.ejb;
 
 import java.util.HashMap;
@@ -21,10 +40,15 @@ import com.google.common.base.Preconditions;
  *
  * @param <T> The entity type for which this DAO is defined.
  */
-abstract public class DAO<T> extends ReadOnlyDAO<T> {
+public abstract class DAO<T> extends ReadOnlyDAO<T> {
     @SuppressWarnings("rawtypes")
     private Map<Class, ParentChildInterface> interfaces;
 
+    /**
+     * Adds a new entity to the database
+     *
+     * @param entity the entity to be added
+     */
     @CRUDOperation(operation=EntityTypeOperation.CREATE)
     @Audit
     @Authorized
@@ -34,6 +58,11 @@ abstract public class DAO<T> extends ReadOnlyDAO<T> {
         em.persist(entity);
     }
 
+    /**
+     * Updates an entity in the database
+     *
+     * @param entity the entity to be updated
+     */
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
     @Authorized
@@ -43,6 +72,11 @@ abstract public class DAO<T> extends ReadOnlyDAO<T> {
         em.merge(entity);
     }
 
+    /**
+     * Deletes entity from the database
+     *
+     * @param entity the entity to be deleted
+     */
     @CRUDOperation(operation=EntityTypeOperation.DELETE)
     @Audit
     @Authorized
@@ -51,6 +85,11 @@ abstract public class DAO<T> extends ReadOnlyDAO<T> {
         em.remove( em.merge(entity) );
     }
 
+    /**
+     * Adds a child entity to a parent and the database
+     *
+     * @param child the child entity to be added
+     */
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
     @Authorized
@@ -64,6 +103,11 @@ abstract public class DAO<T> extends ReadOnlyDAO<T> {
         em.merge(parent);
     }
 
+    /**
+     * Updates a child entity of a parent and in the database
+     *
+     * @param child the child entity to be updated
+     */
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
     @Authorized
@@ -73,6 +117,11 @@ abstract public class DAO<T> extends ReadOnlyDAO<T> {
         entityUtility.setModified(getParent(mergedChild), mergedChild);
     }
 
+    /**
+     * Deletes a child entity from parent collection and removes from the database
+     *
+     * @param child the child entity to be removed
+     */
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
     @Authorized
@@ -121,7 +170,8 @@ abstract public class DAO<T> extends ReadOnlyDAO<T> {
         final ParentChildInterface<T,S> resolver = getResolverInterfaces().get(child.getClass());
         if (resolver == null) {
             throw new UnsupportedOperationException("No child interface defined for the class "+
-                                                    child.getClass().getCanonicalName()+" in "+this.getClass().getSimpleName()+" DAO.");
+                                                    child.getClass().getCanonicalName() + " in " +
+                                                        this.getClass().getSimpleName()+" DAO.");
         }
         return resolver;
     }

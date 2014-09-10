@@ -26,6 +26,7 @@ import javax.inject.Named;
 
 import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.Slot;
+import org.openepics.discs.conf.ent.SlotRelationName;
 import org.primefaces.event.NodeCollapseEvent;
 import org.primefaces.event.NodeExpandEvent;
 import org.primefaces.event.NodeSelectEvent;
@@ -89,7 +90,7 @@ public class ComponentTreeMBean implements Serializable {
     @PostConstruct
     public void init() {
         root = new DefaultTreeNode("Root", null);
-        List<Slot> rnodes = slotBean.getRootNodes();
+        List<Slot> rnodes = slotBean.getRootNodes(SlotRelationName.CONTAINS);
 
         for(Slot lc: rnodes) {
             TreeNode node0 = new DefaultTreeNode("component", new NodeData('l', lc.getName(), lc.getId()), root);
