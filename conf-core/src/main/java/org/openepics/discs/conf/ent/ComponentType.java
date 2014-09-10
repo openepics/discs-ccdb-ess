@@ -95,11 +95,11 @@ public class ComponentType extends ConfigurationEntity {
 
     @XmlTransient
     @JsonIgnore
-    public List<ComptypeAsm> getComptypeAsmList() { return childrenTypes; }
+    public List<ComptypeAsm> getChildrenComptypeAsmList() { return childrenTypes; }
 
     @XmlTransient
     @JsonIgnore
-    public List<ComptypeAsm> getComptypeAsmList1() { return parentTypes; }
+    public List<ComptypeAsm> getParentComptypeAsmList() { return parentTypes; }
 
     @XmlTransient
     @JsonIgnore

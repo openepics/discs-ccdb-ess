@@ -43,8 +43,7 @@ import com.google.common.collect.ImmutableList;
  */
 @Named
 @ViewScoped
-public class ContainerAttributesController extends AbstractAttributesController<SlotPropertyValue, SlotArtifact>{
-
+public class ContainerAttributesController extends AbstractAttributesController<SlotPropertyValue, SlotArtifact> {
     @Inject private SlotEJB slotEJB;
     @Inject private PropertyEJB propertyEJB;
 
@@ -112,6 +111,7 @@ public class ContainerAttributesController extends AbstractAttributesController<
 
     /**
      * Returns {@link Slot} for which attributes are being manipulated
+     * @return the {@link Slot}
      */
     public Slot getSlot() {
         return slot;
@@ -143,5 +143,4 @@ public class ContainerAttributesController extends AbstractAttributesController<
         slot.getTags().remove(tag);
         slotEJB.save(slot);
     }
-
 }

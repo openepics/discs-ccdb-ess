@@ -80,6 +80,8 @@ public class SlotEJB extends DAO<Slot> {
 
     /**
      * All {@link Slot}s for given {@link ComponentType}
+     * @param componentType the {@link ComponentType}
+     * @return list of slots with specific {@link ComponentType}
      */
     public List<Slot> findByComponentType(ComponentType componentType) {
         return em.createNamedQuery("Slot.findByComponentType", Slot.class).setParameter("componentType", componentType).getResultList();

@@ -157,6 +157,7 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
 
     /**
      * Returns {@link ComponentType} for which attributes are being manipulated
+     * @return the {@link ComponentType}
      */
     public ComponentType getDeviceType() {
         return compType;

@@ -20,8 +20,6 @@ package org.openepics.discs.conf.ui;
 import java.io.Serializable;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.logging.Logger;
-
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -48,8 +46,6 @@ import com.google.common.base.Preconditions;
 @Named
 @ViewScoped
 public class DevicesByTypeManager implements Serializable {
-    private static final Logger logger = Logger.getLogger(DevicesByTypeManager.class.getCanonicalName());
-
     @EJB private ComptypeEJB componentTypesEJB;
     @EJB private DeviceEJB deviceEJB;
 

@@ -31,7 +31,8 @@ public class TestUtility {
                     "org.openepics.discs.conf.dl",
                     "org.openepics.discs.conf.util",
                     "org.openepics.discs.conf.security",
-                    "org.openepics.discs.conf.auditlog")
+                    "org.openepics.discs.conf.auditlog",
+                    "org.openepics.discs.conf.views")
             .addAsResource("test-persistence.xml", "META-INF/persistence.xml")
             .addAsWebInfResource("beans.xml")
             .addAsWebInfResource("jboss-web.xml")

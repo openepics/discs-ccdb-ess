@@ -47,7 +47,7 @@ public class ComptypeEJB extends DAO<ComponentType> {
         defineParentChildInterface(ComptypeAsm.class, new ParentChildInterface<ComponentType, ComptypeAsm>() {
             @Override
             public List<ComptypeAsm> getChildCollection(ComponentType type) {
-                return type.getComptypeAsmList();
+                return type.getChildrenComptypeAsmList();
             }
             @Override
             public ComponentType getParentFromChild(ComptypeAsm child) {

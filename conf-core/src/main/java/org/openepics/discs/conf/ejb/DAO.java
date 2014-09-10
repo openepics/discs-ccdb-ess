@@ -78,9 +78,9 @@ abstract public class DAO<T> extends ReadOnlyDAO<T> {
     @Authorized
     public <S> void deleteChild(S child) {
         Preconditions.checkNotNull(child);
+        getChildrenFromParent(child).remove(child);
 
         final S mergedChild = em.merge(child) ;
-        getChildrenFromParent(mergedChild).remove(mergedChild);
         em.remove(mergedChild);
     }
 

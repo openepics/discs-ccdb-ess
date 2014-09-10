@@ -52,8 +52,11 @@ import com.google.common.io.ByteStreams;
  * @author Andraz Pozar <andraz.pozar@cosylab.com>
  * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  *
+ * @param <T>
+ * @param <S>
+ *
  */
-public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 extends Artifact> implements Serializable{
+public abstract class AbstractAttributesController<T extends PropertyValue,S extends Artifact> implements Serializable{
 
     @Inject protected BlobStore blobStore;
     @Inject protected TagEJB tagEJB;
@@ -78,11 +81,11 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
     protected String importFileName;
 
     private DAO<? extends ConfigurationEntity> dao;
-    private Class<T1> propertyValueClass;
-    private Class<T2> artifactClass;
+    private Class<T> propertyValueClass;
+    private Class<S> artifactClass;
 
     protected List<ComptypePropertyValue> parentProperties;
-    protected T1 propertyValueInstance;
+    protected T propertyValueInstance;
 
     protected void resetFields() {
         property = null;
@@ -123,7 +126,7 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
     }
 
     /**
-     * Adds new {@link PropertyValue} to parent {@link ConfigurationEntity} defined in {@link AbstractAttributesController#setArtifactParent(PropertyValue)}
+     * Adds new {@link PropertyValue} to parent {@link ConfigurationEntity} defined in {@link AbstractAttributesController#setArtifactParent(Artifact)}
      *
      * @throws IOException thrown if file in the artifact could not be stored on the file system
      */
@@ -132,7 +135,7 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
             artifactURI = blobStore.storeFile(new ByteArrayInputStream(importData));
         }
 
-        final T2 artifactInstance;
+        final S artifactInstance;
         try {
             artifactInstance = artifactClass.newInstance();
         } catch (InstantiationException | IllegalAccessException e) {
@@ -191,14 +194,14 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
 
     @SuppressWarnings("unchecked")
     protected void deletePropertyValue() {
-        final T1 propValue = (T1) selectedAttribute.getEntity();
+        final T propValue = (T) selectedAttribute.getEntity();
         dao.deleteChild(propValue);
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Property value has been deleted");
     }
 
     @SuppressWarnings("unchecked")
     private void deleteArtifact() throws IOException {
-        final T2 artifact = (T2) selectedAttribute.getEntity();
+        final S artifact = (S) selectedAttribute.getEntity();
         if (artifact.isInternal()) {
             blobStore.deleteFile(artifact.getUri());
         }
@@ -209,7 +212,7 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
     @SuppressWarnings("unchecked")
     protected void prepareModifyPropertyPopUp() {
         if (selectedAttribute.getEntity().getClass().equals(propertyValueClass)) {
-            final T1 selectedPropertyValue = (T1) selectedAttribute.getEntity();
+            final T selectedPropertyValue = (T) selectedAttribute.getEntity();
             property = selectedPropertyValue.getProperty();
             propertyValue = selectedPropertyValue.getPropValue();
 
@@ -220,7 +223,7 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
             RequestContext.getCurrentInstance().update("modifyPropertyValueForm:modifyPropertyValue");
             RequestContext.getCurrentInstance().execute("PF('modifyPropertyValue').show()");
         } else if (selectedAttribute.getEntity().getClass().equals(artifactClass)) {
-            final T2 selectedArtifact = (T2) selectedAttribute.getEntity();
+            final S selectedArtifact = (S) selectedAttribute.getEntity();
             if (selectedArtifact.isInternal()) {
                 importFileName = selectedArtifact.getName();
             }
@@ -242,7 +245,7 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
      */
     @SuppressWarnings("unchecked")
     public void modifyPropertyValue() {
-        final T1 selectedPropertyValue = (T1) selectedAttribute.getEntity();
+        final T selectedPropertyValue = (T) selectedAttribute.getEntity();
         selectedPropertyValue.setProperty(property);
         selectedPropertyValue.setPropValue(propertyValue);
 
@@ -259,7 +262,7 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
      */
     @SuppressWarnings("unchecked")
     public void modifyArtifact() {
-        final T2 selectedArtifact = (T2) selectedAttribute.getEntity();
+        final S selectedArtifact = (S) selectedAttribute.getEntity();
         selectedArtifact.setDescription(artifactDescription);
         selectedArtifact.setUri(artifactURI);
         if (!selectedArtifact.isInternal()) {
@@ -283,7 +286,7 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
      */
     @SuppressWarnings("unchecked")
     public StreamedContent getDownloadFile() throws FileNotFoundException {
-        final T2 selectedArtifact = (T2) selectedAttribute.getEntity();
+        final S selectedArtifact = (S) selectedAttribute.getEntity();
         final String filePath = blobStore.getBlobStoreRoot() + File.separator + selectedArtifact.getUri();
         final String contentType = FacesContext.getCurrentInstance().getExternalContext().getMimeType(filePath);
 
@@ -309,9 +312,9 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
         return attribute instanceof Artifact || attribute instanceof PropertyValue && !(attribute instanceof ComptypePropertyValue) ;
     }
 
-    protected abstract void setPropertyValueParent(T1 child);
+    protected abstract void setPropertyValueParent(T child);
 
-    protected abstract void setArtifactParent(T2 child);
+    protected abstract void setArtifactParent(S child);
 
     protected abstract void setTagParent(Tag tag);
 
@@ -342,6 +345,7 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
 
     /**
      * Returns list of all attributes for current {@link ConfigurationEntity}
+     * @return the list of attributes
      */
     public List<EntityAttributeView> getAttributes() {
         return attributes;
@@ -375,6 +379,7 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
 
     /**
      * Uploads file to be saved in the {@link Artifact}
+     * @param event the {@link FileUploadEvent}
      */
     public void handleImportFileUpload(FileUploadEvent event) {
         try (InputStream inputStream = event.getFile().getInputstream()) {
@@ -429,9 +434,9 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
 
     protected void setDao(DAO<? extends ConfigurationEntity> dao) { this.dao = dao; }
 
-    protected void setPropertyValueClass(Class<T1> propertyValueClass) { this.propertyValueClass = propertyValueClass; }
+    protected void setPropertyValueClass(Class<T> propertyValueClass) { this.propertyValueClass = propertyValueClass; }
 
-    protected void setArtifactClass(Class<T2> artifactClass) { this.artifactClass = artifactClass; }
+    protected void setArtifactClass(Class<S> artifactClass) { this.artifactClass = artifactClass; }
 
     public boolean isPropertyNameChangeDisabled() { return propertyNameChangeDisabled; }
 
