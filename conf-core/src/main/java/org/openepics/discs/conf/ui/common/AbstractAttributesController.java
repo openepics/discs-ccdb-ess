@@ -16,12 +16,17 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import javax.faces.event.ValueChangeEvent;
 import javax.inject.Inject;
+import javax.json.Json;
+import javax.json.JsonReader;
 
 import org.apache.commons.io.FilenameUtils;
 import org.openepics.discs.conf.ejb.DAO;
@@ -32,19 +37,23 @@ import org.openepics.discs.conf.ent.ConfigurationEntity;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyValue;
 import org.openepics.discs.conf.ent.Tag;
+import org.openepics.discs.conf.ent.values.Value;
 import org.openepics.discs.conf.util.BlobStore;
+import org.openepics.discs.conf.util.Conversion;
 import org.openepics.discs.conf.util.PropertyDataType;
-import org.openepics.discs.conf.util.PropertyDataTypeConstants;
+import org.openepics.discs.conf.util.PropertyValueUIElement;
 import org.openepics.discs.conf.util.UnhandledCaseException;
 import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.views.EntityAttributeView;
+import org.openepics.seds.api.datatypes.SedsEnum;
+import org.openepics.seds.api.datatypes.SedsType;
+import org.openepics.seds.core.Seds;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 
 import com.google.common.base.Function;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.io.ByteStreams;
@@ -62,9 +71,11 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
     @Inject protected TagEJB tagEJB;
 
     protected Property property;
-    protected String propertyValue;
+    protected Value propertyValue;
+    protected List<String> enumSelections;
     protected List<Property> filteredProperties;
     private boolean propertyNameChangeDisabled;
+    protected PropertyValueUIElement propertyValueUIElement;
 
     protected String tag;
     protected List<String> tagsForAutocomplete;
@@ -96,6 +107,8 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
         artifactURI = null;
         importData = null;
         importFileName = null;
+        enumSelections = null;
+        propertyValueUIElement = PropertyValueUIElement.NONE;
     }
 
     /**
@@ -225,6 +238,15 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
                 propertyNameChangeDisabled = isInherited((PropertyValue)selectedAttribute.getEntity());
             }
 
+            propertyValueUIElement = Conversion.getUIElementFromProperty(property);
+            if (Conversion.getDataType(property) == PropertyDataType.ENUM) {
+                // if it is an enumeration, get the list of its options from the data type definition field
+                enumSelections = prepareEnumSelections(property);
+            } else {
+                enumSelections = null;
+            }
+
+
             RequestContext.getCurrentInstance().update("modifyPropertyValueForm:modifyPropertyValue");
             RequestContext.getCurrentInstance().execute("PF('modifyPropertyValue').show()");
         } else if (selectedAttribute.getEntity().getClass().equals(artifactClass)) {
@@ -280,7 +302,6 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
         } finally {
             internalPopulateAttributesList();
         }
-
     }
 
     /**
@@ -305,6 +326,8 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
     }
 
     private boolean isInherited(PropertyValue propertyValue) {
+        if (parentProperties == null) return false;
+
         final String propertyName = propertyValue.getProperty().getName();
         for (PropertyValue inheritedPropVal : parentProperties) {
             if (propertyName.equals(inheritedPropVal.getProperty().getName())) return true;
@@ -362,6 +385,8 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
         propertyNameChangeDisabled = false;
         property = null;
         propertyValue = null;
+        enumSelections = null;
+        propertyValueUIElement = PropertyValueUIElement.NONE;
     }
 
     public void prepareForTagAdd() {
@@ -406,8 +431,8 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
     public void setProperty(Property property) { this.property = property; }
     public Property getProperty() { return property; }
 
-    public void setPropertyValue(String propertyValue) { this.propertyValue = propertyValue; }
-    public String getPropertyValue() { return propertyValue; }
+    public void setPropertyValue(String propertyValue) { this.propertyValue = Conversion.stringToValue(propertyValue, property); }
+    public String getPropertyValue() { return Conversion.valueToString(propertyValue); }
 
     public String getTag() { return tag; }
     public void setTag(String tag) { this.tag = tag; }
@@ -454,35 +479,32 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
         return resultList;
     }
 
-    // XXX check where to move!
-    public PropertyDataType getDataType() {
-        return getDataType(property);
+    private List<String> prepareEnumSelections(Property prop) {
+        JsonReader reader = Json.createReader(new StringReader(prop.getDataType().getDefinition()));
+        final SedsType seds = Seds.newDBConverter().deserialize(reader.readObject());
+        final SedsEnum sedsEnum = (SedsEnum) seds;
+        return Arrays.asList(sedsEnum.getElements());
     }
 
-    // XXX check where to move!
-    private PropertyDataType getDataType(Property prop) {
-        Preconditions.checkNotNull(property);
-        switch (prop.getDataType().getName()) {
-        case PropertyDataTypeConstants.INT_NAME :
-            return PropertyDataType.INTEGER;
-        case PropertyDataTypeConstants.DBL_NAME :
-            return PropertyDataType.DOUBLE;
-        case PropertyDataTypeConstants.STR_NAME :
-            return PropertyDataType.STRING;
-        case PropertyDataTypeConstants.TIMESTAMP_NAME :
-            return PropertyDataType.TIMESTAMP;
-        case PropertyDataTypeConstants.URL_NAME :
-            return PropertyDataType.URL;
-        case PropertyDataTypeConstants.INT_VECTOR_NAME :
-            return PropertyDataType.INT_VECTOR;
-        case PropertyDataTypeConstants.DBL_VECTOR_NAME :
-            return PropertyDataType.DBL_VECTOR;
-        case PropertyDataTypeConstants.STRING_LIST_NAME :
-            return PropertyDataType.STRING_LIST;
-        case PropertyDataTypeConstants.DBL_TABLE_NAME :
-            return PropertyDataType.DBL_TABLE;
-        default:
-            return PropertyDataType.ENUM;
+    public void propertyChangeListener(ValueChangeEvent event) {
+        // get the newly selected property
+        if (event.getNewValue() instanceof Property) {
+            final Property newProperty = (Property) event.getNewValue();
+            propertyValueUIElement = Conversion.getUIElementFromProperty(newProperty);
+            propertyValue = null;
+            if (Conversion.getDataType(newProperty) == PropertyDataType.ENUM) {
+                // if it is an enumeration, get the list of its options from the data type definition field
+                enumSelections = prepareEnumSelections(newProperty);
+            } else {
+                enumSelections = null;
+            }
         }
     }
+
+    public PropertyValueUIElement getPropertyValueUIElement() { return propertyValueUIElement; }
+    public void setPropertyValueUIElement(PropertyValueUIElement propertyValueUIElement) { this.propertyValueUIElement = propertyValueUIElement; }
+
+    public List<String> getEnumSelections() { return enumSelections; }
+    public void setEnumSelections(List<String> enumSelections) { this.enumSelections = enumSelections; }
+
 }

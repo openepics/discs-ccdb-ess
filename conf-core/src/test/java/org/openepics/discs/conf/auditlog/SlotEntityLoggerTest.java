@@ -28,6 +28,7 @@ import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.ent.SlotRelation;
 import org.openepics.discs.conf.ent.SlotRelationName;
+import org.openepics.discs.conf.ent.values.IntValue;
 
 /**
  * @author Andraz Pozar <andraz.pozar@cosylab.com>
@@ -51,8 +52,8 @@ public class SlotEntityLoggerTest {
     public void setUp() throws Exception{
         slotPropVal1.setProperty(prop1);
         slotPropVal2.setProperty(prop2);
-        slotPropVal1.setPropValue("10");
-        slotPropVal2.setPropValue("20");
+        slotPropVal1.setPropValue(new IntValue(10));
+        slotPropVal2.setPropValue(new IntValue(20));
         slot.getSlotPropertyList().add(slotPropVal1);
         slot.getSlotPropertyList().add(slotPropVal2);
         slot.getSlotArtifactList().add(artifact1);

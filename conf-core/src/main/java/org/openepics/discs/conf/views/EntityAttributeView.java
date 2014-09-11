@@ -17,6 +17,10 @@ import org.openepics.discs.conf.ent.DataType;
 import org.openepics.discs.conf.ent.PropertyValue;
 import org.openepics.discs.conf.ent.Tag;
 import org.openepics.discs.conf.ent.Unit;
+import org.openepics.discs.conf.ent.values.StrValue;
+import org.openepics.discs.conf.ent.values.UrlValue;
+import org.openepics.discs.conf.ent.values.Value;
+import org.openepics.discs.conf.util.Conversion;
 import org.openepics.discs.conf.util.UnhandledCaseException;
 
 /**
@@ -27,7 +31,7 @@ public class EntityAttributeView {
     private String name;
     private @Nullable DataType type;
     private @Nullable Unit unit;
-    private @Nullable String value;
+    private @Nullable Value value;
     private @Nullable String kind;
     private boolean hasFile;
     private boolean hasURL;
@@ -75,14 +79,14 @@ public class EntityAttributeView {
         name = artifact.getName();
         hasFile = artifact.isInternal();
         hasURL = !artifact.isInternal();
-        value = artifact.getUri();
+        value = new UrlValue(Conversion.toURL(artifact.getUri()));
         kind = "Artifact";
     }
 
     private void setTagParameters() {
         name = ((Tag) entity).getName();
         kind = "Tag";
-        value = "-";
+        value = new StrValue("-");
     }
 
     public String getName() { return name; }
@@ -91,7 +95,7 @@ public class EntityAttributeView {
 
     public Unit getUnit() { return unit; }
 
-    public String getValue() { return value; }
+    public Value getValue() { return value; }
 
     public String getKind() { return kind; }
 

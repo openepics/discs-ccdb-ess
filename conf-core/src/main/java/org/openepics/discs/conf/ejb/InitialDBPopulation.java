@@ -150,7 +150,7 @@ public class InitialDBPopulation {
         em.persist(createDataType(PropertyDataType.DOUBLE.toString(), "Double precision floating point", true, null));
         em.persist(createDataType(PropertyDataType.STRING.toString(), "String of characters (text)", true, null));
         em.persist(createDataType(PropertyDataType.TIMESTAMP.toString(), "Date and time", true, null));
-        em.persist(createDataType(PropertyDataType.URL.toString(), "string of characters which is known to contain URL", true, null));
+        em.persist(createDataType(PropertyDataType.URL.toString(), "string of characters which is known to contain an URL", true, null));
         em.persist(createDataType(PropertyDataType.INT_VECTOR.toString(), "Vector of integer numbers (1D array)", false, null));
         em.persist(createDataType(PropertyDataType.DBL_VECTOR.toString(), "Vector of double precision numbers (1D array)", false, null));
         em.persist(createDataType(PropertyDataType.STRING_LIST.toString(), "List of strings (1D array)", false, null));
@@ -158,8 +158,6 @@ public class InitialDBPopulation {
 
         final SedsEnum testEnum = Seds.newFactory().newEnum("TEST1", new String[]{"TEST1", "TEST2", "TEST3", "TEST4"});
         JsonObject jsonEnum = Seds.newDBConverter().serialize(testEnum);
-
-
         em.persist(createDataType("Test enums", "Testing of enums", false, jsonEnum.toString()));
 
         em.persist(createSlotRelation(SlotRelationName.CONTAINS));

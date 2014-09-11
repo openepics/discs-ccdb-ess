@@ -42,7 +42,8 @@ public class SlotEntityLogger implements EntityLogger {
         final Map<String, String> propertiesMap = new TreeMap<>();
         if (slot.getSlotPropertyList() != null) {
             for (SlotPropertyValue propValue : slot.getSlotPropertyList()) {
-                propertiesMap.put(propValue.getProperty().getName(), propValue.getPropValue());
+                final String entryValue = propValue.getPropValue() == null ? "null" : propValue.getPropValue().toString();
+                propertiesMap.put(propValue.getProperty().getName(), entryValue);
             }
         }
 
