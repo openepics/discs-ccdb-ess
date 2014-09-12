@@ -14,25 +14,38 @@
 package org.openepics.discs.conf.ui;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.openepics.discs.conf.ejb.SlotRelationEJB;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.Slot;
+import org.openepics.discs.conf.ent.SlotPair;
+import org.openepics.discs.conf.ent.SlotRelation;
+import org.openepics.discs.conf.ent.SlotRelationName;
 import org.openepics.discs.conf.ui.common.AbstractSlotsController;
+import org.openepics.discs.conf.util.SlotPairLoopException;
 import org.openepics.discs.conf.util.names.Names;
+import org.openepics.discs.conf.views.SlotRelationshipView;
+import org.openepics.discs.conf.views.SlotView;
+import org.primefaces.context.RequestContext;
+import org.primefaces.model.TreeNode;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 
 @Named
 @ViewScoped
 public class InstallationSlotsController extends AbstractSlotsController {
 
     @Inject private Names names;
+    @Inject private SlotRelationEJB slotRelationEJB;
 
     private ComponentType deviceType;
     private Double beamlinePosition;
@@ -43,12 +56,27 @@ public class InstallationSlotsController extends AbstractSlotsController {
     private Double globalRoll;
     private Double globalYaw;
 
-    List<String> namesForAutoComplete;
+    private List<String> namesForAutoComplete;
+    private List<SlotRelationshipView> relationships;
+    private SlotRelationshipView selectedRelationship;
+    private TreeNode selectedTreeNodeForRelationshipAdd;
+    private String selectedRelationshipType;
+    private List<String> relationshipTypes;
+    private Map<String, SlotRelation> slotRelationBySlotRelationStringName;
+
 
     @PostConstruct
     public void init() {
         updateRootNode();
         fillNamesAutocomplete();
+
+        final List<SlotRelation> slotRelations = slotRelationEJB.findAll();
+        slotRelationBySlotRelationStringName = new HashMap<>();
+        for (SlotRelation slotRelation : slotRelations) {
+            slotRelationBySlotRelationStringName.put(slotRelation.getNameAsString(), slotRelation);
+            slotRelationBySlotRelationStringName.put(slotRelation.getIname(), slotRelation);
+        }
+        relationshipTypes = ImmutableList.copyOf(slotRelationBySlotRelationStringName.keySet().iterator());
     }
 
     @Override
@@ -116,11 +144,85 @@ public class InstallationSlotsController extends AbstractSlotsController {
         updateRootNode();
     }
 
+    public void setSelectedSlotViewForRelationships(SlotView selectedSlotView) {
+        this.selectedSlotView = selectedSlotView;
+        prepareRelationshipsPopup();
+    }
+    public SlotView getSelectedSlotViewForRelationships() { return selectedSlotView; }
+
+    private void prepareRelationshipsPopup() {
+        selectedRelationship = null;
+        relationships = Lists.newArrayList();
+        for (SlotPair slotPair : selectedSlotView.getSlot().getChildrenSlotsPairList()) {
+            relationships.add(new SlotRelationshipView(slotPair, selectedSlotView.getSlot()));
+        }
+
+        for (SlotPair slotPair : selectedSlotView.getSlot().getParentSlotsPairList()) {
+            relationships.add(new SlotRelationshipView(slotPair, selectedSlotView.getSlot()));
+        }
+    }
+
+    public void onRelationshipDelete() {
+        if (canRelationshipBeDeleted()) {
+            slotPairEJB.delete(selectedRelationship.getSlotPair());
+        } else {
+            RequestContext.getCurrentInstance().execute("PF('cantDeleteRelation').show()");
+        }
+        prepareRelationshipsPopup();
+    }
+
+    private boolean canRelationshipBeDeleted() {
+        return !(selectedRelationship.getSlotPair().getSlotRelation().getName() == SlotRelationName.CONTAINS && !slotPairEJB.slotHasMoreThanOneContainsRelation(selectedRelationship.getSlotPair().getChildSlot()));
+    }
+
+    public void prepareAddRelationshipPopup() {
+        selectedTreeNodeForRelationshipAdd = null;
+        selectedRelationshipType = SlotRelationName.CONTAINS.toString().toLowerCase();
+    }
+
+    public void slotForRelationshipChanged() {
+        if (((SlotView)selectedTreeNodeForRelationshipAdd.getData()).getIsHostingSlot()) {
+            relationshipTypes = ImmutableList.copyOf(slotRelationBySlotRelationStringName.keySet().iterator());
+            selectedRelationshipType = SlotRelationName.CONTAINS.toString().toLowerCase();
+        } else {
+            relationshipTypes = ImmutableList.of("contained in");
+            selectedRelationshipType = "contained in";
+        }
+
+        prepareRelationshipsPopup();
+    }
+
+    public void onRelationshipAdd() {
+        final SlotRelation slotRelation = slotRelationBySlotRelationStringName.get(selectedRelationshipType);
+        final Slot parentSlot;
+        final Slot childSlot;
+        if (slotRelation.getNameAsString().equals(selectedRelationshipType)) {
+            childSlot = ((SlotView) selectedTreeNodeForRelationshipAdd.getData()).getSlot();
+            parentSlot = selectedSlotView.getSlot();
+        } else {
+            childSlot = selectedSlotView.getSlot();
+            parentSlot = ((SlotView) selectedTreeNodeForRelationshipAdd.getData()).getSlot();
+        }
+
+        try {
+            slotPairEJB.add(new SlotPair(childSlot, parentSlot, slotRelation));
+        } catch (SlotPairLoopException e) {
+
+                RequestContext.getCurrentInstance().execute("PF('slotPairLoopNotification').show()");
+
+        }
+        prepareRelationshipsPopup();
+    }
+
     @Override
     public String redirectToAttributes(Long id) { return "installation-slot-attributes-manager.xhtml?faces-redirect=true&id=" + id; }
 
     private void fillNamesAutocomplete() {
         namesForAutoComplete = ImmutableList.copyOf(names.getAllNames());
+    }
+
+    public List<SlotRelationshipView> getRelationships() {
+        return relationships;
     }
 
     public ComponentType getDeviceType() { return deviceType; }
@@ -156,6 +258,19 @@ public class InstallationSlotsController extends AbstractSlotsController {
         }
 
         return resultList;
-   }
+    }
+
+    public SlotRelationshipView getSelectedRelationship() { return selectedRelationship; }
+    public void setSelectedRelationship(SlotRelationshipView selectedRelationship) { this.selectedRelationship = selectedRelationship; }
+
+    public void setSelectedSlotViewForRelationshipAdd(TreeNode selectedTreeNode) { selectedTreeNodeForRelationshipAdd = selectedTreeNode; }
+    public TreeNode getSelectedSlotViewForRelationshipAdd() { return selectedTreeNodeForRelationshipAdd; }
+
+    public String getSelectedRelationshipType() { return selectedRelationshipType; }
+    public void setSelectedRelationshipType(String relationshipType) { this.selectedRelationshipType = relationshipType; }
+
+    public List<String> getRelationshipTypes() { return relationshipTypes; }
+
+
 
 }

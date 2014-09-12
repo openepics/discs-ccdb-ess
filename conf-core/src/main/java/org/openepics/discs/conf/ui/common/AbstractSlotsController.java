@@ -40,8 +40,8 @@ public abstract class AbstractSlotsController implements Serializable{
 
     @Inject protected SlotsTreeBuilder slotsTreeBuilder;
     @Inject protected SlotEJB slotEJB;
-    @Inject private SlotPairEJB slotPairEJB;
-    @Inject private SlotRelationEJB slotRelationEJB;
+    @Inject protected SlotPairEJB slotPairEJB;
+    @Inject protected SlotRelationEJB slotRelationEJB;
     @Inject protected ComptypeEJB comptypeEJB;
 
     protected TreeNode rootNode;

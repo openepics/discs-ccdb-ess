@@ -25,6 +25,7 @@ import javax.inject.Named;
 
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotPair;
+import org.openepics.discs.conf.ent.SlotRelationName;
 import org.openepics.discs.conf.ui.common.AlphanumComparator;
 import org.openepics.discs.conf.views.SlotView;
 import org.primefaces.model.DefaultTreeNode;
@@ -80,9 +81,6 @@ public class SlotsTreeBuilder implements Serializable {
     }
 
     private void addSlotNode(SlotTree nprt, Slot slot, Map<Long, Slot> allSlots, boolean withInstallationSlots) {
-        if (slot.getName().equals("WTF")) {
-            int i = 1;
-        }
         if (!nprt.hasNode(slot)) {
             final List<SlotPair> parentSlotPairs = slot.getChildrenSlotsPairList().size() > 0 ? slot.getChildrenSlotsPairList() : null;
             if (parentSlotPairs == null) {
@@ -90,7 +88,7 @@ public class SlotsTreeBuilder implements Serializable {
             } else {
                 for (SlotPair parentSlotPair : parentSlotPairs) {
                     final Slot parentSlot = parentSlotPair.getParentSlot();
-                    if (withInstallationSlots  || !withInstallationSlots && !parentSlot.getIsHostingSlot()) {
+                    if ((withInstallationSlots  || !withInstallationSlots && !parentSlot.getIsHostingSlot()) && parentSlotPair.getSlotRelation().getName().equals(SlotRelationName.CONTAINS)) {
                         addSlotNode(nprt, allSlots.get(parentSlot.getId()), allSlots, withInstallationSlots);
                         nprt.addChildToParent(parentSlot.getId(), slot);
                     }
@@ -160,7 +158,7 @@ public class SlotsTreeBuilder implements Serializable {
         private TreeNode asViewTree(TreeNode parentNode, SlotTreeNode nprNode, int level) {
             final List<TreeNode> children = Lists.newArrayList();
             for (SlotTreeNode child : nprNode.children) {
-                final TreeNode node = new DefaultTreeNode(new SlotView(child.node, (SlotView)parentNode.getData(), child.node.getParentSlotsPairList().size() > 0), parentNode);
+                final TreeNode node = new DefaultTreeNode(new SlotView(child.node, (SlotView)parentNode.getData(), child.node.getParentSlotsPairList()), parentNode);
                 node.setExpanded(!collapsedNodes.contains(((SlotView) node.getData()).getId()));
                 node.setSelectable(level >= selectableLevel);
                 if (isSelected(node)) {

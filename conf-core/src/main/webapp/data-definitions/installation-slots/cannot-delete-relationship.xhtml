@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html">
+
+    <h:form id="cantDeleteRelationForm">
+        <p:dialog widgetVar="cantDeleteRelation" id="cantDeleteRelation" modal="true" resizable="false"  closable="false">
+            <f:facet name="header">
+                <h:outputText value="Cannot delete slot relationship" />
+            </f:facet>           
+            <h:outputText value="Slot relationship cannot be deleted because every slot has be a child in at least one CONTAINS relationship." />
+            <br />
+            <p:commandButton value="Ok" style="float: right" onclick="cantDeleteRelation.hide();" />
+        </p:dialog>
+    </h:form>
+</ui:composition>

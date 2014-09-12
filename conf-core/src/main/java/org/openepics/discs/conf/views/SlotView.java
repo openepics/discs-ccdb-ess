@@ -9,8 +9,12 @@
  */
 package org.openepics.discs.conf.views;
 
+import java.util.List;
+
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.Slot;
+import org.openepics.discs.conf.ent.SlotPair;
+import org.openepics.discs.conf.ent.SlotRelationName;
 
 /**
  * View of container used to compose and manipulate with container presentation in tree view
@@ -22,7 +26,7 @@ public class SlotView {
     private Long id;
     private String name;
     private String description;
-    private boolean hasChildren;
+    private boolean canDelete;
     private SlotView parentNode;
     private Slot slot;
     private boolean isHostingSlot;
@@ -35,12 +39,11 @@ public class SlotView {
     private Double globalRoll;
     private Double globalYaw;
 
-    public SlotView (Slot slot, SlotView parentNode, boolean hasChildren) {
+    public SlotView (Slot slot, SlotView parentNode, List<SlotPair> children) {
         this.slot = slot;
         this.name = slot.getName();
         this.description = slot.getDescription();
         this.id = slot.getId();
-        this.hasChildren = hasChildren;
         this.parentNode = parentNode;
         this.isHostingSlot = slot.getIsHostingSlot();
         this.deviceType = slot.getComponentType();
@@ -51,6 +54,14 @@ public class SlotView {
         this.globalPitch = slot.getPositionInformation().getGlobalPitch();
         this.globalRoll = slot.getPositionInformation().getGlobalRoll();
         this.globalYaw = slot.getPositionInformation().getGlobalYaw();
+
+        canDelete = true;
+        for (SlotPair child : children) {
+            if (child.getSlotRelation().getName() == SlotRelationName.CONTAINS) {
+                canDelete = false;
+                 break;
+            }
+        }
     }
 
     public Long getId() { return id; }
@@ -59,7 +70,7 @@ public class SlotView {
 
     public String getDescription() { return description; }
 
-    public boolean getHasChildren() { return hasChildren; }
+    public boolean getCanDelete() { return canDelete; }
 
     public SlotView getParentNode() { return parentNode; }
 

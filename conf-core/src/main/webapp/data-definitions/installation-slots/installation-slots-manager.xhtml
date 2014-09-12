@@ -35,14 +35,14 @@
                     <p:commandButton icon="ui-icon-pencil" title="Edit" ajax="true" rendered="#{installationSlot.isHostingSlot}" update=":slotModifyForm:modifySlotDialog" oncomplete="modifySlotDialog.show()">
                         <f:setPropertyActionListener value="#{installationSlot}" target="#{installationSlotsController.selectedSlotViewToModify}" />
                     </p:commandButton>
-                    <p:commandButton icon="ui-icon-trash" title="Delete" ajax="true" rendered="#{installationSlot.isHostingSlot}" disabled="#{installationSlot.hasChildren}" oncomplete="deleteInstallationSlot.show()">
+                    <p:commandButton icon="ui-icon-trash" title="Delete" ajax="true" rendered="#{installationSlot.isHostingSlot}" disabled="#{!installationSlot.canDelete}" oncomplete="deleteInstallationSlot.show()">
                         <f:setPropertyActionListener value="#{installationSlot}" target="#{installationSlotsController.selectedSlotView}" />
                     </p:commandButton>
                     <p:commandButton icon="ui-icon-clock" title="Log" rendered="#{installationSlot.isHostingSlot}" oncomplete="installationSlotLog.show()">
                         <f:ajax event="click" listener="#{auditManager.selectEntityForLog(installationSlot.slot, 'SLOT')}" />
                     </p:commandButton>
-                    <p:commandButton icon="ui-icon-link" title="Relationships" rendered="#{installationSlot.isHostingSlot}" oncomplete="slotRelationships.show()">
-                        <f:ajax event="click" />
+                    <p:commandButton icon="ui-icon-link" title="Relationships" rendered="#{installationSlot.isHostingSlot}" oncomplete="slotRelationships.show()" update=":slotRelationshipsForm:slotRelationships">
+                        <f:setPropertyActionListener value="#{installationSlot}" target="#{installationSlotsController.selectedSlotViewForRelationships}" />
                     </p:commandButton>
                 </p:column>
             </p:treeTable>
@@ -66,6 +66,11 @@
             <ui:param name="formId" value="installationSlotLogForm" />
             <ui:param name="dialogTitle" value="Installation Slot Log" />
             <ui:param name="widgetName" value="installationSlotLog" />
+        </ui:include>
+        
+        <ui:include src="slot-relationships.xhtml">
+            <ui:param name="formId" value="slotRelationshipsForm" />
+            <ui:param name="widgetName" value="slotRelationships" />
         </ui:include>
         
         <ui:include src="../add-or-modify-dialogs/delete-confirmation.xhtml" >
