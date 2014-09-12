@@ -42,9 +42,12 @@ public class DblTableValueConverter extends ValueConverter {
         final SedsScalarArray<?>[] columns = new SedsScalarArray<?>[dblTableValue.getDblTableValue().size()];
         int colIndex = 0;
         for (List<Double> column : dblTableValue.getDblTableValue()) {
-            columns[colIndex] = sedsFactory.newScalarArray(column.toArray());
+            final Double[] dblVectorArray = column.toArray(new Double[column.size()]);
+            columns[colIndex] = sedsFactory.newScalarArray(dblVectorArray);
+            colIndex++;
         }
-        final SedsTable sedsTable = sedsFactory.newTable(null, columns);
+        final String[] columnNames = new String[columns.length];
+        final SedsTable sedsTable = sedsFactory.newTable(columnNames, columns);
         return sedsDbConverter.serialize(sedsTable).toString();
     }
 

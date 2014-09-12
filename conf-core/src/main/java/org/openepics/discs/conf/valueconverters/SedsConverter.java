@@ -216,9 +216,13 @@ public class SedsConverter implements AttributeConverter<Value, String> {
                 if (col.getType() != ScalarType.NUMBER)
                     throw new InvalidDataTypeException("Data type not supported for table: " + col.getType().name());
                 final Number[] colValues = (Number[]) col.getValueArray();
-                if (!(colValues instanceof Double[]))
-                    throw new InvalidDataTypeException("Data type for table not Double.");
-                final List<Double> dblColValues = new ArrayList<Double>(Arrays.asList((Double[])colValues));
+                final List<Double> dblColValues = new ArrayList<>(colValues.length);
+                for (Number element : colValues) {
+                    if (element instanceof Double)
+                        dblColValues.add((Double)element);
+                    else
+                        throw new InvalidDataTypeException("Data type for table not Double.");
+                }
                 tableValues.add(dblColValues);
             }
         }

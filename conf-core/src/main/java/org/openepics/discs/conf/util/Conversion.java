@@ -24,6 +24,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Scanner;
+import java.util.regex.Pattern;
 
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.values.DblTableValue;
@@ -96,53 +98,6 @@ public class Conversion {
         return getUIElementFromPropertyDataType(getDataType(property));
     }
 
-    public static String toString(String str) { return str; }
-
-    public static Double toDouble(String str) { return str == null ? null : Double.valueOf(str); }
-
-    public static Integer toInteger(String str) { return str == null ? null : Integer.valueOf(str); }
-
-    public static String toEnum(String str) { return str; }
-
-    public static URL toURL(String str) {
-        try {
-            // TODO check for protocols, etc
-            return new URL(str);
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static List<String> toStrVector(String str) { return new ArrayList<String>(); } // TODO implement
-
-    public static List<Integer> toIntVector(String str) { return new ArrayList<Integer>(); } // TODO implement
-
-    public static List<Double> toDblVector(String str) { return new ArrayList<Double>(); } // TODO implement
-
-    public static Date toTimestamp(String str) { return new Date(); } // TODO implement
-
-    public static List<List<Double>> toDblTable(String str) { return new ArrayList<List<Double>>(); } // TODO implement
-
-    public static String fromString(String value) { return value; }
-
-    public static String fromDouble(Double value) { return value == null ? null : value.toString(); }
-
-    public static String fromInteger(Integer value) { return value == null ? null : value.toString(); }
-
-    public static String fromEnum(String value) { return value; }
-
-    public static String fromURL(URL value) { return value.toString(); }
-
-    public static String fromStrVector(List<String> value) { return value == null ? null : value.toString(); } // TODO implement
-
-    public static String fromIntVector(List<Integer> value) { return value == null ? null : value.toString(); } // TODO implement
-
-    public static String fromDblVector(List<Double> value) { return value == null ? null : value.toString(); } // TODO implement
-
-    public static String fromTimestamp(Date value) { return value == null ? null : value.toString(); } // TODO implement
-
-    public static String fromDblTable(List<List<Double>> value) { return value == null ? null : value.toString(); } // TODO implement
-
     public static Value stringToValue(String strValue, Property property) {
         Preconditions.checkNotNull(property);
         if (strValue == null) return null;
@@ -198,5 +153,165 @@ public class Conversion {
         } else
             throw new IllegalStateException("Unknown property type.");
      }
+
+    public static URL toURL(String str) {
+        try {
+            final URL retUrl = new URL(str);
+            if (!retUrl.getProtocol().startsWith("http") && !retUrl.getProtocol().equals("ftp"))
+                throw new RuntimeException("Protocol must be either http, https or ftp.");
+            return retUrl;
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static String toString(String str) { return str; }
+
+    private static Double toDouble(String str) { return str == null ? null : Double.valueOf(str); }
+
+    private static Integer toInteger(String str) { return str == null ? null : Integer.valueOf(str); }
+
+    private static String toEnum(String str) { return str; }
+
+    private static List<String> toStrVector(String str) {
+        Preconditions.checkNotNull(str);
+
+        final List<String> list = new ArrayList<>();
+
+        try (Scanner scanner = new Scanner(str)) {
+            scanner.useDelimiter(Pattern.compile("(\\r\\n)|\\r|\\n"));
+
+            while (scanner.hasNext()) {
+                list.add(scanner.next());
+            }
+        }
+        return list;
+    }
+
+    private static List<Integer> toIntVector(String str) {
+        Preconditions.checkNotNull(str);
+
+        final List<Integer> list = new ArrayList<>();
+
+        try (Scanner scanner = new Scanner(str)) {
+            scanner.useDelimiter(Pattern.compile("(\\r\\n)|\\r|\\n"));
+
+            while (scanner.hasNext()) {
+                list.add(Integer.parseInt(scanner.next().trim()));
+            }
+        }
+        return list;
+    }
+
+    private static List<Double> toDblVector(String str) {
+        Preconditions.checkNotNull(str);
+
+        final List<Double> list = new ArrayList<>();
+
+        try (Scanner scanner = new Scanner(str)) {
+            scanner.useDelimiter(Pattern.compile("(\\r\\n)|\\r|\\n"));
+
+            while (scanner.hasNext()) {
+                list.add(Double.parseDouble(scanner.next().trim()));
+            }
+        }
+        return list;
+    }
+
+    private static Date toTimestamp(String str) { return new Date(); } // TODO implement
+
+    private static List<List<Double>> toDblTable(String str) {
+        Preconditions.checkNotNull(str);
+
+        final List<List<Double>> table = new ArrayList<>();
+
+        try (Scanner lineScanner = new Scanner(str)) {
+            lineScanner.useDelimiter(Pattern.compile("(\\r\\n)|\\r|\\n"));
+
+            int rowLength = -1;
+
+            while (lineScanner.hasNext()) {
+                final String lineStr = lineScanner.next();
+                final List<Double> tableRow = new ArrayList<>();
+                try (Scanner valueScanner = new Scanner(lineStr)) {
+                    // separator is all whitespaces and UTF "NO-BREAK" space
+                    valueScanner.useDelimiter(Pattern.compile(",[\\s\\u00A0]*"));
+                    while (valueScanner.hasNext()) {
+                        final String dblValue = valueScanner.next().trim();
+                        tableRow.add(Double.parseDouble(dblValue));
+                    }
+                }
+                if (!tableRow.isEmpty()) {
+                    if (rowLength < 0)
+                        rowLength = tableRow.size();
+                    else if (rowLength != tableRow.size())
+                        throw new RuntimeException("All rows must contain the same number of elements.");
+
+                    table.add(tableRow);
+                }
+            }
+        }
+        return table;
+    }
+
+    private static String fromString(String value) { return value; }
+
+    private static String fromDouble(Double value) { return value == null ? null : value.toString(); }
+
+    private static String fromInteger(Integer value) { return value == null ? null : value.toString(); }
+
+    private static String fromEnum(String value) { return value; }
+
+    private static String fromURL(URL value) { return value.toString(); }
+
+    private static String fromStrVector(List<String> value) {
+        if (value == null) return null;
+
+        StringBuilder retStr = new StringBuilder();
+        for (String line : value)
+            retStr.append(line).append('\n');
+
+        return retStr.toString();
+    }
+
+    private static String fromIntVector(List<Integer> value) {
+        if (value == null) return null;
+
+        StringBuilder retStr = new StringBuilder();
+        for (Integer number : value)
+            retStr.append(number.intValue()).append('\n');
+
+        return retStr.toString();
+    }
+
+    private static String fromDblVector(List<Double> value)  {
+        if (value == null) return null;
+
+        StringBuilder retStr = new StringBuilder();
+        for (Double number : value)
+            retStr.append(number.doubleValue()).append('\n');
+
+        return retStr.toString();
+    }
+
+    private static String fromTimestamp(Date value) { return value == null ? null : value.toString(); } // TODO implement
+
+    private static String fromDblTable(List<List<Double>> value) {
+        if (value == null) return null;
+
+        StringBuilder retStr = new StringBuilder();
+        for (List<Double> column : value) {
+            boolean firstNumber = true;
+            for (Double number : column) {
+                if (!firstNumber)
+                    retStr.append(", ");
+                else
+                    firstNumber = false;
+                retStr.append(number.doubleValue());
+            }
+            retStr.append('\n');
+        }
+        return retStr.toString();
+    }
 
 }
