@@ -20,10 +20,14 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Scanner;
+import java.util.regex.Pattern;
 
 import javax.faces.application.FacesMessage;
+import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
+import javax.faces.validator.ValidatorException;
 import javax.inject.Inject;
 import javax.json.Json;
 import javax.json.JsonReader;
@@ -506,5 +510,97 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
 
     public List<String> getEnumSelections() { return enumSelections; }
     public void setEnumSelections(List<String> enumSelections) { this.enumSelections = enumSelections; }
+
+    public void areaValidator(FacesContext ctx, UIComponent component, Object value) throws ValidatorException {
+        if (value == null) {
+            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_FATAL, "Error", "No value to parse."));
+        }
+        if (property == null) {
+            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
+                    "You must select a property first."));
+        }
+
+        String strValue = value.toString();
+        switch (Conversion.getDataType(property)) {
+        case DBL_TABLE:
+            validateTable(strValue);
+            break;
+        case DBL_VECTOR:
+            validateDblVector(strValue);
+            break;
+        case INT_VECTOR:
+            validateIntVector(strValue);
+            break;
+        case STRING_LIST:
+            break;
+        default:
+            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Incorrect property data type."));
+        }
+    }
+
+    private void validateTable(String value) throws ValidatorException {
+        try (Scanner lineScanner = new Scanner(value)) {
+            lineScanner.useDelimiter(Pattern.compile("(\\r\\n)|\\r|\\n"));
+
+            int lineLength = -1;
+            while (lineScanner.hasNext()) {
+                final String line = lineScanner.next().replaceAll("\u00A0", " ");
+
+                try (Scanner valueScanner = new Scanner(line)) {
+                    valueScanner.useDelimiter(",\\s*");
+                    int currentLineLength = 0;
+                    while (valueScanner.hasNext()) {
+                        final String dblValue = valueScanner.next().trim();
+                        currentLineLength++;
+                        try { Double.valueOf(dblValue); } catch (NumberFormatException e) {
+                            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
+                                    "Incorrect value: " + dblValue));
+                        }
+                    }
+                    if (lineLength < 0)
+                        lineLength = currentLineLength;
+                    else if (currentLineLength != lineLength) {
+                        throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
+                                "All rows must contain the same number of elements."));
+                    }
+                }
+            }
+        }
+    }
+
+    private void validateIntVector(String value) throws ValidatorException {
+        try (Scanner scanner = new Scanner(value)) {
+            scanner.useDelimiter(Pattern.compile("(\\r\\n)|\\r|\\n"));
+
+            // replace unicode no-break spaces with normal ones
+            while (scanner.hasNext()) {
+                String intValue = "<error>";
+                try {
+                    intValue = scanner.next().replaceAll("\\u00A0", " ").trim();
+                    Integer.parseInt(intValue);
+                } catch (NumberFormatException e) {
+                    throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Incorrect value: " + intValue));
+                }
+            }
+        }
+    }
+
+    private void validateDblVector(String value) throws ValidatorException {
+        try (Scanner scanner = new Scanner(value)) {
+            scanner.useDelimiter(Pattern.compile("(\\r\\n)|\\r|\\n"));
+
+            // replace unicode no-break spaces with normal ones
+            while (scanner.hasNext()) {
+                String dblValue = "<error>";
+                try {
+                    dblValue = scanner.next().replaceAll("\\u00A0", " ").trim();
+                    Double.parseDouble(dblValue);
+                } catch (NumberFormatException e) {
+                    throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Incorrect value: " + dblValue));
+                }
+            }
+        }
+    }
+
 
 }

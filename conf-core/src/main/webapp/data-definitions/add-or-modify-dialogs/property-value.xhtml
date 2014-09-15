@@ -38,7 +38,8 @@
                     
                     <p:inputTextarea id="propertyValueArea" value="#{controller.propertyValue}" required="true" 
                             rows="7" cols="40" style="width: 100% !important; white-space: nowrap; resize: none;" autoResize="false" 
-                            requiredMessage="Please enter a property value" rendered="#{controller.propertyValueUIElement eq 'TEXT_AREA'}" />
+                            requiredMessage="Please enter a property value" validator="#{controller.areaValidator}" 
+                            rendered="#{controller.propertyValueUIElement eq 'TEXT_AREA'}" />
                     <p:message for="propertyValueArea" rendered="#{controller.propertyValueUIElement eq 'TEXT_AREA'}"/>
                     
                     <p:selectOneMenu id="propertyValueEnum" value="#{controller.propertyValue}" required="true" 
