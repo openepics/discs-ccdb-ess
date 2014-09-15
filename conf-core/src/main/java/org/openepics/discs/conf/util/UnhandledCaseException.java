@@ -7,5 +7,4 @@ package org.openepics.discs.conf.util;
  * @author Marko Kolar <marko.kolar@cosylab.com>
  */
 public class UnhandledCaseException extends RuntimeException {
-
 }

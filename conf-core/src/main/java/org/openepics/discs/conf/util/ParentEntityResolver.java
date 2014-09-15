@@ -24,6 +24,7 @@ import org.openepics.discs.conf.ent.SlotPropertyValue;
  *
  */
 public class ParentEntityResolver {
+    private ParentEntityResolver() {}
 
     /**
      * Checks if input entity is a type of *ParameterValue or *Artifact and returns the entity

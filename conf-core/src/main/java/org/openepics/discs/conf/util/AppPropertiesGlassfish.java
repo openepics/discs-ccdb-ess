@@ -23,6 +23,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Alternative;
 
 /**
+ * Implementation of {@link AppProperties} that is suitable for Glassfish App. Servers
  *
  * @author vuppala
  */
@@ -32,11 +33,14 @@ public class AppPropertiesGlassfish implements AppProperties {
     @Resource(name="org.openepics.discs.conf.props")
     private Properties properties;
 
+    /**
+     * @see AppProperties#getProperty(String)
+     */
+    @Override
     public String getProperty(String name) {
         if (name == null || name.isEmpty()) {
             return null;
         }
-
         return properties.getProperty(name);
     }
 }

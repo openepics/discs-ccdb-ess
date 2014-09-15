@@ -25,25 +25,36 @@ import javax.persistence.PersistenceException;
  * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  */
 public class Utility {
+    private Utility() {}
 
+
+    /**
+     * Utility method used to display a message to the user
+     *
+     * @param severity Severity of the message
+     * @param summary Summary of the message
+     * @param message Detailed message contents
+     */
     public static void showMessage(FacesMessage.Severity severity, String summary, String message) {
         final FacesContext context = FacesContext.getCurrentInstance();
-
         context.addMessage(null, new FacesMessage(severity, summary, message));
-        // FacesMessage n = new FacesMessage();
     }
 
-    /** The method determines whether the cause of the exception is a {@link javax.persistence.PersistenceException} or not.
+    /** The method determines whether the cause of the exception is a
+     * {@link javax.persistence.PersistenceException} or not.
+     *
      * @param t - the exception to inspect
      * @return <code>true</code> if the cause of the exception is javax.persistence.PersistenceException,
      * <code>false</code> otherwise.
      */
     public static boolean causedByPersistenceException(Throwable t) {
-        if (t instanceof PersistenceException) return true;
-
-        if (t != null && t.getCause() != null) return causedByPersistenceException(t.getCause());
-
-        return false;
+        if (t instanceof PersistenceException) {
+            return true;
+        } else if (t != null && t.getCause() != null) {
+            return causedByPersistenceException(t.getCause());
+        } else {
+            return false;
+        }
     }
 
 
