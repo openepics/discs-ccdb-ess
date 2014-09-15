@@ -1,19 +1,24 @@
 package org.openepics.discs.conf.ent;
 
 
-/* ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! *
- * WARNING! PLEASE NOTE! WARNING! PLEASE NOTE! WARNING! PLEASE NOTE! WARNING! PLEASE NOTE! WARNING! PLEASE NOTE!             *
- *                                                                                                                           *
- * The field in the Property.java file persisting this entity is limited to 12 characters.                                   *
- *                                                                                                                           *
- * @Enumerated(EnumType.STRING)                                                                                              *
- * @Column(name = "association", length = 12)                                                                                *
- *                                                                                                                           *
- * If you add another enumeration property that goes over this limit, remember to update the database model accordingly.     *
- *                                                                                                                           *
- * WARNING! PLEASE NOTE! WARNING! PLEASE NOTE! WARNING! PLEASE NOTE! WARNING! PLEASE NOTE! WARNING! PLEASE NOTE!             *
- * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! */
+/* ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! *
+ * WARNING! PLEASE NOTE! WARNING! PLEASE NOTE! WARNING! PLEASE NOTE! WARNING! PLEASE NOTE! WARNING! PLEASE NOTE!     *
+ *                                                                                                                   *
+ * The field in the Property.java file persisting this entity is limited to 12 characters.                           *
+ *                                                                                                                   *
+ * @Enumerated(EnumType.STRING)                                                                                      *
+ * @Column(name = "association", length = 12)                                                                        *
+ *                                                                                                                   *
+ * If you add another enumeration property that goes over this limit, remember to update the database model          *
+ * accordingly.                                                                                                      *
+ *                                                                                                                   *
+ * WARNING! PLEASE NOTE! WARNING! PLEASE NOTE! WARNING! PLEASE NOTE! WARNING! PLEASE NOTE! WARNING! PLEASE NOTE!     *
+ * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! */
 
+/**
+ * Enumeration that is used to detrermine the entity types for which the property can be used
+ *
+ */
 public enum PropertyAssociation {
     /** The property is only for <i>Component Type</i>, E.g.: a CAD drawing. */
     TYPE,

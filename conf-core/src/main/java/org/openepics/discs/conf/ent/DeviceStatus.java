@@ -19,8 +19,12 @@ public enum DeviceStatus {
         this.label = label;
     }
 
+    /**
+     * Gets the string representation of the enum value
+     *
+     * @return string representation of the enum value
+     */
     public String getLabel() {
         return label;
     }
-
 }

@@ -22,6 +22,7 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
+ * {@link AuditRecord} entity stores audit logs for changes on entity types
  *
  * @author vuppala
  */
@@ -30,7 +31,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "AuditRecord.findAll", query = "SELECT a FROM AuditRecord a"),
-    @NamedQuery(name = "AuditRecord.findByEntityIdAndType", query = "SELECT a FROM AuditRecord a WHERE a.entityId = :entityId and a.entityType = :entityType")
+    @NamedQuery(name = "AuditRecord.findByEntityIdAndType", query = "SELECT a FROM AuditRecord a "
+            + "WHERE a.entityId = :entityId and a.entityType = :entityType")
 })
 public class AuditRecord implements Serializable {
     @Id

@@ -1,7 +1,6 @@
 package org.openepics.discs.conf.ent;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -26,6 +25,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
+ * A {@link ComponentType} entity defines the type (set of properties) for a device and/or a slot.
  *
  * @author vuppala
  */
@@ -37,7 +37,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
     @NamedQuery(name = "ComponentType.findById", query = "SELECT c FROM ComponentType c WHERE c.id = :id"),
     @NamedQuery(name = "ComponentType.findByName", query = "SELECT c FROM ComponentType c WHERE c.name = :name"),
     @NamedQuery(name = "ComponentType.findAllOrdered", query = "SELECT c FROM ComponentType c ORDER BY c.name"),
-    @NamedQuery(name = "ComponentType.findByModifiedBy", query = "SELECT c FROM ComponentType c WHERE c.modifiedBy = :modifiedBy")
+    @NamedQuery(name = "ComponentType.findByModifiedBy", query = "SELECT c FROM ComponentType c "
+            + "WHERE c.modifiedBy = :modifiedBy")
 })
 public class ComponentType extends ConfigurationEntity {
     @Basic(optional = false)
@@ -71,12 +72,11 @@ public class ComponentType extends ConfigurationEntity {
 
     @ManyToMany(cascade=CascadeType.ALL)
     @JoinTable(name = "comptype_tag",
-               joinColumns = { @JoinColumn(name = "comptype_id") }, inverseJoinColumns = { @JoinColumn(name = "tag_id") })
+               joinColumns = { @JoinColumn(name = "comptype_id") },
+               inverseJoinColumns = { @JoinColumn(name = "tag_id") })
     private Set<Tag> tags = new HashSet<>();
 
-    public ComponentType() {
-        this.modifiedAt = new Date();
-    }
+    public ComponentType() {}
 
     public ComponentType(String name) {
         this.name = name;

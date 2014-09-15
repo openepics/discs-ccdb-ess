@@ -53,7 +53,8 @@ public class ReportAction extends ConfigurationEntity {
     protected ReportAction() {
     }
 
-    public ReportAction(ReportFilterAction operation, String field, String value, Report parentReport, String modifiedBy) {
+    public ReportAction(ReportFilterAction operation, String field, String value,
+            Report parentReport, String modifiedBy) {
         this.operation = As.notNull(operation);
         this.field = As.notNull(field);
         this.value = As.notNull(value);
@@ -62,7 +63,8 @@ public class ReportAction extends ConfigurationEntity {
         this.modifiedAt = new Date();
     }
 
-    public ReportAction(ReportFilterAction operation, Property property, String value, Report parentReport, String modifiedBy) {
+    public ReportAction(ReportFilterAction operation, Property property, String value,
+            Report parentReport, String modifiedBy) {
         this.operation = As.notNull(operation);
         this.property = As.notNull(property);
         this.value = As.notNull(value);
@@ -135,9 +137,18 @@ public class ReportAction extends ConfigurationEntity {
 
     @Override
     public String toString() {
-        if (field != null) return "[ Field: " + field + " " + operation.toString() + " " + value + " ]";
-        if (property != null) return "[ Property: " + property.getName() + " " + operation.toString() + " " + value + " ]";
-        if (tag != null) return "[ Tag IS " + tag.getName() + " ]";
+        if (field != null) {
+            return "[ Field: " + field + " " + operation.toString() + " " + value + " ]";
+        }
+
+        if (property != null) {
+            return "[ Property: " + property.getName() + " " + operation.toString() + " " + value + " ]";
+        }
+
+        if (tag != null) {
+            return "[ Tag IS " + tag.getName() + " ]";
+        }
+
         return "Error! Invalid report filter definition.";
     }
 }

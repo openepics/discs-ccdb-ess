@@ -24,7 +24,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "SlotPair.findAll", query = "SELECT s FROM SlotPair s"),
-    @NamedQuery(name = "SlotPair.findByParentChildRelation", query = "SELECT s FROM SlotPair s WHERE s.childSlot.name LIKE :childName AND s.parentSlot.name = :parentName AND s.slotRelation.name = :relationName"),
+    @NamedQuery(name = "SlotPair.findByParentChildRelation", query = "SELECT s FROM SlotPair s "
+            + "WHERE s.childSlot.name LIKE :childName "
+                + "AND s.parentSlot.name = :parentName AND s.slotRelation.name = :relationName"),
     @NamedQuery(name = "SlotPair.findById", query = "SELECT s FROM SlotPair s WHERE s.id = :id")
 })
 public class SlotPair implements Serializable {
@@ -84,21 +86,29 @@ public class SlotPair implements Serializable {
 
     @Override
     public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
-        return hash;
+        return id != null ? id.hashCode() : 0;
     }
 
     @Override
     public boolean equals(Object object) {
-        if (!(object instanceof SlotPair)) return false;
+        if (!(object instanceof SlotPair)) {
+            return false;
+        }
 
         SlotPair other = (SlotPair) object;
-        if (this.id == null && other.id != null) return false;
-        if (this.id != null) return this.id.equals(other.id); // return true for same DB entity
+        if (this.id == null && other.id != null) {
+            return false;
+        }
+
+        if (this.id != null) {
+            // return true for same DB entity
+            return this.id.equals(other.id);
+        }
 
         return this==object;
     }
+
+    public Long getVersion() { return version; }
 
     @Override
     public String toString() {

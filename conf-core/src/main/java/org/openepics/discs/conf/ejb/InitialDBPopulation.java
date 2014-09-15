@@ -117,10 +117,6 @@ public class InitialDBPopulation {
         privilege.setRole(role);
         em.persist(privilege);
 
-        privilege = new Privilege(EntityType.MENU, EntityTypeOperation.AUTHORIZED);
-        privilege.setRole(role);
-        em.persist(privilege);
-
         privilege = new Privilege(EntityType.DEVICE, EntityTypeOperation.CREATE);
         privilege.setRole(role);
         em.persist(privilege);

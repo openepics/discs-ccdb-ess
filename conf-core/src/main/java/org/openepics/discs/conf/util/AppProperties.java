@@ -16,15 +16,19 @@
 
 package org.openepics.discs.conf.util;
 
+import javax.annotation.Resource;
+
 
 /**
+ * Interface used to represent generic application properties facility.
+ * Has at least two implementaitons, one for JBoss that uses Systm properties and one for Glassfish that uses a
+ * Properties {@link Resource}
  *
  * @author vuppala
  * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
  *
  */
 public interface AppProperties {
-
     // Entity types for Audit records, authorization, etc
     public static final String EN_DEVICE = "device";
     public static final String EN_SLOT = "slot";
@@ -40,5 +44,11 @@ public interface AppProperties {
     public static final char OPER_LOGIN = 'l';
     public static final char OPER_LOGOUT = 'o';
 
+    /**
+     * Retrieves the string property with the given key-name
+     *
+     * @param name a {@link String} key for the property
+     * @return the property value, or <code>null</code> if it does not exist
+     */
     String getProperty(String name);
 }

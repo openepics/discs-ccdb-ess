@@ -14,10 +14,11 @@ import org.apache.poi.ss.usermodel.Workbook;
  * @author Andraz Pozar <andraz.pozar@cosylab.com>
  */
 public class ExcelCell {
+    private ExcelCell() {}
 
     /**
-     * Creating a String from Excel file cell. If cell contains numeric value, this value is cast to String. If there is no
-     * value for this cell, null is returned.
+     * Creating a String from Excel file cell. If cell contains numeric value, this value is cast to String.
+     * If there is no value for this cell, null is returned.
      *
      * @param cell the Excel {@link Cell}
      * @param workbook the Excel {@link Workbook}

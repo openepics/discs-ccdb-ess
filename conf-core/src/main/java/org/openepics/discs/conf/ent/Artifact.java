@@ -9,6 +9,12 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+/**
+ * An artifact is a user-defined value that is attached to database entities such as URL or a file
+ *
+ * @author vupalla
+ *
+ */
 @Entity
 @Table(name = "artifacts")
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)

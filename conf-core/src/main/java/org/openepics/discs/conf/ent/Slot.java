@@ -26,6 +26,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
+ * An installation slot for devices
  *
  * @author vuppala
  */
@@ -37,10 +38,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
     @NamedQuery(name = "Slot.findBySlotId", query = "SELECT s FROM Slot s WHERE s.id = :id"),
     @NamedQuery(name = "Slot.findByName", query = "SELECT s FROM Slot s WHERE s.name = :name"),
     @NamedQuery(name = "Slot.findByNameContaining", query = "SELECT s FROM Slot s WHERE s.name LIKE :name"),
-    @NamedQuery(name = "Slot.findByIsHostingSlot", query = "SELECT s FROM Slot s WHERE s.isHostingSlot = :isHostingSlot"),
-    @NamedQuery(name = "Slot.findByBeamlinePosition", query = "SELECT s FROM Slot s WHERE s.beamlinePosition = :beamlinePosition"),
+    @NamedQuery(name = "Slot.findByIsHostingSlot", query = "SELECT s FROM Slot s "
+            + "WHERE s.isHostingSlot = :isHostingSlot"),
+    @NamedQuery(name = "Slot.findByBeamlinePosition", query = "SELECT s FROM Slot s "
+            + "WHERE s.beamlinePosition = :beamlinePosition"),
     @NamedQuery(name = "Slot.findByModifiedBy", query = "SELECT s FROM Slot s WHERE s.modifiedBy = :modifiedBy"),
-    @NamedQuery(name = "Slot.findByComponentType", query = "SELECT s FROM Slot s WHERE s.componentType = :componentType")
+    @NamedQuery(name = "Slot.findByComponentType", query = "SELECT s FROM Slot s "
+            + "WHERE s.componentType = :componentType")
 })
 public class Slot extends ConfigurationEntity {
     @Basic(optional = false)
@@ -58,12 +62,11 @@ public class Slot extends ConfigurationEntity {
     @Column(name = "is_hosting_slot")
     private boolean isHostingSlot;
 
-    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "beamline_position")
     private Double beamlinePosition;
 
     @Embedded
-    private AlignmentInformation positionInfo = new AlignmentInformation();
+    private PositionInformation positionInfo = new PositionInformation();
 
     @Size(max = 255)
     @Column(name = "asm_comment")
@@ -141,12 +144,12 @@ public class Slot extends ConfigurationEntity {
         this.beamlinePosition = beamlinePosition;
     }
 
-    public AlignmentInformation getPositionInformation()
+    public PositionInformation getPositionInformation()
     {
         // Due to some weirdness Hibernate clears the initialized field when loading data
         // Added this lazy initialization as convenience
         if (positionInfo==null) {
-            positionInfo = new AlignmentInformation();
+            positionInfo = new PositionInformation();
         }
         return positionInfo;
     }

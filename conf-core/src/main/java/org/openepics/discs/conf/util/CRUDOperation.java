@@ -18,6 +18,10 @@ import org.openepics.discs.conf.ent.EntityTypeOperation;
 @Target(METHOD)
 @Retention(RUNTIME)
 public @interface CRUDOperation {
-
+    /**
+     * A parameter used to determine the CRUD operation being done on an entity.
+     *
+     * @return the {@link EntityTypeOperation} CRUD operation
+     */
     EntityTypeOperation operation();
 }

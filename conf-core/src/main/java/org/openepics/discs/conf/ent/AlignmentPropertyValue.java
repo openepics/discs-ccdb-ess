@@ -9,6 +9,7 @@ import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
+ * A {@link PropertyValue} used for {@link AlignmentRecord}s
  *
  * @author vuppala
  */
@@ -17,9 +18,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "AlignmentPropertyValue.findAll", query = "SELECT a FROM AlignmentPropertyValue a"),
-    @NamedQuery(name = "AlignmentPropertyValue.findByAlignPropId", query = "SELECT a FROM AlignmentPropertyValue a WHERE a.id = :id"),
-    @NamedQuery(name = "AlignmentPropertyValue.findByInRepository", query = "SELECT a FROM AlignmentPropertyValue a WHERE a.inRepository = :inRepository"),
-    @NamedQuery(name = "AlignmentPropertyValue.findByModifiedBy", query = "SELECT a FROM AlignmentPropertyValue a WHERE a.modifiedBy = :modifiedBy")
+    @NamedQuery(name = "AlignmentPropertyValue.findByAlignPropId", query = "SELECT a FROM AlignmentPropertyValue a "
+            + "WHERE a.id = :id"),
+    @NamedQuery(name = "AlignmentPropertyValue.findByInRepository", query = "SELECT a FROM AlignmentPropertyValue a "
+            + "WHERE a.inRepository = :inRepository"),
+    @NamedQuery(name = "AlignmentPropertyValue.findByModifiedBy", query = "SELECT a FROM AlignmentPropertyValue a "
+            + "WHERE a.modifiedBy = :modifiedBy")
 })
 public class AlignmentPropertyValue extends PropertyValue {
     @JoinColumn(name = "alignment_record")

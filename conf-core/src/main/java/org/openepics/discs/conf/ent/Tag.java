@@ -1,5 +1,7 @@
 package org.openepics.discs.conf.ent;
 
+import java.io.Serializable;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
@@ -12,7 +14,7 @@ import javax.persistence.Version;
 @NamedQueries({
     @NamedQuery(name = "Tag.findAllOrdered", query = "SELECT t FROM Tag t ORDER BY t.name")
 })
-public class Tag {
+public class Tag implements Serializable {
     @Id
     private String name;
 

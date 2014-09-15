@@ -15,6 +15,7 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
+ * Properties are given to Devices, Device Types and INstallation Slots
  *
  * @author vuppala
  */
@@ -25,8 +26,10 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Property.findAll", query = "SELECT p FROM Property p"),
     @NamedQuery(name = "Property.findByPropertyId", query = "SELECT p FROM Property p WHERE p.id = :id"),
     @NamedQuery(name = "Property.findByName", query = "SELECT p FROM Property p WHERE p.name = :name"),
-    @NamedQuery(name = "Property.findByAssociation", query = "SELECT p FROM Property p WHERE p.association = :association"),
-    @NamedQuery(name = "Property.findByModifiedBy", query = "SELECT p FROM Property p WHERE p.modifiedBy = :modifiedBy")
+    @NamedQuery(name = "Property.findByAssociation", query = "SELECT p FROM Property p "
+            + "WHERE p.association = :association"),
+    @NamedQuery(name = "Property.findByModifiedBy", query = "SELECT p FROM Property p "
+            + "WHERE p.modifiedBy = :modifiedBy")
 })
 public class Property extends ConfigurationEntity {
     @Basic(optional = false)

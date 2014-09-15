@@ -77,8 +77,8 @@ public class DBTableEntityTypeSecurityPolicy extends AbstractEnityTypeSecurityPo
         }
 
         final List<Privilege> privs = em.createQuery(
-                                          "SELECT p FROM UserRole ur JOIN ur.role r JOIN r.privilegeList p " +
-                                          "WHERE ur.ccdb_user.userId = :user", Privilege.class).
+                                          "SELECT p FROM Role r JOIN ur.role r JOIN r.privilegeList p " +
+                                          "WHERE ur.user.userId = :user", Privilege.class).
                                       setParameter("user", principal).getResultList();
         LOGGER.finer("found privileges: " + privs.size());
 

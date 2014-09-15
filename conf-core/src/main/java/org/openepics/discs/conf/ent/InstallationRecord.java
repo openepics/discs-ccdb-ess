@@ -24,6 +24,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
+ * An Installation Record contains information connects device instances with the installation slots
  *
  * @author vuppala
  */
@@ -32,10 +33,14 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "InstallationRecord.findAll", query = "SELECT i FROM InstallationRecord i"),
-    @NamedQuery(name = "InstallationRecord.findByInstallationRecordId", query = "SELECT i FROM InstallationRecord i WHERE i.id = :id"),
-    @NamedQuery(name = "InstallationRecord.findByInstallDate", query = "SELECT i FROM InstallationRecord i WHERE i.installDate = :installDate"),
-    @NamedQuery(name = "InstallationRecord.findByUninstallDate", query = "SELECT i FROM InstallationRecord i WHERE i.uninstallDate = :uninstallDate"),
-    @NamedQuery(name = "InstallationRecord.findByModifiedBy", query = "SELECT i FROM InstallationRecord i WHERE i.modifiedBy = :modifiedBy")
+    @NamedQuery(name = "InstallationRecord.findByInstallationRecordId", query = "SELECT i FROM InstallationRecord i "
+            + "WHERE i.id = :id"),
+    @NamedQuery(name = "InstallationRecord.findByInstallDate", query = "SELECT i FROM InstallationRecord i "
+            + "WHERE i.installDate = :installDate"),
+    @NamedQuery(name = "InstallationRecord.findByUninstallDate", query = "SELECT i FROM InstallationRecord i "
+            + "WHERE i.uninstallDate = :uninstallDate"),
+    @NamedQuery(name = "InstallationRecord.findByModifiedBy", query = "SELECT i FROM InstallationRecord i "
+            + "WHERE i.modifiedBy = :modifiedBy")
 })
 public class InstallationRecord extends ConfigurationEntity {
     @Basic(optional = false)
@@ -73,7 +78,7 @@ public class InstallationRecord extends ConfigurationEntity {
 
     public InstallationRecord(String recordNumber, Date installDate) {
         this.recordNumber = recordNumber;
-        this.installDate = installDate;
+        this.installDate = new Date(installDate.getTime());
     }
 
     public String getRecordNumber() {
@@ -84,17 +89,17 @@ public class InstallationRecord extends ConfigurationEntity {
     }
 
     public Date getInstallDate() {
-        return installDate;
+        return installDate!=null ? new Date(installDate.getTime()) : null;
     }
     public void setInstallDate(Date installDate) {
-        this.installDate = installDate;
+        this.installDate = new Date(installDate.getTime());
     }
 
     public Date getUninstallDate() {
-        return uninstallDate;
+        return uninstallDate!=null ? new Date(uninstallDate.getTime()) : null;
     }
     public void setUninstallDate(Date uninstallDate) {
-        this.uninstallDate = uninstallDate;
+        this.uninstallDate = new Date(uninstallDate.getTime());
     }
 
     public String getNotes() {

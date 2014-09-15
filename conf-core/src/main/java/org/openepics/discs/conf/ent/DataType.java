@@ -11,6 +11,7 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
+ * Represents a Data Type used in various {@link Property} entities
  *
  * @author vuppala
  */

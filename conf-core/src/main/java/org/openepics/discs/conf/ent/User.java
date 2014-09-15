@@ -47,7 +47,6 @@ public class User implements Serializable {
     @Column(name = "name")
     private String name;
 
-    // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")//if the field contains email address consider using this annotation to enforce field validation
     @Size(max = 64)
     @Column(name = "email")
     private String email;
@@ -125,14 +124,24 @@ public class User implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        if (!(object instanceof User)) return false;
+        if (!(object instanceof User)) {
+            return false;
+        }
 
         User other = (User) object;
-        if (this.userId == null && other.userId != null) return false;
-        if (this.userId != null) return this.userId.equals(other.userId); // return true for same DB entity
+        if (this.userId == null && other.userId != null) {
+            return false;
+        }
+
+        if (this.userId != null) {
+            // return true for same DB entity
+            return this.userId.equals(other.userId);
+        }
 
         return this==object;
     }
+
+    public Long getVersion() { return version; }
 
     @Override
     public String toString() {

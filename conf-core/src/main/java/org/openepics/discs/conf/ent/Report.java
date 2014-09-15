@@ -16,6 +16,7 @@ import javax.persistence.Table;
 import org.openepics.discs.conf.util.As;
 
 /**
+ * An entity that persist information about reports
  *
  * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  *

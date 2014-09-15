@@ -30,9 +30,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "UserRole.findAll", query = "SELECT u FROM UserRole u"),
-    @NamedQuery(name = "UserRole.findByUserRoleId", query = "SELECT u FROM UserRole u WHERE u.userRoleId = :userRoleId"),
-    @NamedQuery(name = "UserRole.findByCanDelegate", query = "SELECT u FROM UserRole u WHERE u.canDelegate = :canDelegate"),
-    @NamedQuery(name = "UserRole.findByIsRoleManager", query = "SELECT u FROM UserRole u WHERE u.isRoleManager = :isRoleManager"),
+    @NamedQuery(name = "UserRole.findByUserRoleId", query = "SELECT u FROM UserRole u "
+            + "WHERE u.userRoleId = :userRoleId"),
+    @NamedQuery(name = "UserRole.findByCanDelegate", query = "SELECT u FROM UserRole u "
+            + "WHERE u.canDelegate = :canDelegate"),
+    @NamedQuery(name = "UserRole.findByIsRoleManager", query = "SELECT u FROM UserRole u "
+            + "WHERE u.isRoleManager = :isRoleManager"),
     @NamedQuery(name = "UserRole.findByStartTime", query = "SELECT u FROM UserRole u WHERE u.startTime = :startTime"),
     @NamedQuery(name = "UserRole.findByEndTime", query = "SELECT u FROM UserRole u WHERE u.endTime = :endTime"),
     @NamedQuery(name = "UserRole.findByComment", query = "SELECT u FROM UserRole u WHERE u.comment = :comment")
@@ -78,7 +81,7 @@ public class UserRole implements Serializable {
 
     @JoinColumn(name = "ccdb_user", referencedColumnName = "user_id")
     @ManyToOne(optional = false)
-    private User ccdb_user;
+    private User user;
 
     protected UserRole() {
     }
@@ -87,7 +90,7 @@ public class UserRole implements Serializable {
         this.canDelegate = canDelegate;
         this.isRoleManager = isRoleManager;
         this.startTime = startTime;
-        this.endTime = endTime;
+        this.endTime = new Date(endTime.getTime());
     }
 
     public Integer getUserRoleId() {
@@ -111,19 +114,19 @@ public class UserRole implements Serializable {
     }
 
     public Date getStartTime() {
-        return startTime;
+        return startTime!=null ? new Date(startTime.getTime()) : null;
     }
 
     public void setStartTime(Date startTime) {
-        this.startTime = startTime;
+        this.startTime = new Date(startTime.getTime());
     }
 
     public Date getEndTime() {
-        return endTime;
+        return endTime!=null ? new Date(endTime.getTime()) : null;
     }
 
     public void setEndTime(Date endTime) {
-        this.endTime = endTime;
+        this.endTime = new Date(endTime.getTime());
     }
 
     public String getComment() {
@@ -143,11 +146,11 @@ public class UserRole implements Serializable {
     }
 
     public User getUser() {
-        return ccdb_user;
+        return user;
     }
 
     public void setUser(User user) {
-        this.ccdb_user = user;
+        this.user = user;
     }
 
     @Override
@@ -159,14 +162,23 @@ public class UserRole implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        if (!(object instanceof UserRole)) return false;
+        if (!(object instanceof UserRole)) {
+            return false;
+        }
 
         UserRole other = (UserRole) object;
-        if (this.userRoleId == null && other.userRoleId != null)  return false;
-        if (this.userRoleId != null) return this.userRoleId.equals(other.userRoleId); // return true for same DB entity
+        if (this.userRoleId == null && other.userRoleId != null) {
+            return false;
+        }
+        if (this.userRoleId != null) {
+            // return true for same DB entity
+            return this.userRoleId.equals(other.userRoleId);
+        }
 
         return this==object;
     }
+
+    public Long getVersion() { return version; }
 
     @Override
     public String toString() {

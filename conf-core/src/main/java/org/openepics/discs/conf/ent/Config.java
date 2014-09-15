@@ -17,6 +17,7 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
+ * A support entity used to store key-value type information in the database.
  *
  * @author vuppala
  */
@@ -77,21 +78,29 @@ public class Config implements Serializable {
 
     @Override
     public int hashCode() {
-        int hash = 0;
-        hash += (configId != null ? configId.hashCode() : 0);
-        return hash;
+        return configId != null ? configId.hashCode() : 0;
     }
 
     @Override
     public boolean equals(Object object) {
-        if (!(object instanceof Config)) return false;
+        if (!(object instanceof Config)) {
+            return false;
+        }
 
         Config other = (Config) object;
-        if (this.configId == null && other.configId != null) return false;
-        if (this.configId != null) return this.configId.equals(other.configId); // return true for same DB entity
+        if (this.configId == null && other.configId != null) {
+            return false;
+        }
+        // return true for same DB entity
+        if (this.configId != null) {
+            return this.configId.equals(other.configId);
+        }
 
         return this==object;
     }
+
+    public Long getVersion() { return version; }
+    public void setVersion(Long version) { this.version = version; }
 
     @Override
     public String toString() {

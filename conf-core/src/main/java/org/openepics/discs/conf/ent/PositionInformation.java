@@ -1,11 +1,20 @@
 package org.openepics.discs.conf.ent;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
+/**
+ * Positional information used in entities
+ *
+ * ToDo: Maybe rename to more appropriate name PositionInformation
+ *
+ * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
+ *
+ */
 @Embeddable
-public class AlignmentInformation {
-    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
+public class PositionInformation implements Serializable {
     @Column(name = "global_x")
     private Double globalX;
 

@@ -12,14 +12,10 @@ package org.openepics.discs.conf.auditlog;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Date;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.openepics.discs.conf.ent.ComponentType;
-import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
-import org.openepics.discs.conf.ent.InstallationRecord;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyAssociation;
 import org.openepics.discs.conf.ent.Slot;
@@ -43,7 +39,6 @@ public class SlotEntityLoggerTest {
     private final SlotArtifact artifact1 = new SlotArtifact("CAT Image", true, "Simple CAT image", "/var/usr/images/CAT");
     private final SlotArtifact artifact2 = new SlotArtifact("Manual", false, "Users manual", "www.deteriorator.com/user-manual");
     private final SlotRelation contains = new SlotRelation(SlotRelationName.CONTAINS);
-    private final InstallationRecord installRecord = new InstallationRecord("recNum", new Date());
 
     final private SlotEntityLogger sel = new SlotEntityLogger();
 
@@ -59,7 +54,6 @@ public class SlotEntityLoggerTest {
         slot.getSlotArtifactList().add(artifact2);
         slot.getChildrenSlotsPairList().add(new SlotPair(new Slot("childSlot", false), slot, contains));
         slot.getParentSlotsPairList().add(new SlotPair(slot, new Slot("parentSlot", false), contains));
-        installRecord.setDevice(new Device("installRecordDevice"));
         slot.setComponentType(new ComponentType("slotCompType"));
     }
 
@@ -70,7 +64,11 @@ public class SlotEntityLoggerTest {
 
     @Test
     public void testSerializeEntity() {
-        final String RESULT = "{\"isHostingSlot\":true,\"positionInformation\":{},\"componentType\":\"slotCompType\",\"slotPropertyList\":[{\"APERTURE\":\"20\"},{\"DETER\":\"10\"}],\"slotArtifactList\":[{\"CAT Image\":\"/var/usr/images/CAT\"},{\"Manual\":\"www.deteriorator.com/user-manual\"}],\"childrenSlots\":[{\"childSlot\":\"CONTAINS\"}],\"parentSlots\":[{\"parentSlot\":\"CONTAINS\"}]}";
+        final String RESULT = "{\"isHostingSlot\":true,\"positionInformation\":{},\"componentType\":\"slotCompType\","
+                + "\"slotPropertyList\":[{\"APERTURE\":\"20\"},{\"DETER\":\"10\"}],"
+                + "\"slotArtifactList\":[{\"CAT Image\":\"/var/usr/images/CAT\"},"
+                + "{\"Manual\":\"www.deteriorator.com/user-manual\"}],\"childrenSlots\":[{\"childSlot\":\"CONTAINS\"}],"
+                + "\"parentSlots\":[{\"parentSlot\":\"CONTAINS\"}]}";
 
         assertEquals(RESULT, sel.auditEntries(slot, EntityTypeOperation.CREATE).get(0).getEntry());
     }

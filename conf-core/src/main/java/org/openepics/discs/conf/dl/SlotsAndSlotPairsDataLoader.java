@@ -23,7 +23,7 @@ import org.openepics.discs.conf.ejb.PropertyEJB;
 import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ejb.SlotPairEJB;
 import org.openepics.discs.conf.ejb.SlotRelationEJB;
-import org.openepics.discs.conf.ent.AlignmentInformation;
+import org.openepics.discs.conf.ent.PositionInformation;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyAssociation;
@@ -270,7 +270,7 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
         slotToAddOrUpdate.setAssemblyComment(asmComment);
         slotToAddOrUpdate.setAssemblyPosition(asmPosition);
         slotToAddOrUpdate.setComment(comment);
-        final AlignmentInformation positionInfo = slotToAddOrUpdate.getPositionInformation();
+        final PositionInformation positionInfo = slotToAddOrUpdate.getPositionInformation();
         positionInfo.setGlobalX(globalX);
         positionInfo.setGlobalY(globalY);
         positionInfo.setGlobalZ(globalZ);

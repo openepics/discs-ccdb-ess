@@ -13,6 +13,7 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
+ * Assembly information for {@link ComponentType}s
  *
  * @author vuppala
  */
@@ -22,7 +23,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "ComptypeAsm.findAll", query = "SELECT c FROM ComptypeAsm c"),
     @NamedQuery(name = "ComptypeAsm.findByComptypeAsmId", query = "SELECT c FROM ComptypeAsm c WHERE c.id = :id"),
-    @NamedQuery(name = "ComptypeAsm.findByModifiedBy", query = "SELECT c FROM ComptypeAsm c WHERE c.modifiedBy = :modifiedBy")
+    @NamedQuery(name = "ComptypeAsm.findByModifiedBy", query = "SELECT c FROM ComptypeAsm c "
+            + "WHERE c.modifiedBy = :modifiedBy")
 })
 public class ComptypeAsm extends ConfigurationEntity {
     @Basic(optional = false)

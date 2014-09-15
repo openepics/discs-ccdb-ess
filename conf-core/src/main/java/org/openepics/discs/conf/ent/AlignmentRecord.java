@@ -28,6 +28,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
+ * Alignment record contains alignment information for Slots
  *
  * @author vuppala
  */
@@ -36,10 +37,14 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "AlignmentRecord.findAll", query = "SELECT a FROM AlignmentRecord a"),
-    @NamedQuery(name = "AlignmentRecord.findByAlignmentRecordId", query = "SELECT a FROM AlignmentRecord a WHERE a.id = :id"),
-    @NamedQuery(name = "AlignmentRecord.findByRecordNumber", query = "SELECT a FROM AlignmentRecord a WHERE a.recordNumber = :recordNumber"),
-    @NamedQuery(name = "AlignmentRecord.findByAlignmentDate", query = "SELECT a FROM AlignmentRecord a WHERE a.alignmentDate = :alignmentDate"),
-    @NamedQuery(name = "AlignmentRecord.findByModifiedBy", query = "SELECT a FROM AlignmentRecord a WHERE a.modifiedBy = :modifiedBy")
+    @NamedQuery(name = "AlignmentRecord.findByAlignmentRecordId", query = "SELECT a FROM AlignmentRecord a "
+            + "WHERE a.id = :id"),
+    @NamedQuery(name = "AlignmentRecord.findByRecordNumber", query = "SELECT a FROM AlignmentRecord a "
+            + "WHERE a.recordNumber = :recordNumber"),
+    @NamedQuery(name = "AlignmentRecord.findByAlignmentDate", query = "SELECT a FROM AlignmentRecord a "
+            + "WHERE a.alignmentDate = :alignmentDate"),
+    @NamedQuery(name = "AlignmentRecord.findByModifiedBy", query = "SELECT a FROM AlignmentRecord a "
+            + "WHERE a.modifiedBy = :modifiedBy")
 })
 public class AlignmentRecord extends ConfigurationEntity {
     @Basic(optional = false)
@@ -55,7 +60,7 @@ public class AlignmentRecord extends ConfigurationEntity {
     private Date alignmentDate;
 
     @Embedded
-    private AlignmentInformation alignmentInfo = new AlignmentInformation();
+    private PositionInformation alignmentInfo = new PositionInformation();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "alignmentRecord")
     private List<AlignmentArtifact> alignmentArtifactList;
@@ -73,7 +78,8 @@ public class AlignmentRecord extends ConfigurationEntity {
 
     @ManyToMany(cascade=CascadeType.ALL)
     @JoinTable(name = "alignment_tag",
-               joinColumns = { @JoinColumn(name = "alignment_id") }, inverseJoinColumns = { @JoinColumn(name = "tag_id") })
+               joinColumns = { @JoinColumn(name = "alignment_id") },
+               inverseJoinColumns = { @JoinColumn(name = "tag_id") })
     private Set<Tag> tags = new HashSet<>();
 
     protected AlignmentRecord() {
@@ -81,7 +87,7 @@ public class AlignmentRecord extends ConfigurationEntity {
 
     public AlignmentRecord(String recordNumber, Date alignmentDate) {
         this.recordNumber = recordNumber;
-        this.alignmentDate = alignmentDate;
+        this.alignmentDate = new Date(alignmentDate.getTime());
     }
 
     public String getRecordNumber() {
@@ -92,13 +98,13 @@ public class AlignmentRecord extends ConfigurationEntity {
     }
 
     public Date getAlignmentDate() {
-        return alignmentDate;
+        return alignmentDate!=null ? new Date(alignmentDate.getTime()) : null;
     }
     public void setAlignmentDate(Date alignmentDate) {
-        this.alignmentDate = alignmentDate;
+        this.alignmentDate = new Date(alignmentDate.getTime());
     }
 
-    public AlignmentInformation getAlignmentInformation() {
+    public PositionInformation getAlignmentInformation() {
         return alignmentInfo;
     }
 

@@ -9,6 +9,7 @@ import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
+ * {@link PropertyValue} used with Device Instances
  *
  * @author vuppala
  */
@@ -17,9 +18,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "DevicePropertyValue.findAll", query = "SELECT d FROM DevicePropertyValue d"),
-    @NamedQuery(name = "DevicePropertyValue.findByDevPropId", query = "SELECT d FROM DevicePropertyValue d WHERE d.id = :id"),
-    @NamedQuery(name = "DevicePropertyValue.findByInRepository", query = "SELECT d FROM DevicePropertyValue d WHERE d.inRepository = :inRepository"),
-    @NamedQuery(name = "DevicePropertyValue.findByModifiedBy", query = "SELECT d FROM DevicePropertyValue d WHERE d.modifiedBy = :modifiedBy")
+    @NamedQuery(name = "DevicePropertyValue.findByDevPropId", query = "SELECT d FROM DevicePropertyValue d "
+            + "WHERE d.id = :id"),
+    @NamedQuery(name = "DevicePropertyValue.findByInRepository", query = "SELECT d FROM DevicePropertyValue d "
+            + "WHERE d.inRepository = :inRepository"),
+    @NamedQuery(name = "DevicePropertyValue.findByModifiedBy", query = "SELECT d FROM DevicePropertyValue d "
+            + "WHERE d.modifiedBy = :modifiedBy")
 })
 public class DevicePropertyValue extends PropertyValue {
     @JoinColumn(name = "device")

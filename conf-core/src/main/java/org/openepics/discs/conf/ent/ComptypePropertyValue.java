@@ -9,6 +9,7 @@ import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
+ * {@link PropertyValue} attached to a {@link ComponentType} entity
  *
  * @author vuppala
  */
@@ -17,10 +18,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "ComptypePropertyValue.findAll", query = "SELECT c FROM ComptypePropertyValue c"),
-    @NamedQuery(name = "ComptypePropertyValue.findById", query = "SELECT c FROM ComptypePropertyValue c WHERE c.id = :id"),
-    @NamedQuery(name = "ComptypePropertyValue.findPropertyDefs", query = "SELECT c FROM ComptypePropertyValue c WHERE c.componentType = :componentType AND c.propValue IS NULL"),
-    @NamedQuery(name = "ComptypePropertyValue.findByInRepository", query = "SELECT c FROM ComptypePropertyValue c WHERE c.inRepository = :inRepository"),
-    @NamedQuery(name = "ComptypePropertyValue.findByModifiedBy", query = "SELECT c FROM ComptypePropertyValue c WHERE c.modifiedBy = :modifiedBy")
+    @NamedQuery(name = "ComptypePropertyValue.findById", query = "SELECT c FROM ComptypePropertyValue c "
+            + "WHERE c.id = :id"),
+    @NamedQuery(name = "ComptypePropertyValue.findPropertyDefs", query = "SELECT c FROM ComptypePropertyValue c "
+            + "WHERE c.componentType = :componentType AND c.propValue IS NULL"),
+    @NamedQuery(name = "ComptypePropertyValue.findByInRepository", query = "SELECT c FROM ComptypePropertyValue c "
+            + "WHERE c.inRepository = :inRepository"),
+    @NamedQuery(name = "ComptypePropertyValue.findByModifiedBy", query = "SELECT c FROM ComptypePropertyValue c "
+            + "WHERE c.modifiedBy = :modifiedBy")
 })
 public class ComptypePropertyValue extends PropertyValue {
     @JoinColumn(name = "component_type")

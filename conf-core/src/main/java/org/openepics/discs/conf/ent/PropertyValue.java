@@ -10,10 +10,14 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+/**
+ * An abstract property for a Configuration Db entity
+ *
+ */
 @Entity
 @Table(name = "property_value")
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-abstract public class PropertyValue extends ConfigurationEntity {
+public abstract class PropertyValue extends ConfigurationEntity {
     @Column(name = "prop_value", columnDefinition = "TEXT")
     private String propValue;
 
