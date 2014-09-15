@@ -33,7 +33,8 @@
                 <h:panelGroup id="valueInputGroup">
                     <h:outputText id="propertyValueNoProp" rendered="#{controller.propertyValueUIElement eq 'NONE'}" value="Select a property first."/>
                     <p:inputText id="propertyValueSimple" value="#{controller.propertyValue}" required="true"
-                            requiredMessage="Please enter a property value" rendered="#{controller.propertyValueUIElement eq 'INPUT'}" />
+                            requiredMessage="Please enter a property value" validator="#{controller.inputValidator}" 
+                            rendered="#{controller.propertyValueUIElement eq 'INPUT'}" />
                     <p:message for="propertyValueSimple" rendered="#{controller.propertyValueUIElement eq 'INPUT'}"/>
                     
                     <p:inputTextarea id="propertyValueArea" value="#{controller.propertyValue}" required="true" 
