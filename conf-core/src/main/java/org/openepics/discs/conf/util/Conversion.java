@@ -181,6 +181,7 @@ public class Conversion {
         try (Scanner scanner = new Scanner(str)) {
             scanner.useDelimiter(Pattern.compile("(\\r\\n)|\\r|\\n"));
 
+            // replace unicode no-break spaces with normal does not work as expected for string list
             while (scanner.hasNext()) {
                 list.add(scanner.next());
             }
@@ -196,8 +197,9 @@ public class Conversion {
         try (Scanner scanner = new Scanner(str)) {
             scanner.useDelimiter(Pattern.compile("(\\r\\n)|\\r|\\n"));
 
+            // replace unicode no-break spaces with normal ones
             while (scanner.hasNext()) {
-                list.add(Integer.parseInt(scanner.next().trim()));
+                list.add(Integer.parseInt(scanner.next().replaceAll("\\u00A0", " ").trim()));
             }
         }
         return list;
@@ -211,8 +213,9 @@ public class Conversion {
         try (Scanner scanner = new Scanner(str)) {
             scanner.useDelimiter(Pattern.compile("(\\r\\n)|\\r|\\n"));
 
+            // replace unicode no-break spaces with normal ones
             while (scanner.hasNext()) {
-                list.add(Double.parseDouble(scanner.next().trim()));
+                list.add(Double.parseDouble(scanner.next().replaceAll("\\u00A0", " ").trim()));
             }
         }
         return list;
@@ -231,11 +234,11 @@ public class Conversion {
             int rowLength = -1;
 
             while (lineScanner.hasNext()) {
-                final String lineStr = lineScanner.next();
+                // replace unicode no-break spaces with normal ones
+                final String lineStr = lineScanner.next().replaceAll("\\u00A0", " ");
                 final List<Double> tableRow = new ArrayList<>();
                 try (Scanner valueScanner = new Scanner(lineStr)) {
-                    // separator is all whitespaces and UTF "NO-BREAK" space
-                    valueScanner.useDelimiter(Pattern.compile(",[\\s\\u00A0]*"));
+                    valueScanner.useDelimiter(Pattern.compile(",\\s*"));
                     while (valueScanner.hasNext()) {
                         final String dblValue = valueScanner.next().trim();
                         tableRow.add(Double.parseDouble(dblValue));
