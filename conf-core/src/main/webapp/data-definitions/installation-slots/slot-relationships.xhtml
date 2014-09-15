@@ -16,7 +16,7 @@
             <p:panelGrid id="grp" styleClass="dialog-grid-panel noBorders">
                 <p:row>
                     <p:column style="text-align: letf">
-                        <p:commandButton value="Add relationship" actionListener="#{installationSlotsController.prepareAddRelationshipPopup}" oncomplete="addSlotRelationship.show()" update=":addSlotRelationshipForm:addSlotRelationship"/>
+                        <p:commandButton value="Add relationship" actionListener="#{installationSlotsController.prepareAddRelationshipPopup}" oncomplete="addSlotRelationship.show()" update=":addSlotRelationshipForm"/>
                     </p:column>
                     <p:column style="text-align: letf">
                         <p:commandButton id="deleteRelationship" value="Delete relationship" disabled="#{installationSlotsController.selectedRelationship == null}" action="#{installationSlotsController.onRelationshipDelete}" update=":#{formId}:relationshipTable"/>
@@ -44,6 +44,7 @@
 	</h:form>
 	
 	<ui:include src="cannot-delete-relationship.xhtml" />
+	<ui:include src="slot-pair-loop-notification.xhtml" />
 	<ui:include src="add-relationship.xhtml" />
 	
 </ui:composition>

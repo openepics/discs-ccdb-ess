@@ -9,7 +9,6 @@
  */
 package org.openepics.discs.conf.ui;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Set;
 
@@ -22,7 +21,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.openepics.discs.conf.ejb.PropertyEJB;
 import org.openepics.discs.conf.ejb.SlotEJB;
-import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyAssociation;
@@ -43,13 +41,13 @@ import com.google.common.collect.ImmutableList;
  */
 @Named
 @ViewScoped
-public class ContainerAttributesController extends AbstractAttributesController<SlotPropertyValue, SlotArtifact>{
+public class SlotAttributesController extends AbstractAttributesController<SlotPropertyValue, SlotArtifact>{
 
     @Inject private SlotEJB slotEJB;
     @Inject private PropertyEJB propertyEJB;
 
     private Slot slot;
-    private String parentContainer;
+    private String parentSlot;
 
     @PostConstruct
     public void init() {
@@ -63,18 +61,21 @@ public class ContainerAttributesController extends AbstractAttributesController<
 
         populateAttributesList();
         filterProperties();
-        parentContainer = slot.getChildrenSlotsPairList().size() > 0 ? slot.getChildrenSlotsPairList().get(0).getParentSlot().getName() : null;
+        parentSlot = slot.getChildrenSlotsPairList().size() > 0 ? slot.getChildrenSlotsPairList().get(0).getParentSlot().getName() : null;
     }
 
     /**
-     * Redirection back to view of all {@link ComponentType}s
+     * Redirection back to view of all container {@link Slot}s
      */
-    public void containerRedirect() {
-        try {
-            FacesContext.getCurrentInstance().getExternalContext().redirect("containers-manager.xhtml");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    public String containerRedirect() {
+        return "containers-manager.xhtml?faces-redirect=true";
+    }
+
+    /**
+     * Redirection back to view of all installation {@link Slot}s
+     */
+    public String installSlotRedirect() {
+        return "installation-slots-manager.xhtml?faces-redirect=true";
     }
 
     @Override
@@ -127,7 +128,7 @@ public class ContainerAttributesController extends AbstractAttributesController<
         child.setSlot(slot);
     }
 
-    public String getParentContainer() { return parentContainer; }
+    public String getParentSlot() { return parentSlot; }
 
     @Override
     protected void setTagParent(Tag tag) {

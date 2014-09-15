@@ -25,7 +25,7 @@
                     <p:commandButton icon="ui-icon-pencil" title="Edit" ajax="true" oncomplete="modifyContainer.show()" update=":modifyContainerForm:modifyContainer" >
                         <f:setPropertyActionListener value="#{container}" target="#{containerController.selectedSlotViewToModify}" />
                     </p:commandButton>
-                    <p:commandButton icon="ui-icon-trash" title="Delete" ajax="true" oncomplete="deleteContainer.show()" disabled="#{container.hasChildren}" >
+                    <p:commandButton icon="ui-icon-trash" title="Delete" ajax="true" oncomplete="deleteContainer.show()" disabled="#{!container.canDelete}" >
                         <f:setPropertyActionListener value="#{container}" target="#{containerController.selectedSlotView}" />
                     </p:commandButton>
                     <p:commandButton icon="ui-icon-clock" title="Log" oncomplete="containerLog.show()" >

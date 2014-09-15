@@ -7,7 +7,6 @@ import javax.ejb.Stateless;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotRelationName;
-import org.openepics.discs.conf.util.SlotPairLoopException;
 
 import com.google.common.base.Preconditions;
 
@@ -51,26 +50,30 @@ public class SlotPairEJB extends DAO<SlotPair> {
         super.delete(entity);
 	}
 
-	@Override
-	public void add(SlotPair entity) {
-	    if (!hasLoop(entity, entity.getChildSlot())) {
-    	    super.add(entity);
-    	    entity.getChildSlot().getChildrenSlotsPairList().add(entity);
-            entity.getParentSlot().getParentSlotsPairList().add(entity);
-            em.merge(entity.getChildSlot());
-            em.merge(entity.getParentSlot());
-	    } else {
-	        throw new SlotPairLoopException();
-	    }
+
+    @Override
+    public void add(SlotPair entity) {
+        super.add(entity);
+        entity.getChildSlot().getChildrenSlotsPairList().add(entity);
+        entity.getParentSlot().getParentSlotsPairList().add(entity);
+        em.merge(entity.getChildSlot());
 	}
 
-	private boolean hasLoop(SlotPair slotPair, Slot childSlot) {
+    /**
+     * Check if by adding new slot pair with {@link SlotRelationName} CONTAINS
+     * a loop will be created.
+     *
+     * @param slotPair {@link SlotPair} that should be added
+     * @param childSlot child {@link Slot} in this relationship
+     * @return {@link Boolean} true if by adding this {@link SlotPair} loop will be created, false otherwise
+     */
+	public boolean slotPairCreatesLoop(SlotPair slotPair, Slot childSlot) {
 	    if (slotPair.getSlotRelation().getName() == SlotRelationName.CONTAINS) {
 	        if (slotPair.getParentSlot().equals(childSlot)) {
 	            return true;
 	        } else {
 	            for (SlotPair parentSlotPair : slotPair.getParentSlot().getChildrenSlotsPairList()) {
-	                if (hasLoop(parentSlotPair, childSlot)) {
+	                if (slotPairCreatesLoop(parentSlotPair, childSlot)) {
 	                    return true;
 	                }
 	            }

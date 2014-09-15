@@ -35,7 +35,7 @@ import org.openepics.discs.conf.ent.Slot;
 public interface Names extends Serializable {
 
     /**
-     * Returns a list of all names that can be used for installation {@link Slot} name
+     * Returns a set of all names that can be used for installation {@link Slot} name
      *
      * @return {@link Set}<String> of names that can be used for installation {@link Slot} name
      */

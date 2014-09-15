@@ -30,7 +30,6 @@ import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotRelation;
 import org.openepics.discs.conf.ent.SlotRelationName;
 import org.openepics.discs.conf.ui.common.AbstractSlotsController;
-import org.openepics.discs.conf.util.SlotPairLoopException;
 import org.openepics.discs.conf.util.names.Names;
 import org.openepics.discs.conf.views.SlotRelationshipView;
 import org.openepics.discs.conf.views.SlotView;
@@ -144,12 +143,6 @@ public class InstallationSlotsController extends AbstractSlotsController {
         updateRootNode();
     }
 
-    public void setSelectedSlotViewForRelationships(SlotView selectedSlotView) {
-        this.selectedSlotView = selectedSlotView;
-        prepareRelationshipsPopup();
-    }
-    public SlotView getSelectedSlotViewForRelationships() { return selectedSlotView; }
-
     private void prepareRelationshipsPopup() {
         selectedRelationship = null;
         relationships = Lists.newArrayList();
@@ -162,6 +155,9 @@ public class InstallationSlotsController extends AbstractSlotsController {
         }
     }
 
+    /**
+     * Called when button to delete relationship is clicked
+     */
     public void onRelationshipDelete() {
         if (canRelationshipBeDeleted()) {
             slotPairEJB.delete(selectedRelationship.getSlotPair());
@@ -175,23 +171,35 @@ public class InstallationSlotsController extends AbstractSlotsController {
         return !(selectedRelationship.getSlotPair().getSlotRelation().getName() == SlotRelationName.CONTAINS && !slotPairEJB.slotHasMoreThanOneContainsRelation(selectedRelationship.getSlotPair().getChildSlot()));
     }
 
+    /**
+     * Prepares data for adding new relationship
+     */
     public void prepareAddRelationshipPopup() {
         selectedTreeNodeForRelationshipAdd = null;
         selectedRelationshipType = SlotRelationName.CONTAINS.toString().toLowerCase();
     }
 
+    /**
+     * Called when slot to be in relationship selected from tree of installation slots is changed.
+     * This method is needed to modify relationship types drop down menu so that if user selects
+     * container slot the only relationship that can be created is "contained in".
+     */
     public void slotForRelationshipChanged() {
         if (((SlotView)selectedTreeNodeForRelationshipAdd.getData()).getIsHostingSlot()) {
             relationshipTypes = ImmutableList.copyOf(slotRelationBySlotRelationStringName.keySet().iterator());
-            selectedRelationshipType = SlotRelationName.CONTAINS.toString().toLowerCase();
+            if (selectedRelationshipType == null) {
+                selectedRelationshipType = SlotRelationName.CONTAINS.toString().toLowerCase();
+            }
         } else {
             relationshipTypes = ImmutableList.of("contained in");
             selectedRelationshipType = "contained in";
         }
-
-        prepareRelationshipsPopup();
     }
 
+    /**
+     * Called when user clicks add button to add new relationship. Relationship is added if this does not
+     * cause a loop on CONTAINS relationships
+     */
     public void onRelationshipAdd() {
         final SlotRelation slotRelation = slotRelationBySlotRelationStringName.get(selectedRelationshipType);
         final Slot parentSlot;
@@ -204,12 +212,11 @@ public class InstallationSlotsController extends AbstractSlotsController {
             parentSlot = ((SlotView) selectedTreeNodeForRelationshipAdd.getData()).getSlot();
         }
 
-        try {
-            slotPairEJB.add(new SlotPair(childSlot, parentSlot, slotRelation));
-        } catch (SlotPairLoopException e) {
-
-                RequestContext.getCurrentInstance().execute("PF('slotPairLoopNotification').show()");
-
+        final SlotPair newSlotPair = new SlotPair(childSlot, parentSlot, slotRelation);
+        if (!slotPairEJB.slotPairCreatesLoop(newSlotPair, childSlot)) {
+            slotPairEJB.add(newSlotPair);
+        } else {
+            RequestContext.getCurrentInstance().execute("PF('slotPairLoopNotification').show()");
         }
         prepareRelationshipsPopup();
     }
@@ -249,6 +256,12 @@ public class InstallationSlotsController extends AbstractSlotsController {
     public Double getGlobalYaw() { return globalYaw; }
     public void setGlobalYaw(Double globalYaw) { this.globalYaw = globalYaw; }
 
+    /**
+     * Helper method for auto complete when entering a name for new installation {@link Slot}.
+     *
+     * @param query Text that was entered so far
+     * @return {@link List} of strings with suggestions
+     */
     public List<String> nameAutocompleteText(String query) {
         final List<String> resultList = new ArrayList<String>();
         final String queryUpperCase = query.toUpperCase();
@@ -260,6 +273,18 @@ public class InstallationSlotsController extends AbstractSlotsController {
         return resultList;
     }
 
+    /**
+     * Sets {@link SlotView} on which button to present relationships was clicked
+     *
+     * @param selectedSlotView selected {@link SlotView}
+     */
+    public void setSelectedSlotViewForRelationships(SlotView selectedSlotView) {
+        this.selectedSlotView = selectedSlotView;
+        prepareRelationshipsPopup();
+    }
+
+    public SlotView getSelectedSlotViewForRelationships() { return selectedSlotView; }
+
     public SlotRelationshipView getSelectedRelationship() { return selectedRelationship; }
     public void setSelectedRelationship(SlotRelationshipView selectedRelationship) { this.selectedRelationship = selectedRelationship; }
 
@@ -270,7 +295,4 @@ public class InstallationSlotsController extends AbstractSlotsController {
     public void setSelectedRelationshipType(String relationshipType) { this.selectedRelationshipType = relationshipType; }
 
     public List<String> getRelationshipTypes() { return relationshipTypes; }
-
-
-
 }

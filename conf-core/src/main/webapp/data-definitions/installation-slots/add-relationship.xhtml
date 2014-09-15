@@ -17,12 +17,13 @@
                         <h:outputText style="vertical-align: top" value="Relationship type:"/>
                         <p:selectOneMenu id="relationshipTypeSelect" value="#{installationSlotsController.selectedRelationshipType}">
                             <f:selectItems value="#{installationSlotsController.relationshipTypes}" /> 
+                            <p:ajax />
 	                     </p:selectOneMenu>                        
                     </p:column>
                 </p:row>
                 <p:row>
                     <p:column>
-                        <p:tree value="#{installationSlotsController.rootNode}" selectionMode="single" var="slotView" selection="#{installationSlotsController.selectedSlotViewForRelationshipAdd}" style="width: 100%; max-height: 200px; overflow: auto;">
+                        <p:tree value="#{installationSlotsController.rootNode}" id="relationshipTree" selectionMode="single" var="slotView" selection="#{installationSlotsController.selectedSlotViewForRelationshipAdd}" style="width: 100%; max-height: 200px; overflow: auto;">
                             <p:ajax event="select" update=":addSlotRelationshipForm:relationshipTypeSelect :addSlotRelationshipForm:addButton" listener="#{installationSlotsController.slotForRelationshipChanged}"/>
                             <p:ajax event="unselect" update=":addSlotRelationshipForm:relationshipTypeSelect :addSlotRelationshipForm:addButton" />
                             
@@ -43,7 +44,7 @@
             </p:panelGrid>
             <p:separator />
 
-            <p:commandButton value="Cancel" style="float: right" onclick="addSlotRelationship.hide()" />
+            <p:commandButton value="Cancel" style="float: right" onclick="addSlotRelationship.hide()" resetValues="true"/>
             <p:commandButton value="Add" style="float: right" disabled="#{installationSlotsController.selectedSlotViewForRelationshipAdd == null}" 
                 id="addButton" action="#{installationSlotsController.onRelationshipAdd}" oncomplete="addSlotRelationship.hide();" update=":slotRelationshipsForm:relationshipTable"/>
         </p:dialog>
