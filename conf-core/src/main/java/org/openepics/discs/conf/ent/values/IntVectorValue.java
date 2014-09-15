@@ -16,6 +16,8 @@ package org.openepics.discs.conf.ent.values;
 import java.util.List;
 
 /**
+ * 1-D vector if integer numbers.
+ *
  * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  *
  */

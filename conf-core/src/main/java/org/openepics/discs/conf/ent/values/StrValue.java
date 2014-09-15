@@ -14,6 +14,8 @@
 package org.openepics.discs.conf.ent.values;
 
 /**
+ * A single string value.
+ *
  * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  *
  */

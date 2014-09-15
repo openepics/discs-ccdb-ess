@@ -21,6 +21,13 @@
 package org.openepics.discs.conf.util;
 
 /**
+ * There are three possible UI elements for showing/editing a property value:
+ * <ul>
+ * <li>simple input field (single value)</li>
+ * <li>text area input box (multiple values)</li>
+ * <li>a drop down for selecting a single element (enumeration)</li>
+ * </ul>
+ *
  * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  *
  */

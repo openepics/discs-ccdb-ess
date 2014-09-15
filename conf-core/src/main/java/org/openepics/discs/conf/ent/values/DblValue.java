@@ -15,6 +15,7 @@ package org.openepics.discs.conf.ent.values;
 
 
 /**
+ * A single double precision value.
  *
  * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  *
@@ -30,5 +31,5 @@ public class DblValue extends Value {
     public void setDblValue(Double dblValue) { this.dblValue = dblValue; }
 
     @Override
-    public String toString() { return "(double vaue)" + dblValue; }
+    public String toString() { return "(double vaue): " + dblValue; }
 }

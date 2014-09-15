@@ -1,5 +1,12 @@
 package org.openepics.discs.conf.util;
 
+/**
+ * The predefined data types are all stored in the backing database storage. Each database entity representing a data type
+ * has a predefined name. The predefined names are listed in this interface.
+ *
+ * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
+ *
+ */
 public interface PropertyDataTypeConstants {
     public static final String INT_NAME = "Integer";
     public static final String DBL_NAME = "Double";

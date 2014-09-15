@@ -43,11 +43,24 @@ import org.openepics.discs.conf.ent.values.Value;
 import com.google.common.base.Preconditions;
 
 /**
+ * A class holding utility methods for UI value conversion. All utility conversion methods are static.
+ *
  * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
+ *
+ */
+/**
+ * @author ess-dev
  *
  */
 public class Conversion {
 
+    /**
+     * Returns a data type used for this property.
+     * <br/>
+     * See: {@link PropertyDataType}
+     * @param prop The property to check data type on.
+     * @return The data type that has been selected for this property.
+     */
     public static PropertyDataType getDataType(Property prop) {
         Preconditions.checkNotNull(prop);
         switch (prop.getDataType().getName()) {
@@ -74,6 +87,14 @@ public class Conversion {
         }
     }
 
+    /**
+     * Determines what UI control to use for editing a property value of a certain data type.
+     * <br/>
+     * See: {@link PropertyValueUIElement}
+     *
+     * @param dataType the data type
+     * @return the UI element to use
+     */
     public static PropertyValueUIElement getUIElementFromPropertyDataType(PropertyDataType dataType) {
         switch (dataType) {
         case URL:
@@ -94,10 +115,29 @@ public class Conversion {
         }
     }
 
+    /**
+     * Determines what UI control to use for editing a property value of a certain data type.
+     * <br/>
+     * See: {@link PropertyValueUIElement}
+     *
+     * @param property the property to chekc for data type
+     * @return the UI element to use
+     */
     public static PropertyValueUIElement getUIElementFromProperty(Property property) {
         return getUIElementFromPropertyDataType(getDataType(property));
     }
 
+    /**
+     * This method takes a string containing a value (the string is returned by the UI elements) and converts it into a
+     * property value of appropriate type.
+     * <br/>
+     * See: {@link Value}
+     *
+     * @param strValue the string containing a property value
+     * @param property the property for which to return a value (what the user selects in the UI or referenced
+     *                     from {@link PropertyValue})
+     * @return The {@link Value} of the property.
+     */
     public static Value stringToValue(String strValue, Property property) {
         Preconditions.checkNotNull(property);
         if (strValue == null) return null;
@@ -127,6 +167,12 @@ public class Conversion {
         }
     }
 
+    /**
+     * The method takes a value returned by the persistence layer {@link PropertyValue} and turns it into a string
+     * representation to be used by UI component.
+     * @param value the value to convert into a string
+     * @return the string representation of the value
+     */
     public static String valueToString(Value value) {
         if (value == null) return null;
 
@@ -154,6 +200,10 @@ public class Conversion {
             throw new IllegalStateException("Unknown property type.");
      }
 
+    /**
+     * @param str string to try and convert into an URL
+     * @return the URL represented by a string.
+     */
     public static URL toURL(String str) {
         try {
             final URL retUrl = new URL(str);

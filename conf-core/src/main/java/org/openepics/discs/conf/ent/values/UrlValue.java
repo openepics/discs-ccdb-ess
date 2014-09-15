@@ -23,6 +23,8 @@ package org.openepics.discs.conf.ent.values;
 import java.net.URL;
 
 /**
+ * An URL value.
+ *
  * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  *
  */

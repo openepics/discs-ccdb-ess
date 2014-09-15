@@ -16,6 +16,7 @@ package org.openepics.discs.conf.ent.values;
 
 
 /**
+ * An abstract base class representing a property value.
  *
  * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  *

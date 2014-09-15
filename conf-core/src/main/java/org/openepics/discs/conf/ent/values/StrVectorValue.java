@@ -16,6 +16,8 @@ package org.openepics.discs.conf.ent.values;
 import java.util.List;
 
 /**
+ * A list of strings.
+ *
  * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  *
  */

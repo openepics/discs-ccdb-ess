@@ -15,6 +15,8 @@ package org.openepics.discs.conf.ent.values;
 
 
 /**
+ * This class hold the selected value out of a predefined set of possible values (enumeration).
+ *
  * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  *
  */

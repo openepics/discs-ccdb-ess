@@ -16,6 +16,7 @@ package org.openepics.discs.conf.ent.values;
 
 
 /**
+ * An integer value.
  *
  * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  *

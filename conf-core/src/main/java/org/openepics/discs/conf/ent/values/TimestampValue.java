@@ -16,6 +16,8 @@ package org.openepics.discs.conf.ent.values;
 import java.util.Date;
 
 /**
+ * A value representing time and date.
+ *
  * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  *
  */

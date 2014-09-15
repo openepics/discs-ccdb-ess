@@ -63,6 +63,8 @@ import org.openepics.seds.core.Seds;
 import org.openepics.seds.util.ScalarType;
 
 /**
+ * A JPA converter to convert between the Value object and the data serialized in the database.
+ *
  * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  *
  */

@@ -79,7 +79,7 @@ public class EntityAttributeView {
         name = artifact.getName();
         hasFile = artifact.isInternal();
         hasURL = !artifact.isInternal();
-        value = new UrlValue(Conversion.toURL(artifact.getUri()));
+        value = hasURL ? new UrlValue(Conversion.toURL(artifact.getUri())) : null;
         kind = "Artifact";
     }
 
