@@ -34,7 +34,8 @@ public class ComponentTypeEntityLogger implements EntityLogger {
         final Map<String, String> propertiesMap = new TreeMap<>();
         if (compType.getComptypePropertyList() != null) {
             for (ComptypePropertyValue propValue : compType.getComptypePropertyList()) {
-                propertiesMap.put(propValue.getProperty().getName(), propValue.getPropValue());
+                final String entryValue = propValue.getPropValue() == null ? null : propValue.getPropValue().toString();
+                propertiesMap.put(propValue.getProperty().getName(), entryValue);
             }
         }
 
@@ -44,12 +45,12 @@ public class ComponentTypeEntityLogger implements EntityLogger {
                 artifactsMap.put(artifact.getName(), artifact.getUri());
             }
         }
-        
-        
+
+
         return ImmutableList.of((new AuditLogUtil(compType).
             removeTopProperties(Arrays.asList("id", "modifiedAt", "modifiedBy", "version", "name")).
             addArrayOfMappedProperties("comptypePropertyList", propertiesMap).
             addArrayOfMappedProperties("comptypeArtifactList", artifactsMap).
-            auditEntry(operation, EntityType.COMPONENT_TYPE, compType.getName(), compType.getId())));                
+            auditEntry(operation, EntityType.COMPONENT_TYPE, compType.getName(), compType.getId())));
     }
 }

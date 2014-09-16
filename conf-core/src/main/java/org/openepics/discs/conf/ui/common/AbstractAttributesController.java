@@ -16,12 +16,23 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.io.StringReader;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Scanner;
+import java.util.regex.Pattern;
 
 import javax.faces.application.FacesMessage;
+import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
+import javax.faces.event.ValueChangeEvent;
+import javax.faces.validator.ValidatorException;
 import javax.inject.Inject;
+import javax.json.Json;
+import javax.json.JsonReader;
 
 import org.apache.commons.io.FilenameUtils;
 import org.openepics.discs.conf.ejb.DAO;
@@ -32,10 +43,17 @@ import org.openepics.discs.conf.ent.ConfigurationEntity;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyValue;
 import org.openepics.discs.conf.ent.Tag;
+import org.openepics.discs.conf.ent.values.Value;
 import org.openepics.discs.conf.util.BlobStore;
+import org.openepics.discs.conf.util.Conversion;
+import org.openepics.discs.conf.util.PropertyDataType;
+import org.openepics.discs.conf.util.PropertyValueUIElement;
 import org.openepics.discs.conf.util.UnhandledCaseException;
 import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.views.EntityAttributeView;
+import org.openepics.seds.api.datatypes.SedsEnum;
+import org.openepics.seds.api.datatypes.SedsType;
+import org.openepics.seds.core.Seds;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.DefaultStreamedContent;
@@ -62,9 +80,11 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
     @Inject protected TagEJB tagEJB;
 
     protected Property property;
-    protected String propertyValue;
+    protected Value propertyValue;
+    protected List<String> enumSelections;
     protected List<Property> filteredProperties;
     private boolean propertyNameChangeDisabled;
+    protected PropertyValueUIElement propertyValueUIElement;
 
     protected String tag;
     protected List<String> tagsForAutocomplete;
@@ -96,6 +116,8 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
         artifactURI = null;
         importData = null;
         importFileName = null;
+        enumSelections = null;
+        propertyValueUIElement = PropertyValueUIElement.NONE;
     }
 
     /**
@@ -220,6 +242,15 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
                 propertyNameChangeDisabled = isInherited((PropertyValue)selectedAttribute.getEntity());
             }
 
+            propertyValueUIElement = Conversion.getUIElementFromProperty(property);
+            if (Conversion.getDataType(property) == PropertyDataType.ENUM) {
+                // if it is an enumeration, get the list of its options from the data type definition field
+                enumSelections = prepareEnumSelections(property);
+            } else {
+                enumSelections = null;
+            }
+
+
             RequestContext.getCurrentInstance().update("modifyPropertyValueForm:modifyPropertyValue");
             RequestContext.getCurrentInstance().execute("PF('modifyPropertyValue').show()");
         } else if (selectedAttribute.getEntity().getClass().equals(artifactClass)) {
@@ -275,7 +306,6 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
         } finally {
             internalPopulateAttributesList();
         }
-
     }
 
     /**
@@ -300,9 +330,15 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
     }
 
     private boolean isInherited(PropertyValue propertyValue) {
+        if (parentProperties == null) {
+            return false;
+        }
+
         final String propertyName = propertyValue.getProperty().getName();
         for (PropertyValue inheritedPropVal : parentProperties) {
-            if (propertyName.equals(inheritedPropVal.getProperty().getName())) return true;
+            if (propertyName.equals(inheritedPropVal.getProperty().getName())) {
+                return true;
+            }
         }
         return false;
     }
@@ -358,6 +394,8 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
         propertyNameChangeDisabled = false;
         property = null;
         propertyValue = null;
+        enumSelections = null;
+        propertyValueUIElement = PropertyValueUIElement.NONE;
     }
 
     public void prepareForTagAdd() {
@@ -403,8 +441,8 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
     public void setProperty(Property property) { this.property = property; }
     public Property getProperty() { return property; }
 
-    public void setPropertyValue(String propertyValue) { this.propertyValue = propertyValue; }
-    public String getPropertyValue() { return propertyValue; }
+    public void setPropertyValue(String propertyValue) { this.propertyValue = Conversion.stringToValue(propertyValue, property); }
+    public String getPropertyValue() { return Conversion.valueToString(propertyValue); }
 
     public String getTag() { return tag; }
     public void setTag(String tag) { this.tag = tag; }
@@ -449,5 +487,174 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
         }
 
         return resultList;
-   }
+    }
+
+    private List<String> prepareEnumSelections(Property prop) {
+        JsonReader reader = Json.createReader(new StringReader(prop.getDataType().getDefinition()));
+        final SedsType seds = Seds.newDBConverter().deserialize(reader.readObject());
+        final SedsEnum sedsEnum = (SedsEnum) seds;
+        return Arrays.asList(sedsEnum.getElements());
+    }
+
+    public void propertyChangeListener(ValueChangeEvent event) {
+        // get the newly selected property
+        if (event.getNewValue() instanceof Property) {
+            final Property newProperty = (Property) event.getNewValue();
+            propertyValueUIElement = Conversion.getUIElementFromProperty(newProperty);
+            propertyValue = null;
+            if (Conversion.getDataType(newProperty) == PropertyDataType.ENUM) {
+                // if it is an enumeration, get the list of its options from the data type definition field
+                enumSelections = prepareEnumSelections(newProperty);
+            } else {
+                enumSelections = null;
+            }
+        }
+    }
+
+    public PropertyValueUIElement getPropertyValueUIElement() { return propertyValueUIElement; }
+    public void setPropertyValueUIElement(PropertyValueUIElement propertyValueUIElement) { this.propertyValueUIElement = propertyValueUIElement; }
+
+    public List<String> getEnumSelections() { return enumSelections; }
+    public void setEnumSelections(List<String> enumSelections) { this.enumSelections = enumSelections; }
+
+    public void areaValidator(FacesContext ctx, UIComponent component, Object value) throws ValidatorException {
+        if (value == null) {
+            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_FATAL, "Error", "No value to parse."));
+        }
+        if (property == null) {
+            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
+                    "You must select a property first."));
+        }
+
+        String strValue = value.toString();
+        switch (Conversion.getDataType(property)) {
+        case DBL_TABLE:
+            validateTable(strValue);
+            break;
+        case DBL_VECTOR:
+            validateDblVector(strValue);
+            break;
+        case INT_VECTOR:
+            validateIntVector(strValue);
+            break;
+        case STRING_LIST:
+            break;
+        default:
+            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Incorrect property data type."));
+        }
+    }
+
+    private void validateTable(String value) throws ValidatorException {
+        try (Scanner lineScanner = new Scanner(value)) {
+            lineScanner.useDelimiter(Pattern.compile("(\\r\\n)|\\r|\\n"));
+
+            int lineLength = -1;
+            while (lineScanner.hasNext()) {
+                final String line = lineScanner.next().replaceAll("\u00A0", " ");
+
+                try (Scanner valueScanner = new Scanner(line)) {
+                    valueScanner.useDelimiter(",\\s*");
+                    int currentLineLength = 0;
+                    while (valueScanner.hasNext()) {
+                        final String dblValue = valueScanner.next().trim();
+                        currentLineLength++;
+                        try {
+                            Double.valueOf(dblValue);
+                        } catch (NumberFormatException e) {
+                            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
+                                    "Incorrect value: " + dblValue));
+                        }
+                    }
+                    if (lineLength < 0) {
+                        lineLength = currentLineLength;
+                    } else if (currentLineLength != lineLength) {
+                        throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
+                                "All rows must contain the same number of elements."));
+                    }
+                }
+            }
+        }
+    }
+
+    private void validateIntVector(String value) throws ValidatorException {
+        try (Scanner scanner = new Scanner(value)) {
+            scanner.useDelimiter(Pattern.compile("(\\r\\n)|\\r|\\n"));
+
+            // replace unicode no-break spaces with normal ones
+            while (scanner.hasNext()) {
+                String intValue = "<error>";
+                try {
+                    intValue = scanner.next().replaceAll("\\u00A0", " ").trim();
+                    Integer.parseInt(intValue);
+                } catch (NumberFormatException e) {
+                    throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Incorrect value: " + intValue));
+                }
+            }
+        }
+    }
+
+    private void validateDblVector(String value) throws ValidatorException {
+        try (Scanner scanner = new Scanner(value)) {
+            scanner.useDelimiter(Pattern.compile("(\\r\\n)|\\r|\\n"));
+
+            // replace unicode no-break spaces with normal ones
+            while (scanner.hasNext()) {
+                String dblValue = "<error>";
+                try {
+                    dblValue = scanner.next().replaceAll("\\u00A0", " ").trim();
+                    Double.parseDouble(dblValue);
+                } catch (NumberFormatException e) {
+                    throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Incorrect value: " + dblValue));
+                }
+            }
+        }
+    }
+
+    public void inputValidator(FacesContext ctx, UIComponent component, Object value) throws ValidatorException {
+        if (value == null) {
+            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_FATAL, "Error", "No value to parse."));
+        }
+        if (property == null) {
+            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
+                    "You must select a property first."));
+        }
+
+        String strValue = value.toString();
+        switch (Conversion.getDataType(property)) {
+        case DOUBLE:
+            try {
+                Double.parseDouble(strValue.trim());
+            } catch (NumberFormatException e) {
+                throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Not a double value."));
+            }
+            break;
+        case INTEGER:
+            try {
+                Integer.parseInt(strValue.trim());
+            } catch (NumberFormatException e) {
+                throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Not an integer number."));
+            }
+            break;
+        case STRING:
+            break;
+        case URL:
+            validateUrl(strValue);
+            break;
+        default:
+            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Incorrect property data type."));
+        }
+    }
+
+    private void validateUrl(String value) throws ValidatorException {
+        try {
+            final URL retUrl = new URL(value);
+            if (!retUrl.getProtocol().startsWith("http") && !retUrl.getProtocol().equals("ftp")) {
+                throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_FATAL, "Error",
+                        "Protocol must be either http, https or ftp."));
+            }
+        } catch (MalformedURLException e) {
+            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_FATAL, "Error",
+                    "The input cannot be parsed into URL."));
+        }
+    }
 }

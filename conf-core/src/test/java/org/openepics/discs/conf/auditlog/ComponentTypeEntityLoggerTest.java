@@ -11,6 +11,7 @@ import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyAssociation;
+import org.openepics.discs.conf.ent.values.IntValue;
 
 public class ComponentTypeEntityLoggerTest {
 
@@ -26,9 +27,9 @@ public class ComponentTypeEntityLoggerTest {
 
     @Before
     public void setUp() throws Exception {
-        compTypePropVal1.setPropValue("15");
+        compTypePropVal1.setPropValue(new IntValue(15));
         compTypePropVal1.setProperty(prop1);
-        compTypePropVal2.setPropValue("10");
+        compTypePropVal2.setPropValue(new IntValue(10));
         compTypePropVal2.setProperty(prop2);
 
         compType.getComptypePropertyList().add(compTypePropVal1);

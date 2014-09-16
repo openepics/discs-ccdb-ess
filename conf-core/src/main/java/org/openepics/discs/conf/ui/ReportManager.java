@@ -88,7 +88,7 @@ public class ReportManager implements Serializable {
         }
         for (SlotPropertyValue sp : slot.getSlotPropertyList()) {
             if (sp.getProperty().getName().equals(propName)) {
-                pvalue = sp.getPropValue();
+                pvalue = sp.getPropValue().toString(); // XXX quick fix until proper reports
                 break;
             }
         }
