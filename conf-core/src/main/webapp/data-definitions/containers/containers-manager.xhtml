@@ -6,8 +6,8 @@
     xmlns:p="http://primefaces.org/ui">
     <ui:define name="dataDefContent">
         <h:form id="containersForm">
-            <p:commandButton ajax="true" id="addContainer"
-                actionListener="#{containerController.prepareAddPopup()}" value="Add new container to parent" oncomplete="addContainer.show()"/>
+            <p:commandButton ajax="true" id="addSlot"
+                actionListener="#{containerController.prepareAddPopup()}" value="Add new container to parent" oncomplete="addContainer.show()" update=":addContainerForm:addContainer"/>
             <p:treeTable id="containersTree" value="#{containerController.rootNode}" var="container" liveResize="true" selection="#{containerController.selectedNode}" selectionMode="single" scrollable="true" scrollWidth="auto">
                 <p:ajax event="collapse" listener="#{containerController.onNodeCollapse}" />
                 <p:ajax event="expand" listener="#{containerController.onNodeExpand}" />
@@ -20,13 +20,13 @@
                     <h:outputText value="#{container.description}"/>
                 </p:column>
                 
-                <p:column headerText="Actions" style="padding: 0px !important; width: 15%">                    
-                    <p:commandButton icon="ui-icon-plus" title="Add Property" action="#{containerController.recirectToAttributes(container.id)}" />
-                    <p:commandButton icon="ui-icon-pencil" title="Edit" ajax="true" oncomplete="modifyContainer.show()" >
-                        <f:setPropertyActionListener value="#{container}" target="#{containerController.selectedContainerToModify}" />
+                <p:column headerText="Actions" style="padding: 0px !important; width: 15%; text-align: center">                    
+                    <p:commandButton icon="ui-icon-plus" title="Add Property" action="#{containerController.redirectToAttributes(container.id)}" />
+                    <p:commandButton icon="ui-icon-pencil" title="Edit" ajax="true" oncomplete="modifyContainer.show()" update=":modifyContainerForm:modifyContainer" >
+                        <f:setPropertyActionListener value="#{container}" target="#{containerController.selectedSlotViewToModify}" />
                     </p:commandButton>
-                    <p:commandButton icon="ui-icon-trash" title="Delete" ajax="true" oncomplete="deleteContainer.show()" rendered="#{!container.hasChildren}" >
-                        <f:setPropertyActionListener value="#{container}" target="#{containerController.selectedContainer}" />
+                    <p:commandButton icon="ui-icon-trash" title="Delete" ajax="true" oncomplete="deleteContainer.show()" disabled="#{!container.canDelete}" >
+                        <f:setPropertyActionListener value="#{container}" target="#{containerController.selectedSlotView}" />
                     </p:commandButton>
                     <p:commandButton icon="ui-icon-clock" title="Log" oncomplete="containerLog.show()" >
                         <f:ajax event="click" listener="#{auditManager.selectEntityForLog(container.slot, 'SLOT')}" />
@@ -40,14 +40,14 @@
             <ui:param name="formId" value="addContainerForm" />
             <ui:param name="dialogTitle" value="Add new container" />
             <ui:param name="widgetName" value="addContainer" />
-            <ui:param name="submitHandler" value="addContainer" />
+            <ui:param name="submitHandler" value="onSlotAdd" />
         </ui:include>
         
         <ui:include src="add-or-modify-container.xhtml" >
             <ui:param name="formId" value="modifyContainerForm" />
             <ui:param name="dialogTitle" value="Modify container" />
             <ui:param name="widgetName" value="modifyContainer" />
-            <ui:param name="submitHandler" value="modifyContainer" />
+            <ui:param name="submitHandler" value="onSlotModify" />
         </ui:include>
         
          <ui:include src="../../audit/audit-log-table.xhtml">

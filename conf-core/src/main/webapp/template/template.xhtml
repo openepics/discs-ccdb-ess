@@ -16,8 +16,12 @@
             function resizePanel() {
                 var menusHeight = $('#top').outerHeight()+50;
                 var headerHeight = $('#containersForm\\:containersTree\\:name').outerHeight();
+
+                if (headerHeight == null) {
+                    headerHeight = $('#installationSlotsForm\\:installationSlotsTree\\:name').outerHeight();
+                }
                 
-                menusHeight = menusHeight+$('#addContainer').outerHeight() + headerHeight + 7;
+                menusHeight = menusHeight+$('#addSlot').outerHeight() + headerHeight + 7;
                 $('.ui-treetable-scrollable-body').css({"height":window.innerHeight-menusHeight});  
             }
 

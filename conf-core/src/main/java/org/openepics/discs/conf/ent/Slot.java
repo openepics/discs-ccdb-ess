@@ -57,7 +57,6 @@ public class Slot extends ConfigurationEntity {
     @Column(name = "is_hosting_slot")
     private boolean isHostingSlot;
 
-    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "beamline_position")
     private Double beamlinePosition;
 
