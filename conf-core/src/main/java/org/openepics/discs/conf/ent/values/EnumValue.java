@@ -13,6 +13,8 @@
  */
 package org.openepics.discs.conf.ent.values;
 
+import com.google.common.base.Preconditions;
+
 
 /**
  * This class hold the selected value out of a predefined set of possible values (enumeration).
@@ -20,11 +22,11 @@ package org.openepics.discs.conf.ent.values;
  * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  *
  */
-public class EnumValue extends Value {
-    private String enumValue;
+public class EnumValue implements Value {
+    private final String enumValue;
 
     public EnumValue(String enumValue) {
-        this.enumValue = enumValue;
+        this.enumValue = Preconditions.checkNotNull(enumValue);
     }
 
     /**
@@ -32,14 +34,6 @@ public class EnumValue extends Value {
      */
     public String getEnumValue() { return enumValue; }
 
-    /**
-     * @param enumValue the enumValue to set
-     */
-    public void setEnumValue(String enumValue) { this.enumValue = enumValue; }
-
     @Override
-    public String toString() {
-        return "(enum value): " + enumValue;
-    }
-
+    public String toString() { return enumValue; }
 }

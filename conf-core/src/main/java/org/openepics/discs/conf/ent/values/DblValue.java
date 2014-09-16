@@ -13,6 +13,8 @@
  */
 package org.openepics.discs.conf.ent.values;
 
+import com.google.common.base.Preconditions;
+
 
 /**
  * A single double precision value.
@@ -20,16 +22,15 @@ package org.openepics.discs.conf.ent.values;
  * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  *
  */
-public class DblValue extends Value {
-    private Double dblValue;
+public class DblValue implements Value {
+    private final Double dblValue;
 
     public DblValue(Double dblValue) {
-        this.dblValue = dblValue;
+        this.dblValue = Preconditions.checkNotNull(dblValue);
     }
 
     public Double getDblValue() { return dblValue; }
-    public void setDblValue(Double dblValue) { this.dblValue = dblValue; }
 
     @Override
-    public String toString() { return "(double vaue): " + dblValue; }
+    public String toString() { return dblValue.toString(); }
 }

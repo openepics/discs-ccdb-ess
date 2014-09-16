@@ -14,6 +14,8 @@
 
 package org.openepics.discs.conf.ent.values;
 
+import com.google.common.base.Preconditions;
+
 
 /**
  * An integer value.
@@ -21,16 +23,15 @@ package org.openepics.discs.conf.ent.values;
  * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  *
  */
-public class IntValue extends Value {
-    private Integer intValue;
+public class IntValue implements Value {
+    private final Integer intValue;
 
     public IntValue(Integer intValue) {
-        this.intValue = intValue;
+        this.intValue = Preconditions.checkNotNull(intValue);
     }
 
     public Integer getIntValue() { return intValue; }
-    public void setIntValue(Integer intValue) { this.intValue = intValue; }
 
     @Override
-    public String toString() { return "(integer value): " + intValue; }
+    public String toString() { return intValue.toString(); }
 }

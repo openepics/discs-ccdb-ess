@@ -15,19 +15,21 @@ package org.openepics.discs.conf.ent.values;
 
 import java.util.List;
 
+import com.google.common.base.Preconditions;
+
 /**
  * A list of strings.
  *
  * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  *
  */
-public class StrVectorValue extends Value {
+public class StrVectorValue implements Value {
     private static final int MAX_ELEMENTS = 5;
 
-    private List<String> strVectorValue;
+    private final List<String> strVectorValue;
 
     public StrVectorValue(List<String> strVectorValue) {
-        this.strVectorValue = strVectorValue;
+        this.strVectorValue = Preconditions.checkNotNull(strVectorValue);
     }
 
     /**
@@ -35,26 +37,25 @@ public class StrVectorValue extends Value {
      */
     public List<String> getStrVectorValue() { return strVectorValue; }
 
-    /**
-     * @param strVectorValues the strVectorValues to set
-     */
-    public void setStrVectorValue(List<String> strVectorValues) { this.strVectorValue = strVectorValues; }
-
     @Override
     public String toString() {
-        StringBuilder retStr = new StringBuilder() ;
-        int i = 0;
-        retStr.append("(string list): [");
+        final StringBuilder retStr = new StringBuilder();
+        final int vectorSize = strVectorValue.size();
+        int rowIndex = 0;
+        retStr.append('[');
 
         for (String item : strVectorValue) {
-            retStr.append(item).append(", ");
-            if (i++ > MAX_ELEMENTS) {
-                retStr.append("...");
+            retStr.append(item);
+            rowIndex++;
+            if (rowIndex < vectorSize) {
+                retStr.append(", ");
+            }
+            if ((vectorSize > MAX_ELEMENTS) && (rowIndex >= MAX_ELEMENTS - 1)) {
+                retStr.append("..., ").append(strVectorValue.get(vectorSize - 1));
                 break;
             }
         }
         retStr.append(']');
-
         return retStr.toString();
     }
 }

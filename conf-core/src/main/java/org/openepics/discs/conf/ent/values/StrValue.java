@@ -13,22 +13,23 @@
  */
 package org.openepics.discs.conf.ent.values;
 
+import com.google.common.base.Preconditions;
+
 /**
  * A single string value.
  *
  * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  *
  */
-public class StrValue extends Value {
-    private String strValue;
+public class StrValue implements Value {
+    private final String strValue;
 
     public StrValue(String strValue) {
-        this.strValue = strValue;
+        this.strValue = Preconditions.checkNotNull(strValue);
     }
 
     public String getStrValue() { return strValue; }
-    public void setStrValue(String strValue) { this.strValue = strValue; }
 
     @Override
-    public String toString() { return "(string value): " + strValue; }
+    public String toString() { return strValue; }
 }

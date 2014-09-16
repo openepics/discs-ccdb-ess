@@ -21,23 +21,20 @@ package org.openepics.discs.conf.valueconverters;
 
 import org.epics.util.time.Timestamp;
 import org.openepics.discs.conf.ent.values.TimestampValue;
-import org.openepics.discs.conf.ent.values.Value;
 import org.openepics.seds.api.datatypes.SedsTime;
 
 /**
  * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  *
  */
-public class TimestampValueConverter extends ValueConverter {
+public class TimestampValueConverter extends ValueConverter<TimestampValue> {
 
     @Override
-    public Class<? extends Value> getType() { return TimestampValue.class; }
+    public Class<TimestampValue> getType() { return TimestampValue.class; }
 
     @Override
-    public String convertToDatabaseColumn(Value attribute) {
-        final TimestampValue timestampValue = (TimestampValue) attribute;
-        final SedsTime sedsTime = sedsFactory.getFactory().newTime(Timestamp.of(timestampValue.getTimestampValue()), null);
+    public String convertToDatabaseColumn(TimestampValue attribute) {
+        final SedsTime sedsTime = sedsFactory.getFactory().newTime(Timestamp.of(attribute.getTimestampValue()), null);
         return sedsDbConverter.serialize(sedsTime).toString();
     }
-
 }

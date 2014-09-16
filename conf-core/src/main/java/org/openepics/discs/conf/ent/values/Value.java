@@ -13,14 +13,12 @@
  */
 package org.openepics.discs.conf.ent.values;
 
-
-
 /**
- * An abstract base class representing a property value.
+ * An property value base interface.
  *
  * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  *
  */
-public abstract class Value {
+public interface Value {
     @Override abstract public String toString();
 }

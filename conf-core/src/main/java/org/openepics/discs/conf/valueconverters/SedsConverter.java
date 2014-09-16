@@ -24,16 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import javax.ejb.Singleton;
-import javax.ejb.Startup;
-import javax.enterprise.inject.Any;
-import javax.enterprise.inject.Instance;
-import javax.inject.Inject;
 import javax.json.Json;
 import javax.json.JsonReader;
 import javax.persistence.AttributeConverter;
@@ -52,7 +43,6 @@ import org.openepics.discs.conf.ent.values.TimestampValue;
 import org.openepics.discs.conf.ent.values.UrlValue;
 import org.openepics.discs.conf.ent.values.Value;
 import org.openepics.discs.conf.util.Conversion;
-import org.openepics.discs.conf.util.PropertyDataType;
 import org.openepics.seds.api.datatypes.SedsEnum;
 import org.openepics.seds.api.datatypes.SedsScalar;
 import org.openepics.seds.api.datatypes.SedsScalarArray;
@@ -69,49 +59,28 @@ import org.openepics.seds.util.ScalarType;
  *
  */
 @Converter(autoApply=true)
-@Singleton
-@Startup
 public class SedsConverter implements AttributeConverter<Value, String> {
-    private static final Logger logger = Logger.getLogger(SedsConverter.class.getCanonicalName());
-
-    private static final Map<Class<? extends Value>, ValueConverter> converters = new ConcurrentHashMap<Class<? extends Value>, ValueConverter>();
 
     public SedsConverter() {}
 
-    /**
-     * Constructs the item. Expects injected iterator of all EntityLogger implementations
-     *
-     * @param allLoggers CDI will inject all logger types in this constructor parameter
-     */
-    @Inject
-    public SedsConverter(@Any Instance<ValueConverter> allConverters) {
-        int convertersFound = 0;
-        for (ValueConverter converter : allConverters) {
-            converters.put(converter.getType(), converter);
-            convertersFound++;
-        }
-
-        logger.log(Level.INFO, "Loaded " + convertersFound + " data type converters.");
-        if (convertersFound != PropertyDataType.values().length)
-            logger.log(Level.SEVERE, "Converter data type implementation number mismatch. Expected: " + PropertyDataType.values().length
-                    + ", found: " + convertersFound);
-    }
-
     @Override
     public String convertToDatabaseColumn(Value attribute) {
-        if (attribute == null) return null;
+        if (attribute == null) {
+            return null;
+        }
 
-        ValueConverter converter = converters.get(attribute.getClass());
-        if (converter == null) return null;
-
-        return converter.convertToDatabaseColumn(attribute);
+        return SedsConverters.convertToDatabaseColumn(attribute);
     }
 
     @Override
     public Value convertToEntityAttribute(String dbData) {
-        if (dbData == null) return null;
+        if (dbData == null) {
+            return null;
+        }
 
-        if (!dbData.startsWith("{")) return new UrlValue(Conversion.toURL(dbData));
+        if (!dbData.startsWith("{")) {
+            return new UrlValue(Conversion.toURL(dbData));
+        }
 
         JsonReader reader = Json.createReader(new StringReader(dbData));
         final SedsType seds = Seds.newDBConverter().deserialize(reader.readObject());
@@ -146,8 +115,6 @@ public class SedsConverter implements AttributeConverter<Value, String> {
 
     private Value convertFromSedsScalar(SedsScalar<?> sedsScalar, String dbData) {
         final IntValue intValue;
-        final DblValue dblValue;
-        final StrValue strValue;
 
         switch (sedsScalar.getType()) {
         case INTEGER:
@@ -156,15 +123,16 @@ public class SedsConverter implements AttributeConverter<Value, String> {
         case NUMBER:
             final Number number = (Number) sedsScalar.getValue();
             if (number instanceof Double) {
-                dblValue = new DblValue((Double)number);
+                final DblValue dblValue = new DblValue((Double)number);
                 return dblValue;
             } else if (number instanceof Integer) {
                 intValue = new IntValue((Integer)number);
                 return intValue;
-            } else
+            } else {
                 throw new IllegalArgumentException("Unable to convert DB data: " + dbData);
+            }
         case STRING:
-            strValue = new StrValue((String)sedsScalar.getValue());
+            final StrValue strValue = new StrValue((String)sedsScalar.getValue());
             return strValue;
         default:
             throw new InvalidDataTypeException("Data type not supported: " + sedsScalar.getType().name());
@@ -179,11 +147,7 @@ public class SedsConverter implements AttributeConverter<Value, String> {
 
     private Value convertFromSedsScalarArray(SedsScalarArray<?> sedsScalarArray, String dbData) {
         final IntVectorValue intVectorValue;
-        final DblVectorValue dblVecotrValue;
-        final StrVectorValue strVectorValue;
         final List<Integer> iValues;
-        final List<Double> dValues;
-        final List<String> sValues;
 
         switch (sedsScalarArray.getType()) {
         case INTEGER:
@@ -193,18 +157,19 @@ public class SedsConverter implements AttributeConverter<Value, String> {
         case NUMBER:
             final Number[] numbers = (Number[]) sedsScalarArray.getValueArray();
             if (numbers instanceof Double[]) {
-                dValues = new ArrayList<Double>(Arrays.asList((Double[])sedsScalarArray.getValueArray()));
-                dblVecotrValue = new DblVectorValue(dValues);
+                final List<Double> dValues = new ArrayList<Double>(Arrays.asList((Double[])sedsScalarArray.getValueArray()));
+                final DblVectorValue dblVecotrValue = new DblVectorValue(dValues);
                 return dblVecotrValue;
             } else if (numbers instanceof Integer[]) {
                 iValues = new ArrayList<Integer>(Arrays.asList((Integer[])sedsScalarArray.getValueArray()));
                 intVectorValue = new IntVectorValue(iValues);
                 return intVectorValue;
-            } else
+            } else {
                 throw new IllegalArgumentException("Unable to convert DB data: " + dbData);
+            }
         case STRING:
-            sValues = new ArrayList<String>(Arrays.asList((String[])sedsScalarArray.getValueArray()));
-            strVectorValue = new StrVectorValue(sValues);
+            final List<String> sValues = new ArrayList<String>(Arrays.asList((String[])sedsScalarArray.getValueArray()));
+            final StrVectorValue strVectorValue = new StrVectorValue(sValues);
             return strVectorValue;
         default:
             throw new InvalidDataTypeException("Data type not supported: " + sedsScalarArray.getType().name());
@@ -215,15 +180,17 @@ public class SedsConverter implements AttributeConverter<Value, String> {
         List<List<Double>> tableValues = new ArrayList<List<Double>>();
         if (sedsTable.getNumColumns() > 0) {
             for (SedsScalarArray<?> col : sedsTable.getValues()) {
-                if (col.getType() != ScalarType.NUMBER)
+                if (col.getType() != ScalarType.NUMBER) {
                     throw new InvalidDataTypeException("Data type not supported for table: " + col.getType().name());
+                }
                 final Number[] colValues = (Number[]) col.getValueArray();
                 final List<Double> dblColValues = new ArrayList<>(colValues.length);
                 for (Number element : colValues) {
-                    if (element instanceof Double)
+                    if (element instanceof Double) {
                         dblColValues.add((Double)element);
-                    else
+                    } else {
                         throw new InvalidDataTypeException("Data type for table not Double.");
+                    }
                 }
                 tableValues.add(dblColValues);
             }

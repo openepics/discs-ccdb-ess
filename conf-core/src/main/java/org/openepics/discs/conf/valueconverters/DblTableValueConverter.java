@@ -22,7 +22,6 @@ package org.openepics.discs.conf.valueconverters;
 import java.util.List;
 
 import org.openepics.discs.conf.ent.values.DblTableValue;
-import org.openepics.discs.conf.ent.values.Value;
 import org.openepics.seds.api.datatypes.SedsScalarArray;
 import org.openepics.seds.api.datatypes.SedsTable;
 
@@ -30,18 +29,16 @@ import org.openepics.seds.api.datatypes.SedsTable;
  * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  *
  */
-public class DblTableValueConverter extends ValueConverter {
+public class DblTableValueConverter extends ValueConverter<DblTableValue> {
 
     @Override
-    public Class<? extends Value> getType() { return DblTableValue.class; }
+    public Class<DblTableValue> getType() { return DblTableValue.class; }
 
     @Override
-    public String convertToDatabaseColumn(Value attribute) {
-        final DblTableValue dblTableValue = (DblTableValue) attribute;
-
-        final SedsScalarArray<?>[] columns = new SedsScalarArray<?>[dblTableValue.getDblTableValue().size()];
+    public String convertToDatabaseColumn(DblTableValue attribute) {
+        final SedsScalarArray<?>[] columns = new SedsScalarArray<?>[attribute.getDblTableValue().size()];
         int colIndex = 0;
-        for (List<Double> column : dblTableValue.getDblTableValue()) {
+        for (List<Double> column : attribute.getDblTableValue()) {
             final Double[] dblVectorArray = column.toArray(new Double[column.size()]);
             columns[colIndex] = sedsFactory.newScalarArray(dblVectorArray);
             colIndex++;
@@ -50,5 +47,4 @@ public class DblTableValueConverter extends ValueConverter {
         final SedsTable sedsTable = sedsFactory.newTable(columnNames, columns);
         return sedsDbConverter.serialize(sedsTable).toString();
     }
-
 }

@@ -15,19 +15,21 @@ package org.openepics.discs.conf.ent.values;
 
 import java.util.List;
 
+import com.google.common.base.Preconditions;
+
 /**
  * 1-D vector of double precision values.
  *
  * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  *
  */
-public class DblVectorValue extends Value {
+public class DblVectorValue implements Value {
     private static final int MAX_ELEMENTS = 5;
 
-    private List<Double> dblVectorValue;
+    private final List<Double> dblVectorValue;
 
     public DblVectorValue(List<Double> dblVectorValue) {
-        this.dblVectorValue = dblVectorValue;
+        this.dblVectorValue = Preconditions.checkNotNull(dblVectorValue);
     }
 
     /**
@@ -35,27 +37,25 @@ public class DblVectorValue extends Value {
      */
     public List<Double> getDblVectorValue() { return dblVectorValue; }
 
-    /**
-     * @param dblVectorValue the dblVectorValue to set
-     */
-    public void setDblVectorValue(List<Double> dblVectorValue) { this.dblVectorValue = dblVectorValue; }
-
     @Override
     public String toString() {
-        StringBuilder retStr = new StringBuilder() ;
-        int i = 0;
-        retStr.append("(double vector): [");
+        final StringBuilder retStr = new StringBuilder();
+        final int vectorSize = dblVectorValue.size();
+        int rowIndex = 0;
+        retStr.append('[');
 
         for (Double item : dblVectorValue) {
-            retStr.append(item).append(", ");
-            if (i++ > MAX_ELEMENTS) {
-                retStr.append("...");
+            retStr.append(item);
+            rowIndex++;
+            if (rowIndex < vectorSize) {
+                retStr.append(", ");
+            }
+            if ((vectorSize > MAX_ELEMENTS) && (rowIndex >= MAX_ELEMENTS - 1)) {
+                retStr.append("..., ").append(dblVectorValue.get(vectorSize - 1));
                 break;
             }
         }
         retStr.append(']');
-
         return retStr.toString();
     }
-
 }

@@ -22,17 +22,19 @@ package org.openepics.discs.conf.ent.values;
 
 import java.net.URL;
 
+import com.google.common.base.Preconditions;
+
 /**
  * An URL value.
  *
  * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  *
  */
-public class UrlValue extends Value {
-    private URL urlValue;
+public class UrlValue implements Value {
+    private final URL urlValue;
 
     public UrlValue(URL urlValue) {
-        this.urlValue = urlValue;
+        this.urlValue = Preconditions.checkNotNull(urlValue);
     }
 
     /**
@@ -40,14 +42,6 @@ public class UrlValue extends Value {
      */
     public URL getUrlValue() { return urlValue; }
 
-    /**
-     * @param urlValue the urlValue to set
-     */
-    public void setUrlValue(URL urlValue) { this.urlValue = urlValue; }
-
     @Override
-    public String toString() {
-        return "(url value): " + urlValue.toString();
-    }
-
+    public String toString() { return urlValue.toString(); }
 }

@@ -301,8 +301,9 @@ public class DeviceManager implements Serializable {
             logger.log(Level.INFO, "Opening stream from repository: " + selectedProperty.getPropValue());
             // logger.log(Level.INFO, "download file name: 2 " + selectedProperty.getName());
             Value propValue = selectedProperty.getPropValue();
-            if (!(propValue instanceof StrValue))
+            if (!(propValue instanceof StrValue)) {
                 throw new Exception("Selected property type incorrect");
+            }
 
             InputStream istream = blobStore.retreiveFile(((StrValue)propValue).getStrValue());
             file = new DefaultStreamedContent(istream, "application/octet-stream", selectedProperty.getProperty().getName());

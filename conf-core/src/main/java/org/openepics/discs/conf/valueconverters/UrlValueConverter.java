@@ -21,20 +21,18 @@
 package org.openepics.discs.conf.valueconverters;
 
 import org.openepics.discs.conf.ent.values.UrlValue;
-import org.openepics.discs.conf.ent.values.Value;
 
 /**
  * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  *
  */
-public class UrlValueConverter extends ValueConverter {
+public class UrlValueConverter extends ValueConverter<UrlValue> {
 
     @Override
-    public Class<? extends Value> getType() { return UrlValue.class; }
+    public Class<UrlValue> getType() { return UrlValue.class; }
 
     @Override
-    public String convertToDatabaseColumn(Value attribute) {
-        final UrlValue urlValue = (UrlValue) attribute;
-        return urlValue.getUrlValue().toString();
+    public String convertToDatabaseColumn(UrlValue attribute) {
+        return attribute.getUrlValue().toString();
     }
 }

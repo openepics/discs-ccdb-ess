@@ -19,8 +19,6 @@
  */
 package org.openepics.discs.conf.valueconverters;
 
-import javax.persistence.AttributeConverter;
-
 import org.openepics.discs.conf.ent.values.Value;
 import org.openepics.seds.api.io.DBConverter;
 import org.openepics.seds.core.Seds;
@@ -30,18 +28,12 @@ import org.openepics.seds.core.datatypes.SimpleSedsFactory;
  * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  *
  */
-abstract public class ValueConverter implements AttributeConverter<Value, String> {
+abstract public class ValueConverter<T extends Value> {
+    // we only want the factories to be instantiated once and for all descendants.
     protected static final SimpleSedsFactory sedsFactory = new SimpleSedsFactory();
     protected static final DBConverter sedsDbConverter = Seds.newDBConverter();
 
-    abstract public Class<? extends Value> getType();
+    abstract public Class<T> getType();
 
-    @Override
-    public Value convertToEntityAttribute(String dbData) {
-        throw new IllegalStateException("SedsConverter should take care of this conversion.");
-    }
-
-    @Override
-    abstract public String convertToDatabaseColumn(Value attribute);
-
+    abstract public String convertToDatabaseColumn(T attribute);
 }

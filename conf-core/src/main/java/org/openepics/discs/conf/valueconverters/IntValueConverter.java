@@ -20,22 +20,20 @@
 package org.openepics.discs.conf.valueconverters;
 
 import org.openepics.discs.conf.ent.values.IntValue;
-import org.openepics.discs.conf.ent.values.Value;
 import org.openepics.seds.api.datatypes.SedsScalar;
 
 /**
  * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  *
  */
-public class IntValueConverter extends ValueConverter {
+public class IntValueConverter extends ValueConverter<IntValue> {
 
     @Override
-    public Class<? extends Value> getType() { return IntValue.class; }
+    public Class<IntValue> getType() { return IntValue.class; }
 
     @Override
-    public String convertToDatabaseColumn(Value attribute) {
-        final IntValue intValue = (IntValue) attribute;
-        final SedsScalar<Integer> sedsScalar = sedsFactory.newScalar(intValue.getIntValue());
+    public String convertToDatabaseColumn(IntValue attribute) {
+        final SedsScalar<Integer> sedsScalar = sedsFactory.newScalar(attribute.getIntValue());
         return sedsDbConverter.serialize(sedsScalar).toString();
     }
 }

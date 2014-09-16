@@ -23,22 +23,20 @@ package org.openepics.discs.conf.valueconverters;
 import java.util.List;
 
 import org.openepics.discs.conf.ent.values.DblVectorValue;
-import org.openepics.discs.conf.ent.values.Value;
 import org.openepics.seds.api.datatypes.SedsScalarArray;
 
 /**
  * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  *
  */
-public class DblVectorValueConverter extends ValueConverter {
+public class DblVectorValueConverter extends ValueConverter<DblVectorValue> {
 
     @Override
-    public Class<? extends Value> getType() { return DblVectorValue.class; }
+    public Class<DblVectorValue> getType() { return DblVectorValue.class; }
 
     @Override
-    public String convertToDatabaseColumn(Value attribute) {
-        final DblVectorValue dblVectorValue = (DblVectorValue) attribute;
-        final List<Double> dblVector = dblVectorValue.getDblVectorValue();
+    public String convertToDatabaseColumn(DblVectorValue attribute) {
+        final List<Double> dblVector = attribute.getDblVectorValue();
         final Double[] dblVectorArray = dblVector.toArray(new Double[dblVector.size()]);
         final SedsScalarArray<Double> sedsScalarArray = sedsFactory.newScalarArray(dblVectorArray);
         return sedsDbConverter.serialize(sedsScalarArray).toString();

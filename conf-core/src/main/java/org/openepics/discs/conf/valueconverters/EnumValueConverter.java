@@ -21,23 +21,20 @@
 package org.openepics.discs.conf.valueconverters;
 
 import org.openepics.discs.conf.ent.values.EnumValue;
-import org.openepics.discs.conf.ent.values.Value;
 import org.openepics.seds.api.datatypes.SedsEnum;
 
 /**
  * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  *
  */
-public class EnumValueConverter extends ValueConverter {
+public class EnumValueConverter extends ValueConverter<EnumValue> {
 
     @Override
-    public Class<? extends Value> getType() { return EnumValue.class; }
+    public Class<EnumValue> getType() { return EnumValue.class; }
 
     @Override
-    public String convertToDatabaseColumn(Value attribute) {
-        final EnumValue enumValue = (EnumValue) attribute;
-        final SedsEnum sedsEnum = sedsFactory.getFactory().newEnum(enumValue.getEnumValue(), new String[] { enumValue.getEnumValue() });
+    public String convertToDatabaseColumn(EnumValue attribute) {
+        final SedsEnum sedsEnum = sedsFactory.getFactory().newEnum(attribute.getEnumValue(), new String[] { attribute.getEnumValue() });
         return sedsDbConverter.serialize(sedsEnum).toString();
     }
-
 }

@@ -332,11 +332,15 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
     }
 
     private boolean isInherited(PropertyValue propertyValue) {
-        if (parentProperties == null) return false;
+        if (parentProperties == null) {
+            return false;
+        }
 
         final String propertyName = propertyValue.getProperty().getName();
         for (PropertyValue inheritedPropVal : parentProperties) {
-            if (propertyName.equals(inheritedPropVal.getProperty().getName())) return true;
+            if (propertyName.equals(inheritedPropVal.getProperty().getName())) {
+                return true;
+            }
         }
         return false;
     }
@@ -554,14 +558,16 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
                     while (valueScanner.hasNext()) {
                         final String dblValue = valueScanner.next().trim();
                         currentLineLength++;
-                        try { Double.valueOf(dblValue); } catch (NumberFormatException e) {
+                        try {
+                            Double.valueOf(dblValue);
+                        } catch (NumberFormatException e) {
                             throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
                                     "Incorrect value: " + dblValue));
                         }
                     }
-                    if (lineLength < 0)
+                    if (lineLength < 0) {
                         lineLength = currentLineLength;
-                    else if (currentLineLength != lineLength) {
+                    } else if (currentLineLength != lineLength) {
                         throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
                                 "All rows must contain the same number of elements."));
                     }
@@ -642,13 +648,13 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
     private void validateUrl(String value) throws ValidatorException {
         try {
             final URL retUrl = new URL(value);
-            if (!retUrl.getProtocol().startsWith("http") && !retUrl.getProtocol().equals("ftp"))
+            if (!retUrl.getProtocol().startsWith("http") && !retUrl.getProtocol().equals("ftp")) {
                 throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_FATAL, "Error",
                         "Protocol must be either http, https or ftp."));
+            }
         } catch (MalformedURLException e) {
             throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_FATAL, "Error",
                     "The input cannot be parsed into URL."));
         }
     }
-
 }

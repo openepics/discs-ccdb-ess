@@ -15,6 +15,8 @@ package org.openepics.discs.conf.ent.values;
 
 import java.util.List;
 
+import com.google.common.base.Preconditions;
+
 /**
  * A table is a collection columns containing double precision values. All columns must contain the same number of elements.
  * This restriction is enforced implicitly by the SEDS serialization and is checked in the UI layer.
@@ -22,14 +24,14 @@ import java.util.List;
  * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  *
  */
-public class DblTableValue extends Value {
-    private static final int ROWS = 3;
-    private static final int COLS = 5;
+public class DblTableValue implements Value {
+    private static final int ROWS = 5;
+    private static final int COLS = 3;
 
-    private List<List<Double>> dblTableValue;
+    private final List<List<Double>> dblTableValue;
 
     public DblTableValue(List<List<Double>> dblTableValue) {
-        this.dblTableValue = dblTableValue;
+        this.dblTableValue = Preconditions.checkNotNull(dblTableValue);
     }
 
     /**
@@ -37,42 +39,46 @@ public class DblTableValue extends Value {
      */
     public List<List<Double>> getDblTableValue() { return dblTableValue; }
 
-    /**
-     * @param table the table to set
-     */
-    public void setDblTableValue(List<List<Double>> dblTableValue) { this.dblTableValue = dblTableValue; }
-
     @Override
     public String toString() {
-        StringBuilder retStr = new StringBuilder() ;
-        int cols = 0;
-        retStr.append("(double table): [");
+        final StringBuilder retStr = new StringBuilder();
+        final int columnsSize = dblTableValue.size(); // number of columns in the table
+        int colIndex = 0;
+        retStr.append('[');
 
-        for (List<Double> row : dblTableValue) {
-            if (cols > 0) retStr.append(", ");
-            if (cols > COLS) {
-                retStr.append("...");
+        for (List<Double> column : dblTableValue) {
+            appendSingleColumn(column, retStr);
+            colIndex++;
+            if (colIndex < columnsSize) {
+                retStr.append(", ");
+            }
+            if ((columnsSize > COLS) && (colIndex >= COLS - 1)) {
+                retStr.append("..., ");
+                appendSingleColumn(dblTableValue.get(columnsSize - 1), retStr); // append last column
                 break;
             }
-
-            int rows = 0;
-            retStr.append("[");
-            for (Double item : row) {
-                if (rows > 0) retStr.append(", ");
-                if (rows > ROWS) {
-                    retStr.append("...");
-                    break;
-                }
-                retStr.append(item);
-                rows++;
-            }
-            retStr.append("]");
-
-            cols++;
         }
         retStr.append(']');
 
         return retStr.toString();
     }
 
+    private void appendSingleColumn(List<Double> column, StringBuilder retStr) {
+        final int rowsSize = column.size(); // number of rows in a column
+        int rowIndex = 0;
+        retStr.append('[');
+
+        for (Double item : column) {
+            retStr.append(item);
+            rowIndex++;
+            if (rowIndex < rowsSize) {
+                retStr.append(", ");
+            }
+            if ((rowsSize > ROWS) && (rowIndex >= ROWS - 1)) {
+                retStr.append("..., ").append(column.get(rowsSize - 1)); // append last row
+                break;
+            }
+        }
+        retStr.append(']');
+    }
 }

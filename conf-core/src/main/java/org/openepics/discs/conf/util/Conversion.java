@@ -64,23 +64,23 @@ public class Conversion {
     public static PropertyDataType getDataType(Property prop) {
         Preconditions.checkNotNull(prop);
         switch (prop.getDataType().getName()) {
-        case PropertyDataTypeConstants.INT_NAME :
+        case PropertyDataType.INT_NAME :
             return PropertyDataType.INTEGER;
-        case PropertyDataTypeConstants.DBL_NAME :
+        case PropertyDataType.DBL_NAME :
             return PropertyDataType.DOUBLE;
-        case PropertyDataTypeConstants.STR_NAME :
+        case PropertyDataType.STR_NAME :
             return PropertyDataType.STRING;
-        case PropertyDataTypeConstants.TIMESTAMP_NAME :
+        case PropertyDataType.TIMESTAMP_NAME :
             return PropertyDataType.TIMESTAMP;
-        case PropertyDataTypeConstants.URL_NAME :
+        case PropertyDataType.URL_NAME :
             return PropertyDataType.URL;
-        case PropertyDataTypeConstants.INT_VECTOR_NAME :
+        case PropertyDataType.INT_VECTOR_NAME :
             return PropertyDataType.INT_VECTOR;
-        case PropertyDataTypeConstants.DBL_VECTOR_NAME :
+        case PropertyDataType.DBL_VECTOR_NAME :
             return PropertyDataType.DBL_VECTOR;
-        case PropertyDataTypeConstants.STRING_LIST_NAME :
+        case PropertyDataType.STRING_LIST_NAME :
             return PropertyDataType.STRING_LIST;
-        case PropertyDataTypeConstants.DBL_TABLE_NAME :
+        case PropertyDataType.DBL_TABLE_NAME :
             return PropertyDataType.DBL_TABLE;
         default:
             return PropertyDataType.ENUM;
@@ -140,7 +140,9 @@ public class Conversion {
      */
     public static Value stringToValue(String strValue, Property property) {
         Preconditions.checkNotNull(property);
-        if (strValue == null) return null;
+        if (strValue == null) {
+            return null;
+        }
         switch (Conversion.getDataType(property)) {
         case DBL_TABLE:
             return new DblTableValue(Conversion.toDblTable(strValue));
@@ -174,7 +176,9 @@ public class Conversion {
      * @return the string representation of the value
      */
     public static String valueToString(Value value) {
-        if (value == null) return null;
+        if (value == null) {
+            return null;
+        }
 
         if (value instanceof IntValue) {
             return Conversion.fromInteger(((IntValue)value).getIntValue());
@@ -207,8 +211,9 @@ public class Conversion {
     public static URL toURL(String str) {
         try {
             final URL retUrl = new URL(str);
-            if (!retUrl.getProtocol().startsWith("http") && !retUrl.getProtocol().equals("ftp"))
+            if (!retUrl.getProtocol().startsWith("http") && !retUrl.getProtocol().equals("ftp")) {
                 throw new RuntimeException("Protocol must be either http, https or ftp.");
+            }
             return retUrl;
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
@@ -217,15 +222,13 @@ public class Conversion {
 
     private static String toString(String str) { return str; }
 
-    private static Double toDouble(String str) { return str == null ? null : Double.valueOf(str); }
+    private static Double toDouble(String str) { return Double.valueOf(str); }
 
-    private static Integer toInteger(String str) { return str == null ? null : Integer.valueOf(str); }
+    private static Integer toInteger(String str) { return Integer.valueOf(str); }
 
     private static String toEnum(String str) { return str; }
 
     private static List<String> toStrVector(String str) {
-        Preconditions.checkNotNull(str);
-
         final List<String> list = new ArrayList<>();
 
         try (Scanner scanner = new Scanner(str)) {
@@ -240,8 +243,6 @@ public class Conversion {
     }
 
     private static List<Integer> toIntVector(String str) {
-        Preconditions.checkNotNull(str);
-
         final List<Integer> list = new ArrayList<>();
 
         try (Scanner scanner = new Scanner(str)) {
@@ -256,8 +257,6 @@ public class Conversion {
     }
 
     private static List<Double> toDblVector(String str) {
-        Preconditions.checkNotNull(str);
-
         final List<Double> list = new ArrayList<>();
 
         try (Scanner scanner = new Scanner(str)) {
@@ -274,8 +273,6 @@ public class Conversion {
     private static Date toTimestamp(String str) { return new Date(); } // TODO implement
 
     private static List<List<Double>> toDblTable(String str) {
-        Preconditions.checkNotNull(str);
-
         final List<List<Double>> table = new ArrayList<>();
 
         try (Scanner lineScanner = new Scanner(str)) {
@@ -295,11 +292,11 @@ public class Conversion {
                     }
                 }
                 if (!tableRow.isEmpty()) {
-                    if (rowLength < 0)
+                    if (rowLength < 0) {
                         rowLength = tableRow.size();
-                    else if (rowLength != tableRow.size())
+                    } else if (rowLength != tableRow.size()) {
                         throw new RuntimeException("All rows must contain the same number of elements.");
-
+                    }
                     table.add(tableRow);
                 }
             }
@@ -309,62 +306,54 @@ public class Conversion {
 
     private static String fromString(String value) { return value; }
 
-    private static String fromDouble(Double value) { return value == null ? null : value.toString(); }
+    private static String fromDouble(Double value) { return value.toString(); }
 
-    private static String fromInteger(Integer value) { return value == null ? null : value.toString(); }
+    private static String fromInteger(Integer value) { return value.toString(); }
 
     private static String fromEnum(String value) { return value; }
 
     private static String fromURL(URL value) { return value.toString(); }
 
     private static String fromStrVector(List<String> value) {
-        if (value == null) return null;
-
         StringBuilder retStr = new StringBuilder();
-        for (String line : value)
+        for (String line : value) {
             retStr.append(line).append('\n');
-
+        }
         return retStr.toString();
     }
 
     private static String fromIntVector(List<Integer> value) {
-        if (value == null) return null;
-
         StringBuilder retStr = new StringBuilder();
-        for (Integer number : value)
+        for (Integer number : value) {
             retStr.append(number.intValue()).append('\n');
-
+        }
         return retStr.toString();
     }
 
     private static String fromDblVector(List<Double> value)  {
-        if (value == null) return null;
-
         StringBuilder retStr = new StringBuilder();
-        for (Double number : value)
+        for (Double number : value) {
             retStr.append(number.doubleValue()).append('\n');
-
+        }
         return retStr.toString();
     }
 
-    private static String fromTimestamp(Date value) { return value == null ? null : value.toString(); } // TODO implement
+    private static String fromTimestamp(Date value) { return value.toString(); } // TODO implement
 
     private static String fromDblTable(List<List<Double>> value) {
-        if (value == null) return null;
-
         StringBuilder retStr = new StringBuilder();
         for (List<Double> column : value) {
             boolean firstNumber = true;
             for (Double number : column) {
-                if (!firstNumber)
+                if (!firstNumber) {
                     retStr.append(", ");
-                else
+                } else {
                     firstNumber = false;
+                }
                 retStr.append(number.doubleValue());
             }
             retStr.append('\n');
         }
         return retStr.toString();
     }
-
 }

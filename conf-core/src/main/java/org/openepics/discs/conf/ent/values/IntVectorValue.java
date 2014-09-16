@@ -15,19 +15,21 @@ package org.openepics.discs.conf.ent.values;
 
 import java.util.List;
 
+import com.google.common.base.Preconditions;
+
 /**
  * 1-D vector if integer numbers.
  *
  * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  *
  */
-public class IntVectorValue extends Value {
+public class IntVectorValue implements Value {
     private static final int MAX_ELEMENTS = 5;
 
-    private List<Integer> intVectorValue;
+    private final List<Integer> intVectorValue;
 
     public IntVectorValue(List<Integer> intVectorValue) {
-        this.intVectorValue = intVectorValue;
+        this.intVectorValue = Preconditions.checkNotNull(intVectorValue);
     }
 
     /**
@@ -35,27 +37,25 @@ public class IntVectorValue extends Value {
      */
     public List<Integer> getIntVectorValue() { return intVectorValue; }
 
-    /**
-     * @param intVectorValue the intVectorValue to set
-     */
-    public void setIntVectorValue(List<Integer> intVectorValue) { this.intVectorValue = intVectorValue; }
-
     @Override
     public String toString() {
-        StringBuilder retStr = new StringBuilder() ;
-        int i = 0;
-        retStr.append("(integer vector): [");
+        final StringBuilder retStr = new StringBuilder();
+        final int vectorSize = intVectorValue.size();
+        int rowIndex = 0;
+        retStr.append('[');
 
         for (Integer item : intVectorValue) {
-            retStr.append(item).append(", ");
-            if (i++ > MAX_ELEMENTS) {
-                retStr.append("...");
+            retStr.append(item);
+            rowIndex++;
+            if (rowIndex < vectorSize) {
+                retStr.append(", ");
+            }
+            if ((vectorSize > MAX_ELEMENTS) && (rowIndex >= MAX_ELEMENTS - 1)) {
+                retStr.append("..., ").append(intVectorValue.get(vectorSize - 1));
                 break;
             }
         }
         retStr.append(']');
-
         return retStr.toString();
     }
-
 }

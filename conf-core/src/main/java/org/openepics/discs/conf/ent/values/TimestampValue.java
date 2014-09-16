@@ -15,17 +15,19 @@ package org.openepics.discs.conf.ent.values;
 
 import java.util.Date;
 
+import com.google.common.base.Preconditions;
+
 /**
  * A value representing time and date.
  *
  * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  *
  */
-public class TimestampValue extends Value {
-    private Date timestampValue;
+public class TimestampValue implements Value {
+    private final Date timestampValue;
 
     public TimestampValue(Date timestampValue) {
-        this.timestampValue = timestampValue;
+        this.timestampValue = Preconditions.checkNotNull(timestampValue);
     }
 
     /**
@@ -33,13 +35,7 @@ public class TimestampValue extends Value {
      */
     public Date getTimestampValue() { return timestampValue; }
 
-    /**
-     * @param timestampValue the timestampValue to set
-     */
-    public void setTimestampValue(Date timestampValue) { this.timestampValue = timestampValue; }
-
     @Override
-    public String toString() { return "(timestamp): " + timestampValue.toString();
-    }
+    public String toString() { return timestampValue.toString(); }
 
 }
