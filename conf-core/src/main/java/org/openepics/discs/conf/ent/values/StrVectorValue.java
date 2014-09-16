@@ -45,13 +45,13 @@ public class StrVectorValue implements Value {
         retStr.append('[');
 
         for (String item : strVectorValue) {
-            retStr.append(item);
+            retStr.append('"').append(item).append('"');
             rowIndex++;
             if (rowIndex < vectorSize) {
                 retStr.append(", ");
             }
             if ((vectorSize > MAX_ELEMENTS) && (rowIndex >= MAX_ELEMENTS - 1)) {
-                retStr.append("..., ").append(strVectorValue.get(vectorSize - 1));
+                retStr.append("..., \"").append(strVectorValue.get(vectorSize - 1)).append('"');
                 break;
             }
         }

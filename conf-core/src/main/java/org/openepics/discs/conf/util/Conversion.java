@@ -222,9 +222,9 @@ public class Conversion {
 
     private static String toString(String str) { return str; }
 
-    private static Double toDouble(String str) { return Double.valueOf(str); }
+    private static Double toDouble(String str) { return Double.valueOf(str.trim()); }
 
-    private static Integer toInteger(String str) { return Integer.valueOf(str); }
+    private static Integer toInteger(String str) { return Integer.valueOf(str.trim()); }
 
     private static String toEnum(String str) { return str; }
 
