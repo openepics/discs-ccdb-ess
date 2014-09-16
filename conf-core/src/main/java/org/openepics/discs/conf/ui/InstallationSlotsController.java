@@ -175,6 +175,9 @@ public class InstallationSlotsController extends AbstractSlotsController {
      * Prepares data for adding new relationship
      */
     public void prepareAddRelationshipPopup() {
+        if (selectedTreeNodeForRelationshipAdd != null) {
+            selectedTreeNodeForRelationshipAdd.setSelected(false);
+        }
         selectedTreeNodeForRelationshipAdd = null;
         selectedRelationshipType = SlotRelationName.CONTAINS.toString().toLowerCase();
     }

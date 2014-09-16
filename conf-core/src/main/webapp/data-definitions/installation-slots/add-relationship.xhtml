@@ -7,7 +7,7 @@
                 xmlns:h="http://java.sun.com/jsf/html">
 
     <h:form id="addSlotRelationshipForm">
-        <p:dialog widgetVar="addSlotRelationship" id="addSlotRelationship" modal="true" width="35em" resizable="false" closable="false">
+        <p:dialog widgetVar="addSlotRelationship" id="addSlotRelationship" modal="true" width="35em" resizable="false" closable="false" dynamic="true">
             <f:facet name="header">
                 <h:outputText value="Add relationship to #{installationSlotsController.selectedSlotView.name}" />
             </f:facet>
