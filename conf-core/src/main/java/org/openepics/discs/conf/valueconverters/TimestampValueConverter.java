@@ -19,7 +19,6 @@
  */
 package org.openepics.discs.conf.valueconverters;
 
-import org.epics.util.time.Timestamp;
 import org.openepics.discs.conf.ent.values.TimestampValue;
 import org.openepics.seds.api.datatypes.SedsTime;
 
@@ -34,7 +33,7 @@ public class TimestampValueConverter extends ValueConverter<TimestampValue> {
 
     @Override
     public String convertToDatabaseColumn(TimestampValue attribute) {
-        final SedsTime sedsTime = sedsFactory.getFactory().newTime(Timestamp.of(attribute.getTimestampValue()), null);
+        final SedsTime sedsTime = sedsFactory.getFactory().newTime(attribute.getTimestampValue(), null);
         return sedsDbConverter.serialize(sedsTime).toString();
     }
 }

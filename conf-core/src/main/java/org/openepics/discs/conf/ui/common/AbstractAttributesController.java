@@ -640,6 +640,13 @@ public abstract class AbstractAttributesController<T1 extends PropertyValue,T2 e
         case URL:
             validateUrl(strValue);
             break;
+        case TIMESTAMP:
+            try {
+                Conversion.toTimestamp(strValue);
+            } catch (RuntimeException e) {
+                throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", e.getMessage()));
+            }
+            break;
         default:
             throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Incorrect property data type."));
         }

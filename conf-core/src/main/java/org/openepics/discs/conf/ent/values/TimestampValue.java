@@ -13,7 +13,7 @@
  */
 package org.openepics.discs.conf.ent.values;
 
-import java.util.Date;
+import org.epics.util.time.Timestamp;
 
 import com.google.common.base.Preconditions;
 
@@ -24,16 +24,16 @@ import com.google.common.base.Preconditions;
  *
  */
 public class TimestampValue implements Value {
-    private final Date timestampValue;
+    private final Timestamp timestampValue;
 
-    public TimestampValue(Date timestampValue) {
+    public TimestampValue(Timestamp timestampValue) {
         this.timestampValue = Preconditions.checkNotNull(timestampValue);
     }
 
     /**
      * @return the timestampValue
      */
-    public Date getTimestampValue() { return timestampValue; }
+    public Timestamp getTimestampValue() { return timestampValue; }
 
     @Override
     public String toString() { return timestampValue.toString(); }

@@ -22,7 +22,6 @@ package org.openepics.discs.conf.valueconverters;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import javax.json.Json;
@@ -140,8 +139,8 @@ public class SedsConverter implements AttributeConverter<Value, String> {
     }
 
     private Value convertFromSedsTime(SedsTime sedsTime) {
-        final Date javaTimestamp = Timestamp.of(sedsTime.getUnixSec(), sedsTime.getNanoSec()).toDate();
-        final TimestampValue timestampValue = new TimestampValue(javaTimestamp);
+        final Timestamp epicsTimestamp = Timestamp.of(sedsTime.getUnixSec(), sedsTime.getNanoSec());
+        final TimestampValue timestampValue = new TimestampValue(epicsTimestamp);
         return timestampValue;
     }
 

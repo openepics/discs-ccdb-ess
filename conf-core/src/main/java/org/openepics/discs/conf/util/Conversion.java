@@ -21,12 +21,17 @@ package org.openepics.discs.conf.util;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.ParseException;
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
+import java.util.TimeZone;
 import java.util.regex.Pattern;
 
+import org.epics.util.time.Timestamp;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.values.DblTableValue;
 import org.openepics.discs.conf.ent.values.DblValue;
@@ -270,7 +275,81 @@ public class Conversion {
         return list;
     }
 
-    private static Date toTimestamp(String str) { return new Date(); } // TODO implement
+    public static Timestamp toTimestamp(String str) {
+        final String trimmedValue = str.trim();
+        final String dateStr;
+        final String nanosStr;
+
+        final long daySeconds = 60 * 60 * 24;
+        final long dayMillis = daySeconds * 1000;
+
+        int nanos = 0;
+        long unixtime = 0;
+
+        final int dotPos = trimmedValue.indexOf('.');
+
+        if (dotPos > -1) {
+            dateStr = trimmedValue.substring(0, dotPos);
+            nanosStr = (trimmedValue.substring(dotPos + 1) + "000000000").substring(0, 9); // .1 stands for 100000000 ns
+        } else {
+            dateStr = trimmedValue;
+            nanosStr = "";
+        }
+        if (dateStr.charAt(dateStr.length() - 1) < '0' || dateStr.charAt(dateStr.length() - 1) > '9')
+            throw new RuntimeException("Timestamp contains invalid characters.");
+
+        Date parsedDate;
+        final SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
+        simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        simpleDateFormat.setLenient(false);
+        if (nanosStr.isEmpty()) {
+            ParsePosition parsePos = new ParsePosition(0);
+            simpleDateFormat.applyPattern("yyyy-MM-dd HH:mm:ss");
+            parsedDate = simpleDateFormat.parse(dateStr, parsePos);
+            if (parsePos.getErrorIndex() >= 0) {
+                parsePos.setErrorIndex(-1); // clear error for new parser
+                simpleDateFormat.applyPattern("yyyy-MM-dd");
+                parsedDate = simpleDateFormat.parse(dateStr, parsePos);
+                if (parsePos.getErrorIndex() >= 0) {
+                    parsePos.setErrorIndex(-1); // clear error for new parser
+                    simpleDateFormat.applyPattern("HH:mm:ss");
+                    parsedDate = simpleDateFormat.parse(dateStr, parsePos);
+                    if (parsePos.getErrorIndex() >= 0) {
+                        throw new RuntimeException("Cannot parse timestamp.");
+                    } else {
+                        if (parsePos.getIndex() < dateStr.length()) {
+                            throw new RuntimeException("Cannot parse timestamp.");
+                        }
+                        final long todayDate = ((new Date()).getTime() / dayMillis) * daySeconds; // in unix time
+                        unixtime = (parsedDate.getTime() / 1000) + todayDate;
+                    }
+                } else {
+                    if (parsePos.getIndex() < dateStr.length()) {
+                        throw new RuntimeException("Cannot parse timestamp.");
+                    }
+                    unixtime = parsedDate.getTime() / 1000;
+                }
+            } else {
+                if (parsePos.getIndex() < dateStr.length()) {
+                    throw new RuntimeException("Cannot parse timestamp.");
+                }
+                unixtime = parsedDate.getTime() / 1000;
+            }
+        } else {
+            try {
+                simpleDateFormat.applyPattern("yyyy-MM-dd HH:mm:ss");
+                parsedDate = simpleDateFormat.parse(dateStr);
+                unixtime = parsedDate.getTime() / 1000;
+                nanos = Integer.parseInt(nanosStr);
+            } catch (ParseException e) {
+                throw new RuntimeException("Cannot parse timestamp.", e);
+            } catch (NumberFormatException e1) {
+                throw new RuntimeException("Cannot parse timestamp nanoseconds.", e1);
+            }
+        }
+
+        return Timestamp.of(unixtime, nanos);
+    }
 
     private static List<List<Double>> toDblTable(String str) {
         final List<List<Double>> table = new ArrayList<>();
@@ -338,7 +417,26 @@ public class Conversion {
         return retStr.toString();
     }
 
-    private static String fromTimestamp(Date value) { return value.toString(); } // TODO implement
+    private static String fromTimestamp(Timestamp value) {
+        final Date dateTime = new Date();
+        dateTime.setTime(value.getSec() * 1000);
+
+        final int dayInSeconds = 60 * 60 * 24;
+        if (value.getSec() % dayInSeconds == 0 && value.getNanoSec() <= 0) {
+            final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+            return simpleDateFormat.format(dateTime);
+        }
+
+        final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        final StringBuilder returnString = new StringBuilder(simpleDateFormat.format(dateTime));
+        if (value.getNanoSec() > 0) {
+            returnString.append('.').append(Integer.toString(value.getNanoSec()).replaceAll("0*$", ""));
+        }
+
+        return returnString.toString();
+    }
 
     private static String fromDblTable(List<List<Double>> value) {
         StringBuilder retStr = new StringBuilder();
