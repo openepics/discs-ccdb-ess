@@ -275,6 +275,19 @@ public class Conversion {
         return list;
     }
 
+    /** This method parses the string into a timestamp. It accepts the following inputs:
+     * <ul>
+     * <li> yyyy-MM-dd : only the date in the ISO format.</li>
+     * <li> HH:mm:ss : only the time in which case the current date is assumed. The time is in 24-hour format.</li>
+     * <li> yyyy-MM-dd HH:mm:ss : the date and time. The time is in 24-hour format.</li>
+     * <li> yyyy-MM-dd HH:mm:ss.nnnnnnnnn : the timestamp with nanosecond precision.
+     *           The fractional part of the second can have any number of places up to 9.</li>
+     * </ul>
+     * In all cases the timestamp if without the time zone (or all timestamps are as UTC timestamps).
+     *
+     * @param str
+     * @return The Timestamp to store in the database.
+     */
     public static Timestamp toTimestamp(String str) {
         final String trimmedValue = str.trim();
         final String dateStr;
