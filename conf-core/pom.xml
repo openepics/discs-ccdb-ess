@@ -241,6 +241,21 @@
             <activation>
                 <activeByDefault>false</activeByDefault>
             </activation>
+            
+            <repositories>
+                <repository>
+                <id>ess-ics-jboss-thirdparty</id>
+                <url>https://artifactory01.esss.lu.se/artifactory/jboss-thirdparty</url>
+                <releases>
+                    <enabled>true</enabled>
+                </releases>
+                <snapshots>
+                    <enabled>false</enabled>
+                </snapshots>
+		</repository>
+
+            </repositories>
+            
             <dependencyManagement>
                 <dependencies>
                     <dependency>
@@ -309,6 +324,12 @@
                 <dependency>
                     <groupId>org.jboss.shrinkwrap.descriptors</groupId>
                     <artifactId>shrinkwrap-descriptors-impl-javaee</artifactId>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-simple</artifactId>
+                    <version>1.7.2.jbossorg-1</version>
                     <scope>test</scope>
                 </dependency>
             </dependencies>
