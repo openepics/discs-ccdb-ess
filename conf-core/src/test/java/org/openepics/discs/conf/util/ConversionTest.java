@@ -437,4 +437,36 @@ public class ConversionTest {
     public void negSTVTimestampTime2() {
         Conversion.stringToValue("4:00:00 PM", timestampProperty);
     }
+
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     *
+     * Value to string conversion tests
+     *
+     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+    @Test
+    public void valueToStringNull() {
+        assertEquals(null, Conversion.valueToString(null));
+    }
+
+    @Test
+    public void valueToStringInt() {
+        assertEquals("123", Conversion.valueToString(new IntValue(123)));
+    }
+
+    @Test
+    public void valueToStringDbl() {
+        assertEquals("1.0", Conversion.valueToString(new DblValue(1.0)));
+    }
+
+    @Test
+    public void valueToStringStr() {
+        assertEquals("ESS", Conversion.valueToString(new StrValue("ESS")));
+    }
+
+    @Test
+    public void valueToStringUrl() throws MalformedURLException {
+        assertEquals("http://www.cosylab.com", Conversion.valueToString(new UrlValue(new URL("http://www.cosylab.com"))));
+    }
+
+
 }
