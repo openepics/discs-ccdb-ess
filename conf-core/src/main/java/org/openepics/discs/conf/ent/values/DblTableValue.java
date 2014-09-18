@@ -48,8 +48,8 @@ public class DblTableValue implements Value {
             throw new IllegalArgumentException("Method expects two paramters for dimensions.");
         }
 
-        final int COLS = dimensions[0];
-        final int ROWS = dimensions[1];
+        final int COLS = dimensions[1];
+        final int ROWS = dimensions[0];
 
         final StringBuilder retStr = new StringBuilder();
         final int columnsSize = dblTableValue.size(); // number of columns in the table
