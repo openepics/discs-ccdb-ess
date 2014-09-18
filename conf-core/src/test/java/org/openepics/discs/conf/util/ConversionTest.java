@@ -40,7 +40,7 @@ public class ConversionTest {
     private final DataType enumDataType = new DataType("AnyRandomName", "", true,
             "{\"meta\":{\"type\":\"SedsEnum\",\"protocol\":\"SEDSv1\",\"version\":\"1.0.0\"},"
             + "\"data\":{\"selected\":\"TEST1\"},\"type\":{\"elements\":[\"TEST1\",\"TEST2\",\"TEST3\",\"TEST4\"]}}");
-
+    private static final String INVALID_ENUMERATION_ITEM = "invalid_item";
     private final Property intProperty = new Property("IntProperty", "", PropertyAssociation.ALL);
     private final Property dblProperty = new Property("DblProperty", "", PropertyAssociation.ALL);
     private final Property strProperty = new Property("StrProperty", "", PropertyAssociation.ALL);
@@ -189,7 +189,6 @@ public class ConversionTest {
         assertEquals(new Double(456), dblValue.getDblValue());
     }
 
-
     @Test
     public void stringToValueStr() {
         StrValue strValue = (StrValue) Conversion.stringToValue("  This is a   string test. ", strProperty);
@@ -271,5 +270,171 @@ public class ConversionTest {
         final Date today = new Date();
         today.setTime((today.getTime() / dayInMillis) * dayInMillis); // remove the time
         return today;
+    }
+
+    /*
+     * negSTV stands for negative (expected to fail) "S"tring "T"o "V"alue
+     */
+    @Test(expected = NumberFormatException.class)
+    public void negSTVDblForInt() {
+        Conversion.stringToValue("23.45", intProperty);
+    }
+
+    @Test(expected = NumberFormatException.class)
+    public void negSTVAlphaForInt() {
+        Conversion.stringToValue("23a", intProperty);
+    }
+
+    @Test(expected = NumberFormatException.class)
+    public void negSTVInvalidCharForDbl() {
+        Conversion.stringToValue("23,45", dblProperty);
+    }
+
+    @Test(expected = ConversionException.class)
+    public void negSTVEnum() {
+        Conversion.stringToValue(INVALID_ENUMERATION_ITEM, enumProperty);
+    }
+
+    @Test(expected = NumberFormatException.class)
+    public void negSTVIntVectorEmptyLine() {
+        final String intVectorStr = "1\n \n-123";
+        Conversion.stringToValue(intVectorStr, intVectorProperty);
+    }
+
+    @Test(expected = NumberFormatException.class)
+    public void negSTVIntVectorInvalidCharacters() {
+        final String intVectorStr = "1, 2, 3";
+        Conversion.stringToValue(intVectorStr, intVectorProperty);
+    }
+
+    @Test(expected = NumberFormatException.class)
+    public void negSTVIntVectorDouble() {
+        final String intVectorStr = "1\n 3.14 \n-123";
+        Conversion.stringToValue(intVectorStr, intVectorProperty);
+    }
+
+    @Test(expected = NumberFormatException.class)
+    public void negSTVDblVectorEmptyLine() {
+        final String dblVectorStr = "1.0\n \n-123.0";
+        Conversion.stringToValue(dblVectorStr, dblVectorProperty);
+    }
+
+    @Test(expected = NumberFormatException.class)
+    public void negSTVDblVectorInvalidCharacters() {
+        final String dblVectorStr = "1.0, 2.0, 3.0";
+        Conversion.stringToValue(dblVectorStr, dblVectorProperty);
+    }
+
+    @Test(expected = ConversionException.class)
+    public void negSTVUrl() {
+        Conversion.stringToValue("imap://mail.example.com", urlProperty);
+    }
+
+    @Test(expected = ConversionException.class)
+    public void negSTVNotUrl() {
+        Conversion.stringToValue("The quick brown fox jumps over the lazy dog", urlProperty);
+    }
+
+    @Test(expected = ConversionException.class)
+    public void negSTVDblTableNonMatrix() {
+        final String dblTableStr = "1.0, 2.0, 3.0\n1.0, 2.0, 3.0, 4.0\n1.0, 2.0, 3.0";
+        Conversion.stringToValue(dblTableStr, dblTableProperty);
+    }
+
+    @Test(expected = Exception.class)
+    public void negSTVDblTableEmptyLine() {
+        final String dblTableStr = "1.0, 2.0, 3.0\n \n1.0, 2.0, 3.0";
+        Conversion.stringToValue(dblTableStr, dblTableProperty);
+    }
+
+    @Test(expected = NumberFormatException.class)
+    public void negSTVDblTableInvalidChar() {
+        final String dblTableStr = "1.0, 2.0, 3.0\na, b, c\n1.0, 2.0, 3.0";
+        Conversion.stringToValue(dblTableStr, dblTableProperty);
+    }
+
+    @Test(expected = ConversionException.class)
+    public void negSTVTimestampFullInvalid() {
+        Conversion.stringToValue("1973-06-20 13:50:00,12345", timestampProperty);
+    }
+
+    @Test(expected = ConversionException.class)
+    public void negSTVTimestampFullSpaceAfterDot() {
+        Conversion.stringToValue("1973-06-20 13:50:00. 12345", timestampProperty);
+    }
+
+    @Test(expected = ConversionException.class)
+    public void negSTVTimestampFullSpaceBeforeDot() {
+        Conversion.stringToValue("1973-06-20 13:50:00 .12345", timestampProperty);
+    }
+
+    @Test(expected = ConversionException.class)
+    public void negSTVTimestampFullPicosec() {
+        Conversion.stringToValue("1973-06-20 13:50:00.1234567890", timestampProperty);
+    }
+
+    @Test(expected = ConversionException.class)
+    public void negSTVTimestampFullTime() {
+        Conversion.stringToValue("1973-06-20 13:50:62.1234567", timestampProperty);
+    }
+
+    @Test(expected = ConversionException.class)
+    public void negSTVTimestampFullTime2() {
+        Conversion.stringToValue("1973-06-20 13:50:OO.1234567", timestampProperty);
+    }
+
+    @Test(expected = ConversionException.class)
+    public void negSTVTimestampFullDate() {
+        Conversion.stringToValue("2000-02-30 12:00:00.13", timestampProperty);
+    }
+
+    @Test(expected = ConversionException.class)
+    public void negSTVTimestampFullDate2() {
+        Conversion.stringToValue("2000-02-40 12:00:00.13", timestampProperty);
+    }
+
+    @Test(expected = ConversionException.class)
+    public void negSTVTimestampDateTimeInvalid() {
+        Conversion.stringToValue("1973-06-20 13:5O:62", timestampProperty);
+    }
+
+    @Test(expected = ConversionException.class)
+    public void negSTVTimestampDateTimeTime() {
+        Conversion.stringToValue("1973-06-20 13:50:62", timestampProperty);
+    }
+
+    @Test(expected = ConversionException.class)
+    public void negSTVTimestampDateTimeDate() {
+        Conversion.stringToValue("2000-02-30 12:00:00", timestampProperty);
+    }
+
+    @Test(expected = ConversionException.class)
+    public void negSTVTimestampDateTimeDate2() {
+        Conversion.stringToValue("2000-02-40 12:00:00", timestampProperty);
+    }
+
+    @Test(expected = ConversionException.class)
+    public void negSTVTimestampDateInvalid() {
+        Conversion.stringToValue("1973-06-2O", timestampProperty);
+    }
+
+    @Test(expected = ConversionException.class)
+    public void negSTVTimestampDate() {
+        Conversion.stringToValue("2000-02-30", timestampProperty);
+    }
+
+    @Test(expected = ConversionException.class)
+    public void negSTVTimestampDate2() {
+        Conversion.stringToValue("2000-02-40", timestampProperty);
+    }
+
+    @Test(expected = ConversionException.class)
+    public void negSTVTimestampTime1() {
+        Conversion.stringToValue("13:50:62", timestampProperty);
+    }
+
+    @Test(expected = ConversionException.class)
+    public void negSTVTimestampTime2() {
+        Conversion.stringToValue("4:00:00 PM", timestampProperty);
     }
 }

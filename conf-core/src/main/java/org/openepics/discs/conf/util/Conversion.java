@@ -324,7 +324,14 @@ public class Conversion {
 
         if (dotPos > -1) {
             dateStr = trimmedValue.substring(0, dotPos);
-            nanosStr = (trimmedValue.substring(dotPos + 1) + "000000000").substring(0, 9); // .1 stands for 100000000 ns
+            if (trimmedValue.substring(dotPos + 1).length() < 9) {
+                nanosStr = (trimmedValue.substring(dotPos + 1) + "000000000").substring(0, 9); // .1 stands for 100000000 ns
+            } else {
+                nanosStr = trimmedValue.substring(dotPos + 1);
+            }
+            if (nanosStr.length() > 9) {
+                throw new ConversionException("Maximum accuracy allowed is nanoseconds.");
+            }
         } else {
             dateStr = trimmedValue;
             nanosStr = "";
