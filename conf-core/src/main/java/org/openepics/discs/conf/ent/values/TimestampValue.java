@@ -38,4 +38,28 @@ public class TimestampValue implements Value {
     @Override
     public String toString() { return timestampValue.toString(); }
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((timestampValue == null) ? 0 : timestampValue.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof TimestampValue)) {
+            return false;
+        }
+        TimestampValue other = (TimestampValue) obj;
+        if (timestampValue == null) {
+            return other.timestampValue == null;
+        }
+
+        return timestampValue.equals(other.timestampValue);
+    }
+
 }

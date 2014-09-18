@@ -58,4 +58,28 @@ public class IntVectorValue implements Value {
         retStr.append(']');
         return retStr.toString();
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((intVectorValue == null) ? 0 : intVectorValue.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof IntVectorValue)) {
+            return false;
+        }
+        IntVectorValue other = (IntVectorValue) obj;
+        if (intVectorValue == null) {
+            return other.intVectorValue == null;
+        }
+
+        return intVectorValue.equals(other.intVectorValue);
+    }
 }

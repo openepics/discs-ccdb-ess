@@ -58,4 +58,28 @@ public class DblVectorValue implements Value {
         retStr.append(']');
         return retStr.toString();
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((dblVectorValue == null) ? 0 : dblVectorValue.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof DblVectorValue)) {
+            return false;
+        }
+        DblVectorValue other = (DblVectorValue) obj;
+        if (dblVectorValue == null) {
+            return other.dblVectorValue == null;
+        }
+
+        return dblVectorValue.equals(other.dblVectorValue);
+    }
 }

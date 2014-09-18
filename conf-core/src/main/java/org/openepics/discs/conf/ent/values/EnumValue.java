@@ -36,4 +36,28 @@ public class EnumValue implements Value {
 
     @Override
     public String toString() { return enumValue; }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((enumValue == null) ? 0 : enumValue.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof EnumValue)) {
+            return false;
+        }
+        EnumValue other = (EnumValue) obj;
+        if (enumValue == null) {
+            return other.enumValue == null;
+        }
+
+        return enumValue.equals(other.enumValue);
+    }
 }

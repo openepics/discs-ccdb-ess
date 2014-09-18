@@ -81,4 +81,28 @@ public class DblTableValue implements Value {
         }
         retStr.append(']');
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((dblTableValue == null) ? 0 : dblTableValue.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof DblTableValue)) {
+            return false;
+        }
+        DblTableValue other = (DblTableValue) obj;
+        if (dblTableValue == null) {
+            return other.dblTableValue == null;
+        }
+
+        return dblTableValue.equals(other.dblTableValue);
+    }
 }
