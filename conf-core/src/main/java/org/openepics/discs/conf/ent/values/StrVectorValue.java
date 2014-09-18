@@ -43,8 +43,8 @@ public class StrVectorValue implements Value {
 
     @Override
     public String auditLogString(int... dimensions) {
-        if (dimensions.length != 1) {
-            throw new IllegalArgumentException("Method expects only one parameter for dimensions.");
+        if (dimensions.length < 1 || dimensions.length > 2) {
+            throw new IllegalArgumentException("Invalid number of parameters");
         }
 
         final int MAX_ELEMENTS = dimensions[0];

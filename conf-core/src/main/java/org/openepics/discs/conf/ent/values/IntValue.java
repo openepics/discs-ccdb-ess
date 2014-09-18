@@ -36,7 +36,12 @@ public class IntValue implements Value {
     public String toString() { return intValue.toString(); }
 
     @Override
-    public String auditLogString(int... dimensions) { return intValue.toString(); }
+    public String auditLogString(int... dimensions) {
+        if (dimensions.length > 2) {
+            throw new IllegalArgumentException("Invalid number of parameter.");
+        }
+        return intValue.toString();
+    }
 
     @Override
     public int hashCode() {

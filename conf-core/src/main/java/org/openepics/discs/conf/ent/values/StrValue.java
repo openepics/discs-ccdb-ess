@@ -34,7 +34,12 @@ public class StrValue implements Value {
     public String toString() { return strValue; }
 
     @Override
-    public String auditLogString(int... dimensions) { return strValue; }
+    public String auditLogString(int... dimensions) {
+        if (dimensions.length > 2) {
+            throw new IllegalArgumentException("Invalid number of parameter.");
+        }
+        return strValue;
+    }
 
     @Override
     public int hashCode() {

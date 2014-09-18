@@ -38,7 +38,12 @@ public class EnumValue implements Value {
     public String toString() { return enumValue; }
 
     @Override
-    public String auditLogString(int... dimensions) { return enumValue; }
+    public String auditLogString(int... dimensions) {
+        if (dimensions.length > 2) {
+            throw new IllegalArgumentException("Invalid number of parameter.");
+        }
+        return enumValue;
+    }
 
     @Override
     public int hashCode() {

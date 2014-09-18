@@ -39,7 +39,12 @@ public class TimestampValue implements Value {
     public String toString() { return timestampValue.toString(); }
 
     @Override
-    public String auditLogString(int... dimensions) { return timestampValue.toString(); }
+    public String auditLogString(int... dimensions) {
+        if (dimensions.length > 2) {
+            throw new IllegalArgumentException("Invalid number of parameter.");
+        }
+        return timestampValue.toString();
+    }
 
     @Override
     public int hashCode() {

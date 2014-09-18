@@ -35,7 +35,12 @@ public class DblValue implements Value {
     public String toString() { return dblValue.toString(); }
 
     @Override
-    public String auditLogString(int... dimensions) { return dblValue.toString(); }
+    public String auditLogString(int... dimensions) {
+        if (dimensions.length > 2) {
+            throw new IllegalArgumentException("Invalid number of parameter.");
+        }
+        return dblValue.toString();
+    }
 
     @Override
     public int hashCode() {

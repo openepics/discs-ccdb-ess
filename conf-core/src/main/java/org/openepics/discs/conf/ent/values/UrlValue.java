@@ -46,7 +46,12 @@ public class UrlValue implements Value {
     public String toString() { return urlValue.toString(); }
 
     @Override
-    public String auditLogString(int... dimensions) { return urlValue.toString(); }
+    public String auditLogString(int... dimensions) {
+        if (dimensions.length > 2) {
+            throw new IllegalArgumentException("Invalid number of parameter.");
+        }
+        return urlValue.toString();
+    }
 
     @Override
     public int hashCode() {
