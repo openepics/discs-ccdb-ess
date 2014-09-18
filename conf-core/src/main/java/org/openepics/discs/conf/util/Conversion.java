@@ -19,6 +19,7 @@
  */
 package org.openepics.discs.conf.util;
 
+import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
@@ -31,7 +32,11 @@ import java.util.Scanner;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
 
+import javax.json.Json;
+import javax.json.JsonReader;
+
 import org.epics.util.time.Timestamp;
+import org.openepics.discs.conf.ent.DataType;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.values.DblTableValue;
 import org.openepics.discs.conf.ent.values.DblValue;
@@ -44,6 +49,8 @@ import org.openepics.discs.conf.ent.values.StrVectorValue;
 import org.openepics.discs.conf.ent.values.TimestampValue;
 import org.openepics.discs.conf.ent.values.UrlValue;
 import org.openepics.discs.conf.ent.values.Value;
+import org.openepics.seds.api.datatypes.SedsEnum;
+import org.openepics.seds.core.Seds;
 
 import com.google.common.base.Preconditions;
 
@@ -156,7 +163,7 @@ public class Conversion {
         case DOUBLE:
             return new DblValue(Conversion.toDouble(strValue));
         case ENUM:
-            return new EnumValue(Conversion.toEnum(strValue));
+            return new EnumValue(Conversion.toEnum(strValue, property.getDataType()));
         case INTEGER:
             return new IntValue(Conversion.toInteger(strValue));
         case INT_VECTOR:
@@ -231,7 +238,21 @@ public class Conversion {
 
     private static Integer toInteger(String str) { return Integer.valueOf(str.trim()); }
 
-    private static String toEnum(String str) { return str; }
+    private static String toEnum(String str, DataType dataType) {
+        JsonReader reader = Json.createReader(new StringReader(dataType.getDefinition()));
+        final SedsEnum sedsEnum = (SedsEnum) Seds.newDBConverter().deserialize(reader.readObject());
+        boolean foundValue = false;
+        for (String selectItem : sedsEnum.getElements()) {
+            if (selectItem.equals(str)) {
+                foundValue = true;
+                break;
+            }
+        }
+        if (!foundValue) {
+            throw new ConversionException("Enum selected value from the selection list.");
+        }
+        return str;
+    }
 
     private static List<String> toStrVector(String str) {
         final List<String> list = new ArrayList<>();
