@@ -46,6 +46,9 @@ public class UrlValue implements Value {
     public String toString() { return urlValue.toString(); }
 
     @Override
+    public String auditLogString(int... dimensions) { return urlValue.toString(); }
+
+    @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;

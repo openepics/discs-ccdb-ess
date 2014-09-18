@@ -38,6 +38,9 @@ public class EnumValue implements Value {
     public String toString() { return enumValue; }
 
     @Override
+    public String auditLogString(int... dimensions) { return enumValue; }
+
+    @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;

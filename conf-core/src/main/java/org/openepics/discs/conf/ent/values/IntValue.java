@@ -36,6 +36,9 @@ public class IntValue implements Value {
     public String toString() { return intValue.toString(); }
 
     @Override
+    public String auditLogString(int... dimensions) { return intValue.toString(); }
+
+    @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;

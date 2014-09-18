@@ -24,7 +24,6 @@ import com.google.common.base.Preconditions;
  *
  */
 public class DblVectorValue implements Value {
-    private static final int MAX_ELEMENTS = 5;
 
     private final List<Double> dblVectorValue;
 
@@ -39,6 +38,16 @@ public class DblVectorValue implements Value {
 
     @Override
     public String toString() {
+        return auditLogString(5);
+    }
+
+    @Override
+    public String auditLogString(int... dimensions) {
+        if (dimensions.length != 1) {
+            throw new IllegalArgumentException("Method expects only one parameter for dimensions.");
+        }
+
+        final int MAX_ELEMENTS = dimensions[0];
         final StringBuilder retStr = new StringBuilder();
         final int vectorSize = dblVectorValue.size();
         int rowIndex = 0;
