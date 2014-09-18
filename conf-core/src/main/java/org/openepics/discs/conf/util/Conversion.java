@@ -309,7 +309,7 @@ public class Conversion {
             nanosStr = "";
         }
         if (dateStr.charAt(dateStr.length() - 1) < '0' || dateStr.charAt(dateStr.length() - 1) > '9')
-            throw new RuntimeException("Timestamp contains invalid characters.");
+            throw new TimestampParseException("Timestamp contains invalid characters.");
 
         Date parsedDate;
         final SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
@@ -328,23 +328,23 @@ public class Conversion {
                     simpleDateFormat.applyPattern("HH:mm:ss");
                     parsedDate = simpleDateFormat.parse(dateStr, parsePos);
                     if (parsePos.getErrorIndex() >= 0) {
-                        throw new RuntimeException("Cannot parse timestamp.");
+                        throw new TimestampParseException("Cannot parse timestamp.");
                     } else {
                         if (parsePos.getIndex() < dateStr.length()) {
-                            throw new RuntimeException("Cannot parse timestamp.");
+                            throw new TimestampParseException("Cannot parse timestamp.");
                         }
                         final long todayDate = ((new Date()).getTime() / dayMillis) * daySeconds; // in unix time
                         unixtime = (parsedDate.getTime() / 1000) + todayDate;
                     }
                 } else {
                     if (parsePos.getIndex() < dateStr.length()) {
-                        throw new RuntimeException("Cannot parse timestamp.");
+                        throw new TimestampParseException("Cannot parse timestamp.");
                     }
                     unixtime = parsedDate.getTime() / 1000;
                 }
             } else {
                 if (parsePos.getIndex() < dateStr.length()) {
-                    throw new RuntimeException("Cannot parse timestamp.");
+                    throw new TimestampParseException("Cannot parse timestamp.");
                 }
                 unixtime = parsedDate.getTime() / 1000;
             }
@@ -355,9 +355,9 @@ public class Conversion {
                 unixtime = parsedDate.getTime() / 1000;
                 nanos = Integer.parseInt(nanosStr);
             } catch (ParseException e) {
-                throw new RuntimeException("Cannot parse timestamp.", e);
+                throw new TimestampParseException("Cannot parse timestamp.", e);
             } catch (NumberFormatException e1) {
-                throw new RuntimeException("Cannot parse timestamp nanoseconds.", e1);
+                throw new TimestampParseException("Cannot parse timestamp nanoseconds.", e1);
             }
         }
 
