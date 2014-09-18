@@ -217,11 +217,11 @@ public class Conversion {
         try {
             final URL retUrl = new URL(str);
             if (!retUrl.getProtocol().startsWith("http") && !retUrl.getProtocol().equals("ftp")) {
-                throw new RuntimeException("Protocol must be either http, https or ftp.");
+                throw new ConversionException("Protocol must be either http, https or ftp.");
             }
             return retUrl;
         } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
+            throw new ConversionException(e);
         }
     }
 
@@ -309,7 +309,7 @@ public class Conversion {
             nanosStr = "";
         }
         if (dateStr.charAt(dateStr.length() - 1) < '0' || dateStr.charAt(dateStr.length() - 1) > '9')
-            throw new TimestampParseException("Timestamp contains invalid characters.");
+            throw new ConversionException("Timestamp contains invalid characters.");
 
         Date parsedDate;
         final SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
@@ -328,23 +328,23 @@ public class Conversion {
                     simpleDateFormat.applyPattern("HH:mm:ss");
                     parsedDate = simpleDateFormat.parse(dateStr, parsePos);
                     if (parsePos.getErrorIndex() >= 0) {
-                        throw new TimestampParseException("Cannot parse timestamp.");
+                        throw new ConversionException("Cannot parse timestamp.");
                     } else {
                         if (parsePos.getIndex() < dateStr.length()) {
-                            throw new TimestampParseException("Cannot parse timestamp.");
+                            throw new ConversionException("Cannot parse timestamp.");
                         }
                         final long todayDate = ((new Date()).getTime() / dayMillis) * daySeconds; // in unix time
                         unixtime = (parsedDate.getTime() / 1000) + todayDate;
                     }
                 } else {
                     if (parsePos.getIndex() < dateStr.length()) {
-                        throw new TimestampParseException("Cannot parse timestamp.");
+                        throw new ConversionException("Cannot parse timestamp.");
                     }
                     unixtime = parsedDate.getTime() / 1000;
                 }
             } else {
                 if (parsePos.getIndex() < dateStr.length()) {
-                    throw new TimestampParseException("Cannot parse timestamp.");
+                    throw new ConversionException("Cannot parse timestamp.");
                 }
                 unixtime = parsedDate.getTime() / 1000;
             }
@@ -355,9 +355,9 @@ public class Conversion {
                 unixtime = parsedDate.getTime() / 1000;
                 nanos = Integer.parseInt(nanosStr);
             } catch (ParseException e) {
-                throw new TimestampParseException("Cannot parse timestamp.", e);
+                throw new ConversionException("Cannot parse timestamp.", e);
             } catch (NumberFormatException e1) {
-                throw new TimestampParseException("Cannot parse timestamp nanoseconds.", e1);
+                throw new ConversionException("Cannot parse timestamp nanoseconds.", e1);
             }
         }
 
@@ -387,7 +387,7 @@ public class Conversion {
                     if (rowLength < 0) {
                         rowLength = tableRow.size();
                     } else if (rowLength != tableRow.size()) {
-                        throw new RuntimeException("All rows must contain the same number of elements.");
+                        throw new ConversionException("All rows must contain the same number of elements.");
                     }
                     table.add(tableRow);
                 }
