@@ -39,7 +39,7 @@ public class DblTableValue implements Value {
 
     @Override
     public String toString() {
-        return auditLogString(3, 5);
+        return auditLogString(5, 3);
     }
 
     @Override

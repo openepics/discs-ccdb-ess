@@ -34,7 +34,7 @@ public class ComponentTypeEntityLogger implements EntityLogger {
         final Map<String, String> propertiesMap = new TreeMap<>();
         if (compType.getComptypePropertyList() != null) {
             for (ComptypePropertyValue propValue : compType.getComptypePropertyList()) {
-                final String entryValue = propValue.getPropValue() == null ? null : propValue.getPropValue().toString();
+                final String entryValue = propValue.getPropValue() == null ? null : propValue.getPropValue().auditLogString(100, 50);
                 propertiesMap.put(propValue.getProperty().getName(), entryValue);
             }
         }
