@@ -13,7 +13,11 @@
  */
 package org.openepics.discs.conf.ent.values;
 
+import java.text.SimpleDateFormat;
+import java.util.TimeZone;
+
 import org.epics.util.time.Timestamp;
+import org.openepics.discs.conf.util.Conversion;
 
 import com.google.common.base.Preconditions;
 
@@ -36,14 +40,23 @@ public class TimestampValue implements Value {
     public Timestamp getTimestampValue() { return timestampValue; }
 
     @Override
-    public String toString() { return timestampValue.toString(); }
+    public String toString() {
+        final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(Conversion.DATE_TIME_FORMAT);
+        simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        final StringBuilder returnString = new StringBuilder(simpleDateFormat.format(timestampValue.toDate()));
+        if (timestampValue.getNanoSec() > 0) {
+            returnString.append('.').append(Integer.toString(timestampValue.getNanoSec()).replaceAll("0*$", ""));
+        }
+
+        return returnString.toString();
+    }
 
     @Override
     public String auditLogString(int... dimensions) {
         if (dimensions.length > 2) {
             throw new IllegalArgumentException("Invalid number of parameter.");
         }
-        return timestampValue.toString();
+        return this.toString();
     }
 
     @Override

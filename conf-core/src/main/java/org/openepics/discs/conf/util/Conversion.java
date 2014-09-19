@@ -60,11 +60,11 @@ import com.google.common.base.Preconditions;
  * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  *
  */
-/**
- * @author ess-dev
- *
- */
 public class Conversion {
+
+    public static final String DATE_ONLY_FORMAT = "yyyy-MM-dd";
+    public static final String TIME_ONLY_FORMAT = "HH:mm:ss";
+    public static final String DATE_TIME_FORMAT = DATE_ONLY_FORMAT + " " + TIME_ONLY_FORMAT;
 
     /**
      * Returns a data type used for this property.
@@ -199,7 +199,7 @@ public class Conversion {
         } else if (value instanceof StrValue) {
             return Conversion.fromString(((StrValue)value).getStrValue());
         } else if (value instanceof TimestampValue) {
-            return Conversion.fromTimestamp(((TimestampValue)value).getTimestampValue());
+            return Conversion.fromTimestamp((TimestampValue)value);
         } else if (value instanceof UrlValue) {
             return Conversion.fromURL(((UrlValue)value).getUrlValue());
         } else if (value instanceof IntVectorValue) {
@@ -345,15 +345,15 @@ public class Conversion {
         simpleDateFormat.setLenient(false);
         if (nanosStr.isEmpty()) {
             ParsePosition parsePos = new ParsePosition(0);
-            simpleDateFormat.applyPattern("yyyy-MM-dd HH:mm:ss");
+            simpleDateFormat.applyPattern(DATE_TIME_FORMAT);
             parsedDate = simpleDateFormat.parse(dateStr, parsePos);
             if (parsePos.getErrorIndex() >= 0) {
                 parsePos.setErrorIndex(-1); // clear error for new parser
-                simpleDateFormat.applyPattern("yyyy-MM-dd");
+                simpleDateFormat.applyPattern(DATE_ONLY_FORMAT);
                 parsedDate = simpleDateFormat.parse(dateStr, parsePos);
                 if (parsePos.getErrorIndex() >= 0) {
                     parsePos.setErrorIndex(-1); // clear error for new parser
-                    simpleDateFormat.applyPattern("HH:mm:ss");
+                    simpleDateFormat.applyPattern(TIME_ONLY_FORMAT);
                     parsedDate = simpleDateFormat.parse(dateStr, parsePos);
                     if (parsePos.getErrorIndex() >= 0) {
                         throw new ConversionException("Cannot parse timestamp.");
@@ -378,7 +378,7 @@ public class Conversion {
             }
         } else {
             try {
-                simpleDateFormat.applyPattern("yyyy-MM-dd HH:mm:ss");
+                simpleDateFormat.applyPattern(DATE_TIME_FORMAT);
                 parsedDate = simpleDateFormat.parse(dateStr);
                 unixtime = parsedDate.getTime() / 1000;
                 nanos = Integer.parseInt(nanosStr);
@@ -458,25 +458,19 @@ public class Conversion {
         return retStr.toString();
     }
 
-    private static String fromTimestamp(Timestamp value) {
+    private static String fromTimestamp(TimestampValue value) {
+        final Timestamp timestamp = value.getTimestampValue();
         final Date dateTime = new Date();
-        dateTime.setTime(value.getSec() * 1000);
+        dateTime.setTime(timestamp.getSec() * 1000);
 
         final int dayInSeconds = 60 * 60 * 24;
-        if (value.getSec() % dayInSeconds == 0 && value.getNanoSec() <= 0) {
-            final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        if ((timestamp.getSec() % dayInSeconds == 0) && (timestamp.getNanoSec() <= 0)) {
+            final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_ONLY_FORMAT);
             simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
             return simpleDateFormat.format(dateTime);
         }
 
-        final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-        final StringBuilder returnString = new StringBuilder(simpleDateFormat.format(dateTime));
-        if (value.getNanoSec() > 0) {
-            returnString.append('.').append(Integer.toString(value.getNanoSec()).replaceAll("0*$", ""));
-        }
-
-        return returnString.toString();
+        return value.toString();
     }
 
     private static String fromDblTable(List<List<Double>> value) {
