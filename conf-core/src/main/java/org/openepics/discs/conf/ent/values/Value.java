@@ -20,5 +20,7 @@ package org.openepics.discs.conf.ent.values;
  *
  */
 public interface Value {
-    @Override abstract public String toString();
+    @Override public String toString();
+
+    public String auditLogString(int... dimensions);
 }

@@ -44,4 +44,36 @@ public class UrlValue implements Value {
 
     @Override
     public String toString() { return urlValue.toString(); }
+
+    @Override
+    public String auditLogString(int... dimensions) {
+        if (dimensions.length > 2) {
+            throw new IllegalArgumentException("Invalid number of parameter.");
+        }
+        return urlValue.toString();
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((urlValue == null) ? 0 : urlValue.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof UrlValue)) {
+            return false;
+        }
+        UrlValue other = (UrlValue) obj;
+        if (urlValue == null) {
+            return other.urlValue == null;
+        }
+
+        return urlValue.equals(other.urlValue);
+    }
 }

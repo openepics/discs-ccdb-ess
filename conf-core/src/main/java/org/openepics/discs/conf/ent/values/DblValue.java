@@ -33,4 +33,36 @@ public class DblValue implements Value {
 
     @Override
     public String toString() { return dblValue.toString(); }
+
+    @Override
+    public String auditLogString(int... dimensions) {
+        if (dimensions.length > 2) {
+            throw new IllegalArgumentException("Invalid number of parameter.");
+        }
+        return dblValue.toString();
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((dblValue == null) ? 0 : dblValue.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof DblValue)) {
+            return false;
+        }
+        DblValue other = (DblValue) obj;
+        if (dblValue == null) {
+            return other.dblValue == null;
+        }
+
+        return dblValue.equals(other.dblValue);
+    }
 }

@@ -17,23 +17,30 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.valueconverters;
-
-import org.openepics.discs.conf.ent.values.TimestampValue;
-import org.openepics.seds.api.datatypes.SedsTime;
+package org.openepics.discs.conf.util;
 
 /**
+ * Runtime exception for the conversion utility.
+ *
  * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  *
  */
-public class TimestampValueConverter extends ValueConverter<TimestampValue> {
+public class ConversionException extends RuntimeException {
 
-    @Override
-    public Class<TimestampValue> getType() { return TimestampValue.class; }
-
-    @Override
-    public String convertToDatabaseColumn(TimestampValue attribute) {
-        final SedsTime sedsTime = sedsFactory.getFactory().newTime(attribute.getTimestampValue(), null);
-        return sedsDbConverter.serialize(sedsTime).toString();
+    public ConversionException() {
+        super();
     }
+
+    public ConversionException(String msg) {
+        super(msg);
+    }
+
+    public ConversionException(String msg, Throwable cause) {
+        super(msg, cause);
+    }
+
+    public ConversionException(Throwable cause) {
+        super(cause);
+    }
+
 }

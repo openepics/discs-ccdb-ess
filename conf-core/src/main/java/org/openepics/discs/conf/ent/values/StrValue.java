@@ -32,4 +32,36 @@ public class StrValue implements Value {
 
     @Override
     public String toString() { return strValue; }
+
+    @Override
+    public String auditLogString(int... dimensions) {
+        if (dimensions.length > 2) {
+            throw new IllegalArgumentException("Invalid number of parameter.");
+        }
+        return strValue;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((strValue == null) ? 0 : strValue.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof StrValue)) {
+            return false;
+        }
+        StrValue other = (StrValue) obj;
+        if (strValue == null) {
+            return other.strValue == null;
+        }
+
+        return strValue.equals(other.strValue);
+    }
 }

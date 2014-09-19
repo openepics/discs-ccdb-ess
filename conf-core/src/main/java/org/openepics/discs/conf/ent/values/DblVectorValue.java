@@ -24,7 +24,6 @@ import com.google.common.base.Preconditions;
  *
  */
 public class DblVectorValue implements Value {
-    private static final int MAX_ELEMENTS = 5;
 
     private final List<Double> dblVectorValue;
 
@@ -39,6 +38,16 @@ public class DblVectorValue implements Value {
 
     @Override
     public String toString() {
+        return auditLogString(5);
+    }
+
+    @Override
+    public String auditLogString(int... dimensions) {
+        if (dimensions.length < 1 || dimensions.length > 2) {
+            throw new IllegalArgumentException("Invalid number of parameters");
+        }
+
+        final int MAX_ELEMENTS = dimensions[0];
         final StringBuilder retStr = new StringBuilder();
         final int vectorSize = dblVectorValue.size();
         int rowIndex = 0;
@@ -57,5 +66,29 @@ public class DblVectorValue implements Value {
         }
         retStr.append(']');
         return retStr.toString();
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((dblVectorValue == null) ? 0 : dblVectorValue.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof DblVectorValue)) {
+            return false;
+        }
+        DblVectorValue other = (DblVectorValue) obj;
+        if (dblVectorValue == null) {
+            return other.dblVectorValue == null;
+        }
+
+        return dblVectorValue.equals(other.dblVectorValue);
     }
 }

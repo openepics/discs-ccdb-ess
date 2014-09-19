@@ -19,14 +19,24 @@
  */
 package org.openepics.discs.conf.util;
 
+import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.ParseException;
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
+import java.util.TimeZone;
 import java.util.regex.Pattern;
 
+import javax.json.Json;
+import javax.json.JsonReader;
+
+import org.epics.util.time.Timestamp;
+import org.openepics.discs.conf.ent.DataType;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.values.DblTableValue;
 import org.openepics.discs.conf.ent.values.DblValue;
@@ -39,6 +49,8 @@ import org.openepics.discs.conf.ent.values.StrVectorValue;
 import org.openepics.discs.conf.ent.values.TimestampValue;
 import org.openepics.discs.conf.ent.values.UrlValue;
 import org.openepics.discs.conf.ent.values.Value;
+import org.openepics.seds.api.datatypes.SedsEnum;
+import org.openepics.seds.core.Seds;
 
 import com.google.common.base.Preconditions;
 
@@ -151,7 +163,7 @@ public class Conversion {
         case DOUBLE:
             return new DblValue(Conversion.toDouble(strValue));
         case ENUM:
-            return new EnumValue(Conversion.toEnum(strValue));
+            return new EnumValue(Conversion.toEnum(strValue, property.getDataType()));
         case INTEGER:
             return new IntValue(Conversion.toInteger(strValue));
         case INT_VECTOR:
@@ -212,11 +224,11 @@ public class Conversion {
         try {
             final URL retUrl = new URL(str);
             if (!retUrl.getProtocol().startsWith("http") && !retUrl.getProtocol().equals("ftp")) {
-                throw new RuntimeException("Protocol must be either http, https or ftp.");
+                throw new ConversionException("Protocol must be either http, https or ftp.");
             }
             return retUrl;
         } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
+            throw new ConversionException(e);
         }
     }
 
@@ -226,7 +238,21 @@ public class Conversion {
 
     private static Integer toInteger(String str) { return Integer.valueOf(str.trim()); }
 
-    private static String toEnum(String str) { return str; }
+    private static String toEnum(String str, DataType dataType) {
+        JsonReader reader = Json.createReader(new StringReader(dataType.getDefinition()));
+        final SedsEnum sedsEnum = (SedsEnum) Seds.newDBConverter().deserialize(reader.readObject());
+        boolean foundValue = false;
+        for (String selectItem : sedsEnum.getElements()) {
+            if (selectItem.equals(str)) {
+                foundValue = true;
+                break;
+            }
+        }
+        if (!foundValue) {
+            throw new ConversionException("Enum selected value from the selection list.");
+        }
+        return str;
+    }
 
     private static List<String> toStrVector(String str) {
         final List<String> list = new ArrayList<>();
@@ -270,7 +296,101 @@ public class Conversion {
         return list;
     }
 
-    private static Date toTimestamp(String str) { return new Date(); } // TODO implement
+    /** This method parses the string into a timestamp. It accepts the following inputs:
+     * <ul>
+     * <li> yyyy-MM-dd : only the date in the ISO format.</li>
+     * <li> HH:mm:ss : only the time in which case the current date is assumed. The time is in 24-hour format.</li>
+     * <li> yyyy-MM-dd HH:mm:ss : the date and time. The time is in 24-hour format.</li>
+     * <li> yyyy-MM-dd HH:mm:ss.nnnnnnnnn : the timestamp with nanosecond precision.
+     *           The fractional part of the second can have any number of places up to 9.</li>
+     * </ul>
+     * In all cases the timestamp if without the time zone (or all timestamps are as UTC timestamps).
+     *
+     * @param str
+     * @return The Timestamp to store in the database.
+     */
+    public static Timestamp toTimestamp(String str) {
+        final String trimmedValue = str.trim();
+        final String dateStr;
+        final String nanosStr;
+
+        final long daySeconds = 60 * 60 * 24;
+        final long dayMillis = daySeconds * 1000;
+
+        int nanos = 0;
+        long unixtime = 0;
+
+        final int dotPos = trimmedValue.indexOf('.');
+
+        if (dotPos > -1) {
+            dateStr = trimmedValue.substring(0, dotPos);
+            if (trimmedValue.substring(dotPos + 1).length() < 9) {
+                nanosStr = (trimmedValue.substring(dotPos + 1) + "000000000").substring(0, 9); // .1 stands for 100000000 ns
+            } else {
+                nanosStr = trimmedValue.substring(dotPos + 1);
+            }
+            if (nanosStr.length() > 9) {
+                throw new ConversionException("Maximum accuracy allowed is nanoseconds.");
+            }
+        } else {
+            dateStr = trimmedValue;
+            nanosStr = "";
+        }
+        if (dateStr.charAt(dateStr.length() - 1) < '0' || dateStr.charAt(dateStr.length() - 1) > '9')
+            throw new ConversionException("Timestamp contains invalid characters.");
+
+        Date parsedDate;
+        final SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
+        simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        simpleDateFormat.setLenient(false);
+        if (nanosStr.isEmpty()) {
+            ParsePosition parsePos = new ParsePosition(0);
+            simpleDateFormat.applyPattern("yyyy-MM-dd HH:mm:ss");
+            parsedDate = simpleDateFormat.parse(dateStr, parsePos);
+            if (parsePos.getErrorIndex() >= 0) {
+                parsePos.setErrorIndex(-1); // clear error for new parser
+                simpleDateFormat.applyPattern("yyyy-MM-dd");
+                parsedDate = simpleDateFormat.parse(dateStr, parsePos);
+                if (parsePos.getErrorIndex() >= 0) {
+                    parsePos.setErrorIndex(-1); // clear error for new parser
+                    simpleDateFormat.applyPattern("HH:mm:ss");
+                    parsedDate = simpleDateFormat.parse(dateStr, parsePos);
+                    if (parsePos.getErrorIndex() >= 0) {
+                        throw new ConversionException("Cannot parse timestamp.");
+                    } else {
+                        if (parsePos.getIndex() < dateStr.length()) {
+                            throw new ConversionException("Cannot parse timestamp.");
+                        }
+                        final long todayDate = ((new Date()).getTime() / dayMillis) * daySeconds; // in unix time
+                        unixtime = (parsedDate.getTime() / 1000) + todayDate;
+                    }
+                } else {
+                    if (parsePos.getIndex() < dateStr.length()) {
+                        throw new ConversionException("Cannot parse timestamp.");
+                    }
+                    unixtime = parsedDate.getTime() / 1000;
+                }
+            } else {
+                if (parsePos.getIndex() < dateStr.length()) {
+                    throw new ConversionException("Cannot parse timestamp.");
+                }
+                unixtime = parsedDate.getTime() / 1000;
+            }
+        } else {
+            try {
+                simpleDateFormat.applyPattern("yyyy-MM-dd HH:mm:ss");
+                parsedDate = simpleDateFormat.parse(dateStr);
+                unixtime = parsedDate.getTime() / 1000;
+                nanos = Integer.parseInt(nanosStr);
+            } catch (ParseException e) {
+                throw new ConversionException("Cannot parse timestamp.", e);
+            } catch (NumberFormatException e1) {
+                throw new ConversionException("Cannot parse timestamp nanoseconds.", e1);
+            }
+        }
+
+        return Timestamp.of(unixtime, nanos);
+    }
 
     private static List<List<Double>> toDblTable(String str) {
         final List<List<Double>> table = new ArrayList<>();
@@ -295,7 +415,7 @@ public class Conversion {
                     if (rowLength < 0) {
                         rowLength = tableRow.size();
                     } else if (rowLength != tableRow.size()) {
-                        throw new RuntimeException("All rows must contain the same number of elements.");
+                        throw new ConversionException("All rows must contain the same number of elements.");
                     }
                     table.add(tableRow);
                 }
@@ -338,7 +458,26 @@ public class Conversion {
         return retStr.toString();
     }
 
-    private static String fromTimestamp(Date value) { return value.toString(); } // TODO implement
+    private static String fromTimestamp(Timestamp value) {
+        final Date dateTime = new Date();
+        dateTime.setTime(value.getSec() * 1000);
+
+        final int dayInSeconds = 60 * 60 * 24;
+        if (value.getSec() % dayInSeconds == 0 && value.getNanoSec() <= 0) {
+            final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+            return simpleDateFormat.format(dateTime);
+        }
+
+        final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        final StringBuilder returnString = new StringBuilder(simpleDateFormat.format(dateTime));
+        if (value.getNanoSec() > 0) {
+            returnString.append('.').append(Integer.toString(value.getNanoSec()).replaceAll("0*$", ""));
+        }
+
+        return returnString.toString();
+    }
 
     private static String fromDblTable(List<List<Double>> value) {
         StringBuilder retStr = new StringBuilder();

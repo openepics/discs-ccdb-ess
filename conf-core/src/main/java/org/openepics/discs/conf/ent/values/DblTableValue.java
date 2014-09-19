@@ -25,8 +25,6 @@ import com.google.common.base.Preconditions;
  *
  */
 public class DblTableValue implements Value {
-    private static final int ROWS = 5;
-    private static final int COLS = 3;
 
     private final List<List<Double>> dblTableValue;
 
@@ -41,20 +39,32 @@ public class DblTableValue implements Value {
 
     @Override
     public String toString() {
+        return auditLogString(5, 3);
+    }
+
+    @Override
+    public String auditLogString(int... dimensions) {
+        if (dimensions.length != 2) {
+            throw new IllegalArgumentException("Method expects two paramters for dimensions.");
+        }
+
+        final int COLS = dimensions[1];
+        final int ROWS = dimensions[0];
+
         final StringBuilder retStr = new StringBuilder();
         final int columnsSize = dblTableValue.size(); // number of columns in the table
         int colIndex = 0;
         retStr.append('[');
 
         for (List<Double> column : dblTableValue) {
-            appendSingleColumn(column, retStr);
+            appendSingleColumn(column, retStr, ROWS);
             colIndex++;
             if (colIndex < columnsSize) {
                 retStr.append(", ");
             }
             if ((columnsSize > COLS) && (colIndex >= COLS - 1)) {
                 retStr.append("..., ");
-                appendSingleColumn(dblTableValue.get(columnsSize - 1), retStr); // append last column
+                appendSingleColumn(dblTableValue.get(columnsSize - 1), retStr, ROWS); // append last column
                 break;
             }
         }
@@ -63,7 +73,7 @@ public class DblTableValue implements Value {
         return retStr.toString();
     }
 
-    private void appendSingleColumn(List<Double> column, StringBuilder retStr) {
+    private void appendSingleColumn(List<Double> column, StringBuilder retStr, final int ROWS) {
         final int rowsSize = column.size(); // number of rows in a column
         int rowIndex = 0;
         retStr.append('[');
@@ -80,5 +90,29 @@ public class DblTableValue implements Value {
             }
         }
         retStr.append(']');
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((dblTableValue == null) ? 0 : dblTableValue.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof DblTableValue)) {
+            return false;
+        }
+        DblTableValue other = (DblTableValue) obj;
+        if (dblTableValue == null) {
+            return other.dblTableValue == null;
+        }
+
+        return dblTableValue.equals(other.dblTableValue);
     }
 }
