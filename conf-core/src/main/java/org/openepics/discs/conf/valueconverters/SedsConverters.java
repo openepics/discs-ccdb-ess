@@ -25,7 +25,7 @@ import org.openepics.discs.conf.util.PropertyDataType;
 @Startup
 public class SedsConverters {
 
-    private static final Logger logger = Logger.getLogger(SedsConverter.class.getCanonicalName());
+    private static final Logger logger = Logger.getLogger(SedsConverterTest.class.getCanonicalName());
 
     private static final Map<Class<? extends Value>, ValueConverter<? extends Value>> converters = new ConcurrentHashMap<>();
 
@@ -59,5 +59,13 @@ public class SedsConverters {
         }
 
         return converter.convertToDatabaseColumn(attribute);
+    }
+
+    /**
+     * A method for initializing the <code>converters</code> static variable to be used from unit tests only.
+     * @param converters
+     */
+    protected static void setConverters(Map<Class<? extends Value>, ValueConverter<? extends Value>> converters) {
+        SedsConverters.converters.putAll(converters);
     }
 }

@@ -155,17 +155,15 @@ public class SedsConverter implements AttributeConverter<Value, String> {
             return intVectorValue;
         case NUMBER:
             final Number[] numbers = (Number[]) sedsScalarArray.getValueArray();
-            if (numbers instanceof Double[]) {
-                final List<Double> dValues = new ArrayList<Double>(Arrays.asList((Double[])sedsScalarArray.getValueArray()));
-                final DblVectorValue dblVecotrValue = new DblVectorValue(dValues);
-                return dblVecotrValue;
-            } else if (numbers instanceof Integer[]) {
-                iValues = new ArrayList<Integer>(Arrays.asList((Integer[])sedsScalarArray.getValueArray()));
-                intVectorValue = new IntVectorValue(iValues);
-                return intVectorValue;
-            } else {
-                throw new IllegalArgumentException("Unable to convert DB data: " + dbData);
+            final List<Double> dblValues = new ArrayList<>(numbers.length);
+            for (Number element : numbers) {
+                if (element instanceof Double) {
+                    dblValues.add((Double)element);
+                } else {
+                    throw new InvalidDataTypeException("Data type for table not Double.");
+                }
             }
+            return new DblVectorValue(dblValues);
         case STRING:
             final List<String> sValues = new ArrayList<String>(Arrays.asList((String[])sedsScalarArray.getValueArray()));
             final StrVectorValue strVectorValue = new StrVectorValue(sValues);
