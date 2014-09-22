@@ -11,11 +11,10 @@ package org.openepics.discs.conf.ui;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -26,12 +25,9 @@ import javax.inject.Named;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotRelationName;
-import org.openepics.discs.conf.ui.common.AlphanumComparator;
 import org.openepics.discs.conf.views.SlotView;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
-
-import com.google.common.collect.Lists;
 
 /**
  * Tree builder for tree presentation of {@link Slot}s
@@ -61,7 +57,6 @@ public class SlotsTreeBuilder implements Serializable {
      * @param selectableLevel the depth level starting from 0 below which (inclusively) node selection is made possible
      * @param selected the {@link Slot} in the resulting tree that should be preselected and the part of the tree containing
      * @param collapsedNodes set of collapsed nodes
-     * expanded
      * @return the root node of the tree
      */
     public TreeNode newSlotsTree(List<Slot> slots, int selectableLevel, Slot selected, Set<Long> collapsedNodes, boolean withInstallationSlots) {
@@ -106,6 +101,19 @@ public class SlotsTreeBuilder implements Serializable {
                 node = slot;
                 children = new ArrayList<>();
             }
+
+            private void add(SlotTreeNode child) {
+                ListIterator<SlotTreeNode> li = children.listIterator();
+                while (li.hasNext()) {
+                    SlotTreeNode currentNode = li.next();
+                    if (child.node.getId() < currentNode.node.getId()) {
+                        li.previous(); // insert before the current element
+                        break;
+                    }
+                }
+                // append at the end of the list
+                li.add(child);
+            }
         }
 
         private final SlotTreeNode root;
@@ -124,19 +132,15 @@ public class SlotsTreeBuilder implements Serializable {
         }
 
         private boolean hasNode(Slot slot) {
-            try {
-                return inventory.containsKey(slot.getId());
-            } catch (NullPointerException e) {
-                throw e;
-            }
+            return inventory.containsKey(slot.getId());
         }
 
         private void addChildToParent(@Nullable Long parentId, Slot slot) {
             final SlotTreeNode newNode = new SlotTreeNode(slot);
             if (parentId != null) {
-                inventory.get(parentId).children.add(newNode);
+                inventory.get(parentId).add(newNode);
             } else {
-                root.children.add(newNode);
+                root.add(newNode);
             }
             inventory.put(slot.getId(), newNode);
         }
@@ -156,7 +160,6 @@ public class SlotsTreeBuilder implements Serializable {
         }
 
         private TreeNode asViewTree(TreeNode parentNode, SlotTreeNode nprNode, int level) {
-            final List<TreeNode> children = Lists.newArrayList();
             for (SlotTreeNode child : nprNode.children) {
                 final TreeNode node = new DefaultTreeNode(new SlotView(child.node, (SlotView)parentNode.getData(), child.node.getParentSlotsPairList()), parentNode);
                 node.setExpanded(!collapsedNodes.contains(((SlotView) node.getData()).getId()));
@@ -166,19 +169,6 @@ public class SlotsTreeBuilder implements Serializable {
                     selectedTreeNode = node;
                 }
                 asViewTree(node, child, level+1);
-                children.add(node);
-            }
-            Collections.sort(children, new Comparator<TreeNode>() {
-                @Override public int compare(TreeNode left, TreeNode right) {
-                    final SlotView leftView = (SlotView) left.getData();
-                    final SlotView rightView = (SlotView) right.getData();
-                    final AlphanumComparator alphanumComparator = new AlphanumComparator();
-                    return alphanumComparator.compare(leftView.getName(), rightView.getName());
-                }
-            });
-            for (TreeNode child : children) {
-                parentNode.getChildren().add(child);
-                child.setParent(parentNode);
             }
             return parentNode;
         }

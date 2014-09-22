@@ -39,6 +39,11 @@ import org.primefaces.model.TreeNode;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
+/**
+ *
+ * @author Andraz Pozar <andraz.pozar@cosylab.com>
+ *
+ */
 @Named
 @ViewScoped
 public class InstallationSlotsController extends AbstractSlotsController {
@@ -168,7 +173,8 @@ public class InstallationSlotsController extends AbstractSlotsController {
     }
 
     private boolean canRelationshipBeDeleted() {
-        return !(selectedRelationship.getSlotPair().getSlotRelation().getName() == SlotRelationName.CONTAINS && !slotPairEJB.slotHasMoreThanOneContainsRelation(selectedRelationship.getSlotPair().getChildSlot()));
+        return !(selectedRelationship.getSlotPair().getSlotRelation().getName() == SlotRelationName.CONTAINS
+                && !slotPairEJB.slotHasMoreThanOneContainsRelation(selectedRelationship.getSlotPair().getChildSlot()));
     }
 
     /**
@@ -266,7 +272,7 @@ public class InstallationSlotsController extends AbstractSlotsController {
      * @return {@link List} of strings with suggestions
      */
     public List<String> nameAutocompleteText(String query) {
-        final List<String> resultList = new ArrayList<String>();
+        final List<String> resultList = new ArrayList<>();
         final String queryUpperCase = query.toUpperCase();
         for (String element : namesForAutoComplete) {
             if (element.toUpperCase().startsWith(queryUpperCase))
