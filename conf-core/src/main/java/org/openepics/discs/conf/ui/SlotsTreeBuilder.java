@@ -111,13 +111,13 @@ public class SlotsTreeBuilder implements Serializable {
                         break;
                     }
                 }
-                // append at the end of the list
+                // append at the current position, if the loop has run through, it is the end of the list.
                 li.add(child);
             }
         }
 
         private final SlotTreeNode root;
-        private final HashMap<Long, SlotTreeNode> inventory;
+        private final HashMap<Long, List<SlotTreeNode>> inventory;
         private final int selectableLevel;
         private final Slot selectedSlot;
         private TreeNode selectedTreeNode;
@@ -138,11 +138,20 @@ public class SlotsTreeBuilder implements Serializable {
         private void addChildToParent(@Nullable Long parentId, Slot slot) {
             final SlotTreeNode newNode = new SlotTreeNode(slot);
             if (parentId != null) {
-                inventory.get(parentId).add(newNode);
+                for (SlotTreeNode aNodeInstance : inventory.get(parentId)) {
+                    aNodeInstance.add(newNode);
+                }
             } else {
                 root.add(newNode);
             }
-            inventory.put(slot.getId(), newNode);
+            final List<SlotTreeNode> listOfTreeNodesWithSameSlot;
+            if (inventory.containsKey(slot.getId())) {
+                listOfTreeNodesWithSameSlot = inventory.get(slot.getId());
+            } else {
+                listOfTreeNodesWithSameSlot = new ArrayList<>();
+                inventory.put(slot.getId(), listOfTreeNodesWithSameSlot);
+            }
+            listOfTreeNodesWithSameSlot.add(newNode);
         }
 
         private TreeNode asViewTree() {
@@ -177,5 +186,4 @@ public class SlotsTreeBuilder implements Serializable {
             return (selectedSlot != null) && (selectedSlot.equals(node.getData()));
         }
     }
-
 }
