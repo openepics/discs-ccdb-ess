@@ -25,7 +25,7 @@ import org.openepics.discs.conf.util.PropertyDataType;
 @Startup
 public class SedsConverters {
 
-    private static final Logger logger = Logger.getLogger(SedsConverterTest.class.getCanonicalName());
+    private static final Logger logger = Logger.getLogger(SedsConverter.class.getCanonicalName());
 
     private static final Map<Class<? extends Value>, ValueConverter<? extends Value>> converters = new ConcurrentHashMap<>();
 
