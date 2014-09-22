@@ -39,7 +39,7 @@ public class SlotView {
     private Double globalRoll;
     private Double globalYaw;
 
-    public SlotView (Slot slot, SlotView parentNode, List<SlotPair> children) {
+    public SlotView(Slot slot, SlotView parentNode, List<SlotPair> children) {
         this.slot = slot;
         this.name = slot.getName();
         this.description = slot.getDescription();
@@ -59,7 +59,7 @@ public class SlotView {
         for (SlotPair child : children) {
             if (child.getSlotRelation().getName() == SlotRelationName.CONTAINS) {
                 canDelete = false;
-                 break;
+                break;
             }
         }
     }
@@ -93,7 +93,4 @@ public class SlotView {
     public Double getGlobalRoll() { return globalRoll; }
 
     public Double getGlobalYaw() { return globalYaw; }
-
-
-
 }

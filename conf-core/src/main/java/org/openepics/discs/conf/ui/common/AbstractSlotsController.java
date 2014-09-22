@@ -36,6 +36,10 @@ import org.primefaces.event.NodeCollapseEvent;
 import org.primefaces.event.NodeExpandEvent;
 import org.primefaces.model.TreeNode;
 
+/**
+ * @author Andraz Pozar <andraz.pozar@cosylab.com>
+ *
+ */
 public abstract class AbstractSlotsController implements Serializable{
 
     @Inject protected SlotsTreeBuilder slotsTreeBuilder;
@@ -70,7 +74,8 @@ public abstract class AbstractSlotsController implements Serializable{
     }
 
     /**
-     * From fields populated in pop up creates new container and saves it.
+     * From fields populated in pop up creates new container and saves it. This method implicitly works on the
+     * <code>newSlot</code> field, which must be set by the descendants.
      */
     protected void onSlotAdd() {
         if (selectedNode != null) {
@@ -169,7 +174,4 @@ public abstract class AbstractSlotsController implements Serializable{
 
     public SlotView getSelectedSlotView() { return selectedSlotView; }
     public void setSelectedSlotView(SlotView selectedSlotView) { this.selectedSlotView = selectedSlotView; }
-
-
-
 }
