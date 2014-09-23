@@ -19,12 +19,17 @@
                         <p:commandButton value="Add relationship" actionListener="#{installationSlotsController.prepareAddRelationshipPopup}" oncomplete="addSlotRelationship.show()" update=":addSlotRelationshipForm"/>
                     </p:column>
                     <p:column style="text-align: letf">
-                        <p:commandButton id="deleteRelationship" value="Delete relationship" disabled="#{installationSlotsController.selectedRelationship == null}" action="#{installationSlotsController.onRelationshipDelete}" update=":#{formId}:relationshipTable"/>
+                        <p:commandButton id="deleteRelationship" value="Delete relationship" 
+                            disabled="#{installationSlotsController.selectedRelationship == null}" 
+                            action="#{installationSlotsController.onRelationshipDelete}" update=":#{formId}:relationshipTable"/>
                     </p:column>
                 </p:row>
                 <p:row>
                     <p:column colspan="2">
-                        <p:dataTable value="#{installationSlotsController.relationships}" id="relationshipTable" var="relationship" selectionMode="single" rowKey="#{relationship.relationshipName}" selection="#{installationSlotsController.selectedRelationship}" paginator="false" scrollable="true" scrollHeight="200">
+                        <p:dataTable value="#{installationSlotsController.relationships}" id="relationshipTable" 
+                            var="relationship" selectionMode="single" rowKey="#{relationship.slotPair.id}" 
+                            selection="#{installationSlotsController.selectedRelationship}" paginator="false" 
+                            scrollable="true" scrollHeight="200">
                             <p:ajax event="rowSelect" update=":#{formId}:deleteRelationship" />
                             <p:ajax event="rowUnselect" update=":#{formId}:deleteRelationship" />
                             
@@ -39,7 +44,8 @@
                 </p:row>
 			</p:panelGrid>
 			
-			<p:commandButton value="Close" style="float: right" onclick="#{widgetName}.hide();" />
+			<p:commandButton value="Close" style="float: right" onclick="#{widgetName}.hide();" 
+                    action="#{installationSlotsController.onRelationshipPopupClose}" update=":installationSlotsForm" />
 		</p:dialog>
 	</h:form>
 	

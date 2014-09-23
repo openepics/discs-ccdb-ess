@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2014 European Spallation Source
  * Copyright (c) 2014 Cosylab d.d.
  *
@@ -36,6 +36,7 @@ import org.openepics.discs.conf.views.SlotView;
 import org.primefaces.context.RequestContext;
 import org.primefaces.model.TreeNode;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
@@ -67,7 +68,7 @@ public class InstallationSlotsController extends AbstractSlotsController {
     private String selectedRelationshipType;
     private List<String> relationshipTypes;
     private Map<String, SlotRelation> slotRelationBySlotRelationStringName;
-
+    private SlotView selectedSlotForRelationships;
 
     @PostConstruct
     public void init() {
@@ -149,15 +150,28 @@ public class InstallationSlotsController extends AbstractSlotsController {
     }
 
     private void prepareRelationshipsPopup() {
+        Preconditions.checkNotNull(selectedSlotForRelationships);
         selectedRelationship = null;
+        final Slot freshSlot = slotEJB.findById(selectedSlotForRelationships.getSlot().getId());
         relationships = Lists.newArrayList();
-        for (SlotPair slotPair : selectedSlotView.getSlot().getChildrenSlotsPairList()) {
-            relationships.add(new SlotRelationshipView(slotPair, selectedSlotView.getSlot()));
+        for (SlotPair slotPair : freshSlot.getChildrenSlotsPairList()) {
+            relationships.add(new SlotRelationshipView(slotPair, selectedSlotForRelationships.getSlot()));
         }
 
-        for (SlotPair slotPair : selectedSlotView.getSlot().getParentSlotsPairList()) {
-            relationships.add(new SlotRelationshipView(slotPair, selectedSlotView.getSlot()));
+        for (SlotPair slotPair : freshSlot.getParentSlotsPairList()) {
+            relationships.add(new SlotRelationshipView(slotPair, selectedSlotForRelationships.getSlot()));
         }
+    }
+
+    /**
+     * This method rebuilds the tree so that all displayed slots are refreshed. This is important for refreshing the
+     * relationship status of all displayed slots. Otherwise the information can get out of synch with the database.
+     */
+    public void onRelationshipPopupClose() {
+        if (selectedNode != null) {
+            selectedNode.setSelected(true);
+        }
+        updateRootNode();
     }
 
     /**
@@ -181,6 +195,9 @@ public class InstallationSlotsController extends AbstractSlotsController {
      * Prepares data for adding new relationship
      */
     public void prepareAddRelationshipPopup() {
+        if (selectedNode != null) {
+            selectedNode.setSelected(false);
+        }
         if (selectedTreeNodeForRelationshipAdd != null) {
             selectedTreeNodeForRelationshipAdd.setSelected(false);
         }
@@ -215,12 +232,12 @@ public class InstallationSlotsController extends AbstractSlotsController {
         final Slot childSlot;
         if (slotRelation.getNameAsString().equals(selectedRelationshipType)) {
             childSlot = ((SlotView) selectedTreeNodeForRelationshipAdd.getData()).getSlot();
-            parentSlot = selectedSlotView.getSlot();
+            parentSlot = selectedSlotForRelationships.getSlot();
         } else {
-            childSlot = selectedSlotView.getSlot();
+            childSlot = selectedSlotForRelationships.getSlot();
             parentSlot = ((SlotView) selectedTreeNodeForRelationshipAdd.getData()).getSlot();
         }
-
+        // TODO do not create the same relationship twice
         final SlotPair newSlotPair = new SlotPair(childSlot, parentSlot, slotRelation);
         if (!slotPairEJB.slotPairCreatesLoop(newSlotPair, childSlot)) {
             slotPairEJB.add(newSlotPair);
@@ -237,9 +254,7 @@ public class InstallationSlotsController extends AbstractSlotsController {
         namesForAutoComplete = ImmutableList.copyOf(names.getAllNames());
     }
 
-    public List<SlotRelationshipView> getRelationships() {
-        return relationships;
-    }
+    public List<SlotRelationshipView> getRelationships() { return relationships; }
 
     public ComponentType getDeviceType() { return deviceType; }
     public void setDeviceType(ComponentType deviceType) { this.deviceType = deviceType; }
@@ -288,7 +303,7 @@ public class InstallationSlotsController extends AbstractSlotsController {
      * @param selectedSlotView selected {@link SlotView}
      */
     public void setSelectedSlotViewForRelationships(SlotView selectedSlotView) {
-        this.selectedSlotView = selectedSlotView;
+        this.selectedSlotForRelationships = selectedSlotView;
         prepareRelationshipsPopup();
     }
 

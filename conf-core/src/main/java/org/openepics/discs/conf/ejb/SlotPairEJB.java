@@ -1,3 +1,16 @@
+/*
+ * Copyright (c) 2014 European Spallation Source
+ * Copyright (c) 2014 Cosylab d.d.
+ *
+ * This file is part of Controls Configuration Database.
+ * Controls Configuration Database is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU General Public License as published by the Free Software Foundation, either version 2 of the License, or any
+ * newer version.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with this program. If not, see
+ * https://www.gnu.org/licenses/gpl-2.0.txt
+ */
 package org.openepics.discs.conf.ejb;
 
 import java.util.List;
@@ -53,10 +66,14 @@ public class SlotPairEJB extends DAO<SlotPair> {
 
     @Override
     public void add(SlotPair entity) {
+        Preconditions.checkNotNull(entity);
+        final Slot parentSlot = em.merge(entity.getParentSlot());
+        final Slot childSlot = em.merge(entity.getChildSlot());
+        entity.setParentSlot(parentSlot);
+        entity.setChildSlot(childSlot);
+        childSlot.getChildrenSlotsPairList().add(entity);
+        parentSlot.getParentSlotsPairList().add(entity);
         super.add(entity);
-        entity.getChildSlot().getChildrenSlotsPairList().add(entity);
-        entity.getParentSlot().getParentSlotsPairList().add(entity);
-        em.merge(entity.getChildSlot());
 	}
 
     /**
