@@ -306,8 +306,7 @@ public class InstallationSlotsController extends AbstractSlotsController {
         this.selectedSlotForRelationships = selectedSlotView;
         prepareRelationshipsPopup();
     }
-
-    public SlotView getSelectedSlotViewForRelationships() { return selectedSlotView; }
+    public SlotView getSelectedSlotViewForRelationships() { return selectedSlotForRelationships; }
 
     public SlotRelationshipView getSelectedRelationship() { return selectedRelationship; }
     public void setSelectedRelationship(SlotRelationshipView selectedRelationship) { this.selectedRelationship = selectedRelationship; }
