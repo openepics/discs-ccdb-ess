@@ -35,6 +35,7 @@ import org.openepics.discs.conf.ent.SlotRelation;
 import org.openepics.discs.conf.ent.SlotRelationName;
 import org.openepics.discs.conf.ent.User;
 import org.openepics.discs.conf.ent.UserRole;
+import org.openepics.discs.conf.util.PropertyDataType;
 import org.openepics.seds.api.datatypes.SedsEnum;
 import org.openepics.seds.core.Seds;
 
@@ -166,20 +167,18 @@ public class InitialDBPopulation {
         privilege.setRole(role);
         em.persist(privilege);
 
-        em.persist(createDataType("Integer", "Integer number", true, null));
-        em.persist(createDataType("Double", "Double precision floating point", true, null));
-        em.persist(createDataType("String", "String of characters (text)", true, null));
-        em.persist(createDataType("Timestamp", "Date and time", true, null));
-        em.persist(createDataType("URL", "string of characters which is known to contain URL", true, null));
-        em.persist(createDataType("Integers Vector", "ector of integer numbers (1D array)", false, null));
-        em.persist(createDataType("Doubles Vector", "Vector of double precision numbers (1D array)", false, null));
-        em.persist(createDataType("Strings List", "List of strings (1D array)", false, null));
-        em.persist(createDataType("Doubles Table", "Table of double precision numbers (2D array)", false, null));
+        em.persist(createDataType(PropertyDataType.INTEGER.toString(), "Integer number", true, null));
+        em.persist(createDataType(PropertyDataType.DOUBLE.toString(), "Double precision floating point", true, null));
+        em.persist(createDataType(PropertyDataType.STRING.toString(), "String of characters (text)", true, null));
+        em.persist(createDataType(PropertyDataType.TIMESTAMP.toString(), "Date and time", true, null));
+        em.persist(createDataType(PropertyDataType.URL.toString(), "String of characters which is known to contain an URL", true, null));
+        em.persist(createDataType(PropertyDataType.INT_VECTOR.toString(), "Vector of integer numbers (1D array)", false, null));
+        em.persist(createDataType(PropertyDataType.DBL_VECTOR.toString(), "Vector of double precision numbers (1D array)", false, null));
+        em.persist(createDataType(PropertyDataType.STRING_LIST.toString(), "List of strings (1D array)", false, null));
+        em.persist(createDataType(PropertyDataType.DBL_TABLE.toString(), "Table of double precision numbers (2D array)", false, null));
 
         final SedsEnum testEnum = Seds.newFactory().newEnum("TEST1", new String[] {"TEST1", "TEST2", "TEST3", "TEST4"});
         JsonObject jsonEnum = Seds.newDBConverter().serialize(testEnum);
-
-
         em.persist(createDataType("Test enums", "Testing of enums", false, jsonEnum.toString()));
 
         em.persist(createSlotRelation(SlotRelationName.CONTAINS));

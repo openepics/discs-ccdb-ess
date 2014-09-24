@@ -1,15 +1,24 @@
-/**
+/*
  * Copyright (c) 2014 European Spallation Source
  * Copyright (c) 2014 Cosylab d.d.
  *
  * This file is part of Controls Configuration Database.
- * Controls Configuration Database is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 2 of the License, or any newer version.
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License along with this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
+ *
+ * Controls Configuration Database is free software: you can redistribute it
+ * and/or modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 2 of the License,
+ * or any newer version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
 package org.openepics.discs.conf.ui;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Set;
 
@@ -22,7 +31,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.openepics.discs.conf.ejb.PropertyEJB;
 import org.openepics.discs.conf.ejb.SlotEJB;
-import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyAssociation;
@@ -31,7 +39,6 @@ import org.openepics.discs.conf.ent.SlotArtifact;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.ent.Tag;
 import org.openepics.discs.conf.ui.common.AbstractAttributesController;
-import org.openepics.discs.conf.util.CCDBRuntimeException;
 import org.openepics.discs.conf.views.EntityAttributeView;
 
 import com.google.common.base.Predicate;
@@ -44,16 +51,18 @@ import com.google.common.collect.ImmutableList;
  */
 @Named
 @ViewScoped
-public class ContainerAttributesController extends AbstractAttributesController<SlotPropertyValue, SlotArtifact> {
+public class SlotAttributesController extends AbstractAttributesController<SlotPropertyValue, SlotArtifact> {
+
     @Inject private SlotEJB slotEJB;
     @Inject private PropertyEJB propertyEJB;
 
     private Slot slot;
-    private String parentContainer;
+    private String parentSlot;
 
     @PostConstruct
     public void init() {
-        final Long id = Long.parseLong(((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest()).getParameter("id"));
+        final Long id = Long.parseLong(((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext()
+                .getRequest()).getParameter("id"));
         slot = slotEJB.findById(id);
         super.setArtifactClass(SlotArtifact.class);
         super.setPropertyValueClass(SlotPropertyValue.class);
@@ -63,18 +72,23 @@ public class ContainerAttributesController extends AbstractAttributesController<
 
         populateAttributesList();
         filterProperties();
-        parentContainer = !slot.getChildrenSlotsPairList().isEmpty() ? slot.getChildrenSlotsPairList().get(0).getParentSlot().getName() : null;
+        parentSlot = slot.getChildrenSlotsPairList().size() > 0
+                ? slot.getChildrenSlotsPairList().get(0).getParentSlot().getName()
+                        : null;
     }
 
     /**
-     * Redirection back to view of all {@link ComponentType}s
+     * Redirection back to view of all container {@link Slot}s
      */
-    public void containerRedirect() {
-        try {
-            FacesContext.getCurrentInstance().getExternalContext().redirect("containers-manager.xhtml");
-        } catch (IOException e) {
-            throw new CCDBRuntimeException(e);
-        }
+    public String containerRedirect() {
+        return "containers-manager.xhtml?faces-redirect=true";
+    }
+
+    /**
+     * Redirection back to view of all installation {@link Slot}s
+     */
+    public String installSlotRedirect() {
+        return "installation-slots-manager.xhtml?faces-redirect=true";
     }
 
     @Override
@@ -83,9 +97,7 @@ public class ContainerAttributesController extends AbstractAttributesController<
         slot = slotEJB.findById(slot.getId());
 
         for (ComptypePropertyValue parentProp : parentProperties) {
-            if (parentProp.getPropValue() != null) {
-                attributes.add(new EntityAttributeView(parentProp));
-            }
+            if (parentProp.getPropValue() != null) attributes.add(new EntityAttributeView(parentProp));
         }
 
         for (SlotPropertyValue prop : slot.getSlotPropertyList()) {
@@ -107,14 +119,15 @@ public class ContainerAttributesController extends AbstractAttributesController<
             @Override
             public boolean apply(Property property) {
                 final PropertyAssociation propertyAssociation = property.getAssociation();
-                return propertyAssociation == PropertyAssociation.ALL || propertyAssociation == PropertyAssociation.SLOT || propertyAssociation == PropertyAssociation.SLOT_DEVICE || propertyAssociation == PropertyAssociation.TYPE_SLOT;
+                return propertyAssociation == PropertyAssociation.ALL || propertyAssociation == PropertyAssociation.SLOT
+                        || propertyAssociation == PropertyAssociation.SLOT_DEVICE
+                        || propertyAssociation == PropertyAssociation.TYPE_SLOT;
             }
         }));
     }
 
     /**
      * Returns {@link Slot} for which attributes are being manipulated
-     * @return the {@link Slot}
      */
     public Slot getSlot() {
         return slot;
@@ -130,9 +143,7 @@ public class ContainerAttributesController extends AbstractAttributesController<
         child.setSlot(slot);
     }
 
-    public String getParentContainer() {
-        return parentContainer;
-    }
+    public String getParentSlot() { return parentSlot; }
 
     @Override
     protected void setTagParent(Tag tag) {
@@ -148,4 +159,5 @@ public class ContainerAttributesController extends AbstractAttributesController<
         slot.getTags().remove(tag);
         slotEJB.save(slot);
     }
+
 }

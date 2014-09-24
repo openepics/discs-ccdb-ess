@@ -1,0 +1,166 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html">
+
+    <h:form id="#{formId}">
+        <p:dialog id="#{widgetName}" widgetVar="#{widgetName}" modal="true" resizable="false" closable="false"
+            width="55em" dynamic="true">
+            <f:facet name="header">
+                <h:outputText value="#{dialogTitle}" />
+            </f:facet>
+
+            <p:panelGrid id="grp" width="100%" styleClass="noBorders">
+                <p:row>
+                    <p:column style="vertical-align: top;">
+                        <p:panelGrid id="deviceBasic" styleClass="noBorders">
+                            <p:row>
+                                <p:column style="text-align: right">
+                                    <p:outputLabel for="compTypeSelect" value="Device Type:" />
+                                </p:column>
+                                <p:column>
+                                    <h:panelGroup>
+                                    <p:selectOneMenu id="compTypeSelect" value="#{installationSlotsController.deviceType}" var="dev" converter="#{componentTypeConverter}" 
+                                            rendered="true" required="true" requiredMessage="Please select a device type" style="width: 100%">
+                                        <f:selectItem itemLabel="Select One" itemValue="" />
+                                        <f:selectItems value="#{componentTypeManager.objects}" var="deviceType" itemLabel="#{deviceType.name}" itemValue="#{deviceType}" />
+                                        <p:column>  
+                                            #{dev.name}
+                                        </p:column>                    
+                                    </p:selectOneMenu>
+                                    <p:message for="compTypeSelect"/>
+                                </h:panelGroup>
+                                </p:column>
+                            </p:row>
+                        
+                            <p:row>
+                                <p:column style="text-align: right">
+                                    <p:outputLabel for="installSlotName" value="Installation Slot Name:" />
+                                </p:column>
+                                <p:column>
+                                    <h:panelGroup>
+                                        <p:autoComplete id="installSlotName" value="#{installationSlotsController.name}" completeMethod="#{installationSlotsController.nameAutocompleteText}"
+                                            required="true" requiredMessage="Please enter an installation slot name" />
+                                        <p:message for="installSlotName" />
+                                    </h:panelGroup>
+                                </p:column>
+                            </p:row>
+                                    
+                            <p:row>
+                                <p:column style="text-align: right">
+		                            <p:outputLabel for="installSlotDesc" value="Description:" />
+		                        </p:column>
+		                        <p:column>
+		                            <h:panelGroup style="width: 100%">
+		                                <p:inputTextarea id="installSlotDesc" rows="5" style="width: 100%"
+		                                    counter="icounter" maxlength="254"
+		                                    counterTemplate="{0} characters remaining." required="true"
+		                                    requiredMessage="Please enter a description"
+		                                    value="#{installationSlotsController.description}" />
+		                                <br />
+		                                <h:outputText id="icounter" />
+		                                <p:message for="installSlotDesc" />
+		                            </h:panelGroup>
+		                        </p:column>
+                            </p:row>
+                            
+                            <p:row>
+                                <p:column style="text-align: right">
+                                    <p:outputLabel for="parent" value="Parent:" />
+                                </p:column>
+                                <p:column>
+                                    <p:inputText id="parent" value="#{installationSlotsController.parentSlotView.name}" disabled="true"/>
+                                </p:column>
+                            </p:row>
+                        </p:panelGrid>
+                    </p:column>
+                    <p:column>
+                        <p:panelGrid id="slotPosition" styleClass="noBorders">
+	                       <p:row>
+		                       <p:column style="text-align: left">
+		                           <p:outputLabel for="position" value="Beamline position:" />
+		                       </p:column>
+		                       <p:column>
+			                        <p:inputText id="position" value="#{installationSlotsController.beamlinePosition}" />
+		                       </p:column>
+		                   </p:row>
+		                   <p:row>
+		                       <p:column colspan="2">
+			                       <p:fieldset legend="Global position">
+			                           <p:panelGrid styleClass="noBorders">
+			                               <p:row>
+			                                   <p:column>
+                                                   <p:outputLabel for="globalX" value="X:" />
+                                               </p:column>
+					                           <p:column>
+					                               <p:inputText id="globalX" value="#{installationSlotsController.globalX}" /> 
+					                           </p:column>
+					                        </p:row>
+					                        <p:row>
+					                           <p:column>
+					                               <p:outputLabel for="globalY" value="Y:" />
+					                           </p:column>
+				                               <p:column>
+					                               <p:inputText id="globalY" value="#{installationSlotsController.globalY}" /> 
+					                           </p:column>
+					                        </p:row>
+                                            <p:row>
+					                           <p:column>	                               
+					                               <p:outputLabel for="globalZ" value="Z:" />
+					                           </p:column>
+					                           <p:column>	                          
+					                               <p:inputText id="globalZ" value="#{installationSlotsController.globalZ}" /> 
+					                           </p:column>
+					                        </p:row>
+				                        </p:panelGrid>
+			                       </p:fieldset>
+			                   </p:column>
+		                   </p:row>
+		                    <p:row>
+		                       <p:column colspan="2">
+			                       <p:fieldset legend="Global alignment">
+			                           <p:panelGrid styleClass="noBorders">
+			                               <p:row>
+			                                   <p:column>
+                                                    <p:outputLabel for="globalPitch" value="Pitch:" />
+                                               </p:column>
+					                           <p:column>
+					                               <p:inputText id="globalPitch" value="#{installationSlotsController.globalPitch}" /> 
+					                           </p:column>
+					                        </p:row>
+                                            <p:row>
+					                           <p:column>
+				                                    <p:outputLabel for="globalRoll" value="Roll:" />
+				                               </p:column>
+				                               <p:column>
+				                                    <p:inputText id="globalRoll" value="#{installationSlotsController.globalRoll}" /> 
+					                           </p:column>
+					                        </p:row>
+                                            <p:row>
+					                           <p:column>
+				                                   <p:outputLabel for="globalYaw" value="Yaw:" />
+				                               </p:column>
+				                               <p:column>
+				                                   <p:inputText id="globalYaw" value="#{installationSlotsController.globalYaw}" /> 
+					                           </p:column>
+				                           </p:row>
+				                       </p:panelGrid>
+			                       </p:fieldset>
+			                   </p:column>
+	                       </p:row>
+	                     </p:panelGrid>
+                    </p:column>
+                </p:row>
+            </p:panelGrid>
+            
+            <p:commandButton value="Cancel" style="float: right" onclick="#{widgetName}.hide();" update="grp" resetValues="true" />
+            <p:commandButton value="Save" style="float: right;" oncomplete="if (args &amp;&amp; !args.validationFailed) #{widgetName}.hide(); resizePanel() "
+                action="#{installationSlotsController[submitHandler]}" update=":installationSlotsForm:installationSlotsTree grp" />
+            
+        </p:dialog>
+    </h:form>
+
+</ui:composition>

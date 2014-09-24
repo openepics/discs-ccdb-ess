@@ -26,6 +26,8 @@ import org.openepics.discs.conf.ejb.AlignmentEJB;
 import org.openepics.discs.conf.ent.AlignmentArtifact;
 import org.openepics.discs.conf.ent.AlignmentPropertyValue;
 import org.openepics.discs.conf.ent.AlignmentRecord;
+import org.openepics.discs.conf.ent.values.StrValue;
+import org.openepics.discs.conf.ent.values.Value;
 import org.openepics.discs.conf.util.BlobStore;
 import org.openepics.discs.conf.util.Utility;
 import org.primefaces.context.RequestContext;
@@ -214,7 +216,7 @@ public class AlignmentManager implements Serializable {
                     RequestContext.getCurrentInstance().addCallbackParam("success", false);
                     return;
                 }
-                inputProperty.setPropValue(repoFileId);
+                inputProperty.setPropValue(new StrValue(repoFileId));
             }
 
             if (propertyOperation == 'a') {
@@ -260,7 +262,11 @@ public class AlignmentManager implements Serializable {
         StreamedContent file = null;
         try {
             logger.log(Level.INFO, "Opening stream from repository: " + selectedProperty.getPropValue());
-            InputStream istream = blobStore.retreiveFile(selectedProperty.getPropValue());
+            Value propValue = selectedProperty.getPropValue();
+            if (!(propValue instanceof StrValue))
+                throw new Exception("Selected property type incorrect");
+
+            InputStream istream = blobStore.retreiveFile(((StrValue)propValue).getStrValue());
             file = new DefaultStreamedContent(istream, "application/octet-stream", selectedProperty.getProperty().getName());
         } catch (Exception e) {
             Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error: Downloading file", e.getMessage());

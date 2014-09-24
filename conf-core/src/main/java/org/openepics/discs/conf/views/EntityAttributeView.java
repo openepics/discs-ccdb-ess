@@ -1,11 +1,21 @@
-/**
+/*
  * Copyright (c) 2014 European Spallation Source
  * Copyright (c) 2014 Cosylab d.d.
  *
  * This file is part of Controls Configuration Database.
- * Controls Configuration Database is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 2 of the License, or any newer version.
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License along with this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
+ *
+ * Controls Configuration Database is free software: you can redistribute it
+ * and/or modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 2 of the License,
+ * or any newer version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
 package org.openepics.discs.conf.views;
 
@@ -17,6 +27,9 @@ import org.openepics.discs.conf.ent.DataType;
 import org.openepics.discs.conf.ent.PropertyValue;
 import org.openepics.discs.conf.ent.Tag;
 import org.openepics.discs.conf.ent.Unit;
+import org.openepics.discs.conf.ent.values.StrValue;
+import org.openepics.discs.conf.ent.values.Value;
+import org.openepics.discs.conf.util.Conversion;
 import org.openepics.discs.conf.util.UnhandledCaseException;
 
 /**
@@ -27,7 +40,7 @@ public class EntityAttributeView {
     private String name;
     private @Nullable DataType type;
     private @Nullable Unit unit;
-    private @Nullable String value;
+    private @Nullable Value value;
     private @Nullable String kind;
     private boolean hasFile;
     private boolean hasURL;
@@ -75,14 +88,14 @@ public class EntityAttributeView {
         name = artifact.getName();
         hasFile = artifact.isInternal();
         hasURL = !artifact.isInternal();
-        value = artifact.getUri();
+        value = hasURL ? new StrValue(artifact.getUri()) : null;
         kind = "Artifact";
     }
 
     private void setTagParameters() {
         name = ((Tag) entity).getName();
         kind = "Tag";
-        value = "-";
+        value = new StrValue("-");
     }
 
     public String getName() {
@@ -98,7 +111,7 @@ public class EntityAttributeView {
     }
 
     public String getValue() {
-        return value;
+        return Conversion.valueToString(value);
     }
 
     public String getKind() {

@@ -282,6 +282,11 @@
                     <version>1.0.0</version>
                 </dependency>
                 <dependency>
+                    <groupId>org.openepics</groupId>
+                    <artifactId>names-client</artifactId>
+                    <version>3.0.1</version>
+                </dependency>
+                <dependency>
                     <groupId>org.postgresql</groupId>
                     <artifactId>postgresql</artifactId>
                     <version>9.3-1102-jdbc41</version>
@@ -397,6 +402,7 @@
                                             <includes>
                                                 <include>beans.xml</include>
                                                 <include>jboss-web.xml</include>
+                                                <include>jboss-all.xml</include>
                                             </includes>
                                         </resource>
                                     </resources>

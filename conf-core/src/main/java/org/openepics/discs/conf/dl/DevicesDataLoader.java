@@ -27,6 +27,7 @@ import org.openepics.discs.conf.ent.DeviceStatus;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyAssociation;
 import org.openepics.discs.conf.util.As;
+import org.openepics.discs.conf.util.Conversion;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
@@ -257,14 +258,14 @@ public class DevicesDataLoader extends AbstractDataLoader implements DataLoader 
                 if (propertyValue == null) {
                     deviceEJB.deleteChild(devicePropertyToUpdate);
                 } else {
-                    devicePropertyToUpdate.setPropValue(propertyValue);
+                    devicePropertyToUpdate.setPropValue(Conversion.stringToValue(propertyValue, property));
                     deviceEJB.saveChild(devicePropertyToUpdate);
                 }
 
             } else if (propertyValue != null) {
                 final DevicePropertyValue devicePropertyToAdd = new DevicePropertyValue(false);
                 devicePropertyToAdd.setProperty(property);
-                devicePropertyToAdd.setPropValue(propertyValue);
+                devicePropertyToAdd.setPropValue(Conversion.stringToValue(propertyValue, property));
                 devicePropertyToAdd.setDevice(device);
                 deviceEJB.addChild(devicePropertyToAdd);
             }

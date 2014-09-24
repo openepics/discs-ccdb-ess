@@ -1,6 +1,11 @@
 package org.openepics.discs.conf.ejb;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 import java.util.UUID;
@@ -19,6 +24,9 @@ import org.junit.runner.RunWith;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.Tag;
+import org.openepics.discs.conf.ent.values.DblValue;
+import org.openepics.discs.conf.ent.values.IntValue;
+import org.openepics.discs.conf.ent.values.Value;
 import org.openepics.discs.conf.util.TestUtility;
 
 /**
@@ -160,7 +168,7 @@ public class ComptypeEJBIT {
         compValue.setProperty( propertyService.findByName("CURRENT") );
         compValue.setComponentType(compType);
         compValue.setUnit( null );
-        final String propValue = "33.45";
+        final Value propValue = new DblValue(33.45);
         compValue.setPropValue(propValue);
 
         compTypesService.addChild(compValue);
@@ -168,7 +176,7 @@ public class ComptypeEJBIT {
         final ComponentType newCompType = compTypesService.findByName(SEARCH_COMP_TYPE_NAME);
         assertNotNull(newCompType);
         assertTrue(newCompType.getComptypePropertyList().contains(compValue));
-        final String newPropValue = newCompType.getComptypePropertyList().get( newCompType.getComptypePropertyList().indexOf(compValue) ).getPropValue();
+        final Value newPropValue = newCompType.getComptypePropertyList().get( newCompType.getComptypePropertyList().indexOf(compValue) ).getPropValue();
         assertEquals(newPropValue, propValue);
     }
 
@@ -178,12 +186,12 @@ public class ComptypeEJBIT {
     public void testSaveCompTypeProp() {
         final ComponentType compType = compTypesService.findByName(SEARCH_COMP_TYPE_NAME);
         final ComptypePropertyValue compValue = compType.getComptypePropertyList().get(0);
-        final String propValue = "22";
+        final Value propValue = new IntValue(22);
         compValue.setPropValue(propValue);
         compTypesService.saveChild(compValue);
 
         final ComponentType newCompType = compTypesService.findByName(SEARCH_COMP_TYPE_NAME);
-        final String newPropValue = newCompType.getComptypePropertyList().get( newCompType.getComptypePropertyList().indexOf(compValue) ).getPropValue();
+        final Value newPropValue = newCompType.getComptypePropertyList().get( newCompType.getComptypePropertyList().indexOf(compValue) ).getPropValue();
         assertEquals(propValue, newPropValue);
     }
 

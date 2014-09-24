@@ -22,6 +22,7 @@ import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyAssociation;
 import org.openepics.discs.conf.util.As;
+import org.openepics.discs.conf.util.Conversion;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
@@ -218,14 +219,14 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
                 if (propertyValue == null) {
                     comptypeEJB.deleteChild(compTypePropertyToUpdate);
                 } else {
-                    compTypePropertyToUpdate.setPropValue(propertyValue);
+                    compTypePropertyToUpdate.setPropValue(Conversion.stringToValue(propertyValue, property));
                     comptypeEJB.saveChild(compTypePropertyToUpdate);
                 }
 
             } else if (propertyValue != null) {
                 final ComptypePropertyValue comptypePropertyToAdd = new ComptypePropertyValue(false);
                 comptypePropertyToAdd.setProperty(property);
-                comptypePropertyToAdd.setPropValue(propertyValue);
+                comptypePropertyToAdd.setPropValue(Conversion.stringToValue(propertyValue, property));
                 comptypePropertyToAdd.setComponentType(compType);
                 comptypeEJB.addChild(comptypePropertyToAdd);
             }

@@ -11,6 +11,7 @@ import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyAssociation;
+import org.openepics.discs.conf.ent.values.IntValue;
 
 public class DeviceEntityLoggerTest {
 
@@ -29,8 +30,8 @@ public class DeviceEntityLoggerTest {
     public void setUp() {
         devicePropVal1.setProperty(prop1);
         devicePropVal2.setProperty(prop2);
-        devicePropVal1.setPropValue("10");
-        devicePropVal2.setPropValue("20");
+        devicePropVal1.setPropValue(new IntValue(10));
+        devicePropVal2.setPropValue(new IntValue(20));
         device.getDevicePropertyList().add(devicePropVal1);
         device.getDevicePropertyList().add(devicePropVal2);
         device.getDeviceArtifactList().add(artifact1);

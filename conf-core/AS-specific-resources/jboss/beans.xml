@@ -3,6 +3,11 @@
     xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/beans_1_0.xsd">
     <alternatives>
         <class>org.openepics.discs.conf.util.AppPropertiesJBoss</class>
+        <class>org.openepics.discs.conf.util.names.NamesForDevelopment</class>
+        <!-- To get list of names from ESS naming convention tool, replace upper
+         alternative with an alternative below.
+         <class>org.openepics.discs.conf.util.names.NamesESS</class>     
+         -->                
 
 		<!-- To Enable RBAC Replace with the alternative bellow 
         <class>org.openepics.discs.conf.security.RBACEntityTypeSecurityPolicy</class>

@@ -27,7 +27,9 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "SlotPair.findByParentChildRelation", query = "SELECT s FROM SlotPair s "
             + "WHERE s.childSlot.name LIKE :childName "
                 + "AND s.parentSlot.name = :parentName AND s.slotRelation.name = :relationName"),
-    @NamedQuery(name = "SlotPair.findById", query = "SELECT s FROM SlotPair s WHERE s.id = :id")
+    @NamedQuery(name = "SlotPair.findById", query = "SELECT s FROM SlotPair s WHERE s.id = :id"),
+    @NamedQuery(name = "SlotPair.findSlotPairsByChildAndRelation", query = "SELECT s FROM SlotPair s "
+            + "WHERE s.childSlot = :childSlot AND s.slotRelation.name = :relationName")
 })
 public class SlotPair implements Serializable {
     @Id

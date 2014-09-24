@@ -10,6 +10,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import org.openepics.discs.conf.ent.values.Value;
+
 /**
  * An abstract property for a Configuration Db entity
  *
@@ -19,7 +21,7 @@ import javax.validation.constraints.NotNull;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class PropertyValue extends ConfigurationEntity {
     @Column(name = "prop_value", columnDefinition = "TEXT")
-    private String propValue;
+    private Value propValue;
 
     @Basic(optional = false)
     @NotNull
@@ -40,10 +42,10 @@ public abstract class PropertyValue extends ConfigurationEntity {
         this.inRepository = inRepository;
     }
 
-    public String getPropValue() {
+    public Value getPropValue() {
         return propValue;
     }
-    public void setPropValue(String propValue) {
+    public void setPropValue(Value propValue) {
         this.propValue = propValue;
     }
 

@@ -33,6 +33,7 @@ import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.ent.SlotRelation;
 import org.openepics.discs.conf.ent.SlotRelationName;
 import org.openepics.discs.conf.util.As;
+import org.openepics.discs.conf.util.Conversion;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
@@ -527,14 +528,14 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                 if (propertyValue == null) {
                     slotEJB.deleteChild(slotPropertyToUpdate);
                 } else {
-                    slotPropertyToUpdate.setPropValue(propertyValue);
+                    slotPropertyToUpdate.setPropValue(Conversion.stringToValue(propertyValue, property));
                     slotEJB.saveChild(slotPropertyToUpdate);
                 }
 
             } else if (propertyValue != null) {
                 final SlotPropertyValue slotPropertyToAdd = new SlotPropertyValue(false);
                 slotPropertyToAdd.setProperty(property);
-                slotPropertyToAdd.setPropValue(propertyValue);
+                slotPropertyToAdd.setPropValue(Conversion.stringToValue(propertyValue, property));
                 slotPropertyToAdd.setSlot(slot);
                 slotEJB.addChild(slotPropertyToAdd);
             }

@@ -29,6 +29,8 @@ import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotArtifact;
 import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
+import org.openepics.discs.conf.ent.values.StrValue;
+import org.openepics.discs.conf.ent.values.Value;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
 import org.openepics.discs.conf.util.BlobStore;
 import org.openepics.discs.conf.util.Utility;
@@ -211,7 +213,7 @@ public class SlotManager implements Serializable {
                 RequestContext.getCurrentInstance().addCallbackParam("success", false);
                 return;
             }
-            inputProperty.setPropValue(repoFileId);
+            inputProperty.setPropValue(new StrValue(repoFileId));
         }
 
         if (propertyOperation == 'a') {
@@ -262,7 +264,11 @@ public class SlotManager implements Serializable {
             // return downloadedFile;
             logger.log(Level.INFO, "Opening stream from repository: " + selectedProperty.getPropValue());
             // logger.log(Level.INFO, "download file name: 2 " + selectedProperty.getName());
-            InputStream istream = blobStore.retreiveFile(selectedProperty.getPropValue());
+            Value propValue = selectedProperty.getPropValue();
+            if (!(propValue instanceof StrValue)) {
+                throw new Exception("Selected property type incorrect");
+            }
+            InputStream istream = blobStore.retreiveFile(((StrValue)propValue).getStrValue());
             file = new DefaultStreamedContent(istream, "application/octet-stream", selectedProperty.getProperty().getName());
 
             // InputStream stream = new FileInputStream(pathName);
