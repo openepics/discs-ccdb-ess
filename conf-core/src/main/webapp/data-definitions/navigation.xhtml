@@ -6,13 +6,13 @@
 	<h:form>
 		<p:menu style="width:100%">
 		    <p:menuitem value="Installation Slots" url="/data-definitions/installation-slots/installation-slots-manager.xhtml" ajax="true"
-                styleClass="#{fn:endsWith(request.requestURL,'/data-definitions/installation-slots/installation-slots-manager.xhtml') ? 'menu-selected' : ''}" />
+                styleClass="#{fn:endsWith(request.requestURL,'installation-slots-manager.xhtml') ? 'menu-selected' : ''}" />
 		    <p:menuitem value="Containers" url="/data-definitions/containers/containers-manager.xhtml" ajax="true" 
-                styleClass="#{fn:endsWith(request.requestURL,'/data-definitions/containers/containers-manager.xhtml') ? 'menu-selected' : ''}" />
+                styleClass="#{fn:endsWith(request.requestURL,'containers-manager.xhtml') ? 'menu-selected' : ''}" />
 			<p:menuitem value="Device Types" url="/data-definitions/device-types/device-types-manager.xhtml" ajax="true" 
-                styleClass="#{fn:endsWith(request.requestURL,'/data-definitions/device-types/device-types-manager.xhtml') ? 'menu-selected' : ''}" />
+                styleClass="#{fn:endsWith(request.requestURL,'device-types-manager.xhtml') ? 'menu-selected' : ''}" />
 			<p:menuitem value="Properties" url="/data-definitions/properties/properties-manager.xhtml " ajax="true" 
-                styleClass="#{fn:endsWith(request.requestURL,'/data-definitions/properties/properties-manager.xhtml') ? 'menu-selected' : ''}" />
+                styleClass="#{fn:endsWith(request.requestURL,'properties-manager.xhtml') ? 'menu-selected' : ''}" />
 	    </p:menu>
 	</h:form>
     
