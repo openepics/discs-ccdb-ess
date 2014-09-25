@@ -1,0 +1,75 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    template="/template/template.xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html">
+
+    <ui:define name="content">
+        <h:form id="hierarches">
+            <p:growl showDetail="true" globalOnly="true" autoUpdate="true"/>
+            <p:panelGrid id="hierarchiesContainer" style="width: 100%;" styleClass="noBorders">
+                <p:row>
+                    <p:column rowspan="2">
+                        <p:treeTable value="#{hierarchiesController.rootNode}" var="installationSlot" 
+                                selectionMode="single" selection="#{hierarchiesController.selectedNode}" 
+                                scrollable="true" scrollHeight="800" scrollWidth="auto" style="width: 300px;">
+                            <p:ajax event="select" update=":hierarches:attributesTable :hierarches:relationsTable" />
+                            <p:ajax event="unselect" update=":hierarches:attributesTable :hierarches:relationsTable" />
+                                
+                            <p:column id="name" headerText="Name">
+                                <h:outputText value=""
+                                    style="display:inline-block; vertical-align:bottom !important"
+                                    styleClass="ui-icon ui-icon-wrench"
+                                    rendered="#{installationSlot.isHostingSlot}" />
+                                <h:outputText value=""
+                                    style="display:inline-block; vertical-align:bottom !important"
+                                    styleClass="ui-icon ui-icon-folder-collapsed"
+                                    rendered="#{!installationSlot.isHostingSlot}" />
+                                <h:outputText value="#{installationSlot.name}" />
+                            </p:column>
+                        </p:treeTable>
+                    </p:column>
+                    <p:column styleClass="alignTop" style="height: 50%">
+                        <p:dataTable id="attributesTable" value="#{hierarchiesController.attributes}" var="attribute" 
+                                style="width: 100%;" scrollable="true" scrollHeight="380">
+                            <p:column headerText="Name">
+                                <h:outputText value="#{attribute.name}" />
+                            </p:column>
+                            
+                            <p:column headerText="Kind">
+                                <h:outputText value="#{attribute.kind}" />
+                            </p:column>
+        
+                            <p:column headerText="Data type">
+                                <h:outputText value="#{attribute.type.name}" />
+                            </p:column>
+        
+                            <p:column headerText="Unit">
+                                <h:outputText value="#{empty attribute.unit ? '-' : attribute.unit.name}" />
+                            </p:column>
+        
+                            <p:column headerText="Value" style="width: 400px;">
+                                <h:outputText value="#{attribute.value}" />
+                            </p:column>
+                        </p:dataTable>
+                    </p:column>
+                </p:row>
+                <p:row>
+                    <p:column styleClass="alignTop" style="height: 50%">
+                        <p:dataTable id="relationsTable" value="#{hierarchiesController.relationships}" var="relationship" style="width: 50%;">
+                            <p:column headerText="Relationship">
+                                <h:outputText value="#{relationship.relationshipName}" />
+                            </p:column>
+                            
+                            <p:column headerText="Target">
+                                <h:outputText value="#{relationship.targetSlotName}" />
+                            </p:column>
+                        </p:dataTable>
+                    </p:column>
+                </p:row>
+            </p:panelGrid>
+        </h:form>
+    </ui:define>
+</ui:composition>

@@ -62,8 +62,17 @@ import com.google.common.base.Preconditions;
  */
 public class Conversion {
 
+    /**
+     * Format string for acceptable date format (ISO 8601: yyyy-MM-dd).
+     */
     public static final String DATE_ONLY_FORMAT = "yyyy-MM-dd";
+    /**
+     * Format string for acceptable time format (HH:mm:ss). HH is a value 00-23.
+     */
     public static final String TIME_ONLY_FORMAT = "HH:mm:ss";
+    /**
+     * Format string for acceptable date time format (yyyy-MM-dd HH:mm:ss). HH is a value 00-23.
+     */
     public static final String DATE_TIME_FORMAT = DATE_ONLY_FORMAT + " " + TIME_ONLY_FORMAT;
 
     /**
@@ -147,7 +156,7 @@ public class Conversion {
      *
      * @param strValue the string containing a property value
      * @param property the property for which to return a value (what the user selects in the UI or referenced
-     *                     from {@link PropertyValue})
+     *                     from {@link org.openepics.discs.conf.ent.PropertyValue})
      * @return The {@link Value} of the property.
      */
     public static Value stringToValue(String strValue, Property property) {
@@ -182,7 +191,8 @@ public class Conversion {
     }
 
     /**
-     * The method takes a value returned by the persistence layer {@link PropertyValue} and turns it into a string
+     * The method takes a value returned by the persistence layer
+     * {@link org.openepics.discs.conf.ent.PropertyValue} and turns it into a string
      * representation to be used by UI component.
      * @param value the value to convert into a string
      * @return the string representation of the value

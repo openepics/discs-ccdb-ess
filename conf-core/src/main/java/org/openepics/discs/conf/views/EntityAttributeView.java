@@ -32,6 +32,8 @@ import org.openepics.discs.conf.ent.values.Value;
 import org.openepics.discs.conf.util.Conversion;
 import org.openepics.discs.conf.util.UnhandledCaseException;
 
+import com.google.common.base.Preconditions;
+
 /**
  * @author Andraz Pozar <andraz.pozar@cosylab.com>
  *
@@ -41,10 +43,17 @@ public class EntityAttributeView {
     private @Nullable DataType type;
     private @Nullable Unit unit;
     private @Nullable Value value;
-    private @Nullable String kind;
+    private String kind;
     private boolean hasFile;
     private boolean hasURL;
     private Object entity;
+
+    public EntityAttributeView(Object entity, String kind) {
+        Preconditions.checkNotNull(kind);
+        this.entity = entity;
+        setParameters();
+        this.kind = kind;
+    }
 
     public EntityAttributeView(Object entity) {
         this.entity = entity;
