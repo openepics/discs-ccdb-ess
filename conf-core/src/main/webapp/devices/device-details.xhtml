@@ -87,7 +87,7 @@
                                 </p:column>
                                 <p:column>
                                     <p:inputTextarea value="#{deviceDetailsAttributesController.device.description}" rows="7" cols="70"
-                                        readonly="true" disabled="true" style="width=100%" />
+                                        readonly="true" disabled="true" style="width: 100%" />
                                 </p:column>
                             </p:row>
                             <p:row style="margin-top: 20px;">
@@ -133,23 +133,29 @@
                                 <h:outputText value="#{attribute.value}" />
                             </p:column>
 
-                            <p:column headerText="Actions" width="10%">
-                                <p:commandButton icon="ui-icon-pencil" title="Edit" ajax="true" 
-                                        rendered="#{deviceDetailsAttributesController.canEdit(attribute.entity)}">
-                                     <f:setPropertyActionListener value="#{attribute}" target="#{deviceDetailsAttributesController.selectedAttributeToModify}" />
-                                </p:commandButton>
-                                <p:commandButton icon="ui-icon-trash" title="Delete" ajax="true" oncomplete="deleteAttribute.show()"
-                                        rendered="#{deviceDetailsAttributesController.canDelete(attribute.entity)}">
-                                     <f:setPropertyActionListener value="#{attribute}" target="#{deviceDetailsAttributesController.selectedAttribute}" />
-                                </p:commandButton>
-                                <p:commandButton icon="ui-icon-arrowthick-1-s" title="Download" ajax="false" rendered="#{attribute.hasFile}">
-                                     <f:setPropertyActionListener value="#{attribute}" target="#{deviceDetailsAttributesController.selectedAttribute}" />
-                                     <p:fileDownload value="#{deviceDetailsAttributesController.downloadFile}" />
-                                </p:commandButton>
-                                <p:button icon="ui-icon-extlink" target="_blank" title="Got to URL" ajax="true"
-                                        rendered="#{attribute.hasURL}" href="#{attribute.value}"/>
+                            <p:column headerText="Actions" width="90px">
+                                <p:commandLink ajax="true" rendered="#{deviceDetailsAttributesController.canEdit(attribute.entity)}" title="Edit">
+                                    <h:outputText styleClass="ui-icon ui-icon-pencil" style="display: inline-block !important; margin-right: 6px;" />
+                                    <f:setPropertyActionListener value="#{attribute}" target="#{deviceDetailsAttributesController.selectedAttributeToModify}" />
+                                </p:commandLink>
+                                <p:commandLink ajax="true" rendered="#{deviceDetailsAttributesController.canDelete(attribute.entity)}" title="Delete">
+                                    <h:outputText styleClass="ui-icon ui-icon-trash" style="display: inline-block !important; margin-right: 6px;" />
+                                    <f:setPropertyActionListener value="#{attribute}" target="#{deviceDetailsAttributesController.selectedAttribute}" />
+                                </p:commandLink>
+                                <p:commandLink ajax="true" rendered="#{attribute.hasFile}" title="Download">
+                                    <h:outputText styleClass="ui-icon ui-icon-arrowthick-1-s" style="display: inline-block !important; margin-right: 6px;" />
+                                    <f:setPropertyActionListener value="#{attribute}" target="#{deviceDetailsAttributesController.selectedAttribute}" />
+                                    <p:fileDownload value="#{deviceDetailsAttributesController.downloadFile}" />
+                                </p:commandLink>
+                                <h:outputLink rendered="#{attribute.hasURL}" title="Got to URL" target="_blank" value="#{attribute.value}">
+                                    <h:outputText styleClass="ui-icon ui-icon-extlink" style="display: inline-block !important; margin-right: 6px;" />
+                                </h:outputLink>
                             </p:column>
                         </p:dataTable>
+                        
+                        <h:panelGroup style="float: left; margin-top: 30px;">
+                            <p:commandButton id="installButton" title="Install" label="Install" value="Install" type="button"></p:commandButton>
+                        </h:panelGroup>
 
                     </p:column>
 
