@@ -25,13 +25,18 @@ public class TestUtility {
         final WebArchive war = ShrinkWrap.create(WebArchive.class, "confmgr_test.war")
                                .addAsLibraries(libraries)
                                .addPackages(true,
-                                            "org.openepics.discs.conf.ent",
-                                            "org.openepics.discs.conf.ejb",
-                                            "org.openepics.discs.conf.ui",
-                                            "org.openepics.discs.conf.dl",
-                                            "org.openepics.discs.conf.util",
-                                            "org.openepics.discs.conf.security",
                                             "org.openepics.discs.conf.auditlog",
+                                            "org.openepics.discs.conf.dl",
+                                            "org.openepics.discs.conf.dl.common",
+                                            "org.openepics.discs.conf.ejb",
+                                            "org.openepics.discs.conf.ent",
+                                            "org.openepics.discs.conf.ent.values",
+                                            "org.openepics.discs.conf.security",
+                                            "org.openepics.discs.conf.ui",
+                                            "org.openepics.discs.conf.ui.common",
+                                            "org.openepics.discs.conf.util",
+                                            "org.openepics.discs.conf.util.names",
+                                            "org.openepics.discs.conf.valueconverters",
                                             "org.openepics.discs.conf.views")
                                .addAsResource("test-persistence.xml", "META-INF/persistence.xml")
                                .addAsWebInfResource("beans.xml")
