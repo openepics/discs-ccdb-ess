@@ -115,11 +115,10 @@ public class SlotsTreeBuilder implements Serializable {
             } else {
                 // include only installation slots of the requested type (and all containers)
                 final String componentTypeName = slot.getComponentType().getName();
-                if (componentTypeName.equals(SlotEJB.ROOT_COMPONENT_TYPE)
-                        || componentTypeName.equals(SlotEJB.GRP_COMPONENT_TYPE)
-                        || componentTypeName.equals(requestedComponentType)) {
-                    completeSlotList.put(slot.getId(), slot);
-                } else {
+                completeSlotList.put(slot.getId(), slot);
+                if (!componentTypeName.equals(SlotEJB.ROOT_COMPONENT_TYPE)
+                        && !componentTypeName.equals(SlotEJB.GRP_COMPONENT_TYPE)
+                        && !componentTypeName.equals(requestedComponentType)) {
                     // The installation slot of this type is not needed and can be removed.
                     // This shrinks the slots collection and makes subsequent tree build shorter.
                     slotLI.remove();
@@ -133,14 +132,15 @@ public class SlotsTreeBuilder implements Serializable {
          * always the same.
          */
         for (Slot slot : slots) {
-            addSlotNode(slotsTree, slot, completeSlotList, withInstallationSlots, installationSlotType != null);
+            addSlotNode(slotsTree, slot, completeSlotList, withInstallationSlots, installationSlotType);
         }
 
         return slotsTree.asViewTree();
     }
 
-    private void addSlotNode(SlotTree nprt, Slot slot, Map<Long, Slot> allSlots, boolean withInstallationSlots, boolean showInstalledDevice) {
+    private void addSlotNode(SlotTree nprt, Slot slot, Map<Long, Slot> allSlots, boolean withInstallationSlots, ComponentType installationSlotType) {
         if (!nprt.hasNode(slot)) {
+            final boolean showInstalledDevice = installationSlotType != null;
             final List<SlotPair> parentSlotPairs = slot.getChildrenSlotsPairList().size() > 0
                     ? slot.getChildrenSlotsPairList() : null;
             // !withInstallationSlots : tree for displaying containers only (data definitions -> containers)
@@ -154,7 +154,7 @@ public class SlotsTreeBuilder implements Serializable {
                         final Slot parentSlot = parentSlotPair.getParentSlot();
                         // first recursively add parents
                         addSlotNode(nprt, allSlots.get(parentSlot.getId()), allSlots, withInstallationSlots,
-                                showInstalledDevice);
+                                installationSlotType);
                         if ((withInstallationSlots || !withInstallationSlots && !slot.isHostingSlot())) {
                             final Device installedDevice;
                             if (!showInstalledDevice || !slot.isHostingSlot()) {
@@ -167,6 +167,7 @@ public class SlotsTreeBuilder implements Serializable {
                             // then add the child you're working on at the moment
                             nprt.addChildToParent(parentSlot.getId(), slot, installedDevice, selectable
                                     || (withInstallationSlots && showInstalledDevice && slot.isHostingSlot()
+                                            && slot.getComponentType().equals(installationSlotType)
                                             && installedDevice == null));
                         }
                     }

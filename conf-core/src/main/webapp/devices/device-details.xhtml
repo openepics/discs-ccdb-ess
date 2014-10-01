@@ -153,13 +153,20 @@
                             </p:column>
                         </p:dataTable>
                         
-                        <h:panelGroup style="float: left; margin-top: 30px;">
+                        <h:panelGroup id="installationDetails" style="float: left; margin-top: 30px;">
                             <p:commandButton id="installButton" title="Install" label="Install" value="Install" 
                                 type="button" update=":installDeviceForm" onclick="installDevice.show()"
                                 disabled="#{installationManager.isDeviceInstalled(deviceDetailsAttributesController.device)}" />
                             <p:commandButton id="uninstallButton" title="Uninstall" label="Uninstall" value="Uninstall" 
                                 type="button" 
                                 disabled="#{!installationManager.isDeviceInstalled(deviceDetailsAttributesController.device)}" />
+                            <p:dataTable rendered="#{installationManager.isDeviceInstalled(deviceDetailsAttributesController.device)}"
+                                value="#{installationManager.getInstalledSlotInformation(deviceDetailsAttributesController.device)}"
+                                var="installationPath">
+                                <p:column headerText="Path">
+                                    <h:outputText value="#{installationPath}" />
+                                </p:column>
+                            </p:dataTable>
                         </h:panelGroup>
 
                     </p:column>

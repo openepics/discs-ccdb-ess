@@ -405,4 +405,14 @@ public class InstallationManager implements Serializable {
         newRecord.setSlot(((SlotView)selectedSlot.getData()).getSlot());
         installationEJB.add(newRecord);
     }
+
+    public List<String> getInstalledSlotInformation(Device device) {
+        final List<String> installationInformation = new ArrayList<>();
+
+        return installationInformation;
+    }
+
+    public boolean isSameDeviceType(ComponentType type1, ComponentType type2) {
+        return type1 != null && type2 != null && type1.equals(type2);
+    }
 }

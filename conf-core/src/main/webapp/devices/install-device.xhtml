@@ -25,7 +25,7 @@
                             </p:column>
                             <p:column headerText="Device" width="35%">
                                 <h:outputText value="#{empty installationSlot.installedDevice ? '&lt;empty&gt;' : installationSlot.installedDevice.serialNumber}" 
-                                    rendered="#{installationSlot.isHostingSlot}" />
+                                    rendered="#{installationSlot.isHostingSlot and installationManager.isSameDeviceType(installationSlot.deviceType, device.componentType) }" />
                             </p:column>
                         </p:treeTable>
                     </p:column>
@@ -37,7 +37,7 @@
                         <p:commandButton id="installButton" style="float: right;" title="Install" label="Install"
                             disabled="#{empty installationManager.selectedSlot}" value="Install" 
                             action="#{installationManager.installDevice(device)}" oncomplete="#{widgetName}.hide()"
-                            update=":deviceDetailsForm:installButton :deviceDetailsForm:uninstallButton" />
+                            update=":deviceDetailsForm:installationDetails" />
                     </p:column>
                 </p:row>
             </p:panelGrid>
