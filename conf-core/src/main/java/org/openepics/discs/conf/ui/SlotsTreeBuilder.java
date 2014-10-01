@@ -145,8 +145,7 @@ public class SlotsTreeBuilder implements Serializable {
                     ? slot.getChildrenSlotsPairList() : null;
             // !withInstallationSlots : tree for displaying containers only (data definitions -> containers)
             // (withInstallationSlots && !showInstalledDevice) : tree for displaying installation slots and containers (data definitions -> installation slots)
-            // slot.isHostingSlot() : tree for installing device instance into a slot
-            final boolean selectable = !withInstallationSlots || (withInstallationSlots && !showInstalledDevice) || slot.isHostingSlot();
+            final boolean selectable = !withInstallationSlots || (withInstallationSlots && !showInstalledDevice);
             if (parentSlotPairs == null) {
                 nprt.addChildToParent(null, slot, null, selectable);
             } else {
@@ -166,7 +165,9 @@ public class SlotsTreeBuilder implements Serializable {
                                 installedDevice = installationRecord == null ? null : installationRecord.getDevice();
                             }
                             // then add the child you're working on at the moment
-                            nprt.addChildToParent(parentSlot.getId(), slot, installedDevice, selectable);
+                            nprt.addChildToParent(parentSlot.getId(), slot, installedDevice, selectable
+                                    || (withInstallationSlots && showInstalledDevice && slot.isHostingSlot()
+                                            && installedDevice == null));
                         }
                     }
                 }
