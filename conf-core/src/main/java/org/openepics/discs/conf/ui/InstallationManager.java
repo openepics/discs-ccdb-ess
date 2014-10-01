@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,8 +23,12 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.openepics.discs.conf.ejb.InstallationEJB;
+import org.openepics.discs.conf.ejb.SlotEJB;
+import org.openepics.discs.conf.ent.ComponentType;
+import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.InstallationArtifact;
 import org.openepics.discs.conf.ent.InstallationRecord;
+import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.util.BlobStore;
 import org.openepics.discs.conf.util.Utility;
 import org.primefaces.context.RequestContext;
@@ -31,7 +36,10 @@ import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
+import org.primefaces.model.TreeNode;
 import org.primefaces.model.UploadedFile;
+
+import com.google.common.base.Preconditions;
 
 /**
  *
@@ -44,7 +52,9 @@ public class InstallationManager implements Serializable {
     private static final Logger logger = Logger.getLogger(InstallationManager.class.getCanonicalName());
 
     @EJB private InstallationEJB installationEJB;
+    @EJB private SlotEJB slotEJB;
     @Inject private BlobStore blobStore;
+    @Inject protected SlotsTreeBuilder slotsTreeBuilder;
 
     private List<InstallationRecord> objects;
     private List<InstallationRecord> sortedObjects;
@@ -60,6 +70,18 @@ public class InstallationManager implements Serializable {
     private char artifactOperation = 'n'; // selected operation on artifact: [a]dd, [e]dit, [d]elete, [n]one
     private String uploadedFileName;
     private boolean fileUploaded = false;
+
+    /* * * * * *
+     *
+     * CCDB variables
+     * TODO do cleanup of legacy variables after development. Remove this comment block.
+     * * * * * */
+    private Device installedDevice;
+    private InstallationRecord installationRecord;
+    private Slot installationSlot;
+    private TreeNode installableSlots;
+    private TreeNode selectedSlot;
+
     /**
      * Creates a new instance of InstallationManager
      */
@@ -314,6 +336,58 @@ public class InstallationManager implements Serializable {
 
     public char getArtifactOperation() {
         return artifactOperation;
+    }
+
+    /* * * * * * *
+     * CCDB methods.
+     * TODO do cleanup of legacy methods after development. Remove this comment block.
+     * * * * * * */
+
+    public boolean isDeviceInstalled(Device device) {
+        setInstallationRecord(installationEJB.getActiveInstallationRecordForDevice(device));
+        return device != null;
+    }
+
+    public void setInstallationRecord(InstallationRecord installationRecord) {
+        this.installationRecord = installationRecord;
+        if (installationRecord != null) {
+            this.installedDevice = installationRecord.getDevice();
+            this.installationSlot = installationRecord.getSlot();
+        } else {
+            this.installedDevice = null;
+            this.installationSlot = null;
+        }
+    }
+
+    public InstallationRecord getInstallationRecord() {
+        return installationRecord;
+    }
+
+    public TreeNode getInstallationTree(Device device) {
+        Preconditions.checkNotNull(device);
+        if (installableSlots != null) {
+            return installableSlots;
+        }
+
+        final List<Slot> allSlots = slotEJB.findAll();
+        final ComponentType componentType = device.getComponentType();
+
+        installableSlots = slotsTreeBuilder.newSlotsTree(allSlots, null, new HashSet<Long>(), true, componentType);
+        return installableSlots;
+    }
+
+    /**
+     * @return the selectedSlot
+     */
+    public TreeNode getSelectedSlot() {
+        return selectedSlot;
+    }
+
+    /**
+     * @param selectedSlot the selectedSlot to set
+     */
+    public void setSelectedSlot(TreeNode selectedSlot) {
+        this.selectedSlot = selectedSlot;
     }
 
 }

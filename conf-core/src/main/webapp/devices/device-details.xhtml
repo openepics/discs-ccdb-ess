@@ -154,7 +154,12 @@
                         </p:dataTable>
                         
                         <h:panelGroup style="float: left; margin-top: 30px;">
-                            <p:commandButton id="installButton" title="Install" label="Install" value="Install" type="button"></p:commandButton>
+                            <p:commandButton id="installButton" title="Install" label="Install" value="Install" 
+                                type="button" update=":installDeviceForm" onclick="installDevice.show()"
+                                disabled="#{!installationManager.isDeviceInstalled(deviceDetailsAttributesController.device)}" />
+                            <p:commandButton id="uninstallButton" title="Uninstall" label="Uninstall" value="Uninstall" 
+                                type="button" 
+                                disabled="#{installationManager.isDeviceInstalled(deviceDetailsAttributesController.device)}" />
                         </h:panelGroup>
 
                     </p:column>
@@ -227,6 +232,13 @@
             <ui:param name="controller" value="#{deviceDetailsAttributesController}" />
             <ui:param name="submitHandler" value="modifyArtifact" />
             <ui:param name="componentToUpdate" value=":deviceDetailsForm:devAttribs" />
-        </ui:include>   
+        </ui:include>
+        
+        <ui:include src="install-device.xhtml">
+            <ui:param name="formId" value="installDeviceForm" />
+            <ui:param name="dialogTitle" value="Select installation slot" />
+            <ui:param name="widgetName" value="installDevice" />
+            <ui:param name="device" value="#{deviceDetailsAttributesController.device}" />
+        </ui:include>
     </ui:define>
 </ui:composition>

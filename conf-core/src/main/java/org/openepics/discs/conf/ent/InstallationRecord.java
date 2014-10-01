@@ -40,7 +40,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
     @NamedQuery(name = "InstallationRecord.findByUninstallDate", query = "SELECT i FROM InstallationRecord i "
             + "WHERE i.uninstallDate = :uninstallDate"),
     @NamedQuery(name = "InstallationRecord.findByModifiedBy", query = "SELECT i FROM InstallationRecord i "
-            + "WHERE i.modifiedBy = :modifiedBy")
+            + "WHERE i.modifiedBy = :modifiedBy"),
+    @NamedQuery(name = "InstallationRecord.activeRecordForSlot", query = "SELECT i FROM InstallationRecord i "
+            + "WHERE i.slot = :slot AND i.uninstallDate IS NOT NULL "),
+    @NamedQuery(name = "InstallationRecord.activeRecordForDevice", query = "SELECT i FROM InstallationRecord i "
+            + "WHERE i.device = :device AND i.uninstallDate IS NOT NULL ")
 })
 public class InstallationRecord extends ConfigurationEntity {
     @Basic(optional = false)

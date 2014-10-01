@@ -1,2 +1,2 @@
 #!/bin/sh
-mvn wildfly:deploy -P jboss
+mvn wildfly:deploy -P jboss $@

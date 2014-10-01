@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html">
+
+    <h:form id="#{formId}">
+        <p:dialog widgetVar="#{widgetName}" id="#{widgetName}" modal="true" resizable="false" dynamic="true" width="550">
+
+            <f:facet name="header">
+                <h:outputText value="#{dialogTitle}" />
+            </f:facet>
+
+            <p:panelGrid styleClass="noBorders">
+                <p:row>
+                    <p:column>
+                        <p:treeTable value="#{installationManager.getInstallationTree(device)}" scrollHeight="180" scrollable="true"
+                                selection="#{installationManager.selectedSlot}" var="installationSlot" selectionMode="single">
+                            <p:column headerText="Name" width="65%">
+                                <h:outputText value="#{installationSlot.name}" />
+                            </p:column>
+                            <p:column headerText="Device" width="35%">
+                                <h:outputText value="#{empty installationSlot.installedDevice ? '&lt;empty&gt;' : installationSlot.installedDevice.serialNumber}" 
+                                    rendered="#{installationSlot.isHostingSlot}" />
+                            </p:column>
+                        </p:treeTable>
+                    </p:column>
+                </p:row>
+                <p:row>
+                    <p:column>
+                        <p:commandButton id="installButton" title="Install" label="Install" value="Install" type="button" />
+                    </p:column>
+                </p:row>
+            </p:panelGrid>
+            
+        </p:dialog>
+    </h:form>
+</ui:composition>
