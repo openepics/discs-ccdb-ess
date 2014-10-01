@@ -156,10 +156,10 @@
                         <h:panelGroup style="float: left; margin-top: 30px;">
                             <p:commandButton id="installButton" title="Install" label="Install" value="Install" 
                                 type="button" update=":installDeviceForm" onclick="installDevice.show()"
-                                disabled="#{!installationManager.isDeviceInstalled(deviceDetailsAttributesController.device)}" />
+                                disabled="#{installationManager.isDeviceInstalled(deviceDetailsAttributesController.device)}" />
                             <p:commandButton id="uninstallButton" title="Uninstall" label="Uninstall" value="Uninstall" 
                                 type="button" 
-                                disabled="#{installationManager.isDeviceInstalled(deviceDetailsAttributesController.device)}" />
+                                disabled="#{!installationManager.isDeviceInstalled(deviceDetailsAttributesController.device)}" />
                         </h:panelGroup>
 
                     </p:column>

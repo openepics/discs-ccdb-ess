@@ -31,6 +31,7 @@ import org.openepics.discs.conf.ent.InstallationRecord;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.util.BlobStore;
 import org.openepics.discs.conf.util.Utility;
+import org.openepics.discs.conf.views.SlotView;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.SelectEvent;
@@ -344,8 +345,10 @@ public class InstallationManager implements Serializable {
      * * * * * * */
 
     public boolean isDeviceInstalled(Device device) {
-        setInstallationRecord(installationEJB.getActiveInstallationRecordForDevice(device));
-        return device != null;
+        if (this.installationRecord == null) {
+            setInstallationRecord(installationEJB.getActiveInstallationRecordForDevice(device));
+        }
+        return this.installedDevice != null;
     }
 
     public void setInstallationRecord(InstallationRecord installationRecord) {
@@ -390,4 +393,11 @@ public class InstallationManager implements Serializable {
         this.selectedSlot = selectedSlot;
     }
 
+    public void installDevice(Device device) {
+        final Date today = new Date();
+        final InstallationRecord newRecord = new InstallationRecord(Long.toString(today.getTime()), today);
+        newRecord.setDevice(device);
+        newRecord.setSlot(((SlotView)selectedSlot.getData()).getSlot());
+        installationEJB.add(newRecord);
+    }
 }
