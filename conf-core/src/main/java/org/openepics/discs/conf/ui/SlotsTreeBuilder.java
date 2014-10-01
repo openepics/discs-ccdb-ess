@@ -143,8 +143,12 @@ public class SlotsTreeBuilder implements Serializable {
         if (!nprt.hasNode(slot)) {
             final List<SlotPair> parentSlotPairs = slot.getChildrenSlotsPairList().size() > 0
                     ? slot.getChildrenSlotsPairList() : null;
+            // !withInstallationSlots : tree for displaying containers only (data definitions -> containers)
+            // (withInstallationSlots && !showInstalledDevice) : tree for displaying installation slots and containers (data definitions -> installation slots)
+            // slot.isHostingSlot() : tree for installing device instance into a slot
+            final boolean selectable = !withInstallationSlots || (withInstallationSlots && !showInstalledDevice) || slot.isHostingSlot();
             if (parentSlotPairs == null) {
-                nprt.addChildToParent(null, slot, null);
+                nprt.addChildToParent(null, slot, null, selectable);
             } else {
                 for (SlotPair parentSlotPair : parentSlotPairs) {
                     if (parentSlotPair.getSlotRelation().getName() == SlotRelationName.CONTAINS) {
@@ -162,7 +166,7 @@ public class SlotsTreeBuilder implements Serializable {
                                 installedDevice = installationRecord == null ? null : installationRecord.getDevice();
                             }
                             // then add the child you're working on at the moment
-                            nprt.addChildToParent(parentSlot.getId(), slot, installedDevice);
+                            nprt.addChildToParent(parentSlot.getId(), slot, installedDevice, selectable);
                         }
                     }
                 }
@@ -192,18 +196,18 @@ public class SlotsTreeBuilder implements Serializable {
                 this.collapsedNodes = collapsedNodes != null ? collapsedNodes : new HashSet<Long>();
             }
 
-            private void addNewNodeToParent(@Nullable Long parentId, Slot slot, Device installedDevice) {
+            private void addNewNodeToParent(@Nullable Long parentId, Slot slot, Device installedDevice, boolean selectable) {
                 if (parentId != null) {
                     for (TreeNode parentNode : cache.get(parentId)) {
-                        addNewNode(slot, (SlotView)parentNode.getData(), parentNode, installedDevice);
+                        addNewNode(slot, (SlotView)parentNode.getData(), parentNode, installedDevice, selectable);
                     }
                 } else {
                     // this is one of the hierarchy roots
-                    addNewNode(slot, null, root, installedDevice);
+                    addNewNode(slot, null, root, installedDevice, selectable);
                 }
             }
 
-            private void addNewNode(Slot slot, SlotView parent, TreeNode parentNode, Device installedDevice) {
+            private void addNewNode(Slot slot, SlotView parent, TreeNode parentNode, Device installedDevice, boolean selectable) {
                 final TreeNode newNode = new DefaultTreeNode(new SlotView(slot, parent, slot.getParentSlotsPairList(), installedDevice),
                                                 parentNode);
                 final List<TreeNode> treeNodesWithSameSlot;
@@ -217,6 +221,7 @@ public class SlotsTreeBuilder implements Serializable {
                 treeNodesWithSameSlot.add(newNode);
 
                 newNode.setExpanded(!collapsedNodes.contains(slotId));
+                newNode.setSelectable(selectable);
                 if (isSelected(newNode)) {
                     newNode.setSelected(true);
                     selectedTreeNode = newNode;
@@ -238,8 +243,8 @@ public class SlotsTreeBuilder implements Serializable {
             return treeBuilder.cache.containsKey(slot.getId());
         }
 
-        private void addChildToParent(@Nullable Long parentId, Slot slot, Device installedDevice) {
-            treeBuilder.addNewNodeToParent(parentId, slot, installedDevice);
+        private void addChildToParent(@Nullable Long parentId, Slot slot, Device installedDevice, boolean selectable) {
+            treeBuilder.addNewNodeToParent(parentId, slot, installedDevice, selectable);
         }
 
         private TreeNode asViewTree() {
