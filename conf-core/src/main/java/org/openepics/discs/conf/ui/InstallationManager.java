@@ -345,10 +345,15 @@ public class InstallationManager implements Serializable {
      * * * * * * */
 
     public boolean isDeviceInstalled(Device device) {
-        if (this.installationRecord == null) {
+        if (!device.equals(this.installedDevice)) {
             setInstallationRecord(installationEJB.getActiveInstallationRecordForDevice(device));
         }
         return this.installedDevice != null;
+    }
+
+    public String getInstalledSlotForDevice(Device device) {
+        final InstallationRecord record = installationEJB.getActiveInstallationRecordForDevice(device);
+        return record == null ? "-" : record.getSlot().getName();
     }
 
     public void setInstallationRecord(InstallationRecord installationRecord) {

@@ -39,7 +39,7 @@
                             </p:column>
                    
                             <p:column headerText="Installed in" width="30%">
-                                <h:outputText value="-" />
+                                <h:outputText value="#{installationManager.getInstalledSlotForDevice(device)}" />
                             </p:column>
                    
                             <p:column headerText="Actions">
