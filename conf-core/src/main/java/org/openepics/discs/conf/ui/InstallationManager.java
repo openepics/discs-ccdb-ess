@@ -29,6 +29,8 @@ import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.InstallationArtifact;
 import org.openepics.discs.conf.ent.InstallationRecord;
 import org.openepics.discs.conf.ent.Slot;
+import org.openepics.discs.conf.ent.SlotPair;
+import org.openepics.discs.conf.ent.SlotRelationName;
 import org.openepics.discs.conf.util.BlobStore;
 import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.views.SlotView;
@@ -407,9 +409,30 @@ public class InstallationManager implements Serializable {
     }
 
     public List<String> getInstalledSlotInformation(Device device) {
-        final List<String> installationInformation = new ArrayList<>();
-
+        List<String> installationInformation = new ArrayList<>();
+        final InstallationRecord record = installationEJB.getActiveInstallationRecordForDevice(device);
+        if(record != null) {
+            installationInformation = buildInstalledSlotInformation(record.getSlot());
+        }
         return installationInformation;
+    }
+
+    private List<String> buildInstalledSlotInformation(Slot slot) {
+        if (slot.getComponentType().getName().equals(SlotEJB.ROOT_COMPONENT_TYPE)) {
+            final List<String> list = new ArrayList<>();
+            list.add(slot.getName());
+            return list;
+        } else {
+            final List<String> list = new ArrayList<>();
+            for (SlotPair pair : slot.getChildrenSlotsPairList()) {
+                if (pair.getSlotRelation().getName() == SlotRelationName.CONTAINS) {
+                    for (String parentPath : buildInstalledSlotInformation(pair.getParentSlot())) {
+                        list.add(parentPath + "\u00A0\u00A0\u00BB\u00A0\u00A0" + slot.getName());
+                    }
+                }
+            }
+            return list;
+        }
     }
 
     public boolean isSameDeviceType(ComponentType type1, ComponentType type2) {
