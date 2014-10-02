@@ -158,11 +158,12 @@
                                 type="button" update=":installDeviceForm" onclick="installDevice.show()"
                                 disabled="#{installationManager.isDeviceInstalled(deviceDetailsAttributesController.device)}" />
                             <p:commandButton id="uninstallButton" title="Uninstall" label="Uninstall" value="Uninstall" 
-                                type="button" 
+                                update=":deviceDetailsForm"
+                                action="#{installationManager.uninstallDevice(deviceDetailsAttributesController.device)}"
                                 disabled="#{!installationManager.isDeviceInstalled(deviceDetailsAttributesController.device)}" />
                             <p:dataTable rendered="#{installationManager.isDeviceInstalled(deviceDetailsAttributesController.device)}"
                                 value="#{installationManager.getInstalledSlotInformation(deviceDetailsAttributesController.device)}"
-                                var="installationPath">
+                                var="installationPath" style="margin-top: 1em;">
                                 <p:column headerText="Path">
                                     <h:outputText value="#{installationPath}" />
                                 </p:column>
@@ -246,6 +247,7 @@
             <ui:param name="dialogTitle" value="Select installation slot" />
             <ui:param name="widgetName" value="installDevice" />
             <ui:param name="device" value="#{deviceDetailsAttributesController.device}" />
+            <ui:param name="componentToUpdate" value=":deviceDetailsForm" />
         </ui:include>
     </ui:define>
 </ui:composition>
