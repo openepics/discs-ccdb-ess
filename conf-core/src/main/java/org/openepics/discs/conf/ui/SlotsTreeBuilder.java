@@ -1,11 +1,21 @@
-/**
+/*
  * Copyright (c) 2014 European Spallation Source
  * Copyright (c) 2014 Cosylab d.d.
  *
  * This file is part of Controls Configuration Database.
- * Controls Configuration Database is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 2 of the License, or any newer version.
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License along with this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
+ *
+ * Controls Configuration Database is free software: you can redistribute it
+ * and/or modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 2 of the License,
+ * or any newer version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
 package org.openepics.discs.conf.ui;
 
@@ -16,7 +26,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -26,10 +35,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.openepics.discs.conf.ejb.InstallationEJB;
-import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.Device;
-import org.openepics.discs.conf.ent.InstallationRecord;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotRelationName;
@@ -43,13 +50,14 @@ import com.google.common.base.Preconditions;
  * Tree builder for tree presentation of {@link Slot}s
  *
  * @author Andraz Pozar <andraz.pozar@cosylab.com>
+ * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  *
  */
 @Named
 @ViewScoped
 public class SlotsTreeBuilder implements Serializable {
 
-    @Inject private InstallationEJB installationEJB;
+    @Inject protected InstallationEJB installationEJB;
 
     /**
      * Builds a tree of {@link SlotView}s from the provided lists of slots.
@@ -94,7 +102,13 @@ public class SlotsTreeBuilder implements Serializable {
                                     boolean withInstallationSlots, ComponentType installationSlotType) {
         Preconditions.checkArgument(withInstallationSlots || (!withInstallationSlots && installationSlotType == null),
                 "Installation slots not included in the resulting tree, but installation slot type selected.");
-        Collections.sort(slots, new Comparator<Slot>() {
+
+        final String requestedComponentTypeName = installationSlotType == null ? "" : installationSlotType.getName();
+        final Map<Long, Slot> completeSlotMap = new HashMap<>();
+
+        final List<Slot> filteredList = filterSlotsAndPrepareCache(slots, completeSlotMap, requestedComponentTypeName);
+
+        Collections.sort(filteredList, new Comparator<Slot>() {
             @Override
             public int compare(Slot o1, Slot o2) {
                 // TODO introduce additional sort criteria (user specified) later
@@ -103,51 +117,25 @@ public class SlotsTreeBuilder implements Serializable {
             }
         });
 
-        final Map<Long, Slot> completeSlotList = new HashMap<>();
-        final String requestedComponentType = installationSlotType == null ? "" : installationSlotType.getName();
-
-        ListIterator<Slot> slotLI = slots.listIterator();
-        while (slotLI.hasNext()) {
-            final Slot slot = slotLI.next();
-            if (installationSlotType == null) {
-                // include all slots
-                completeSlotList.put(slot.getId(), slot);
-            } else {
-                // include only installation slots of the requested type (and all containers)
-                final String componentTypeName = slot.getComponentType().getName();
-                completeSlotList.put(slot.getId(), slot);
-                if (!componentTypeName.equals(SlotEJB.ROOT_COMPONENT_TYPE)
-                        && !componentTypeName.equals(SlotEJB.GRP_COMPONENT_TYPE)
-                        && !componentTypeName.equals(requestedComponentType)) {
-                    // The installation slot of this type is not needed and can be removed.
-                    // This shrinks the slots collection and makes subsequent tree build shorter.
-                    slotLI.remove();
-                }
-            }
-        }
-
         final SlotTree slotsTree = new SlotTree(selected, collapsedNodes);
         /*
          * use the slots list to build the tree because it is sorted. This guarantees that the layout of the tree is
          * always the same.
          */
-        for (Slot slot : slots) {
-            addSlotNode(slotsTree, slot, completeSlotList, withInstallationSlots, installationSlotType);
+        for (Slot slot : filteredList) {
+            addSlotNode(slotsTree, slot, completeSlotMap, withInstallationSlots, installationSlotType);
         }
 
         return slotsTree.asViewTree();
     }
 
-    private void addSlotNode(SlotTree nprt, Slot slot, Map<Long, Slot> allSlots, boolean withInstallationSlots, ComponentType installationSlotType) {
+    private void addSlotNode(SlotTree nprt, Slot slot, Map<Long, Slot> allSlots, boolean withInstallationSlots,
+            ComponentType installationSlotType) {
         if (!nprt.hasNode(slot)) {
-            final boolean showInstalledDevice = installationSlotType != null;
             final List<SlotPair> parentSlotPairs = slot.getChildrenSlotsPairList().size() > 0
                     ? slot.getChildrenSlotsPairList() : null;
-            // !withInstallationSlots : tree for displaying containers only (data definitions -> containers)
-            // (withInstallationSlots && !showInstalledDevice) : tree for displaying installation slots and containers (data definitions -> installation slots)
-            final boolean selectable = !withInstallationSlots || (withInstallationSlots && !showInstalledDevice);
             if (parentSlotPairs == null) {
-                nprt.addChildToParent(null, slot, null, selectable);
+                nprt.addChildToParent(null, slot, null, isRootNodeSelectable());
             } else {
                 for (SlotPair parentSlotPair : parentSlotPairs) {
                     if (parentSlotPair.getSlotRelation().getName() == SlotRelationName.CONTAINS) {
@@ -155,20 +143,11 @@ public class SlotsTreeBuilder implements Serializable {
                         // first recursively add parents
                         addSlotNode(nprt, allSlots.get(parentSlot.getId()), allSlots, withInstallationSlots,
                                 installationSlotType);
-                        if ((withInstallationSlots || !withInstallationSlots && !slot.isHostingSlot())) {
-                            final Device installedDevice;
-                            if (!showInstalledDevice || !slot.isHostingSlot()) {
-                                // no installed device is required or this is a container
-                                installedDevice = null;
-                            } else {
-                                final InstallationRecord installationRecord = installationEJB.getActiveInstallationRecordForSlot(slot);
-                                installedDevice = installationRecord == null ? null : installationRecord.getDevice();
-                            }
+                        if (withInstallationSlots || (!withInstallationSlots && !slot.isHostingSlot())) {
+                            final Device installedDevice = getInstalledDeviceForSlot(slot, installationSlotType);
                             // then add the child you're working on at the moment
-                            nprt.addChildToParent(parentSlot.getId(), slot, installedDevice, selectable
-                                    || (withInstallationSlots && showInstalledDevice && slot.isHostingSlot()
-                                            && slot.getComponentType().equals(installationSlotType)
-                                            && installedDevice == null));
+                            nprt.addChildToParent(parentSlot.getId(), slot, installedDevice,
+                                    isNodeSelectable(slot, installationSlotType, installedDevice));
                         }
                     }
                 }
@@ -252,5 +231,51 @@ public class SlotsTreeBuilder implements Serializable {
         private TreeNode asViewTree() {
             return treeBuilder.root;
         }
+    }
+
+    /** This method populates the all slots cache and prepares the list of slots that will be used for building a tree
+     * @param allSlotList the list of all slots in the database.
+     * @param slotCache the hash map (cache) containing all the slots retrievable by their database id.
+     * @param requestedComponentTypeName the component (device) type to filter the allSlotList by.
+     * @return The filtered list to build the tree of.
+     */
+    protected List<Slot> filterSlotsAndPrepareCache(final List<Slot> allSlotList, final Map<Long, Slot> slotCache,
+            final String requestedComponentTypeName) {
+        List<Slot> filteredList = new ArrayList<>(allSlotList.size());
+
+        for (Slot slot : allSlotList) {
+            slotCache.put(slot.getId(), slot);
+            filteredList.add(slot);
+        }
+
+        return filteredList;
+    }
+
+    /**
+     * @param slot the slot to inspect.
+     * @param installationSlotType the type of the devices the user is interested in.
+     * @return The device that is installed in the current slot.
+     */
+    protected Device getInstalledDeviceForSlot(final Slot slot, final ComponentType installationSlotType) {
+        // in the basic container/slot tree we are not niterested in the installed devices
+        return null;
+    }
+
+    /**
+     * @return <code>true</code> if the root node is selectable, <code>false</code> otherwise.
+     */
+    protected boolean isRootNodeSelectable() {
+        return true;
+    }
+
+    /** This method determines whether the node is selectable based on the slot the node is for, the device type the
+     * user has requested and device that is installed in this slot.
+     * @param slot the slot this node is for.
+     * @param installationSlotType the device type the user requested.
+     * @param installedDevice the device that is installed in this slot.
+     * @return <code>true</code> if the node is selectable, <code>false</code> otherwise.
+     */
+    protected boolean isNodeSelectable(Slot slot, ComponentType installationSlotType, Device installedDevice) {
+        return true;
     }
 }

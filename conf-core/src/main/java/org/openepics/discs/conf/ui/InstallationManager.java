@@ -29,6 +29,7 @@ import org.openepics.discs.conf.ent.InstallationRecord;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotRelationName;
+import org.openepics.discs.conf.util.DeviceInstallation;
 import org.openepics.discs.conf.views.SlotView;
 import org.primefaces.model.TreeNode;
 
@@ -46,7 +47,7 @@ public class InstallationManager implements Serializable {
 
     @EJB private InstallationEJB installationEJB;
     @EJB private SlotEJB slotEJB;
-    @Inject private SlotsTreeBuilder slotsTreeBuilder;
+    @Inject @DeviceInstallation private SlotsTreeBuilder slotsTreeBuilder;
 
     private Device installedDevice;
     private InstallationRecord installationRecord;
@@ -73,7 +74,7 @@ public class InstallationManager implements Serializable {
 
     /** Used in the listing of device instances screen.
      * @param device the device to query for.
-     * @return The name os the installation slot the device is currently installed in.
+     * @return The name of the installation slot the device is currently installed in.
      */
     public String getInstalledSlotForDevice(Device device) {
         final InstallationRecord record = installationEJB.getActiveInstallationRecordForDevice(device);
