@@ -65,7 +65,7 @@ public class SlotEntityLoggerTest {
 
     @Test
     public void testSerializeEntity() {
-        final String RESULT = "{\"isHostingSlot\":true,\"positionInformation\":{},\"componentType\":\"slotCompType\","
+        final String RESULT = "{\"hostingSlot\":true,\"positionInformation\":{},\"componentType\":\"slotCompType\","
                 + "\"slotPropertyList\":[{\"APERTURE\":\"20\"},{\"DETER\":\"10\"}],"
                 + "\"slotArtifactList\":[{\"CAT Image\":\"/var/usr/images/CAT\"},"
                 + "{\"Manual\":\"www.deteriorator.com/user-manual\"}],\"childrenSlots\":[{\"childSlot\":\"CONTAINS\"}],"

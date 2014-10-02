@@ -14,7 +14,6 @@
 
             <p:panelGrid styleClass="noBorders">
                 <p:row>
-
                     <p:column style="vertical-align: top;">
                         <p:panelGrid id="deviceDetails" styleClass="noBorders">
                             <p:row>
@@ -103,7 +102,6 @@
                     </p:column>
 
                     <p:column style="width: 60%; vertical-align: top;">
-
                       <p:commandButton id="addButton" value="Add" type="button" icon="ui-icon-plus"/>
                       <p:menu overlay="true" trigger="addButton" my="left top" at="left bottom">
                             <p:menuitem value="Property" oncomplete="addPropertyValue.show()"
@@ -154,14 +152,15 @@
                         </p:dataTable>
                         
                         <h:panelGroup id="installationDetails" style="float: left; margin-top: 30px;">
-                            <p:commandButton id="installButton" title="Install" label="Install" value="Install" 
-                                type="button" update=":installDeviceForm" onclick="installDevice.show()"
+                            <p:commandButton title="Install" label="Install" value="Install" 
+                                type="button" update=":installDeviceForm:installationDetails" onclick="installDevice.show()"
                                 disabled="#{installationManager.isDeviceInstalled(deviceDetailsAttributesController.device)}" />
-                            <p:commandButton id="uninstallButton" title="Uninstall" label="Uninstall" value="Uninstall" 
-                                update=":deviceDetailsForm"
+                            <p:commandButton title="Uninstall" label="Uninstall" value="Uninstall" 
+                                update=":deviceDetailsForm:installationDetails"
                                 action="#{installationManager.uninstallDevice(deviceDetailsAttributesController.device)}"
                                 disabled="#{!installationManager.isDeviceInstalled(deviceDetailsAttributesController.device)}" />
-                            <p:dataTable rendered="#{installationManager.isDeviceInstalled(deviceDetailsAttributesController.device)}"
+                            <p:dataTable 
+                                rendered="#{installationManager.isDeviceInstalled(deviceDetailsAttributesController.device)}"
                                 value="#{installationManager.getInstalledSlotInformation(deviceDetailsAttributesController.device)}"
                                 var="installationPath" style="margin-top: 1em;">
                                 <p:column headerText="Path">
@@ -169,9 +168,7 @@
                                 </p:column>
                             </p:dataTable>
                         </h:panelGroup>
-
                     </p:column>
-
                 </p:row>
             </p:panelGrid>
         </h:form>
@@ -247,7 +244,7 @@
             <ui:param name="dialogTitle" value="Select installation slot" />
             <ui:param name="widgetName" value="installDevice" />
             <ui:param name="device" value="#{deviceDetailsAttributesController.device}" />
-            <ui:param name="componentToUpdate" value=":deviceDetailsForm" />
+            <ui:param name="componentToUpdate" value=":deviceDetailsForm:installationDetails" />
         </ui:include>
     </ui:define>
 </ui:composition>

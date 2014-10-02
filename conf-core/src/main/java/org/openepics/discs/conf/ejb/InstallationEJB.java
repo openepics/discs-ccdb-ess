@@ -57,6 +57,11 @@ public class InstallationEJB extends DAO<InstallationRecord> {
         });
     }
 
+    /**
+     * @param slot the installation slot to find active installation record for.
+     * @return The currently active installation slot (an installation slot which has uninstall date <code>NULL</code>),
+     * <code>null</code> otherwise.
+     */
     public InstallationRecord getActiveInstallationRecordForSlot(Slot slot) {
         Preconditions.checkNotNull(slot);
         try {
@@ -68,6 +73,11 @@ public class InstallationEJB extends DAO<InstallationRecord> {
         }
     }
 
+    /**
+     * @param device the device instance to find active installation record for.
+     * @return The currently active installation slot (an installation slot which has uninstall date <code>NULL</code>),
+     * <code>null</code> otherwise.
+     */
     public InstallationRecord getActiveInstallationRecordForDevice(Device device) {
         Preconditions.checkNotNull(device);
         try {
