@@ -28,10 +28,14 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.openepics.discs.conf.ejb.InstallationEJB;
 import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ejb.SlotPairEJB;
 import org.openepics.discs.conf.ent.ComptypeArtifact;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
+import org.openepics.discs.conf.ent.DeviceArtifact;
+import org.openepics.discs.conf.ent.DevicePropertyValue;
+import org.openepics.discs.conf.ent.InstallationRecord;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotArtifact;
 import org.openepics.discs.conf.ent.SlotPair;
@@ -53,6 +57,7 @@ public class HierarchiesController implements Serializable {
     @Inject private SlotsTreeBuilder slotsTreeBuilder;
     @Inject private SlotEJB slotEJB;
     @Inject private SlotPairEJB slotPairEJB;
+    @Inject private InstallationEJB installationEJB;
 
     private TreeNode rootNode;
     private TreeNode selectedNode;
@@ -77,6 +82,13 @@ public class HierarchiesController implements Serializable {
                 attributesList.add(new EntityAttributeView(value, slotType + " property"));
             }
 
+            final InstallationRecord installationRecord = installationEJB.getActiveInstallationRecordForSlot(selectedSlot);
+            if (installationRecord != null) {
+                for (DevicePropertyValue value : installationRecord.getDevice().getDevicePropertyList()) {
+                    attributesList.add(new EntityAttributeView(value, "Device property"));
+                }
+            }
+
             for (ComptypeArtifact artifact : selectedSlot.getComponentType().getComptypeArtifactList()) {
                 attributesList.add(new EntityAttributeView(artifact, "Type artifact"));
             }
@@ -85,12 +97,24 @@ public class HierarchiesController implements Serializable {
                 attributesList.add(new EntityAttributeView(artifact, slotType + " artifact"));
             }
 
+            if (installationRecord != null) {
+                for (DeviceArtifact artifact : installationRecord.getDevice().getDeviceArtifactList()) {
+                    attributesList.add(new EntityAttributeView(artifact, "Device artifact"));
+                }
+            }
+
             for (Tag tag : selectedSlot.getComponentType().getTags()) {
                 attributesList.add(new EntityAttributeView(tag, "Type tag"));
             }
 
             for (Tag tag : selectedSlot.getTags()) {
                 attributesList.add(new EntityAttributeView(tag, slotType + " tag"));
+            }
+
+            if (installationRecord != null) {
+                for (Tag tag : installationRecord.getDevice().getTags()) {
+                    attributesList.add(new EntityAttributeView(tag, "Device tag"));
+                }
             }
         }
         return attributesList;
