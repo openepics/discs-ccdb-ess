@@ -67,7 +67,7 @@ public class HierarchiesController implements Serializable {
 
         if (selectedNode != null) {
             final Slot selectedSlot = ((SlotView)selectedNode.getData()).getSlot();
-            final String slotType = selectedSlot.getIsHostingSlot() ? "Installation slot" : "Container";
+            final String slotType = selectedSlot.isHostingSlot() ? "Installation slot" : "Container";
 
             for (ComptypePropertyValue value : selectedSlot.getComponentType().getComptypePropertyList()) {
                 attributesList.add(new EntityAttributeView(value, "Type property"));
