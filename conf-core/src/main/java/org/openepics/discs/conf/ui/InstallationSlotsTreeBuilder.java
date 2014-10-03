@@ -21,7 +21,6 @@ package org.openepics.discs.conf.ui;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
@@ -45,22 +44,20 @@ import org.openepics.discs.conf.util.DeviceInstallation;
 public class InstallationSlotsTreeBuilder extends SlotsTreeBuilder {
 
     @Override
-    protected List<Slot> filterSlotsAndPrepareCache(final List<Slot> incomingSlotList, final Map<Long, Slot> slotCache,
-            final String requestedComponentTypeName) {
+    protected List<Slot> filterSlotsAndPrepareCache(final List<Slot> incomingSlotList,
+            final String requestedComponentTypeName, boolean withInstallationSlots) {
         List<Slot> filteredList = new ArrayList<>(incomingSlotList.size());
 
         for (Slot slot : incomingSlotList) {
-            slotCache.put(slot.getId(), slot);
             if (requestedComponentTypeName.isEmpty()) {
                 filteredList.add(slot);
             } else {
-                // include only installation slots of the requested type (and all containers)
+                // Include only installation slots of the requested type (and all containers).
+                // This shrinks the slots collection and makes subsequent tree build shorter.
                 final String componentTypeName = slot.getComponentType().getName();
                 if (componentTypeName.equals(SlotEJB.ROOT_COMPONENT_TYPE)
                         || componentTypeName.equals(SlotEJB.GRP_COMPONENT_TYPE)
                         || componentTypeName.equals(requestedComponentTypeName)) {
-                    // The installation slot of this type is not needed and can be removed.
-                    // This shrinks the slots collection and makes subsequent tree build shorter.
                     filteredList.add(slot);
                 }
             }
@@ -89,7 +86,7 @@ public class InstallationSlotsTreeBuilder extends SlotsTreeBuilder {
 
     @Override
     protected boolean isNodeSelectable(Slot slot, ComponentType installationSlotType, Device installedDevice) {
-        return (installationSlotType != null) && slot.isHostingSlot()
-                && slot.getComponentType().equals(installationSlotType) && installedDevice == null;
+        return (installationSlotType != null) && installedDevice == null && slot.isHostingSlot()
+                && slot.getComponentType().equals(installationSlotType);
     }
 }

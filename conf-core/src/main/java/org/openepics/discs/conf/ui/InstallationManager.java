@@ -44,6 +44,7 @@ import com.google.common.base.Preconditions;
 @ViewScoped
 public class InstallationManager implements Serializable {
     private static final Logger logger = Logger.getLogger(InstallationManager.class.getCanonicalName());
+    private static final String PATH_SEPARATOR = "\u00A0\u00A0\u00BB\u00A0\u00A0";
 
     @EJB private InstallationEJB installationEJB;
     @EJB private SlotEJB slotEJB;
@@ -181,7 +182,7 @@ public class InstallationManager implements Serializable {
             for (SlotPair pair : slot.getChildrenSlotsPairList()) {
                 if (pair.getSlotRelation().getName() == SlotRelationName.CONTAINS) {
                     for (String parentPath : buildInstalledSlotInformation(pair.getParentSlot())) {
-                        list.add(parentPath + "\u00A0\u00A0\u00BB\u00A0\u00A0" + slot.getName());
+                        list.add(parentPath + PATH_SEPARATOR + slot.getName());
                     }
                 }
             }
@@ -213,7 +214,7 @@ public class InstallationManager implements Serializable {
         }
         deviceInstallationRecord.setUninstallDate(new Date());
         installationEJB.save(deviceInstallationRecord);
-        // the device is not installed any more.
+        // the device is not installed any more. Clear the installation state information.
         this.installationRecord = null;
         this.installedDevice = null;
         this.installationSlot = null;
