@@ -120,6 +120,10 @@ public class HierarchiesController implements Serializable {
         return attributesList;
     }
 
+    public Slot getSelectedNodeSlot() {
+        return selectedNode == null ? null : ((SlotView)selectedNode.getData()).getSlot();
+    }
+
     public List<SlotRelationshipView> getRelationships() {
         final List<SlotRelationshipView> relationships = new ArrayList<>();
         if (selectedNode != null) {

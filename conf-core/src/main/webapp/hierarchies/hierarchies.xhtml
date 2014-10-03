@@ -15,8 +15,8 @@
                         <p:treeTable value="#{hierarchiesController.rootNode}" var="installationSlot" 
                                 selectionMode="single" selection="#{hierarchiesController.selectedNode}" 
                                 scrollable="true" scrollHeight="800" scrollWidth="auto" style="width: 300px;">
-                            <p:ajax event="select" update=":hierarches:attributesTable :hierarches:relationsTable" />
-                            <p:ajax event="unselect" update=":hierarches:attributesTable :hierarches:relationsTable" />
+                            <p:ajax event="select" update=":hierarches:attributesTable :hierarches:relationsTable :hierarches:slotDetails" />
+                            <p:ajax event="unselect" update=":hierarches:attributesTable :hierarches:relationsTable :hierarches:slotDetails" />
                                 
                             <p:column id="name" headerText="Name">
                                 <h:outputText value=""
@@ -31,7 +31,7 @@
                             </p:column>
                         </p:treeTable>
                     </p:column>
-                    <p:column styleClass="alignTop" style="height: 50%">
+                    <p:column styleClass="alignTop" style="height: 50%" colspan="2">
                         <p:dataTable id="attributesTable" value="#{hierarchiesController.attributes}" var="attribute" 
                                 style="width: 100%;" scrollable="true" scrollHeight="380">
                             <p:column headerText="Name">
@@ -56,9 +56,10 @@
                         </p:dataTable>
                     </p:column>
                 </p:row>
-                <p:row>
-                    <p:column styleClass="alignTop" style="height: 50%">
-                        <p:dataTable id="relationsTable" value="#{hierarchiesController.relationships}" var="relationship" style="width: 50%;">
+                <p:row style="height: 50%">
+                    <p:column styleClass="alignTop" style="width: 30%">
+                        <p:dataTable id="relationsTable" value="#{hierarchiesController.relationships}" 
+                            var="relationship" style="width: 100%;">
                             <p:column headerText="Relationship">
                                 <h:outputText value="#{relationship.relationshipName}" />
                             </p:column>
@@ -67,6 +68,147 @@
                                 <h:outputText value="#{relationship.targetSlotName}" />
                             </p:column>
                         </p:dataTable>
+                    </p:column>
+                    <p:column styleClass="alignTop" style="width: 70%">
+                        <p:panel id="slotDetails" styleClass="noBorders" style="padding: 0;">
+                            <h:outputText rendered="#{empty hierarchiesController.selectedNode}" value="No element selected." />
+                            
+                            
+                            <p:panelGrid rendered="#{!empty hierarchiesController.selectedNode and !hierarchiesController.selectedNodeSlot.hostingSlot}" 
+                                    styleClass="dialog-grid-panel noBorders">
+                                <p:row>
+                                    <p:column style="text-align: center;">
+                                        <h:outputText style="font-weight: bold;" value="Container" />
+                                    </p:column>
+                                </p:row>
+                                <p:row>
+                                    <p:column>
+                                        <p:panelGrid styleClass="dialog-grid-panel noBorders">
+                                            <p:row>
+                                                <p:column style="text-align: right; width: 15em;">
+                                                    <h:outputText value="Name:" />
+                                                </p:column>
+                                                <p:column>
+                                                    <h:outputText value="#{hierarchiesController.selectedNodeSlot.name}" />
+                                                </p:column>
+                                            </p:row>
+                                            <p:row>
+                                                <p:column style="text-align: right; width: 15em;">
+                                                    <h:outputText value="Description:" />
+                                                </p:column>
+                                                <p:column>
+                                                    <p:inputTextarea rows="5" style="width: 100%" readonly="true" 
+                                                        value="#{hierarchiesController.selectedNodeSlot.description}" />
+                                                </p:column>
+                                            </p:row>
+                                        </p:panelGrid>
+                                    </p:column>
+                                </p:row>
+                            </p:panelGrid>
+    
+                            <p:tabView style="height: 100%;" rendered="#{!empty hierarchiesController.selectedNode and hierarchiesController.selectedNodeSlot.hostingSlot}">
+                                <p:tab title="Installation slot">
+                                    <p:panelGrid style="width: 100%" styleClass="noBorders">
+                                        <p:row>
+                                            <p:column style="text-align: right">
+                                                <h:outputText value="Device type:" />
+                                            </p:column>
+                                            <p:column>
+                                                <h:outputText value="#{hierarchiesController.selectedNodeSlot.componentType.name}" />
+                                            </p:column>
+                                            <p:column style="text-align: right;">
+                                                <h:outputText value="Beamline position:" />
+                                            </p:column>
+                                            <p:column>
+                                                <h:outputText value="#{hierarchiesController.selectedNodeSlot.beamlinePosition}" />
+                                            </p:column>
+                                        </p:row>
+                                        <p:row>
+                                            <p:column style="text-align: right">
+                                                <h:outputText value="Name:" />
+                                            </p:column>
+                                            <p:column>
+                                                <h:outputText value="#{hierarchiesController.selectedNodeSlot.name}" />
+                                            </p:column>
+                                            
+                                            <p:column rowspan="2">
+                                                <p:fieldset legend="Position">
+                                                    <p:panelGrid styleClass="noBorders">
+                                                        <p:row>
+                                                            <p:column style="text-align: right;">
+                                                                <h:outputText value="X:" />
+                                                            </p:column>
+                                                            <p:column>
+                                                                <h:outputText value="#{hierarchiesController.selectedNodeSlot.positionInformation.globalX}" />
+                                                            </p:column>
+                                                        </p:row>
+                                                        <p:row>
+                                                            <p:column style="text-align: right;">
+                                                                <h:outputText value="Y:" />
+                                                            </p:column>
+                                                            <p:column>
+                                                                <h:outputText value="#{hierarchiesController.selectedNodeSlot.positionInformation.globalY}" />
+                                                            </p:column>
+                                                        </p:row>
+                                                        <p:row>
+                                                            <p:column style="text-align: right;">
+                                                                <h:outputText value="Z:" />
+                                                            </p:column>
+                                                            <p:column>
+                                                                <h:outputText value="#{hierarchiesController.selectedNodeSlot.positionInformation.globalZ}" />
+                                                            </p:column>
+                                                        </p:row>
+                                                    </p:panelGrid>
+                                                </p:fieldset>
+                                            </p:column>
+                                            <p:column rowspan="2">
+                                                <p:fieldset legend="Alignment">
+                                                    <p:panelGrid styleClass="noBorders">
+                                                         <p:row>
+                                                             <p:column style="text-align: right;">
+                                                                 <h:outputText value="Pitch:" />
+                                                             </p:column>
+                                                             <p:column>
+                                                                 <h:outputText value="#{hierarchiesController.selectedNodeSlot.positionInformation.globalPitch}" />
+                                                             </p:column>
+                                                         </p:row>
+                                                         <p:row>
+                                                             <p:column style="text-align: right;">
+                                                                 <h:outputText value="Roll:" />
+                                                             </p:column>
+                                                             <p:column>
+                                                                 <h:outputText value="#{hierarchiesController.selectedNodeSlot.positionInformation.globalRoll}" />
+                                                             </p:column>
+                                                         </p:row>
+                                                         <p:row>
+                                                             <p:column style="text-align: right;">
+                                                                 <h:outputText value="Yaw:" />
+                                                             </p:column>
+                                                             <p:column>
+                                                                 <h:outputText value="#{hierarchiesController.selectedNodeSlot.positionInformation.globalYaw}" />
+                                                             </p:column>
+                                                         </p:row>
+                                                    </p:panelGrid>
+                                                </p:fieldset>
+                                            </p:column>
+                                        </p:row>
+                                        <p:row>
+                                            <p:column style="text-align: right">
+                                                <h:outputText value="Description:" />
+                                            </p:column>
+                                            <p:column>
+                                                <p:inputTextarea rows="5" style="width: 100%" readonly="true" 
+                                                    value="#{hierarchiesController.selectedNodeSlot.description}" />
+                                            </p:column>
+                                        </p:row>
+                                    </p:panelGrid>
+                                </p:tab>
+                                <p:tab title="Device">
+                                    <h:outputText rendered="#{empty hierarchiesController.selectedNode}" value="No element selected." />
+                                    <h:outputText rendered="#{!empty hierarchiesController.selectedNode}" value="Device details" />
+                                </p:tab>
+                            </p:tabView>
+                        </p:panel>
                     </p:column>
                 </p:row>
             </p:panelGrid>
