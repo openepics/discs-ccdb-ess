@@ -266,7 +266,7 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
         slotToAddOrUpdate.setModifiedAt(new Date());
         slotToAddOrUpdate.setComponentType(compType);
         slotToAddOrUpdate.setDescription(description);
-        slotToAddOrUpdate.setIsHostingSlot(isHosting);
+        slotToAddOrUpdate.setHostingSlot(isHosting);
         slotToAddOrUpdate.setBeamlinePosition(blp);
         slotToAddOrUpdate.setAssemblyComment(asmComment);
         slotToAddOrUpdate.setAssemblyPosition(asmPosition);
@@ -368,7 +368,7 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                                                 if (childSlot.getComponentType().getName().equalsIgnoreCase(SlotEJB.ROOT_COMPONENT_TYPE)) {
                                                     rowResult.addMessage(new ValidationMessage(ErrorMessage.CANT_ADD_PARENT_TO_ROOT, rowNumber));
                                                     continue;
-                                                } else if (parentSlot.getIsHostingSlot() && !childSlot.getIsHostingSlot()) {
+                                                } else if (parentSlot.isHostingSlot() && !childSlot.isHostingSlot()) {
                                                     rowResult.addMessage(new ValidationMessage(ErrorMessage.INSTALL_CANT_CONTAIN_CONTAINER, rowNumber));
                                                     continue;
                                                 } else {
@@ -377,14 +377,14 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                                                     newSlotPairChildren.add(newSlotPair.getChildSlot());
                                                 }
                                             } else if (slotRelation.getName() == SlotRelationName.POWERS) {
-                                                if (childSlot.getIsHostingSlot() && parentSlot.getIsHostingSlot()) {
+                                                if (childSlot.isHostingSlot() && parentSlot.isHostingSlot()) {
                                                     slotPairEJB.add(new SlotPair(childSlot, parentSlot, slotRelation));
                                                 } else {
                                                     rowResult.addMessage(new ValidationMessage(ErrorMessage.POWER_RELATIONSHIP_RESTRICTIONS, rowNumber));
                                                     continue;
                                                 }
                                             } else if (slotRelation.getName() == SlotRelationName.CONTROLS) {
-                                                if (childSlot.getIsHostingSlot() && parentSlot.getIsHostingSlot()) {
+                                                if (childSlot.isHostingSlot() && parentSlot.isHostingSlot()) {
                                                     slotPairEJB.add(new SlotPair(childSlot, parentSlot, slotRelation));
                                                 } else {
                                                     rowResult.addMessage(new ValidationMessage(ErrorMessage.CONTROL_RELATIONSHIP_RESTRICTIONS, rowNumber));
