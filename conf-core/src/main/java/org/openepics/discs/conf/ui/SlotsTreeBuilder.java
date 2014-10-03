@@ -105,7 +105,7 @@ public class SlotsTreeBuilder implements Serializable {
 
         final String requestedComponentTypeName = installationSlotType == null ? "" : installationSlotType.getName();
 
-        final List<Slot> filteredList = filterSlotsAndPrepareCache(slots, requestedComponentTypeName,
+        final List<Slot> filteredList = filterSlots(slots, requestedComponentTypeName,
                 withInstallationSlots);
 
         Collections.sort(filteredList, new Comparator<Slot>() {
@@ -118,10 +118,7 @@ public class SlotsTreeBuilder implements Serializable {
         });
 
         final SlotTree slotsTree = new SlotTree(selected, collapsedNodes);
-        /*
-         * use the slots list to build the tree because it is sorted. This guarantees that the layout of the tree is
-         * always the same.
-         */
+        // use the sorted list to build the tree. This guarantees that the layout of the tree is always the same.
         for (Slot slot : filteredList) {
             addSlotNode(slotsTree, slot, installationSlotType);
         }
@@ -141,7 +138,7 @@ public class SlotsTreeBuilder implements Serializable {
                         final Slot parentSlot = parentSlotPair.getParentSlot();
                         // first recursively add parents
                         addSlotNode(nprt, parentSlot, installationSlotType);
-                        final Device installedDevice = getInstalledDeviceForSlot(slot, installationSlotType);
+                        final Device installedDevice = getInstalledDeviceForSlot(slot);
                         // then add the child you're working on at the moment
                         nprt.addChildToParent(parentSlot.getId(), slot, installedDevice,
                                 isNodeSelectable(slot, installationSlotType, installedDevice));
@@ -231,17 +228,17 @@ public class SlotsTreeBuilder implements Serializable {
         }
     }
 
-    /** This method populates the all slots cache and prepares the list of slots that will be used for building a tree.
-     * Only the slots in the returned list will be shown in the tree (plus any parents that are required, even if they
-     * are not part of the filtered list).
+    /** This method prepares the list of slots that will be used for building a tree. Only the slots in the returned
+     * list will be shown in the tree (plus any parents that are required, even if they are not part of the
+     * filtered list).
      * @param allSlotList the list of all slots in the database.
      * @param requestedComponentTypeName the component (device) type to filter the allSlotList by.
      * @param withInstallationSlots <code>true</code> if the installation slots should be included in the built tree,
      *              <code>false</code> otherwise.
      * @return The filtered list to build the tree out of.
      */
-    protected List<Slot> filterSlotsAndPrepareCache(final List<Slot> allSlotList,
-            final String requestedComponentTypeName, boolean withInstallationSlots) {
+    protected List<Slot> filterSlots(final List<Slot> allSlotList, final String requestedComponentTypeName,
+            boolean withInstallationSlots) {
         List<Slot> filteredList = new ArrayList<>(allSlotList.size());
 
         for (Slot slot : allSlotList) {
@@ -253,12 +250,13 @@ public class SlotsTreeBuilder implements Serializable {
         return filteredList;
     }
 
-    /**
+    /** This method is only called with the appropriate type of installation slot or a container which can never have
+     * a device installed.
      * @param slot the slot to inspect.
-     * @param installationSlotType the type of the devices the user is interested in.
-     * @return The device that is installed in the current slot.
+     * @return The device that is installed in the current slot. <code>null</code> means that the installation slot
+     * is empty.
      */
-    protected Device getInstalledDeviceForSlot(final Slot slot, final ComponentType installationSlotType) {
+    protected Device getInstalledDeviceForSlot(final Slot slot) {
         // in the basic container/slot tree we are not interested in the installed devices
         return null;
     }

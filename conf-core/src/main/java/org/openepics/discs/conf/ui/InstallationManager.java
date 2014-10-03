@@ -15,8 +15,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.ejb.EJB;
-import javax.faces.application.FacesMessage;
-import javax.faces.validator.ValidatorException;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -142,12 +140,12 @@ public class InstallationManager implements Serializable {
                 .getActiveInstallationRecordForSlot(((SlotView)selectedSlot.getData()).getSlot());
         if (slotCheck != null) {
             logger.log(Level.WARNING, "An attempt was made to install a device in an already occupied slot.");
-            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Slot already occupied.", ""));
+            throw new RuntimeException("Slot already occupied.");
         }
         final InstallationRecord deviceCheck = installationEJB.getActiveInstallationRecordForDevice(device);
         if (deviceCheck != null) {
             logger.log(Level.WARNING, "An attempt was made to install a device that is already installed.");
-            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Device already installed.", ""));
+            throw new RuntimeException("Device already installed.");
         }
 
         final Date today = new Date();
@@ -209,8 +207,7 @@ public class InstallationManager implements Serializable {
             logger.log(Level.WARNING, "The device appears installed, but no active installation record for "
                     + "it could be retrieved. Device db ID: " + device.getId()
                     + ", serial number: " + device.getSerialNumber());
-            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                    "No installation record for the device exists.", ""));
+            throw new RuntimeException("No installation record for the device exists.");
         }
         deviceInstallationRecord.setUninstallDate(new Date());
         installationEJB.save(deviceInstallationRecord);
