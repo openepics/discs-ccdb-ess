@@ -14,7 +14,6 @@
 
             <p:panelGrid styleClass="noBorders">
                 <p:row>
-
                     <p:column style="vertical-align: top;">
                         <p:panelGrid id="deviceDetails" styleClass="noBorders">
                             <p:row>
@@ -87,7 +86,7 @@
                                 </p:column>
                                 <p:column>
                                     <p:inputTextarea value="#{deviceDetailsAttributesController.device.description}" rows="7" cols="70"
-                                        readonly="true" disabled="true" style="width=100%" />
+                                        readonly="true" disabled="true" style="width: 100%" />
                                 </p:column>
                             </p:row>
                             <p:row style="margin-top: 20px;">
@@ -103,7 +102,6 @@
                     </p:column>
 
                     <p:column style="width: 60%; vertical-align: top;">
-
                       <p:commandButton id="addButton" value="Add" type="button" icon="ui-icon-plus"/>
                       <p:menu overlay="true" trigger="addButton" my="left top" at="left bottom">
                             <p:menuitem value="Property" oncomplete="addPropertyValue.show()"
@@ -133,26 +131,44 @@
                                 <h:outputText value="#{attribute.value}" />
                             </p:column>
 
-                            <p:column headerText="Actions" width="10%">
-                                <p:commandButton icon="ui-icon-pencil" title="Edit" ajax="true" 
-                                        rendered="#{deviceDetailsAttributesController.canEdit(attribute.entity)}">
-                                     <f:setPropertyActionListener value="#{attribute}" target="#{deviceDetailsAttributesController.selectedAttributeToModify}" />
-                                </p:commandButton>
-                                <p:commandButton icon="ui-icon-trash" title="Delete" ajax="true" oncomplete="deleteAttribute.show()"
-                                        rendered="#{deviceDetailsAttributesController.canDelete(attribute.entity)}">
-                                     <f:setPropertyActionListener value="#{attribute}" target="#{deviceDetailsAttributesController.selectedAttribute}" />
-                                </p:commandButton>
-                                <p:commandButton icon="ui-icon-arrowthick-1-s" title="Download" ajax="false" rendered="#{attribute.hasFile}">
-                                     <f:setPropertyActionListener value="#{attribute}" target="#{deviceDetailsAttributesController.selectedAttribute}" />
-                                     <p:fileDownload value="#{deviceDetailsAttributesController.downloadFile}" />
-                                </p:commandButton>
-                                <p:button icon="ui-icon-extlink" target="_blank" title="Got to URL" ajax="true"
-                                        rendered="#{attribute.hasURL}" href="#{attribute.value}"/>
+                            <p:column headerText="Actions" width="90px">
+                                <p:commandLink ajax="true" rendered="#{deviceDetailsAttributesController.canEdit(attribute.entity)}" title="Edit">
+                                    <h:outputText styleClass="ui-icon ui-icon-pencil" style="display: inline-block !important; margin-right: 6px;" />
+                                    <f:setPropertyActionListener value="#{attribute}" target="#{deviceDetailsAttributesController.selectedAttributeToModify}" />
+                                </p:commandLink>
+                                <p:commandLink ajax="true" rendered="#{deviceDetailsAttributesController.canDelete(attribute.entity)}" title="Delete">
+                                    <h:outputText styleClass="ui-icon ui-icon-trash" style="display: inline-block !important; margin-right: 6px;" />
+                                    <f:setPropertyActionListener value="#{attribute}" target="#{deviceDetailsAttributesController.selectedAttribute}" />
+                                </p:commandLink>
+                                <p:commandLink ajax="true" rendered="#{attribute.hasFile}" title="Download">
+                                    <h:outputText styleClass="ui-icon ui-icon-arrowthick-1-s" style="display: inline-block !important; margin-right: 6px;" />
+                                    <f:setPropertyActionListener value="#{attribute}" target="#{deviceDetailsAttributesController.selectedAttribute}" />
+                                    <p:fileDownload value="#{deviceDetailsAttributesController.downloadFile}" />
+                                </p:commandLink>
+                                <h:outputLink rendered="#{attribute.hasURL}" title="Got to URL" target="_blank" value="#{attribute.value}">
+                                    <h:outputText styleClass="ui-icon ui-icon-extlink" style="display: inline-block !important; margin-right: 6px;" />
+                                </h:outputLink>
                             </p:column>
                         </p:dataTable>
-
+                        
+                        <h:panelGroup id="installationDetails" style="float: left; margin-top: 30px;">
+                            <p:commandButton title="Install" label="Install" value="Install" 
+                                type="button" update=":installDeviceForm:installationDetails" onclick="installDevice.show()"
+                                disabled="#{installationManager.isDeviceInstalled(deviceDetailsAttributesController.device)}" />
+                            <p:commandButton title="Uninstall" label="Uninstall" value="Uninstall" 
+                                update=":deviceDetailsForm:installationDetails"
+                                action="#{installationManager.uninstallDevice(deviceDetailsAttributesController.device)}"
+                                disabled="#{!installationManager.isDeviceInstalled(deviceDetailsAttributesController.device)}" />
+                            <p:dataTable 
+                                rendered="#{installationManager.isDeviceInstalled(deviceDetailsAttributesController.device)}"
+                                value="#{installationManager.getInstalledSlotInformation(deviceDetailsAttributesController.device)}"
+                                var="installationPath" style="margin-top: 1em;">
+                                <p:column headerText="Path">
+                                    <h:outputText value="#{installationPath}" />
+                                </p:column>
+                            </p:dataTable>
+                        </h:panelGroup>
                     </p:column>
-
                 </p:row>
             </p:panelGrid>
         </h:form>
@@ -221,6 +237,14 @@
             <ui:param name="controller" value="#{deviceDetailsAttributesController}" />
             <ui:param name="submitHandler" value="modifyArtifact" />
             <ui:param name="componentToUpdate" value=":deviceDetailsForm:devAttribs" />
-        </ui:include>   
+        </ui:include>
+        
+        <ui:include src="install-device.xhtml">
+            <ui:param name="formId" value="installDeviceForm" />
+            <ui:param name="dialogTitle" value="Select installation slot" />
+            <ui:param name="widgetName" value="installDevice" />
+            <ui:param name="device" value="#{deviceDetailsAttributesController.device}" />
+            <ui:param name="componentToUpdate" value=":deviceDetailsForm:installationDetails" />
+        </ui:include>
     </ui:define>
 </ui:composition>

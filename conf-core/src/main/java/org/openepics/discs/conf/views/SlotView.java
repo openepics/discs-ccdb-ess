@@ -12,6 +12,7 @@ package org.openepics.discs.conf.views;
 import java.util.List;
 
 import org.openepics.discs.conf.ent.ComponentType;
+import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotRelationName;
@@ -23,29 +24,30 @@ import org.openepics.discs.conf.ent.SlotRelationName;
  *
  */
 public class SlotView {
-    private Long id;
-    private String name;
-    private String description;
+    private final Long id;
+    private final String name;
+    private final String description;
     private boolean canDelete;
-    private SlotView parentNode;
-    private Slot slot;
-    private boolean isHostingSlot;
-    private ComponentType deviceType;
-    private Double beamlinePosition;
-    private Double globalX;
-    private Double globalY;
-    private Double globalZ;
-    private Double globalPitch;
-    private Double globalRoll;
-    private Double globalYaw;
+    private final SlotView parentNode;
+    private final Slot slot;
+    private final boolean isHostingSlot;
+    private final ComponentType deviceType;
+    private final Double beamlinePosition;
+    private final Double globalX;
+    private final Double globalY;
+    private final Double globalZ;
+    private final Double globalPitch;
+    private final Double globalRoll;
+    private final Double globalYaw;
+    private final Device installedDevice;
 
-    public SlotView(Slot slot, SlotView parentNode, List<SlotPair> children) {
+    public SlotView(Slot slot, SlotView parentNode, List<SlotPair> children, Device installedDevice) {
         this.slot = slot;
         this.name = slot.getName();
         this.description = slot.getDescription();
         this.id = slot.getId();
         this.parentNode = parentNode;
-        this.isHostingSlot = slot.getIsHostingSlot();
+        this.isHostingSlot = slot.isHostingSlot();
         this.deviceType = slot.getComponentType();
         this.beamlinePosition = slot.getBeamlinePosition();
         this.globalX = slot.getPositionInformation().getGlobalX();
@@ -54,6 +56,7 @@ public class SlotView {
         this.globalPitch = slot.getPositionInformation().getGlobalPitch();
         this.globalRoll = slot.getPositionInformation().getGlobalRoll();
         this.globalYaw = slot.getPositionInformation().getGlobalYaw();
+        this.installedDevice = installedDevice;
 
         canDelete = true;
         for (SlotPair child : children) {
@@ -93,4 +96,6 @@ public class SlotView {
     public Double getGlobalRoll() { return globalRoll; }
 
     public Double getGlobalYaw() { return globalYaw; }
+
+    public Device getInstalledDevice() { return installedDevice; }
 }

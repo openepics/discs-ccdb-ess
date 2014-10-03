@@ -130,10 +130,10 @@ public class Slot extends ConfigurationEntity {
         this.description = description;
     }
 
-    public boolean getIsHostingSlot() {
+    public boolean isHostingSlot() {
         return isHostingSlot;
     }
-    public void setIsHostingSlot(boolean isHostingSlot) {
+    public void setHostingSlot(boolean isHostingSlot) {
         this.isHostingSlot = isHostingSlot;
     }
 

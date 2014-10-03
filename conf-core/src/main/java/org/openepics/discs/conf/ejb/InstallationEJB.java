@@ -22,9 +22,14 @@ package org.openepics.discs.conf.ejb;
 import java.util.List;
 
 import javax.ejb.Stateless;
+import javax.persistence.NoResultException;
 
+import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.InstallationArtifact;
 import org.openepics.discs.conf.ent.InstallationRecord;
+import org.openepics.discs.conf.ent.Slot;
+
+import com.google.common.base.Preconditions;
 
 /**
  *
@@ -51,4 +56,37 @@ public class InstallationEJB extends DAO<InstallationRecord> {
             }
         });
     }
+
+    /**
+     * @param slot the installation slot to find active installation record for.
+     * @return The currently active installation slot (an installation slot which has uninstall date <code>NULL</code>),
+     * <code>null</code> otherwise.
+     */
+    public InstallationRecord getActiveInstallationRecordForSlot(Slot slot) {
+        Preconditions.checkNotNull(slot);
+        try {
+            return em.createNamedQuery("InstallationRecord.activeRecordForSlot", InstallationRecord.class)
+                .setParameter("slot", slot).getSingleResult();
+        } catch (NoResultException e) {
+            // no result is not an exception
+            return null;
+        }
+    }
+
+    /**
+     * @param device the device instance to find active installation record for.
+     * @return The currently active installation slot (an installation slot which has uninstall date <code>NULL</code>),
+     * <code>null</code> otherwise.
+     */
+    public InstallationRecord getActiveInstallationRecordForDevice(Device device) {
+        Preconditions.checkNotNull(device);
+        try {
+            return em.createNamedQuery("InstallationRecord.activeRecordForDevice", InstallationRecord.class)
+                .setParameter("device", device).getSingleResult();
+        } catch (NoResultException e) {
+            // no result is not an exception
+            return null;
+        }
+    }
+
 }
