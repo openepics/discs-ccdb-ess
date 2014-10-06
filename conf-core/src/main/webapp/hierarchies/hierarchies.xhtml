@@ -7,7 +7,7 @@
     xmlns:h="http://java.sun.com/jsf/html">
 
     <ui:define name="content">
-        <h:form id="hierarches">
+        <h:form id="hierarchies">
             <p:growl showDetail="true" globalOnly="true" autoUpdate="true"/>
             <p:panelGrid id="hierarchiesContainer" style="width: 100%;" styleClass="noBorders">
                 <p:row>
@@ -15,8 +15,8 @@
                         <p:treeTable value="#{hierarchiesController.rootNode}" var="installationSlot" 
                                 selectionMode="single" selection="#{hierarchiesController.selectedNode}" 
                                 scrollable="true" scrollHeight="800" scrollWidth="auto" style="width: 300px;">
-                            <p:ajax event="select" update=":hierarches:attributesTable :hierarches:relationsTable :hierarches:slotDetails" />
-                            <p:ajax event="unselect" update=":hierarches:attributesTable :hierarches:relationsTable :hierarches:slotDetails" />
+                            <p:ajax event="select" update=":hierarchies:attributesTable :hierarchies:relationsTable :hierarchies:slotDetails" />
+                            <p:ajax event="unselect" update=":hierarchies:attributesTable :hierarchies:relationsTable :hierarchies:slotDetails" />
                                 
                             <p:column id="name" headerText="Name">
                                 <h:outputText value=""
@@ -82,7 +82,10 @@
                                     <ui:include src="tabs/installation-slot-tab.xhtml" />
                                 </p:tab>
                                 <p:tab title="Device" rendered="#{!empty hierarchiesController.selectedNode and hierarchiesController.selectedNodeSlot.hostingSlot}">
-                                    <h:outputText rendered="#{empty hierarchiesController.installedDevice}" value="No device installed." />
+                                    <p:commandButton title="Install" label="Install" value="Install" 
+                                        rendered="#{empty hierarchiesController.installedDevice}"
+                                        type="button" onclick="installDevice.show()"
+                                        update=":hierarchies:attributesTable :hierarchies:relationsTable :hierarchies:slotDetails"/>
                                     
                                     <ui:include src="tabs/device-tab.xhtml" />
                                 </p:tab>
@@ -92,5 +95,15 @@
                 </p:row>
             </p:panelGrid>
         </h:form>
+        
+
+        <ui:include src="install-device.xhtml">
+            <ui:param name="formId" value="installDeviceForm" />
+            <ui:param name="dialogTitle" value="Select device instance" />
+            <ui:param name="widgetName" value="installDevice" />
+            <ui:param name="slot" value="#{hierarchiesController.selectedNodeSlot}" />
+            <ui:param name="componentToUpdate" value=":hierarchies:attributesTable :hierarchies:relationsTable :hierarchies:slotDetails" />
+        </ui:include>
+        
     </ui:define>
 </ui:composition>

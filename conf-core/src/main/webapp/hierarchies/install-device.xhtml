@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html">
+
+    <h:form id="#{formId}">
+        <p:dialog widgetVar="#{widgetName}" id="#{widgetName}" modal="true" resizable="false" dynamic="true" width="550">
+
+            <f:facet name="header">
+                <h:outputText value="#{dialogTitle}" />
+            </f:facet>
+
+            <p:panelGrid styleClass="noBorders">
+                <p:row>
+                    <p:column>
+                        <p:dataTable var="device" value="#{hierarchiesController.uninstalledDevices}" 
+                                selectionMode="single" selection="#{hierarchiesController.deviceToInstall}"
+                                rowKey="#{device.id}" scrollable="true" scrollHeight="180"  
+                                emptyMessage="No device available for installation.">
+                            <p:ajax event="rowSelect" update=":#{formId}:installButton" />
+                            <p:ajax event="rowUnselect" update=":#{formId}:installButton" />
+                            <p:column headerText="Inventory Id">
+                                <h:outputText value="#{device.serialNumber}" />
+                            </p:column>
+                            <p:column headerText="Description">
+                                <h:outputText value="#{device.description}" />
+                            </p:column>
+                        </p:dataTable>
+                    </p:column>
+                </p:row>
+                <p:row>
+                    <p:column>
+                        <p:commandButton title="Cancel" style="float: right;" label="Cancel" value="Cancel" 
+                            onclick="#{widgetName}.hide()" resetValues="true" update=":#{formId}" />
+                        <p:commandButton id="installButton" style="float: right;" title="Install" label="Install"
+                            disabled="#{empty hierarchiesController.deviceToInstall}" value="Install" 
+                            action="#{hierarchiesController.installDevice()}" oncomplete="#{widgetName}.hide()"
+                            update="#{componentToUpdate}" />
+                    </p:column>
+                </p:row>
+            </p:panelGrid>
+            
+        </p:dialog>
+    </h:form>
+</ui:composition>

@@ -21,7 +21,10 @@ package org.openepics.discs.conf.ui;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
@@ -47,6 +50,8 @@ import org.openepics.discs.conf.views.SlotRelationshipView;
 import org.openepics.discs.conf.views.SlotView;
 import org.primefaces.model.TreeNode;
 
+import com.google.common.base.Preconditions;
+
 /**
  * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  *
@@ -54,6 +59,7 @@ import org.primefaces.model.TreeNode;
 @Named
 @ViewScoped
 public class HierarchiesController implements Serializable {
+    private static final Logger logger = Logger.getLogger(HierarchiesController.class.getCanonicalName());
 
     @Inject private SlotsTreeBuilder slotsTreeBuilder;
     @Inject private SlotEJB slotEJB;
@@ -63,6 +69,8 @@ public class HierarchiesController implements Serializable {
     private TreeNode rootNode;
     private TreeNode selectedNode;
     private InstallationRecord installationRecord;
+    private Device deviceToInstall;
+    private Slot selectedSlot;
 
     @PostConstruct
     public void init() {
@@ -73,7 +81,6 @@ public class HierarchiesController implements Serializable {
         final List<EntityAttributeView> attributesList = new ArrayList<>();
 
         if (selectedNode != null) {
-            final Slot selectedSlot = ((SlotView)selectedNode.getData()).getSlot();
             final String slotType = selectedSlot.isHostingSlot() ? "Installation slot" : "Container";
 
             for (ComptypePropertyValue value : selectedSlot.getComponentType().getComptypePropertyList()) {
@@ -122,13 +129,12 @@ public class HierarchiesController implements Serializable {
     }
 
     public Slot getSelectedNodeSlot() {
-        return selectedNode == null ? null : ((SlotView)selectedNode.getData()).getSlot();
+        return selectedSlot;
     }
 
     public List<SlotRelationshipView> getRelationships() {
         final List<SlotRelationshipView> relationships = new ArrayList<>();
         if (selectedNode != null) {
-            final Slot selectedSlot = ((SlotView)selectedNode.getData()).getSlot();
             final List<SlotPair> slotPairs = slotPairEJB.getSlotRleations(selectedSlot);
 
             for (SlotPair slotPair : slotPairs) {
@@ -148,15 +154,59 @@ public class HierarchiesController implements Serializable {
 
     public void setSelectedNode(TreeNode selectedNode) {
         this.selectedNode = selectedNode;
-        if (selectedNode != null) {
-            installationRecord = installationEJB
-                        .getActiveInstallationRecordForSlot(((SlotView)selectedNode.getData()).getSlot());
-        } else {
-            installationRecord = null;
-        }
+        this.selectedSlot = selectedNode == null ? null : ((SlotView)selectedNode.getData()).getSlot();
+        this.installationRecord = selectedNode == null ? null
+                                    : installationEJB.getActiveInstallationRecordForSlot(selectedSlot);
     }
 
     public Device getInstalledDevice() {
         return installationRecord == null ? null : installationRecord.getDevice();
+    }
+
+
+    public List<Device> getUninstalledDevices() {
+        if (selectedSlot == null || !selectedSlot.isHostingSlot()) {
+            return new ArrayList<Device>();
+        }
+        return installationEJB.getUninstalledDevices(selectedSlot.getComponentType());
+    }
+
+    /**
+     * @return the deviceToInstall
+     */
+    public Device getDeviceToInstall() {
+        return deviceToInstall;
+    }
+
+    /**
+     * @param deviceToInstall the deviceToInstall to set
+     */
+    public void setDeviceToInstall(Device deviceToInstall) {
+        this.deviceToInstall = deviceToInstall;
+    }
+
+    public void installDevice() {
+        Preconditions.checkNotNull(deviceToInstall);
+        Preconditions.checkNotNull(selectedSlot);
+        // we must check whether the selected slot is already occupied or selected device is already installed
+        final InstallationRecord slotCheck = installationEJB.getActiveInstallationRecordForSlot(selectedSlot);
+        if (slotCheck != null) {
+            logger.log(Level.WARNING, "An attempt was made to install a device in an already occupied slot.");
+            throw new RuntimeException("Slot already occupied.");
+        }
+        final InstallationRecord deviceCheck = installationEJB.getActiveInstallationRecordForDevice(deviceToInstall);
+        if (deviceCheck != null) {
+            logger.log(Level.WARNING, "An attempt was made to install a device that is already installed.");
+            throw new RuntimeException("Device already installed.");
+        }
+
+        final Date today = new Date();
+        final InstallationRecord newRecord = new InstallationRecord(Long.toString(today.getTime()), today);
+        newRecord.setDevice(deviceToInstall);
+        newRecord.setSlot(selectedSlot);
+        installationEJB.add(newRecord);
+
+        deviceToInstall = null;
+        installationRecord = installationEJB.getActiveInstallationRecordForSlot(selectedSlot);
     }
 }

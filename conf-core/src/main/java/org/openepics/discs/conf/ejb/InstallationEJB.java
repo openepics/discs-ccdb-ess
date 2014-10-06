@@ -24,6 +24,7 @@ import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.NoResultException;
 
+import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.InstallationArtifact;
 import org.openepics.discs.conf.ent.InstallationRecord;
@@ -87,6 +88,12 @@ public class InstallationEJB extends DAO<InstallationRecord> {
             // no result is not an exception
             return null;
         }
+    }
+
+    public List<Device> getUninstalledDevices(ComponentType componentType) {
+        Preconditions.checkNotNull(componentType);
+        return em.createNamedQuery("Device.uninstalledDevicesByType", Device.class).
+                setParameter("componentType", componentType).getResultList();
     }
 
 }

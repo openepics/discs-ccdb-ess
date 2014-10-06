@@ -38,7 +38,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
     // device instance does not have a name. This named query is introduced to satisfy the ReadOnlyDAO assumption.
     @NamedQuery(name = "Device.findByName", query = "SELECT d FROM Device d WHERE d.serialNumber = :name"),
     @NamedQuery(name = "Device.findByComponentType", query = "SELECT d FROM Device d "
-            + "WHERE d.componentType = :componentType")
+            + "WHERE d.componentType = :componentType"),
+    @NamedQuery(name = "Device.uninstalledDevicesByType", query = "SELECT d from Device d "
+            + "WHERE d.componentType = :componentType "
+            + "AND (NOT EXISTS (SELECT ir FROM InstallationRecord ir WHERE d = ir.device) "
+            + "OR NOT EXISTS (SELECT ir FROM InstallationRecord ir WHERE d = ir.device AND ir.uninstallDate IS NULL))")
 })
 public class Device extends ConfigurationEntity {
     @Basic(optional = false)
