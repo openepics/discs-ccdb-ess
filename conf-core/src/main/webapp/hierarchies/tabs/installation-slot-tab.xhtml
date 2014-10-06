@@ -1,0 +1,104 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html">
+    
+    <p:panelGrid style="width: 100%" styleClass="noBorders">
+        <p:row>
+            <p:column style="text-align: right">
+                <h:outputText value="Device type:" />
+            </p:column>
+            <p:column>
+                <h:outputText value="#{hierarchiesController.selectedNodeSlot.componentType.name}" />
+            </p:column>
+            <p:column style="text-align: right;">
+                <h:outputText value="Beamline position:" />
+            </p:column>
+            <p:column>
+                <h:outputText value="#{hierarchiesController.selectedNodeSlot.beamlinePosition}" />
+            </p:column>
+        </p:row>
+        <p:row>
+            <p:column style="text-align: right">
+                <h:outputText value="Name:" />
+            </p:column>
+            <p:column>
+                <h:outputText value="#{hierarchiesController.selectedNodeSlot.name}" />
+            </p:column>
+            
+            <p:column rowspan="2">
+                <p:fieldset legend="Position">
+                    <p:panelGrid styleClass="noBorders">
+                        <p:row>
+                            <p:column style="text-align: right;">
+                                <h:outputText value="X:" />
+                            </p:column>
+                            <p:column>
+                                <h:outputText value="#{hierarchiesController.selectedNodeSlot.positionInformation.globalX}" />
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column style="text-align: right;">
+                                <h:outputText value="Y:" />
+                            </p:column>
+                            <p:column>
+                                <h:outputText value="#{hierarchiesController.selectedNodeSlot.positionInformation.globalY}" />
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column style="text-align: right;">
+                                <h:outputText value="Z:" />
+                            </p:column>
+                            <p:column>
+                                <h:outputText value="#{hierarchiesController.selectedNodeSlot.positionInformation.globalZ}" />
+                            </p:column>
+                        </p:row>
+                    </p:panelGrid>
+                </p:fieldset>
+            </p:column>
+            <p:column rowspan="2">
+                <p:fieldset legend="Alignment">
+                    <p:panelGrid styleClass="noBorders">
+                         <p:row>
+                             <p:column style="text-align: right;">
+                                 <h:outputText value="Pitch:" />
+                             </p:column>
+                             <p:column>
+                                 <h:outputText value="#{hierarchiesController.selectedNodeSlot.positionInformation.globalPitch}" />
+                             </p:column>
+                         </p:row>
+                         <p:row>
+                             <p:column style="text-align: right;">
+                                 <h:outputText value="Roll:" />
+                             </p:column>
+                             <p:column>
+                                 <h:outputText value="#{hierarchiesController.selectedNodeSlot.positionInformation.globalRoll}" />
+                             </p:column>
+                         </p:row>
+                         <p:row>
+                             <p:column style="text-align: right;">
+                                 <h:outputText value="Yaw:" />
+                             </p:column>
+                             <p:column>
+                                 <h:outputText value="#{hierarchiesController.selectedNodeSlot.positionInformation.globalYaw}" />
+                             </p:column>
+                         </p:row>
+                    </p:panelGrid>
+                </p:fieldset>
+            </p:column>
+        </p:row>
+        <p:row>
+            <p:column style="text-align: right">
+                <h:outputText value="Description:" />
+            </p:column>
+            <p:column>
+                <p:inputTextarea rows="5" style="width: 100%" readonly="true" 
+                    value="#{hierarchiesController.selectedNodeSlot.description}" />
+            </p:column>
+        </p:row>
+    </p:panelGrid>
+
+</ui:composition>
