@@ -33,6 +33,7 @@ import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ejb.SlotPairEJB;
 import org.openepics.discs.conf.ent.ComptypeArtifact;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
+import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.DeviceArtifact;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ent.InstallationRecord;
@@ -61,6 +62,7 @@ public class HierarchiesController implements Serializable {
 
     private TreeNode rootNode;
     private TreeNode selectedNode;
+    private InstallationRecord installationRecord;
 
     @PostConstruct
     public void init() {
@@ -82,7 +84,6 @@ public class HierarchiesController implements Serializable {
                 attributesList.add(new EntityAttributeView(value, slotType + " property"));
             }
 
-            final InstallationRecord installationRecord = installationEJB.getActiveInstallationRecordForSlot(selectedSlot);
             if (installationRecord != null) {
                 for (DevicePropertyValue value : installationRecord.getDevice().getDevicePropertyList()) {
                     attributesList.add(new EntityAttributeView(value, "Device property"));
@@ -147,5 +148,15 @@ public class HierarchiesController implements Serializable {
 
     public void setSelectedNode(TreeNode selectedNode) {
         this.selectedNode = selectedNode;
+        if (selectedNode != null) {
+            installationRecord = installationEJB
+                        .getActiveInstallationRecordForSlot(((SlotView)selectedNode.getData()).getSlot());
+        } else {
+            installationRecord = null;
+        }
+    }
+
+    public Device getInstalledDevice() {
+        return installationRecord == null ? null : installationRecord.getDevice();
     }
 }
