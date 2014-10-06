@@ -7,8 +7,7 @@
     xmlns:h="http://java.sun.com/jsf/html">
 
     <h:form id="#{formId}">
-        <p:dialog widgetVar="#{widgetName}" id="#{widgetName}" modal="true" resizable="false" closable="false"
-            width="25%">
+        <p:dialog widgetVar="#{widgetName}" id="#{widgetName}" modal="true" resizable="false" closable="false" width="530">
             <f:facet name="header">
                 <h:outputText value="#{dialogTitle}" />
             </f:facet>
@@ -30,7 +29,7 @@
             </p:panelGrid>
             
             <p:commandButton value="Cancel" style="float: right" onclick="#{widgetName}.hide();" update="grp" resetValues="true" />
-            <p:commandButton value="Submit" style="float: right" update=":dataDefinitionsContainer grp" oncomplete="if (args &amp;&amp; !args.validationFailed) #{widgetName}.hide()" action="#{componentTypeManager[submitHandler]}"/>
+            <p:commandButton value="Save" style="float: right" update=":dataDefinitionsContainer grp" oncomplete="if (args &amp;&amp; !args.validationFailed) #{widgetName}.hide()" action="#{componentTypeManager[submitHandler]}"/>
         </p:dialog>
 
     </h:form>

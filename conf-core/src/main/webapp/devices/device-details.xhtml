@@ -145,7 +145,7 @@
                                     <f:setPropertyActionListener value="#{attribute}" target="#{deviceDetailsAttributesController.selectedAttribute}" />
                                     <p:fileDownload value="#{deviceDetailsAttributesController.downloadFile}" />
                                 </p:commandLink>
-                                <h:outputLink rendered="#{attribute.hasURL}" title="Got to URL" target="_blank" value="#{attribute.value}">
+                                <h:outputLink rendered="#{attribute.hasURL}" title="Go to URL" target="_blank" value="#{attribute.value}">
                                     <h:outputText styleClass="ui-icon ui-icon-extlink" style="display: inline-block !important; margin-right: 6px;" />
                                 </h:outputLink>
                             </p:column>

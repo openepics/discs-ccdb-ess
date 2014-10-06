@@ -26,16 +26,19 @@
 				<p:column headerText="Data Type" filterBy="#{property.dataType.name}" width="10%">
 					<h:outputText value="#{property.dataType.name}" />
 				</p:column>
-				<p:column headerText="Action" style="text-align: center;" width="10%">
-					<p:commandButton icon="ui-icon-trash" title="Delete" ajax="true" oncomplete="deleteProperty.show()">
-	                    <f:setPropertyActionListener value="#{property}" target="#{propertyManager.selectedProperty}" />
-	                </p:commandButton>
-					<p:commandButton icon="ui-icon-pencil" title="Edit" ajax="true"	oncomplete="modifyProperty.show()">
-						<f:setPropertyActionListener value="#{property}" target="#{propertyManager.selectedPropertyToModify}" />
-					</p:commandButton>
-					<p:commandButton icon="ui-icon-clock" title="Log" update=":propertyLogForm" oncomplete="propertyLog.show()">
-                    <f:ajax event="click" listener="#{auditManager.selectEntityForLog(property, 'PROPERTY')}" />
-                </p:commandButton>
+				<p:column headerText="Action" style="text-align: center;" width="70">
+                    <p:commandLink ajax="true" title="Edit" update=":modifyPropertyForm" oncomplete="modifyProperty.show()">
+                        <h:outputText styleClass="ui-icon ui-icon-pencil" style="display: inline-block !important; margin-right: 6px;" />
+                        <f:setPropertyActionListener value="#{property}" target="#{propertyManager.selectedPropertyToModify}" />
+                    </p:commandLink>
+                    <p:commandLink ajax="true" title="Delete" oncomplete="deleteProperty.show()">
+                        <h:outputText styleClass="ui-icon ui-icon-trash" style="display: inline-block !important; margin-right: 6px;" />
+                        <f:setPropertyActionListener value="#{property}" target="#{propertyManager.selectedProperty}" />
+                    </p:commandLink>
+                    <p:commandLink ajax="true" title="Log" update=":propertyLogForm" oncomplete="propertyLog.show()">
+                        <h:outputText styleClass="ui-icon ui-icon-clock" style="display: inline-block !important; margin-right: 6px;" />
+                        <f:ajax event="click" listener="#{auditManager.selectEntityForLog(property, 'PROPERTY')}" />
+                    </p:commandLink>
 				</p:column>
 			</p:dataTable>
 		</h:form>

@@ -43,17 +43,21 @@
                             </p:column>
                    
                             <p:column headerText="Actions">
-                                <p:commandButton icon="ui-icon-plus" title="Add Property" action="#{devicesByTypeManager.deviceDetailsRedirect(device.id)}" />
-                                <p:commandButton icon="ui-icon-pencil" title="Edit" ajax="true" oncomplete="modifyDeviceDialog.show()"
-                                        action="#{devicesByTypeManager.prepareForModify()}">
+                                <p:commandLink ajax="true" title="Device details" action="#{devicesByTypeManager.deviceDetailsRedirect(device.id)}">
+                                    <h:outputText styleClass="ui-icon ui-icon-contact" style="display: inline-block !important; margin-right: 6px;" />
+                                </p:commandLink>
+                                <p:commandLink ajax="true" title="Edit" update=":deviceModifyForm" action="#{devicesByTypeManager.prepareForModify()}" oncomplete="modifyDeviceDialog.show()">
+                                    <h:outputText styleClass="ui-icon ui-icon-pencil" style="display: inline-block !important; margin-right: 6px;" />
                                     <f:setPropertyActionListener value="#{device}" target="#{devicesByTypeManager.selectedDevice}" />
-                                </p:commandButton>
-                                <p:commandButton icon="ui-icon-trash" title="Delete" ajax="true" oncomplete="deleteDevice.show()">
+                                </p:commandLink>
+                                <p:commandLink ajax="true" title="Delete" oncomplete="deleteDevice.show()">
+                                    <h:outputText styleClass="ui-icon ui-icon-trash" style="display: inline-block !important; margin-right: 6px;" />
                                     <f:setPropertyActionListener value="#{device}" target="#{devicesByTypeManager.selectedDevice}" />
-                                </p:commandButton>
-                                <p:commandButton icon="ui-icon-clock" title="Log" update=":deviceLogForm" oncomplete="deviceLog.show()">
+                                </p:commandLink>
+                                <p:commandLink ajax="true" title="Log" update=":deviceLogForm" oncomplete="deviceLog.show()">
+                                    <h:outputText styleClass="ui-icon ui-icon-clock" style="display: inline-block !important; margin-right: 6px;" />
                                     <f:ajax event="click" listener="#{auditManager.selectEntityForLog(device, 'DEVICE')}" />
-                                </p:commandButton>
+                                </p:commandLink>
                             </p:column>
                         </p:dataTable>
     	            </p:column>

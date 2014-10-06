@@ -20,17 +20,22 @@
                     <h:outputText value="#{container.description}"/>
                 </p:column>
                 
-                <p:column headerText="Actions" style="padding: 0px !important; width: 15%; text-align: center">                    
-                    <p:commandButton icon="ui-icon-plus" title="Add Property" action="#{containerController.redirectToAttributes(container.id)}" />
-                    <p:commandButton icon="ui-icon-pencil" title="Edit" ajax="true" oncomplete="modifyContainer.show()" update=":modifyContainerForm:modifyContainer" >
+                <p:column headerText="Actions" style="padding: 0px !important; width: 122; text-align: center">                    
+                    <p:commandLink ajax="true" title="Add Property" action="#{containerController.redirectToAttributes(container.id)}">
+                        <h:outputText styleClass="ui-icon ui-icon-contact" style="display: inline-block !important; margin-right: 6px;" />
+                    </p:commandLink>
+                    <p:commandLink ajax="true" title="Edit" update=":modifyContainerForm" oncomplete="modifyContainer.show()">
+                        <h:outputText styleClass="ui-icon ui-icon-pencil" style="display: inline-block !important; margin-right: 6px;" />
                         <f:setPropertyActionListener value="#{container}" target="#{containerController.selectedSlotViewToModify}" />
-                    </p:commandButton>
-                    <p:commandButton icon="ui-icon-trash" title="Delete" ajax="true" oncomplete="deleteContainer.show()" disabled="#{!container.canDelete}" >
+                    </p:commandLink>
+                    <p:commandLink ajax="true" title="Delete" oncomplete="deleteContainer.show()" disabled="#{!container.canDelete}">
+                        <h:outputText styleClass="ui-icon ui-icon-trash" style="display: inline-block !important; margin-right: 6px;" />
                         <f:setPropertyActionListener value="#{container}" target="#{containerController.selectedSlotView}" />
-                    </p:commandButton>
-                    <p:commandButton icon="ui-icon-clock" title="Log" oncomplete="containerLog.show()" >
+                    </p:commandLink>
+                    <p:commandLink ajax="true" title="Log" update=":containerLogForm" oncomplete="containerLog.show()">
+                        <h:outputText styleClass="ui-icon ui-icon-clock" style="display: inline-block !important; margin-right: 6px;" />
                         <f:ajax event="click" listener="#{auditManager.selectEntityForLog(container.slot, 'SLOT')}" />
-                    </p:commandButton>
+                    </p:commandLink>
                 </p:column>
                 
             </p:treeTable>

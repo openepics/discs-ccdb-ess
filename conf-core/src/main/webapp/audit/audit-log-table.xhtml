@@ -39,8 +39,10 @@
                 </p:column>
                 
                 <p:column headerText="Action" width="50" style="text-align: center;" >
-                    <p:commandButton icon="ui-icon-info" title="Details" update=":logDetailsForm" 
-                        action="#{auditManager.chooseDisplayRecord(auditRecord.id)}" oncomplete="logDetails.show()" />
+                    <p:commandLink ajax="true" title="Details" update=":logDetailsForm" oncomplete="logDetails.show()" 
+                            action="#{auditManager.chooseDisplayRecord(auditRecord.id)}">
+                        <h:outputText styleClass="ui-icon ui-icon-info" style="display: inline-block !important; margin-right: 6px;" />
+                    </p:commandLink>
                 </p:column>
             </p:dataTable>
             <p:commandButton value="Close" style="float: right" onclick="#{widgetName}.hide();" />
