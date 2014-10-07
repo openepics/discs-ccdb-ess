@@ -1,32 +1,31 @@
 <ui:composition template="../template.xhtml" 
     xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:p="http://primefaces.org/ui">
-	<ui:define name="dataDefContent">
-		<h:form id="propertiesForm">
-			<p:commandButton ajax="true"
-				actionListener="#{propertyManager.prepareAddPopup()}" value="Add new"
-				oncomplete="addProperty.show()" />
-			<p:dataTable var="property" id="propertiesTable" value="#{propertyManager.properties}" resizableColumns="true" style="table-layout: fixed; word-wrap: break-word;" filteredValue="#{propertyManager.filteredProperties}"
-				rows="15" paginator="true" paginatorPosition="bottom">
-				<p:column headerText="Name" sortBy="#{property.name}" filterBy="#{property.name}" width="20%">
-					<h:outputText value="#{property.name}" />
-				</p:column>
-	
-				<p:column headerText="Description" filterBy="#{property.description}" width="50%">
-					<h:outputText value="#{property.description}" />
-				</p:column>
-	
-				<p:column headerText="Unit">
-					<h:outputText value="#{property.unit.name}" width="10%"/>
-				</p:column>
-	
-				<p:column headerText="Data Type" filterBy="#{property.dataType.name}" width="10%">
-					<h:outputText value="#{property.dataType.name}" />
-				</p:column>
-				<p:column headerText="Action" style="text-align: center;" width="70">
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui">
+    <ui:define name="dataDefContent">
+        <h:form id="propertiesForm">
+            <p:commandButton ajax="true" actionListener="#{propertyManager.prepareAddPopup()}" value="Add new"
+                    oncomplete="addProperty.show()" />
+            <p:dataTable var="property" id="propertiesTable" value="#{propertyManager.properties}" resizableColumns="true" style="table-layout: fixed; word-wrap: break-word;" filteredValue="#{propertyManager.filteredProperties}"
+                rows="15" paginator="true" paginatorPosition="bottom">
+                <p:column headerText="Name" sortBy="#{property.name}" filterBy="#{property.name}" width="20%">
+                    <h:outputText value="#{property.name}" />
+                </p:column>
+    
+                <p:column headerText="Description" filterBy="#{property.description}" width="50%">
+                    <h:outputText value="#{property.description}" />
+                </p:column>
+    
+                <p:column headerText="Unit">
+                    <h:outputText value="#{property.unit.name}" width="10%"/>
+                </p:column>
+    
+                <p:column headerText="Data Type" filterBy="#{property.dataType.name}" width="10%">
+                    <h:outputText value="#{property.dataType.name}" />
+                </p:column>
+                <p:column headerText="Action" style="text-align: center;" width="70">
                     <p:commandLink ajax="true" title="Edit" update=":modifyPropertyForm" oncomplete="modifyProperty.show()">
                         <h:outputText styleClass="ui-icon ui-icon-pencil" style="display: inline-block !important; margin-right: 6px;" />
                         <f:setPropertyActionListener value="#{property}" target="#{propertyManager.selectedPropertyToModify}" />
@@ -39,11 +38,11 @@
                         <h:outputText styleClass="ui-icon ui-icon-clock" style="display: inline-block !important; margin-right: 6px;" />
                         <f:ajax event="click" listener="#{auditManager.selectEntityForLog(property, 'PROPERTY')}" />
                     </p:commandLink>
-				</p:column>
-			</p:dataTable>
-		</h:form>
-		
-		<ui:include src="../add-or-modify-dialogs/delete-confirmation.xhtml" >
+                </p:column>
+            </p:dataTable>
+        </h:form>
+        
+        <ui:include src="../add-or-modify-dialogs/delete-confirmation.xhtml" >
                 <ui:param name="formId" value="deletePropertyForm" />
                 <ui:param name="dialogTitle" value="Delete property" />
                 <ui:param name="widgetName" value="deleteProperty" />
@@ -53,24 +52,24 @@
         </ui:include>
         
         <ui:include src="../add-or-modify-dialogs/property.xhtml">
-	        <ui:param name="formId" value="modifyPropertyForm" />
-	        <ui:param name="dialogTitle" value="Modify Property" />
-	        <ui:param name="widgetName" value="modifyProperty" />
-	        <ui:param name="submitHandler" value="onModify" />
-	    </ui:include>
-	
-	    <ui:include src="../add-or-modify-dialogs/property.xhtml">
-	        <ui:param name="formId" value="addPropertyForm" />
-	        <ui:param name="dialogTitle" value="Add Property" />
-	        <ui:param name="widgetName" value="addProperty" />
-	        <ui:param name="submitHandler" value="onAdd" />
-	    </ui:include>
-	    
-	    <ui:include src="../../audit/audit-log-table.xhtml">
-	        <ui:param name="formId" value="propertyLogForm" />
-	        <ui:param name="dialogTitle" value="Property Log" />
-	        <ui:param name="widgetName" value="propertyLog" />
+            <ui:param name="formId" value="modifyPropertyForm" />
+            <ui:param name="dialogTitle" value="Modify Property" />
+            <ui:param name="widgetName" value="modifyProperty" />
+            <ui:param name="submitHandler" value="onModify" />
+        </ui:include>
+    
+        <ui:include src="../add-or-modify-dialogs/property.xhtml">
+            <ui:param name="formId" value="addPropertyForm" />
+            <ui:param name="dialogTitle" value="Add Property" />
+            <ui:param name="widgetName" value="addProperty" />
+            <ui:param name="submitHandler" value="onAdd" />
+        </ui:include>
+        
+        <ui:include src="../../audit/audit-log-table.xhtml">
+            <ui:param name="formId" value="propertyLogForm" />
+            <ui:param name="dialogTitle" value="Property Log" />
+            <ui:param name="widgetName" value="propertyLog" />
     </ui:include>
-		
-	</ui:define>
+        
+    </ui:define>
 </ui:composition>

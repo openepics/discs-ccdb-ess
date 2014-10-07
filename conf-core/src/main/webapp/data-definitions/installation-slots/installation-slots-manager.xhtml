@@ -6,8 +6,12 @@
     xmlns:p="http://primefaces.org/ui">
     <ui:define name="dataDefContent">
         <h:form id="installationSlotsForm">
-            <p:commandButton ajax="true" id="addSlot" actionListener="#{installationSlotsController.prepareAddPopup()}" update=":slotAddForm:addSlotDialog" value="Add new installation slot to parent" oncomplete="addSlotDialog.show()" disabled="#{installationSlotsController.selectedNode == null}"/>
-            <p:treeTable id="installationSlotsTree" value="#{installationSlotsController.rootNode}" var="installationSlot" liveResize="true" selection="#{installationSlotsController.selectedNode}" selectionMode="single" scrollable="true" scrollWidth="auto">
+            <p:commandButton ajax="true" id="addSlot" actionListener="#{installationSlotsController.prepareAddPopup()}" 
+                    update=":slotAddForm:addSlotDialog" value="Add new installation slot to parent" 
+                    oncomplete="addSlotDialog.show()" disabled="#{installationSlotsController.selectedNode == null}"/>
+            <p:treeTable id="installationSlotsTree" value="#{installationSlotsController.rootNode}" var="installationSlot" 
+                    liveResize="true" selection="#{installationSlotsController.selectedNode}" selectionMode="single" 
+                    scrollable="true" scrollWidth="auto">
                 <p:ajax event="collapse" listener="#{installationSlotsController.onNodeCollapse}" />
                 <p:ajax event="expand" listener="#{installationSlotsController.onNodeExpand}" />
                 <p:ajax event="select" update=":installationSlotsForm:addSlot" />
