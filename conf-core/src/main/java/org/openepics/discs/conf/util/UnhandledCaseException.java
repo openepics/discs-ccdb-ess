@@ -7,9 +7,4 @@ package org.openepics.discs.conf.util;
  * @author Marko Kolar <marko.kolar@cosylab.com>
  */
 public class UnhandledCaseException extends RuntimeException {
-
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
 }

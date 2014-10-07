@@ -1,6 +1,7 @@
 package org.openepics.discs.conf.ent;
 
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -23,6 +24,8 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  *
  * @author vuppala
@@ -32,18 +35,16 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Device.findAll", query = "SELECT d FROM Device d"),
-    @NamedQuery(name = "Device.findByDeviceId", query = "SELECT d FROM Device d WHERE d.id = :id"),
-    @NamedQuery(name = "Device.findBySerialNumber", query = "SELECT d FROM Device d WHERE d.serialNumber = :serialNumber"),
-    @NamedQuery(name = "Device.findByStatus", query = "SELECT d FROM Device d WHERE d.status = :status"),
-    @NamedQuery(name = "Device.findByManufacturer", query = "SELECT d FROM Device d WHERE d.manufacturer = :manufacturer"),
-    @NamedQuery(name = "Device.findByManufModel", query = "SELECT d FROM Device d WHERE d.manufModel = :manufModel"),
-    @NamedQuery(name = "Device.findByManufSerialNumber", query = "SELECT d FROM Device d WHERE d.manufSerialNumber = :manufSerialNumber"),
-    @NamedQuery(name = "Device.findByLocation", query = "SELECT d FROM Device d WHERE d.location = :location"),
-    @NamedQuery(name = "Device.findByPurchaseOrder", query = "SELECT d FROM Device d WHERE d.purchaseOrder = :purchaseOrder"),
-    @NamedQuery(name = "Device.findByModifiedBy", query = "SELECT d FROM Device d WHERE d.modifiedBy = :modifiedBy")})
+    // device instance does not have a name. This named query is introduced to satisfy the ReadOnlyDAO assumption.
+    @NamedQuery(name = "Device.findByName", query = "SELECT d FROM Device d WHERE d.serialNumber = :name"),
+    @NamedQuery(name = "Device.findByComponentType", query = "SELECT d FROM Device d "
+            + "WHERE d.componentType = :componentType"),
+    @NamedQuery(name = "Device.uninstalledDevicesByType", query = "SELECT d from Device d "
+            + "WHERE d.componentType = :componentType "
+            + "AND (NOT EXISTS (SELECT ir FROM InstallationRecord ir WHERE d = ir.device) "
+            + "OR NOT EXISTS (SELECT ir FROM InstallationRecord ir WHERE d = ir.device AND ir.uninstallDate IS NULL))")
+})
 public class Device extends ConfigurationEntity {
-    private static final long serialVersionUID = 1L;
-
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)
@@ -85,98 +86,166 @@ public class Device extends ConfigurationEntity {
     private String manufModel;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "device")
-    private List<DevicePropertyValue> devicePropertyList;
+    private List<DevicePropertyValue> devicePropertyList = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "device")
-    private List<AlignmentRecord> alignmentRecordList;
+    private List<AlignmentRecord> alignmentRecordList = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "device")
-    private List<InstallationRecord> installationRecordList;
+    private List<InstallationRecord> installationRecordList = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "device")
-    private List<DeviceArtifact> deviceArtifactList;
+    private List<DeviceArtifact> deviceArtifactList = new ArrayList<>();
 
     @JoinColumn(name = "component_type")
     @ManyToOne(optional = false)
     private ComponentType componentType;
 
     @OneToMany(mappedBy = "asmParent")
-    private List<Device> deviceList;
+    private List<Device> deviceList = new ArrayList<>();
 
     @JoinColumn(name = "asm_parent")
     @ManyToOne
     private Device asmParent;
 
-    @ManyToMany
-    @JoinTable(name = "device_tags",
-        joinColumns = { @JoinColumn(name = "device_id") }, inverseJoinColumns = { @JoinColumn(name = "tag_id") })
-    private Set<Tag> tags;
+    @ManyToMany(cascade=CascadeType.ALL)
+    @JoinTable(name = "device_tag",
+               joinColumns = { @JoinColumn(name = "device_id") }, inverseJoinColumns = { @JoinColumn(name = "tag_id") })
+    private Set<Tag> tags = new HashSet<>();
 
     protected Device() {
     }
 
-    public Device(String serialNumber, String modifiedBy) {
+    public Device(String serialNumber) {
         this.serialNumber = serialNumber;
-        this.modifiedBy = modifiedBy;
-        this.modifiedAt = new Date();
     }
 
-    public String getSerialNumber() { return serialNumber; }
-    public void setSerialNumber(String serialNumber) { this.serialNumber = serialNumber; }
+    public String getSerialNumber() {
+        return serialNumber;
+    }
+    public void setSerialNumber(String serialNumber) {
+        this.serialNumber = serialNumber;
+    }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
+    public String getDescription() {
+        return description;
+    }
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-    public DeviceStatus getStatus() { return status; }
-    public void setStatus(DeviceStatus status) { this.status = status; }
+    public DeviceStatus getStatus() {
+        return status;
+    }
+    public void setStatus(DeviceStatus status) {
+        this.status = status;
+    }
 
-    public String getManufacturerSerialNumber() { return manufSerialNumber; }
-    public void setManufacturerSerialNumber(String manufSerialNumber) { this.manufSerialNumber = manufSerialNumber; }
+    public String getManufacturerSerialNumber() {
+        return manufSerialNumber;
+    }
+    public void setManufacturerSerialNumber(String manufSerialNumber) {
+        this.manufSerialNumber = manufSerialNumber;
+    }
 
-    public String getLocation() { return location; }
-    public void setLocation(String location) { this.location = location; }
+    public String getLocation() {
+        return location;
+    }
+    public void setLocation(String location) {
+        this.location = location;
+    }
 
-    public String getPurchaseOrder() { return purchaseOrder; }
-    public void setPurchaseOrder(String purchaseOrder) { this.purchaseOrder = purchaseOrder; }
+    public String getPurchaseOrder() {
+        return purchaseOrder;
+    }
+    public void setPurchaseOrder(String purchaseOrder) {
+        this.purchaseOrder = purchaseOrder;
+    }
 
-    public String getAssemblyPosition() { return asmPosition; }
-    public void setAssemblyPosition(String asmPosition) { this.asmPosition = asmPosition; }
+    public String getAssemblyPosition() {
+        return asmPosition;
+    }
+    public void setAssemblyPosition(String asmPosition) {
+        this.asmPosition = asmPosition;
+    }
 
-    public String getAssemblyDescription() { return asmDescription; }
-    public void setAssemblyDescription(String asmDescription) { this.asmDescription = asmDescription; }
+    public String getAssemblyDescription() {
+        return asmDescription;
+    }
+    public void setAssemblyDescription(String asmDescription) {
+        this.asmDescription = asmDescription;
+    }
 
-    public String getManufacturer() { return manufacturer; }
-    public void setManufacturer(String manufacturer) { this.manufacturer = manufacturer; }
+    public String getManufacturer() {
+        return manufacturer;
+    }
+    public void setManufacturer(String manufacturer) {
+        this.manufacturer = manufacturer;
+    }
 
-    public String getManufacturerModel() { return manufModel; }
-    public void setManufacturerModel(String manufModel) { this.manufModel = manufModel; }
+    public String getManufacturerModel() {
+        return manufModel;
+    }
+    public void setManufacturerModel(String manufModel) {
+        this.manufModel = manufModel;
+    }
 
     @XmlTransient
-    public List<DevicePropertyValue> getDevicePropertyList() { return devicePropertyList; }
+    @JsonIgnore
+    public List<DevicePropertyValue> getDevicePropertyList() {
+        return devicePropertyList;
+    }
 
     @XmlTransient
-    public List<AlignmentRecord> getAlignmentRecordList() { return alignmentRecordList; }
+    @JsonIgnore
+    public List<AlignmentRecord> getAlignmentRecordList() {
+        return alignmentRecordList;
+    }
 
     @XmlTransient
-    public List<InstallationRecord> getInstallationRecordList() { return installationRecordList; }
+    @JsonIgnore
+    public List<InstallationRecord> getInstallationRecordList() {
+        return installationRecordList;
+    }
 
     @XmlTransient
-    public List<DeviceArtifact> getDeviceArtifactList() { return deviceArtifactList; }
+    @JsonIgnore
+    public List<DeviceArtifact> getDeviceArtifactList() {
+        return deviceArtifactList;
+    }
 
-    public ComponentType getComponentType() { return componentType; }
-    public void setComponentType(ComponentType componentType) { this.componentType = componentType; }
+    public ComponentType getComponentType() {
+        return componentType;
+    }
+    public void setComponentType(ComponentType componentType) {
+        this.componentType = componentType;
+    }
 
     @XmlTransient
-    public List<Device> getDeviceList() { return deviceList; }
+    @JsonIgnore
+    public List<Device> getDeviceList() {
+        return deviceList;
+    }
 
-    public Device getAssemblyParent() { return asmParent; }
-    public void setAssemblyParent(Device asmParent) { this.asmParent = asmParent; }
+    public Device getAssemblyParent() {
+        return asmParent;
+    }
+    public void setAssemblyParent(Device asmParent) {
+        this.asmParent = asmParent;
+    }
 
     @XmlTransient
-    public Set<Tag> getTags() { return tags; }
-    public void setTags(Set<Tag> tags) { this.tags = tags; }
+    @JsonIgnore
+    public Set<Tag> getTags() {
+        return tags;
+    }
+    public void setTags(Set<Tag> tags) {
+        this.tags = tags;
+    }
 
     @Override
-    public String toString() { return "Device[ deviceId=" + id + " ]"; }
+    public String toString() {
+        return "Device[ deviceId=" + id + " ]";
+    }
 
 }

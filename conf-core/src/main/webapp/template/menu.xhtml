@@ -12,123 +12,49 @@
 
 		<p:menubar id="mainMenu" styleClass="menubar">
 			<p:menuitem value="Home" icon="ui-icon-home" title="Home" url="/" />
-
-			<p:submenu label="Browse" icon="ui-icon-note" rendered="true">
-				<p:menuitem value="Alignments" title="Browse Alignment Records"
-					url="/browse/alignment/" icon="ui-icon-note" />
-				<p:menuitem value="Component Types" title="Browse Component Types"
-					url="/browse/comptype/" icon="ui-icon-note" />
-				<p:menuitem value="Data Types" title="Browse Data Types"
-					url="/browse/datatype/" icon="ui-icon-note" />
-				<p:menuitem value="Devices" icon="ui-icon-note"
-					title="Browse Devices" url="/browse/device/" />
-				<p:menuitem value="Installations" title="Browse Installations"
-					url="/browse/installation/" icon="ui-icon-note" />
-				<p:menuitem value="Properties" title="Browse Properties"
-					url="/browse/property/" icon="ui-icon-note" />
-				<p:menuitem value="Slots" icon="ui-icon-note" title="Browse Slots"
-					url="/browse/slot/" />
-				<p:menuitem value="Units" title="Browse Units" url="/browse/unit/"
-					icon="ui-icon-note" />
-			</p:submenu>
-			<p:submenu label="Export" icon="ui-icon-transferthick-e-w">
-				<p:menuitem value="Lattice" title="Export Layout"
-					url="/export/lattice.xhtml" icon="ui-icon-transfer-e-w" />
-			</p:submenu>
-			<p:submenu label="Manage" icon="ui-icon-newwin">
-				<p:menuitem value="Alignments" title="Edit Alignment Records"
-					url="/manage/alignment/" icon="ui-icon-newwin"
-					disabled="#{! loginManager.authorized}" />
-				<p:menuitem value="Component Types" title="Edit Component Types"
-					url="/manage/comptype/" icon="ui-icon-newwin"
-					disabled="#{! loginManager.authorized}" />
-				<p:menuitem value="Data Types" title="Edit Data Types"
-					url="/manage/property/" icon="ui-icon-newwin" disabled="true" />
-				<p:menuitem value="Devices" title="Device Assemblies"
-					url="/manage/device/" icon="ui-icon-newwin"
-					disabled="#{! loginManager.authorized}" />
-				<p:menuitem value="Installations" title="Edit Installation Records"
-					url="/manage/installation/" icon="ui-icon-newwin"
-					disabled="#{! loginManager.authorized}" />
-				<p:menuitem value="Propeties" title="Edit Properties"
-					url="/manage/property/" icon="ui-icon-newwin"
-					disabled="#{! loginManager.authorized}" />
-				<p:menuitem value="Slots" title="Edit Layout Slots"
-					url="/manage/slot/" icon="ui-icon-newwin"
-					disabled="#{! loginManager.authorized}" />
-				<p:menuitem value="Units" title="Edit Units" url="/manage/property/"
-					icon="ui-icon-newwin" disabled="true" />
-			</p:submenu>
-
-			<p:menuitem value="Reports" title="Reports" icon="ui-icon-print"
-				url="reports.xhtml" disabled="true" />
-
-			<p:menuitem value="Preferences" title="Preferences"
-				icon="ui-icon-gear" url="preferences.xhtml" disabled="true" />
-			<p:submenu label="Admin" icon="ui-icon-note" rendered="true">
-
-				<p:menuitem value="Audit Records" title="Browse Audit Records"
-					url="/browse/audit/" icon="ui-icon-note" />
-				<p:menuitem value="Authorization" title="Manage Authorizations"
-					url="/browse/audit/" icon="ui-icon-note" disabled="true" />
-			</p:submenu>
-
+			<p:menuitem value="Hierarchies" icon="ui-icon-link" title="Hierarchies" url="/hierarchies/hierarchies.xhtml" />
+			<p:menuitem value="Devices" icon="ui-icon-gear" title="Devices" url="/devices/index.xhtml" />
+			<p:menuitem value="Reports" icon="ui-icon-home" title="Reports" url="/" disabled="true" />
 			<p:submenu label="Import" icon="ui-icon-folder-open" rendered="true">
-				<p:menuitem value="Import Units" update=":importUnitsForm"
-					oncomplete="importUnits.show()" title="Import Units"
-					actionListener="#{unitManager.prepareImportPopup()}"
-					disabled="#{!unitManager.canImportUnits()}" />
-					
-				<p:menuitem value="Import Properties" update=":importPropertiesForm"
+                <p:menuitem value="Import Units" update=":importUnitsForm"
+                    oncomplete="importUnits.show()" title="Import Units"
+                    actionListener="#{unitManager.prepareImportPopup()}"
+                    disabled="#{!securityPolicy.getUIHint('UNIT')}" />
+                    
+                <p:menuitem value="Import Properties" update=":importPropertiesForm"
                     oncomplete="importProperties.show()" title="Import Properties"
                     actionListener="#{propertyManager.prepareImportPopup()}"
-                    disabled="#{!propertyManager.canImportProperties()}" />
+                    disabled="#{!securityPolicy.getUIHint('PROPERTY')}" />
                     
                 <p:menuitem value="Import Component Types" update=":importCompTypesForm"
                     oncomplete="importCompTypes.show()" title="Import Component Types"
                     actionListener="#{componentTypeManager.prepareImportPopup()}"
-                    disabled="#{!componentTypeManager.canImportCompTypes()}" />
+                    disabled="#{! securityPolicy.getUIHint('COMPONENT_TYPE')}" />
                     
                 <p:menuitem value="Import Slots and Slot Relationships" update=":importSlotsForm"
                     oncomplete="importSlots.show()" title="Import Slots"
                     actionListener="#{slotManager.prepareImportPopup()}"
-                    disabled="#{!slotManager.canImportSlots()}"/>
+                    disabled="#{!securityPolicy.getUIHint('SLOT')}"/>
                   
                 <p:menuitem value="Import Device Instances" update=":importDevicesForm"
                     oncomplete="importDevices.show()" title="Import Devices"
                     actionListener="#{deviceManager.prepareImportPopup()}"
-                    disabled="#{!deviceManager.canImportDevices()}"/>
+                    disabled="#{!securityPolicy.getUIHint('DEVICE')}"/>
 
-				
-			</p:submenu>
+                
+            </p:submenu>
 
-			<p:submenu label="Help" icon="ui-icon-help">
-				<p:menuitem value=" Online Help" title="Online Help"
-					icon="ui-icon-help" url="help.xhtml" disabled="true" />
-				<p:menuitem value=" API Manual" title="API Manual"
-					icon="ui-icon-script" url="api-manual.xhtml" disabled="true" />
-				<p:menuitem value=" Report Problems"
-					title="Report Problems/Suggestions" icon="ui-icon-alert"
-					target="_blank" url="#{msgs.bugReportSite}" rendered="true" />
-				<p:menuitem value=" About" id="aboutMenu" icon="ui-icon-info"
-					title="About #{msgs.title}" onclick="aboutPanelWid.show()" />
-			</p:submenu>
-
+			<p:menuitem value="Data Definitions" icon="ui-icon-script" title="Data Definitions" url="/data-definitions/properties/properties-manager.xhtml"/>
+			<p:menuitem value="Deleted" icon="ui-icon-home" title="Deleted" url="/" disabled="true"/>
+			<p:menuitem value="Help" icon="ui-icon-home" title="Help" url="/" disabled="true"/>	
+			
 			<f:facet name="options">
-				<fc:logincomp ajax="false" />
-			</f:facet>
-		</p:menubar>
-		<p:dialog id="aboutPanel" header="#{msgs.title}"
-			widgetVar="aboutPanelWid">
-			<ui:include src="about.xhtml" />
-		</p:dialog>
-		
-		
-		
-		   
+                <fc:logincomp ajax="false" />
+            </f:facet>	
+		</p:menubar>	   
 	</h:form>
 	
-	<ui:include src="/loaders/single-file-DL.xhtml">
+	<ui:include src="../loaders/single-file-DL.xhtml">
         <ui:param name="formId" value="importUnitsForm" />
         <ui:param name="dialogTitle" value="Units Import" />
         <ui:param name="widgetName" value="importUnits" />
@@ -136,21 +62,21 @@
     </ui:include>
     
     
-    <ui:include src="/loaders/single-file-DL.xhtml">
+    <ui:include src="../loaders/single-file-DL.xhtml">
         <ui:param name="formId" value="importPropertiesForm" />
         <ui:param name="dialogTitle" value="Properties Import" />
         <ui:param name="widgetName" value="importProperties" />
         <ui:param name="controller" value="#{propertyManager}" />
     </ui:include>
 
-    <ui:include src="/loaders/single-file-DL.xhtml">
+    <ui:include src="../loaders/single-file-DL.xhtml">
         <ui:param name="formId" value="importCompTypesForm" />
         <ui:param name="dialogTitle" value="Component Types Import" />
         <ui:param name="widgetName" value="importCompTypes" />
         <ui:param name="controller" value="#{componentTypeManager}" />
     </ui:include>
     
-    <ui:include src="/loaders/multiple-files-DL.xhtml">
+    <ui:include src="../loaders/multiple-files-DL.xhtml">
         <ui:param name="formId" value="importSlotsForm" />
         <ui:param name="dialogTitle" value="Slots and Slot Relationships Import" />
         <ui:param name="widgetName" value="importSlots" />
@@ -159,7 +85,7 @@
         <ui:param name="secondFileContents" value="slot pairs" />
     </ui:include>
     
-    <ui:include src="/loaders/single-file-DL.xhtml">
+    <ui:include src="../loaders/single-file-DL.xhtml">
         <ui:param name="formId" value="importDevicesForm" />
         <ui:param name="dialogTitle" value="Devices Import" />
         <ui:param name="widgetName" value="importDevices" />

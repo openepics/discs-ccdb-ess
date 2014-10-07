@@ -10,23 +10,23 @@ import org.openepics.discs.conf.ent.EntityTypeOperation;
  */
 public class ValidationMessage {
 
-	private ErrorMessage message;
+    private ErrorMessage message;
 
-	private boolean error;
+    private boolean error;
 
-	private String row;
-	private String column;
-	private EntityTypeOperation operation;
-	private EntityType entity;
-	private String fileName;
-	private String orphanSlotName;
+    private String row;
+    private String column;
+    private EntityTypeOperation operation;
+    private EntityType entity;
+    private String fileName;
+    private String orphanSlotName;
 
-	public ValidationMessage(String fileName) {
-	    this.fileName = fileName;
-	    error = false;
-	}
+    public ValidationMessage(String fileName) {
+        this.fileName = fileName;
+        error = false;
+    }
 
-	/**
+    /**
      * Constructs the message.
      *
      * @param message the message enumeration
@@ -35,40 +35,40 @@ public class ValidationMessage {
         this(message, null);
     }
 
-	/**
-	 * Constructs the message.
-	 *
-	 * @param message the message enumeration
+    /**
+     * Constructs the message.
+     *
+     * @param message the message enumeration
      * @param row the row location description, or null for no information
-	 */
-	public ValidationMessage(ErrorMessage message, String row) {
-		this(message, row, null);
-	}
+     */
+    public ValidationMessage(ErrorMessage message, String row) {
+        this(message, row, null);
+    }
 
 
-	/**
-	 * Constructs the message with location information.
-	 *
-	 * @param message the message enumeration
-	 * @param row the row location description, or null for no information
-	 * @param column the column location description, or null for no information
-	 */
-	public ValidationMessage(ErrorMessage message, String row,
-			String column) {
-		this(message, row, column, null, null);
-	}
+    /**
+     * Constructs the message with location information.
+     *
+     * @param message the message enumeration
+     * @param row the row location description, or null for no information
+     * @param column the column location description, or null for no information
+     */
+    public ValidationMessage(ErrorMessage message, String row,
+                             String column) {
+        this(message, row, column, null, null);
+    }
 
-	/**
-	 * Construct the message with location information and information of {@link EntityType} and {@link EntityTypeOperation}
-	 *
-	 * @param message the message enumeration
-	 * @param row
-	 * @param column
-	 * @param operation
-	 * @param entity
-	 */
-	public ValidationMessage(ErrorMessage message, String row,
-            String column, EntityTypeOperation operation, EntityType entity) {
+    /**
+     * Construct the message with location information and information of {@link EntityType} and {@link EntityTypeOperation}
+     *
+     * @param message the message enumeration
+     * @param row
+     * @param column
+     * @param operation
+     * @param entity
+     */
+    public ValidationMessage(ErrorMessage message, String row,
+                             String column, EntityTypeOperation operation, EntityType entity) {
         super();
         this.message = message;
         this.error = true;
@@ -78,70 +78,84 @@ public class ValidationMessage {
         this.entity = entity;
     }
 
-	public void setOrphanSlotName(String orphanSlotName) { this.orphanSlotName = orphanSlotName; }
+    public void setOrphanSlotName(String orphanSlotName) {
+        this.orphanSlotName = orphanSlotName;
+    }
 
-	/** @return the message enum */
-	public ErrorMessage getMessage() { return message; }
+    /** @return the message enum */
+    public ErrorMessage getMessage() {
+        return message;
+    }
 
-	/** @return true if this message represents an error */
-	public boolean isError() { return error; }
+    /** @return true if this message represents an error */
+    public boolean isError() {
+        return error;
+    }
 
-	/** @return the row label, or null if not specified */
-	public String getRow() { return row; }
+    /** @return the row label, or null if not specified */
+    public String getRow() {
+        return row;
+    }
 
-	/** @return the column label, or null if not specified */
-	public String getColumn() { return column; }
+    /** @return the column label, or null if not specified */
+    public String getColumn() {
+        return column;
+    }
 
-	/** @return operation on entity */
-	public EntityTypeOperation getOperation() { return operation; }
+    /** @return operation on entity */
+    public EntityTypeOperation getOperation() {
+        return operation;
+    }
 
-	/** @return entity */
-	public EntityType getEntity() { return entity; }
+    /** @return entity */
+    public EntityType getEntity() {
+        return entity;
+    }
 
-	@Override
-	public String toString() {
-		final StringBuilder builder = new StringBuilder();
-		if (fileName != null) {
-		    builder.append("In file: " + fileName);
-		} else {
-		    if (orphanSlotName != null) {
-		        builder.append("Found orphan slot ");
-		        builder.append(orphanSlotName);
-		        builder.append(", ");
-		    }
-    		if (getRow() != null) {
-    			builder.append("Row ");
-    			builder.append(getRow());
-    		}
-    		if (getRow() != null && getColumn() != null) {
-    			builder.append(", ");
-    		}
-    		if (getColumn() != null) {
-    			builder.append("Column ");
-    			builder.append(getColumn());
-    		}
-    		if ((getRow() != null || getColumn() != null) && (getEntity() != null || getOperation() != null)) {
+    @Override
+    public String toString() {
+        final StringBuilder builder = new StringBuilder();
+        if (fileName != null) {
+            builder.append("In file: " + fileName);
+        } else {
+            if (orphanSlotName != null) {
+                builder.append("Found orphan slot ");
+                builder.append(orphanSlotName);
                 builder.append(", ");
             }
-    		if (getEntity() != null) {
+            if (getRow() != null) {
+                builder.append("Row ");
+                builder.append(getRow());
+            }
+            if (getRow() != null && getColumn() != null) {
+                builder.append(", ");
+            }
+            if (getColumn() != null) {
+                builder.append("Column ");
+                builder.append(getColumn());
+            }
+            if ((getRow() != null || getColumn() != null) && (getEntity() != null || getOperation() != null)) {
+                builder.append(", ");
+            }
+            if (getEntity() != null) {
                 builder.append("Entity ");
                 builder.append(getEntity().name());
             }
-    		if ((getRow() != null || getColumn() != null || getEntity() != null) && getOperation() != null) {
+            if ((getRow() != null || getColumn() != null || getEntity() != null) && getOperation() != null) {
                 builder.append(", ");
             }
-    		if (getOperation() != null) {
+            if (getOperation() != null) {
                 builder.append("Operation ");
                 builder.append(getOperation().name());
             }
-    		if (getRow() != null || getColumn() != null || getEntity() != null || getOperation() != null) {
-    			builder.append(": ");
-    		}
-    		if (isError()) {
-    			builder.append("ERROR: ");
-    		}
-    		builder.append(getMessage().toString());
-		}
-		return builder.toString();
-	}
+            if (getRow() != null || getColumn() != null || getEntity() != null || getOperation() != null) {
+                builder.append(": ");
+            }
+            if (isError()) {
+                builder.append("ERROR: ");
+            }
+            builder.append(getMessage().toString());
+        }
+        return builder.toString();
+    }
 }

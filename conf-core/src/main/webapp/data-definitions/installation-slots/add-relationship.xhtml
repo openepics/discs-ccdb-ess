@@ -1,0 +1,52 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html">
+
+    <h:form id="addSlotRelationshipForm">
+        <p:dialog widgetVar="addSlotRelationship" id="addSlotRelationship" modal="true" width="35em" resizable="false" closable="false" dynamic="true">
+            <f:facet name="header">
+                <h:outputText value="Add relationship to #{installationSlotsController.selectedSlotView.name}" />
+            </f:facet>
+            <p:panelGrid id="grid" style="text-align: left" styleClass="dialog-grid-panel noBorders">
+                <p:row>
+                    <p:column>
+                        <h:outputText style="vertical-align: top" value="Relationship type:"/>
+                        <p:selectOneMenu id="relationshipTypeSelect" value="#{installationSlotsController.selectedRelationshipType}">
+                            <f:selectItems value="#{installationSlotsController.relationshipTypes}" /> 
+                            <p:ajax />
+	                     </p:selectOneMenu>                        
+                    </p:column>
+                </p:row>
+                <p:row>
+                    <p:column>
+                        <p:tree value="#{installationSlotsController.rootNode}" id="relationshipTree" selectionMode="single" var="slotView" selection="#{installationSlotsController.selectedSlotViewForRelationshipAdd}" style="width: 100%; max-height: 200px; overflow: auto;">
+                            <p:ajax event="select" update=":addSlotRelationshipForm:relationshipTypeSelect :addSlotRelationshipForm:addButton" listener="#{installationSlotsController.slotForRelationshipChanged}"/>
+                            <p:ajax event="unselect" update=":addSlotRelationshipForm:relationshipTypeSelect :addSlotRelationshipForm:addButton" />
+                            
+                            <p:treeNode>
+                                <h:outputText value=""
+			                        style="display:inline-block; vertical-align:bottom !important"
+			                        styleClass="ui-icon ui-icon-wrench"
+			                        rendered="#{slotView.isHostingSlot}" />
+			                    <h:outputText value=""
+			                        style="display:inline-block; vertical-align:bottom !important"
+			                        styleClass="ui-icon ui-icon-folder-collapsed"
+			                        rendered="#{!slotView.isHostingSlot}" />
+                                <h:outputText value="#{slotView.name}" />
+                            </p:treeNode>
+                        </p:tree>
+                    </p:column>
+                </p:row>
+            </p:panelGrid>
+            <p:separator />
+
+            <p:commandButton value="Cancel" style="float: right" onclick="addSlotRelationship.hide()" resetValues="true"/>
+            <p:commandButton value="Add" style="float: right" disabled="#{installationSlotsController.selectedSlotViewForRelationshipAdd == null}" 
+                id="addButton" action="#{installationSlotsController.onRelationshipAdd}" oncomplete="addSlotRelationship.hide();" update=":slotRelationshipsForm:relationshipTable"/>
+        </p:dialog>
+    </h:form>
+</ui:composition>

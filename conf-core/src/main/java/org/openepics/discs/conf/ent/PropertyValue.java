@@ -1,7 +1,5 @@
 package org.openepics.discs.conf.ent;
 
-import java.util.Date;
-
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,14 +10,18 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
-@Entity
-@Table(name = "property_values")
-@Inheritance(strategy = InheritanceType.JOINED)
-public class PropertyValue extends ConfigurationEntity {
-    private static final long serialVersionUID = 1L;
+import org.openepics.discs.conf.ent.values.Value;
 
+/**
+ * An abstract property for a Configuration Db entity
+ *
+ */
+@Entity
+@Table(name = "property_value")
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+public abstract class PropertyValue extends ConfigurationEntity {
     @Column(name = "prop_value", columnDefinition = "TEXT")
-    private String propValue;
+    private Value propValue;
 
     @Basic(optional = false)
     @NotNull
@@ -36,21 +38,35 @@ public class PropertyValue extends ConfigurationEntity {
 
     protected PropertyValue() { }
 
-    public PropertyValue(boolean inRepository, String modifiedBy) {
+    public PropertyValue(boolean inRepository) {
         this.inRepository = inRepository;
-        this.modifiedBy = modifiedBy;
-        this.modifiedAt = new Date();
     }
 
-    public String getPropValue() { return propValue; }
-    public void setPropValue(String propValue) { this.propValue = propValue; }
+    public Value getPropValue() {
+        return propValue;
+    }
+    public void setPropValue(Value propValue) {
+        this.propValue = propValue;
+    }
 
-    public boolean getInRepository() { return inRepository; }
-    public void setInRepository(boolean inRepository) { this.inRepository = inRepository; }
+    public boolean getInRepository() {
+        return inRepository;
+    }
+    public void setInRepository(boolean inRepository) {
+        this.inRepository = inRepository;
+    }
 
-    public Property getProperty() { return property; }
-    public void setProperty(Property property) { this.property = property; }
+    public Property getProperty() {
+        return property;
+    }
+    public void setProperty(Property property) {
+        this.property = property;
+    }
 
-    public Unit getUnit() { return unit; }
-    public void setUnit(Unit unit) { this.unit = unit; }
+    public Unit getUnit() {
+        return unit;
+    }
+    public void setUnit(Unit unit) {
+        this.unit = unit;
+    }
 }

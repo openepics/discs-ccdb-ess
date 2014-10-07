@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html">
+
+    <h:form id="#{formId}">
+        <p:dialog widgetVar="#{widgetName}" id="#{widgetName}" modal="true" resizable="false" closable="false">
+            <f:facet name="header">
+                <h:outputText value="#{dialogTitle}" />
+            </f:facet>
+            
+            <h:panelGrid id="logDetGrp" style="text-align: left" columns="2" width="100%">
+                <h:outputText value="Action:" />
+                <h:outputText value="#{auditManager.displayRecord.oper}" />
+                
+                <h:outputText value="User:" />
+                <h:outputText value="#{auditManager.displayRecord.user}" />
+                
+                <h:outputText value="Timestamp:" />
+                <h:outputText value="#{auditManager.displayRecord.logTime}" />
+                
+                <h:outputText value="Entity type:" />
+                <h:outputText value="#{auditManager.displayRecord.entityType}" />
+                
+                <h:outputText value="Entity name:" />
+                <h:outputText value="#{auditManager.displayRecord.entityKey}" />
+                
+                <h:outputText value="Details:" />
+                <p:inputTextarea readonly="true" rows="5" cols="60" style="width: 100% !important; white-space: nowrap; resize: none;" autoResize="false" value="#{auditManager.displayRecordEntry}" />
+            </h:panelGrid>
+            
+            <p:commandButton value="Close" style="float: right" onclick="#{widgetName}.hide();" />
+        
+        </p:dialog>
+    </h:form>
+    
+</ui:composition>

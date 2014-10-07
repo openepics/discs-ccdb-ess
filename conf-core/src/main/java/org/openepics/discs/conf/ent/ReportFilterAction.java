@@ -6,13 +6,17 @@ package org.openepics.discs.conf.ent;
  *
  */
 public enum ReportFilterAction {
-    /** Property value is a string (or enum) and contains a substring <code>filter</code>. Entities without this property will not be included. */
+    /** Property value is a string (or enum) and contains a substring <code>filter</code>.
+     *  Entities without this property will not be included. */
     CONTAINS,
-    /** Property value is a string (or enum) and its value is <code>filter</code>. Entities without this property will not be included. */
+    /** Property value is a string (or enum) and its value is <code>filter</code>.
+     * Entities without this property will not be included. */
     IS,
-    /** Property value is a string (or enum) and it starts with <code>filter</code>. Entities without this property will not be included. */
+    /** Property value is a string (or enum) and it starts with <code>filter</code>.
+     * Entities without this property will not be included. */
     STARTS_WITH,
-    /** The value of the actual property does not matter, but the entity will be included in the report, if it has this property. */
+    /** The value of the actual property does not matter, but the entity will be included in the report,
+     * if it has this property. */
     DISPLAY_ONLY,
     /** Property value is a scalar number and <code>propertyValue == filter</code>. */
     EQ,

@@ -22,6 +22,7 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
+ * {@link AuditRecord} entity stores audit logs for changes on entity types
  *
  * @author vuppala
  */
@@ -30,15 +31,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "AuditRecord.findAll", query = "SELECT a FROM AuditRecord a"),
-    @NamedQuery(name = "AuditRecord.findByLogTime", query = "SELECT a FROM AuditRecord a WHERE a.logTime = :logTime"),
-    @NamedQuery(name = "AuditRecord.findByUser", query = "SELECT a FROM AuditRecord a WHERE a.user = :user"),
-    @NamedQuery(name = "AuditRecord.findByEntityType", query = "SELECT a FROM AuditRecord a WHERE a.entityType = :entityType"),
-    @NamedQuery(name = "AuditRecord.findByEntityKey", query = "SELECT a FROM AuditRecord a WHERE a.entityKey = :entityKey")})
+    @NamedQuery(name = "AuditRecord.findByEntityIdAndType", query = "SELECT a FROM AuditRecord a "
+            + "WHERE a.entityId = :entityId and a.entityType = :entityType")
+})
 public class AuditRecord implements Serializable {
-    private static final long serialVersionUID = 1L;
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private Long id;
 
@@ -81,11 +79,10 @@ public class AuditRecord implements Serializable {
     protected AuditRecord() {
     }
 
-    public AuditRecord(Date logTime, EntityTypeOperation oper, String user, String entry) {
-        this.logTime = logTime;
+    public AuditRecord(EntityTypeOperation oper, String entry, Long entityId) {
         this.oper = oper;
-        this.user = user;
         this.entry = entry;
+        this.entityId = entityId;
     }
 
     public Long getId() {

@@ -24,15 +24,20 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "SlotPair.findAll", query = "SELECT s FROM SlotPair s"),
-    @NamedQuery(name = "SlotPair.findByParentChildRelation", query = "SELECT s FROM SlotPair s WHERE s.childSlot.name LIKE :childName AND s.parentSlot.name = :parentName AND s.slotRelation.name = :relationName"),
-    @NamedQuery(name = "SlotPair.findById", query = "SELECT s FROM SlotPair s WHERE s.id = :id")})
+    @NamedQuery(name = "SlotPair.findByParentChildRelation", query = "SELECT s FROM SlotPair s "
+            + "WHERE s.childSlot.name LIKE :childName "
+                + "AND s.parentSlot.name = :parentName AND s.slotRelation.name = :relationName"),
+    @NamedQuery(name = "SlotPair.findById", query = "SELECT s FROM SlotPair s WHERE s.id = :id"),
+    @NamedQuery(name = "SlotPair.findSlotPairsByChildAndRelation", query = "SELECT s FROM SlotPair s "
+            + "WHERE s.childSlot = :childSlot AND s.slotRelation.name = :relationName"),
+    @NamedQuery(name = "SlotPair.findSlotRelations", query = "SELECT s from SlotPair s "
+            + "WHERE s.childSlot = :slot OR s.parentSlot = :slot")
+})
 public class SlotPair implements Serializable {
-    private static final long serialVersionUID = 1L;
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
-    private Integer id;
+    private Long id;
 
     @Version
     private Long version;
@@ -58,35 +63,59 @@ public class SlotPair implements Serializable {
         this.slotRelation = slotRelation;
     }
 
-    public Integer getId() { return id; }
+    public Long getId() {
+        return id;
+    }
 
-    public Slot getChildSlot() { return childSlot; }
-    public void setChildSlot(Slot childSlot) { this.childSlot = childSlot; }
+    public Slot getChildSlot() {
+        return childSlot;
+    }
+    public void setChildSlot(Slot childSlot) {
+        this.childSlot = childSlot;
+    }
 
-    public SlotRelation getSlotRelation() { return slotRelation; }
-    public void setSlotRelation(SlotRelation slotRelation) { this.slotRelation = slotRelation; }
+    public SlotRelation getSlotRelation() {
+        return slotRelation;
+    }
+    public void setSlotRelation(SlotRelation slotRelation) {
+        this.slotRelation = slotRelation;
+    }
 
-    public Slot getParentSlot() { return parentSlot; }
-    public void setParentSlot(Slot parentSlot) { this.parentSlot = parentSlot; }
+    public Slot getParentSlot() {
+        return parentSlot;
+    }
+    public void setParentSlot(Slot parentSlot) {
+        this.parentSlot = parentSlot;
+    }
 
     @Override
     public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
-        return hash;
+        return id != null ? id.hashCode() : 0;
     }
 
     @Override
     public boolean equals(Object object) {
-        if (!(object instanceof SlotPair)) return false;
+        if (!(object instanceof SlotPair)) {
+            return false;
+        }
 
         SlotPair other = (SlotPair) object;
-        if (this.id == null && other.id != null) return false;
-        if (this.id != null) return this.id.equals(other.id); // return true for same DB entity
+        if (this.id == null && other.id != null) {
+            return false;
+        }
+
+        if (this.id != null) {
+            // return true for same DB entity
+            return this.id.equals(other.id);
+        }
 
         return this==object;
     }
 
+    public Long getVersion() { return version; }
+
     @Override
-    public String toString() { return "SlotPair[ id=" + id + " ]"; }
+    public String toString() {
+        return "SlotPair[ id=" + id + " ]";
+    }
 }

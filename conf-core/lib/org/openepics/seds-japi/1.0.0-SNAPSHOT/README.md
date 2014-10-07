@@ -1,0 +1,2 @@
+For the correct working of the application this file should be installed to the local maven repository form current directory with the following command:
+mvn install:install-file -Dfile=seds-japi-1.0.0-SNAPSHOT.jar -DgroupId=org.openepics  -DartifactId=seds-japi -Dversion=1.0.0-SNAPSHOT -Dpackaging=jar

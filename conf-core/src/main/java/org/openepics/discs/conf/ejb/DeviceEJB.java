@@ -1,165 +1,93 @@
+/*
+ * Copyright (c) 2014 European Spallation Source
+ * Copyright (c) 2014 Cosylab d.d.
+ *
+ * This file is part of Controls Configuration Database.
+ *
+ * Controls Configuration Database is free software: you can redistribute it
+ * and/or modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 2 of the License,
+ * or any newer version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
+ */
 package org.openepics.discs.conf.ejb;
 
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 
-import org.openepics.discs.conf.ent.AuditRecord;
+import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.DeviceArtifact;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
-import org.openepics.discs.conf.ent.EntityType;
-import org.openepics.discs.conf.ent.EntityTypeOperation;
-import org.openepics.discs.conf.ent.Slot;
-import org.openepics.discs.conf.ent.SlotPropertyValue;
-import org.openepics.discs.conf.ui.LoginManager;
 
 /**
+ * DAO service for accessing device instances.
  *
  * @author vuppala
+ * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
+ * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  */
-@Stateless public class DeviceEJB {
-
-    @EJB private AuthEJB authEJB;
-    @Inject private LoginManager loginManager;
-    private static final Logger logger = Logger.getLogger(DeviceEJB.class.getCanonicalName());
-    @PersistenceContext private EntityManager em;
-
-    // ----------- Audit record ---------------------------------------
-    private void makeAuditEntry(EntityTypeOperation oper, String key, String entry, Long id) {
-        AuditRecord arec = new AuditRecord(new Date(), oper, loginManager.getUserid(), entry);
-        arec.setEntityType(EntityType.DEVICE);
-        arec.setEntityKey(key);
-        em.persist(arec);
-    }
-
-    // ---------------- Physical Component -------------------------
-
-    public List<Device> findDevice() {
-        List<Device> comps;
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<Device> cq = cb.createQuery(Device.class);
-        Root<Device> prop = cq.from(Device.class);
-
-        TypedQuery<Device> query = em.createQuery(cq);
-        comps = query.getResultList();
-        logger.log(Level.INFO, "Number of devices: {0}", comps.size());
-
-        return comps;
-    }
-
-    public Device findDevice(Long id) {
-        return em.find(Device.class, id);
-    }
-
+@Stateless
+public class DeviceEJB extends DAO<Device> {
+    /**
+     * Searches for a device instance in the database, by its serial number
+     *
+     * @param serialNumber the {@link String} serial number
+     * @return a device entity matching the criteria or <code>null</code>
+     */
     public Device findDeviceBySerialNumber(String serialNumber) {
-        Device device;
-        try {
-            device = em.createNamedQuery("Device.findBySerialNumber", Device.class).setParameter("serialNumber", serialNumber).getSingleResult();
-        } catch (NoResultException e) {
-            device = null;
+        return findByName(serialNumber);
+    }
+
+    /** Finds a list of device instances of a specified component type.
+     * @param componentType - the component type to search for.
+     * @return The list of instances of a specified component type.
+     */
+    public List<Device> findDevicesByComponentType(ComponentType componentType) {
+        if (componentType == null) {
+            return new ArrayList<>();
         }
-        return device;
+
+        return em.createNamedQuery("Device.findByComponentType", Device.class)
+                .setParameter("componentType", componentType).getResultList();
     }
 
-    public void saveDevice(String token, Device device) {
-        logger.log(Level.INFO, "Preparing to save device");
-        em.merge(device);
-        makeAuditEntry(EntityTypeOperation.UPDATE, device.getSerialNumber(), "Modified device", device.getId());
-    }
+    @Override
+    protected void defineEntity() {
+        defineEntityClass(Device.class);
 
-    public void addDevice(Device device) {
-        em.persist(device);
-        makeAuditEntry(EntityTypeOperation.UPDATE, device.getSerialNumber(), "Added device", device.getId());
-    }
+        defineParentChildInterface(DevicePropertyValue.class, new ParentChildInterface<Device, DevicePropertyValue>() {
+            @Override
+            public List<DevicePropertyValue> getChildCollection(Device device) {
+                return device.getDevicePropertyList();
+            }
+            @Override
+            public Device getParentFromChild(DevicePropertyValue child) {
+                return child.getDevice();
+            }
+        });
 
-    public void deleteDevice(Device device) {
-        Device ct = em.find(Device.class, device.getId());
-        em.remove(ct);
-        makeAuditEntry(EntityTypeOperation.DELETE, device.getSerialNumber(), "Deleted device", device.getId());
-    }
+        defineParentChildInterface(DeviceArtifact.class, new ParentChildInterface<Device, DeviceArtifact>() {
 
-    // ------------------ Property ---------------
+            @Override
+            public List<DeviceArtifact> getChildCollection(Device device) {
+                return device.getDeviceArtifactList();
 
-    public void saveDeviceProp(DevicePropertyValue prop, boolean create) {
-        prop.setModifiedAt(new Date());
-        DevicePropertyValue newProp = em.merge(prop);
+            }
 
-        if (create) { // create instead of update
-            Device device = prop.getDevice();
-            device.getDevicePropertyList().add(newProp);
-            em.merge(device);
-        }
-        logger.log(Level.INFO, "Comp Type Property: id " + newProp.getId() + " name " + newProp.getProperty().getName());
-        makeAuditEntry(EntityTypeOperation.UPDATE, prop.getDevice().getSerialNumber(), "Modified property " + prop.getProperty().getName(),prop.getDevice().getId());
-    }
-
-    public void deleteDeviceProp(DevicePropertyValue prop) {
-        DevicePropertyValue property = em.find(DevicePropertyValue.class, prop.getId());
-        Device device = property.getDevice();
-        device.getDevicePropertyList().remove(property);
-        em.remove(property);
-        makeAuditEntry(EntityTypeOperation.UPDATE, prop.getDevice().getSerialNumber(), "Deleted property " + prop.getProperty().getName(), prop.getDevice().getId());
-    }
-
-    public void addDeviceProperty(DevicePropertyValue property) {
-        em.persist(property);
-    }
-
-    // ---------------- Artifact ---------------------
-
-    public void saveDeviceArtifact(DeviceArtifact art, boolean create) throws Exception {
-        if (art == null) {
-            logger.log(Level.SEVERE, "deleteDeviceArtifact: Device is null");
-            return;
-        }
-        String user = loginManager.getUserid();
-        if (!authEJB.userHasAuth(user, EntityType.DEVICE, EntityTypeOperation.UPDATE)) {
-            logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
-            throw new Exception("User " + user + " is not authorized to perform this operation");
-        }
-        art.setModifiedAt(new Date());
-        art.setModifiedBy("user");
-        DeviceArtifact newArt = em.merge(art);
-        if (create) { // create instead of update
-            Device dev = art.getDevice();
-            dev.getDeviceArtifactList().add(newArt);
-            em.merge(dev);
-        }
-        // logger.log(Level.INFO, "Artifact: name " + art.getName() +
-        // " description " + art.getDescription() + " uri " + art.getUri() +
-        // "is int " + art.getIsInternal());
-        // logger.log(Level.INFO, "device serial " + device.getSerialNumber());
-        makeAuditEntry(EntityTypeOperation.UPDATE, art.getDevice().getSerialNumber(), "Modified artifact " + art.getName(), art.getDevice().getId());
-    }
-
-    public void deleteDeviceArtifact(DeviceArtifact art) throws Exception {
-        if (art == null) {
-            logger.log(Level.SEVERE, "deleteDeviceArtifact: dev-artifact is null");
-            return;
-        }
-        String user = loginManager.getUserid();
-        if (!authEJB.userHasAuth(user, EntityType.DEVICE, EntityTypeOperation.UPDATE)) {
-            logger.log(Level.SEVERE, "User is not authorized to perform this operation:  " + user);
-            throw new Exception("User " + user + " is not authorized to perform this operation");
-        }
-        logger.log(Level.INFO, "deleting " + art.getName() + " id " + art.getId() + " des " + art.getDescription());
-        DeviceArtifact artifact = em.find(DeviceArtifact.class, art.getId());
-        Device device = artifact.getDevice();
-        device.getDeviceArtifactList().remove(artifact);
-        em.remove(artifact);
-        makeAuditEntry(EntityTypeOperation.UPDATE, art.getDevice().getSerialNumber(), "Deleted artifact " + art.getName(), art.getDevice().getId());
+            @Override
+            public Device getParentFromChild(DeviceArtifact child) {
+                return child.getDevice();
+            }
+        });
     }
 }

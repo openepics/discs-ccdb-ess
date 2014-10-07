@@ -26,6 +26,7 @@ import javax.inject.Named;
 
 import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.Slot;
+import org.openepics.discs.conf.ent.SlotRelationName;
 import org.primefaces.event.NodeCollapseEvent;
 import org.primefaces.event.NodeExpandEvent;
 import org.primefaces.event.NodeSelectEvent;
@@ -40,9 +41,7 @@ import org.primefaces.model.TreeNode;
 @Named
 @ViewScoped
 public class ComponentTreeMBean implements Serializable {
-
-    @EJB
-    private SlotEJB slotBean;
+    @EJB private SlotEJB slotBean;
     private TreeNode root;
     private TreeNode selectedNode;
     private Slot selectedComponent;
@@ -51,12 +50,13 @@ public class ComponentTreeMBean implements Serializable {
      *
      */
     public static class NodeData implements Serializable {
-
+        @SuppressWarnings("unused")
         private char type; // l - logical component, r - relation, i - inverse relation
         private String name; // name of logical component or relationship
         private long id; // id of the logical component or relationship
 
         /**
+         * Constructs new Node Data ..
          *
          * @param t
          * @param n
@@ -69,8 +69,8 @@ public class ComponentTreeMBean implements Serializable {
         }
 
         /**
-         *
-         * @return
+         * Getter for the name
+         * @return the name
          */
         public String getName() {
             return name;
@@ -90,7 +90,7 @@ public class ComponentTreeMBean implements Serializable {
     @PostConstruct
     public void init() {
         root = new DefaultTreeNode("Root", null);
-        List<Slot> rnodes = slotBean.getRootNodes();
+        List<Slot> rnodes = slotBean.getRootNodes(SlotRelationName.CONTAINS);
 
         for(Slot lc: rnodes) {
             TreeNode node0 = new DefaultTreeNode("component", new NodeData('l', lc.getName(), lc.getId()), root);
@@ -100,16 +100,18 @@ public class ComponentTreeMBean implements Serializable {
     }
 
     /**
+     * Gets the root node.
      *
-     * @return
+     * @return the root node
      */
     public TreeNode getRoot() {
         return root;
     }
 
     /**
+     * Gets the selected node
      *
-     * @return
+     * @return the selected node
      */
     public TreeNode getSelectedNode() {
         return selectedNode;
@@ -151,21 +153,23 @@ public class ComponentTreeMBean implements Serializable {
     }
 
     /**
+     * Handles the node collapse UI event
      *
-     * @param event
+     * @param event event data
      */
     public void onNodeCollapse(NodeCollapseEvent event) {
         DefaultTreeNode tn = (DefaultTreeNode)event.getTreeNode();
         tn.setExpanded(false);
     }
 
-     /**
-     *
-     * @param event
-     */
+    /**
+    * Handles the node selection UI event
+    *
+    * @param event event data
+    */
     public void onNodeSelect(NodeSelectEvent event) {
         NodeData ndata = (NodeData) selectedNode.getData();
-        selectedComponent = slotBean.findLayoutSlot(ndata.id);
+        selectedComponent = slotBean.findById(ndata.id);
     }
 
     public void setSelectedComponent(Slot selectedComponent) {
@@ -173,8 +177,9 @@ public class ComponentTreeMBean implements Serializable {
     }
 
     /**
+     * Getter for the selected component
      *
-     * @return
+     * @return the selected component
      */
     public Slot getSelectedComponent() {
         return selectedComponent;

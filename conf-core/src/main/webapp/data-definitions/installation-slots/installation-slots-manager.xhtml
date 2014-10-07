@@ -1,0 +1,100 @@
+<ui:composition template="../template.xhtml" 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui">
+    <ui:define name="dataDefContent">
+        <h:form id="installationSlotsForm">
+            <p:commandButton ajax="true" id="addSlot" actionListener="#{installationSlotsController.prepareAddPopup()}" 
+                    update=":slotAddForm:addSlotDialog" value="Add new installation slot to parent" 
+                    oncomplete="addSlotDialog.show()" disabled="#{installationSlotsController.selectedNode == null}"/>
+            <p:treeTable id="installationSlotsTree" value="#{installationSlotsController.rootNode}" var="installationSlot" 
+                    liveResize="true" selection="#{installationSlotsController.selectedNode}" selectionMode="single" 
+                    scrollable="true" scrollWidth="auto">
+                <p:ajax event="collapse" listener="#{installationSlotsController.onNodeCollapse}" />
+                <p:ajax event="expand" listener="#{installationSlotsController.onNodeExpand}" />
+                <p:ajax event="select" update=":installationSlotsForm:addSlot" />
+                <p:ajax event="unselect" update=":installationSlotsForm:addSlot" />
+                
+                <p:column id="name" headerText="Name">
+                    <h:outputText value=""
+                        style="display:inline-block; vertical-align:bottom !important"
+                        styleClass="ui-icon ui-icon-wrench"
+                        rendered="#{installationSlot.isHostingSlot}" />
+                    <h:outputText value=""
+                        style="display:inline-block; vertical-align:bottom !important"
+                        styleClass="ui-icon ui-icon-folder-collapsed"
+                        rendered="#{!installationSlot.isHostingSlot}" />
+                    <h:outputText value="#{installationSlot.name}"/>
+                </p:column>
+                
+                <p:column id="desc" headerText="Description">
+                    <h:outputText value="#{installationSlot.description}"/>
+                </p:column>
+                
+
+                <p:column headerText="Actions" style="padding: 0px !important; width: 120; text-align: center">
+                    <p:commandLink ajax="true" title="Add properties" rendered="#{installationSlot.isHostingSlot}" 
+                            action="#{installationSlotsController.redirectToAttributes(installationSlot.id)}">
+                        <h:outputText styleClass="ui-icon ui-icon-contact" style="display: inline-block !important; margin-right: 6px;" />
+                    </p:commandLink>
+                    <p:commandLink ajax="true" title="Edit" rendered="#{installationSlot.isHostingSlot}" 
+                            update=":slotModifyForm" oncomplete="modifySlotDialog.show()">
+                        <h:outputText styleClass="ui-icon ui-icon-pencil" style="display: inline-block !important; margin-right: 6px;" />
+                        <f:setPropertyActionListener value="#{installationSlot}" target="#{installationSlotsController.selectedSlotViewToModify}" />
+                    </p:commandLink>
+                    <p:commandLink ajax="true" title="Relationships" rendered="#{installationSlot.isHostingSlot}" 
+                            oncomplete="slotRelationships.show()" update=":slotRelationshipsForm">
+                        <h:outputText styleClass="ui-icon ui-icon-link" style="display: inline-block !important; margin-right: 6px;" />
+                        <f:setPropertyActionListener value="#{installationSlot}" target="#{installationSlotsController.selectedSlotViewForRelationships}" />
+                    </p:commandLink>
+                    <p:commandLink ajax="true" title="Delete" rendered="#{installationSlot.isHostingSlot}" 
+                            disabled="#{!installationSlot.canDelete}" oncomplete="deleteInstallationSlot.show()">
+                        <h:outputText styleClass="ui-icon ui-icon-trash" style="display: inline-block !important; margin-right: 6px;" />
+                        <f:setPropertyActionListener value="#{installationSlot}" target="#{installationSlotsController.selectedSlotView}" />
+                    </p:commandLink>
+                    <p:commandLink ajax="true" title="Log" update=":installationSlotLogForm" 
+                            rendered="#{installationSlot.isHostingSlot}" oncomplete="installationSlotLog.show()">
+                        <h:outputText styleClass="ui-icon ui-icon-clock" style="display: inline-block !important; margin-right: 6px;" />
+                        <f:ajax event="click" listener="#{auditManager.selectEntityForLog(installationSlot.slot, 'SLOT')}" />
+                    </p:commandLink>
+                </p:column>
+            </p:treeTable>
+        </h:form>
+        
+        <ui:include src="add-or-modify-installation-slot.xhtml">
+            <ui:param name="formId" value="slotAddForm" />
+            <ui:param name="widgetName" value="addSlotDialog" />
+            <ui:param name="dialogTitle" value="Add installation slot" />
+            <ui:param name="submitHandler" value="onSlotAdd" />
+        </ui:include>
+        
+        <ui:include src="add-or-modify-installation-slot.xhtml">
+            <ui:param name="formId" value="slotModifyForm" />
+            <ui:param name="widgetName" value="modifySlotDialog" />
+            <ui:param name="dialogTitle" value="Modify installation slot" />
+            <ui:param name="submitHandler" value="onSlotModify" />
+        </ui:include>
+                
+         <ui:include src="../../audit/audit-log-table.xhtml">
+            <ui:param name="formId" value="installationSlotLogForm" />
+            <ui:param name="dialogTitle" value="Installation Slot Log" />
+            <ui:param name="widgetName" value="installationSlotLog" />
+        </ui:include>
+        
+        <ui:include src="slot-relationships.xhtml">
+            <ui:param name="formId" value="slotRelationshipsForm" />
+            <ui:param name="widgetName" value="slotRelationships" />
+        </ui:include>
+        
+        <ui:include src="../add-or-modify-dialogs/delete-confirmation.xhtml" >
+            <ui:param name="formId" value="deleteInstallationSlotForm" />
+            <ui:param name="dialogTitle" value="Delete Installation Slot" />
+            <ui:param name="widgetName" value="deleteInstallationSlot" />
+            <ui:param name="controller" value="#{installationSlotsController}" />
+            <ui:param name="submitHandler" value="onDelete" />
+            <ui:param name="formToUpdate" value=":installationSlotsForm:installationSlotsTree" />
+        </ui:include>
+    </ui:define>
+</ui:composition>

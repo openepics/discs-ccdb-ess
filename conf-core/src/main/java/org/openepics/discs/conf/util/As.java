@@ -10,9 +10,14 @@ import com.google.common.base.Preconditions;
  * @author Marko Kolar <marko.kolar@cosylab.com>
  */
 public class As {
+    private As() { }
+
     /**
      * The cast of the value declared nullable to the same type that does not permit null values. Throws an exception if
      * the input value is, in fact, null.
+     *
+     * @param value the input object
+     * @return casted not-null object
      */
     public static <T> T notNull(@Nullable T value) {
         Preconditions.checkNotNull(value);

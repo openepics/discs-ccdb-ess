@@ -6,7 +6,6 @@
 
 package org.openepics.discs.conf.ui;
 
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.ejb.EJB;
@@ -15,7 +14,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 
-import org.openepics.discs.conf.ejb.ConfigurationEJB;
+import org.openepics.discs.conf.ejb.UnitEJB;
 import org.openepics.discs.conf.ent.Unit;
 
 /**
@@ -25,10 +24,10 @@ import org.openepics.discs.conf.ent.Unit;
 @ManagedBean // workaround for injecting an EJB in a converter (for older versions of Glassfish)
 // @FacesConverter(value = "experimentConverter")
 // @ViewScoped
-public class UnitConverter implements Converter{
+public class UnitConverter implements Converter {
 
     @EJB
-    private ConfigurationEJB configurationEJB;
+    private UnitEJB unitEJB;
     private static final Logger logger = Logger.getLogger(UnitConverter.class.getCanonicalName());
     /**
      * Creates a new instance of UnitConverter
@@ -41,10 +40,10 @@ public class UnitConverter implements Converter{
         Unit unit;
 
         if (value == null || value.equals("")) {
-            logger.log(Level.INFO, "exp converter: empty experiemnt id");
+            logger.finer("exp converter: empty experiemnt id");
             return null;
         } else {
-            unit = configurationEJB.findUnit(Long.valueOf(value));
+            unit = unitEJB.findById(Long.valueOf(value));
             return unit;
         }
     }
@@ -52,7 +51,7 @@ public class UnitConverter implements Converter{
     @Override
     public String getAsString(FacesContext context, UIComponent component, Object value) {
         if (value == null || value.equals("")) {
-            logger.log(Level.INFO, "Null object");
+            logger.finer("Null object");
             return "";
         } else {
             // logger.log(Level.INFO, "Exp number: " + ((Experiment) value).getId().toString());

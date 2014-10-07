@@ -1,10 +1,6 @@
 package org.openepics.discs.conf.ent;
 
-import java.util.Date;
-import java.util.List;
-
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -13,14 +9,13 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
+ * Properties are given to Devices, Device Types and INstallation Slots
  *
  * @author vuppala
  */
@@ -31,15 +26,16 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Property.findAll", query = "SELECT p FROM Property p"),
     @NamedQuery(name = "Property.findByPropertyId", query = "SELECT p FROM Property p WHERE p.id = :id"),
     @NamedQuery(name = "Property.findByName", query = "SELECT p FROM Property p WHERE p.name = :name"),
-    @NamedQuery(name = "Property.findByAssociation", query = "SELECT p FROM Property p WHERE p.association = :association"),
-    @NamedQuery(name = "Property.findByModifiedBy", query = "SELECT p FROM Property p WHERE p.modifiedBy = :modifiedBy")})
+    @NamedQuery(name = "Property.findByAssociation", query = "SELECT p FROM Property p "
+            + "WHERE p.association = :association"),
+    @NamedQuery(name = "Property.findByModifiedBy", query = "SELECT p FROM Property p "
+            + "WHERE p.modifiedBy = :modifiedBy")
+})
 public class Property extends ConfigurationEntity {
-    private static final long serialVersionUID = 1L;
-
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)
-    @Column(name = "name")
+    @Column(name = "name", unique = true)
     private String name;
 
     @Basic(optional = false)
@@ -54,9 +50,6 @@ public class Property extends ConfigurationEntity {
     @Column(name = "association", length = 12)
     private PropertyAssociation association;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "property")
-    private List<PropertyValue> propertyValuesList;
-
     @JoinColumn(name = "data_type")
     @ManyToOne(optional = false)
     private DataType dataType;
@@ -68,32 +61,49 @@ public class Property extends ConfigurationEntity {
     protected Property() {
     }
 
-    public Property(String name, String description, PropertyAssociation association, String modifiedBy) {
+    public Property(String name, String description, PropertyAssociation association) {
         this.name = name;
         this.description = description;
         this.association = association;
-        this.modifiedBy = modifiedBy;
-        this.modifiedAt = new Date();
     }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
+    public String getDescription() {
+        return description;
+    }
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-    public PropertyAssociation getAssociation() { return association; }
-    public void setAssociation(PropertyAssociation association) { this.association = association; }
+    public PropertyAssociation getAssociation() {
+        return association;
+    }
+    public void setAssociation(PropertyAssociation association) {
+        this.association = association;
+    }
 
-    @XmlTransient
-    public List<PropertyValue> getPropertyValuesList() { return propertyValuesList; }
+    public DataType getDataType() {
+        return dataType;
+    }
+    public void setDataType(DataType dataType) {
+        this.dataType = dataType;
+    }
 
-    public DataType getDataType() { return dataType; }
-    public void setDataType(DataType dataType) { this.dataType = dataType; }
-
-    public Unit getUnit() { return unit; }
-    public void setUnit(Unit unit) { this.unit = unit; }
+    public Unit getUnit() {
+        return unit;
+    }
+    public void setUnit(Unit unit) {
+        this.unit = unit;
+    }
 
     @Override
-    public String toString() { return "Property[ propertyId=" + id + " ]"; }
+    public String toString() {
+        return "Property[ propertyId=" + id + " ]";
+    }
 }

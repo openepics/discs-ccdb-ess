@@ -18,6 +18,8 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  *
  * @author vuppala
@@ -30,10 +32,9 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "User.findByUserId", query = "SELECT u FROM User u WHERE u.userId = :userId"),
     @NamedQuery(name = "User.findByName", query = "SELECT u FROM User u WHERE u.name = :name"),
     @NamedQuery(name = "User.findByEmail", query = "SELECT u FROM User u WHERE u.email = :email"),
-    @NamedQuery(name = "User.findByComment", query = "SELECT u FROM User u WHERE u.comment = :comment")})
+    @NamedQuery(name = "User.findByComment", query = "SELECT u FROM User u WHERE u.comment = :comment")
+})
 public class User implements Serializable {
-    private static final long serialVersionUID = 1L;
-
     @Id
     @NotNull
     @Size(min = 1, max = 64)
@@ -46,7 +47,6 @@ public class User implements Serializable {
     @Column(name = "name")
     private String name;
 
-    // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")//if the field contains email address consider using this annotation to enforce field validation
     @Size(max = 64)
     @Column(name = "email")
     private String email;
@@ -58,7 +58,7 @@ public class User implements Serializable {
     @Version
     private Long version;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "ccdb_user")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
     private List<UserRole> userRoleList;
 
     protected User() {
@@ -106,6 +106,7 @@ public class User implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<UserRole> getUserRoleList() {
         return userRoleList;
     }
@@ -123,14 +124,24 @@ public class User implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        if (!(object instanceof User)) return false;
+        if (!(object instanceof User)) {
+            return false;
+        }
 
         User other = (User) object;
-        if (this.userId == null && other.userId != null) return false;
-        if (this.userId != null) return this.userId.equals(other.userId); // return true for same DB entity
+        if (this.userId == null && other.userId != null) {
+            return false;
+        }
+
+        if (this.userId != null) {
+            // return true for same DB entity
+            return this.userId.equals(other.userId);
+        }
 
         return this==object;
     }
+
+    public Long getVersion() { return version; }
 
     @Override
     public String toString() {

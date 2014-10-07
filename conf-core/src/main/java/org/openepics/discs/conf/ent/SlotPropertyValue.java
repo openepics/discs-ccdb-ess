@@ -13,29 +13,37 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author vuppala
  */
 @Entity
-@Table(name = "slot_property_values")
+@Table(name = "slot_property_value")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "SlotPropertyValue.findAll", query = "SELECT s FROM SlotPropertyValue s"),
-    @NamedQuery(name = "SlotPropertyValue.findBySlotPropId", query = "SELECT s FROM SlotPropertyValue s WHERE s.id = :id"),
-    @NamedQuery(name = "SlotPropertyValue.findByInRepository", query = "SELECT s FROM SlotPropertyValue s WHERE s.inRepository = :inRepository"),
-    @NamedQuery(name = "SlotPropertyValue.findByModifiedBy", query = "SELECT s FROM SlotPropertyValue s WHERE s.modifiedBy = :modifiedBy")})
+    @NamedQuery(name = "SlotPropertyValue.findBySlotPropId", query = "SELECT s FROM SlotPropertyValue s "
+            + "WHERE s.id = :id"),
+    @NamedQuery(name = "SlotPropertyValue.findByInRepository", query = "SELECT s FROM SlotPropertyValue s "
+            + "WHERE s.inRepository = :inRepository"),
+    @NamedQuery(name = "SlotPropertyValue.findByModifiedBy", query = "SELECT s FROM SlotPropertyValue s "
+            + "WHERE s.modifiedBy = :modifiedBy")
+})
 public class SlotPropertyValue extends PropertyValue {
-    private static final long serialVersionUID = 1L;
-
     @JoinColumn(name = "slot")
     @ManyToOne(optional = false)
     private Slot slot;
 
-    protected SlotPropertyValue() { }
+    public SlotPropertyValue() { }
 
-    public SlotPropertyValue(boolean inRepository, String modifiedBy) {
-        super(inRepository, modifiedBy);
+    public SlotPropertyValue(boolean inRepository) {
+        super(inRepository);
     }
 
-    public Slot getSlot() { return slot; }
-    public void setSlot(Slot slot) { this.slot = slot; }
+    public Slot getSlot() {
+        return slot;
+    }
+    public void setSlot(Slot slot) {
+        this.slot = slot;
+    }
 
     @Override
-    public String toString() { return "SlotProperty[ slotPropId=" + id + " ]"; }
+    public String toString() {
+        return "SlotProperty[ slotPropId=" + id + " ]";
+    }
 }

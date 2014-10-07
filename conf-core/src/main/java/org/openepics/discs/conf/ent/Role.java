@@ -18,6 +18,8 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  *
  * @author vuppala
@@ -27,10 +29,9 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Role.findAll", query = "SELECT r FROM Role r"),
-    @NamedQuery(name = "Role.findByRoleId", query = "SELECT r FROM Role r WHERE r.roleId = :roleId")})
+    @NamedQuery(name = "Role.findByRoleId", query = "SELECT r FROM Role r WHERE r.roleId = :roleId")
+})
 public class Role implements Serializable {
-    private static final long serialVersionUID = 1L;
-
     @Id
     @NotNull
     @Size(min = 1, max = 64)
@@ -81,6 +82,7 @@ public class Role implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<UserRole> getUserRoleList() {
         return userRoleList;
     }
@@ -90,6 +92,7 @@ public class Role implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<Privilege> getPrivilegeList() {
         return privilegeList;
     }
@@ -100,18 +103,24 @@ public class Role implements Serializable {
 
     @Override
     public int hashCode() {
-        int hash = 0;
-        hash += (roleId != null ? roleId.hashCode() : 0);
-        return hash;
+        return roleId != null ? roleId.hashCode() : 0;
     }
 
     @Override
     public boolean equals(Object object) {
-        if (!(object instanceof Role)) return false;
+        if (!(object instanceof Role)) {
+            return false;
+        }
 
         Role other = (Role) object;
-        if (this.roleId == null && other.roleId != null) return false;
-        if (this.roleId != null) return this.roleId.equals(other.roleId); // return true for same DB entity
+        if (this.roleId == null && other.roleId != null) {
+            return false;
+        }
+
+        if (this.roleId != null) {
+            // return true for same DB entity
+            return this.roleId.equals(other.roleId);
+        }
 
         return this==object;
     }

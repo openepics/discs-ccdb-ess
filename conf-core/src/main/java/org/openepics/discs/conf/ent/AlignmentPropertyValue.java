@@ -10,33 +10,42 @@ import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
+ * A {@link PropertyValue} used for {@link AlignmentRecord}s
  *
  * @author vuppala
  */
 @Entity
-@Table(name = "alignment_property_values", indexes = { @Index(columnList = "alignment_record") })
+@Table(name = "alignment_property_value", indexes = { @Index(columnList = "alignment_record") })
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "AlignmentPropertyValue.findAll", query = "SELECT a FROM AlignmentPropertyValue a"),
-    @NamedQuery(name = "AlignmentPropertyValue.findById", query = "SELECT a FROM AlignmentPropertyValue a WHERE a.id = :id"),
-    @NamedQuery(name = "AlignmentPropertyValue.findByInRepository", query = "SELECT a FROM AlignmentPropertyValue a WHERE a.inRepository = :inRepository"),
-    @NamedQuery(name = "AlignmentPropertyValue.findByModifiedBy", query = "SELECT a FROM AlignmentPropertyValue a WHERE a.modifiedBy = :modifiedBy")})
+    @NamedQuery(name = "AlignmentPropertyValue.findByAlignPropId", query = "SELECT a FROM AlignmentPropertyValue a "
+            + "WHERE a.id = :id"),
+    @NamedQuery(name = "AlignmentPropertyValue.findByInRepository", query = "SELECT a FROM AlignmentPropertyValue a "
+            + "WHERE a.inRepository = :inRepository"),
+    @NamedQuery(name = "AlignmentPropertyValue.findByModifiedBy", query = "SELECT a FROM AlignmentPropertyValue a "
+            + "WHERE a.modifiedBy = :modifiedBy")
+})
 public class AlignmentPropertyValue extends PropertyValue {
-    private static final long serialVersionUID = 1L;
-
     @JoinColumn(name = "alignment_record")
     @ManyToOne(optional = false)
     private AlignmentRecord alignmentRecord;
 
-    protected AlignmentPropertyValue() { }
+    public AlignmentPropertyValue() { }
 
-    public AlignmentPropertyValue(boolean inRepository, String modifiedBy) {
-        super(inRepository, modifiedBy);
+    public AlignmentPropertyValue(boolean inRepository) {
+        super(inRepository);
     }
 
-    public AlignmentRecord getAlignmentRecord() { return alignmentRecord; }
-    public void setAlignmentRecord(AlignmentRecord alignmentRecord) { this.alignmentRecord = alignmentRecord; }
+    public AlignmentRecord getAlignmentRecord() {
+        return alignmentRecord;
+    }
+    public void setAlignmentRecord(AlignmentRecord alignmentRecord) {
+        this.alignmentRecord = alignmentRecord;
+    }
 
     @Override
-    public String toString() { return "AlignmentProperty[ alignPropId=" + id + " ]"; }
+    public String toString() {
+        return "AlignmentProperty[ alignPropId=" + id + " ]";
+    }
 }

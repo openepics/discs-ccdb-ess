@@ -17,15 +17,15 @@ import javax.validation.constraints.Size;
 
 
 /**
+* A super-class used for most of the Configuration Database entities.
+* Used as a {@link MappedSuperclass}.
 *
 * @author Miha Vitorovic
 */
 @MappedSuperclass
 public class ConfigurationEntity implements Serializable {
-    private static final long serialVersionUID = 1L;
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     protected Long id;
 
@@ -33,7 +33,7 @@ public class ConfigurationEntity implements Serializable {
     @NotNull
     @Column(name = "modified_at")
     @Temporal(TemporalType.TIMESTAMP)
-    protected Date modifiedAt;
+    protected Date modifiedAt = new Date(0L);
 
     @Basic(optional = false)
     @NotNull
@@ -44,28 +44,44 @@ public class ConfigurationEntity implements Serializable {
     @Version
     protected Long version;
 
-    public Long getId() { return id; }
+    public Long getId() {
+        return id;
+    }
 
-    public Date getModifiedAt() { return modifiedAt; }
-    public void setModifiedAt(Date modifiedAt) { this.modifiedAt = modifiedAt; }
+    public Date getModifiedAt() {
+        return new Date(modifiedAt.getTime());
+    }
+    public void setModifiedAt(Date modifiedAt) {
+        this.modifiedAt = new Date(modifiedAt.getTime());
+    }
 
-    public String getModifiedBy() { return modifiedBy; }
-    public void setModifiedBy(String modifiedBy) { this.modifiedBy = modifiedBy; }
+    public String getModifiedBy() {
+        return modifiedBy;
+    }
+    public void setModifiedBy(String modifiedBy) {
+        this.modifiedBy = modifiedBy;
+    }
 
     @Override
     public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
-        return hash;
+        return id != null ? id.hashCode() : 0;
     }
 
     @Override
     public boolean equals(Object object) {
-        if ((object == null) || (object.getClass() != this.getClass())) return false;
+        if ((object == null) || (object.getClass() != this.getClass())) {
+            return false;
+        }
 
         ConfigurationEntity other = (ConfigurationEntity) object;
-        if (this.id == null && other.id != null) return false;
-        if (this.id != null) return this.id.equals(other.id); // return true for same DB entity
+        if (this.id == null && other.id != null) {
+            return false;
+        }
+
+        // return true for same DB entity
+        if (this.id != null) {
+            return this.id.equals(other.id);
+        }
 
         return this==object;
     }

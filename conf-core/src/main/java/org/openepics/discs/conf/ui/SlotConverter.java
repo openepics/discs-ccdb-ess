@@ -24,7 +24,7 @@ import org.openepics.discs.conf.ent.Slot;
  */
 @ManagedBean  // workaround for injecting an EJB in a converter (for older versions of Glassfish)
 // @ViewScoped
-public class SlotConverter implements Converter{
+public class SlotConverter implements Converter {
 
     @EJB
     private SlotEJB slotEJB;
@@ -43,7 +43,7 @@ public class SlotConverter implements Converter{
             logger.log(Level.INFO, "Slot converter: empty slot id");
             return null;
         } else {
-            slot = slotEJB.findLayoutSlot(Long.valueOf(value));
+            slot = slotEJB.findById(Long.valueOf(value));
             return slot;
         }
     }

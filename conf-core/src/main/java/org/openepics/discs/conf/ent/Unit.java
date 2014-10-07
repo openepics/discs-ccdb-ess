@@ -1,6 +1,5 @@
 package org.openepics.discs.conf.ent;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Basic;
@@ -15,6 +14,8 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  *
  * @author vuppala
@@ -24,18 +25,17 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Unit.findAll", query = "SELECT u FROM Unit u"),
-    @NamedQuery(name = "Unit.findByUnitName", query = "SELECT u FROM Unit u WHERE u.unitName = :unitName"),
+    @NamedQuery(name = "Unit.findByName", query = "SELECT u FROM Unit u WHERE u.name = :name"),
     @NamedQuery(name = "Unit.findByQuantity", query = "SELECT u FROM Unit u WHERE u.quantity = :quantity"),
     @NamedQuery(name = "Unit.findBySymbol", query = "SELECT u FROM Unit u WHERE u.symbol = :symbol"),
-    @NamedQuery(name = "Unit.findByModifiedBy", query = "SELECT u FROM Unit u WHERE u.modifiedBy = :modifiedBy")})
+    @NamedQuery(name = "Unit.findByModifiedBy", query = "SELECT u FROM Unit u WHERE u.modifiedBy = :modifiedBy")
+})
 public class Unit extends ConfigurationEntity {
-    private static final long serialVersionUID = 1L;
-
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 32)
     @Column(name = "unit_name", unique=true)
-    private String unitName;
+    private String name;
 
     @Basic(optional = false)
     @NotNull
@@ -58,39 +58,53 @@ public class Unit extends ConfigurationEntity {
     @OneToMany(mappedBy = "unit")
     private List<PropertyValue> propertyValuesList;
 
-    @OneToMany(mappedBy = "unit")
-    private List<Property> propertyList;
-
     protected Unit() {
     }
 
-    public Unit(String unitName, String quantity, String symbol, String description, String modifiedBy) {
-        this.unitName = unitName;
+    public Unit(String unitName, String quantity, String symbol, String description) {
+        this.name = unitName;
         this.quantity = quantity;
         this.symbol = symbol;
         this.description = description;
-        this.modifiedBy = modifiedBy;
-        this.modifiedAt = new Date();
     }
 
-    public String getUnitName() { return unitName; }
-    public void setUnitName(String unitName) { this.unitName = unitName; }
 
-    public String getQuantity() { return quantity; }
-    public void setQuantity(String quantity) { this.quantity = quantity; }
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    public String getSymbol() { return symbol; }
-    public void setSymbol(String symbol) { this.symbol = symbol; }
+    public String getQuantity() {
+        return quantity;
+    }
+    public void setQuantity(String quantity) {
+        this.quantity = quantity;
+    }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
+    public String getSymbol() {
+        return symbol;
+    }
+    public void setSymbol(String symbol) {
+        this.symbol = symbol;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     @XmlTransient
-    public List<PropertyValue> getPropertyValuesList() { return propertyValuesList; }
-
-    @XmlTransient
-    public List<Property> getPropertyList() { return propertyList; }
+    @JsonIgnore
+    public List<PropertyValue> getPropertyValuesList() {
+        return propertyValuesList;
+    }
 
     @Override
-    public String toString() { return "Unit[ unitId=" + id + " ]"; }
+    public String toString() {
+        return "Unit[ unitId=" + id + " ]";
+    }
 }

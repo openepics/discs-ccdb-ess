@@ -1,22 +1,17 @@
 package org.openepics.discs.conf.ent;
 
-import java.util.Date;
-import java.util.List;
-
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
+ * Represents a Data Type used in various {@link Property} entities
  *
  * @author vuppala
  */
@@ -27,14 +22,13 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "DataType.findAll", query = "SELECT d FROM DataType d"),
     @NamedQuery(name = "DataType.findByName", query = "SELECT d FROM DataType d WHERE d.name = :name"),
     @NamedQuery(name = "DataType.findByDataTypeId", query = "SELECT d FROM DataType d WHERE d.id = :id"),
-    @NamedQuery(name = "DataType.findByModifiedBy", query = "SELECT d FROM DataType d WHERE d.modifiedBy = :modifiedBy")})
+    @NamedQuery(name = "DataType.findByModifiedBy", query = "SELECT d FROM DataType d WHERE d.modifiedBy = :modifiedBy")
+})
 public class DataType extends ConfigurationEntity {
-    private static final long serialVersionUID = 1L;
-
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)
-    @Column(name = "name")
+    @Column(name = "name", unique = true)
     private String name;
 
     @Basic(optional = false)
@@ -50,36 +44,46 @@ public class DataType extends ConfigurationEntity {
     @Column(name = "definition", columnDefinition="TEXT")
     private String definition;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "dataType")
-    private List<Property> propertyList;
-
     protected DataType() {
     }
 
-    public DataType(String name, String description, boolean scalar, String definition, String modifiedBy) {
+    public DataType(String name, String description, boolean scalar, String definition) {
         this.name = name;
         this.description = description;
         this.scalar = scalar;
         this.definition = definition;
-        this.modifiedBy = modifiedBy;
-        this.modifiedAt = new Date();
     }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description;     }
+    public String getDescription() {
+        return description;
+    }
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-    public boolean isScalar() { return scalar; }
-    public void setScalar(boolean scalar) { this.scalar = scalar; }
+    public boolean isScalar() {
+        return scalar;
+    }
+    public void setScalar(boolean scalar) {
+        this.scalar = scalar;
+    }
 
-    public String getDefinition() { return definition; }
-    public void setDefinition(String definition) { this.definition = definition; }
-
-    @XmlTransient
-    public List<Property> getPropertyList() { return propertyList; }
+    public String getDefinition() {
+        return definition;
+    }
+    public void setDefinition(String definition) {
+        this.definition = definition;
+    }
 
     @Override
-    public String toString() { return "DataType[ dataTypeId=" + id + " ]"; }
+    public String toString() {
+        return "DataType[ dataTypeId=" + id + " ]";
+    }
 }

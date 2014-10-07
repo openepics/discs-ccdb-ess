@@ -1,5 +1,6 @@
 package org.openepics.discs.conf.ent;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -20,7 +21,10 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
+ * An Installation Record contains information connects device instances with the installation slots
  *
  * @author vuppala
  */
@@ -28,14 +32,18 @@ import javax.xml.bind.annotation.XmlTransient;
 @Table(name = "installation_record")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "InstallationRecord.findAll", query = "SELECT i FROM InstallationRecord i"),
-    @NamedQuery(name = "InstallationRecord.findByInstallationRecordId", query = "SELECT i FROM InstallationRecord i WHERE i.id = :id"),
-    @NamedQuery(name = "InstallationRecord.findByInstallDate", query = "SELECT i FROM InstallationRecord i WHERE i.installDate = :installDate"),
-    @NamedQuery(name = "InstallationRecord.findByUninstallDate", query = "SELECT i FROM InstallationRecord i WHERE i.uninstallDate = :uninstallDate"),
-    @NamedQuery(name = "InstallationRecord.findByModifiedBy", query = "SELECT i FROM InstallationRecord i WHERE i.modifiedBy = :modifiedBy")})
+    @NamedQuery(name = "InstallationRecord.findByName", query = "SELECT i FROM InstallationRecord i "
+            + "WHERE i.recordNumber = :name"),
+    @NamedQuery(name = "InstallationRecord.findByUninstallDate", query = "SELECT i FROM InstallationRecord i "
+            + "WHERE i.uninstallDate = :uninstallDate"),
+    @NamedQuery(name = "InstallationRecord.findByModifiedBy", query = "SELECT i FROM InstallationRecord i "
+            + "WHERE i.modifiedBy = :modifiedBy"),
+    @NamedQuery(name = "InstallationRecord.activeRecordForSlot", query = "SELECT i FROM InstallationRecord i "
+            + "WHERE i.slot = :slot AND i.uninstallDate IS NULL "),
+    @NamedQuery(name = "InstallationRecord.activeRecordForDevice", query = "SELECT i FROM InstallationRecord i "
+            + "WHERE i.device = :device AND i.uninstallDate IS NULL ")
+})
 public class InstallationRecord extends ConfigurationEntity {
-    private static final long serialVersionUID = 1L;
-
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)
@@ -64,39 +72,66 @@ public class InstallationRecord extends ConfigurationEntity {
     private Device device;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "installationRecord")
-    private List<InstallationArtifact> installationArtifactList;
+    private List<InstallationArtifact> installationArtifactList = new ArrayList<>();
 
     protected InstallationRecord() {
     }
 
-    public InstallationRecord(String recordNumber, Date installDate, String modifiedBy) {
+    public InstallationRecord(String recordNumber, Date installDate) {
         this.recordNumber = recordNumber;
-        this.installDate = installDate;
-        this.modifiedBy = modifiedBy;
-        this.modifiedAt = new Date();
+        this.installDate = new Date(installDate.getTime());
     }
 
-    public String getRecordNumber() { return recordNumber; }
-    public void setRecordNumber(String recordNumber) { this.recordNumber = recordNumber; }
+    public String getRecordNumber() {
+        return recordNumber;
+    }
+    public void setRecordNumber(String recordNumber) {
+        this.recordNumber = recordNumber;
+    }
 
-    public Date getInstallDate() { return installDate; }
-    public void setInstallDate(Date installDate) { this.installDate = installDate; }
+    public Date getInstallDate() {
+        return installDate!=null ? new Date(installDate.getTime()) : null;
+    }
+    public void setInstallDate(Date installDate) {
+        this.installDate = new Date(installDate.getTime());
+    }
 
-    public Date getUninstallDate() { return uninstallDate; }
-    public void setUninstallDate(Date uninstallDate) { this.uninstallDate = uninstallDate; }
+    public Date getUninstallDate() {
+        return uninstallDate!=null ? new Date(uninstallDate.getTime()) : null;
+    }
+    public void setUninstallDate(Date uninstallDate) {
+        this.uninstallDate = new Date(uninstallDate.getTime());
+    }
 
-    public String getNotes() { return notes; }
-    public void setNotes(String notes) { this.notes = notes; }
+    public String getNotes() {
+        return notes;
+    }
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
 
-    public Slot getSlot() { return slot; }
-    public void setSlot(Slot slot) { this.slot = slot; }
+    public Slot getSlot() {
+        return slot;
+    }
+    public void setSlot(Slot slot) {
+        this.slot = slot;
+    }
 
-    public Device getDevice() { return device; }
-    public void setDevice(Device device) { this.device = device; }
+    public Device getDevice() {
+        return device;
+    }
+    public void setDevice(Device device) {
+        this.device = device;
+    }
 
     @XmlTransient
-    public List<InstallationArtifact> getInstallationArtifactList() { return installationArtifactList; }
+    @JsonIgnore
+    public List<InstallationArtifact> getInstallationArtifactList() {
+        return installationArtifactList;
+    }
 
     @Override
-    public String toString() { return "InstallationRecord[ installationRecordId=" + id + " ]"; }
+    public String toString() {
+        return "InstallationRecord[ installationRecordId=" + id + " ]";
+    }
 }

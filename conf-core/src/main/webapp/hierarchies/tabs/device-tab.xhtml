@@ -1,0 +1,82 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html">
+
+    <p:panelGrid styleClass="noBorders" rendered="#{!empty hierarchiesController.installedDevice}">
+        <p:row>
+            <p:column style="text-align: right;">
+                Device type:
+            </p:column>
+            <p:column>
+                <h:outputText value="#{hierarchiesController.installedDevice.componentType.name}" />
+            </p:column>
+    
+            <p:column style="text-align: right;">
+                Status:
+            </p:column>
+            <p:column>
+                <h:outputText value="#{hierarchiesController.installedDevice.status.label}" />
+            </p:column>
+            
+            <p:column style="text-align: right;">
+                Manufacturer:
+            </p:column>
+            <p:column>
+                <h:outputText value="#{hierarchiesController.installedDevice.manufacturer}" />
+            </p:column>
+        </p:row>
+        <p:row>
+            <p:column style="text-align: right;">
+                Inventory ID:
+            </p:column>
+            <p:column>
+                <h:outputText value="#{hierarchiesController.installedDevice.serialNumber}" />
+            </p:column>
+    
+            <p:column style="text-align: right; vertical-align: top;" rowspan="3">
+                Description:
+            </p:column>
+            <p:column rowspan="3" style="vertical-align: top;">
+                <p:inputTextarea rows="5" style="width: 100%" readonly="true" 
+                    value="#{hierarchiesController.installedDevice.description}" />
+            </p:column>
+            
+            <p:column style="text-align: right;">
+                Manufacturer model:
+            </p:column>
+            <p:column>
+                <h:outputText value="#{hierarchiesController.installedDevice.manufacturerModel}" />
+            </p:column>
+        </p:row>
+    
+        <p:row>
+            <p:column style="text-align: right;">
+                Location:
+            </p:column>
+            <p:column>
+                <h:outputText value="#{hierarchiesController.installedDevice.location}" />
+            </p:column>
+    
+            <p:column style="text-align: right; vertical-align: top;" rowspan="2">
+                Manufacturer serial #:
+            </p:column>
+            <p:column style="vertical-align:top" rowspan="2">
+                <h:outputText value="#{hierarchiesController.installedDevice.manufacturerSerialNumber}" />
+            </p:column>
+        </p:row>
+    
+        <p:row>
+            <p:column style="text-align: right;">
+                Purchase order ref:
+            </p:column>
+            <p:column>
+                <h:outputText value="#{hierarchiesController.installedDevice.purchaseOrder}" />
+            </p:column>
+        </p:row>
+    </p:panelGrid>
+
+</ui:composition>

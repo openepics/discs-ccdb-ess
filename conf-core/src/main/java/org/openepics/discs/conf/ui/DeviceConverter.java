@@ -6,7 +6,6 @@
 
 package org.openepics.discs.conf.ui;
 
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.ejb.EJB;
@@ -40,10 +39,10 @@ public class DeviceConverter implements Converter {
         Device dev;
 
         if (value == null || value.equals("")) {
-            logger.log(Level.INFO, "Device converter: empty device id");
+            logger.fine( "Device converter: empty device id");
             return null;
         } else {
-            dev = deviceEJB.findDevice(Long.parseLong(value));
+            dev = deviceEJB.findById(Long.parseLong(value));
             return dev;
         }
     }
@@ -51,7 +50,7 @@ public class DeviceConverter implements Converter {
     @Override
     public String getAsString(FacesContext context, UIComponent component, Object value) {
         if (value == null || value.equals("")) {
-            logger.log(Level.INFO, "Device converter: Null or empty device object");
+            logger.fine("Device converter: Null or empty device object");
             return "";
         } else {
             // logger.log(Level.INFO, "Exp number: " + ((Experiment) value).getId().toString());

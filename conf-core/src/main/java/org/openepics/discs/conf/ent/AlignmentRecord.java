@@ -1,6 +1,7 @@
 package org.openepics.discs.conf.ent;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -25,7 +26,10 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
+ * Alignment record contains alignment information for Slots
  *
  * @author vuppala
  */
@@ -34,13 +38,16 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "AlignmentRecord.findAll", query = "SELECT a FROM AlignmentRecord a"),
-    @NamedQuery(name = "AlignmentRecord.findById", query = "SELECT a FROM AlignmentRecord a WHERE a.id = :id"),
-    @NamedQuery(name = "AlignmentRecord.findByRecordNumber", query = "SELECT a FROM AlignmentRecord a WHERE a.recordNumber = :recordNumber"),
-    @NamedQuery(name = "AlignmentRecord.findByAlignmentDate", query = "SELECT a FROM AlignmentRecord a WHERE a.alignmentDate = :alignmentDate"),
-    @NamedQuery(name = "AlignmentRecord.findByModifiedBy", query = "SELECT a FROM AlignmentRecord a WHERE a.modifiedBy = :modifiedBy")})
+    @NamedQuery(name = "AlignmentRecord.findByAlignmentRecordId", query = "SELECT a FROM AlignmentRecord a "
+            + "WHERE a.id = :id"),
+    @NamedQuery(name = "AlignmentRecord.findByRecordNumber", query = "SELECT a FROM AlignmentRecord a "
+            + "WHERE a.recordNumber = :recordNumber"),
+    @NamedQuery(name = "AlignmentRecord.findByAlignmentDate", query = "SELECT a FROM AlignmentRecord a "
+            + "WHERE a.alignmentDate = :alignmentDate"),
+    @NamedQuery(name = "AlignmentRecord.findByModifiedBy", query = "SELECT a FROM AlignmentRecord a "
+            + "WHERE a.modifiedBy = :modifiedBy")
+})
 public class AlignmentRecord extends ConfigurationEntity {
-    private static final long serialVersionUID = 1L;
-
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)
@@ -54,7 +61,7 @@ public class AlignmentRecord extends ConfigurationEntity {
     private Date alignmentDate;
 
     @Embedded
-    private AlignmentInformation alignmentInfo;
+    private PositionInformation alignmentInfo = new PositionInformation();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "alignmentRecord")
     private List<AlignmentArtifact> alignmentArtifactList;
@@ -70,47 +77,76 @@ public class AlignmentRecord extends ConfigurationEntity {
     @ManyToOne(optional = false)
     private Device device;
 
-    @ManyToMany
-    @JoinTable(name = "alignment_tags",
-        joinColumns = { @JoinColumn(name = "alignment_id") }, inverseJoinColumns = { @JoinColumn(name = "tag_id") })
-    private Set<Tag> tags;
+    @ManyToMany(cascade=CascadeType.ALL)
+    @JoinTable(name = "alignment_tag",
+               joinColumns = { @JoinColumn(name = "alignment_id") },
+               inverseJoinColumns = { @JoinColumn(name = "tag_id") })
+    private Set<Tag> tags = new HashSet<>();
 
     protected AlignmentRecord() {
     }
 
-    public AlignmentRecord(String recordNumber, Date alignmentDate, String modifiedBy) {
-        this.alignmentInfo = new AlignmentInformation();
+    public AlignmentRecord(String recordNumber, Date alignmentDate) {
         this.recordNumber = recordNumber;
-        this.alignmentDate = alignmentDate;
-        this.modifiedBy = modifiedBy;
-        this.modifiedAt = new Date();
+        this.alignmentDate = new Date(alignmentDate.getTime());
     }
 
-    public String getRecordNumber() { return recordNumber; }
-    public void setRecordNumber(String recordNumber) { this.recordNumber = recordNumber; }
+    public String getRecordNumber() {
+        return recordNumber;
+    }
+    public void setRecordNumber(String recordNumber) {
+        this.recordNumber = recordNumber;
+    }
 
-    public Date getAlignmentDate() { return alignmentDate; }
-    public void setAlignmentDate(Date alignmentDate) { this.alignmentDate = alignmentDate; }
+    public Date getAlignmentDate() {
+        return alignmentDate!=null ? new Date(alignmentDate.getTime()) : null;
+    }
+    public void setAlignmentDate(Date alignmentDate) {
+        this.alignmentDate = new Date(alignmentDate.getTime());
+    }
 
-    public AlignmentInformation getAlignmentInformation() { return alignmentInfo; }
-
-    @XmlTransient
-    public List<AlignmentArtifact> getAlignmentArtifactList() { return alignmentArtifactList; }
-
-    @XmlTransient
-    public List<AlignmentPropertyValue> getAlignmentPropertyList() { return alignmentPropertyList; }
-
-    public Slot getSlot() { return slot; }
-    public void setSlot(Slot slot) { this.slot = slot; }
-
-    public Device getDevice() { return device; }
-    public void setDevice(Device device) { this.device = device; }
+    public PositionInformation getAlignmentInformation() {
+        return alignmentInfo;
+    }
 
     @XmlTransient
-    public Set<Tag> getTags() { return tags; }
-    public void setTags(Set<Tag> tags) { this.tags = tags; }
+    @JsonIgnore
+    public List<AlignmentArtifact> getAlignmentArtifactList() {
+        return alignmentArtifactList;
+    }
+
+    @XmlTransient
+    @JsonIgnore
+    public List<AlignmentPropertyValue> getAlignmentPropertyList() {
+        return alignmentPropertyList;
+    }
+
+    public Slot getSlot() {
+        return slot;
+    }
+    public void setSlot(Slot slot) {
+        this.slot = slot;
+    }
+
+    public Device getDevice() {
+        return device;
+    }
+    public void setDevice(Device device) {
+        this.device = device;
+    }
+
+    @XmlTransient
+    @JsonIgnore
+    public Set<Tag> getTags() {
+        return tags;
+    }
+    public void setTags(Set<Tag> tags) {
+        this.tags = tags;
+    }
 
     @Override
-    public String toString() { return "AlignmentRecord[ alignmentRecordId=" + id + " ]"; }
+    public String toString() {
+        return "AlignmentRecord[ alignmentRecordId=" + id + " ]";
+    }
 
 }

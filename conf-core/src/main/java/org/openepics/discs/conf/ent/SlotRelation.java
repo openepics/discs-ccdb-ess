@@ -1,22 +1,16 @@
 package org.openepics.discs.conf.ent;
 
-import java.util.Date;
-import java.util.List;
-
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -28,10 +22,9 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "SlotRelation.findAll", query = "SELECT s FROM SlotRelation s"),
     @NamedQuery(name = "SlotRelation.findBySlotRelationId", query = "SELECT s FROM SlotRelation s WHERE s.id = :id"),
-    @NamedQuery(name = "SlotRelation.findByName", query = "SELECT s FROM SlotRelation s WHERE s.name = :name")})
+    @NamedQuery(name = "SlotRelation.findByName", query = "SELECT s FROM SlotRelation s WHERE s.name = :name")
+})
 public class SlotRelation extends ConfigurationEntity {
-    private static final long serialVersionUID = 1L;
-
     @Basic(optional = false)
     @NotNull
     @Enumerated(EnumType.STRING)
@@ -47,20 +40,19 @@ public class SlotRelation extends ConfigurationEntity {
     @Column(name = "description")
     private String description;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "slotRelation")
-    private List<SlotPair> slotPairList;
-
     protected SlotRelation() {
     }
 
-    public SlotRelation(SlotRelationName name, String modifiedBy) {
+    public SlotRelation(SlotRelationName name) {
         setName(name);
-        this.modifiedBy = modifiedBy;
-        this.modifiedAt = new Date();
     }
 
-    public SlotRelationName getName() { return name; }
-    public String getNameAsString() { return name.toString().toLowerCase(); }
+    public SlotRelationName getName() {
+        return name;
+    }
+    public String getNameAsString() {
+        return name.toString().toLowerCase();
+    }
 
     public void setName(SlotRelationName name) {
         this.name = name;
@@ -73,14 +65,19 @@ public class SlotRelation extends ConfigurationEntity {
         }
     }
 
-    public String getIname() { return iname; }
+    public String getIname() {
+        return iname;
+    }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
-
-    @XmlTransient
-    public List<SlotPair> getSlotPairList() { return slotPairList; }
+    public String getDescription() {
+        return description;
+    }
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     @Override
-    public String toString() { return "SlotRelation[ slotRelationId=" + id + " ]"; }
+    public String toString() {
+        return "SlotRelation[ slotRelationId=" + id + " ]";
+    }
 }

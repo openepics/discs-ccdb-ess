@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.annotation.Nullable;
 import javax.ejb.Stateless;
@@ -16,20 +17,17 @@ import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.dl.common.ErrorMessage;
 import org.openepics.discs.conf.dl.common.ValidationMessage;
-import org.openepics.discs.conf.ejb.AuthEJB;
 import org.openepics.discs.conf.ejb.ComptypeEJB;
-import org.openepics.discs.conf.ejb.ConfigurationEJB;
 import org.openepics.discs.conf.ejb.DeviceEJB;
+import org.openepics.discs.conf.ejb.PropertyEJB;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ent.DeviceStatus;
-import org.openepics.discs.conf.ent.EntityType;
-import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyAssociation;
-import org.openepics.discs.conf.ui.LoginManager;
 import org.openepics.discs.conf.util.As;
+import org.openepics.discs.conf.util.Conversion;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
@@ -37,10 +35,7 @@ import com.google.common.collect.ImmutableList;
 @Stateless
 @DevicesLoaderQualifier
 public class DevicesDataLoader extends AbstractDataLoader implements DataLoader  {
-
-    @Inject private LoginManager loginManager;
-    @Inject private AuthEJB authEJB;
-    @Inject private ConfigurationEJB configurationEJB;
+    @Inject private PropertyEJB propertyEJB;
     @Inject private ComptypeEJB comptypeEJB;
     @Inject private DeviceEJB deviceEJB;
     private int serialIndex, compTypeIndex, descriptionIndex, statusIndex, manufSerialIndex, locationIndex, purchaseOrderIndex, asmPositionIndex, asmDescriptionIndex, manufacturerIndex, manufModelIndex;
@@ -86,7 +81,7 @@ public class DevicesDataLoader extends AbstractDataLoader implements DataLoader 
                         return loaderResult;
                     } else {
                         continue; // skip the rest of the processing for
-                                  // HEADER row
+                        // HEADER row
                     }
                 } else if (row.get(1).equals(CMD_END)) {
                     break;
@@ -105,8 +100,6 @@ public class DevicesDataLoader extends AbstractDataLoader implements DataLoader 
                 final @Nullable String manufacturer = manufacturerIndex == -1 ? null : row.get(manufacturerIndex);
                 final @Nullable String manufModel = manufModelIndex == -1 ? null : row.get(manufModelIndex);
 
-                final String modifiedBy = loginManager.getUserid();
-
                 if (serial == null) {
                     rowResult.addMessage(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, rowNumber, headerRow.get(serialIndex)));
                 } else if (componentType == null && !command.equals(CMD_DELETE)) {
@@ -120,31 +113,31 @@ public class DevicesDataLoader extends AbstractDataLoader implements DataLoader 
                     switch (command) {
                     case CMD_UPDATE:
                         if (deviceEJB.findDeviceBySerialNumber(serial) != null) {
-                            final @Nullable ComponentType compType = comptypeEJB.findComponentTypeByName(componentType);
+                            final @Nullable ComponentType compType = comptypeEJB.findByName(componentType);
                             if (compType == null) {
                                 rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(compTypeIndex)));
                                 continue;
                             } else {
-                                if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.DEVICE, EntityTypeOperation.UPDATE)) {
+                                try {
                                     final Device deviceToUpdate = deviceEJB.findDeviceBySerialNumber(serial);
-                                    addOrUpdateDevice(deviceToUpdate, compType, description, status, manufSerial, location, purchaseOrder, asmPosition, asmDescription, manufacturer, manufModel, modifiedBy);
-                                    addOrUpdateProperties(deviceToUpdate, indexByPropertyName, row, rowNumber, modifiedBy);
-                                 } else {
+                                    addOrUpdateDevice(deviceToUpdate, compType, description, status, manufSerial, location, purchaseOrder, asmPosition, asmDescription, manufacturer, manufModel);
+                                    addOrUpdateProperties(deviceToUpdate, indexByPropertyName, row, rowNumber);
+                                } catch (Exception e) {
                                     rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                                 }
                             }
                         } else {
-                            final @Nullable ComponentType compType = comptypeEJB.findComponentTypeByName(componentType);
+                            final @Nullable ComponentType compType = comptypeEJB.findByName(componentType);
                             if (compType == null) {
                                 rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(compTypeIndex)));
                                 continue;
                             } else {
-                                if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.DEVICE, EntityTypeOperation.CREATE)) {
-                                    final Device newDevice = new Device(serial, modifiedBy);
-                                    addOrUpdateDevice(newDevice, compType, description, status, manufSerial, location, purchaseOrder, asmPosition, asmDescription, manufacturer, manufModel, modifiedBy);
-                                    deviceEJB.addDevice(newDevice);
-                                    addOrUpdateProperties(newDevice, indexByPropertyName, row, rowNumber, modifiedBy);
-                                } else {
+                                try {
+                                    final Device newDevice = new Device(serial);
+                                    addOrUpdateDevice(newDevice, compType, description, status, manufSerial, location, purchaseOrder, asmPosition, asmDescription, manufacturer, manufModel);
+                                    deviceEJB.add(newDevice);
+                                    addOrUpdateProperties(newDevice, indexByPropertyName, row, rowNumber);
+                                } catch (Exception e) {
                                     rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                                 }
                             }
@@ -155,9 +148,9 @@ public class DevicesDataLoader extends AbstractDataLoader implements DataLoader 
                         if (deviceToDelete == null) {
                             rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(serialIndex)));
                         } else {
-                            if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.DEVICE, EntityTypeOperation.DELETE)) {
-                                deviceEJB.deleteDevice(deviceToDelete);
-                            } else {
+                            try {
+                                deviceEJB.delete(deviceToDelete);
+                            } catch (Exception e) {
                                 rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                             }
                         }
@@ -172,9 +165,8 @@ public class DevicesDataLoader extends AbstractDataLoader implements DataLoader 
         return loaderResult;
     }
 
-    private void addOrUpdateDevice(Device device, ComponentType compType, String description, DeviceStatus status, String manufSerial, String location, String purchaseOrder, String asmPosition, String asmDescription, String manufacturer, String manufModel, String modifiedBy) {
+    private void addOrUpdateDevice(Device device, ComponentType compType, String description, DeviceStatus status, String manufSerial, String location, String purchaseOrder, String asmPosition, String asmDescription, String manufacturer, String manufModel) {
         device.setModifiedAt(new Date());
-        device.setModifiedBy(modifiedBy);
         device.setComponentType(compType);
         device.setDescription(description);
         device.setAssemblyPosition(asmPosition);
@@ -213,7 +205,7 @@ public class DevicesDataLoader extends AbstractDataLoader implements DataLoader 
         final Iterator<String> propertiesIterator = properties.keySet().iterator();
         while (propertiesIterator.hasNext()) {
             final String propertyName = propertiesIterator.next();
-            final @Nullable Property property = configurationEJB.findPropertyByName(propertyName);
+            final @Nullable Property property = propertyEJB.findByName(propertyName);
             if (property == null) {
                 rowResult.addMessage(new ValidationMessage(ErrorMessage.PROPERTY_NOT_FOUND, rowNumber, propertyName));
             } else {
@@ -244,8 +236,7 @@ public class DevicesDataLoader extends AbstractDataLoader implements DataLoader 
         }
     }
 
-    private void addOrUpdateProperties(Device device, Map<String, Integer> properties, List<String> row, String rowNumber, String modifiedBy) {
-        final Iterator<String> propertiesIterator = properties.keySet().iterator();
+    private void addOrUpdateProperties(Device device, Map<String, Integer> properties, List<String> row, String rowNumber) {
         final List<DevicePropertyValue> deviceProperties = new ArrayList<>();
         if (device.getDevicePropertyList() != null) {
             deviceProperties.addAll(device.getDevicePropertyList());
@@ -256,27 +247,27 @@ public class DevicesDataLoader extends AbstractDataLoader implements DataLoader 
             devicePropertyByProperty.put(deviceProperty.getProperty(), deviceProperty);
         }
 
-        while (propertiesIterator.hasNext()) {
-            final String propertyName = propertiesIterator.next();
-            final int propertyIndex = properties.get(propertyName);
-            final @Nullable Property property = configurationEJB.findPropertyByName(propertyName);
+        for (Entry<String, Integer> entry : properties.entrySet()) {
+            final String propertyName = entry.getKey();
+            final int propertyIndex = entry.getValue();
+            final @Nullable Property property = propertyEJB.findByName(propertyName);
             final @Nullable String propertyValue = row.get(propertyIndex);
             if (devicePropertyByProperty.containsKey(property)) {
                 final DevicePropertyValue devicePropertyToUpdate = devicePropertyByProperty.get(property);
+
                 if (propertyValue == null) {
-                    deviceEJB.deleteDeviceProp(devicePropertyToUpdate);
+                    deviceEJB.deleteChild(devicePropertyToUpdate);
                 } else {
-                    devicePropertyToUpdate.setPropValue(propertyValue);
-                    devicePropertyToUpdate.setModifiedBy(modifiedBy);
-                    deviceEJB.saveDeviceProp(devicePropertyToUpdate, false);
+                    devicePropertyToUpdate.setPropValue(Conversion.stringToValue(propertyValue, property));
+                    deviceEJB.saveChild(devicePropertyToUpdate);
                 }
 
             } else if (propertyValue != null) {
-                final DevicePropertyValue devicePropertyToAdd = new DevicePropertyValue(false, modifiedBy);
+                final DevicePropertyValue devicePropertyToAdd = new DevicePropertyValue(false);
                 devicePropertyToAdd.setProperty(property);
-                devicePropertyToAdd.setPropValue(propertyValue);
+                devicePropertyToAdd.setPropValue(Conversion.stringToValue(propertyValue, property));
                 devicePropertyToAdd.setDevice(device);
-                deviceEJB.addDeviceProperty(devicePropertyToAdd);
+                deviceEJB.addChild(devicePropertyToAdd);
             }
         }
     }

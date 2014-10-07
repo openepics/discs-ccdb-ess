@@ -6,7 +6,6 @@
 
 package org.openepics.discs.conf.ui;
 
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.ejb.EJB;
@@ -26,9 +25,9 @@ import org.openepics.discs.conf.ent.ComponentType;
 // @FacesConverter(value = "experimentConverter")
 // @ViewScoped
 public class ComponentTypeConverter implements Converter {
-    @EJB
-    private ComptypeEJB comptypeEJB;
     private static final Logger logger = Logger.getLogger(ComponentTypeConverter.class.getCanonicalName());
+
+    @EJB private ComptypeEJB comptypeEJB;
 
     /**
      * Creates a new instance of ComponentTypeConverter
@@ -41,10 +40,9 @@ public class ComponentTypeConverter implements Converter {
         ComponentType ctype;
 
         if (value == null || value.equals("")) {
-            logger.log(Level.INFO, "CompType converter: empty Component Type id");
             return null;
         } else {
-            ctype = comptypeEJB.findComponentType(Long.parseLong(value));
+            ctype = comptypeEJB.findById(Long.parseLong(value));
             return ctype;
         }
     }
@@ -52,7 +50,6 @@ public class ComponentTypeConverter implements Converter {
     @Override
     public String getAsString(FacesContext context, UIComponent component, Object value) {
         if (value == null || value.equals("")) {
-            logger.log(Level.INFO, "Null object");
             return "";
         } else {
             // logger.log(Level.INFO, "Exp number: " + ((Experiment) value).getId().toString());

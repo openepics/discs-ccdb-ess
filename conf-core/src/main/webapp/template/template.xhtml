@@ -1,0 +1,61 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />      
+        <h:outputStylesheet name="./css/layout.css"/>
+        <link rel="shortcut icon" href="resources/images/proteus.ico" />
+        <title>Controls Configuration Database</title>
+        <script type="text/javascript">
+            function resizePanel() {
+                var menusHeight = $('#top').outerHeight()+50;
+                var headerHeight = $('#containersForm\\:containersTree\\:name').outerHeight();
+
+                if (headerHeight == null) {
+                    headerHeight = $('#installationSlotsForm\\:installationSlotsTree\\:name').outerHeight();
+                }
+                
+                menusHeight = menusHeight+$('#addSlot').outerHeight() + headerHeight + 7;
+                $('.ui-treetable-scrollable-body').css({"height":window.innerHeight-menusHeight});  
+            }
+
+            $(window).resize(function() {
+                resizePanel();
+                });
+
+            $(window).ready(function() {
+                resizePanel();
+            });
+        </script>
+    </h:head>
+
+    <h:body style="overflow-x: hidden">
+        <h:panelGroup id="top" layout="block">
+            <ui:insert name="top">
+                <h:panelGroup id="header" layout="block">
+                    <ui:include src="header.xhtml" />
+                </h:panelGroup>
+                <h:panelGroup id="menu" layout="block">
+                    <ui:include src="menu.xhtml" />
+                </h:panelGroup>
+            </ui:insert>
+
+        </h:panelGroup>
+
+        <h:panelGroup layout="block" >
+            <ui:insert name="content">Content</ui:insert>
+        </h:panelGroup>
+        
+        <p:dialog modal="true" widgetVar="statusDialog" showHeader="false" draggable="false" closable="false" resizable="false">  
+            <p:graphicImage value="/resources/images/ajax-loader.gif" />  
+        </p:dialog>
+
+    </h:body>
+
+</html>

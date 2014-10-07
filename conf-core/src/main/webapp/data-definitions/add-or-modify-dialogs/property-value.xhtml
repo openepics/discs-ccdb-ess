@@ -1,0 +1,68 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html">
+
+    <h:form id="#{formId}">
+        <p:dialog widgetVar="#{widgetName}" id="#{widgetName}" modal="true" resizable="false" closable="false" dynamic="true"
+            width="45em">
+            <f:facet name="header">
+                <h:outputText value="#{dialogTitle}" />
+            </f:facet>
+            <p:panelGrid id="grp" styleClass="dialog-grid-panel noBorders" columns="2">
+            
+                <p:outputLabel for="propertySelect" value="Property:" />
+                <h:panelGroup>
+                    <p:selectOneMenu id="propertySelect" value="#{controller.property}" var="prop" converter="#{propertyConverter}" 
+                            rendered="true" required="true" requiredMessage="Please select a property"
+                            disabled="#{controller.propertyNameChangeDisabled}" valueChangeListener="#{controller.propertyChangeListener}">
+                        <p:ajax update=":#{formId}:propertyUnit :#{formId}:propertyDataType :#{formId}:valueInputGroup"/>
+                        <f:selectItem itemLabel="Select One" itemValue="" />
+                        <f:selectItems value="#{controller.filteredProperties}" var="property" itemLabel="#{property.name}" itemValue="#{property}" />
+                        <p:column>  
+                            #{prop.name}
+                        </p:column>                    
+                    </p:selectOneMenu>
+                    <p:message for="propertySelect"/>
+                </h:panelGroup>
+                
+                <p:outputLabel value="Value:" />
+                <h:panelGroup id="valueInputGroup">
+                    <h:outputText id="propertyValueNoProp" rendered="#{controller.propertyValueUIElement eq 'NONE'}" value="Select a property first."/>
+                    <p:inputText id="propertyValueSimple" value="#{controller.propertyValue}" required="true"
+                            requiredMessage="Please enter a property value" validator="#{controller.inputValidator}" 
+                            rendered="#{controller.propertyValueUIElement eq 'INPUT'}" />
+                    <p:message for="propertyValueSimple" rendered="#{controller.propertyValueUIElement eq 'INPUT'}"/>
+                    
+                    <p:inputTextarea id="propertyValueArea" value="#{controller.propertyValue}" required="true" 
+                            rows="7" cols="40" style="width: 100% !important; white-space: nowrap; resize: none;" autoResize="false" 
+                            requiredMessage="Please enter a property value" validator="#{controller.areaValidator}" 
+                            rendered="#{controller.propertyValueUIElement eq 'TEXT_AREA'}" />
+                    <p:message for="propertyValueArea" rendered="#{controller.propertyValueUIElement eq 'TEXT_AREA'}"/>
+                    
+                    <p:selectOneMenu id="propertyValueEnum" value="#{controller.propertyValue}" required="true" 
+                            rendered="#{controller.propertyValueUIElement eq 'SELECT_ONE_MENU'}">
+                        <f:selectItems value="#{controller.enumSelections}" var="enum" itemLabel="#{enum}" itemValue="#{enum}" />        
+                    </p:selectOneMenu>
+                    <p:message for="propertyValueEnum" rendered="#{controller.propertyValueUIElement eq 'SELECT_ONE_MENU'}"/>
+                </h:panelGroup>
+                
+                <p:outputLabel value="Data type:" />
+                <p:inputText disabled="true" id="propertyDataType" value="#{controller.property.dataType.name}"/>
+                
+                <p:outputLabel value="Unit:" />
+                <p:inputText disabled="true" id="propertyUnit" value="#{controller.property.unit.name}"/>
+               
+            </p:panelGrid>
+            
+            <p:commandButton value="Cancel" style="float: right" onclick="#{widgetName}.hide();" update="grp" resetValues="true" />
+            <p:commandButton value="Save" style="float: right" update="#{componentToUpdate} grp" 
+                oncomplete="if (args &amp;&amp; !args.validationFailed) #{widgetName}.hide()" 
+                action="#{controller[submitHandler]}"/>
+        </p:dialog>
+
+    </h:form>
+</ui:composition>

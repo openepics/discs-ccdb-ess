@@ -10,45 +10,33 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.logging.Logger;
 
-import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
-import javax.faces.application.FacesMessage;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
-import org.openepics.discs.conf.ejb.ConfigurationEJB;
+import org.openepics.discs.conf.ejb.SlotRelationEJB;
 import org.openepics.discs.conf.ent.SlotRelation;
-import org.openepics.discs.conf.util.Utility;
 
 /**
  *
  * @author vuppala
+ * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  */
 @Named
 @ViewScoped
 public class RelationManager implements Serializable {
-    @EJB
-    private ConfigurationEJB configurationEJB;
+    @SuppressWarnings("unused")
     private static final Logger logger = Logger.getLogger(RelationManager.class.getCanonicalName());
 
+    @EJB private SlotRelationEJB slotRelationEJB;
+
     private List<SlotRelation> objects;
-    /**
-     * Creates a new instance of RelationManager
-     */
+
     public RelationManager() {
     }
 
-    @PostConstruct
-    public void init() {
-        try {
-            objects = configurationEJB.findSlotRelation();
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Error in getting slot relationships", " ");
-        }
-    }
-
     public List<SlotRelation> getObjects() {
+        if (objects == null) objects = slotRelationEJB.findAll();
         return objects;
     }
 

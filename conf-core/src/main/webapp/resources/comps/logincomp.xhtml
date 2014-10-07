@@ -21,15 +21,15 @@
             <ui:remove> -------------------- Login -------------------</ui:remove>
             <p:commandButton id="_loginButton" type="button" 
                              value="#{msgs.loginBtn}" 
-                             icon="ui-icon-person" rendered="#{!loginManager.loggedin}"/>
+                             icon="ui-icon-person" rendered="#{!loginManager.loggedIn}"/>
             <p:overlayPanel id="_loginSigninPanel" for="_loginButton" 
                             widgetVar="_loginSigninWidget" style="border: 0px" 
-                            rendered="#{!loginManager.loggedin}"  dismissable="false">              
-                <p:panelGrid id="_loginSigninGrid">
+                            rendered="#{!loginManager.loggedIn}"  dismissable="false">              
+                <p:panelGrid id="_loginSigninGrid" styleClass="noBorders">
                     
                     <p:row>
                         <p:column><p:outputLabel for="userid" value="#{msgs.loginUser}" /> </p:column>
-                        <p:column><p:inputText id="userid" value="#{loginManager.userid}" required="true"/> </p:column>
+                        <p:column><p:inputText id="userid" value="#{loginManager.userId}" required="true"/> </p:column>
                     </p:row>
                     <p:row>
                         <p:column><p:outputLabel for="passwd" value="#{msgs.loginPass} " />     </p:column>                       
@@ -57,14 +57,14 @@
             </p:overlayPanel>
             <ui:remove> -------------------- Logout -------------------</ui:remove>
             <p:commandButton id="_loginOutButton" type="button" 
-                             value="#{loginManager.userid}" 
-                             icon="ui-icon-person" rendered="#{loginManager.loggedin}" />
+                             value="#{loginManager.userId}" 
+                             icon="ui-icon-person" rendered="#{loginManager.loggedIn}" />
             <p:overlayPanel id="_loginExitPanel" for="_loginOutButton" 
-                            widgetVar="_loginExitWidget" style="border: 0px" rendered="#{loginManager.loggedin}" >               
+                            widgetVar="_loginExitWidget" style="border: 0px" rendered="#{loginManager.loggedIn}" >               
                 <p:panelGrid styleClass="noBorders">
                     <p:row>
                         <p:column colspan="2">  
-                            <h:outputText value="You are logged in as #{loginManager.userid}" />
+                            <h:outputText value="You are logged in as #{loginManager.userId}" />
                         </p:column>                        
                     </p:row>
                     <f:facet name="footer">

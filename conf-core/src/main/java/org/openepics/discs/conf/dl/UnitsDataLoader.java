@@ -8,17 +8,14 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+
 import org.openepics.discs.conf.dl.common.AbstractDataLoader;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.dl.common.ErrorMessage;
 import org.openepics.discs.conf.dl.common.ValidationMessage;
-import org.openepics.discs.conf.ejb.AuthEJB;
-import org.openepics.discs.conf.ejb.ConfigurationEJB;
-import org.openepics.discs.conf.ent.EntityType;
-import org.openepics.discs.conf.ent.EntityTypeOperation;
+import org.openepics.discs.conf.ejb.UnitEJB;
 import org.openepics.discs.conf.ent.Unit;
-import org.openepics.discs.conf.ui.LoginManager;
 import org.openepics.discs.conf.util.As;
 
 /**
@@ -30,10 +27,7 @@ import org.openepics.discs.conf.util.As;
 @Stateless
 @UnitLoaderQualifier
 public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
-
-    @Inject private LoginManager loginManager;
-    @Inject private AuthEJB authEJB;
-    @Inject private ConfigurationEJB configurationEJB;
+    @Inject private UnitEJB unitEJB;
 
     private Map<String, Unit> unitByName;
     private int nameIndex, quantityIndex, symbolIndex, descriptionIndex;
@@ -86,7 +80,6 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
                 final @Nullable String description = row.get(descriptionIndex);
 
                 final Date modifiedAt = new Date();
-                final String modifiedBy = loginManager.getUserid();
 
                 if (name == null) {
                     rowResult.addMessage(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, rowNumber, headerRow.get(nameIndex)));
@@ -102,45 +95,48 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
                     switch (command) {
                     case CMD_UPDATE:
                         if (unitByName.containsKey(name)) {
-                            if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.UNIT, EntityTypeOperation.UPDATE)) {
+                            try {
                                 final Unit unitToUpdate = unitByName.get(name);
                                 unitToUpdate.setDescription(description);
                                 unitToUpdate.setQuantity(quantity);
                                 unitToUpdate.setSymbol(symbol);
                                 unitToUpdate.setModifiedAt(modifiedAt);
-                                configurationEJB.saveUnit(unitToUpdate);
-                            } else {
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                                unitEJB.save(unitToUpdate);
+                            } catch (Exception e) {
+                                if (e instanceof SecurityException)
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                                 continue;
                             }
                         } else {
-                            if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.UNIT, EntityTypeOperation.CREATE)) {
-                                final Unit unitToAdd = new Unit(name, quantity, symbol, description, modifiedBy);
-                                configurationEJB.addUnit(unitToAdd);
-                                unitByName.put(unitToAdd.getUnitName(), unitToAdd);
-                            } else {
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                            try {
+                                final Unit unitToAdd = new Unit(name, quantity, symbol, description);
+                                unitEJB.add(unitToAdd);
+                                unitByName.put(unitToAdd.getName(), unitToAdd);
+                            } catch (Exception e) {
+                                if (e instanceof SecurityException)
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                                 continue;
                             }
                         }
                         break;
                     case CMD_DELETE:
-                        if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.UNIT, EntityTypeOperation.DELETE)) {
+                        try {
                             final Unit unitToDelete = unitByName.get(name);
                             if (unitToDelete == null) {
-                               rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
-                               continue;
+                                rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
+                                continue;
                             } else {
-                                configurationEJB.deleteUnit(unitToDelete);
-                                unitByName.remove(unitToDelete.getUnitName());
+                                unitEJB.delete(unitToDelete);
+                                unitByName.remove(unitToDelete.getName());
                             }
-                        } else {
-                            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                        } catch (Exception e) {
+                            if (e instanceof SecurityException)
+                                rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                             continue;
                         }
                         break;
                     case CMD_RENAME:
-                        if (authEJB.userHasAuth(loginManager.getUserid(), EntityType.UNIT, EntityTypeOperation.RENAME)) {
+                        try {
                             final int startOldNameMarkerIndex = name.indexOf("[");
                             final int endOldNameMarkerIndex = name.indexOf("]");
                             if (startOldNameMarkerIndex == -1 || endOldNameMarkerIndex == -1) {
@@ -157,8 +153,8 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
                                     continue;
                                 } else {
                                     final Unit unitToRename = unitByName.get(oldName);
-                                    unitToRename.setUnitName(newName);
-                                    configurationEJB.saveUnit(unitToRename);
+                                    unitToRename.setName(newName);
+                                    unitEJB.save(unitToRename);
                                     unitByName.remove(oldName);
                                     unitByName.put(newName, unitToRename);
                                 }
@@ -166,8 +162,9 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
                                 rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
                                 continue;
                             }
-                        } else {
-                            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                        } catch (Exception e) {
+                            if (e instanceof SecurityException)
+                                rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                             continue;
                         }
                         break;
@@ -187,8 +184,8 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
     private void init() {
         loaderResult = new DataLoaderResult();
         unitByName = new HashMap<>();
-        for (Unit unit : configurationEJB.findUnits()) {
-            unitByName.put(unit.getUnitName(), unit);
+        for (Unit unit : unitEJB.findAll()) {
+            unitByName.put(unit.getName(), unit);
         }
     }
 

@@ -171,7 +171,6 @@ pip-log.txt
 ~*.docx
 *.pyc
 *.zip
-*.jar
 *.pdf
 *.ldb
 # Local files: VV

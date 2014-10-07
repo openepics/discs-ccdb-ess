@@ -1,6 +1,6 @@
 package org.openepics.discs.conf.dl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +16,7 @@ import org.junit.runner.RunWith;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.dl.common.ErrorMessage;
+import org.openepics.discs.conf.util.TestUtility;
 
 import com.google.common.collect.ImmutableList;
 
@@ -29,34 +30,43 @@ import com.google.common.collect.ImmutableList;
 public class UnitsDataLoaderIT {
 
     @Inject @UnitLoaderQualifier private DataLoader unitsDataLoader;
+    @Inject private TestUtility testUtility;
+
     private List<List<String>> inputRows;
 
     @Deployment
     public static WebArchive createDeployment() {
-        return CCDBPackager.createWebArchive();
+        return TestUtility.createWebArchive();
     }
 
     @Before
     public void setUpBeforeTest() {
         inputRows = new ArrayList<>();
+
+        testUtility.loginForTests();
     }
 
     @Test
-    public void notAuthorizedTest() {
+    public void generalTest() {
         inputRows.add(ImmutableList.of("1", "HEADER", "NAME", "SYMBOL", "QUANTITY", "DESCRIPTION"));
         inputRows.add(ImmutableList.of("2", "UPDATE", "Ampere", "A", "Current", "Electric current"));
-        DataLoaderResult dataLoaderResult = unitsDataLoader.loadDataToDatabase(inputRows);
-        assertEquals(ErrorMessage.NOT_AUTHORIZED, dataLoaderResult.getMessages().get(0).getMessage());
+        unitsDataLoader.loadDataToDatabase(inputRows);
+    }
 
-        inputRows.remove(1);
-        inputRows.add(ImmutableList.of("2", "DELETE", "Ampere", "A", "Current", "Electric current"));
-        dataLoaderResult = unitsDataLoader.loadDataToDatabase(inputRows);
-        assertEquals(ErrorMessage.NOT_AUTHORIZED, dataLoaderResult.getMessages().get(0).getMessage());
+    @Test
+    public void entityNotFoundTest() {
+        inputRows.add(ImmutableList.of("1", "HEADER", "NAME", "SYMBOL", "QUANTITY", "DESCRIPTION"));
+        inputRows.add(ImmutableList.of("1", "DELETE", "AmpereNonExistant", "A", "Current", "Electric current"));
+        final DataLoaderResult dataLoaderResult = unitsDataLoader.loadDataToDatabase(inputRows);
+        assertEquals(ErrorMessage.ENTITY_NOT_FOUND, dataLoaderResult.getMessages().get(0).getMessage());
+    }
 
-        inputRows.remove(1);
-        inputRows.add(ImmutableList.of("2", "RENAME", "Ampere", "A", "Current", "Electric current"));
-        dataLoaderResult = unitsDataLoader.loadDataToDatabase(inputRows);
-        assertEquals(ErrorMessage.NOT_AUTHORIZED, dataLoaderResult.getMessages().get(0).getMessage());
+    @Test
+    public void renameMisformatTest() {
+        inputRows.add(ImmutableList.of("1", "HEADER", "NAME", "SYMBOL", "QUANTITY", "DESCRIPTION"));
+        inputRows.add(ImmutableList.of("1", "RENAME", "Ampere", "A", "Current", "Electric current"));
+        final DataLoaderResult dataLoaderResult = unitsDataLoader.loadDataToDatabase(inputRows);
+        assertEquals(ErrorMessage.RENAME_MISFORMAT, dataLoaderResult.getMessages().get(0).getMessage());
     }
 
     /**

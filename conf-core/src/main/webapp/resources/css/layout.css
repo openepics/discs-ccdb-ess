@@ -16,7 +16,10 @@ body {
 .ui-widget, 
 .ui-widget .ui-widget {
     font-size: 12px;
+}
 
+.preliminary {
+	color: #990033;
 }
 
 .ui-widget table {
@@ -51,9 +54,52 @@ body {
     /* box-shadow: 0 0 7px 2px #888888; */
 }
 
+.content {
+    margin-left: 200px;
+    position: relative;
+}
+
+.navigation {
+    float: left;
+    width: 180px;
+}
+
+.container {
+    margin: 0 auto;
+    width: 100%;
+}
+
+.properties-parent-info {
+	float: left;
+	width: 25%;
+}
+
+.property-values {
+    float: right;
+    width: 74%;
+}
+
+.dialog-grid-panel {
+	text-align: left; 
+	width: 100%;
+}
+
+/*
+.ui-panelgrid tr,
+.ui-panelgrid td {
+    border: none !important;
+}
+*/
 
 .menu {
     background-color: transparent; 
+}
+
+.alignTop {
+    vertical-align: top;
+}
+.inputTextField {
+	width: 100%;
 }
 
 .export-grid  img {
@@ -114,8 +160,8 @@ body {
     /* background-color: #FFFFFF;  */
 }
 
-#bottom {
-    position: relative;
+.bottom {
+    position: bottom;
     color:  #009999;
     padding: 5px;
     /* margin: 10px 0px 0px 0px; */
@@ -156,4 +202,21 @@ a {
     background: -ms-linear-gradient(left,  rgba(206,220,231,1) 0%,rgba(89,106,114,1) 100%); /* IE10+ */
     background: linear-gradient(to right,  rgba(206,220,231,1) 0%,rgba(89,106,114,1) 100%); /* W3C */
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#cedce7', endColorstr='#596a72',GradientType=1 ); /* IE6-9 */
+}
+
+.borderlessPanelGrid>tr, .borderlessPanelGrid>td {
+    border: none !important;
+} 
+
+.devicesView tr, .devicesView td {
+    border: none !important;
+} 
+
+
+.devicesView .ui-datatable .ui-datatable-data tr, .devicesView .ui-datatable .ui-datatable-data-empty tr, .devicesView .ui-datatable .ui-datatable-data td, .devicesView .ui-datatable .ui-datatable-data-empty td{
+  border:1px solid !important;
+}
+
+.menu-selected {
+	font-weight: bold !important;
 }

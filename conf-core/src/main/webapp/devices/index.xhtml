@@ -1,0 +1,105 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    template="/template/template.xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html">
+
+    <ui:define name="content">
+        <p:growl showDetail="true" globalOnly="true" autoUpdate="true" />
+        <h:form id="deviceTypesForm">
+            <p:panelGrid styleClass="noBorders">
+                <p:row>
+                    <p:column style="width: 20%; vertical-align: top;">
+        	            <p:dataTable id="typesTable" var="devType" selection="#{devicesByTypeManager.selectedComponentType}"
+                                selectionMode="single" rowKey="#{devType.id}" scrollable="true" 
+                                value="#{devicesByTypeManager.deviceTypes}" scrollHeight="600" 
+                                filteredValue="#{devicesByTypeManager.filteredComponentTypes}" emptyMessage="No device types defined.">
+                            <p:ajax event="rowSelect" listener="#{devicesByTypeManager.prepareDevicesForDisplay()}" 
+                                update=":deviceTypesForm:devicesTable :deviceTypesForm:addDeviceButton :deviceAddForm:addDeviceDialog" />
+        	                <p:column headerText="Type" filterBy="#{devType.name}">
+        	                    <h:outputText value="#{devType.name}" />
+        	                </p:column>
+        	            </p:dataTable>
+                    </p:column>            
+                    <p:column style="width: 80%; vertical-align: top;">
+                        <p:commandButton value="Add new" oncomplete="addDeviceDialog.show()" id="addDeviceButton" 
+                            disabled="#{empty devicesByTypeManager.selectedComponentType}" update=":deviceAddForm" />                        
+                        
+                        <p:dataTable id="devicesTable" var="device" rows="15" paginator="true" paginatorPosition="bottom"
+                                value="#{devicesByTypeManager.devices}" emptyMessage="No devices.">
+                                
+                            <p:column headerText="Serial #" width="40%">
+                                <h:outputText value="#{device.serialNumber}" />
+                            </p:column>
+                            
+                            <p:column headerText="Status">
+                                <h:outputText value="#{device.status.label}" />
+                            </p:column>
+                   
+                            <p:column headerText="Installed in" width="30%">
+                                <h:outputText value="#{installationManager.getInstalledSlotForDevice(device)}" />
+                            </p:column>
+                   
+                            <p:column headerText="Actions" width="92">
+                                <p:commandLink ajax="true" title="Add properties" action="#{devicesByTypeManager.deviceDetailsRedirect(device.id)}">
+                                    <h:outputText styleClass="ui-icon ui-icon-contact" style="display: inline-block !important; margin-right: 6px;" />
+                                </p:commandLink>
+                                <p:commandLink ajax="true" title="Edit" update=":deviceModifyForm" action="#{devicesByTypeManager.prepareForModify()}" oncomplete="modifyDeviceDialog.show()">
+                                    <h:outputText styleClass="ui-icon ui-icon-pencil" style="display: inline-block !important; margin-right: 6px;" />
+                                    <f:setPropertyActionListener value="#{device}" target="#{devicesByTypeManager.selectedDevice}" />
+                                </p:commandLink>
+                                <p:commandLink ajax="true" title="Delete" oncomplete="deleteDevice.show()">
+                                    <h:outputText styleClass="ui-icon ui-icon-trash" style="display: inline-block !important; margin-right: 6px;" />
+                                    <f:setPropertyActionListener value="#{device}" target="#{devicesByTypeManager.selectedDevice}" />
+                                </p:commandLink>
+                                <p:commandLink ajax="true" title="Log" update=":deviceLogForm" oncomplete="deviceLog.show()">
+                                    <h:outputText styleClass="ui-icon ui-icon-clock" style="display: inline-block !important; margin-right: 6px;" />
+                                    <f:ajax event="click" listener="#{auditManager.selectEntityForLog(device, 'DEVICE')}" />
+                                </p:commandLink>
+                            </p:column>
+                        </p:dataTable>
+    	            </p:column>
+                </p:row>
+            </p:panelGrid>
+        </h:form>
+        
+        <ui:include src="/audit/audit-log-table.xhtml">
+            <ui:param name="formId" value="deviceLogForm" />
+            <ui:param name="dialogTitle" value="Device log" />
+            <ui:param name="widgetName" value="deviceLog" />
+        </ui:include>
+    
+        <ui:include src="/audit/audit-log-details.xhtml">
+            <ui:param name="formId" value="logDetailsForm" />
+            <ui:param name="dialogTitle" value="Log entry details" />
+            <ui:param name="widgetName" value="logDetails" />
+        </ui:include>
+        
+        <ui:include src="/devices/device-add-or-modify-dialog.xhtml">
+            <ui:param name="formId" value="deviceAddForm" />
+            <ui:param name="widgetName" value="addDeviceDialog" />
+            <ui:param name="dialogTitle" value="Add device" />
+            <ui:param name="submitHandler" value="onDeviceAdd" />
+        </ui:include>
+
+        <ui:include src="/devices/device-add-or-modify-dialog.xhtml">
+            <ui:param name="formId" value="deviceModifyForm" />
+            <ui:param name="widgetName" value="modifyDeviceDialog" />
+            <ui:param name="dialogTitle" value="Modify device" />
+            <ui:param name="submitHandler" value="onDeviceModify" />
+        </ui:include>
+        
+        <ui:include src="/data-definitions/add-or-modify-dialogs/delete-confirmation.xhtml" >
+            <ui:param name="formId" value="deleteDeviceForm" />
+            <ui:param name="dialogTitle" value="Delete device" />
+            <ui:param name="widgetName" value="deleteDevice" />
+            <ui:param name="controller" value="#{devicesByTypeManager}" />
+            <ui:param name="submitHandler" value="onDeviceDelete" />
+            <ui:param name="formToUpdate" value=":deviceTypesForm:devicesTable" />
+        </ui:include>
+        
+    </ui:define>
+    
+</ui:composition>

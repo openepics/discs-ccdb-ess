@@ -6,7 +6,6 @@
 
 package org.openepics.discs.conf.ui;
 
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.ejb.EJB;
@@ -15,7 +14,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 
-import org.openepics.discs.conf.ejb.ConfigurationEJB;
+import org.openepics.discs.conf.ejb.PropertyEJB;
 import org.openepics.discs.conf.ent.Property;
 
 /**
@@ -27,7 +26,7 @@ import org.openepics.discs.conf.ent.Property;
 // @ViewScoped
 public class PropertyConverter implements Converter {
     @EJB
-    private ConfigurationEJB configurationEJB;
+    private PropertyEJB propertyEJB;
     private static final Logger logger = Logger.getLogger(PropertyConverter.class.getCanonicalName());
 
     public PropertyConverter() {
@@ -38,10 +37,10 @@ public class PropertyConverter implements Converter {
         Property prop;
 
         if (value == null || value.equals("")) {
-            logger.log(Level.INFO, "PropertyConverter: empty property id");
+            logger.fine("PropertyConverter: empty property id");
             return null;
         } else {
-            prop = configurationEJB.findProperty(Long.parseLong(value));
+            prop = propertyEJB.findById(Long.parseLong(value));
             return prop;
         }
     }
@@ -49,7 +48,7 @@ public class PropertyConverter implements Converter {
     @Override
     public String getAsString(FacesContext context, UIComponent component, Object value) {
         if (value == null || value.equals("")) {
-            logger.log(Level.INFO, "PropertyConverter: empty property object");
+            logger.fine("PropertyConverter: empty property object");
             return "";
         } else {
             // logger.log(Level.INFO, "Exp number: " + ((Experiment) value).getId().toString());

@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.faces.event.ActionEvent;
@@ -27,13 +26,12 @@ import org.apache.commons.io.FilenameUtils;
 import org.openepics.discs.conf.dl.DevicesLoaderQualifier;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
-import org.openepics.discs.conf.ejb.AuthEJB;
 import org.openepics.discs.conf.ejb.DeviceEJB;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.DeviceArtifact;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
-import org.openepics.discs.conf.ent.EntityType;
-import org.openepics.discs.conf.ent.EntityTypeOperation;
+import org.openepics.discs.conf.ent.values.StrValue;
+import org.openepics.discs.conf.ent.values.Value;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
 import org.openepics.discs.conf.util.BlobStore;
 import org.openepics.discs.conf.util.Utility;
@@ -50,24 +48,21 @@ import com.google.common.io.ByteStreams;
 /**
  *
  * @author vuppala
+ * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
+ * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
+ *
  */
 @Named
 @ViewScoped
 public class DeviceManager implements Serializable {
-    @EJB
-    private DeviceEJB deviceEJB;
     private static final Logger logger = Logger.getLogger(DeviceManager.class.getCanonicalName());
 
-    @Inject
-    private BlobStore blobStore;
-    // ToDo: Remove the injection. Not a good way to authorize.
-    @Inject
-    private LoginManager loginManager;
-    // private String loggedInUser; // logged in user
+    @EJB private DeviceEJB deviceEJB;
+
+    @Inject private BlobStore blobStore;
 
     @Inject private DataLoaderHandler dataLoaderHandler;
     @Inject @DevicesLoaderQualifier private DataLoader devicesDataLoader;
-    @Inject private AuthEJB authEJB;
 
     private byte[] importData;
     private String importFileName;
@@ -112,18 +107,6 @@ public class DeviceManager implements Serializable {
     public DeviceManager() {
     }
 
-    @PostConstruct
-    public void init() {
-        try {
-            objects = deviceEJB.findDevice();
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-            logger.log(Level.SEVERE, "Cannot retrieve component types");
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Error in getting component types", " ");
-        }
-    }
-
-
     // ----------------- Device  ------------------------------
     public void onDeviceSelect(SelectEvent event) {
         inputObject = selectedObject;
@@ -137,8 +120,8 @@ public class DeviceManager implements Serializable {
 
     public void onDeviceAdd(ActionEvent event) {
         selectedOp = 'a';
-        // TODO replaced void constructor (now protected) with default values. Check!
-        inputObject = new Device("1", loginManager.getUserid());
+
+        inputObject = new Device("1");
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Add", "");
     }
 
@@ -150,29 +133,29 @@ public class DeviceManager implements Serializable {
 
     public void onDeviceDelete(ActionEvent event) {
         try {
-            deviceEJB.deleteDevice(selectedObject);
-            objects.remove(selectedObject);
+            deviceEJB.delete(selectedObject);
+            getObjects().remove(selectedObject);
             selectedObject = null;
             inputObject = null;
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted", "");
         } catch (Exception e) {
-            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Device not deleted", e.getMessage());
-        } finally {
-
+            if (Utility.causedByPersistenceException(e))
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Deletion failed", "The device could not be deleted because it is used.");
+            else
+                throw e;
         }
     }
 
     public void onDeviceSave(ActionEvent event) {
-        String token = loginManager.getToken();
         logger.info("Saving device");
 
         try {
             if (selectedOp == 'a') {
-                deviceEJB.addDevice(inputObject);
+                deviceEJB.add(inputObject);
                 selectedObject = inputObject;
-                objects.add(selectedObject);
+                getObjects().add(selectedObject);
             } else {
-                deviceEJB.saveDevice(token, inputObject);
+                deviceEJB.save(inputObject);
             }
             // tell the client if the operation was a success so that it can hide
             RequestContext.getCurrentInstance().addCallbackParam("success", true);
@@ -187,7 +170,7 @@ public class DeviceManager implements Serializable {
         }
     }
 
-     // --------------------------------- Property ------------------------------------------------
+    // --------------------------------- Property ------------------------------------------------
     public void onPropertyAdd(ActionEvent event) {
         try {
             if (selectedProperties == null) {
@@ -196,7 +179,7 @@ public class DeviceManager implements Serializable {
             propertyOperation = 'a';
 
             // TODO replaced void constructor (now protected) with default values. Check!
-            inputProperty = new DevicePropertyValue(false, loginManager.getUserid());
+            inputProperty = new DevicePropertyValue(false);
             inputProperty.setDevice(selectedObject);
             fileUploaded = false;
             uploadedFileName = null;
@@ -211,17 +194,18 @@ public class DeviceManager implements Serializable {
     public void onPropertyDelete(DevicePropertyValue ctp) {
         try {
             if (ctp == null) {
-                Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "No property selected");
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Strange", "No property selected");
                 return;
             }
-            deviceEJB.deleteDeviceProp(ctp);
+            deviceEJB.deleteChild(ctp);
             selectedProperties.remove(ctp);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted property", "");
         } catch (Exception e) {
-            Utility.showMessage(FacesMessage.SEVERITY_FATAL, "Error in deleting property", "Refresh the page");
-            logger.severe(e.getMessage());
+            if (Utility.causedByPersistenceException(e))
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Deletion failed", "The property value could not be deleted because it is used.");
+            else
+                throw e;
         }
-
     }
 
     public void onPropertyInit(RowEditEvent event) {
@@ -261,9 +245,16 @@ public class DeviceManager implements Serializable {
                     RequestContext.getCurrentInstance().addCallbackParam("success", false);
                     return;
                 }
-                inputProperty.setPropValue(repoFileId);
+                StrValue strValue = new StrValue(repoFileId);
+                inputProperty.setPropValue(strValue);
             }
-            deviceEJB.saveDeviceProp(inputProperty, propertyOperation == 'a');
+
+            if (propertyOperation == 'a') {
+                deviceEJB.addChild(inputProperty);
+            } else {
+                deviceEJB.saveChild(inputProperty);
+            }
+
             logger.log(Level.INFO, "returned artifact id is " + inputProperty.getId());
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Property saved", "");
             RequestContext.getCurrentInstance().addCallbackParam("success", true);
@@ -309,7 +300,12 @@ public class DeviceManager implements Serializable {
             // return downloadedFile;
             logger.log(Level.INFO, "Opening stream from repository: " + selectedProperty.getPropValue());
             // logger.log(Level.INFO, "download file name: 2 " + selectedProperty.getName());
-            InputStream istream = blobStore.retreiveFile(selectedProperty.getPropValue());
+            Value propValue = selectedProperty.getPropValue();
+            if (!(propValue instanceof StrValue)) {
+                throw new Exception("Selected property type incorrect");
+            }
+
+            InputStream istream = blobStore.retreiveFile(((StrValue)propValue).getStrValue());
             file = new DefaultStreamedContent(istream, "application/octet-stream", selectedProperty.getProperty().getName());
 
             // InputStream stream = new FileInputStream(pathName);
@@ -330,8 +326,8 @@ public class DeviceManager implements Serializable {
             if (selectedArtifacts == null) {
                 selectedArtifacts = new ArrayList<>();
             }
-            // TODO replaced void constructor (now protected) with default values. Check!
-            inputArtifact = new DeviceArtifact("", false, "", "", loginManager.getUserid());
+
+            inputArtifact = new DeviceArtifact("", false, "", "");
             inputArtifact.setDevice(selectedObject);
             fileUploaded = false;
             uploadedFileName = null;
@@ -355,8 +351,12 @@ public class DeviceManager implements Serializable {
                 }
             }
 
-            // deviceEJB.saveDeviceArtifact(selectedObject, inputArtifact);
-            deviceEJB.saveDeviceArtifact(inputArtifact, artifactOperation == 'a');
+            if (artifactOperation == 'a') {
+                deviceEJB.addChild(inputArtifact);
+            } else {
+                deviceEJB.saveChild(inputArtifact);
+            }
+
             logger.log(Level.INFO,"returned artifact id is " + inputArtifact.getId());
 
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Artifact saved", "");
@@ -371,16 +371,18 @@ public class DeviceManager implements Serializable {
     public void onArtifactDelete(DeviceArtifact art) {
         try {
             if (art == null) {
-                Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "No artifact selected");
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Strange", "No artifact selected");
                 return;
             }
 
-            deviceEJB.deleteDeviceArtifact(art);
+            deviceEJB.deleteChild(art);
             selectedArtifacts.remove(art);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted Artifact", "");
         } catch (Exception e) {
-            Utility.showMessage(FacesMessage.SEVERITY_FATAL, "Error in deleting artifact", "Refresh the page");
-            logger.severe(e.getMessage());
+            if (Utility.causedByPersistenceException(e))
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Deletion failed", "The artifact could not be deleted because it is used.");
+            else
+                throw e;
         }
     }
 
@@ -466,15 +468,14 @@ public class DeviceManager implements Serializable {
     }
 
     public void onPartDeviceSave(ActionEvent event) {
-        String token = loginManager.getToken();
         try {
             inputAsmDevice.setAssemblyPosition(inputAsmPosition);
             inputAsmDevice.setAssemblyDescription(inputAsmComment);
             inputAsmDevice.setAssemblyParent(selectedObject);
-            deviceEJB.saveDevice(token,inputAsmDevice);
+            deviceEJB.save(inputAsmDevice);
             selectedObject.getDeviceList().add(inputAsmDevice);
 
-            deviceEJB.saveDevice(token, selectedObject);
+            deviceEJB.save(selectedObject);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Part saved", "");
             RequestContext.getCurrentInstance().addCallbackParam("success", true);
         } catch (Exception e) {
@@ -485,7 +486,6 @@ public class DeviceManager implements Serializable {
     }
 
     public void onPartDeviceDelete(Device device) {
-        String token = loginManager.getToken();
         try {
             if (device == null) {
                 Utility.showMessage(FacesMessage.SEVERITY_INFO, "Strange", "Null slot selected");
@@ -495,9 +495,9 @@ public class DeviceManager implements Serializable {
             device.setAssemblyPosition(null);
             device.setAssemblyDescription(null);
             device.setAssemblyParent(null);
-            deviceEJB.saveDevice(token, device);
+            deviceEJB.save(device);
             selectedObject.getDeviceList().remove(device);
-            deviceEJB.saveDevice(token, selectedObject);
+            deviceEJB.save(selectedObject);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted Artifact", "");
         } catch (Exception e) {
             Utility.showMessage(FacesMessage.SEVERITY_FATAL, "Error in deleting artifact", "Refresh the page");
@@ -515,20 +515,18 @@ public class DeviceManager implements Serializable {
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Edit:", "Edit initiated " );
     }
 
-    public boolean canImportDevices() {
-        return authEJB.userHasAuth(loginManager.getUserid(), EntityType.DEVICE, EntityTypeOperation.CREATE) ||
-                authEJB.userHasAuth(loginManager.getUserid(), EntityType.DEVICE, EntityTypeOperation.DELETE) ||
-                authEJB.userHasAuth(loginManager.getUserid(), EntityType.DEVICE, EntityTypeOperation.UPDATE);
+    public String getImportFileName() {
+        return importFileName;
     }
-
-    public String getImportFileName() { return importFileName; }
 
     public void doImport() {
         final InputStream inputStream = new ByteArrayInputStream(importData);
         loaderResult = dataLoaderHandler.loadData(inputStream, devicesDataLoader);
     }
 
-    public DataLoaderResult getLoaderResult() { return loaderResult; }
+    public DataLoaderResult getLoaderResult() {
+        return loaderResult;
+    }
 
     public void prepareImportPopup() {
         importData = null;
@@ -549,7 +547,6 @@ public class DeviceManager implements Serializable {
     public List<Device> getSortedObjects() {
         return sortedObjects;
     }
-
     public void setSortedObjects(List<Device> sortedObjects) {
         this.sortedObjects = sortedObjects;
     }
@@ -557,7 +554,6 @@ public class DeviceManager implements Serializable {
     public List<Device> getFilteredObjects() {
         return filteredObjects;
     }
-
     public void setFilteredObjects(List<Device> filteredObjects) {
         this.filteredObjects = filteredObjects;
     }
@@ -565,7 +561,6 @@ public class DeviceManager implements Serializable {
     public Device getSelectedObject() {
         return selectedObject;
     }
-
     public void setSelectedObject(Device selectedObject) {
         this.selectedObject = selectedObject;
     }
@@ -573,7 +568,6 @@ public class DeviceManager implements Serializable {
     public Device getInputObject() {
         return inputObject;
     }
-
     public void setInputObject(Device inputObject) {
         this.inputObject = inputObject;
     }
@@ -581,7 +575,6 @@ public class DeviceManager implements Serializable {
     public DeviceArtifact getInputArtifact() {
         return inputArtifact;
     }
-
     public void setInputArtifact(DeviceArtifact inputArtifact) {
         this.inputArtifact = inputArtifact;
     }
@@ -589,7 +582,6 @@ public class DeviceManager implements Serializable {
     public char getSelectedOp() {
         return selectedOp;
     }
-
     public void setSelectedOp(char selectedOp) {
         this.selectedOp = selectedOp;
     }
@@ -597,15 +589,14 @@ public class DeviceManager implements Serializable {
     public boolean isInternalArtifact() {
         return internalArtifact;
     }
-
     public void setInternalArtifact(boolean internalArtifact) {
         this.internalArtifact = internalArtifact;
     }
 
     public List<Device> getObjects() {
+        if (objects == null) objects = deviceEJB.findAll();
         return objects;
     }
-
     public List<DevicePropertyValue> getSelectedProperties() {
         return selectedProperties;
     }
@@ -625,7 +616,6 @@ public class DeviceManager implements Serializable {
     public DeviceArtifact getSelectedArtifact() {
         return selectedArtifact;
     }
-
     public void setSelectedArtifact(DeviceArtifact selectedArtifact) {
         this.selectedArtifact = selectedArtifact;
     }
@@ -633,7 +623,6 @@ public class DeviceManager implements Serializable {
     public Device getInputAsmDevice() {
         return inputAsmDevice;
     }
-
     public void setInputAsmDevice(Device inputAsmDevice) {
         this.inputAsmDevice = inputAsmDevice;
     }
@@ -641,7 +630,6 @@ public class DeviceManager implements Serializable {
     public String getInputAsmComment() {
         return inputAsmComment;
     }
-
     public void setInputAsmComment(String inputAsmComment) {
         this.inputAsmComment = inputAsmComment;
     }
@@ -649,7 +637,6 @@ public class DeviceManager implements Serializable {
     public String getInputAsmPosition() {
         return inputAsmPosition;
     }
-
     public void setInputAsmPosition(String inputAsmPosition) {
         this.inputAsmPosition = inputAsmPosition;
     }
@@ -661,7 +648,6 @@ public class DeviceManager implements Serializable {
     public DevicePropertyValue getSelectedProperty() {
         return selectedProperty;
     }
-
     public void setSelectedProperty(DevicePropertyValue selectedProperty) {
         this.selectedProperty = selectedProperty;
     }
@@ -669,7 +655,6 @@ public class DeviceManager implements Serializable {
     public DevicePropertyValue getInputProperty() {
         return inputProperty;
     }
-
     public void setInputProperty(DevicePropertyValue inputProperty) {
         this.inputProperty = inputProperty;
     }
@@ -677,7 +662,6 @@ public class DeviceManager implements Serializable {
     public boolean isInRepository() {
         return inRepository;
     }
-
     public void setInRepository(boolean inRepository) {
         this.inRepository = inRepository;
     }

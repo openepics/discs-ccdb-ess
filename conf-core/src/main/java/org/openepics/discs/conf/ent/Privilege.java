@@ -27,12 +27,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Privilege.findAll", query = "SELECT p FROM Privilege p"),
-    @NamedQuery(name = "Privilege.findByPrivilegeId", query = "SELECT p FROM Privilege p WHERE p.privilegeId = :privilegeId")})
+    @NamedQuery(name = "Privilege.findByPrivilegeId", query = "SELECT p FROM Privilege p "
+            + "WHERE p.privilegeId = :privilegeId")
+})
 public class Privilege implements Serializable {
-    private static final long serialVersionUID = 1L;
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "privilege_id")
     private Integer privilegeId;
 
@@ -90,18 +90,24 @@ public class Privilege implements Serializable {
 
     @Override
     public int hashCode() {
-        int hash = 0;
-        hash += (privilegeId != null ? privilegeId.hashCode() : 0);
-        return hash;
+        return privilegeId != null ? privilegeId.hashCode() : 0;
     }
 
     @Override
     public boolean equals(Object object) {
-        if (!(object instanceof Privilege)) return false;
+        if (!(object instanceof Privilege)) {
+            return false;
+        }
 
         Privilege other = (Privilege) object;
-        if (this.privilegeId == null && other.privilegeId != null) return false;
-        if (this.privilegeId != null) return this.privilegeId.equals(other.privilegeId); // return true for same DB entity
+        if (this.privilegeId == null && other.privilegeId != null) {
+            return false;
+        }
+
+        // return true for same DB entity
+        if (this.privilegeId != null) {
+            return this.privilegeId.equals(other.privilegeId);
+        }
 
         return this==object;
     }

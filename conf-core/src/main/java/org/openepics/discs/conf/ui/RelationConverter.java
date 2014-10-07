@@ -6,7 +6,6 @@
 
 package org.openepics.discs.conf.ui;
 
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.ejb.EJB;
@@ -15,7 +14,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 
-import org.openepics.discs.conf.ejb.ConfigurationEJB;
+import org.openepics.discs.conf.ejb.SlotRelationEJB;
 import org.openepics.discs.conf.ent.SlotRelation;
 
 /**
@@ -26,8 +25,8 @@ import org.openepics.discs.conf.ent.SlotRelation;
 // @FacesConverter(value = "experimentConverter")
 // @ViewScoped
 public class RelationConverter implements Converter  {
-@EJB
-    private ConfigurationEJB configurationEJB;
+    @EJB
+    private SlotRelationEJB slotRelationEJB;
     private static final Logger logger = Logger.getLogger(RelationConverter.class.getCanonicalName());
     /**
      * Creates a new instance of RelationConverter
@@ -40,10 +39,10 @@ public class RelationConverter implements Converter  {
         SlotRelation dtype;
 
         if (value == null || value.equals("")) {
-            logger.log(Level.INFO, "relation converter: empty key");
+            logger.fine("relation converter: empty key");
             return null;
         } else {
-            dtype = configurationEJB.findSlotRelation(Long.valueOf(value));
+            dtype = slotRelationEJB.findById(Long.valueOf(value));
             return dtype;
         }
     }
@@ -51,7 +50,7 @@ public class RelationConverter implements Converter  {
     @Override
     public String getAsString(FacesContext context, UIComponent component, Object value) {
         if (value == null || value.equals("")) {
-            logger.log(Level.INFO, "relation converter: empty object");
+            logger.fine("relation converter: empty object");
             return "";
         } else {
             // logger.log(Level.INFO, "Exp number: " + ((Experiment) value).getId().toString());

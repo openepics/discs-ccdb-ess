@@ -6,7 +6,6 @@
 
 package org.openepics.discs.conf.ui;
 
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.ejb.EJB;
@@ -15,7 +14,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 
-import org.openepics.discs.conf.ejb.ConfigurationEJB;
+import org.openepics.discs.conf.ejb.DataTypeEJB;
 import org.openepics.discs.conf.ent.DataType;
 
 /**
@@ -28,7 +27,7 @@ import org.openepics.discs.conf.ent.DataType;
 public class DataTypeConverter implements Converter {
 
     @EJB
-    private ConfigurationEJB configurationEJB;
+    private DataTypeEJB dataTypeEJB;
     private static final Logger logger = Logger.getLogger(DataTypeConverter.class.getCanonicalName());
     /**
      * Creates a new instance of DataTypeConverter
@@ -41,10 +40,10 @@ public class DataTypeConverter implements Converter {
         DataType dtype;
 
         if (value == null || value.equals("")) {
-            logger.log(Level.INFO, "exp converter: empty experiemnt id");
+            logger.fine("exp converter: empty experiemnt id");
             return null;
         } else {
-            dtype = configurationEJB.findDataType(Long.valueOf(value));
+            dtype = dataTypeEJB.findById(Long.valueOf(value));
             return dtype;
         }
     }
@@ -52,7 +51,7 @@ public class DataTypeConverter implements Converter {
     @Override
     public String getAsString(FacesContext context, UIComponent component, Object value) {
         if (value == null || value.equals("")) {
-            logger.log(Level.INFO, "Null object");
+            logger.fine("Null object");
             return "";
         } else {
             // logger.log(Level.INFO, "Exp number: " + ((Experiment) value).getId().toString());

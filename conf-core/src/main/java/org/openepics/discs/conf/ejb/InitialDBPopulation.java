@@ -1,8 +1,28 @@
+/*
+ * Copyright (c) 2014 European Spallation Source
+ * Copyright (c) 2014 Cosylab d.d.
+ *
+ * This file is part of Controls Configuration Database.
+ *
+ * Controls Configuration Database is free software: you can redistribute it
+ * and/or modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 2 of the License,
+ * or any newer version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
+ */
 package org.openepics.discs.conf.ejb;
 
 import java.util.Date;
 
 import javax.ejb.Stateless;
+import javax.json.JsonObject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -15,12 +35,24 @@ import org.openepics.discs.conf.ent.SlotRelation;
 import org.openepics.discs.conf.ent.SlotRelationName;
 import org.openepics.discs.conf.ent.User;
 import org.openepics.discs.conf.ent.UserRole;
+import org.openepics.discs.conf.util.PropertyDataType;
+import org.openepics.seds.api.datatypes.SedsEnum;
+import org.openepics.seds.core.Seds;
 
+/**
+ * This EJB populates an empty database with mandatory data (data-types etc) and optional
+ * (default login for DB security).
+ *
+ * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
+ */
 @Stateless
 public class InitialDBPopulation {
     @PersistenceContext private EntityManager em;
-    final private String userName = "init-import";
 
+    /**
+     * Fills out initial data for empty database
+     *
+     */
     public void initialPopulation() {
         final User user = new User("admin", "admin");
         em.persist(user);
@@ -46,6 +78,7 @@ public class InitialDBPopulation {
         privilege = new Privilege(EntityType.COMPONENT_TYPE, EntityTypeOperation.DELETE);
         privilege.setRole(role);
         em.persist(privilege);
+
         privilege = new Privilege(EntityType.UNIT, EntityTypeOperation.CREATE);
         privilege.setRole(role);
         em.persist(privilege);
@@ -58,6 +91,7 @@ public class InitialDBPopulation {
         privilege = new Privilege(EntityType.UNIT, EntityTypeOperation.DELETE);
         privilege.setRole(role);
         em.persist(privilege);
+
         privilege = new Privilege(EntityType.PROPERTY, EntityTypeOperation.CREATE);
         privilege.setRole(role);
         em.persist(privilege);
@@ -70,6 +104,7 @@ public class InitialDBPopulation {
         privilege = new Privilege(EntityType.PROPERTY, EntityTypeOperation.DELETE);
         privilege.setRole(role);
         em.persist(privilege);
+
         privilege = new Privilege(EntityType.SLOT, EntityTypeOperation.CREATE);
         privilege.setRole(role);
         em.persist(privilege);
@@ -82,9 +117,7 @@ public class InitialDBPopulation {
         privilege = new Privilege(EntityType.SLOT, EntityTypeOperation.DELETE);
         privilege.setRole(role);
         em.persist(privilege);
-        privilege = new Privilege(EntityType.MENU, EntityTypeOperation.AUTHORIZED);
-        privilege.setRole(role);
-        em.persist(privilege);
+
         privilege = new Privilege(EntityType.DEVICE, EntityTypeOperation.CREATE);
         privilege.setRole(role);
         em.persist(privilege);
@@ -95,21 +128,93 @@ public class InitialDBPopulation {
         privilege.setRole(role);
         em.persist(privilege);
 
-        em.persist(new DataType("Integer", "Integer number", true, null, userName));
-        em.persist(new DataType("Double", "Double precision floating point", true, null, userName));
-        em.persist(new DataType("String", "String of characters (text)", true, null, userName));
-        em.persist(new DataType("Timestamp", "Date and time", true, null, userName));
-        em.persist(new DataType("URL", "string of characters which is known to contain URL", true, null, userName));
-        em.persist(new DataType("Integers Vector", "ector of integer numbers (1D array)", false, null, userName));
-        em.persist(new DataType("Doubles Vector", "Vector of double precision numbers (1D array)", false, null, userName));
-        em.persist(new DataType("Strings List", "List of strings (1D array)", false, null, userName));
-        em.persist(new DataType("Doubles Table", "Table of double precision numbers (2D array)", false, null, userName));
+        privilege = new Privilege(EntityType.ALIGNMENT_RECORD, EntityTypeOperation.CREATE);
+        privilege.setRole(role);
+        em.persist(privilege);
+        privilege = new Privilege(EntityType.ALIGNMENT_RECORD, EntityTypeOperation.UPDATE);
+        privilege.setRole(role);
+        em.persist(privilege);
+        privilege = new Privilege(EntityType.ALIGNMENT_RECORD, EntityTypeOperation.RENAME);
+        privilege.setRole(role);
+        em.persist(privilege);
+        privilege = new Privilege(EntityType.ALIGNMENT_RECORD, EntityTypeOperation.DELETE);
+        privilege.setRole(role);
+        em.persist(privilege);
 
-        em.persist(new SlotRelation(SlotRelationName.CONTAINS, userName));
-        em.persist(new SlotRelation(SlotRelationName.POWERS, userName));
-        em.persist(new SlotRelation(SlotRelationName.CONTROLS, userName));
+        privilege = new Privilege(EntityType.DATA_TYPE, EntityTypeOperation.CREATE);
+        privilege.setRole(role);
+        em.persist(privilege);
+        privilege = new Privilege(EntityType.DATA_TYPE, EntityTypeOperation.UPDATE);
+        privilege.setRole(role);
+        em.persist(privilege);
+        privilege = new Privilege(EntityType.DATA_TYPE, EntityTypeOperation.RENAME);
+        privilege.setRole(role);
+        em.persist(privilege);
+        privilege = new Privilege(EntityType.DATA_TYPE, EntityTypeOperation.DELETE);
+        privilege.setRole(role);
+        em.persist(privilege);
 
+        privilege = new Privilege(EntityType.INSTALLATION_RECORD, EntityTypeOperation.CREATE);
+        privilege.setRole(role);
+        em.persist(privilege);
+        privilege = new Privilege(EntityType.INSTALLATION_RECORD, EntityTypeOperation.UPDATE);
+        privilege.setRole(role);
+        em.persist(privilege);
+        privilege = new Privilege(EntityType.INSTALLATION_RECORD, EntityTypeOperation.RENAME);
+        privilege.setRole(role);
+        em.persist(privilege);
+        privilege = new Privilege(EntityType.INSTALLATION_RECORD, EntityTypeOperation.DELETE);
+        privilege.setRole(role);
+        em.persist(privilege);
 
+        em.persist(createDataType(PropertyDataType.INTEGER.toString(), "Integer number", true, null));
+        em.persist(createDataType(PropertyDataType.DOUBLE.toString(), "Double precision floating point", true, null));
+        em.persist(createDataType(PropertyDataType.STRING.toString(), "String of characters (text)", true, null));
+        em.persist(createDataType(PropertyDataType.TIMESTAMP.toString(), "Date and time", true, null));
+        em.persist(createDataType(PropertyDataType.URL.toString(), "String of characters which is known to contain an URL", true, null));
+        em.persist(createDataType(PropertyDataType.INT_VECTOR.toString(), "Vector of integer numbers (1D array)", false, null));
+        em.persist(createDataType(PropertyDataType.DBL_VECTOR.toString(), "Vector of double precision numbers (1D array)", false, null));
+        em.persist(createDataType(PropertyDataType.STRING_LIST.toString(), "List of strings (1D array)", false, null));
+        em.persist(createDataType(PropertyDataType.DBL_TABLE.toString(), "Table of double precision numbers (2D array)", false, null));
 
+        final SedsEnum testEnum = Seds.newFactory().newEnum("TEST1", new String[] {"TEST1", "TEST2", "TEST3", "TEST4"});
+        JsonObject jsonEnum = Seds.newDBConverter().serialize(testEnum);
+        em.persist(createDataType("Test enums", "Testing of enums", false, jsonEnum.toString()));
+
+        em.persist(createSlotRelation(SlotRelationName.CONTAINS));
+        em.persist(createSlotRelation(SlotRelationName.POWERS));
+        em.persist(createSlotRelation(SlotRelationName.CONTROLS));
+    }
+
+    /**
+     * Helper function to create data type entity and fill out mandatory modifiedAt and modifiedBy fields
+     *
+     * @param name
+     * @param description
+     * @param scalar
+     * @param definition
+     * @return
+     */
+    private DataType createDataType(String name, String description, boolean scalar, String definition) {
+        final DataType result = new DataType(name, description, scalar, definition);
+
+        result.setModifiedBy("system");
+        result.setModifiedAt(new Date());
+
+        return result;
+    }
+
+    /**
+     * Helper function to create a slot relation entity and fill out mandatory modifietAt and modifiedBy fields
+     * @param relationName
+     * @return
+     */
+    private SlotRelation createSlotRelation(SlotRelationName relationName) {
+        final SlotRelation slotRelation = new SlotRelation(relationName);
+
+        slotRelation.setModifiedBy("system");
+        slotRelation.setModifiedAt(new Date());
+
+        return slotRelation;
     }
 }

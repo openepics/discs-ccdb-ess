@@ -10,12 +10,10 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Logger;
 
-import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
-import javax.faces.event.ActionEvent;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -24,48 +22,51 @@ import org.apache.commons.io.FilenameUtils;
 import org.openepics.discs.conf.dl.PropertiesLoaderQualifier;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
-import org.openepics.discs.conf.ejb.AuthEJB;
-import org.openepics.discs.conf.ejb.ConfigurationEJB;
-import org.openepics.discs.conf.ent.EntityType;
-import org.openepics.discs.conf.ent.EntityTypeOperation;
+import org.openepics.discs.conf.ejb.PropertyEJB;
+import org.openepics.discs.conf.ent.DataType;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyAssociation;
+import org.openepics.discs.conf.ent.Unit;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
 import org.openepics.discs.conf.util.Utility;
+import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
-import org.primefaces.event.SelectEvent;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.io.ByteStreams;
 
 /**
  *
  * @author vuppala
+ * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
+ * @author Andraz Pozar <andraz.pozar@cosylab.com>
+ * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
+ *
  */
 @Named
 @ViewScoped
 public class PropertyManager implements Serializable {
-    @Inject private ConfigurationEJB configurationEJB;
-    @Inject private LoginManager loginManager;
-    @Inject private AuthEJB authEJB;
+    @Inject private PropertyEJB propertyEJB;
+    // @Inject private AuditRecordEJB auditRecordEJB; TODO merge conflict piece
+
     @Inject private DataLoaderHandler dataLoaderHandler;
     @Inject @PropertiesLoaderQualifier private DataLoader propertiesDataLoader;
-    private static final Logger logger = Logger.getLogger(PropertyManager.class.getCanonicalName());
 
-    private List<Property> objects;
-    private List<Property> sortedObjects;
-    private List<Property> filteredObjects;
-    private Property selectedObject;
-    private Property inputObject;
+    private List<Property> properties;
+    private List<Property> sortedProperties;
+    private List<Property> filteredProperties;
 
     private byte[] importData;
     private String importFileName;
     private DataLoaderResult loaderResult;
-    // private Property newProperty = new Property();
 
-    //
-    private boolean inTrans = false; // in the middle of an operations
-    private char selectedOp = 'n'; // selected operation: [a]dd, [e]dit, [d]elete, [n]one
+    private String name;
+    private String description;
+    private DataType dataType;
+    private Unit unit;
+    private PropertyAssociation association;
+    private Property selectedProperty;
+    private boolean unitComboEnabled;
+
 
     /**
      * Creates a new instance of PropertyManager
@@ -73,128 +74,93 @@ public class PropertyManager implements Serializable {
     public PropertyManager() {
     }
 
-    @PostConstruct
-    public void init() {
+    private void init() {
+        properties = propertyEJB.findAll();
+        selectedProperty = null;
+        resetFields();
+    }
+
+    public void onAdd() {
+        final Property propertyToAdd = new Property(name, description, association);
+        propertyToAdd.setDataType(dataType);
+        propertyToAdd.setUnit(unit);
         try {
-            objects = configurationEJB.findProperties();
-            // objects.add(new Property());
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-        }
-    }
-
-    public void onRowSelect(SelectEvent event) {
-        inputObject = selectedObject;
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Selected", "");
-    }
-
-    public void onAdd(ActionEvent event) {
-        selectedOp = 'a';
-        inTrans = true;
-        // TODO replaced void constructor (now protected) with default values. Check!
-        inputObject = new Property("", "", PropertyAssociation.ALL, loginManager.getUserid());
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Add", "");
-    }
-
-    public void onEdit(ActionEvent event) {
-        selectedOp = 'e';
-        inTrans = true;
-        inputObject = selectedObject;
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Edit", "");
-    }
-
-    public void onDelete(ActionEvent event) {
-        try {
-            configurationEJB.deleteProperty(selectedObject);
-            objects.remove(selectedObject);
-            selectedObject = null;
-            inputObject = null;
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted", "");
-        } catch (Exception e) {
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Deleted", "");
+            propertyEJB.add(propertyToAdd);
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "New property has been created");
         } finally {
-
+            init();
         }
     }
 
-    public void onSave(ActionEvent event) {
-        try {
-            inputObject.setAssociation(PropertyAssociation.TYPE);
-            inputObject.setModifiedBy("test-user");
+    public void onModify() {
+        selectedProperty.setName(name);
+        selectedProperty.setDescription(description);
+        selectedProperty.setDataType(dataType);
+        selectedProperty.setAssociation(association);
+        selectedProperty.setUnit(unit);
 
-            if (selectedOp == 'a') {
-                configurationEJB.addProperty(inputObject);
-                selectedObject = inputObject;
-                objects.add(selectedObject);
-            } else if (selectedOp == 'e') {
-                configurationEJB.saveProperty(inputObject);
+        try {
+            propertyEJB.save(selectedProperty);
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Property was modified");
+        } finally {
+            init();
+        }
+    }
+
+    public void prepareAddPopup() {
+        resetFields();
+        RequestContext.getCurrentInstance().update("addPropertyForm:addProperty");
+    }
+
+    public void prepareModifyPopup() {
+        name = selectedProperty.getName();
+        description = selectedProperty.getDescription();
+        dataType = selectedProperty.getDataType();
+        unit = selectedProperty.getUnit();
+        association = selectedProperty.getAssociation();
+        setIsUnitComboEnabled();
+        RequestContext.getCurrentInstance().update("modifyPropertyForm:modifyProperty");
+    }
+
+    public void onDelete() {
+        try {
+            propertyEJB.delete(selectedProperty);
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Property was deleted");
+        } catch (Exception e) {
+            if (Utility.causedByPersistenceException(e)) {
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Deletion failed", "The property could not be deleted because it is used.");
+            } else {
+                throw e;
             }
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Saved", "");
-        } catch (Exception e) {
-            logger.severe(e.getMessage());
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Error", "");
         } finally {
-            inTrans = false;
-            selectedOp = 'n';
+            init();
         }
     }
 
-    public void onCancel(ActionEvent event) {
-        selectedOp = 'n';
-        inputObject = selectedObject;
-        inTrans = false;
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Cancelled", "");
+    public List<Property> getSortedProperties() {
+        return sortedProperties;
     }
 
-    // ---------------------------------
-    public List<Property> getSortedObjects() {
-        return sortedObjects;
+    public void setSortedOProperties(List<Property> sortedObjects) {
+        this.sortedProperties = sortedObjects;
     }
 
-    public void setSortedObjects(List<Property> sortedObjects) {
-        this.sortedObjects = sortedObjects;
+    public List<Property> getFilteredProperties() {
+        return filteredProperties;
     }
 
-    public List<Property> getFilteredObjects() {
-        return filteredObjects;
+    public void setFilteredProperties(List<Property> filteredObjects) {
+        this.filteredProperties = filteredObjects;
     }
 
-    public void setFilteredObjects(List<Property> filteredObjects) {
-        this.filteredObjects = filteredObjects;
+    public List<Property> getProperties() {
+        if (properties == null) properties = propertyEJB.findAll();
+        return properties;
     }
 
-    public Property getSelectedObject() {
-        return selectedObject;
+    public String getImportFileName() {
+        return importFileName;
     }
-
-    public void setSelectedObject(Property selectedObject) {
-        this.selectedObject = selectedObject;
-    }
-
-    public Property getInputObject() {
-        return inputObject;
-    }
-
-    public void setInputObject(Property inputObject) {
-        this.inputObject = inputObject;
-    }
-
-    public List<Property> getObjects() {
-        return objects;
-    }
-
-    public boolean isInTrans() {
-        return inTrans;
-    }
-
-    public boolean canImportProperties() {
-        return authEJB.userHasAuth(loginManager.getUserid(), EntityType.PROPERTY, EntityTypeOperation.CREATE) ||
-                authEJB.userHasAuth(loginManager.getUserid(), EntityType.PROPERTY, EntityTypeOperation.DELETE) ||
-                authEJB.userHasAuth(loginManager.getUserid(), EntityType.PROPERTY, EntityTypeOperation.UPDATE) ||
-                authEJB.userHasAuth(loginManager.getUserid(), EntityType.PROPERTY, EntityTypeOperation.RENAME);
-    }
-
-    public String getImportFileName() { return importFileName; }
 
     public void doImport() {
         final InputStream inputStream = new ByteArrayInputStream(importData);
@@ -206,7 +172,75 @@ public class PropertyManager implements Serializable {
         importFileName = null;
     }
 
-    public DataLoaderResult getLoaderResult() { return loaderResult; }
+    public List<PropertyAssociation> getPropertyAssociations() {
+        return Arrays.asList(PropertyAssociation.values());
+    }
+
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public DataType getDataType() {
+        return dataType;
+    }
+    public void setDataType(DataType dataType) {
+        this.dataType = dataType;
+    }
+
+    public Unit getUnit() {
+        return unit;
+    }
+    public void setUnit(Unit unit) {
+        this.unit = unit;
+    }
+
+    public PropertyAssociation getPropertyAssociation() {
+        return association;
+    }
+    public void setPropertyAssociation(PropertyAssociation association) {
+        this.association = association;
+    }
+
+    public void setIsUnitComboEnabled() {
+        if (dataType.getName().equalsIgnoreCase("integer") || dataType.getName().equalsIgnoreCase("double") || dataType.getName().equalsIgnoreCase("integers vector") || dataType.getName().equalsIgnoreCase("doubles vector" ) || dataType.getName().equalsIgnoreCase("doubles table")) {
+            unitComboEnabled = true;
+        } else {
+            unitComboEnabled = false;
+        }
+    }
+
+    public boolean isUnitComboEnabled() {
+        return unitComboEnabled;
+    }
+
+    public Property getSelectedProperty() {
+        return selectedProperty;
+    }
+    public void setSelectedProperty(Property selectedProperty) {
+        this.selectedProperty = selectedProperty;
+    }
+
+    public Property getSelectedPropertyToModify() {
+        return selectedProperty;
+    }
+    public void setSelectedPropertyToModify(Property selectedProperty) {
+        this.selectedProperty = selectedProperty;
+        prepareModifyPopup();
+    }
+
+    public DataLoaderResult getLoaderResult() {
+        return loaderResult;
+    }
 
     public void handleImportFileUpload(FileUploadEvent event) {
         try (InputStream inputStream = event.getFile().getInputstream()) {
@@ -215,5 +249,14 @@ public class PropertyManager implements Serializable {
         } catch (IOException e) {
             throw new RuntimeException();
         }
+    }
+
+    private void resetFields() {
+        name = null;
+        description = null;
+        dataType = null;
+        unit = null;
+        association = null;
+        unitComboEnabled = true;
     }
 }

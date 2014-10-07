@@ -11,45 +11,49 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.Serializable;
 import java.util.Calendar;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
+import javax.ejb.Stateless;
 import javax.inject.Inject;
 
 /**
  *
  * @author vuppala
  */
-public class BlobStore implements Serializable {
+@Stateless
+public class BlobStore {
+    private static final Logger LOGGER = Logger.getLogger(BlobStore.class.getCanonicalName());
 
-    private static final Logger logger = Logger.getLogger(BlobStore.class.getCanonicalName());
-    private static String blobStoreRoot = "/var/confmgr";
-    private boolean validStore = true; // is the blob store valid?
+    private String blobStoreRoot = "/var/confmgr";
 
-    @Inject
-    private AppProperties appProps;
+    // is the blob store valid?
+    private boolean validStore = true;
 
-    public void BlobStore() {
-    }
+    @Inject private AppProperties appProps;
 
+    public BlobStore() { }
+
+    /**
+     * Initializes the {@link BlobStore} bean
+     *
+     */
     @PostConstruct
     public void init() {
-        String storeRoot = appProps.getProperty("BlobStoreRoot"); // Todo: either move it to AppProperties or inject it
+        // Todo: either move it to AppProperties or inject it
+        final String storeRoot = appProps.getProperty("BlobStoreRoot");
 
         if (storeRoot != null && !storeRoot.isEmpty()) {
             blobStoreRoot = storeRoot;
         }
 
-        File folder = new File(blobStoreRoot);
-        if (!folder.exists()) {
-            if (!folder.mkdirs()) {
-                logger.log(Level.SEVERE, "Could not create blob store root {0}", blobStoreRoot);
-                validStore = false;
-            }
+        final File folder = new File(blobStoreRoot);
+        if (!folder.exists() && !folder.mkdirs()) {
+            LOGGER.log(Level.SEVERE, "Could not create blob store root {0}", blobStoreRoot);
+            validStore = false;
         }
     }
 
@@ -75,43 +79,58 @@ public class BlobStore implements Serializable {
         String pathName = blobStoreRoot + separator + dirName;
 
         File folder = new File(pathName);
-        if (!folder.exists()) {
-            if (!folder.mkdirs()) {
-                logger.log(Level.SEVERE, "Could not create blob directory {0}", pathName);
-                return null;
-            }
+        if (!folder.exists() && !folder.mkdirs()) {
+            LOGGER.log(Level.SEVERE, "Could not create blob directory {0}", pathName);
+            return null;
         }
 
         String blobId = dirName + separator + fileName;
         String fullPath = blobStoreRoot + separator + blobId;
         File newFile = new File(fullPath);
         if (newFile.exists()) {
-            logger.log(Level.SEVERE, "Blob already exists! Name collision {0}", fullPath);
+            LOGGER.log(Level.SEVERE, "Blob already exists! Name collision {0}", fullPath);
             return null;
         }
 
-        logger.log(Level.INFO, "New Blob Id {0}", blobId);
+        LOGGER.log(Level.INFO, "New Blob Id {0}", blobId);
 
         return blobId;
     }
 
+    /**
+     * Stores a file in the Blob Store
+     *
+     * @param istream A stream of data to be saved
+     * @return an identifier for the stored file
+     * @throws IOException
+     */
     public String storeFile(InputStream istream) throws IOException {
         String fileId =  this.newBlobId();
-        OutputStream ostream;
 
         if (istream == null) {
             throw new IOException("istream is null");
         }
 
-        File ofile = new File(blobStoreRoot + File.separator + fileId);
-        ostream = new FileOutputStream(ofile);
-        copyFile(istream, ostream);
-        // repBean.putFile(folderName, fname, istream);
-        ostream.close();
+        OutputStream ostream = null;
+        try {
+            ostream = new FileOutputStream( new File(blobStoreRoot + File.separator + fileId) );
+            copyFile(istream, ostream);
+        } finally {
+            if (ostream != null) {
+                ostream.close();
+            }
+        }
 
         return fileId;
     }
 
+    /**
+     * Retrieves a file form the Blob Store as a {@link InputStream}
+     *
+     * @param fileId identifier of the file as returned by {@link BlobStore#storeFile(InputStream)}
+     * @return an {@link InputStream} representing the file conents
+     * @throws IOException
+     */
     public InputStream retreiveFile(String fileId) throws IOException {
         InputStream istream;
 
@@ -120,17 +139,29 @@ public class BlobStore implements Serializable {
         return istream;
     }
 
+    /**
+     * Deletes a file from the Blob Store
+     *
+     * @param fileId identifier of the file as returned by {@link BlobStore#storeFile(InputStream)}
+     * @throws IOException
+     */
     public void deleteFile(String fileId) throws IOException {
-        InputStream istream;
-
-        // istream = new FileInputStream(blobStoreRoot + fileId);
-        // return istream;
+        final File fileToDelete = new File(blobStoreRoot + File.separator + fileId);
+        fileToDelete.delete();
     }
 
+    /**
+     * Get's the configured root directory of the Blob Store on the file-system
+     * @return a {@link String} path-name
+     */
     public String getBlobStoreRoot() {
         return blobStoreRoot;
     }
 
+    /**
+     * Checks whether the Blob Store is valid (path is accessable)
+     * @return <code>true</code> if the path is accessable / blob store is valid
+     */
     public boolean isValidStore() {
         return validStore;
     }

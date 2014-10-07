@@ -1,6 +1,7 @@
 package org.openepics.discs.conf.ent;
 
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -22,7 +23,10 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
+ * An installation slot for devices
  *
  * @author vuppala
  */
@@ -34,12 +38,15 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Slot.findBySlotId", query = "SELECT s FROM Slot s WHERE s.id = :id"),
     @NamedQuery(name = "Slot.findByName", query = "SELECT s FROM Slot s WHERE s.name = :name"),
     @NamedQuery(name = "Slot.findByNameContaining", query = "SELECT s FROM Slot s WHERE s.name LIKE :name"),
-    @NamedQuery(name = "Slot.findByIsHostingSlot", query = "SELECT s FROM Slot s WHERE s.isHostingSlot = :isHostingSlot"),
-    @NamedQuery(name = "Slot.findByBeamlinePosition", query = "SELECT s FROM Slot s WHERE s.beamlinePosition = :beamlinePosition"),
-    @NamedQuery(name = "Slot.findByModifiedBy", query = "SELECT s FROM Slot s WHERE s.modifiedBy = :modifiedBy")})
+    @NamedQuery(name = "Slot.findByIsHostingSlot", query = "SELECT s FROM Slot s "
+            + "WHERE s.isHostingSlot = :isHostingSlot"),
+    @NamedQuery(name = "Slot.findByBeamlinePosition", query = "SELECT s FROM Slot s "
+            + "WHERE s.beamlinePosition = :beamlinePosition"),
+    @NamedQuery(name = "Slot.findByModifiedBy", query = "SELECT s FROM Slot s WHERE s.modifiedBy = :modifiedBy"),
+    @NamedQuery(name = "Slot.findByComponentType", query = "SELECT s FROM Slot s "
+            + "WHERE s.componentType = :componentType")
+})
 public class Slot extends ConfigurationEntity {
-    private static final long serialVersionUID = 1L;
-
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 128)
@@ -55,12 +62,11 @@ public class Slot extends ConfigurationEntity {
     @Column(name = "is_hosting_slot")
     private boolean isHostingSlot;
 
-    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "beamline_position")
     private Double beamlinePosition;
 
     @Embedded
-    private AlignmentInformation positionInfo;
+    private PositionInformation positionInfo = new PositionInformation();
 
     @Size(max = 255)
     @Column(name = "asm_comment")
@@ -75,105 +81,155 @@ public class Slot extends ConfigurationEntity {
     private String comment;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "slot")
-    private List<SlotArtifact> slotArtifactList;
+    private List<SlotArtifact> slotArtifactList = new ArrayList<>();
 
     @JoinColumn(name = "component_type")
     @ManyToOne(optional = false)
     private ComponentType componentType;
 
     @OneToMany(mappedBy = "asmSlot")
-    private List<Slot> slotList;
+    private List<Slot> slotList = new ArrayList<>();
 
     @JoinColumn(name = "asm_slot")
     @ManyToOne
     private Slot asmSlot;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "slot")
-    private List<AlignmentRecord> alignmentRecordList;
-
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "slot")
-    private List<InstallationRecord> installationRecordList;
-
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "childSlot")
-    private List<SlotPair> childrenSlots;
+    private List<SlotPair> childrenSlots = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "parentSlot")
-    private List<SlotPair> parentSlots;
+    private List<SlotPair> parentSlots = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "slot")
-    private List<SlotPropertyValue> slotPropertyList;
+    private List<SlotPropertyValue> slotPropertyList = new ArrayList<>();
 
-    @ManyToMany
-    @JoinTable(name = "slot_tags",
-        joinColumns = { @JoinColumn(name = "slot_id") }, inverseJoinColumns = { @JoinColumn(name = "tag_id") })
-    private Set<Tag> tags;
-
+    @ManyToMany(cascade=CascadeType.ALL)
+    @JoinTable(name = "slot_tag",
+               joinColumns = { @JoinColumn(name = "slot_id") }, inverseJoinColumns = { @JoinColumn(name = "tag_id") })
+    private Set<Tag> tags = new HashSet<>();
 
     protected Slot() {
     }
 
-    public Slot(String name, boolean isHostingSlot, String modifiedBy) {
-        this.positionInfo = new AlignmentInformation();
+    public Slot(String name, boolean isHostingSlot) {
         this.name = name;
         this.isHostingSlot = isHostingSlot;
-        this.modifiedBy = modifiedBy;
-        this.modifiedAt = new Date();
     }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    public String getDescription() { return description;    }
-    public void setDescription(String description) { this.description = description; }
+    public String getDescription() {
+        return description;
+    }
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-    public boolean getIsHostingSlot() { return isHostingSlot; }
-    public void setIsHostingSlot(boolean isHostingSlot) { this.isHostingSlot = isHostingSlot; }
+    public boolean isHostingSlot() {
+        return isHostingSlot;
+    }
+    public void setHostingSlot(boolean isHostingSlot) {
+        this.isHostingSlot = isHostingSlot;
+    }
 
-    public Double getBeamlinePosition() { return beamlinePosition; }
-    public void setBeamlinePosition(Double beamlinePosition) { this.beamlinePosition = beamlinePosition; }
+    public Double getBeamlinePosition() {
+        return beamlinePosition;
+    }
+    public void setBeamlinePosition(Double beamlinePosition) {
+        this.beamlinePosition = beamlinePosition;
+    }
 
-    public AlignmentInformation getPositionInformation() { return positionInfo; }
+    public PositionInformation getPositionInformation()
+    {
+        // Due to some weirdness Hibernate clears the initialized field when loading data
+        // Added this lazy initialization as convenience
+        if (positionInfo==null) {
+            positionInfo = new PositionInformation();
+        }
+        return positionInfo;
+    }
 
-    public String getAssemblyComment() { return asmComment; }
-    public void setAssemblyComment(String asmComment) { this.asmComment = asmComment; }
+    public String getAssemblyComment() {
+        return asmComment;
+    }
+    public void setAssemblyComment(String asmComment) {
+        this.asmComment = asmComment;
+    }
 
-    public String getAssemblyPosition() { return asmPosition; }
-    public void setAssemblyPosition(String asmPosition) { this.asmPosition = asmPosition; }
+    public String getAssemblyPosition() {
+        return asmPosition;
+    }
+    public void setAssemblyPosition(String asmPosition) {
+        this.asmPosition = asmPosition;
+    }
 
-    public String getComment() { return comment; }
-    public void setComment(String comment) { this.comment = comment; }
+    public String getComment() {
+        return comment;
+    }
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
 
     @XmlTransient
-    public List<SlotArtifact> getSlotArtifactList() { return slotArtifactList; }
+    @JsonIgnore
+    public List<SlotArtifact> getSlotArtifactList() {
+        return slotArtifactList;
+    }
 
-    public ComponentType getComponentType() { return componentType; }
-    public void setComponentType(ComponentType componentType) { this.componentType = componentType; }
-
-    @XmlTransient
-    public List<Slot> getSlotList() { return slotList; }
-
-    public Slot getAssemblySlot() { return asmSlot; }
-    public void setAssemblySlot(Slot asmSlot) { this.asmSlot = asmSlot; }
-
-    @XmlTransient
-    public List<AlignmentRecord> getAlignmentRecordList() { return alignmentRecordList; }
+    public ComponentType getComponentType() {
+        return componentType;
+    }
+    public void setComponentType(ComponentType componentType) {
+        this.componentType = componentType;
+    }
 
     @XmlTransient
-    public List<InstallationRecord> getInstallationRecordList() { return installationRecordList; }
+    @JsonIgnore
+    public List<Slot> getSlotList() {
+        return slotList;
+    }
+
+    public Slot getAssemblySlot() {
+        return asmSlot;
+    }
+    public void setAssemblySlot(Slot asmSlot) {
+        this.asmSlot = asmSlot;
+    }
 
     @XmlTransient
-    public List<SlotPair> getChildrenSlotsPairList() { return childrenSlots; }
+    @JsonIgnore
+    public List<SlotPair> getChildrenSlotsPairList() {
+        return childrenSlots;
+    }
 
     @XmlTransient
-    public List<SlotPair> getParentSlotsPairList() { return parentSlots; }
+    @JsonIgnore
+    public List<SlotPair> getParentSlotsPairList() {
+        return parentSlots;
+    }
 
     @XmlTransient
-    public List<SlotPropertyValue> getSlotPropertyList() { return slotPropertyList; }
+    @JsonIgnore
+    public List<SlotPropertyValue> getSlotPropertyList() {
+        return slotPropertyList;
+    }
 
     @XmlTransient
-    public Set<Tag> getTags() { return tags; }
-    public void setTags(Set<Tag> tags) { this.tags = tags; }
+    @JsonIgnore
+    public Set<Tag> getTags() {
+        return tags;
+    }
+    public void setTags(Set<Tag> tags) {
+        this.tags = tags;
+    }
 
     @Override
-    public String toString() { return "Slot[ slotId=" + id + " ]"; }
+    public String toString() {
+        return "Slot[ slotId=" + id + " ]";
+    }
 }

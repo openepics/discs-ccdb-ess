@@ -19,29 +19,16 @@
         </session-timeout>
     </session-config>
     <welcome-file-list>
-        <welcome-file>index.xhtml</welcome-file>
+        <welcome-file>/index.xhtml</welcome-file>
     </welcome-file-list>
     <error-page>
         <exception-type>javax.faces.application.ViewExpiredException</exception-type>
         <location>/expired.xhtml</location>
     </error-page>
-   <!--
-    <security-constraint>
-        <web-resource-collection>
-            <web-resource-name>auth</web-resource-name>
-            <url-pattern>/manage/*</url-pattern>
-        </web-resource-collection>
-        <auth-constraint>
-            <role-name>USER</role-name>
-        </auth-constraint>
-        <user-data-constraint>
-            <transport-guarantee>CONFIDENTIAL</transport-guarantee>
-        </user-data-constraint>
-    </security-constraint>-->
     <security-constraint>
         <web-resource-collection>
             <web-resource-name>all-access</web-resource-name>
-            <url-pattern>/manage/*</url-pattern>
+            <url-pattern>*</url-pattern>
             <http-method>DELETE</http-method>
             <http-method>PUT</http-method>
             <http-method>GET</http-method>

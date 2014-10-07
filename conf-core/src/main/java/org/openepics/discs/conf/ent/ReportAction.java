@@ -23,8 +23,6 @@ import org.openepics.discs.conf.util.As;
 @Entity
 @Table(name = "report_action")
 public class ReportAction extends ConfigurationEntity {
-    private static final long serialVersionUID = 1L;
-
     @Basic(optional = false)
     @Nonnull
     @Enumerated(EnumType.STRING)
@@ -55,7 +53,8 @@ public class ReportAction extends ConfigurationEntity {
     protected ReportAction() {
     }
 
-    public ReportAction(ReportFilterAction operation, String field, String value, Report parentReport, String modifiedBy) {
+    public ReportAction(ReportFilterAction operation, String field, String value,
+            Report parentReport, String modifiedBy) {
         this.operation = As.notNull(operation);
         this.field = As.notNull(field);
         this.value = As.notNull(value);
@@ -64,7 +63,8 @@ public class ReportAction extends ConfigurationEntity {
         this.modifiedAt = new Date();
     }
 
-    public ReportAction(ReportFilterAction operation, Property property, String value, Report parentReport, String modifiedBy) {
+    public ReportAction(ReportFilterAction operation, Property property, String value,
+            Report parentReport, String modifiedBy) {
         this.operation = As.notNull(operation);
         this.property = As.notNull(property);
         this.value = As.notNull(value);
@@ -83,49 +83,72 @@ public class ReportAction extends ConfigurationEntity {
         this.modifiedAt = new Date();
     }
 
-    public ReportFilterAction getOperation() { return operation; }
+    public ReportFilterAction getOperation() {
+        return operation;
+    }
     public void setOperation(ReportFilterAction operation) {
         if (tag != null && operation != ReportFilterAction.IS)
             throw new IllegalArgumentException("Tag can only have an \"IS\" operation.");
         this.operation = operation;
     }
 
-    public String getField() { return field; }
+    public String getField() {
+        return field;
+    }
     public void setField(String field) {
         this.field = field;
         this.property = null;
         this.tag = null;
     }
 
-    public Property getProperty() { return property; }
+    public Property getProperty() {
+        return property;
+    }
     public void setProperty(Property property) {
         this.property = property;
         this.field = null;
         this.tag = null;
     }
 
-    public Tag getTag() { return tag; }
+    public Tag getTag() {
+        return tag;
+    }
     public void setTag(Tag tag) {
         this.tag = tag;
         this.field = null;
         this.property = null;
     }
 
-    public String getValue() { return value; }
+    public String getValue() {
+        return value;
+    }
     public void setValue(String value) {
         if (tag != null)
             throw new IllegalStateException("Cannot set a value on a filter by tag.");
         this.value = value;
     }
 
-    public Report getParentReport() { return parentReport; }
-    public void setParentReport(Report parentReport) { this.parentReport = parentReport; }
+    public Report getParentReport() {
+        return parentReport;
+    }
+    public void setParentReport(Report parentReport) {
+        this.parentReport = parentReport;
+    }
 
     @Override
     public String toString() {
-        if (field != null) return "[ Field: " + field + " " + operation.toString() + " " + value + " ]";
-        if (property != null) return "[ Property: " + property.getName() + " " + operation.toString() + " " + value + " ]";
-        if (tag != null) return "[ Tag IS " + tag.getName() + " ]";
+        if (field != null) {
+            return "[ Field: " + field + " " + operation.toString() + " " + value + " ]";
+        }
+
+        if (property != null) {
+            return "[ Property: " + property.getName() + " " + operation.toString() + " " + value + " ]";
+        }
+
+        if (tag != null) {
+            return "[ Tag IS " + tag.getName() + " ]";
+        }
+
         return "Error! Invalid report filter definition.";
     }
 }

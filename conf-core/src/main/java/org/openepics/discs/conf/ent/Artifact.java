@@ -1,7 +1,5 @@
 package org.openepics.discs.conf.ent;
 
-import java.util.Date;
-
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,12 +9,16 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+/**
+ * An artifact is a user-defined value that is attached to database entities such as URL or a file
+ *
+ * @author vupalla
+ *
+ */
 @Entity
 @Table(name = "artifacts")
-@Inheritance(strategy = InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Artifact extends ConfigurationEntity {
-    private static final long serialVersionUID = 1L;
-
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 128)
@@ -41,24 +43,38 @@ public class Artifact extends ConfigurationEntity {
 
     protected Artifact() { }
 
-    public Artifact(String name, boolean isInternal, String description, String uri, String modifiedBy) {
+    public Artifact(String name, boolean isInternal, String description, String uri) {
         this.name = name;
         this.isInternal = isInternal;
         this.description = description;
         this.uri = uri;
-        this.modifiedBy = modifiedBy;
-        this.modifiedAt = new Date();
     }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    public boolean isInternal() { return isInternal; }
-    public void setInternal(boolean isInternal) { this.isInternal = isInternal; }
+    public boolean isInternal() {
+        return isInternal;
+    }
+    public void setInternal(boolean isInternal) {
+        this.isInternal = isInternal;
+    }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
+    public String getDescription() {
+        return description;
+    }
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-    public String getUri() { return uri; }
-    public void setUri(String uri) { this.uri = uri; }
+    public String getUri() {
+        return uri;
+    }
+    public void setUri(String uri) {
+        this.uri = uri;
+    }
 }

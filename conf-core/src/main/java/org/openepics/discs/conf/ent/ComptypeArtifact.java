@@ -9,6 +9,7 @@ import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
+ * An {@link Artifact} used in {@link ComponentType} entities
  *
  * @author vuppala
  */
@@ -17,25 +18,31 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "ComptypeArtifact.findAll", query = "SELECT c FROM ComptypeArtifact c"),
-    @NamedQuery(name = "ComptypeArtifact.findByArtifactId", query = "SELECT c FROM ComptypeArtifact c WHERE c.id = :id"),
+    @NamedQuery(name = "ComptypeArtifact.findByArtifactId", query = "SELECT c FROM ComptypeArtifact c "
+            + "WHERE c.id = :id"),
     @NamedQuery(name = "ComptypeArtifact.findByName", query = "SELECT c FROM ComptypeArtifact c WHERE c.name = :name"),
-    @NamedQuery(name = "ComptypeArtifact.findByIsInternal", query = "SELECT c FROM ComptypeArtifact c WHERE c.isInternal = :isInternal"),
-    @NamedQuery(name = "ComptypeArtifact.findByModifiedBy", query = "SELECT c FROM ComptypeArtifact c WHERE c.modifiedBy = :modifiedBy")})
+    @NamedQuery(name = "ComptypeArtifact.findByIsInternal", query = "SELECT c FROM ComptypeArtifact c "
+            + "WHERE c.isInternal = :isInternal"),
+    @NamedQuery(name = "ComptypeArtifact.findByModifiedBy", query = "SELECT c FROM ComptypeArtifact c "
+            + "WHERE c.modifiedBy = :modifiedBy")
+})
 public class ComptypeArtifact extends Artifact {
-    private static final long serialVersionUID = 1L;
-
     @JoinColumn(name = "component_type")
     @ManyToOne(optional = false)
     private ComponentType componentType;
 
     public ComptypeArtifact() { }
 
-    public ComptypeArtifact(String name, boolean isInternal, String description, String uri, String modifiedBy) {
-        super(name, isInternal, description, uri, modifiedBy);
+    public ComptypeArtifact(String name, boolean isInternal, String description, String uri) {
+        super(name, isInternal, description, uri);
     }
 
-    public ComponentType getComponentType() { return componentType; }
-    public void setComponentType(ComponentType componentType) { this.componentType = componentType; }
+    public ComponentType getComponentType() {
+        return componentType;
+    }
+    public void setComponentType(ComponentType componentType) {
+        this.componentType = componentType;
+    }
 
     @Override
     public String toString() {
