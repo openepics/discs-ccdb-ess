@@ -131,7 +131,7 @@
                                 <h:outputText value="#{attribute.value}" />
                             </p:column>
 
-                            <p:column headerText="Actions" width="90px">
+                            <p:column headerText="Actions" width="70">
                                 <p:commandLink ajax="true" rendered="#{deviceDetailsAttributesController.canEdit(attribute.entity)}" title="Edit">
                                     <h:outputText styleClass="ui-icon ui-icon-pencil" style="display: inline-block !important; margin-right: 6px;" />
                                     <f:setPropertyActionListener value="#{attribute}" target="#{deviceDetailsAttributesController.selectedAttributeToModify}" />

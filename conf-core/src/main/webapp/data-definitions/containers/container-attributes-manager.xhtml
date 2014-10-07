@@ -5,76 +5,83 @@
     xmlns:ui="http://java.sun.com/jsf/facelets"
     xmlns:p="http://primefaces.org/ui">
     <ui:define name="content">
-          <h:panelGroup id="containerPropertiesManager" layout="block" class="container">
-               <p:growl showDetail="true" globalOnly="true" autoUpdate="true"/>
-               <h:form id="containerPropertiesManagerForm" enctype="multipart/form-data">
+        <h:panelGroup id="containerPropertiesManager" layout="block" class="container">
+            <p:growl showDetail="true" globalOnly="true" autoUpdate="true"/>
+            <h:form id="containerPropertiesManagerForm" enctype="multipart/form-data">
                
-                   <h:panelGroup class="properties-parent-info" layout="block" style="border-right: 1px solid #a8a8a8;">
-                       <p:panelGrid columns="2" style="width: 100%;" columnClasses="alignTop, alignTop" styleClass="noBorders"> 
-                                               
-                           <h:outputLabel value="Device type name:" />
-                           <h:outputText value="#{slotAttributesController.slot.name}" style="width: 100%;" />
-                                                                       
-                           <h:outputLabel value="Description:" />
-                           <p:inputTextarea value="#{slotAttributesController.slot.description}"  rows="5" cols="51" disabled="true" style="width: 100%;"/>
-                           
-                           <h:outputLabel value="Parent container:" />
-                           <h:outputText value="#{slotAttributesController.parentSlot}" style="width: 100%;" />
-                       </p:panelGrid>
-                       
-                       <br/>
-                       <br/>
-                       
-                       <p:commandButton value="History" icon="ui-icon-clock" style="float: right; margin: 10px 10px " update=":containerLogForm" oncomplete="containerLog.show()" >
-                          <f:ajax event="click" listener="#{auditManager.selectEntityForLog(slotAttributesController.slot, 'SLOT')}" />
-                       </p:commandButton>
-                       <p:commandButton value="Back" style="float: right; margin: 10px 0px 10px 10px" ajax="false" >
-                           <f:ajax event="click" listener="#{slotAttributesController.containerRedirect()}" />
-                       </p:commandButton>
-                       
-                   </h:panelGroup>
+                <h:panelGroup class="properties-parent-info" layout="block" style="border-right: 1px solid #a8a8a8;">
+                    <p:panelGrid columns="2" style="width: 100%;" columnClasses="alignTop, alignTop" styleClass="noBorders"> 
+                        <h:outputLabel value="Device type name:" />
+                        <h:outputText value="#{slotAttributesController.slot.name}" style="width: 100%;" />
+                                                                    
+                        <h:outputLabel value="Description:" />
+                        <p:inputTextarea value="#{slotAttributesController.slot.description}"  rows="5" cols="51" disabled="true" style="width: 100%;"/>
+                        
+                        <h:outputLabel value="Parent container:" />
+                        <h:outputText value="#{slotAttributesController.parentSlot}" style="width: 100%;" />
+                    </p:panelGrid>
+                    
+                    <br/>
+                    <br/>
+                    
+                    <p:commandButton value="History" icon="ui-icon-clock" style="float: right; margin: 10px 10px " 
+                         update=":containerLogForm" oncomplete="containerLog.show()" >
+                       <f:ajax event="click" listener="#{auditManager.selectEntityForLog(slotAttributesController.slot, 'SLOT')}" />
+                    </p:commandButton>
+                    <p:commandButton value="Back" style="float: right; margin: 10px 0px 10px 10px" ajax="false" 
+                         action="#{slotAttributesController.containerRedirect()}" />
+                </h:panelGroup>
                    
-                   <h:panelGroup class="property-values" layout="block">
-                      <p:commandButton id="addButton" value="Add" type="button" icon="ui-icon-plus"/>
-                      <p:menu overlay="true" trigger="addButton" my="left top" at="left bottom">
-                            <p:menuitem value="Property" oncomplete="addPropertyValue.show()" 
-                                    actionListener="#{slotAttributesController.prepareForPropertyValueAdd}" 
-                                    update=":addPropertyValueForm:addPropertyValue"/>
-                            <p:menuitem value="Tag" oncomplete="containerTag.show()" update=":containerTagForm" 
-                                    actionListener="#{slotAttributesController.prepareForTagAdd}"/>
-                            <p:menuitem value="Artifact" oncomplete="addArtifact.show()" 
-                                    actionListener="#{slotAttributesController.prepareForArtifactAdd}" 
-                                    update=":addArtifactForm:addArtifact"/>
-                       </p:menu>
-                       <p:dataTable id="attributesDataTable" var="attribute" value="#{slotAttributesController.attributes}" style="table-layout: fixed; word-wrap: break-word;" rows="15" paginator="true" paginatorPosition="bottom">
-                            <p:column headerText="Name" sortBy="#{attribute.name}">
-                                <h:outputText value="#{attribute.name}" />
-                            </p:column>
-                
-                            <p:column headerText="Value">
-                                <h:outputText value="#{attribute.value}" />
-                            </p:column>
-                                                        
-                            <p:column headerText="Unit" >
-                                <h:outputText value="#{!empty attribute.unit ? attribute.unit.name : '-'}" />
-                            </p:column>
-                
-                            <p:column headerText="Actions" width="10%">
-                                <p:commandButton icon="ui-icon-pencil" title="Edit" ajax="true" rendered="#{slotAttributesController.canEdit(attribute.entity)}">
-                                     <f:setPropertyActionListener value="#{attribute}" target="#{slotAttributesController.selectedAttributeToModify}" />
-                                </p:commandButton>
-                                <p:commandButton icon="ui-icon-trash" title="Delete" ajax="true" oncomplete="deleteAttribute.show()" rendered="#{slotAttributesController.canDelete(attribute.entity)}">
-                                     <f:setPropertyActionListener value="#{attribute}" target="#{slotAttributesController.selectedAttribute}" />
-                                </p:commandButton>
-                                <p:commandButton icon="ui-icon-arrowthick-1-s" title="Download" ajax="false" rendered="#{attribute.hasFile}">
-                                     <f:setPropertyActionListener value="#{attribute}" target="#{slotAttributesController.selectedAttribute}" />
-                                     <p:fileDownload value="#{slotAttributesController.downloadFile}" />
-                                </p:commandButton>
-                                <p:button icon="ui-icon-extlink" target="_blank" title="Got to URL" ajax="true" rendered="#{attribute.hasURL}" href="#{attribute.value}"/>
-                            </p:column>
-                        </p:dataTable>
-                   </h:panelGroup>
-                </h:form>
+                <h:panelGroup class="property-values" layout="block">
+                    <p:commandButton id="addButton" value="Add" type="button" icon="ui-icon-plus"/>
+                    <p:menu overlay="true" trigger="addButton" my="left top" at="left bottom">
+                        <p:menuitem value="Property" oncomplete="addPropertyValue.show()" 
+                                actionListener="#{slotAttributesController.prepareForPropertyValueAdd}" 
+                                update=":addPropertyValueForm:addPropertyValue"/>
+                        <p:menuitem value="Tag" oncomplete="containerTag.show()" update=":containerTagForm" 
+                                actionListener="#{slotAttributesController.prepareForTagAdd}"/>
+                        <p:menuitem value="Artifact" oncomplete="addArtifact.show()" 
+                                actionListener="#{slotAttributesController.prepareForArtifactAdd}" 
+                                update=":addArtifactForm:addArtifact"/>
+                    </p:menu>
+                    <p:dataTable id="attributesDataTable" var="attribute" value="#{slotAttributesController.attributes}" 
+                            style="table-layout: fixed; word-wrap: break-word;" rows="15" paginator="true" 
+                            paginatorPosition="bottom">
+                        <p:column headerText="Name" sortBy="#{attribute.name}">
+                            <h:outputText value="#{attribute.name}" />
+                        </p:column>
+
+                        <p:column headerText="Value">
+                            <h:outputText value="#{attribute.value}" />
+                        </p:column>
+                                                     
+                        <p:column headerText="Unit" >
+                            <h:outputText value="#{!empty attribute.unit ? attribute.unit.name : '-'}" />
+                        </p:column>
+
+                        <p:column headerText="Actions" width="70">
+                            <p:commandLink ajax="true" title="Edit" update=":modifyPropertyValueForm :modifyArtifactForm" 
+                                    rendered="#{slotAttributesController.canEdit(attribute.entity)}">
+                                <h:outputText styleClass="ui-icon ui-icon-pencil" style="display: inline-block !important; margin-right: 6px;" />
+                                <f:setPropertyActionListener value="#{attribute}" target="#{slotAttributesController.selectedAttributeToModify}" />
+                            </p:commandLink>
+                            <p:commandLink ajax="true" title="Delete"  oncomplete="deleteAttribute.show()" 
+                                    rendered="#{slotAttributesController.canDelete(attribute.entity)}">
+                                <h:outputText styleClass="ui-icon ui-icon-trash" style="display: inline-block !important; margin-right: 6px;" />
+                                <f:setPropertyActionListener value="#{attribute}" target="#{slotAttributesController.selectedAttribute}" />
+                            </p:commandLink>
+                            <p:commandLink ajax="false" title="Download" rendered="#{attribute.hasFile}">
+                                <h:outputText styleClass="ui-icon ui-icon-arrowthick-1-s" style="display: inline-block !important; margin-right: 6px;" />
+                                <f:setPropertyActionListener value="#{attribute}" target="#{slotAttributesController.selectedAttribute}" />
+                                <p:fileDownload value="#{slotAttributesController.downloadFile}" />
+                            </p:commandLink>
+                            <h:outputLink rendered="#{attribute.hasURL}" title="Go to URL" target="_blank" value="#{attribute.value}">
+                                <h:outputText styleClass="ui-icon ui-icon-extlink" style="display: inline-block !important; margin-right: 6px;" />
+                            </h:outputLink>
+                        </p:column>
+                    </p:dataTable>
+                </h:panelGroup>
+            </h:form>
         </h:panelGroup>
         
         <ui:include src="../../audit/audit-log-table.xhtml">

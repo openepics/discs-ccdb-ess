@@ -30,20 +30,31 @@
                 </p:column>
                 
 
-                <p:column headerText="Actions" style="padding: 0px !important; width: 15%; text-align: center">                    
-                    <p:commandButton icon="ui-icon-plus" title="Add Property" rendered="#{installationSlot.isHostingSlot}" action="#{installationSlotsController.redirectToAttributes(installationSlot.id)}"/>
-                    <p:commandButton icon="ui-icon-pencil" title="Edit" ajax="true" rendered="#{installationSlot.isHostingSlot}" update=":slotModifyForm:modifySlotDialog" oncomplete="modifySlotDialog.show()">
+                <p:column headerText="Actions" style="padding: 0px !important; width: 120; text-align: center">
+                    <p:commandLink ajax="true" title="Add properties" rendered="#{installationSlot.isHostingSlot}" 
+                            action="#{installationSlotsController.redirectToAttributes(installationSlot.id)}">
+                        <h:outputText styleClass="ui-icon ui-icon-contact" style="display: inline-block !important; margin-right: 6px;" />
+                    </p:commandLink>
+                    <p:commandLink ajax="true" title="Edit" rendered="#{installationSlot.isHostingSlot}" 
+                            update=":slotModifyForm" oncomplete="modifySlotDialog.show()">
+                        <h:outputText styleClass="ui-icon ui-icon-pencil" style="display: inline-block !important; margin-right: 6px;" />
                         <f:setPropertyActionListener value="#{installationSlot}" target="#{installationSlotsController.selectedSlotViewToModify}" />
-                    </p:commandButton>
-                    <p:commandButton icon="ui-icon-trash" title="Delete" ajax="true" rendered="#{installationSlot.isHostingSlot}" disabled="#{!installationSlot.canDelete}" oncomplete="deleteInstallationSlot.show()">
-                        <f:setPropertyActionListener value="#{installationSlot}" target="#{installationSlotsController.selectedSlotView}" />
-                    </p:commandButton>
-                    <p:commandButton icon="ui-icon-clock" title="Log" rendered="#{installationSlot.isHostingSlot}" oncomplete="installationSlotLog.show()">
-                        <f:ajax event="click" listener="#{auditManager.selectEntityForLog(installationSlot.slot, 'SLOT')}" />
-                    </p:commandButton>
-                    <p:commandButton icon="ui-icon-link" title="Relationships" rendered="#{installationSlot.isHostingSlot}" oncomplete="slotRelationships.show()" update=":slotRelationshipsForm:slotRelationships">
+                    </p:commandLink>
+                    <p:commandLink ajax="true" title="Relationships" rendered="#{installationSlot.isHostingSlot}" 
+                            oncomplete="slotRelationships.show()" update=":slotRelationshipsForm">
+                        <h:outputText styleClass="ui-icon ui-icon-link" style="display: inline-block !important; margin-right: 6px;" />
                         <f:setPropertyActionListener value="#{installationSlot}" target="#{installationSlotsController.selectedSlotViewForRelationships}" />
-                    </p:commandButton>
+                    </p:commandLink>
+                    <p:commandLink ajax="true" title="Delete" rendered="#{installationSlot.isHostingSlot}" 
+                            disabled="#{!installationSlot.canDelete}" oncomplete="deleteInstallationSlot.show()">
+                        <h:outputText styleClass="ui-icon ui-icon-trash" style="display: inline-block !important; margin-right: 6px;" />
+                        <f:setPropertyActionListener value="#{installationSlot}" target="#{installationSlotsController.selectedSlotView}" />
+                    </p:commandLink>
+                    <p:commandLink ajax="true" title="Log" update=":installationSlotLogForm" 
+                            rendered="#{installationSlot.isHostingSlot}" oncomplete="installationSlotLog.show()">
+                        <h:outputText styleClass="ui-icon ui-icon-clock" style="display: inline-block !important; margin-right: 6px;" />
+                        <f:ajax event="click" listener="#{auditManager.selectEntityForLog(installationSlot.slot, 'SLOT')}" />
+                    </p:commandLink>
                 </p:column>
             </p:treeTable>
         </h:form>
@@ -74,12 +85,12 @@
         </ui:include>
         
         <ui:include src="../add-or-modify-dialogs/delete-confirmation.xhtml" >
-             <ui:param name="formId" value="deleteInstallationSlotForm" />
-             <ui:param name="dialogTitle" value="Delete Installation Slot" />
-             <ui:param name="widgetName" value="deleteInstallationSlot" />
-             <ui:param name="controller" value="#{installationSlotsController}" />
-             <ui:param name="submitHandler" value="onDelete" />
-             <ui:param name="formToUpdate" value=":installationSlotsForm:installationSlotsTree" />
+            <ui:param name="formId" value="deleteInstallationSlotForm" />
+            <ui:param name="dialogTitle" value="Delete Installation Slot" />
+            <ui:param name="widgetName" value="deleteInstallationSlot" />
+            <ui:param name="controller" value="#{installationSlotsController}" />
+            <ui:param name="submitHandler" value="onDelete" />
+            <ui:param name="formToUpdate" value=":installationSlotsForm:installationSlotsTree" />
         </ui:include>
     </ui:define>
 </ui:composition>

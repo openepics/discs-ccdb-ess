@@ -42,8 +42,8 @@
                                 <h:outputText value="#{installationManager.getInstalledSlotForDevice(device)}" />
                             </p:column>
                    
-                            <p:column headerText="Actions">
-                                <p:commandLink ajax="true" title="Device details" action="#{devicesByTypeManager.deviceDetailsRedirect(device.id)}">
+                            <p:column headerText="Actions" width="92">
+                                <p:commandLink ajax="true" title="Add properties" action="#{devicesByTypeManager.deviceDetailsRedirect(device.id)}">
                                     <h:outputText styleClass="ui-icon ui-icon-contact" style="display: inline-block !important; margin-right: 6px;" />
                                 </p:commandLink>
                                 <p:commandLink ajax="true" title="Edit" update=":deviceModifyForm" action="#{devicesByTypeManager.prepareForModify()}" oncomplete="modifyDeviceDialog.show()">

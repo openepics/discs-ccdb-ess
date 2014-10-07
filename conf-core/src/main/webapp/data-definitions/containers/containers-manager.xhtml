@@ -21,7 +21,7 @@
                 </p:column>
                 
                 <p:column headerText="Actions" style="padding: 0px !important; width: 122; text-align: center">                    
-                    <p:commandLink ajax="true" title="Add Property" action="#{containerController.redirectToAttributes(container.id)}">
+                    <p:commandLink ajax="true" title="Add properties" action="#{containerController.redirectToAttributes(container.id)}">
                         <h:outputText styleClass="ui-icon ui-icon-contact" style="display: inline-block !important; margin-right: 6px;" />
                     </p:commandLink>
                     <p:commandLink ajax="true" title="Edit" update=":modifyContainerForm" oncomplete="modifyContainer.show()">
