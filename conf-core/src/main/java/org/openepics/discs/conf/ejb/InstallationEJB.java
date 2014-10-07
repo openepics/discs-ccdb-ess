@@ -20,6 +20,8 @@
 package org.openepics.discs.conf.ejb;
 
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.ejb.Stateless;
 import javax.persistence.NoResultException;
@@ -39,6 +41,7 @@ import com.google.common.base.Preconditions;
  */
 @Stateless
 public class InstallationEJB extends DAO<InstallationRecord> {
+    private static final Logger logger = Logger.getLogger(InstallationEJB.class.getCanonicalName());
 
     @Override
     protected void defineEntity() {
@@ -98,6 +101,31 @@ public class InstallationEJB extends DAO<InstallationRecord> {
         Preconditions.checkNotNull(componentType);
         return em.createNamedQuery("Device.uninstalledDevicesByType", Device.class).
                 setParameter("componentType", componentType).getResultList();
+    }
+
+    @Override
+    public void add(InstallationRecord record) {
+        final Device device = record.getDevice();
+        final Slot slot = record.getSlot();
+        Preconditions.checkNotNull(device);
+        Preconditions.checkNotNull(slot);
+        if (!slot.getComponentType().equals(device.getComponentType())) {
+            logger.log(Level.WARNING, "The device and installation slot device types do not match.");
+            throw new RuntimeException("The device and installation slot device types do not match.");
+        }
+        // we must check whether the selected slot is already occupied or selected device is already installed
+        final InstallationRecord slotCheck = getActiveInstallationRecordForSlot(slot);
+        if (slotCheck != null) {
+            logger.log(Level.WARNING, "An attempt was made to install a device in an already occupied slot.");
+            throw new RuntimeException("Slot already occupied.");
+        }
+        final InstallationRecord deviceCheck = getActiveInstallationRecordForDevice(device);
+        if (deviceCheck != null) {
+            logger.log(Level.WARNING, "An attempt was made to install a device that is already installed.");
+            throw new RuntimeException("Device already installed.");
+        }
+
+        super.add(record);
     }
 
 }

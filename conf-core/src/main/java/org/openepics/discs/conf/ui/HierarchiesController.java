@@ -21,9 +21,9 @@ package org.openepics.discs.conf.ui;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
@@ -49,8 +49,6 @@ import org.openepics.discs.conf.views.EntityAttributeView;
 import org.openepics.discs.conf.views.SlotRelationshipView;
 import org.openepics.discs.conf.views.SlotView;
 import org.primefaces.model.TreeNode;
-
-import com.google.common.base.Preconditions;
 
 /**
  * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
@@ -201,7 +199,7 @@ public class HierarchiesController implements Serializable {
      */
     public List<Device> getUninstalledDevices() {
         if (selectedSlot == null || !selectedSlot.isHostingSlot()) {
-            return new ArrayList<Device>();
+            return Collections.emptyList();
         }
         return installationEJB.getUninstalledDevices(selectedSlot.getComponentType());
     }
@@ -223,6 +221,7 @@ public class HierarchiesController implements Serializable {
     /**
      * This method creates a new installation record for the device selected in the installation dialog. Before that
      * it checks whether a device slot and device are both selected, and that both are also uninstalled at the moment.
+     * The checks are performed in the EJB.
      * This method creates a new installation record containing:
      * <ul>
      * <li>record number</li>
@@ -233,24 +232,6 @@ public class HierarchiesController implements Serializable {
      * The uninstall date is left empty (NULL).
      */
     public void installDevice() {
-        Preconditions.checkNotNull(deviceToInstall);
-        Preconditions.checkNotNull(selectedSlot);
-        if (!selectedSlot.getComponentType().equals(deviceToInstall.getComponentType())) {
-            logger.log(Level.WARNING, "The device and installation slot device types do not match.");
-            throw new RuntimeException("The device and installation slot device types do not match.");
-        }
-        // we must check whether the selected slot is already occupied or selected device is already installed
-        final InstallationRecord slotCheck = installationEJB.getActiveInstallationRecordForSlot(selectedSlot);
-        if (slotCheck != null) {
-            logger.log(Level.WARNING, "An attempt was made to install a device in an already occupied slot.");
-            throw new RuntimeException("Slot already occupied.");
-        }
-        final InstallationRecord deviceCheck = installationEJB.getActiveInstallationRecordForDevice(deviceToInstall);
-        if (deviceCheck != null) {
-            logger.log(Level.WARNING, "An attempt was made to install a device that is already installed.");
-            throw new RuntimeException("Device already installed.");
-        }
-
         final Date today = new Date();
         final InstallationRecord newRecord = new InstallationRecord(Long.toString(today.getTime()), today);
         newRecord.setDevice(deviceToInstall);
