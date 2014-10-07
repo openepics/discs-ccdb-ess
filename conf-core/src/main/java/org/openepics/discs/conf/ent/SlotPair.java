@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
@@ -20,7 +21,8 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author vuppala
  */
 @Entity
-@Table(name = "slot_pair")
+@Table(name = "slot_pair", indexes = { @Index(columnList = "parent_slot, slot_relation"),
+        @Index(columnList = "child_slot") })
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "SlotPair.findAll", query = "SELECT s FROM SlotPair s"),

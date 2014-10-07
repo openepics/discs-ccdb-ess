@@ -32,7 +32,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @author vuppala
  */
 @Entity
-@Table(name = "slot", indexes = { @Index(columnList = "name") })
+@Table(name = "slot", indexes = { @Index(columnList = "name") , @Index(columnList = "component_type"),
+        @Index(columnList = "is_hosting_slot") })
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Slot.findAll", query = "SELECT s FROM Slot s"),

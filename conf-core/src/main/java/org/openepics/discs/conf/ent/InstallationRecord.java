@@ -29,8 +29,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  *
  * @author vuppala
  */
+// when searching by device only, the composite index (device, uninstall_date) can be used as well
 @Entity
-@Table(name = "installation_record", indexes = { @Index(columnList = "slot"), @Index(columnList = "device"),
+@Table(name = "installation_record", indexes = { @Index(columnList = "slot"),
         @Index(columnList = "device, uninstall_date") })
 @XmlRootElement
 @NamedQueries({
