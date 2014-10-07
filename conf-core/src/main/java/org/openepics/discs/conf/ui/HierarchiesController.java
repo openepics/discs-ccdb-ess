@@ -77,6 +77,14 @@ public class HierarchiesController implements Serializable {
         rootNode = slotsTreeBuilder.newSlotsTree(slotEJB.findAll(), null, true);
     }
 
+    /**
+     * @return The list of attributes (property values, artifacts and tags) for at all levels:
+     * <ul>
+     * <li>device type properties</li>
+     * <li>container or installation slot properties</li>
+     * <li>device instance properties (for installation slots and if device is installed)</li>
+     * </ul>
+     */
     public List<EntityAttributeView> getAttributes() {
         final List<EntityAttributeView> attributesList = new ArrayList<>();
 
@@ -128,10 +136,16 @@ public class HierarchiesController implements Serializable {
         return attributesList;
     }
 
+    /**
+     * @return The slot (container or installation slot) that is currently selected in the tree.
+     */
     public Slot getSelectedNodeSlot() {
         return selectedSlot;
     }
 
+    /**
+     * @return The list of relationships for the currently selected slot.
+     */
     public List<SlotRelationshipView> getRelationships() {
         final List<SlotRelationshipView> relationships = new ArrayList<>();
         if (selectedNode != null) {
@@ -144,14 +158,27 @@ public class HierarchiesController implements Serializable {
         return relationships;
     }
 
+    /**
+     * @return The root node of (and consequently the entire) hierarchy tree.
+     */
     public TreeNode getRootNode() {
         return rootNode;
     }
 
+    /**
+     * @return Getter for the currently selected node in a tree (required by PrimeFaces).
+     */
     public TreeNode getSelectedNode() {
         return selectedNode;
     }
 
+    /** With this method PrimeFaces sets the currently selected node. The method has two side effects:
+     * <ul>
+     * <li>it also sets the container or installation slot associated with the currently selected tree node</li>
+     * <li>it also searches id there is an installation record associated with the currently selected tree node</li>
+     * </ul>
+     * @param selectedNode The PrimeFaces tree node to that is selected.
+     */
     public void setSelectedNode(TreeNode selectedNode) {
         this.selectedNode = selectedNode;
         this.selectedSlot = selectedNode == null ? null : ((SlotView)selectedNode.getData()).getSlot();
@@ -159,11 +186,19 @@ public class HierarchiesController implements Serializable {
                                     : installationEJB.getActiveInstallationRecordForSlot(selectedSlot);
     }
 
+    /**
+     * @return The device that is installed in the currently selected slot, <code>null</code> if no device is installed
+     * or this is a <i>container</i> or no node is selected.
+     */
     public Device getInstalledDevice() {
         return installationRecord == null ? null : installationRecord.getDevice();
     }
 
 
+    /**
+     * @return Based on the device type of the currently selected slot, this returns a list of all appropriate device
+     * instances that are not installed.
+     */
     public List<Device> getUninstalledDevices() {
         if (selectedSlot == null || !selectedSlot.isHostingSlot()) {
             return new ArrayList<Device>();
@@ -185,9 +220,25 @@ public class HierarchiesController implements Serializable {
         this.deviceToInstall = deviceToInstall;
     }
 
+    /**
+     * This method creates a new installation record for the device selected in the installation dialog. Before that
+     * it checks whether a device slot and device are both selected, and that both are also uninstalled at the moment.
+     * This method creates a new installation record containing:
+     * <ul>
+     * <li>record number</li>
+     * <li>install date</li>
+     * <li>device</li>
+     * <li>installation slot</li>
+     * </ul>
+     * The uninstall date is left empty (NULL).
+     */
     public void installDevice() {
         Preconditions.checkNotNull(deviceToInstall);
         Preconditions.checkNotNull(selectedSlot);
+        if (!selectedSlot.getComponentType().equals(deviceToInstall.getComponentType())) {
+            logger.log(Level.WARNING, "The device and installation slot device types do not match.");
+            throw new RuntimeException("The device and installation slot device types do not match.");
+        }
         // we must check whether the selected slot is already occupied or selected device is already installed
         final InstallationRecord slotCheck = installationEJB.getActiveInstallationRecordForSlot(selectedSlot);
         if (slotCheck != null) {

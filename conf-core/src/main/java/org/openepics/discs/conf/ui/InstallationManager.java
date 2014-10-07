@@ -123,8 +123,9 @@ public class InstallationManager implements Serializable {
         this.selectedSlot = selectedSlot;
     }
 
-    /** Used in the device details screen. This method creates a new installation record for a device. The
-     * installation record contains:
+    /** Used in the device details screen. This method creates a new installation record for a device. Before that it
+     * checks whether a device slot and device are both selected, and that both are also uninstalled at the moment.
+     * The installation record contains:
      * <ul>
      * <li>record number</li>
      * <li>install date</li>
@@ -132,12 +133,18 @@ public class InstallationManager implements Serializable {
      * <li>installation slot</li>
      * </ul>
      * The uninstall date is left empty (NULL).
+     *
      * @param device The device to create installation record for.
      */
     public void installDevice(Device device) {
+        final Slot slot = ((SlotView)selectedSlot.getData()).getSlot();
+        if (!slot.getComponentType().equals(device.getComponentType())) {
+            logger.log(Level.WARNING, "The device and installation slot device types do not match.");
+            throw new RuntimeException("The device and installation slot device types do not match.");
+        }
         // we must check whether the selected slot is already occupied or selected device is already installed
         final InstallationRecord slotCheck = installationEJB
-                .getActiveInstallationRecordForSlot(((SlotView)selectedSlot.getData()).getSlot());
+                .getActiveInstallationRecordForSlot(slot);
         if (slotCheck != null) {
             logger.log(Level.WARNING, "An attempt was made to install a device in an already occupied slot.");
             throw new RuntimeException("Slot already occupied.");
@@ -151,7 +158,7 @@ public class InstallationManager implements Serializable {
         final Date today = new Date();
         final InstallationRecord newRecord = new InstallationRecord(Long.toString(today.getTime()), today);
         newRecord.setDevice(device);
-        newRecord.setSlot(((SlotView)selectedSlot.getData()).getSlot());
+        newRecord.setSlot(slot);
         installationEJB.add(newRecord);
     }
 
@@ -197,8 +204,10 @@ public class InstallationManager implements Serializable {
         return type1 != null && type2 != null && type1.equals(type2);
     }
 
-    /** Used in the device details screen. This method creates a new installation record for a device.
-     * @param device
+    /** Used in the device details screen. This method updates the currently active installation record for a device.
+     * The currently active installation record is the one which has the uninstall date set to <code>NULL</code>.
+     * The method sets this field to the current date.
+     * @param device the device which to uninstall.
      */
     public void uninstallDevice(Device device) {
         Preconditions.checkNotNull(device);

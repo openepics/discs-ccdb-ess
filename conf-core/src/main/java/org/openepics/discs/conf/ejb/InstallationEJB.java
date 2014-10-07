@@ -90,6 +90,10 @@ public class InstallationEJB extends DAO<InstallationRecord> {
         }
     }
 
+    /**
+     * @param componentType the device type for which we are requesting information.
+     * @return The list of all device instances which are not installed into any installation slot.
+     */
     public List<Device> getUninstalledDevices(ComponentType componentType) {
         Preconditions.checkNotNull(componentType);
         return em.createNamedQuery("Device.uninstalledDevicesByType", Device.class).
