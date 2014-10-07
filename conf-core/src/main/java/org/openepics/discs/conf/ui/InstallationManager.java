@@ -125,6 +125,7 @@ public class InstallationManager implements Serializable {
 
     /** Used in the device details screen. This method creates a new installation record for a device. Before that it
      * checks whether a device slot and device are both selected, and that both are also uninstalled at the moment.
+     * The checks are performed in the EJB.
      * The installation record contains:
      * <ul>
      * <li>record number</li>
@@ -137,28 +138,10 @@ public class InstallationManager implements Serializable {
      * @param device The device to create installation record for.
      */
     public void installDevice(Device device) {
-        final Slot slot = ((SlotView)selectedSlot.getData()).getSlot();
-        if (!slot.getComponentType().equals(device.getComponentType())) {
-            logger.log(Level.WARNING, "The device and installation slot device types do not match.");
-            throw new RuntimeException("The device and installation slot device types do not match.");
-        }
-        // we must check whether the selected slot is already occupied or selected device is already installed
-        final InstallationRecord slotCheck = installationEJB
-                .getActiveInstallationRecordForSlot(slot);
-        if (slotCheck != null) {
-            logger.log(Level.WARNING, "An attempt was made to install a device in an already occupied slot.");
-            throw new RuntimeException("Slot already occupied.");
-        }
-        final InstallationRecord deviceCheck = installationEJB.getActiveInstallationRecordForDevice(device);
-        if (deviceCheck != null) {
-            logger.log(Level.WARNING, "An attempt was made to install a device that is already installed.");
-            throw new RuntimeException("Device already installed.");
-        }
-
         final Date today = new Date();
         final InstallationRecord newRecord = new InstallationRecord(Long.toString(today.getTime()), today);
         newRecord.setDevice(device);
-        newRecord.setSlot(slot);
+        newRecord.setSlot(((SlotView)selectedSlot.getData()).getSlot());
         installationEJB.add(newRecord);
     }
 
