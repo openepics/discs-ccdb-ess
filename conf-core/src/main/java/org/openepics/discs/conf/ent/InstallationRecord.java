@@ -8,6 +8,7 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
@@ -29,7 +30,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @author vuppala
  */
 @Entity
-@Table(name = "installation_record")
+@Table(name = "installation_record", indexes = { @Index(columnList = "slot"), @Index(columnList = "device"),
+        @Index(columnList = "device, uninstall_date") })
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "InstallationRecord.findByName", query = "SELECT i FROM InstallationRecord i "

@@ -10,6 +10,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -31,7 +32,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @author vuppala
  */
 @Entity
-@Table(name = "slot")
+@Table(name = "slot", indexes = { @Index(columnList = "name") })
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Slot.findAll", query = "SELECT s FROM Slot s"),

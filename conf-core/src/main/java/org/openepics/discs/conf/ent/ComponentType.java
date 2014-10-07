@@ -31,7 +31,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @author vuppala
  */
 @Entity
-@Table(name = "component_type", indexes = { @Index(columnList = "super_component_type") })
+@Table(name = "component_type", indexes = { @Index(columnList = "super_component_type"), @Index(columnList = "name") })
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "ComponentType.findAll", query = "SELECT c FROM ComponentType c"),
