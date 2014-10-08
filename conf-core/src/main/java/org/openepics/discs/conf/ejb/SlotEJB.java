@@ -20,6 +20,7 @@
 package org.openepics.discs.conf.ejb;
 
 import java.util.List;
+
 import javax.ejb.Stateless;
 
 import org.openepics.discs.conf.ent.ComponentType;
@@ -95,6 +96,7 @@ public class SlotEJB extends DAO<Slot> {
      * @return {@link List} of slots
      */
     public List<Slot> getRootNodes(SlotRelationName relationName) {
+        // XXX Optimization opportunity - find "component type" and "slot relation" objects first, then scan the table
         return em.createQuery("SELECT cp.childSlot FROM SlotPair cp "
                               + "WHERE cp.parentSlot.componentType.name = :ctype AND cp.slotRelation.name = :relname "
                               + "ORDER BY cp.childSlot.name",
@@ -111,6 +113,7 @@ public class SlotEJB extends DAO<Slot> {
      * @return {@link List} of slots matching the query
      */
     public List<Slot> relatedChildren(String compName) {
+        // XXX Optimization opportunity - find "component type" and "slot relation" objects first, then scan the table
         return em.createQuery("SELECT cp.childSlot FROM SlotPair cp "
                               + "WHERE cp.parentSlot.name = :compname AND cp.slotRelation.name = :relname", Slot.class)
                .setParameter("compname", compName)

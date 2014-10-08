@@ -21,8 +21,9 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author vuppala
  */
 @Entity
+// does combined index make sense at all? We're searching for name anyhow...
 @Table(name = "slot_pair", indexes = { @Index(columnList = "parent_slot, slot_relation"),
-        @Index(columnList = "child_slot") })
+        @Index(columnList = "child_slot"), @Index(columnList = "parent_slot") })
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "SlotPair.findAll", query = "SELECT s FROM SlotPair s"),
