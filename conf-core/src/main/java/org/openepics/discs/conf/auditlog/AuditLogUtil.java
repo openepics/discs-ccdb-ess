@@ -46,10 +46,9 @@ public class AuditLogUtil {
 
     static {
         // Configure Jackson to always order entries see, http://stackoverflow.com/a/18993481
+        MAPPER.setSerializationInclusion(Include.NON_EMPTY);
         MAPPER.configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true);
         MAPPER.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-        MAPPER.setSerializationInclusion(Include.NON_NULL);
-
     }
 
     private ObjectNode node = null;
@@ -67,14 +66,11 @@ public class AuditLogUtil {
     /**
      * Given a set of property names, those will be removed from the serialized output
      *
-     * ToDo: Check if it exists and throw exception if it doesn't. Exception should not happen,
-     * if it happens something is changed and the audit logger should be updated.
-     *
-     * @param propertyNames
+     * @param fieldNames
      * @return This class, with updated state (removed properties)
      */
-    public AuditLogUtil removeTopProperties(Collection<String> propertyNames) {
-        node.remove(propertyNames);
+    public AuditLogUtil removeTopProperties(final Collection<String> fieldNames) {
+        node.remove(fieldNames);
         return this;
     }
 
