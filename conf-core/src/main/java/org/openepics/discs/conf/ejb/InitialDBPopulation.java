@@ -26,6 +26,7 @@ import javax.json.JsonObject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.DataType;
 import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
@@ -184,6 +185,9 @@ public class InitialDBPopulation {
         em.persist(createSlotRelation(SlotRelationName.CONTAINS));
         em.persist(createSlotRelation(SlotRelationName.POWERS));
         em.persist(createSlotRelation(SlotRelationName.CONTROLS));
+
+        em.persist(createContainerType(SlotEJB.ROOT_COMPONENT_TYPE));
+        em.persist(createContainerType(SlotEJB.GRP_COMPONENT_TYPE));
     }
 
     /**
@@ -216,5 +220,14 @@ public class InitialDBPopulation {
         slotRelation.setModifiedAt(new Date());
 
         return slotRelation;
+    }
+
+    private ComponentType createContainerType(String containerTypeName) {
+        final ComponentType containerType = new ComponentType(containerTypeName);
+        containerType.setDescription(containerTypeName);
+        containerType.setModifiedBy("system");
+        containerType.setModifiedAt(new Date());
+
+        return containerType;
     }
 }

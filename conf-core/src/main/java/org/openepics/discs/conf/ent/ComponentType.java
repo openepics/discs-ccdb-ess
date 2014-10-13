@@ -9,6 +9,7 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -30,10 +31,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @author vuppala
  */
 @Entity
-@Table(name = "component_type")
+@Table(name = "component_type", indexes = { @Index(columnList = "super_component_type"), @Index(columnList = "name") })
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "ComponentType.findAll", query = "SELECT c FROM ComponentType c"),
+    @NamedQuery(name = "ComponentType.findUserTypesOnly", query = "SELECT c FROM ComponentType c "
+            + "WHERE c.name <> :internalType1 AND c.name <> :internalType2 ORDER BY c.name"),
     @NamedQuery(name = "ComponentType.findById", query = "SELECT c FROM ComponentType c WHERE c.id = :id"),
     @NamedQuery(name = "ComponentType.findByName", query = "SELECT c FROM ComponentType c WHERE c.name = :name"),
     @NamedQuery(name = "ComponentType.findAllOrdered", query = "SELECT c FROM ComponentType c ORDER BY c.name"),

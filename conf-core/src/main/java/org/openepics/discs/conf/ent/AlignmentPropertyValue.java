@@ -1,6 +1,7 @@
 package org.openepics.discs.conf.ent;
 
 import javax.persistence.Entity;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
@@ -14,7 +15,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author vuppala
  */
 @Entity
-@Table(name = "alignment_property_value")
+@Table(name = "alignment_property_value", indexes = { @Index(columnList = "alignment_record") })
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "AlignmentPropertyValue.findAll", query = "SELECT a FROM AlignmentPropertyValue a"),

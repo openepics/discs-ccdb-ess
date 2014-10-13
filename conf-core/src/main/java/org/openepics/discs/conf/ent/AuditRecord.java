@@ -11,6 +11,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
@@ -27,12 +28,12 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author vuppala
  */
 @Entity
-@Table(name = "audit_record")
+@Table(name = "audit_record", indexes = { @Index(columnList = "entity_id, entity_type") })
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "AuditRecord.findAll", query = "SELECT a FROM AuditRecord a"),
     @NamedQuery(name = "AuditRecord.findByEntityIdAndType", query = "SELECT a FROM AuditRecord a "
-            + "WHERE a.entityId = :entityId and a.entityType = :entityType")
+            + "WHERE a.entityId = :entityId AND a.entityType = :entityType")
 })
 public class AuditRecord implements Serializable {
     @Id

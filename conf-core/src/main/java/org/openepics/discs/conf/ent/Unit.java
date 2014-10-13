@@ -5,6 +5,7 @@ import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Index;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -21,7 +22,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @author vuppala
  */
 @Entity
-@Table(name = "unit")
+@Table(name = "unit", indexes = { @Index(columnList = "unit_name") })
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Unit.findAll", query = "SELECT u FROM Unit u"),
