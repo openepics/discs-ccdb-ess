@@ -93,4 +93,11 @@ public class ComptypeEJB extends DAO<ComponentType> {
                .setParameter("componentType", componentType).getResultList();
     }
 
+    @Override
+    public List<ComponentType> findAll() {
+        return em.createNamedQuery("ComponentType.findUserTypesOnly", ComponentType.class)
+                .setParameter("internalType1", SlotEJB.ROOT_COMPONENT_TYPE)
+                .setParameter("internalType2", SlotEJB.GRP_COMPONENT_TYPE).getResultList();
+    }
+
 }
