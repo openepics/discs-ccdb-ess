@@ -5,6 +5,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.Index;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
@@ -17,7 +18,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author vuppala
  */
 @Entity
-@Table(name = "slot_relation")
+@Table(name = "slot_relation", indexes = { @Index(columnList = "name") })
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "SlotRelation.findAll", query = "SELECT s FROM SlotRelation s"),

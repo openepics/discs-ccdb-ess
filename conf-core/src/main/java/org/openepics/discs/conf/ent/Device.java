@@ -11,6 +11,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -31,7 +32,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @author vuppala
  */
 @Entity
-@Table(name = "device")
+@Table(name = "device", indexes = { @Index(columnList = "serial_number"), @Index(columnList = "component_type") })
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Device.findAll", query = "SELECT d FROM Device d"),
