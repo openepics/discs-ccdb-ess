@@ -8,10 +8,7 @@
          alternative with an alternative below.
          <class>org.openepics.discs.conf.util.names.NamesESS</class>     
          -->                
-
-		<!-- To Enable RBAC Replace with the alternative bellow 
         <class>org.openepics.discs.conf.security.RBACEntityTypeSecurityPolicy</class>
-        -->
     </alternatives>
 
     <interceptors>

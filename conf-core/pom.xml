@@ -244,16 +244,15 @@
             
             <repositories>
                 <repository>
-                <id>ess-ics-jboss-thirdparty</id>
-                <url>https://artifactory01.esss.lu.se/artifactory/jboss-thirdparty</url>
-                <releases>
-                    <enabled>true</enabled>
-                </releases>
-                <snapshots>
-                    <enabled>false</enabled>
-                </snapshots>
-		</repository>
-
+                    <id>ess-ics-jboss-thirdparty</id>
+                    <url>https://artifactory01.esss.lu.se/artifactory/jboss-thirdparty</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </repository>
             </repositories>
             
             <dependencyManagement>
