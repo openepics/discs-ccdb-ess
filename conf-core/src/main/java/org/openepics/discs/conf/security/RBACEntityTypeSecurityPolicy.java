@@ -30,6 +30,9 @@ import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.Alternative;
 import javax.inject.Named;
@@ -59,6 +62,8 @@ import com.google.common.collect.ImmutableMap.Builder;
 @Alternative
 public class RBACEntityTypeSecurityPolicy extends AbstractEnityTypeSecurityPolicy
     implements SecurityPolicy, Serializable {
+
+    private static final Logger LOGGER = Logger.getLogger(RBACEntityTypeSecurityPolicy.class.getCanonicalName());
 
     private static final String RBAC_RESOURCE = "ControlsDatabase";
 
@@ -100,6 +105,12 @@ public class RBACEntityTypeSecurityPolicy extends AbstractEnityTypeSecurityPolic
         if (!RBAC_RESOURCE.equals(rbacPrincipal.getResource())) {
             throw new SecurityException(RBACEntityTypeSecurityPolicy.class.getName() + " ControlsDatabase resource not "
                     + "available in the principal. Is the RBAC login module configured properly?");
+        }
+        for (String roleName : rbacPrincipal.getRoles()) {
+            LOGGER.log(Level.FINE, "User role: " + roleName);
+        }
+        for (String permissionName : rbacPrincipal.getPermissions()) {
+            LOGGER.log(Level.FINE, "User permission: " + permissionName);
         }
     }
 
