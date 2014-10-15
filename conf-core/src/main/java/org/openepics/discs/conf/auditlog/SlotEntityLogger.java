@@ -77,14 +77,21 @@ public class SlotEntityLogger implements EntityLogger<Slot> {
             }
         }
 
-        return ImmutableList.of(new AuditLogUtil(slot)
-                                .removeTopProperties(Arrays.asList("id", "modifiedAt", "modifiedBy", "version",
-                                        "name", "componentType"))
-                                .addStringProperty("componentType", slot.getComponentType().getName())
-                                .addArrayOfMappedProperties("slotPropertyList", propertiesMap)
-                                .addArrayOfMappedProperties("slotArtifactList", artifactsMap)
-                                .addArrayOfMappedProperties("childrenSlots", childrenMap)
-                                .addArrayOfMappedProperties("parentSlots", parentsMap)
-                                .auditEntry(operation, EntityType.SLOT, slot.getName(), slot.getId()));
+        final AuditLogUtil logUtil = new AuditLogUtil(slot)
+                        .removeTopProperties(Arrays.asList("id", "modifiedAt", "modifiedBy", "version",
+                                "name", "componentType"))
+                        .addStringProperty("componentType", slot.getComponentType().getName())
+                        .addArrayOfMappedProperties("slotPropertyList", propertiesMap)
+                        .addArrayOfMappedProperties("slotArtifactList", artifactsMap)
+                        .addArrayOfMappedProperties("childrenSlots", childrenMap)
+                        .addArrayOfMappedProperties("parentSlots", parentsMap);
+        
+        // If positionInformation is empty do not add it
+        if (slot.getPositionInformation().isEmpty()) 
+        {
+            logUtil.removeTopProperties(Arrays.asList("positionInformation"));
+        }
+        
+        return ImmutableList.of(logUtil.auditEntry(operation, EntityType.SLOT, slot.getName(), slot.getId()));
     }
 }

@@ -82,7 +82,10 @@ public class AuditLogUtil {
      * @return a reference to this instance of {@link AuditLogUtil}
      */
     public AuditLogUtil addStringProperty(String key, String value) {
-        node.put(key, value);
+        // Only add non-null stuff
+        if (value!=null) {
+            node.put(key, value);
+        }
         return this;
     }
 
@@ -94,6 +97,11 @@ public class AuditLogUtil {
      * @return a reference to this instance of {@link AuditLogUtil}
      */
     public AuditLogUtil addArrayOfMappedProperties(String key, Map<String, String> keyValuePairs) {
+        // Don't add anything if empty
+        if (keyValuePairs.isEmpty()) {
+            return this;
+        }        
+
         final ArrayNode arrayNode = MAPPER.createArrayNode();
 
         for (Entry<String, String> entry : keyValuePairs.entrySet()) {
@@ -113,6 +121,11 @@ public class AuditLogUtil {
      * @return a reference to this instance of {@link AuditLogUtil}
      */
     public AuditLogUtil addArrayOfProperties(String key, List<String> arrayValues) {
+        // Don't add anything if empty
+        if (arrayValues.isEmpty()) {
+            return this;
+        }
+        
         final ArrayNode arrayNode = MAPPER.createArrayNode();
         for (String value : arrayValues) {
             arrayNode.add(value);

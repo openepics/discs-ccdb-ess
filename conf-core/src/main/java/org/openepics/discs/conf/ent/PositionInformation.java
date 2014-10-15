@@ -74,4 +74,8 @@ public class PositionInformation implements Serializable {
     public void setGlobalRoll(Double globalRoll) {
         this.globalRoll = globalRoll;
     }
+    
+    public boolean isEmpty() {
+        return globalX == null && globalY == null && globalZ == null && globalPitch == null && globalRoll == null;        
+    }
 }
