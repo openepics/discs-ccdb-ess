@@ -21,11 +21,15 @@ package org.openepics.discs.conf.ejb;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 
 import org.openepics.discs.conf.ent.ComponentType;
+import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotArtifact;
+import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.ent.SlotRelationName;
 
@@ -38,7 +42,6 @@ import org.openepics.discs.conf.ent.SlotRelationName;
  */
 @Stateless
 public class SlotEJB extends DAO<Slot> {
-    // TODO Get the root type from configuration (JNDI, config table etc)
     /**
      * Special {@link ComponentType} name for root components
      */
@@ -48,6 +51,9 @@ public class SlotEJB extends DAO<Slot> {
      * Special {@link ComponentType} name for group components
      */
     public static final String GRP_COMPONENT_TYPE = "_GRP";
+
+    @Inject private SlotPairEJB slotPairEJB;
+    @Inject private SlotRelationEJB slotRelationEJB;
 
     @Override
     protected void defineEntity() {
@@ -139,5 +145,25 @@ public class SlotEJB extends DAO<Slot> {
     public List<Slot> findByIsHostingSlot(boolean isHostingSlot) {
         return em.createNamedQuery("Slot.findByIsHostingSlot", Slot.class)
                 .setParameter("isHostingSlot", isHostingSlot).getResultList();
+    }
+
+    /** The method takes care of adding a new Slot and all its dependencies in one transaction. Called from Container
+     * and iInstallation slot managed beans.
+     * @param newSlot the Container or Installation slot to be added
+     * @param parentSlot its parent. <code>null</code> if the container is a new root.
+     * @param propertyDefinitions a list of property definitions that are automatically added to this slot.
+     */
+    public void addSlotToParentWithPropertyDefs(Slot newSlot, @Nullable Slot parentSlot, List<ComptypePropertyValue> propertyDefinitions) {
+        add(newSlot);
+        if (parentSlot != null) {
+            slotPairEJB.add(new SlotPair(newSlot, parentSlot, slotRelationEJB.findBySlotRelationName(SlotRelationName.CONTAINS)));
+        }
+        for (ComptypePropertyValue propertyDefinition : propertyDefinitions) {
+            final SlotPropertyValue slotPropertyValue = new SlotPropertyValue(false);
+            slotPropertyValue.setProperty(propertyDefinition.getProperty());
+            slotPropertyValue.setSlot(newSlot);
+            addChild(slotPropertyValue);
+        }
+
     }
 }

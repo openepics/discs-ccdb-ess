@@ -38,7 +38,7 @@
                             actionListener="#{comptypeAttributesController.prepareForPropertyValueAdd}" 
                             update=":addPropertyValueForm:addPropertyValue" />
                         <p:menuitem value="Property Definition" oncomplete="deviceTypePropertyDefinition.show()" 
-                            actionListener="#{comptypeAttributesController.prepareForPropertyValueAdd}" 
+                            actionListener="#{comptypeAttributesController.prepareForPropertyDefAdd()}" 
                             update=":deviceTypePropertyDefinitionForm:deviceTypePropertyDefinition" />
                         <p:menuitem value="Tag" oncomplete="deviceTypeTag.show()" update=":deviceTypeTagForm" 
                                    actionListener="#{comptypeAttributesController.prepareForTagAdd}" />

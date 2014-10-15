@@ -69,7 +69,6 @@ public class ContainerController extends AbstractSlotsController {
         } else {
             newSlot.setComponentType(comptypeEJB.findByName(SlotEJB.ROOT_COMPONENT_TYPE));
         }
-        slotEJB.add(newSlot);
         super.onSlotAdd();
     }
 

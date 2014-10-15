@@ -16,20 +16,13 @@ package org.openepics.discs.conf.ui.common;
 
 import java.io.Serializable;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.inject.Inject;
 
 import org.openepics.discs.conf.ejb.ComptypeEJB;
 import org.openepics.discs.conf.ejb.SlotEJB;
-import org.openepics.discs.conf.ejb.SlotPairEJB;
-import org.openepics.discs.conf.ejb.SlotRelationEJB;
-import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.Slot;
-import org.openepics.discs.conf.ent.SlotPair;
-import org.openepics.discs.conf.ent.SlotPropertyValue;
-import org.openepics.discs.conf.ent.SlotRelationName;
 import org.openepics.discs.conf.ui.SlotsTreeBuilder;
 import org.openepics.discs.conf.views.SlotView;
 import org.primefaces.event.NodeCollapseEvent;
@@ -44,8 +37,6 @@ public abstract class AbstractSlotsController implements Serializable{
 
     @Inject protected SlotsTreeBuilder slotsTreeBuilder;
     @Inject protected SlotEJB slotEJB;
-    @Inject protected SlotPairEJB slotPairEJB;
-    @Inject protected SlotRelationEJB slotRelationEJB;
     @Inject protected ComptypeEJB comptypeEJB;
 
     protected TreeNode rootNode;
@@ -78,17 +69,11 @@ public abstract class AbstractSlotsController implements Serializable{
      * <code>newSlot</code> field, which must be set by the descendants.
      */
     protected void onSlotAdd() {
-        if (selectedNode != null) {
-            slotPairEJB.add(new SlotPair(newSlot, ((SlotView) selectedNode.getData()).getSlot(), slotRelationEJB.findBySlotRelationName(SlotRelationName.CONTAINS)));
-        }
+        final Slot parentSlot = selectedNode != null ? ((SlotView) selectedNode.getData()).getSlot() : null;
 
-        List<ComptypePropertyValue> propertyDefinitions = comptypeEJB.findPropertyDefinitions(newSlot.getComponentType());
-        for (ComptypePropertyValue propertyDefinition : propertyDefinitions) {
-            final SlotPropertyValue slotPropertyValue = new SlotPropertyValue(false);
-            slotPropertyValue.setProperty(propertyDefinition.getProperty());
-            slotPropertyValue.setSlot(newSlot);
-            slotEJB.addChild(slotPropertyValue);
-        }
+        slotEJB.addSlotToParentWithPropertyDefs(newSlot, parentSlot,
+                comptypeEJB.findPropertyDefinitions(newSlot.getComponentType()));
+
         updateRootNode();
     }
 

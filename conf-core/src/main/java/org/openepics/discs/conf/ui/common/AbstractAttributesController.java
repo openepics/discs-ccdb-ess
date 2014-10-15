@@ -91,6 +91,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
     protected List<Property> filteredProperties;
     private boolean propertyNameChangeDisabled;
     protected PropertyValueUIElement propertyValueUIElement;
+    protected boolean isPropertyDefinition;
 
     protected String tag;
     protected List<String> tagsForAutocomplete;
@@ -141,10 +142,14 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
         propertyValueInstance.setPropValue(propertyValue);
         setPropertyValueParent(propertyValueInstance);
 
+        if (propertyValueInstance instanceof ComptypePropertyValue) {
+            ((ComptypePropertyValue) propertyValueInstance).setPropertyDefinition(isPropertyDefinition);
+        }
+
         try {
             dao.addChild(propertyValueInstance);
 
-            if (propertyValue == null) {
+            if (isPropertyDefinition) {
                 Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "New property definition has been created");
             } else {
                 Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "New property value has been created");
@@ -405,6 +410,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
         propertyValue = null;
         enumSelections = null;
         propertyValueUIElement = PropertyValueUIElement.NONE;
+        isPropertyDefinition = false;
     }
 
     public void prepareForTagAdd() {

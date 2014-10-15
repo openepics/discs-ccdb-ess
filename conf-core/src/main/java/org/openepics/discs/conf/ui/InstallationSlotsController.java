@@ -23,6 +23,7 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.openepics.discs.conf.ejb.SlotPairEJB;
 import org.openepics.discs.conf.ejb.SlotRelationEJB;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.Slot;
@@ -50,6 +51,7 @@ import com.google.common.collect.Lists;
 public class InstallationSlotsController extends AbstractSlotsController {
 
     @Inject private Names names;
+    @Inject private SlotPairEJB slotPairEJB;
     @Inject private SlotRelationEJB slotRelationEJB;
 
     private ComponentType deviceType;
@@ -114,7 +116,6 @@ public class InstallationSlotsController extends AbstractSlotsController {
         newSlot.getPositionInformation().setGlobalPitch(globalPitch);
         newSlot.getPositionInformation().setGlobalRoll(globalRoll);
         newSlot.getPositionInformation().setGlobalYaw(globalYaw);
-        slotEJB.add(newSlot);
         super.onSlotAdd();
     }
 

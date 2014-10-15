@@ -188,4 +188,12 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
         comptypeEJB.save(compType);
     }
 
+    /**
+     * Prepares the data for property definition creation.
+     */
+    public void prepareForPropertyDefAdd() {
+        super.prepareForPropertyValueAdd();
+        isPropertyDefinition = true;
+    }
+
 }

@@ -7,7 +7,6 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 import org.openepics.discs.conf.ent.values.Value;
@@ -17,7 +16,6 @@ import org.openepics.discs.conf.ent.values.Value;
  *
  */
 @Entity
-@Table(name = "property_value")
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class PropertyValue extends ConfigurationEntity {
     @Column(name = "prop_value", columnDefinition = "TEXT")
