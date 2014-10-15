@@ -83,7 +83,7 @@ public class AuditLogUtil {
      */
     public AuditLogUtil addStringProperty(String key, String value) {
         // Only add non-null stuff
-        if (value!=null) {
+        if (value != null) {
             node.put(key, value);
         }
         return this;
@@ -100,7 +100,7 @@ public class AuditLogUtil {
         // Don't add anything if empty
         if (keyValuePairs.isEmpty()) {
             return this;
-        }        
+        }
 
         final ArrayNode arrayNode = MAPPER.createArrayNode();
 
@@ -125,7 +125,7 @@ public class AuditLogUtil {
         if (arrayValues.isEmpty()) {
             return this;
         }
-        
+
         final ArrayNode arrayNode = MAPPER.createArrayNode();
         for (String value : arrayValues) {
             arrayNode.add(value);
