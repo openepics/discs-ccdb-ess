@@ -22,6 +22,7 @@ package org.openepics.discs.conf.ejb;
 import java.util.List;
 
 import javax.ejb.Stateless;
+import javax.persistence.NoResultException;
 
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotPair;
@@ -94,6 +95,15 @@ public class SlotPairEJB extends DAO<SlotPair> {
         entity.setChildSlot(childSlot);
         childSlot.getChildrenSlotsPairList().add(entity);
         parentSlot.getParentSlotsPairList().add(entity);
+        int lastNumber;
+        try {
+            lastNumber = em.createNamedQuery("SlotPair.findMaxPairOrder", Integer.class)
+                    .setParameter("parentSlot", parentSlot).getSingleResult();
+            lastNumber++;
+        } catch (NoResultException e) {
+            lastNumber = 1;
+        }
+        entity.setSlotOrder(lastNumber);
         super.add(entity);
 	}
 

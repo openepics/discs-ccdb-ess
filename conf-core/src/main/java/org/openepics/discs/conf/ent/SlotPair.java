@@ -2,6 +2,7 @@ package org.openepics.discs.conf.ent;
 
 import java.io.Serializable;
 
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -19,17 +20,20 @@ import javax.xml.bind.annotation.XmlRootElement;
 /**
  *
  * @author vuppala
+ * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  */
 @Entity
 // does combined index make sense at all? We're searching for name anyhow...
 @Table(name = "slot_pair", indexes = { @Index(columnList = "parent_slot, slot_relation"),
-        @Index(columnList = "child_slot"), @Index(columnList = "parent_slot") })
+        @Index(columnList = "child_slot"), @Index(columnList = "parent_slot, slot_relation, slot_order") })
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "SlotPair.findAll", query = "SELECT s FROM SlotPair s"),
     @NamedQuery(name = "SlotPair.findByParentChildRelation", query = "SELECT s FROM SlotPair s "
             + "WHERE s.childSlot.name LIKE :childName "
                 + "AND s.parentSlot.name = :parentName AND s.slotRelation.name = :relationName"),
+    @NamedQuery(name = "SlotPair.findMaxPairOrder", query = "SELECT MAX(s.slotOrder) FROM SlotPair s "
+            + "WHERE s.parentSlot = :parentSlot"),
     @NamedQuery(name = "SlotPair.findById", query = "SELECT s FROM SlotPair s WHERE s.id = :id"),
     @NamedQuery(name = "SlotPair.findSlotPairsByChildAndRelation", query = "SELECT s FROM SlotPair s "
             + "WHERE s.childSlot = :childSlot AND s.slotRelation.name = :relationName"),
@@ -56,6 +60,10 @@ public class SlotPair implements Serializable {
     @JoinColumn(name = "parent_slot")
     @ManyToOne(optional = false)
     private Slot parentSlot;
+
+    @Basic(optional = false)
+    @Column(name = "slot_order")
+    private Integer slotOrder;
 
     public SlotPair() {
     }
@@ -120,5 +128,13 @@ public class SlotPair implements Serializable {
     @Override
     public String toString() {
         return "SlotPair[ id=" + id + " ]";
+    }
+
+    public Integer getSlotOrder() {
+        return slotOrder;
+    }
+
+    public void setSlotOrder(Integer slotOrder) {
+        this.slotOrder = slotOrder;
     }
 }
