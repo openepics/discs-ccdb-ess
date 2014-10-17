@@ -14,6 +14,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -25,7 +26,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Entity
 // does combined index make sense at all? We're searching for name anyhow...
 @Table(name = "slot_pair", indexes = { @Index(columnList = "parent_slot, slot_relation"),
-        @Index(columnList = "child_slot"), @Index(columnList = "parent_slot, slot_relation, slot_order") })
+        @Index(columnList = "child_slot") }, uniqueConstraints = { @UniqueConstraint(
+                columnNames = {"parent_slot", "slot_relation", "slot_order"} ) })
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "SlotPair.findAll", query = "SELECT s FROM SlotPair s"),
