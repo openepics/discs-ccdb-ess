@@ -32,6 +32,7 @@ import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.Privilege;
 import org.openepics.discs.conf.ent.Role;
+import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotRelation;
 import org.openepics.discs.conf.ent.SlotRelationName;
 import org.openepics.discs.conf.ent.User;
@@ -186,8 +187,16 @@ public class InitialDBPopulation {
         em.persist(createSlotRelation(SlotRelationName.POWERS));
         em.persist(createSlotRelation(SlotRelationName.CONTROLS));
 
-        em.persist(createContainerType(SlotEJB.ROOT_COMPONENT_TYPE));
+        final ComponentType rootComponentType = createContainerType(SlotEJB.ROOT_COMPONENT_TYPE);
+        em.persist(rootComponentType);
         em.persist(createContainerType(SlotEJB.GRP_COMPONENT_TYPE));
+
+        final Slot rootContainer = new Slot("_ROOT", false);
+        rootContainer.setComponentType(rootComponentType);
+        rootContainer.setDescription("Implicit CCDB type.");
+        rootContainer.setModifiedBy("system");
+        rootContainer.setModifiedAt(new Date());
+        em.persist(rootContainer);
     }
 
     /**
