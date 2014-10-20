@@ -23,8 +23,8 @@ import org.openepics.discs.conf.ejb.PropertyEJB;
 import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ejb.SlotPairEJB;
 import org.openepics.discs.conf.ejb.SlotRelationEJB;
-import org.openepics.discs.conf.ent.PositionInformation;
 import org.openepics.discs.conf.ent.ComponentType;
+import org.openepics.discs.conf.ent.PositionInformation;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyAssociation;
 import org.openepics.discs.conf.ent.Slot;
@@ -49,18 +49,21 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
     @Inject private ComptypeEJB comptypeEJB;
     private List<Slot> newSlots;
     private Set<Slot> newSlotPairChildren;
-    private int nameIndex, compTypeIndex, isHostingIndex, descriptionIndex, blpIndex, globalXIndex, globalYIndex, globalZIndex, globalRollIndex, globalYawIndex, globalPitchIndex, asmCommentIndex, asmPositionIndex, commentIndex;
+    private int nameIndex, compTypeIndex, isHostingIndex, descriptionIndex, blpIndex;
+    private int globalXIndex, globalYIndex, globalZIndex, globalRollIndex, globalYawIndex, globalPitchIndex;
+    private int asmCommentIndex, asmPositionIndex, commentIndex;
     private int relationIndex, parentIndex, childIndex;
     private DataLoaderResult slotsLoaderResult;
     private DataLoaderResult slotPairsLoaderResult;
 
-    public DataLoaderResult loadDataToDatabase(List<List<String>> slotsFileRows, List<List<String>> slotPairsFileRows, String slotsFileName, String slotPairsFileName) {
+    public DataLoaderResult loadDataToDatabase(List<List<String>> slotsFileRows, List<List<String>> slotPairsFileRows,
+            String slotsFileName, String slotPairsFileName) {
 
         loaderResult = new DataLoaderResult();
         newSlots = new ArrayList<>();
         newSlotPairChildren = new HashSet<>();
 
-        if (slotsFileRows != null && slotsFileRows.size() > 0) {
+        if (slotsFileRows != null && !slotsFileRows.isEmpty()) {
             slotsLoaderResult = new DataLoaderResult();
             slotsLoaderResult.addMessage(new ValidationMessage(slotsFileName));
             loadSlots(slotsFileRows);
@@ -69,7 +72,7 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
             }
         }
 
-        if (slotPairsFileRows != null && slotPairsFileRows.size() > 0 && !loaderResult.isError()) {
+        if (slotPairsFileRows != null && !slotPairsFileRows.isEmpty() && !loaderResult.isError()) {
             slotPairsLoaderResult = new DataLoaderResult();
             slotPairsLoaderResult.addMessage(new ValidationMessage(slotPairsFileName));
             loadSlotPairs(slotPairsFileRows);
@@ -86,7 +89,8 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
     }
 
     private void loadSlots(List<List<String>> inputRows) {
-        final List<String> fields = ImmutableList.of("NAME", "CTYPE", "DESCRIPTION", "IS-HOSTING-SLOT", "BLP", "GCX", "GCY", "GCZ", "GL-ROLL", "GL-YAW", "GL-PITCH", "ASM-COMMENT", "ASM-POSITION", "COMMENT");
+        final List<String> fields = ImmutableList.of("NAME", "CTYPE", "DESCRIPTION", "IS-HOSTING-SLOT", "BLP", "GCX",
+                "GCY", "GCZ", "GL-ROLL", "GL-YAW", "GL-PITCH", "ASM-COMMENT", "ASM-POSITION", "COMMENT");
         /*
          * List does not contain any rows that do not have a value (command)
          * in the first column. There should be no commands before "HEADER".
@@ -180,6 +184,10 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                                 continue;
                             } else {
                                 try {
+                                    if (compType.getName().equals(SlotEJB.ROOT_COMPONENT_TYPE)) {
+                                        rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                                        continue;
+                                    }
                                     final Slot slotToUpdate = slotEJB.findByName(name);
                                     addOrUpdateSlot(slotToUpdate, compType, isHosting, description, blp, globalX, globalY, globalZ, globalRoll, globalPitch, globalYaw, asmComment, asmPosition, comment);
                                     addOrUpdateProperties(slotToUpdate, indexByPropertyName, row, rowNumber);
@@ -197,6 +205,10 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                                 continue;
                             } else {
                                 try {
+                                    if (compType.getName().equals(SlotEJB.ROOT_COMPONENT_TYPE)) {
+                                        rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                                        continue;
+                                    }
                                     final Slot newSlot = new Slot(name, isHosting);
                                     addOrUpdateSlot(newSlot, compType, isHosting, description, blp, globalX, globalY, globalZ, globalRoll, globalPitch, globalYaw, asmComment, asmPosition, comment);
                                     slotEJB.add(newSlot);
@@ -218,6 +230,11 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                                 rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
                                 continue;
                             } else {
+                                final ComponentType compType = slotToDelete.getComponentType();
+                                if (compType.getName().equals(SlotEJB.ROOT_COMPONENT_TYPE)) {
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                                    continue;
+                                }
                                 slotEJB.delete(slotToDelete);
                             }
                         } catch (Exception e) {
@@ -242,6 +259,11 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                                     rowResult.addMessage(new ValidationMessage(ErrorMessage.NAME_ALREADY_EXISTS, rowNumber, headerRow.get(nameIndex)));
                                     continue;
                                 } else {
+                                    final ComponentType compType = slotToRename.getComponentType();
+                                    if (compType.getName().equals(SlotEJB.ROOT_COMPONENT_TYPE)) {
+                                        rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                                        continue;
+                                    }
                                     slotToRename.setName(newName);
                                     slotEJB.save(slotToRename);
                                 }
@@ -262,7 +284,9 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
         }
     }
 
-    private void addOrUpdateSlot(Slot slotToAddOrUpdate, ComponentType compType, boolean isHosting, String description, Double blp, Double globalX, Double globalY, Double globalZ, Double globalRoll, Double globalPitch, Double globalYaw, String asmComment, String asmPosition, String comment) {
+    private void addOrUpdateSlot(Slot slotToAddOrUpdate, ComponentType compType, boolean isHosting, String description,
+            Double blp, Double globalX, Double globalY, Double globalZ, Double globalRoll, Double globalPitch,
+            Double globalYaw, String asmComment, String asmPosition, String comment) {
         slotToAddOrUpdate.setModifiedAt(new Date());
         slotToAddOrUpdate.setComponentType(compType);
         slotToAddOrUpdate.setDescription(description);

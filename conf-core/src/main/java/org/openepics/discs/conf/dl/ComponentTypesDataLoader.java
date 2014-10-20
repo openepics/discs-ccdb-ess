@@ -17,6 +17,7 @@ import org.openepics.discs.conf.dl.common.ErrorMessage;
 import org.openepics.discs.conf.dl.common.ValidationMessage;
 import org.openepics.discs.conf.ejb.ComptypeEJB;
 import org.openepics.discs.conf.ejb.PropertyEJB;
+import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.Property;
@@ -94,6 +95,10 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
                 case CMD_UPDATE:
                     final ComponentType componentTypeToUpdate = comptypeEJB.findByName(name);
                     if (componentTypeToUpdate != null) {
+                        if (componentTypeToUpdate.getName().equals(SlotEJB.ROOT_COMPONENT_TYPE)) {
+                            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                            continue;
+                        }
                         try {
                             componentTypeToUpdate.setDescription(description);
                             addOrUpdateProperties(componentTypeToUpdate, indexByPropertyName, row, rowNumber);
@@ -124,6 +129,10 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
                             rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
                             continue;
                         } else {
+                            if (componentTypeToDelete.getName().equals(SlotEJB.ROOT_COMPONENT_TYPE)) {
+                                rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                                continue;
+                            }
                             comptypeEJB.delete(componentTypeToDelete);
                         }
                     } catch (Exception e) {
@@ -144,6 +153,10 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
 
                         final ComponentType componentTypeToRename = comptypeEJB.findByName(oldName);
                         if (componentTypeToRename != null) {
+                            if (componentTypeToRename.getName().equals(SlotEJB.ROOT_COMPONENT_TYPE)) {
+                                rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                                continue;
+                            }
                             if (comptypeEJB.findByName(newName) != null) {
                                 rowResult.addMessage(new ValidationMessage(ErrorMessage.NAME_ALREADY_EXISTS, rowNumber, headerRow.get(nameIndex)));
                                 continue;
