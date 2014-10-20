@@ -40,8 +40,9 @@ public class SlotView {
     private final Double globalRoll;
     private final Double globalYaw;
     private final Device installedDevice;
+    private final int order;
 
-    public SlotView(Slot slot, SlotView parentNode, List<SlotPair> children, Device installedDevice) {
+    public SlotView(Slot slot, SlotView parentNode, List<SlotPair> children, Device installedDevice, int order) {
         this.slot = slot;
         this.name = slot.getName();
         this.description = slot.getDescription();
@@ -57,6 +58,7 @@ public class SlotView {
         this.globalRoll = slot.getPositionInformation().getGlobalRoll();
         this.globalYaw = slot.getPositionInformation().getGlobalYaw();
         this.installedDevice = installedDevice;
+        this.order = order;
 
         canDelete = true;
         for (SlotPair child : children) {
@@ -98,4 +100,6 @@ public class SlotView {
     public Double getGlobalYaw() { return globalYaw; }
 
     public Device getInstalledDevice() { return installedDevice; }
+
+    public int getOrder() { return order; }
 }

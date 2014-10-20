@@ -19,7 +19,6 @@
  */
 package org.openepics.discs.conf.ui;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -35,6 +34,8 @@ import org.openepics.discs.conf.util.DeviceInstallation;
 import org.primefaces.model.TreeNode;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableList.Builder;
 
 /**
  * Tree builder for tree presentation of {@link Slot}s when installing device
@@ -58,7 +59,7 @@ public class InstallationSlotsTreeBuilder extends SlotsTreeBuilder {
     protected List<Slot> filterSlots(final List<Slot> incomingSlotList, final String requestedComponentTypeName,
             boolean withInstallationSlots) {
         Preconditions.checkArgument(!requestedComponentTypeName.isEmpty());
-        List<Slot> filteredList = new ArrayList<>(incomingSlotList.size());
+        Builder<Slot> listBuilder = ImmutableList.builder();
 
         for (Slot slot : incomingSlotList) {
             // Include only installation slots of the requested type (and all containers).
@@ -67,10 +68,10 @@ public class InstallationSlotsTreeBuilder extends SlotsTreeBuilder {
             if (componentTypeName.equals(SlotEJB.ROOT_COMPONENT_TYPE)
                     || componentTypeName.equals(SlotEJB.GRP_COMPONENT_TYPE)
                     || componentTypeName.equals(requestedComponentTypeName)) {
-                filteredList.add(slot);
+                listBuilder.add(slot);
             }
         }
-        return filteredList;
+        return listBuilder.build();
     }
 
     @Override

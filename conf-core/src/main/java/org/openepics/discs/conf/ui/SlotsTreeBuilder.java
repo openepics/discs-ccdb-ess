@@ -21,20 +21,19 @@ package org.openepics.discs.conf.ui;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.Nullable;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.openepics.discs.conf.ejb.InstallationEJB;
+import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.Slot;
@@ -45,6 +44,8 @@ import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableList.Builder;
 
 /**
  * Tree builder for tree presentation of {@link Slot}s
@@ -105,19 +106,9 @@ public class SlotsTreeBuilder implements Serializable {
 
         final String requestedComponentTypeName = installationSlotType == null ? "" : installationSlotType.getName();
 
-        final List<Slot> filteredList = filterSlots(slots, requestedComponentTypeName,
-                withInstallationSlots);
+        final List<Slot> filteredList = filterSlots(slots, requestedComponentTypeName, withInstallationSlots);
 
-        Collections.sort(filteredList, new Comparator<Slot>() {
-            @Override
-            public int compare(Slot o1, Slot o2) {
-                // TODO introduce additional sort criteria (user specified) later
-                final long diff = o1.getId() - o2.getId();
-                return (diff < 0) ? -1 : (diff > 0) ? 1 : 0; // avoid long to int conversion loss
-            }
-        });
-
-        final SlotTree slotsTree = new SlotTree(selected, collapsedNodes);
+        final SlotTree slotsTree = new SlotTree( getRootNode(filteredList), selected, collapsedNodes);
         // use the sorted list to build the tree. This guarantees that the layout of the tree is always the same.
         for (Slot slot : filteredList) {
             addSlotNode(slotsTree, slot, installationSlotType);
@@ -126,23 +117,20 @@ public class SlotsTreeBuilder implements Serializable {
         return slotsTree.asViewTree();
     }
 
-    private void addSlotNode(SlotTree nprt, Slot slot, ComponentType installationSlotType) {
-        if (!nprt.hasNode(slot)) {
-            final List<SlotPair> parentSlotPairs = slot.getChildrenSlotsPairList().size() > 0
-                    ? slot.getChildrenSlotsPairList() : null;
-            if (parentSlotPairs == null) {
-                nprt.addChildToParent(null, slot, null, isRootNodeSelectable());
-            } else {
-                for (SlotPair parentSlotPair : parentSlotPairs) {
-                    if (parentSlotPair.getSlotRelation().getName() == SlotRelationName.CONTAINS) {
-                        final Slot parentSlot = parentSlotPair.getParentSlot();
-                        // first recursively add parents
-                        addSlotNode(nprt, parentSlot, installationSlotType);
-                        final Device installedDevice = getInstalledDeviceForSlot(slot);
-                        // then add the child you're working on at the moment
-                        nprt.addChildToParent(parentSlot.getId(), slot, installedDevice,
-                                isNodeSelectable(slot, installationSlotType, installedDevice));
-                    }
+    private void addSlotNode(SlotTree slotTree, Slot slot, ComponentType installationSlotType) {
+        if (!slotTree.hasNode(slot)) {
+            Preconditions.checkState(!slot.getChildrenSlotsPairList().isEmpty());
+            final List<SlotPair> parentSlotPairs = slot.getChildrenSlotsPairList();
+            for (SlotPair parentSlotPair : parentSlotPairs) {
+                if (parentSlotPair.getSlotRelation().getName() == SlotRelationName.CONTAINS) {
+                    final Slot parentSlot = parentSlotPair.getParentSlot();
+                    // first recursively add parents
+                    addSlotNode(slotTree, parentSlot, installationSlotType);
+                    final Device installedDevice = getInstalledDeviceForSlot(slot);
+                    // then add the child you're working on at the moment
+                    slotTree.addChildToParent(parentSlot.getId(), slot, installedDevice,
+                            isNodeSelectable(slot, installationSlotType, installedDevice),
+                            parentSlotPair.getSlotOrder());
                 }
             }
         }
@@ -163,31 +151,40 @@ public class SlotsTreeBuilder implements Serializable {
             private TreeNode selectedTreeNode;
             private Set<Long> collapsedNodes;
 
-            private TreeNodeBuilder(Slot selected, Set<Long> collapsedNodes) {
-                root = new DefaultTreeNode(null, null);
+            private TreeNodeBuilder(Slot rootSlot, Slot selected, Set<Long> collapsedNodes) {
+                root = new DefaultTreeNode( new SlotView(rootSlot, null, new ArrayList<SlotPair>(), null, 1), null);
                 cache = new HashMap<>();
+                addToCache(root);
                 this.selectedSlot = selected;
                 this.collapsedNodes = collapsedNodes != null ? collapsedNodes : new HashSet<Long>();
             }
 
-            private void addNewNodeToParent(@Nullable Long parentId, Slot slot, Device installedDevice,
-                    boolean selectable) {
-                if (parentId != null) {
-                    for (TreeNode parentNode : cache.get(parentId)) {
-                        addNewNode(slot, (SlotView)parentNode.getData(), parentNode, installedDevice, selectable);
-                    }
-                } else {
-                    // this is one of the hierarchy roots
-                    addNewNode(slot, null, root, installedDevice, selectable);
+            private void addNewNodeToParent(Long parentId, Slot slot, Device installedDevice,
+                    boolean selectable, int order) {
+                for (TreeNode parentNode : cache.get(parentId)) {
+                    addNewNode(slot, (SlotView)parentNode.getData(), parentNode, installedDevice, selectable, order);
                 }
             }
 
             private void addNewNode(Slot slot, SlotView parent, TreeNode parentNode, Device installedDevice,
-                    boolean selectable) {
+                    boolean selectable, int order) {
                 final TreeNode newNode = new DefaultTreeNode(
-                        new SlotView(slot, parent, slot.getParentSlotsPairList(), installedDevice), parentNode);
+                        new SlotView(slot, parent, slot.getParentSlotsPairList(), installedDevice, order));
+
+                orderedInsert(parentNode, newNode);
+                addToCache(newNode);
+                newNode.setExpanded(!collapsedNodes.contains(slot.getId()));
+                newNode.setSelectable(selectable);
+                if (isSelected(newNode)) {
+                    newNode.setSelected(true);
+                    selectedTreeNode = newNode;
+                }
+            }
+
+            private void addToCache(TreeNode newNode) {
+                final SlotView slotView = (SlotView) newNode.getData();
+                final Long slotId = slotView.getId();
                 final List<TreeNode> treeNodesWithSameSlot;
-                final Long slotId = slot.getId();
                 if (cache.containsKey(slotId)) {
                     treeNodesWithSameSlot = cache.get(slotId);
                 } else {
@@ -195,13 +192,27 @@ public class SlotsTreeBuilder implements Serializable {
                     cache.put(slotId, treeNodesWithSameSlot);
                 }
                 treeNodesWithSameSlot.add(newNode);
+            }
 
-                newNode.setExpanded(!collapsedNodes.contains(slotId));
-                newNode.setSelectable(selectable);
-                if (isSelected(newNode)) {
-                    newNode.setSelected(true);
-                    selectedTreeNode = newNode;
+            private void orderedInsert(TreeNode parent, TreeNode child) {
+                if (parent.getChildCount() == 0) {
+                    parent.getChildren().add(child);
+                    return;
                 }
+
+                final int childOrder = ((SlotView) child.getData()).getOrder();
+
+                ListIterator<TreeNode> siblings = parent.getChildren().listIterator();
+                while (siblings.hasNext()) {
+                    SlotView sibling = (SlotView) siblings.next().getData();
+                    final int siblingOrder = sibling.getOrder();
+                    if (childOrder < siblingOrder) {
+                        // we have to insert before the element we just received
+                        siblings.previous();
+                        break;
+                    }
+                }
+                siblings.add(child);
             }
 
             private boolean isSelected(TreeNode node) {
@@ -211,21 +222,31 @@ public class SlotsTreeBuilder implements Serializable {
 
         private final TreeNodeBuilder treeBuilder;
 
-        private SlotTree(Slot selected, Set<Long> collapsedNodes) {
-            treeBuilder = new TreeNodeBuilder(selected, collapsedNodes);
+        private SlotTree(Slot rootSlot, Slot selected, Set<Long> collapsedNodes) {
+            treeBuilder = new TreeNodeBuilder(rootSlot, selected, collapsedNodes);
         }
 
         private boolean hasNode(Slot slot) {
             return treeBuilder.cache.containsKey(slot.getId());
         }
 
-        private void addChildToParent(@Nullable Long parentId, Slot slot, Device installedDevice, boolean selectable) {
-            treeBuilder.addNewNodeToParent(parentId, slot, installedDevice, selectable);
+        private void addChildToParent(Long parentId, Slot slot, Device installedDevice, boolean selectable,
+                int order) {
+            treeBuilder.addNewNodeToParent(parentId, slot, installedDevice, selectable, order);
         }
 
         private TreeNode asViewTree() {
             return treeBuilder.root;
         }
+    }
+
+    private Slot getRootNode(List<Slot> slots) {
+        for (Slot slot : slots) {
+            if (slot.getComponentType().getName().equals(SlotEJB.ROOT_COMPONENT_TYPE)) {
+                return slot;
+            }
+        }
+        throw new RuntimeException("_ROOT node does not exist in the database.");
     }
 
     /** This method prepares the list of slots that will be used for building a tree. Only the slots in the returned
@@ -239,15 +260,15 @@ public class SlotsTreeBuilder implements Serializable {
      */
     protected List<Slot> filterSlots(final List<Slot> allSlotList, final String requestedComponentTypeName,
             boolean withInstallationSlots) {
-        List<Slot> filteredList = new ArrayList<>(allSlotList.size());
+        Builder<Slot> listBuilder = ImmutableList.builder();
 
         for (Slot slot : allSlotList) {
             if (withInstallationSlots || !slot.isHostingSlot()) {
-                filteredList.add(slot);
+                listBuilder.add(slot);
             }
         }
 
-        return filteredList;
+        return listBuilder.build();
     }
 
     /** This method is only called with the appropriate type of installation slot or a container which can never have
