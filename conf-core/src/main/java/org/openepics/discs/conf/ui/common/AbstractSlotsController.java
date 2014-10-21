@@ -16,15 +16,20 @@ package org.openepics.discs.conf.ui.common;
 
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.ListIterator;
 import java.util.Set;
 
+import javax.faces.event.ActionEvent;
 import javax.inject.Inject;
 
 import org.openepics.discs.conf.ejb.ComptypeEJB;
 import org.openepics.discs.conf.ejb.SlotEJB;
+import org.openepics.discs.conf.ejb.SlotPairEJB;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ui.SlotsTreeBuilder;
 import org.openepics.discs.conf.views.SlotView;
+import org.primefaces.component.commandlink.CommandLink;
+import org.primefaces.component.treetable.TreeTable;
 import org.primefaces.event.NodeCollapseEvent;
 import org.primefaces.event.NodeExpandEvent;
 import org.primefaces.model.TreeNode;
@@ -38,6 +43,7 @@ public abstract class AbstractSlotsController implements Serializable{
     @Inject protected SlotsTreeBuilder slotsTreeBuilder;
     @Inject protected SlotEJB slotEJB;
     @Inject protected ComptypeEJB comptypeEJB;
+    @Inject protected SlotPairEJB slotPairEJB;
 
     protected TreeNode rootNode;
     protected TreeNode selectedNode;
@@ -140,6 +146,74 @@ public abstract class AbstractSlotsController implements Serializable{
                 collapsedNodes.remove(((SlotView)event.getTreeNode().getData()).getId());
             }
         }
+    }
+
+    /** The action event to be called when the user presses the "move up" action icon. This action moves the current
+     * container/installation slot up one space, if that is possible.
+     * @param ev
+     */
+    public void moveUp(ActionEvent ev) {
+        /* determined by the debugger:
+         * action is invoked by the CommandLink
+         * parent of CommandLink is Column
+         * parent of Column is TreeTable
+         */
+        TreeNode currentNode = ((TreeTable)((CommandLink)ev.getSource()).getParent().getParent()).getRowNode();
+        TreeNode parent = currentNode.getParent();
+
+        ListIterator<TreeNode> listIterator = parent.getChildren().listIterator();
+        while (listIterator.hasNext()) {
+            TreeNode element = listIterator.next();
+            if (element.equals(currentNode) && listIterator.hasPrevious()) {
+                final SlotView movedSlotView = (SlotView) currentNode.getData();
+                final SlotView parentSlotView = (SlotView) parent.getData();
+                listIterator.remove();
+                final SlotView affectedNode = (SlotView) listIterator.previous().getData();
+                affectedNode.setLast(movedSlotView.isLast());
+                affectedNode.setFirst(false);
+                movedSlotView.setLast(false);
+                movedSlotView.setFirst(!listIterator.hasPrevious());
+                listIterator.add(currentNode);
+                slotPairEJB.moveUp(parentSlotView.getSlot(), movedSlotView.getSlot());
+                selectedNode = null;
+                break;
+            }
+        }
+        // TODO see what is the easiest way to update only the parent of the moved node
+    }
+
+    /** The action event to be called when the user presses the "move down" action icon. This action moves the current
+     * container/installation slot down one space, if that is possible.
+     * @param ev
+     */
+    public void moveDown(ActionEvent ev) {
+        /* determined by the debugger:
+         * action is invoked by the CommandLink
+         * parent of CommandLink is Column
+         * parent of Column is TreeTable
+         */
+        TreeNode currentNode = ((TreeTable)((CommandLink)ev.getSource()).getParent().getParent()).getRowNode();
+        TreeNode parent = currentNode.getParent();
+
+        ListIterator<TreeNode> listIterator = parent.getChildren().listIterator();
+        while (listIterator.hasNext()) {
+            TreeNode element = listIterator.next();
+            if (element.equals(currentNode) && listIterator.hasNext()) {
+                final SlotView movedSlotView = (SlotView) currentNode.getData();
+                final SlotView parentSlotView = (SlotView) parent.getData();
+                listIterator.remove();
+                final SlotView affectedNode = (SlotView) listIterator.next().getData();
+                affectedNode.setFirst(movedSlotView.isFirst());
+                affectedNode.setLast(false);
+                movedSlotView.setFirst(false);
+                movedSlotView.setLast(!listIterator.hasNext());
+                listIterator.add(currentNode);
+                slotPairEJB.moveDown(parentSlotView.getSlot(), movedSlotView.getSlot());
+                selectedNode = null;
+                break;
+            }
+        }
+        // TODO see what is the easiest way to update only the parent of the moved node
     }
 
     protected abstract void updateRootNode();

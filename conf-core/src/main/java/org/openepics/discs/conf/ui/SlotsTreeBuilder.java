@@ -211,10 +211,14 @@ public class SlotsTreeBuilder implements Serializable {
                     SlotView sibling = (SlotView) siblings.next().getData();
                     final int siblingOrder = sibling.getOrder();
                     if (childOrder < siblingOrder) {
-                        // we have to insert before the element we just received
+                        // we have to insert before the element we just processed
+                        // and the processed element is definitely no longer the first
+                        sibling.setFirst(false);
                         siblings.previous();
                         break;
                     }
+                    // the new element will be added after this one, so this one is definitely not the last
+                    sibling.setLast(false);
                 }
                 childSlotView.setFirst(!siblings.hasPrevious());
                 childSlotView.setLast(!siblings.hasNext());
