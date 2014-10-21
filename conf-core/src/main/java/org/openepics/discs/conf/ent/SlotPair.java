@@ -36,11 +36,16 @@ import javax.xml.bind.annotation.XmlRootElement;
                 + "AND s.parentSlot.name = :parentName AND s.slotRelation.name = :relationName"),
     @NamedQuery(name = "SlotPair.findMaxPairOrder", query = "SELECT MAX(s.slotOrder) FROM SlotPair s "
             + "WHERE s.parentSlot = :parentSlot"),
-    @NamedQuery(name = "SlotPair.findById", query = "SELECT s FROM SlotPair s WHERE s.id = :id"),
     @NamedQuery(name = "SlotPair.findSlotPairsByChildAndRelation", query = "SELECT s FROM SlotPair s "
             + "WHERE s.childSlot = :childSlot AND s.slotRelation.name = :relationName"),
     @NamedQuery(name = "SlotPair.findSlotRelations", query = "SELECT s from SlotPair s "
-            + "WHERE s.childSlot = :slot OR s.parentSlot = :slot")
+            + "WHERE s.childSlot = :slot OR s.parentSlot = :slot"),
+    @NamedQuery(name = "SlotPair.findPrecedingPairs", query = "SELECT s FROM SlotPair s "
+            + "WHERE s.parentSlot = :parentSlot AND s.slotRelation = :slotRelation AND s.slotOrder < :order "
+            + "ORDER BY s.slotOrder DESC"),
+    @NamedQuery(name = "SlotPair.findSucceedingPairs", query = "SELECT s FROM SlotPair s "
+            + "WHERE s.parentSlot = :parentSlot AND s.slotRelation = :slotRelation AND s.slotOrder > :order "
+            + "ORDER BY s.slotOrder ASC")
 })
 public class SlotPair implements Serializable {
     @Id

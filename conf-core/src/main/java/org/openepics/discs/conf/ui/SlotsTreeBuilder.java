@@ -108,7 +108,7 @@ public class SlotsTreeBuilder implements Serializable {
 
         final List<Slot> filteredList = filterSlots(slots, requestedComponentTypeName, withInstallationSlots);
 
-        final SlotTree slotsTree = new SlotTree( getRootNode(filteredList), selected, collapsedNodes);
+        final SlotTree slotsTree = new SlotTree(getRootNode(filteredList), selected, collapsedNodes);
         // use the sorted list to build the tree. This guarantees that the layout of the tree is always the same.
         for (Slot slot : filteredList) {
             addSlotNode(slotsTree, slot, installationSlotType);
@@ -152,7 +152,7 @@ public class SlotsTreeBuilder implements Serializable {
             private Set<Long> collapsedNodes;
 
             private TreeNodeBuilder(Slot rootSlot, Slot selected, Set<Long> collapsedNodes) {
-                root = new DefaultTreeNode( new SlotView(rootSlot, null, new ArrayList<SlotPair>(), null, 1), null);
+                root = new DefaultTreeNode(new SlotView(rootSlot, null, new ArrayList<SlotPair>(), null, 1), null);
                 cache = new HashMap<>();
                 addToCache(root);
                 this.selectedSlot = selected;
@@ -195,12 +195,16 @@ public class SlotsTreeBuilder implements Serializable {
             }
 
             private void orderedInsert(TreeNode parent, TreeNode child) {
+                final SlotView childSlotView = (SlotView) child.getData();
+
                 if (parent.getChildCount() == 0) {
+                    childSlotView.setFirst(true);
+                    childSlotView.setLast(true);
                     parent.getChildren().add(child);
                     return;
                 }
 
-                final int childOrder = ((SlotView) child.getData()).getOrder();
+                final int childOrder = childSlotView.getOrder();
 
                 ListIterator<TreeNode> siblings = parent.getChildren().listIterator();
                 while (siblings.hasNext()) {
@@ -212,6 +216,8 @@ public class SlotsTreeBuilder implements Serializable {
                         break;
                     }
                 }
+                childSlotView.setFirst(!siblings.hasPrevious());
+                childSlotView.setLast(!siblings.hasNext());
                 siblings.add(child);
             }
 

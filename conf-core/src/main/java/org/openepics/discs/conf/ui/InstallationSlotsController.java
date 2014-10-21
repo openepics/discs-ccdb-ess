@@ -16,9 +16,11 @@ package org.openepics.discs.conf.ui;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
+import javax.faces.event.ActionEvent;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -34,6 +36,8 @@ import org.openepics.discs.conf.ui.common.AbstractSlotsController;
 import org.openepics.discs.conf.util.names.Names;
 import org.openepics.discs.conf.views.SlotRelationshipView;
 import org.openepics.discs.conf.views.SlotView;
+import org.primefaces.component.commandlink.CommandLink;
+import org.primefaces.component.treetable.TreeTable;
 import org.primefaces.context.RequestContext;
 import org.primefaces.model.TreeNode;
 
@@ -296,6 +300,60 @@ public class InstallationSlotsController extends AbstractSlotsController {
         }
 
         return resultList;
+    }
+
+    public void moveUp(ActionEvent ev) {
+        /* determined by the debugger:
+         * action is invoked by the CommandLink
+         * parent of CommandLink is Column
+         * parent of Column is TreeTable
+         */
+        TreeNode currentNode = ((TreeTable)((CommandLink)ev.getSource()).getParent().getParent()).getRowNode();
+        TreeNode parent = currentNode.getParent();
+
+        ListIterator<TreeNode> listIterator = parent.getChildren().listIterator();
+        while (listIterator.hasNext()) {
+            TreeNode element = listIterator.next();
+            if (element.equals(currentNode) && listIterator.hasPrevious()) {
+                final SlotView currentSlotView = (SlotView) currentNode.getData();
+                final SlotView parentSlotView = (SlotView) parent.getData();
+                listIterator.remove();
+                listIterator.previous();
+                currentSlotView.setLast(false);
+                currentSlotView.setFirst(!listIterator.hasPrevious());
+                listIterator.add(currentNode);
+                slotPairEJB.moveUp(parentSlotView.getSlot(), currentSlotView.getSlot());
+                selectedNode = null;
+                break;
+            }
+        }
+    }
+
+    public void moveDown(ActionEvent ev) {
+        /* determined by the debugger:
+         * action is invoked by the CommandLink
+         * parent of CommandLink is Column
+         * parent of Column is TreeTable
+         */
+        TreeNode currentNode = ((TreeTable)((CommandLink)ev.getSource()).getParent().getParent()).getRowNode();
+        TreeNode parent = currentNode.getParent();
+
+        ListIterator<TreeNode> listIterator = parent.getChildren().listIterator();
+        while (listIterator.hasNext()) {
+            TreeNode element = listIterator.next();
+            if (element.equals(currentNode) && listIterator.hasNext()) {
+                final SlotView currentSlotView = (SlotView) currentNode.getData();
+                final SlotView parentSlotView = (SlotView) parent.getData();
+                listIterator.remove();
+                listIterator.next();
+                currentSlotView.setFirst(false);
+                currentSlotView.setLast(!listIterator.hasNext());
+                listIterator.add(currentNode);
+                slotPairEJB.moveDown(parentSlotView.getSlot(), currentSlotView.getSlot());
+                selectedNode = null;
+                break;
+            }
+        }
     }
 
     /**

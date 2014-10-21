@@ -34,7 +34,7 @@
                 </p:column>
                 
 
-                <p:column headerText="Actions" style="padding: 0px !important; width: 120; text-align: center">
+                <p:column headerText="Actions" style="padding: 0px !important; width: 164; text-align: center">
                     <p:commandLink ajax="true" title="Add properties" rendered="#{installationSlot.isHostingSlot}" 
                             action="#{installationSlotsController.redirectToAttributes(installationSlot.id)}">
                         <h:outputText styleClass="ui-icon ui-icon-contact" style="display: inline-block !important; margin-right: 6px;" />
@@ -49,6 +49,18 @@
                         <h:outputText styleClass="ui-icon ui-icon-link" style="display: inline-block !important; margin-right: 6px;" />
                         <f:setPropertyActionListener value="#{installationSlot}" target="#{installationSlotsController.selectedSlotViewForRelationships}" />
                     </p:commandLink>
+
+                    <p:commandLink ajax="true" title="Move up" rendered="#{installationSlot.isHostingSlot}"
+                            actionListener="#{installationSlotsController.moveUp}" disabled="#{installationSlot.first}"
+                            update=":installationSlotsForm:installationSlotsTree">
+                        <h:outputText styleClass="ui-icon ui-icon-arrowthick-1-n" style="display: inline-block !important; margin-right: 6px;" />
+                    </p:commandLink>
+                    <p:commandLink ajax="true" title="Move down" rendered="#{installationSlot.isHostingSlot}"
+                            actionListener="#{installationSlotsController.moveDown}" disabled="#{installationSlot.last}"
+                            update=":installationSlotsForm:installationSlotsTree">
+                        <h:outputText styleClass="ui-icon ui-icon-arrowthick-1-s" style="display: inline-block !important; margin-right: 6px;" />
+                    </p:commandLink>
+
                     <p:commandLink ajax="true" title="Delete" rendered="#{installationSlot.isHostingSlot}" 
                             disabled="#{!installationSlot.canDelete}" oncomplete="deleteInstallationSlot.show()">
                         <h:outputText styleClass="ui-icon ui-icon-trash" style="display: inline-block !important; margin-right: 6px;" />

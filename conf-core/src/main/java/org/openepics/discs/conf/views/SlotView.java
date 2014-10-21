@@ -41,6 +41,8 @@ public class SlotView {
     private final Double globalYaw;
     private final Device installedDevice;
     private final int order;
+    private boolean isFirst;
+    private boolean isLast;
 
     public SlotView(Slot slot, SlotView parentNode, List<SlotPair> children, Device installedDevice, int order) {
         this.slot = slot;
@@ -102,4 +104,10 @@ public class SlotView {
     public Device getInstalledDevice() { return installedDevice; }
 
     public int getOrder() { return order; }
+
+    public boolean isFirst() { return isFirst; }
+    public void setFirst(boolean isFirst) { this.isFirst = isFirst; }
+
+    public boolean isLast() { return isLast;  }
+    public void setLast(boolean isLast) { this.isLast = isLast; }
 }

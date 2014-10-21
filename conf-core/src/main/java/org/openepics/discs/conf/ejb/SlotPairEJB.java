@@ -139,4 +139,61 @@ public class SlotPairEJB extends DAO<SlotPair> {
 	    return em.createNamedQuery("SlotPair.findSlotRelations", SlotPair.class).setParameter("slot", slot)
 	            .getResultList();
 	}
+
+	/** The method performs an order swap between the the current <code>slot</code> and the previous slot in the
+	 * context of the <code>parentSlot</code>. The swap is only possible for the <code>CONTAINS</code> relationship.
+	 * The previous slot is the one that has the largest order number that is still smaller than the current
+	 * <code>slot</code> order number. If there is no previous slot, the method doesn't do anything.
+	 * @param parentSlot the parent slot in context of which to perform the move
+	 * @param slot the slot to move "up"
+	 */
+	public void moveUp(Slot parentSlot, Slot slot) {
+	    moveUpOrDown(parentSlot, slot, "SlotPair.findPrecedingPairs");
+	}
+
+    /** The method performs an order swap between the the current <code>slot</code> and the next slot in the
+     * context of the <code>parentSlot</code>. The swap is only possible for the <code>CONTAINS</code> relationship.
+     * The next slot is the one that has the smallest order number that is still larger than the <code>slot</code> order
+     * number. If there is no next slot, the method doesn't do anything.
+     * @param parentSlot the parent slot in context of which to perform the move
+     * @param slot the slot to move "down"
+     */
+	public void moveDown(Slot parentSlot, Slot slot) {
+        moveUpOrDown(parentSlot, slot, "SlotPair.findSucceedingPairs");
+	}
+
+	private void moveUpOrDown(Slot parentSlot, Slot slot, String queryName) {
+        SlotPair mySlotPair = null;
+        for (SlotPair pair : slot.getChildrenSlotsPairList()) {
+            if (pair.getParentSlot().equals(parentSlot) &&
+                    pair.getSlotRelation().getName() == SlotRelationName.CONTAINS) {
+                // when moving the slot, this "pair" information gets stale very fast. We need to fetch from DB.
+                mySlotPair = findById(pair.getId());
+                break;
+            }
+        }
+        if (mySlotPair == null) {
+            throw new IllegalArgumentException("No CONTAINS relationship between parent ("
+                    + parentSlot.getName() + ") and child (" + slot.getName() + ").");
+        }
+
+        // get all preceding/succeeding elements "conveniently" ordered in the right way
+        List<SlotPair> relevantPairs = em.createNamedQuery(queryName, SlotPair.class)
+                                            .setParameter("parentSlot", parentSlot)
+                                            .setParameter("slotRelation", mySlotPair.getSlotRelation())
+                                            .setParameter("order", mySlotPair.getSlotOrder())
+                                            .getResultList();
+        if (relevantPairs.isEmpty()) {
+            return; // nothing to do
+        }
+
+        SlotPair swapPair = relevantPairs.get(0);
+
+        int swapPairOrder = swapPair.getSlotOrder();
+        int myPairOrder = mySlotPair.getSlotOrder();
+        mySlotPair.setSlotOrder(-myPairOrder);
+        swapPair.setSlotOrder(myPairOrder);
+        em.flush();
+        mySlotPair.setSlotOrder(swapPairOrder);
+	}
 }

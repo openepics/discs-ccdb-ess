@@ -22,8 +22,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "ComptypePropertyValue.findAll", query = "SELECT c FROM ComptypePropertyValue c"),
-    @NamedQuery(name = "ComptypePropertyValue.findById", query = "SELECT c FROM ComptypePropertyValue c "
-            + "WHERE c.id = :id"),
     @NamedQuery(name = "ComptypePropertyValue.findPropertyDefs", query = "SELECT c FROM ComptypePropertyValue c "
             + "WHERE c.componentType = :componentType AND c.isPropertyDefinition = TRUE"),
     @NamedQuery(name = "ComptypePropertyValue.findByInRepository", query = "SELECT c FROM ComptypePropertyValue c "
