@@ -27,7 +27,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 // does combined index make sense at all? We're searching for name anyhow...
 @Table(name = "slot_pair", indexes = { @Index(columnList = "parent_slot, slot_relation"),
         @Index(columnList = "child_slot") }, uniqueConstraints = { @UniqueConstraint(
-                columnNames = {"parent_slot", "slot_relation", "slot_order"} ) })
+                columnNames = {"parent_slot", "slot_relation", "slot_order"}),
+                @UniqueConstraint(columnNames = { "parent_slot", "child_slot", "slot_relation" }) })
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "SlotPair.findAll", query = "SELECT s FROM SlotPair s"),
