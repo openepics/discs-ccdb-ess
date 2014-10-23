@@ -6,9 +6,12 @@
         <class>org.openepics.discs.conf.util.names.NamesForDevelopment</class>
         <!-- To get list of names from ESS naming convention tool, replace upper
          alternative with an alternative below.
-         <class>org.openepics.discs.conf.util.names.NamesESS</class>     
-         -->                
+         <class>org.openepics.discs.conf.util.names.NamesESS</class>
+         -->
+         <!--
+         To enable RBAC include this alternative below.
         <class>org.openepics.discs.conf.security.RBACEntityTypeSecurityPolicy</class>
+         -->
     </alternatives>
 
     <interceptors>
