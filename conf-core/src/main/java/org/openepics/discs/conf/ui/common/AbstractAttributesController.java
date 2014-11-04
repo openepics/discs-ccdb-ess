@@ -27,8 +27,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.io.StringReader;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -711,9 +709,6 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
             break;
         case STRING:
             break;
-        case URL:
-            validateUrl(strValue);
-            break;
         case TIMESTAMP:
             try {
                 Conversion.toTimestamp(strValue);
@@ -724,19 +719,6 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
         default:
             throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
                     "Incorrect property data type."));
-        }
-    }
-
-    private void validateUrl(String value) throws ValidatorException {
-        try {
-            final URL retUrl = new URL(value);
-            if (!retUrl.getProtocol().startsWith("http") && !retUrl.getProtocol().equals("ftp")) {
-                throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_FATAL, "Error",
-                        "Protocol must be either http, https or ftp."));
-            }
-        } catch (MalformedURLException e) {
-            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_FATAL, "Error",
-                    "The input cannot be parsed into URL."));
         }
     }
 }

@@ -173,7 +173,6 @@ public class InitialDBPopulation {
         em.persist(createDataType(PropertyDataType.DOUBLE.toString(), "Double precision floating point", true, null));
         em.persist(createDataType(PropertyDataType.STRING.toString(), "String of characters (text)", true, null));
         em.persist(createDataType(PropertyDataType.TIMESTAMP.toString(), "Date and time", true, null));
-        em.persist(createDataType(PropertyDataType.URL.toString(), "String of characters which is known to contain an URL", true, null));
         em.persist(createDataType(PropertyDataType.INT_VECTOR.toString(), "Vector of integer numbers (1D array)", false, null));
         em.persist(createDataType(PropertyDataType.DBL_VECTOR.toString(), "Vector of double precision numbers (1D array)", false, null));
         em.persist(createDataType(PropertyDataType.STRING_LIST.toString(), "List of strings (1D array)", false, null));

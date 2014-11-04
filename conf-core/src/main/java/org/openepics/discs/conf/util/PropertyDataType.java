@@ -19,8 +19,6 @@ public enum PropertyDataType {
     STRING(PropertyDataType.STR_NAME),
     /** The property value can be a date and time timestamp */
     TIMESTAMP(PropertyDataType.TIMESTAMP_NAME),
-    /** The property value can be an URL. Possible protocols are http, https and ftp. */
-    URL(PropertyDataType.URL_NAME),
     /** The property value can be a 1-D vector of signed 32-bit integer numbers */
     INT_VECTOR(PropertyDataType.INT_VECTOR_NAME),
     /** The property value can be a 1-D vector of double precision numbers */
@@ -36,7 +34,6 @@ public enum PropertyDataType {
     public static final String DBL_NAME = "Double";
     public static final String STR_NAME = "String";
     public static final String TIMESTAMP_NAME = "Timestamp";
-    public static final String URL_NAME = "URL";
     public static final String INT_VECTOR_NAME = "Integers Vector";
     public static final String DBL_VECTOR_NAME = "Doubles Vector";
     public static final String STRING_LIST_NAME = "Strings List";
