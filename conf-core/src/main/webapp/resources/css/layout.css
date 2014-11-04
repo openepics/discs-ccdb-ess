@@ -2,6 +2,8 @@
     Document   : Layout
     Created on : Oct 16, 2013, 3:48:17 PM
     Author     : Vasu V <vuppala@frib.msu.org>
+    Author     : Miha Vitorovic <miha.vitorovic@cosylab.com>
+    Author     : Andraz Pozar <andraz.pozar@cosylab.com>
     Description:
         Purpose of the stylesheet follows.
 */
@@ -189,7 +191,7 @@ a {
 }
 
 
-.titlebar .titlebar>tbody>tr, .titlebar>tbody>tr>td {
+.titlebar, .titlebar>tbody>tr, .titlebar>tbody>tr>td {
     padding: 0px !important; 
     width: 100%;
     /* background-image: url('../images/header-bg.png'); 
