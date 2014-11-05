@@ -22,8 +22,6 @@ package org.openepics.discs.conf.valueconverters;
 
 import static org.junit.Assert.assertEquals;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,7 +39,6 @@ import org.openepics.discs.conf.ent.values.IntVectorValue;
 import org.openepics.discs.conf.ent.values.StrValue;
 import org.openepics.discs.conf.ent.values.StrVectorValue;
 import org.openepics.discs.conf.ent.values.TimestampValue;
-import org.openepics.discs.conf.ent.values.UrlValue;
 import org.openepics.discs.conf.ent.values.Value;
 
 /**
@@ -98,7 +95,6 @@ public class SedsConverterTest {
         converters.put(StrValue.class, new StrValueConverter());
         converters.put(StrVectorValue.class, new StrVectorValueConverter());
         converters.put(TimestampValue.class, new TimestampValueConverter());
-        converters.put(UrlValue.class, new UrlValueConverter());
 
         SedsConverters.setConverters(converters);
     }
@@ -154,11 +150,6 @@ public class SedsConverterTest {
     }
 
     @Test
-    public void urlValueToSeds() throws MalformedURLException {
-        assertEquals(SEDS_URL, sedsConverter.convertToDatabaseColumn(new UrlValue(new URL("http://www.cosylab.com"))));
-    }
-
-    @Test
     public void dblTableValueFromSeds() {
         assertEquals(VAL_DBL_TABLE, sedsConverter.convertToEntityAttribute(SEDS_DBL_TABLE));
     }
@@ -201,10 +192,5 @@ public class SedsConverterTest {
     @Test
     public void timestampValueFromSeds() {
         assertEquals(VAL_TIMESTAMP, sedsConverter.convertToEntityAttribute(SEDS_TIMESTAMP));
-    }
-
-    @Test
-    public void urlValueFromSeds() throws MalformedURLException {
-        assertEquals(new UrlValue(new URL("http://www.cosylab.com")), sedsConverter.convertToEntityAttribute(SEDS_URL));
     }
 }

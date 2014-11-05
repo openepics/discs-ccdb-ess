@@ -39,9 +39,7 @@ import org.openepics.discs.conf.ent.values.IntVectorValue;
 import org.openepics.discs.conf.ent.values.StrValue;
 import org.openepics.discs.conf.ent.values.StrVectorValue;
 import org.openepics.discs.conf.ent.values.TimestampValue;
-import org.openepics.discs.conf.ent.values.UrlValue;
 import org.openepics.discs.conf.ent.values.Value;
-import org.openepics.discs.conf.util.Conversion;
 import org.openepics.seds.api.datatypes.SedsEnum;
 import org.openepics.seds.api.datatypes.SedsScalar;
 import org.openepics.seds.api.datatypes.SedsScalarArray;
@@ -78,7 +76,7 @@ public class SedsConverter implements AttributeConverter<Value, String> {
         }
 
         if (!dbData.startsWith("{")) {
-            return new UrlValue(Conversion.toURL(dbData));
+            throw new IllegalArgumentException("SEDS data expected. Found: " + dbData);
         }
 
         JsonReader reader = Json.createReader(new StringReader(dbData));

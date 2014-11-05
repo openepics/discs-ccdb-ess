@@ -20,8 +20,6 @@
 package org.openepics.discs.conf.util;
 
 import java.io.StringReader;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.text.ParseException;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
@@ -47,7 +45,6 @@ import org.openepics.discs.conf.ent.values.IntVectorValue;
 import org.openepics.discs.conf.ent.values.StrValue;
 import org.openepics.discs.conf.ent.values.StrVectorValue;
 import org.openepics.discs.conf.ent.values.TimestampValue;
-import org.openepics.discs.conf.ent.values.UrlValue;
 import org.openepics.discs.conf.ent.values.Value;
 import org.openepics.seds.api.datatypes.SedsEnum;
 import org.openepics.seds.core.Seds;
@@ -93,8 +90,6 @@ public class Conversion {
             return PropertyDataType.STRING;
         case PropertyDataType.TIMESTAMP_NAME :
             return PropertyDataType.TIMESTAMP;
-        case PropertyDataType.URL_NAME :
-            return PropertyDataType.URL;
         case PropertyDataType.INT_VECTOR_NAME :
             return PropertyDataType.INT_VECTOR;
         case PropertyDataType.DBL_VECTOR_NAME :
@@ -118,7 +113,6 @@ public class Conversion {
      */
     public static PropertyValueUIElement getUIElementFromPropertyDataType(PropertyDataType dataType) {
         switch (dataType) {
-        case URL:
         case TIMESTAMP:
         case STRING:
         case INTEGER:
@@ -183,8 +177,6 @@ public class Conversion {
             return new StrVectorValue(Conversion.toStrVector(strValue));
         case TIMESTAMP:
             return new TimestampValue(Conversion.toTimestamp(strValue));
-        case URL:
-            return new UrlValue(Conversion.toURL(strValue));
         default:
             throw new IllegalStateException("Unknown property type.");
         }
@@ -210,8 +202,6 @@ public class Conversion {
             return Conversion.fromString(((StrValue)value).getStrValue());
         } else if (value instanceof TimestampValue) {
             return Conversion.fromTimestamp((TimestampValue)value);
-        } else if (value instanceof UrlValue) {
-            return Conversion.fromURL(((UrlValue)value).getUrlValue());
         } else if (value instanceof IntVectorValue) {
             return Conversion.fromIntVector(((IntVectorValue)value).getIntVectorValue());
         } else if (value instanceof DblVectorValue) {
@@ -225,22 +215,6 @@ public class Conversion {
         } else
             throw new IllegalStateException("Unknown property type.");
      }
-
-    /**
-     * @param str string to try and convert into an URL
-     * @return the URL represented by a string.
-     */
-    public static URL toURL(String str) {
-        try {
-            final URL retUrl = new URL(str);
-            if (!retUrl.getProtocol().startsWith("http") && !retUrl.getProtocol().equals("ftp")) {
-                throw new ConversionException("Protocol must be either http, https or ftp.");
-            }
-            return retUrl;
-        } catch (MalformedURLException e) {
-            throw new ConversionException(e);
-        }
-    }
 
     private static String toString(String str) { return str; }
 
@@ -441,8 +415,6 @@ public class Conversion {
     private static String fromInteger(Integer value) { return value.toString(); }
 
     private static String fromEnum(String value) { return value; }
-
-    private static String fromURL(URL value) { return value.toString(); }
 
     private static String fromStrVector(List<String> value) {
         StringBuilder retStr = new StringBuilder();

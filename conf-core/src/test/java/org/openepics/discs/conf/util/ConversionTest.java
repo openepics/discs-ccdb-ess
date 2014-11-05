@@ -3,8 +3,6 @@ package org.openepics.discs.conf.util;
 
 import static org.junit.Assert.assertEquals;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.Date;
 
@@ -22,7 +20,6 @@ import org.openepics.discs.conf.ent.values.IntVectorValue;
 import org.openepics.discs.conf.ent.values.StrValue;
 import org.openepics.discs.conf.ent.values.StrVectorValue;
 import org.openepics.discs.conf.ent.values.TimestampValue;
-import org.openepics.discs.conf.ent.values.UrlValue;
 
 public class ConversionTest {
 
@@ -30,7 +27,6 @@ public class ConversionTest {
     private final DataType dblDataType = new DataType(PropertyDataType.DBL_NAME, "", true, null);
     private final DataType strDataType = new DataType(PropertyDataType.STR_NAME, "", true, null);
     private final DataType timestampDataType = new DataType(PropertyDataType.TIMESTAMP_NAME, "", true, null);
-    private final DataType urlDataType = new DataType(PropertyDataType.URL_NAME, "", true, null);
 
     private final DataType dblVectorDataType = new DataType(PropertyDataType.DBL_VECTOR_NAME, "", false, null);
     private final DataType intVectorDataType = new DataType(PropertyDataType.INT_VECTOR_NAME, "", false, null);
@@ -45,7 +41,6 @@ public class ConversionTest {
     private final Property dblProperty = new Property("DblProperty", "", PropertyAssociation.ALL);
     private final Property strProperty = new Property("StrProperty", "", PropertyAssociation.ALL);
     private final Property timestampProperty = new Property("TimestampProperty", "", PropertyAssociation.ALL);
-    private final Property urlProperty = new Property("UrlProperty", "", PropertyAssociation.ALL);
 
     private final Property dblVectorProperty = new Property("DblVectorProperty", "", PropertyAssociation.ALL);
     private final Property intVectorProperty = new Property("IntVectorProperty", "", PropertyAssociation.ALL);
@@ -61,7 +56,6 @@ public class ConversionTest {
         dblProperty.setDataType(dblDataType);
         strProperty.setDataType(strDataType);
         timestampProperty.setDataType(timestampDataType);
-        urlProperty.setDataType(urlDataType);
         dblVectorProperty.setDataType(dblVectorDataType);
         intVectorProperty.setDataType(intVectorDataType);
         strVectorProperty.setDataType(strVectorDataType);
@@ -92,11 +86,6 @@ public class ConversionTest {
     @Test
     public void dataTypeTimestamp() {
         assertEquals(PropertyDataType.TIMESTAMP, Conversion.getDataType(timestampProperty));
-    }
-
-    @Test
-    public void dataTypeUrl() {
-        assertEquals(PropertyDataType.URL, Conversion.getDataType(urlProperty));
     }
 
     @Test
@@ -142,11 +131,6 @@ public class ConversionTest {
     @Test
     public void uiElementFromPropertyTimestamp() {
         assertEquals(PropertyValueUIElement.INPUT, Conversion.getUIElementFromProperty(timestampProperty));
-    }
-
-    @Test
-    public void uiElementFromPropertyURL() {
-        assertEquals(PropertyValueUIElement.INPUT, Conversion.getUIElementFromProperty(urlProperty));
     }
 
     @Test
@@ -253,18 +237,6 @@ public class ConversionTest {
                         dblTableValue.getDblTableValue());
     }
 
-    @Test
-    public void stringToValueUrl() throws MalformedURLException {
-        UrlValue urlValue = (UrlValue) Conversion.stringToValue("http://www.cosylab.com", urlProperty);
-        assertEquals(new URL("http://www.cosylab.com"), urlValue.getUrlValue());
-
-        urlValue = (UrlValue) Conversion.stringToValue("https://www.cosylab.com", urlProperty);
-        assertEquals(new URL("https://www.cosylab.com"), urlValue.getUrlValue());
-
-        urlValue = (UrlValue) Conversion.stringToValue("ftp://ftp.cosylab.com/some/resource/document.pdf", urlProperty);
-        assertEquals(new URL("ftp://ftp.cosylab.com/some/resource/document.pdf"), urlValue.getUrlValue());
-    }
-
     private Date today() {
         final long dayInMillis = 1000 * 60 * 60 * 24;
         final Date today = new Date();
@@ -323,16 +295,6 @@ public class ConversionTest {
     public void negSTVDblVectorInvalidCharacters() {
         final String dblVectorStr = "1.0, 2.0, 3.0";
         Conversion.stringToValue(dblVectorStr, dblVectorProperty);
-    }
-
-    @Test(expected = ConversionException.class)
-    public void negSTVUrl() {
-        Conversion.stringToValue("imap://mail.example.com", urlProperty);
-    }
-
-    @Test(expected = ConversionException.class)
-    public void negSTVNotUrl() {
-        Conversion.stringToValue("The quick brown fox jumps over the lazy dog", urlProperty);
     }
 
     @Test(expected = ConversionException.class)
@@ -462,11 +424,4 @@ public class ConversionTest {
     public void valueToStringStr() {
         assertEquals("ESS", Conversion.valueToString(new StrValue("ESS")));
     }
-
-    @Test
-    public void valueToStringUrl() throws MalformedURLException {
-        assertEquals("http://www.cosylab.com", Conversion.valueToString(new UrlValue(new URL("http://www.cosylab.com"))));
-    }
-
-
 }
