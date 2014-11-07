@@ -70,6 +70,8 @@ public class ContainerController extends AbstractSlotsController {
             newSlot.setComponentType(comptypeEJB.findByName(SlotEJB.ROOT_COMPONENT_TYPE));
         }
         super.onSlotAdd();
+        selectedNode = null;
+        selectedSlotView = null;
     }
 
     /**

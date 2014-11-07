@@ -119,7 +119,7 @@ public class SlotsTreeBuilder implements Serializable {
 
     private void addSlotNode(SlotTree slotTree, Slot slot, ComponentType installationSlotType) {
         if (!slotTree.hasNode(slot)) {
-            Preconditions.checkState(!slot.getChildrenSlotsPairList().isEmpty());
+            Preconditions.checkState(!slot.getChildrenSlotsPairList().isEmpty(), "No parents for slot " + slot.toString());
             final List<SlotPair> parentSlotPairs = slot.getChildrenSlotsPairList();
             for (SlotPair parentSlotPair : parentSlotPairs) {
                 if (parentSlotPair.getSlotRelation().getName() == SlotRelationName.CONTAINS) {
