@@ -6,8 +6,6 @@
 
 package org.openepics.discs.conf.ui;
 
-import java.util.logging.Logger;
-
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.component.UIComponent;
@@ -21,14 +19,11 @@ import org.openepics.discs.conf.ent.DataType;
  *
  * @author vuppala
  */
-@ManagedBean // workaround for injecting an EJB in a converter (for older versions of Glassfish)
-// @FacesConverter(value = "experimentConverter")
-// @ViewScoped
+@ManagedBean
 public class DataTypeConverter implements Converter {
 
     @EJB
     private DataTypeEJB dataTypeEJB;
-    private static final Logger logger = Logger.getLogger(DataTypeConverter.class.getCanonicalName());
     /**
      * Creates a new instance of DataTypeConverter
      */
@@ -40,7 +35,6 @@ public class DataTypeConverter implements Converter {
         DataType dtype;
 
         if (value == null || value.equals("")) {
-            logger.fine("exp converter: empty experiemnt id");
             return null;
         } else {
             dtype = dataTypeEJB.findById(Long.valueOf(value));
@@ -51,7 +45,6 @@ public class DataTypeConverter implements Converter {
     @Override
     public String getAsString(FacesContext context, UIComponent component, Object value) {
         if (value == null || value.equals("")) {
-            logger.fine("Null object");
             return "";
         } else {
             // logger.log(Level.INFO, "Exp number: " + ((Experiment) value).getId().toString());

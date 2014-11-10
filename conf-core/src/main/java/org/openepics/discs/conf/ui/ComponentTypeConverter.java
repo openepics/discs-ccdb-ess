@@ -6,8 +6,6 @@
 
 package org.openepics.discs.conf.ui;
 
-import java.util.logging.Logger;
-
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.component.UIComponent;
@@ -21,11 +19,8 @@ import org.openepics.discs.conf.ent.ComponentType;
  *
  * @author vuppala
  */
-@ManagedBean // workaround for injecting an EJB in a converter (for older versions of Glassfish)
-// @FacesConverter(value = "experimentConverter")
-// @ViewScoped
+@ManagedBean
 public class ComponentTypeConverter implements Converter {
-    private static final Logger logger = Logger.getLogger(ComponentTypeConverter.class.getCanonicalName());
 
     @EJB private ComptypeEJB comptypeEJB;
 

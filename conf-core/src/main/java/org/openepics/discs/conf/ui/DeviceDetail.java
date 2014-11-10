@@ -35,8 +35,6 @@ public class DeviceDetail implements Serializable {
     }
 
     public void init() {
-        // logger.entering(DeviceDetail.class.getName(), "init", this);
-        // logger.log(Level.INFO, "entering init {0}", id);
         try {
             selectedObject = deviceEJB.findById(id);
             if ( selectedObject == null ) {

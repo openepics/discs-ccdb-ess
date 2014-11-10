@@ -21,9 +21,7 @@ import org.openepics.discs.conf.ent.Property;
  *
  * @author vuppala
  */
-@ManagedBean // workaround for injecting an EJB in a converter (for older versions of Glassfish)
-// @FacesConverter(value = "experimentConverter")
-// @ViewScoped
+@ManagedBean
 public class PropertyConverter implements Converter {
     @EJB
     private PropertyEJB propertyEJB;
@@ -51,7 +49,6 @@ public class PropertyConverter implements Converter {
             logger.fine("PropertyConverter: empty property object");
             return "";
         } else {
-            // logger.log(Level.INFO, "Exp number: " + ((Experiment) value).getId().toString());
             return ((Property) value).getId().toString();
         }
     }
