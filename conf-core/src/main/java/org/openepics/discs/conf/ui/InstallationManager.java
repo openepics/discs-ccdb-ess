@@ -163,14 +163,19 @@ public class InstallationManager implements Serializable {
     private List<String> buildInstalledSlotInformation(Slot slot) {
         if (slot.getComponentType().getName().equals(SlotEJB.ROOT_COMPONENT_TYPE)) {
             final List<String> list = new ArrayList<>();
-            list.add(slot.getName());
             return list;
         } else {
             final List<String> list = new ArrayList<>();
             for (SlotPair pair : slot.getChildrenSlotsPairList()) {
                 if (pair.getSlotRelation().getName() == SlotRelationName.CONTAINS) {
-                    for (String parentPath : buildInstalledSlotInformation(pair.getParentSlot())) {
-                        list.add(parentPath + PATH_SEPARATOR + slot.getName());
+                    List<String> parentList = buildInstalledSlotInformation(pair.getParentSlot());
+                    if (!parentList.isEmpty()) {
+                        for (String parentPath : parentList) {
+                            list.add(parentPath + PATH_SEPARATOR + slot.getName());
+                        }
+                    } else {
+                        // this is the "user" root node
+                        list.add(slot.getName());
                     }
                 }
             }
