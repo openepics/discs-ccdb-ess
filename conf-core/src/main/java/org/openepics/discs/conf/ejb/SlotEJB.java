@@ -25,13 +25,17 @@ import javax.annotation.Nullable;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
+import org.openepics.discs.conf.auditlog.Audit;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
+import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotArtifact;
 import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.ent.SlotRelationName;
+import org.openepics.discs.conf.security.Authorized;
+import org.openepics.discs.conf.util.CRUDOperation;
 
 /**
  * DAO Service for accessing Installation Slot entities ( {@link Slot} )
@@ -149,6 +153,9 @@ public class SlotEJB extends DAO<Slot> {
      * @param parentSlot its parent. <code>null</code> if the container is a new root.
      * @param propertyDefinitions a list of property definitions that are automatically added to this slot.
      */
+    @CRUDOperation(operation=EntityTypeOperation.CREATE)
+    @Audit
+    @Authorized
     public void addSlotToParentWithPropertyDefs(Slot newSlot, @Nullable Slot parentSlot, List<ComptypePropertyValue> propertyDefinitions) {
         add(newSlot);
         if (parentSlot != null) {
@@ -162,6 +169,5 @@ public class SlotEJB extends DAO<Slot> {
             slotPropertyValue.setSlot(newSlot);
             addChild(slotPropertyValue);
         }
-
     }
 }

@@ -23,9 +23,13 @@ import java.util.List;
 
 import javax.ejb.Stateless;
 
+import org.openepics.discs.conf.auditlog.Audit;
+import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotRelationName;
+import org.openepics.discs.conf.security.Authorized;
+import org.openepics.discs.conf.util.CRUDOperation;
 
 import com.google.common.base.Preconditions;
 
@@ -75,6 +79,9 @@ public class SlotPairEJB extends DAO<SlotPair> {
 	}
 
 	@Override
+    @CRUDOperation(operation=EntityTypeOperation.DELETE)
+    @Audit
+    @Authorized
 	public void delete(SlotPair entity) {
 	    Preconditions.checkNotNull(entity);
         entity.getChildSlot().getChildrenSlotsPairList().remove(entity);
@@ -86,6 +93,9 @@ public class SlotPairEJB extends DAO<SlotPair> {
 
 
     @Override
+    @CRUDOperation(operation=EntityTypeOperation.CREATE)
+    @Audit
+    @Authorized
     public void add(SlotPair entity) {
         Preconditions.checkNotNull(entity);
         final Slot parentSlot = em.merge(entity.getParentSlot());
@@ -147,6 +157,9 @@ public class SlotPairEJB extends DAO<SlotPair> {
 	 * @param parentSlot the parent slot in context of which to perform the move
 	 * @param slot the slot to move "up"
 	 */
+    @CRUDOperation(operation=EntityTypeOperation.UPDATE)
+    @Audit
+    @Authorized
 	public void moveUp(Slot parentSlot, Slot slot) {
 	    moveUpOrDown(parentSlot, slot, "SlotPair.findPrecedingPairs");
 	}
@@ -158,6 +171,9 @@ public class SlotPairEJB extends DAO<SlotPair> {
      * @param parentSlot the parent slot in context of which to perform the move
      * @param slot the slot to move "down"
      */
+    @CRUDOperation(operation=EntityTypeOperation.UPDATE)
+    @Audit
+    @Authorized
 	public void moveDown(Slot parentSlot, Slot slot) {
         moveUpOrDown(parentSlot, slot, "SlotPair.findSucceedingPairs");
 	}
