@@ -26,11 +26,15 @@ import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.persistence.NoResultException;
 
+import org.openepics.discs.conf.auditlog.Audit;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.Device;
+import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.InstallationArtifact;
 import org.openepics.discs.conf.ent.InstallationRecord;
 import org.openepics.discs.conf.ent.Slot;
+import org.openepics.discs.conf.security.Authorized;
+import org.openepics.discs.conf.util.CRUDOperation;
 
 import com.google.common.base.Preconditions;
 
@@ -104,6 +108,9 @@ public class InstallationEJB extends DAO<InstallationRecord> {
     }
 
     @Override
+    @CRUDOperation(operation=EntityTypeOperation.CREATE)
+    @Audit
+    @Authorized
     public void add(InstallationRecord record) {
         final Device device = record.getDevice();
         final Slot slot = record.getSlot();
@@ -127,5 +134,4 @@ public class InstallationEJB extends DAO<InstallationRecord> {
 
         super.add(record);
     }
-
 }
