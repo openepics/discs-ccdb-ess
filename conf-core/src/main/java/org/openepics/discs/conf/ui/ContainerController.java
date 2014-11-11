@@ -31,6 +31,7 @@ import org.openepics.discs.conf.ui.common.AbstractSlotsController;
  * Controller for manipulation of container {@link Slot}s
  *
  * @author Andraz Pozar <andraz.pozar@cosylab.com>
+ * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  *
  */
 @Named
@@ -64,11 +65,7 @@ public class ContainerController extends AbstractSlotsController {
     public void onSlotAdd() {
         newSlot = new Slot(name, false);
         newSlot.setDescription(description);
-        if (selectedNode != null) {
-            newSlot.setComponentType(comptypeEJB.findByName(SlotEJB.GRP_COMPONENT_TYPE));
-        } else {
-            newSlot.setComponentType(comptypeEJB.findByName(SlotEJB.ROOT_COMPONENT_TYPE));
-        }
+        newSlot.setComponentType(comptypeEJB.findByName(SlotEJB.GRP_COMPONENT_TYPE));
         super.onSlotAdd();
     }
 

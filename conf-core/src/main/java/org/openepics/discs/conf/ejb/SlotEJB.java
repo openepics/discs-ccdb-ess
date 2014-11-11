@@ -54,6 +54,7 @@ public class SlotEJB extends DAO<Slot> {
 
     @Inject private SlotPairEJB slotPairEJB;
     @Inject private SlotRelationEJB slotRelationEJB;
+    @Inject private ComptypeEJB comptypeEJB;
 
     @Override
     protected void defineEntity() {
@@ -96,19 +97,14 @@ public class SlotEJB extends DAO<Slot> {
     }
 
     /**
-     * Retrieves special root slots from the database, given a relation type
+     * Retrieves the special implicit root container from the database.
      *
-     * @param relationName relation type
-     * @return {@link List} of slots
+     * @return the implicit root {@link Slot} of the contains hierarchy
      */
-    public List<Slot> getRootNodes(SlotRelationName relationName) {
-        // XXX Optimization opportunity - find "component type" and "slot relation" objects first, then scan the table
-        return em.createQuery("SELECT cp.childSlot FROM SlotPair cp "
-                              + "WHERE cp.parentSlot.componentType.name = :ctype AND cp.slotRelation.name = :relname "
-                              + "ORDER BY cp.childSlot.name",
-                              Slot.class)
-               .setParameter("ctype", ROOT_COMPONENT_TYPE)
-               .setParameter("relname", relationName).getResultList();
+    public Slot getRootNode() {
+        ComponentType rootComponentType = comptypeEJB.findByName(ROOT_COMPONENT_TYPE);
+        return em.createNamedQuery("Slot.findByComponentType", Slot.class)
+                .setParameter("componentType", rootComponentType).getSingleResult();
     }
 
     /**
@@ -157,6 +153,8 @@ public class SlotEJB extends DAO<Slot> {
         add(newSlot);
         if (parentSlot != null) {
             slotPairEJB.add(new SlotPair(newSlot, parentSlot, slotRelationEJB.findBySlotRelationName(SlotRelationName.CONTAINS)));
+        } else {
+            slotPairEJB.add(new SlotPair(newSlot, getRootNode(), slotRelationEJB.findBySlotRelationName(SlotRelationName.CONTAINS)));
         }
         for (ComptypePropertyValue propertyDefinition : propertyDefinitions) {
             final SlotPropertyValue slotPropertyValue = new SlotPropertyValue(false);
