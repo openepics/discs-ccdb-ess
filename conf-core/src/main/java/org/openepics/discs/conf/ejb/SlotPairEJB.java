@@ -41,6 +41,7 @@ import com.google.common.base.Preconditions;
  */
 @Stateless
 public class SlotPairEJB extends DAO<SlotPair> {
+
     @Override
     protected void defineEntity() {
         defineEntityClass(SlotPair.class);
@@ -98,8 +99,8 @@ public class SlotPairEJB extends DAO<SlotPair> {
     @Authorized
     public void add(SlotPair entity) {
         Preconditions.checkNotNull(entity);
-        final Slot parentSlot = em.merge(entity.getParentSlot());
-        final Slot childSlot = em.merge(entity.getChildSlot());
+        final Slot parentSlot = em.find( Slot.class, entity.getParentSlot().getId());
+        final Slot childSlot = em.find(Slot.class, entity.getChildSlot().getId());
         entity.setParentSlot(parentSlot);
         entity.setChildSlot(childSlot);
         final int highestOrderNumberForNewPair;
