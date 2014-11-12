@@ -25,6 +25,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Property.findAll", query = "SELECT p FROM Property p"),
+    @NamedQuery(name = "Property.findAllOrderedByName", query = "SELECT p FROM Property p ORDER BY p.name"),
     @NamedQuery(name = "Property.findByPropertyId", query = "SELECT p FROM Property p WHERE p.id = :id"),
     @NamedQuery(name = "Property.findByName", query = "SELECT p FROM Property p WHERE p.name = :name"),
     @NamedQuery(name = "Property.findByAssociation", query = "SELECT p FROM Property p "

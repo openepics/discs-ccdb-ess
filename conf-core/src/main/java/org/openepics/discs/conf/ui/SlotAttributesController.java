@@ -115,7 +115,7 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
 
     @Override
     protected void filterProperties() {
-        filteredProperties = ImmutableList.copyOf(Collections2.filter(propertyEJB.findAll(), new Predicate<Property>() {
+        filteredProperties = ImmutableList.copyOf(Collections2.filter(propertyEJB.findAllOrderedByName(), new Predicate<Property>() {
             @Override
             public boolean apply(Property property) {
                 final PropertyAssociation propertyAssociation = property.getAssociation();

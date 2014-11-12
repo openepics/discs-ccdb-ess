@@ -146,11 +146,13 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
 
     @Override
     protected void filterProperties() {
-        filteredProperties = ImmutableList.copyOf(Collections2.filter(propertyEJB.findAll(), new Predicate<Property>() {
+        filteredProperties = ImmutableList.copyOf(Collections2.filter(propertyEJB.findAllOrderedByName(), new Predicate<Property>() {
             @Override
             public boolean apply(Property property) {
                 final PropertyAssociation propertyAssociation = property.getAssociation();
-                return propertyAssociation == PropertyAssociation.ALL || propertyAssociation == PropertyAssociation.TYPE || propertyAssociation == PropertyAssociation.TYPE_DEVICE || propertyAssociation == PropertyAssociation.TYPE_SLOT;
+                return propertyAssociation == PropertyAssociation.ALL || propertyAssociation == PropertyAssociation.TYPE
+                        || propertyAssociation == PropertyAssociation.TYPE_DEVICE
+                        || propertyAssociation == PropertyAssociation.TYPE_SLOT;
             }
         }));
     }
