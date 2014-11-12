@@ -8,7 +8,7 @@
             <f:facet name="header">
                 <h:outputText value="Cannot delete slot relationship" />
             </f:facet>           
-            <h:outputText value="Slot relationship cannot be deleted because every slot has be a child in at least one CONTAINS relationship." />
+            <h:outputText value="This relationship cannot be deleted, because every slot must have at least one 'contained in' relationship." />
             <br />
             <p:commandButton value="Ok" style="float: right" onclick="cantDeleteRelation.hide();" />
         </p:dialog>
