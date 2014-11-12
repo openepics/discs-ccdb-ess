@@ -59,6 +59,7 @@ import com.google.common.collect.ImmutableList.Builder;
 public class SlotsTreeBuilder implements Serializable {
 
     @Inject protected InstallationEJB installationEJB;
+    private TreeNode initiallySelectedTreeNode;
 
     /**
      * Builds a tree of {@link SlotView}s from the provided lists of slots.
@@ -113,6 +114,8 @@ public class SlotsTreeBuilder implements Serializable {
         for (Slot slot : filteredList) {
             addSlotNode(slotsTree, slot, installationSlotType);
         }
+
+        initiallySelectedTreeNode = slotsTree.getSelectedTreeNode();
 
         return slotsTree.asViewTree();
     }
@@ -226,7 +229,14 @@ public class SlotsTreeBuilder implements Serializable {
             }
 
             private boolean isSelected(TreeNode node) {
-                return (selectedSlot != null) && (selectedTreeNode != null) && (selectedSlot.equals(node.getData()));
+                // if there is a slot defined for selection, and there is no tree node already selected and if the
+                // current slot matches
+                return (selectedSlot != null) && (selectedTreeNode == null)
+                        && (selectedSlot.equals( ((SlotView) node.getData()).getSlot() ));
+            }
+
+            private TreeNode getSelectedTreeNode() {
+                return selectedTreeNode;
             }
         }
 
@@ -247,6 +257,10 @@ public class SlotsTreeBuilder implements Serializable {
 
         private TreeNode asViewTree() {
             return treeBuilder.root;
+        }
+
+        private TreeNode getSelectedTreeNode() {
+            return treeBuilder.getSelectedTreeNode();
         }
     }
 
@@ -308,5 +322,16 @@ public class SlotsTreeBuilder implements Serializable {
      */
     protected boolean isNodeSelectable(Slot slot, ComponentType installationSlotType, Device installedDevice) {
         return true;
+    }
+
+    public SlotView getInitiallySelectedSlotView() {
+        if (initiallySelectedTreeNode == null) {
+            return null;
+        }
+        return (SlotView) initiallySelectedTreeNode.getData();
+    }
+
+    public TreeNode getInitiallySelectedTreeNode() {
+        return initiallySelectedTreeNode;
     }
 }

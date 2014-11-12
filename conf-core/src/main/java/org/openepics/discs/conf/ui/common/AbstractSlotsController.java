@@ -46,13 +46,17 @@ public abstract class AbstractSlotsController implements Serializable{
     @Inject protected SlotPairEJB slotPairEJB;
 
     protected TreeNode rootNode;
+    /** The currently selected PrimeFaces tree node */
     protected TreeNode selectedNode;
+    /** Used in modify slot operations, this is usually set when the user clicks the pencil icon,
+     * <code>null</code> otherwise. */
     protected SlotView selectedSlotView;
 
     protected Set<Long> collapsedNodes;
 
     protected String name;
     protected String description;
+    /** Used in "add child to parent" operations. This usually reflects the <code>selectedNode</code>. */
     protected SlotView parentSlotView;
 
     protected Slot newSlot;
@@ -88,6 +92,8 @@ public abstract class AbstractSlotsController implements Serializable{
      */
     public void onDelete() {
         slotEJB.delete(selectedSlotView.getSlot());
+        selectedSlotView = null;
+        selectedNode = null;
         updateRootNode();
     }
 

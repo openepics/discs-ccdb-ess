@@ -45,7 +45,16 @@ public class ContainerController extends AbstractSlotsController {
 
     @Override
     protected void updateRootNode() {
-        rootNode = slotsTreeBuilder.newSlotsTree(slotEJB.findByIsHostingSlot(false), collapsedNodes, false);
+        final Slot selectedSlot;
+        if (parentSlotView != null) {
+            selectedSlot = parentSlotView.getSlot();
+        } else {
+            selectedSlot = null;
+        }
+
+        rootNode = slotsTreeBuilder.newSlotsTree(slotEJB.findByIsHostingSlot(false), selectedSlot, collapsedNodes, false);
+        selectedNode = slotsTreeBuilder.getInitiallySelectedTreeNode();
+        parentSlotView = slotsTreeBuilder.getInitiallySelectedSlotView();
     }
 
     /**

@@ -86,7 +86,16 @@ public class InstallationSlotsController extends AbstractSlotsController {
 
     @Override
     protected void updateRootNode() {
-        rootNode = slotsTreeBuilder.newSlotsTree(slotEJB.findAll(), collapsedNodes, true);
+        final Slot selectedSlot;
+        if (parentSlotView != null) {
+            selectedSlot = parentSlotView.getSlot();
+        } else {
+            selectedSlot = null;
+        }
+
+        rootNode = slotsTreeBuilder.newSlotsTree(slotEJB.findAll(), selectedSlot, collapsedNodes, true);
+        selectedNode = slotsTreeBuilder.getInitiallySelectedTreeNode();
+        parentSlotView = slotsTreeBuilder.getInitiallySelectedSlotView();
     }
 
     @Override
