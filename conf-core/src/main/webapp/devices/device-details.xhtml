@@ -134,7 +134,8 @@
                                     <h:outputText styleClass="ui-icon ui-icon-pencil" style="display: inline-block !important; margin-right: 6px;" />
                                     <f:setPropertyActionListener value="#{attribute}" target="#{deviceDetailsAttributesController.selectedAttributeToModify}" />
                                 </p:commandLink>
-                                <p:commandLink ajax="true" rendered="#{deviceDetailsAttributesController.canDelete(attribute.entity)}" title="Delete">
+                                <p:commandLink ajax="true" title="Delete" oncomplete="deleteAttribute.show()" 
+                                        rendered="#{deviceDetailsAttributesController.canDelete(attribute.entity)}">
                                     <h:outputText styleClass="ui-icon ui-icon-trash" style="display: inline-block !important; margin-right: 6px;" />
                                     <f:setPropertyActionListener value="#{attribute}" target="#{deviceDetailsAttributesController.selectedAttribute}" />
                                 </p:commandLink>
@@ -189,7 +190,7 @@
             <ui:param name="widgetName" value="deleteAttribute" />
             <ui:param name="controller" value="#{deviceDetailsAttributesController}" />
             <ui:param name="submitHandler" value="deleteAttribute" />
-            <ui:param name="formToUpdate" value=":deviceDetailsForm" />
+            <ui:param name="formToUpdate" value=":deviceDetailsForm:devAttribs" />
         </ui:include>
 
         <ui:include src="../data-definitions/add-or-modify-dialogs/property-value.xhtml" >
