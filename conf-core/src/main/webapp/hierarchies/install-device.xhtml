@@ -35,7 +35,7 @@
                         <p:commandButton id="installButton" style="float: right;" title="Install" label="Install"
                             disabled="#{empty hierarchiesController.deviceToInstall}" value="Install" 
                             action="#{hierarchiesController.installDevice()}" oncomplete="#{widgetName}.hide()"
-                            update="#{componentToUpdate}" />
+                            update="#{componentToUpdate} :#{formId}" />
                     </p:column>
                 </p:row>
             </p:panelGrid>
