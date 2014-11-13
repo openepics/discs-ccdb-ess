@@ -176,7 +176,7 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
     }
 
     @Override
-    public void setTagParent(Tag tag) {
+    protected void setTagParent(Tag tag) {
         final Set<Tag> existingTags = compType.getTags();
         if (!existingTags.contains(tag)) {
             existingTags.add(tag);

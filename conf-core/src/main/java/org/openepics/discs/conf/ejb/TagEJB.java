@@ -24,6 +24,7 @@ import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+
 import org.openepics.discs.conf.ent.Tag;
 
 /**
@@ -44,4 +45,12 @@ public class TagEJB {
     public List<Tag> findAllSorted() {
         return em.createNamedQuery( "Tag.findAllOrdered", Tag.class).getResultList();
     }
+
+    public Tag findById(String tag) {
+        if (tag == null || tag.isEmpty()) {
+            return null;
+        }
+        return em.find(Tag.class, tag);
+    }
+
 }
