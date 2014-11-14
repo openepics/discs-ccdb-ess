@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
+import org.openepics.discs.conf.dl.common.ValidationMessage;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
 import org.openepics.discs.conf.util.TestUtility;
 
@@ -54,19 +55,43 @@ public class IntegralDataLoaderIT {
         testLoadData("conf-data-devices.xlsx", devicesDataLoader, null, null);
     }
 
+
     // ToDo review the interface wierdness of slot data loader with Andraz
     private void testLoadData(String fileName, Object dataLoader, String secondFileName, Object secondDataLoader) {
         final InputStream stream = this.getClass().getResourceAsStream("/dataloader/"+fileName);
 
         if (secondFileName==null) {
             final DataLoaderResult result = dataLoaderHandler.loadData(stream, (DataLoader) dataLoader);
-            assertFalse(fileName+" loading failed.", result.isError());
+            
+            String errorMessage = "";
+            if (result.isError()) {
+                StringBuilder sb = new StringBuilder();
+                for (ValidationMessage vm : result.getMessages())
+                    sb.append(vm.toString() + '\n');
+                errorMessage = sb.toString();
+            }
+            
+            assertFalse(fileName+" loading failed." +
+                    dumpDataLoaderMessages(result), result.isError());
         } else {
             final InputStream secondStream = this.getClass().getResourceAsStream("/dataloader/"+secondFileName);
 
             final DataLoaderResult result = dataLoaderHandler.loadDataFromTwoFiles(stream, secondStream, fileName, secondFileName);
-            assertFalse(fileName+" or "+secondFileName+" loading failed.", result.isError());
+            
+            assertFalse(fileName+" or "+secondFileName+" loading failed:" + 
+                    dumpDataLoaderMessages(result), result.isError());
         }
+    }
+    
+    private String dumpDataLoaderMessages(DataLoaderResult result) {
+        String errorMessage = "";
+        if (result.isError()) {
+            StringBuilder sb = new StringBuilder();
+            for (ValidationMessage vm : result.getMessages())
+                sb.append(vm.toString() + '\n');
+            errorMessage = sb.toString();
+        }
+        return errorMessage;
     }
 
 }
