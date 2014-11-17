@@ -412,7 +412,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
         propertyValue = null;
         enumSelections = null;
         propertyValueUIElement = PropertyValueUIElement.NONE;
-        isPropertyDefinition = false;
+        filterProperties();
     }
 
     public void prepareForTagAdd() {

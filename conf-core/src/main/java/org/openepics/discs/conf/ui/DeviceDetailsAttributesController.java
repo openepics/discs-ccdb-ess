@@ -15,6 +15,7 @@
 package org.openepics.discs.conf.ui;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -26,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.openepics.discs.conf.ejb.DeviceEJB;
 import org.openepics.discs.conf.ejb.PropertyEJB;
+import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.DeviceArtifact;
@@ -96,7 +98,20 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
 
     @Override
     protected void filterProperties() {
-        filteredProperties = ImmutableList.copyOf(Collections2.filter(propertyEJB.findAllOrderedByName(), new Predicate<Property>() {
+        List<Property> propertyCandidates = propertyEJB.findAllOrderedByName();
+
+        // remove all properties that are already defined in device type either as value or as property.
+        ComponentType compType = device.getComponentType();
+        for (ComptypePropertyValue comptypePropertyValue : compType.getComptypePropertyList()) {
+            propertyCandidates.remove(comptypePropertyValue.getProperty());
+        }
+
+        // remove all properties that are already defined.
+        for (DevicePropertyValue devicePropertyValue : device.getDevicePropertyList()) {
+            propertyCandidates.remove(devicePropertyValue.getProperty());
+        }
+
+        filteredProperties = ImmutableList.copyOf(Collections2.filter(propertyCandidates, new Predicate<Property>() {
             @Override
             public boolean apply(Property property) {
                 final PropertyAssociation propertyAssociation = property.getAssociation();
@@ -140,4 +155,9 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
         this.device = device;
     }
 
+    @Override
+    public void prepareForPropertyValueAdd() {
+        isPropertyDefinition = false;
+        super.prepareForPropertyValueAdd();
+    }
 }

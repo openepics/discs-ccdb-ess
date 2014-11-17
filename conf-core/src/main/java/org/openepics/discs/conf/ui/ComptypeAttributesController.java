@@ -11,6 +11,7 @@ package org.openepics.discs.conf.ui;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -146,15 +147,13 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
 
     @Override
     protected void filterProperties() {
-        filteredProperties = ImmutableList.copyOf(Collections2.filter(propertyEJB.findAllOrderedByName(), new Predicate<Property>() {
-            @Override
-            public boolean apply(Property property) {
-                final PropertyAssociation propertyAssociation = property.getAssociation();
-                return propertyAssociation == PropertyAssociation.ALL || propertyAssociation == PropertyAssociation.TYPE
-                        || propertyAssociation == PropertyAssociation.TYPE_DEVICE
-                        || propertyAssociation == PropertyAssociation.TYPE_SLOT;
-            }
-        }));
+        List<Property> propertyCandidates = propertyEJB.findAllOrderedByName();
+
+        for (ComptypePropertyValue comptypePropertyValue : compType.getComptypePropertyList()) {
+            propertyCandidates.remove(comptypePropertyValue.getProperty());
+        }
+
+        filteredProperties = ImmutableList.copyOf(Collections2.filter(propertyCandidates, getPropertyFilterPredicate()));
     }
 
     /**
@@ -190,12 +189,46 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
         comptypeEJB.save(compType);
     }
 
+    @Override
+    public void prepareForPropertyValueAdd() {
+        isPropertyDefinition = false;
+        super.prepareForPropertyValueAdd();
+    }
+
     /**
      * Prepares the data for property definition creation.
      */
     public void prepareForPropertyDefAdd() {
-        super.prepareForPropertyValueAdd();
         isPropertyDefinition = true;
+        super.prepareForPropertyValueAdd();
+    }
+
+    private Predicate<Property> getPropertyFilterPredicate() {
+        if (isPropertyDefinition) {
+            return new Predicate<Property>() {
+                @Override
+                public boolean apply(Property property) {
+                    final PropertyAssociation propertyAssociation = property.getAssociation();
+                    return propertyAssociation == PropertyAssociation.ALL
+                            || propertyAssociation == PropertyAssociation.DEVICE
+                            || propertyAssociation == PropertyAssociation.SLOT
+                            || propertyAssociation == PropertyAssociation.TYPE_DEVICE
+                            || propertyAssociation == PropertyAssociation.TYPE_SLOT;
+                }
+            };
+        } else {
+            return new Predicate<Property>() {
+                @Override
+                public boolean apply(Property property) {
+                    final PropertyAssociation propertyAssociation = property.getAssociation();
+                    return propertyAssociation == PropertyAssociation.ALL
+                            || propertyAssociation == PropertyAssociation.TYPE
+                            || propertyAssociation == PropertyAssociation.TYPE_DEVICE
+                            || propertyAssociation == PropertyAssociation.TYPE_SLOT;
+                }
+            };
+        }
     }
 
 }
+

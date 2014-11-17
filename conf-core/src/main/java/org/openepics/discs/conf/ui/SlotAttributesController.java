@@ -20,6 +20,7 @@
 package org.openepics.discs.conf.ui;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -31,6 +32,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.openepics.discs.conf.ejb.PropertyEJB;
 import org.openepics.discs.conf.ejb.SlotEJB;
+import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyAssociation;
@@ -115,7 +117,20 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
 
     @Override
     protected void filterProperties() {
-        filteredProperties = ImmutableList.copyOf(Collections2.filter(propertyEJB.findAllOrderedByName(), new Predicate<Property>() {
+        List<Property> propertyCandidates = propertyEJB.findAllOrderedByName();
+
+        // remove all properties that are already defined in device type either as value or as property.
+        ComponentType compType = slot.getComponentType();
+        for (ComptypePropertyValue comptypePropertyValue : compType.getComptypePropertyList()) {
+            propertyCandidates.remove(comptypePropertyValue.getProperty());
+        }
+
+        // remove all properties that are already defined.
+        for (SlotPropertyValue slotPropertyValue : slot.getSlotPropertyList()) {
+            propertyCandidates.remove(slotPropertyValue.getProperty());
+        }
+
+        filteredProperties = ImmutableList.copyOf(Collections2.filter(propertyCandidates, new Predicate<Property>() {
             @Override
             public boolean apply(Property property) {
                 final PropertyAssociation propertyAssociation = property.getAssociation();
@@ -160,4 +175,9 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
         slotEJB.save(slot);
     }
 
+    @Override
+    public void prepareForPropertyValueAdd() {
+        isPropertyDefinition = false;
+        super.prepareForPropertyValueAdd();
+    }
 }
