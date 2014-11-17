@@ -86,19 +86,29 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
     public void addNewPropertyValue() {
         super.addNewPropertyValue();
 
-        if (propertyValue == null) {
-            for (Slot slot : slotEJB.findByComponentType(compType)) {
-                final SlotPropertyValue newSlotProperty = new SlotPropertyValue();
-                newSlotProperty.setProperty(propertyValueInstance.getProperty());
-                newSlotProperty.setSlot(slot);
-                slotEJB.addChild(newSlotProperty);
+        if (propertyValueInstance.isPropertyDefinition()) {
+            if (propertyValueInstance.getProperty().getAssociation() == PropertyAssociation.ALL
+                    || propertyValueInstance.getProperty().getAssociation() == PropertyAssociation.TYPE_SLOT
+                    || propertyValueInstance.getProperty().getAssociation() == PropertyAssociation.SLOT_DEVICE
+                    || propertyValueInstance.getProperty().getAssociation() == PropertyAssociation.SLOT) {
+                for (Slot slot : slotEJB.findByComponentType(compType)) {
+                    final SlotPropertyValue newSlotProperty = new SlotPropertyValue();
+                    newSlotProperty.setProperty(propertyValueInstance.getProperty());
+                    newSlotProperty.setSlot(slot);
+                    slotEJB.addChild(newSlotProperty);
+                }
             }
 
-            for (Device device : deviceEJB.findDevicesByComponentType(compType)) {
-                final DevicePropertyValue newDeviceProperty = new DevicePropertyValue();
-                newDeviceProperty.setProperty(propertyValueInstance.getProperty());
-                newDeviceProperty.setDevice(device);
-                deviceEJB.addChild(newDeviceProperty);
+            if (propertyValueInstance.getProperty().getAssociation() == PropertyAssociation.ALL
+                    || propertyValueInstance.getProperty().getAssociation() == PropertyAssociation.TYPE_DEVICE
+                    || propertyValueInstance.getProperty().getAssociation() == PropertyAssociation.SLOT_DEVICE
+                    || propertyValueInstance.getProperty().getAssociation() == PropertyAssociation.DEVICE) {
+                for (Device device : deviceEJB.findDevicesByComponentType(compType)) {
+                    final DevicePropertyValue newDeviceProperty = new DevicePropertyValue();
+                    newDeviceProperty.setProperty(propertyValueInstance.getProperty());
+                    newDeviceProperty.setDevice(device);
+                    deviceEJB.addChild(newDeviceProperty);
+                }
             }
         }
     }
@@ -213,7 +223,8 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
                             || propertyAssociation == PropertyAssociation.DEVICE
                             || propertyAssociation == PropertyAssociation.SLOT
                             || propertyAssociation == PropertyAssociation.TYPE_DEVICE
-                            || propertyAssociation == PropertyAssociation.TYPE_SLOT;
+                            || propertyAssociation == PropertyAssociation.TYPE_SLOT
+                            || propertyAssociation == PropertyAssociation.SLOT_DEVICE;
                 }
             };
         } else {
