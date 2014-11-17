@@ -26,6 +26,7 @@ import javax.inject.Named;
 import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ui.common.AbstractSlotsController;
+import org.openepics.discs.conf.ui.common.UIException;
 
 /**
  * Controller for manipulation of container {@link Slot}s
@@ -39,8 +40,12 @@ import org.openepics.discs.conf.ui.common.AbstractSlotsController;
 public class ContainerController extends AbstractSlotsController {
 
     @PostConstruct
-    public void init() {
-        updateRootNode();
+    public void init() throws UIException {
+        try {
+            updateRootNode();
+        } catch(Exception e) {
+            throw new UIException("Container display initialization fialed: " + e.getMessage(), e);
+        }
     }
 
     @Override

@@ -1,0 +1,15 @@
+<ui:composition 
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    template="/template/template.xhtml"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://java.sun.com/jsf/core"   
+    xmlns:h="http://java.sun.com/jsf/html">              
+
+    <ui:define name="content">      
+        <h:panelGroup layout="block" class="box">
+            <p:panel header="Unexpected error">            
+                <h:outputText value="#{param['errorMsg']}" />
+            </p:panel>            
+        </h:panelGroup>     
+    </ui:define>
+</ui:composition>

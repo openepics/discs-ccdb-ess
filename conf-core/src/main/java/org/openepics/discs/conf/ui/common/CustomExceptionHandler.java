@@ -17,13 +17,18 @@
 
 package org.openepics.discs.conf.ui.common;
 
+import java.lang.reflect.InvocationTargetException;
+import java.net.URLEncoder;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.ejb.EJBException;
 import javax.faces.FacesException;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.ExceptionHandler;
 import javax.faces.context.ExceptionHandlerWrapper;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ExceptionQueuedEvent;
 import javax.faces.event.ExceptionQueuedEventContext;
@@ -38,6 +43,7 @@ import javax.faces.event.ExceptionQueuedEventContext;
 public class CustomExceptionHandler extends ExceptionHandlerWrapper {
 
     private final ExceptionHandler wrapped;
+    private static final Logger LOG = Logger.getLogger(CustomExceptionHandler.class.getCanonicalName());
 
     public CustomExceptionHandler(ExceptionHandler wrapped) {
         this.wrapped = wrapped;
@@ -53,16 +59,52 @@ public class CustomExceptionHandler extends ExceptionHandlerWrapper {
         while (iterator.hasNext()) {
             final ExceptionQueuedEvent event = iterator.next();
             final ExceptionQueuedEventContext context = (ExceptionQueuedEventContext) event.getSource();
-            final Throwable throwable = getExceptionNonframeworkCause(context.getException());
-            try {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Unexpected error", throwable.getMessage()));
-            } finally {
-                iterator.remove();
+            
+            // Handle UIException case which requires redirect to another page
+            final InvocationTargetException ite = getInvocationTargetException(context.getException());
+            if (ite.getTargetException() instanceof UIException) {
+                final ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
+                try {
+                    // ExternalContext.redirect is the most low-level redirect I could find, and using uri parameters
+                    // seems like the most straight-forward way of doing it. 
+                    ec.redirect(ec.getRequestContextPath() + "/error.xhtml?errorMsg=" + 
+                            URLEncoder.encode(((UIException)ite.getTargetException()).getMessage(), "UTF-8"));
+                } catch (Exception e) {
+                    LOG.log(Level.SEVERE, "Failed to redirect to error page");
+                } finally {
+                    iterator.remove();
+                }
+            } else {
+                // Handle all other cases where redirect is not needed.
+                final Throwable throwable = getExceptionNonframeworkCause(context.getException());
+                try {
+                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Unexpected error", throwable.getMessage()));
+                } finally {
+                    iterator.remove();
+                }
             }
         }
         wrapped.handle();
     }
 
+    /**
+     * Check for leaf {@link InvocationTargetException}.
+     * 
+     * @param exception The top exception
+     * @return The invocation target exception or <code>null</code>
+     */
+    private InvocationTargetException getInvocationTargetException(Throwable exception) {
+        Throwable iterated = exception;
+        while (iterated!=null && iterated.getCause()!=null) {
+            if (iterated instanceof InvocationTargetException) 
+                return (InvocationTargetException) iterated;
+
+           iterated = iterated.getCause();
+        }
+            
+        return null;
+    }
+    
     /* Returns the nested exception cause that is not Faces or EJB exception, if it exists. */
     private Throwable getExceptionNonframeworkCause(Throwable exception) {
         return (exception instanceof FacesException || exception instanceof EJBException) && (exception.getCause() != null)

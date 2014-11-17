@@ -122,7 +122,11 @@ public class SlotsTreeBuilder implements Serializable {
 
     private void addSlotNode(SlotTree slotTree, Slot slot, ComponentType installationSlotType) {
         if (!slotTree.hasNode(slot)) {
-            Preconditions.checkState(!slot.getChildrenSlotsPairList().isEmpty());
+            if (slot.getChildrenSlotsPairList().isEmpty()) {
+                throw new IllegalStateException("Illegal state in the database. "
+                        + "Please contact the administrator.\nDetails: Slot " + slot.getName() + " is orphaned "
+                                + "(not a child, not involved in any parent-child relationships)");
+            }
             final List<SlotPair> parentSlotPairs = slot.getChildrenSlotsPairList();
             for (SlotPair parentSlotPair : parentSlotPairs) {
                 if (parentSlotPair.getSlotRelation().getName() == SlotRelationName.CONTAINS) {
