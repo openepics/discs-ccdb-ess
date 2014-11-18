@@ -10,7 +10,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openepics.discs.conf.ent.DataType;
 import org.openepics.discs.conf.ent.Property;
-import org.openepics.discs.conf.ent.PropertyAssociation;
 import org.openepics.discs.conf.ent.values.DblTableValue;
 import org.openepics.discs.conf.ent.values.DblValue;
 import org.openepics.discs.conf.ent.values.DblVectorValue;
@@ -37,18 +36,18 @@ public class ConversionTest {
             "{\"meta\":{\"type\":\"SedsEnum\",\"protocol\":\"SEDSv1\",\"version\":\"1.0.0\"},"
             + "\"data\":{\"selected\":\"TEST1\"},\"type\":{\"elements\":[\"TEST1\",\"TEST2\",\"TEST3\",\"TEST4\"]}}");
     private static final String INVALID_ENUMERATION_ITEM = "invalid_item";
-    private final Property intProperty = new Property("IntProperty", "", PropertyAssociation.ALL);
-    private final Property dblProperty = new Property("DblProperty", "", PropertyAssociation.ALL);
-    private final Property strProperty = new Property("StrProperty", "", PropertyAssociation.ALL);
-    private final Property timestampProperty = new Property("TimestampProperty", "", PropertyAssociation.ALL);
+    private final Property intProperty = new Property("IntProperty", "");
+    private final Property dblProperty = new Property("DblProperty", "");
+    private final Property strProperty = new Property("StrProperty", "");
+    private final Property timestampProperty = new Property("TimestampProperty", "");
 
-    private final Property dblVectorProperty = new Property("DblVectorProperty", "", PropertyAssociation.ALL);
-    private final Property intVectorProperty = new Property("IntVectorProperty", "", PropertyAssociation.ALL);
-    private final Property strVectorProperty = new Property("StrVectorProperty", "", PropertyAssociation.ALL);
+    private final Property dblVectorProperty = new Property("DblVectorProperty", "");
+    private final Property intVectorProperty = new Property("IntVectorProperty", "");
+    private final Property strVectorProperty = new Property("StrVectorProperty", "");
 
-    private final Property dblTableProperty = new Property("DblTableProperty", "", PropertyAssociation.ALL);
+    private final Property dblTableProperty = new Property("DblTableProperty", "");
 
-    private final Property enumProperty = new Property("EnumProperty", "", PropertyAssociation.ALL);
+    private final Property enumProperty = new Property("EnumProperty", "");
 
     @Before
     public void initProperties() {

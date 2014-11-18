@@ -3,9 +3,6 @@ package org.openepics.discs.conf.ent;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
@@ -19,17 +16,16 @@ import javax.xml.bind.annotation.XmlRootElement;
  * Properties are given to Devices, Device Types and INstallation Slots
  *
  * @author vuppala
+ * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  */
 @Entity
-@Table(name = "property", indexes = { @Index(columnList = "name") })
+@Table(name = "property")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Property.findAll", query = "SELECT p FROM Property p"),
     @NamedQuery(name = "Property.findAllOrderedByName", query = "SELECT p FROM Property p ORDER BY p.name"),
     @NamedQuery(name = "Property.findByPropertyId", query = "SELECT p FROM Property p WHERE p.id = :id"),
     @NamedQuery(name = "Property.findByName", query = "SELECT p FROM Property p WHERE p.name = :name"),
-    @NamedQuery(name = "Property.findByAssociation", query = "SELECT p FROM Property p "
-            + "WHERE p.association = :association"),
     @NamedQuery(name = "Property.findByModifiedBy", query = "SELECT p FROM Property p "
             + "WHERE p.modifiedBy = :modifiedBy")
 })
@@ -46,12 +42,6 @@ public class Property extends ConfigurationEntity {
     @Column(name = "description")
     private String description;
 
-    @Basic(optional = false)
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    @Column(name = "association", length = 12)
-    private PropertyAssociation association;
-
     @JoinColumn(name = "data_type")
     @ManyToOne(optional = false)
     private DataType dataType;
@@ -60,13 +50,29 @@ public class Property extends ConfigurationEntity {
     @ManyToOne
     private Unit unit;
 
+    /* * * * * Property association section * * * * * * * * */
+    @Basic
+    @Column(name = "is_type_asspociation")
+    private Boolean isTypeAssociation = Boolean.FALSE;
+
+    @Basic
+    @Column(name = "is_slot_asspociation")
+    private Boolean isSlotAssociation = Boolean.FALSE;
+
+    @Basic
+    @Column(name = "is_device_asspociation")
+    private Boolean isDeviceAssociation = Boolean.FALSE;
+
+    @Basic
+    @Column(name = "is_alignment_asspociation")
+    private Boolean isAlignmentAssociation = Boolean.FALSE;
+
     protected Property() {
     }
 
-    public Property(String name, String description, PropertyAssociation association) {
+    public Property(String name, String description) {
         this.name = name;
         this.description = description;
-        this.association = association;
     }
 
     public String getName() {
@@ -83,13 +89,6 @@ public class Property extends ConfigurationEntity {
         this.description = description;
     }
 
-    public PropertyAssociation getAssociation() {
-        return association;
-    }
-    public void setAssociation(PropertyAssociation association) {
-        this.association = association;
-    }
-
     public DataType getDataType() {
         return dataType;
     }
@@ -102,6 +101,60 @@ public class Property extends ConfigurationEntity {
     }
     public void setUnit(Unit unit) {
         this.unit = unit;
+    }
+
+    public boolean isTypeAssociation() {
+        return isTypeAssociation != null ? isTypeAssociation : false;
+    }
+
+    public void setTypeAssociation(Boolean isTypeAssociation) {
+        this.isTypeAssociation = isTypeAssociation;
+    }
+
+    public boolean isSlotAssociation() {
+        return isSlotAssociation != null ? isSlotAssociation : false;
+    }
+
+    public void setSlotAssociation(Boolean isSlotAssociation) {
+        this.isSlotAssociation = isSlotAssociation;
+    }
+
+    public boolean isDeviceAssociation() {
+        return isDeviceAssociation != null ? isDeviceAssociation : false;
+    }
+
+    public void setDeviceAssociation(Boolean isDeviceAssociation) {
+        this.isDeviceAssociation = isDeviceAssociation;
+    }
+
+    public boolean isAlignmentAssociation() {
+        return isAlignmentAssociation != null ? isAlignmentAssociation : false;
+    }
+
+    public void setAlignmentAssociation(Boolean isAlignmentAssociation) {
+        this.isAlignmentAssociation = isAlignmentAssociation;
+    }
+
+    public boolean isAssociationAll() {
+        return isTypeAssociation() && isSlotAssociation() && isDeviceAssociation() && isAlignmentAssociation();
+    }
+
+    public boolean isAssociationNone() {
+        return !(isTypeAssociation() || isSlotAssociation() || isDeviceAssociation() || isAlignmentAssociation());
+    }
+
+    public void setAllAssociation() {
+        isTypeAssociation = Boolean.TRUE;
+        isSlotAssociation = Boolean.TRUE;
+        isDeviceAssociation = Boolean.TRUE;
+        isAlignmentAssociation = Boolean.TRUE;
+    }
+
+    public void setNoneAssociation() {
+        isTypeAssociation = Boolean.FALSE;
+        isSlotAssociation = Boolean.FALSE;
+        isDeviceAssociation = Boolean.FALSE;
+        isAlignmentAssociation = Boolean.FALSE;
     }
 
     @Override

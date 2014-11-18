@@ -10,15 +10,14 @@ import org.openepics.discs.conf.ent.DeviceArtifact;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.Property;
-import org.openepics.discs.conf.ent.PropertyAssociation;
 import org.openepics.discs.conf.ent.values.IntValue;
 
 public class DeviceEntityLoggerTest {
 
-    private final Property prop1 = new Property("DETER", "deter", PropertyAssociation.ALL);
+    private final Property prop1 = new Property("DETER", "deter");
     private final Device device = new Device("serial1");
     private final DevicePropertyValue devicePropVal1 = new DevicePropertyValue(false);
-    private final Property prop2 = new Property("APERTURE", "aperture", PropertyAssociation.ALL);
+    private final Property prop2 = new Property("APERTURE", "aperture");
     private final DevicePropertyValue devicePropVal2 = new DevicePropertyValue(false);
     private final DeviceArtifact artifact1 = new DeviceArtifact("CAT Image", true, "Simple CAT image", "/var/usr/images/CAT");
     private final DeviceArtifact artifact2 = new DeviceArtifact("Manual", false, "Users manual", "www.deteriorator.com/user-manual");

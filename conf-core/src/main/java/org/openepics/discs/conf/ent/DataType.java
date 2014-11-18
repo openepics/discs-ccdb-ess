@@ -3,7 +3,6 @@ package org.openepics.discs.conf.ent;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Index;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
@@ -17,7 +16,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author vuppala
  */
 @Entity
-@Table(name = "data_type", indexes = { @Index(columnList = "name") })
+@Table(name = "data_type")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "DataType.findAll", query = "SELECT d FROM DataType d"),

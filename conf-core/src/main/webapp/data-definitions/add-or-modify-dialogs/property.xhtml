@@ -58,10 +58,13 @@
 
                 <p:outputLabel for="propertyAssociation" value="Association:" />
                 <h:panelGroup>
-                    <p:selectOneMenu id="propertyAssociation" value="#{propertyManager.propertyAssociation}" rendered="true" required="true" requiredMessage="Please select association">
-                        <f:selectItem itemLabel="Select One" itemValue="" />
-                        <f:selectItems value="#{propertyManager.propertyAssociations}" />
-                    </p:selectOneMenu>
+                    <p:selectManyCheckbox id="propertyAssociation" value="#{propertyManager.propertyAssociation}" 
+                            rendered="true" required="true" requiredMessage="Please select association">
+                        <f:selectItem itemLabel="Type" itemValue="TYPE" />
+                        <f:selectItem itemLabel="Slot" itemValue="SLOT" />
+                        <f:selectItem itemLabel="Device" itemValue="DEVICE" />
+                        <f:selectItem itemLabel="Alignment" itemValue="ALIGNMENT" />
+                    </p:selectManyCheckbox>
                     <p:message for="propertyAssociation"/>
                 </h:panelGroup>
             </p:panelGrid>

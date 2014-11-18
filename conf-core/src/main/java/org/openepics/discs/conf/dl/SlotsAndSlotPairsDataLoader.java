@@ -26,7 +26,6 @@ import org.openepics.discs.conf.ejb.SlotRelationEJB;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.PositionInformation;
 import org.openepics.discs.conf.ent.Property;
-import org.openepics.discs.conf.ent.PropertyAssociation;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
@@ -523,8 +522,7 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
             if (property == null) {
                 rowResult.addMessage(new ValidationMessage(ErrorMessage.PROPERTY_NOT_FOUND, rowNumber, propertyName));
             } else {
-                final PropertyAssociation propAssociation = property.getAssociation();
-                if (propAssociation != PropertyAssociation.ALL && propAssociation != PropertyAssociation.SLOT && propAssociation != PropertyAssociation.SLOT_DEVICE && propAssociation != PropertyAssociation.TYPE_SLOT) {
+                if (!property.isSlotAssociation()) {
                     rowResult.addMessage(new ValidationMessage(ErrorMessage.PROPERTY_ASSOCIATION_FAILURE, rowNumber, propertyName));
                 }
             }

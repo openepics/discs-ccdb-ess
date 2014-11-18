@@ -1,6 +1,10 @@
 package org.openepics.discs.conf.ejb;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
@@ -17,7 +21,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.openepics.discs.conf.ent.Property;
-import org.openepics.discs.conf.ent.PropertyAssociation;
 import org.openepics.discs.conf.util.TestUtility;
 
 @RunWith(Arquillian.class)
@@ -74,7 +77,8 @@ public class PropertyEJBIT {
     @UsingDataSet(value= {"unit.xml", "property.xml"})
     @ApplyScriptBefore(value= {"update_sequences.sql"})
     public void testAdd() {
-        final Property newProperty = new Property("TESTPROP", "TestPropDescription", PropertyAssociation.SLOT);
+        final Property newProperty = new Property("TESTPROP", "TestPropDescription");
+        newProperty.setSlotAssociation(true);
         newProperty.setDataType( dataTypeService.findByName("Double") );
         newProperty.setUnit( unitService.findByName("meter") );
         propertyService.add(newProperty);
@@ -83,7 +87,7 @@ public class PropertyEJBIT {
         assertNotNull(newerProperty);
         assertEquals(newerProperty.getName(), "TESTPROP");
         assertEquals(newerProperty.getDescription(), "TestPropDescription");
-        assertEquals(newerProperty.getAssociation(), PropertyAssociation.SLOT);
+        assertTrue(newerProperty.isSlotAssociation());
         assertEquals(newerProperty.getDataType().getName(), "Double");
         assertEquals(newerProperty.getUnit().getName(), "meter");
     }

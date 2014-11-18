@@ -1,3 +1,22 @@
+/*
+ * Copyright (c) 2014 European Spallation Source
+ * Copyright (c) 2014 Cosylab d.d.
+ *
+ * This file is part of Controls Configuration Database.
+ *
+ * Controls Configuration Database is free software: you can redistribute it
+ * and/or modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 2 of the License,
+ * or any newer version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
+ */
 package org.openepics.discs.conf.dl;
 
 import java.util.ArrayList;
@@ -21,7 +40,6 @@ import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.Property;
-import org.openepics.discs.conf.ent.PropertyAssociation;
 import org.openepics.discs.conf.util.As;
 import org.openepics.discs.conf.util.Conversion;
 
@@ -203,8 +221,7 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
             if (property == null) {
                 rowResult.addMessage(new ValidationMessage(ErrorMessage.PROPERTY_NOT_FOUND, rowNumber, entry.getKey()));
             } else {
-                final PropertyAssociation propAssociation = property.getAssociation();
-                if (propAssociation != PropertyAssociation.ALL && propAssociation != PropertyAssociation.TYPE && propAssociation != PropertyAssociation.TYPE_DEVICE && propAssociation != PropertyAssociation.TYPE_SLOT) {
+                if (!property.isTypeAssociation()) {
                     rowResult.addMessage(new ValidationMessage(ErrorMessage.PROPERTY_ASSOCIATION_FAILURE, rowNumber, propertyName));
                 }
             }

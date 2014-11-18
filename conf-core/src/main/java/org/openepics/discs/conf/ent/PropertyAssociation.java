@@ -1,39 +1,37 @@
+/*
+ * Copyright (c) 2014 European Spallation Source
+ * Copyright (c) 2014 Cosylab d.d.
+ *
+ * This file is part of Controls Configuration Database.
+ *
+ * Controls Configuration Database is free software: you can redistribute it
+ * and/or modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 2 of the License,
+ * or any newer version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
+ */
 package org.openepics.discs.conf.ent;
 
-
-/* ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! *
- * WARNING! PLEASE NOTE! WARNING! PLEASE NOTE! WARNING! PLEASE NOTE! WARNING! PLEASE NOTE! WARNING! PLEASE NOTE!     *
- *                                                                                                                   *
- * The field in the Property.java file persisting this entity is limited to 12 characters.                           *
- *                                                                                                                   *
- * @Enumerated(EnumType.STRING)                                                                                      *
- * @Column(name = "association", length = 12)                                                                        *
- *                                                                                                                   *
- * If you add another enumeration property that goes over this limit, remember to update the database model          *
- * accordingly.                                                                                                      *
- *                                                                                                                   *
- * WARNING! PLEASE NOTE! WARNING! PLEASE NOTE! WARNING! PLEASE NOTE! WARNING! PLEASE NOTE! WARNING! PLEASE NOTE!     *
- * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! * ! */
-
 /**
- * Enumeration that is used to detrermine the entity types for which the property can be used
+ * Public interface with possible association string literals.
  *
  */
-public enum PropertyAssociation {
+public interface PropertyAssociation {
     /** The property is only for <i>Component Type</i>, E.g.: a CAD drawing. */
-    TYPE,
+    public static final String TYPE = "TYPE";
     /** The property is only for <i>Slot</i>. */
-    SLOT,
+    public static final String SLOT = "SLOT";
     /** The property is only for <i>Physical Device</i>. */
-    DEVICE,
-    /** The property is for both <i>Slot</i> and <i>Physical Device</i>. */
-    SLOT_DEVICE,
-    /** The property is for both <i>Component Type</i> and <i>Physical Device</i>. */
-    TYPE_DEVICE,
-    /** The property is for both <i>Component Type</i> and <i>Slot</i>. */
-    TYPE_SLOT,
-    /** The property is for <i>Component Type</i>, <i>Slot</i> and <i>Physical Device</i> .*/
-    ALL,
+    public static final String DEVICE = "DEVICE";
     /** The property is for <i>Alignment Record</i>. */
-    ALIGNMENT
+    public static final String ALIGNMENT = "ALIGNMENT";
+    /** The property is for <i>Component Type</i>, <i>Slot</i>, <i>Physical Device</i> and <i>Alignment</i>.*/
+    public static final String ALL = "ALL";
 }

@@ -17,7 +17,6 @@ import org.junit.Test;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.Property;
-import org.openepics.discs.conf.ent.PropertyAssociation;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotArtifact;
 import org.openepics.discs.conf.ent.SlotPair;
@@ -32,9 +31,9 @@ import org.openepics.discs.conf.ent.values.IntValue;
  */
 public class SlotEntityLoggerTest {
 
-    private final Property prop1 = new Property("DETER", "deter", PropertyAssociation.ALL);
+    private final Property prop1 = new Property("DETER", "deter");
     private final SlotPropertyValue slotPropVal1 = new SlotPropertyValue(true);
-    private final Property prop2 = new Property("APERTURE", "aperture", PropertyAssociation.ALL);
+    private final Property prop2 = new Property("APERTURE", "aperture");
     private final SlotPropertyValue slotPropVal2 = new SlotPropertyValue(false);
     private final Slot slot = new Slot("Test slot", true);
     private final SlotArtifact artifact1 = new SlotArtifact("CAT Image", true, "Simple CAT image", "/var/usr/images/CAT");

@@ -35,7 +35,6 @@ import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.Property;
-import org.openepics.discs.conf.ent.PropertyAssociation;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotArtifact;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
@@ -133,10 +132,7 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
         filteredProperties = ImmutableList.copyOf(Collections2.filter(propertyCandidates, new Predicate<Property>() {
             @Override
             public boolean apply(Property property) {
-                final PropertyAssociation propertyAssociation = property.getAssociation();
-                return propertyAssociation == PropertyAssociation.ALL || propertyAssociation == PropertyAssociation.SLOT
-                        || propertyAssociation == PropertyAssociation.SLOT_DEVICE
-                        || propertyAssociation == PropertyAssociation.TYPE_SLOT;
+                return property.isSlotAssociation();
             }
         }));
     }

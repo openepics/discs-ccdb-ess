@@ -29,7 +29,7 @@ public class PropertyEntityLogger implements EntityLogger<Property> {
 
         return ImmutableList.of(new AuditLogUtil(prop)
                                 .removeTopProperties(Arrays.asList("id", "modifiedAt", "modifiedBy",
-                                        "version", "name", "dataType", "unit"))
+                                        "version", "name", "dataType", "unit", "associationAll", "associationNone"))
                                 .addStringProperty("dataType",
                                         prop.getDataType() != null ? prop.getDataType().getName() : null)
                                 .addStringProperty("unit", prop.getUnit() != null ? prop.getUnit().getName() : null)

@@ -10,14 +10,13 @@ import org.openepics.discs.conf.ent.ComptypeArtifact;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.Property;
-import org.openepics.discs.conf.ent.PropertyAssociation;
 import org.openepics.discs.conf.ent.values.IntValue;
 
 public class ComponentTypeEntityLoggerTest {
 
-    private final Property prop1 = new Property("DETER", "deter", PropertyAssociation.ALL);
+    private final Property prop1 = new Property("DETER", "deter");
     private final ComptypePropertyValue compTypePropVal1 = new ComptypePropertyValue(false);
-    private final Property prop2 = new Property("APERTURE", "aperture", PropertyAssociation.ALL);
+    private final Property prop2 = new Property("APERTURE", "aperture");
     private final ComptypePropertyValue compTypePropVal2 = new ComptypePropertyValue(false);
     private final ComponentType compType = new ComponentType("Deteriorator");
     private final ComptypeArtifact artifact1 = new ComptypeArtifact("CAT Image", true, "Simple CAT image", "/var/usr/images/CAT");

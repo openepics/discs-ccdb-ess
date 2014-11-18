@@ -1,5 +1,21 @@
-/**
+/*
+ * Copyright (c) 2014 European Spallation Source
+ * Copyright (c) 2014 Cosylab d.d.
  *
+ * This file is part of Controls Configuration Database.
+ *
+ * Controls Configuration Database is free software: you can redistribute it
+ * and/or modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 2 of the License,
+ * or any newer version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
 package org.openepics.discs.conf.dl;
 
@@ -111,7 +127,7 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
                             try {
                                 final Property propertyToUpdate = propertyByName.get(name);
                                 propertyToUpdate.setDescription(description);
-                                propertyToUpdate.setAssociation(propertyAssociation(association));
+                                setPropertyAssociation(association, propertyToUpdate);
                                 propertyToUpdate.setModifiedAt(modifiedAt);
                                 setPropertyFields(propertyToUpdate, unit, dataType, rowNumber);
                                 if (rowResult.isError()) {
@@ -125,7 +141,8 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
                             }
                         } else {
                             try {
-                                final Property propertyToAdd = new Property(name, description, propertyAssociation(association));
+                                final Property propertyToAdd = new Property(name, description);
+                                setPropertyAssociation(association, propertyToAdd);
                                 setPropertyFields(propertyToAdd, unit, dataType, rowNumber);
                                 if (rowResult.isError()) {
                                     continue;
@@ -250,25 +267,31 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
         }
     }
 
-    private PropertyAssociation propertyAssociation(String association) {
-        if (association == null) {
-            return PropertyAssociation.TYPE;
-        } else if (association.equalsIgnoreCase(PropertyAssociation.ALL.name())) {
-            return PropertyAssociation.ALL;
-        } else if (association.equalsIgnoreCase(PropertyAssociation.DEVICE.name())) {
-            return PropertyAssociation.DEVICE;
-        } else if (association.equalsIgnoreCase(PropertyAssociation.SLOT.name())) {
-            return PropertyAssociation.SLOT;
-        } else if (association.equalsIgnoreCase(PropertyAssociation.SLOT_DEVICE.name())) {
-            return PropertyAssociation.SLOT_DEVICE;
-        } else if (association.equalsIgnoreCase(PropertyAssociation.TYPE.name())) {
-            return PropertyAssociation.TYPE;
-        } else if (association.equalsIgnoreCase(PropertyAssociation.TYPE_DEVICE.name())) {
-            return PropertyAssociation.TYPE_DEVICE;
-        } else if (association.equalsIgnoreCase(PropertyAssociation.TYPE_SLOT.name())) {
-            return PropertyAssociation.TYPE_SLOT;
-        } else {
-            return PropertyAssociation.TYPE;
+    private void setPropertyAssociation(String association, Property setAssociationProperty) {
+        setAssociationProperty.setNoneAssociation();
+
+        final String associationCaps = association == null ? PropertyAssociation.TYPE : association.toUpperCase();
+
+        if (associationCaps.contains(PropertyAssociation.ALL)) {
+            setAssociationProperty.setAllAssociation();
+            return;
+        }
+        if (associationCaps.contains(PropertyAssociation.DEVICE)) {
+            setAssociationProperty.setDeviceAssociation(true);
+        }
+        if (associationCaps.contains(PropertyAssociation.SLOT)) {
+            setAssociationProperty.setSlotAssociation(true);
+        }
+        if (associationCaps.contains(PropertyAssociation.TYPE)) {
+            setAssociationProperty.setTypeAssociation(true);
+        }
+        if (associationCaps.contains(PropertyAssociation.ALIGNMENT)) {
+            setAssociationProperty.setAlignmentAssociation(true);
+        }
+
+        // default if nothing was set
+        if (setAssociationProperty.isAssociationNone()) {
+            setAssociationProperty.setTypeAssociation(true);
         }
     }
 }

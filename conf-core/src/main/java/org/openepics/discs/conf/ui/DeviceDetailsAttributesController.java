@@ -33,7 +33,6 @@ import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.DeviceArtifact;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ent.Property;
-import org.openepics.discs.conf.ent.PropertyAssociation;
 import org.openepics.discs.conf.ent.Tag;
 import org.openepics.discs.conf.ui.common.AbstractAttributesController;
 import org.openepics.discs.conf.views.EntityAttributeView;
@@ -114,10 +113,7 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
         filteredProperties = ImmutableList.copyOf(Collections2.filter(propertyCandidates, new Predicate<Property>() {
             @Override
             public boolean apply(Property property) {
-                final PropertyAssociation propertyAssociation = property.getAssociation();
-                return propertyAssociation == PropertyAssociation.ALL || propertyAssociation == PropertyAssociation.DEVICE
-                       || propertyAssociation == PropertyAssociation.SLOT_DEVICE
-                       || propertyAssociation == PropertyAssociation.TYPE_DEVICE;
+                return property.isDeviceAssociation();
             }
         }));
     }

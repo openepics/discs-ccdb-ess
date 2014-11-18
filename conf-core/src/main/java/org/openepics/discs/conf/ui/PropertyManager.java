@@ -10,7 +10,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.faces.application.FacesMessage;
@@ -63,7 +63,7 @@ public class PropertyManager implements Serializable {
     private String description;
     private DataType dataType;
     private Unit unit;
-    private PropertyAssociation association;
+    private String[] association = new String[] {};;
     private Property selectedProperty;
     private boolean unitComboEnabled;
 
@@ -81,7 +81,8 @@ public class PropertyManager implements Serializable {
     }
 
     public void onAdd() {
-        final Property propertyToAdd = new Property(name, description, association);
+        final Property propertyToAdd = new Property(name, description);
+        setAssociationOnProperty(propertyToAdd);
         propertyToAdd.setDataType(dataType);
         propertyToAdd.setUnit(unit);
         try {
@@ -96,7 +97,7 @@ public class PropertyManager implements Serializable {
         selectedProperty.setName(name);
         selectedProperty.setDescription(description);
         selectedProperty.setDataType(dataType);
-        selectedProperty.setAssociation(association);
+        setAssociationOnProperty(selectedProperty);
         selectedProperty.setUnit(unit);
 
         try {
@@ -117,7 +118,7 @@ public class PropertyManager implements Serializable {
         description = selectedProperty.getDescription();
         dataType = selectedProperty.getDataType();
         unit = selectedProperty.getUnit();
-        association = selectedProperty.getAssociation();
+        association = constructSetAssociations(selectedProperty);
         setIsUnitComboEnabled();
         RequestContext.getCurrentInstance().update("modifyPropertyForm:modifyProperty");
     }
@@ -172,10 +173,6 @@ public class PropertyManager implements Serializable {
         importFileName = null;
     }
 
-    public List<PropertyAssociation> getPropertyAssociations() {
-        return Arrays.asList(PropertyAssociation.values());
-    }
-
     public String getName() {
         return name;
     }
@@ -204,15 +201,63 @@ public class PropertyManager implements Serializable {
         this.unit = unit;
     }
 
-    public PropertyAssociation getPropertyAssociation() {
+    public String[] getPropertyAssociation() {
         return association;
     }
-    public void setPropertyAssociation(PropertyAssociation association) {
+    public void setPropertyAssociation(String[] association) {
         this.association = association;
     }
 
+    private String[] constructSetAssociations(Property property) {
+        ArrayList<String> associations = new ArrayList<>();
+        if (property.isTypeAssociation()) {
+            associations.add(PropertyAssociation.TYPE);
+        }
+        if (property.isSlotAssociation()) {
+            associations.add(PropertyAssociation.SLOT);
+        }
+        if (property.isDeviceAssociation()) {
+            associations.add(PropertyAssociation.DEVICE);
+        }
+        if (property.isAlignmentAssociation()) {
+            associations.add(PropertyAssociation.ALIGNMENT);
+        }
+        return associations.toArray(new String[] {});
+    }
+
+    private void setAssociationOnProperty(Property property) {
+        // reset all data
+        property.setNoneAssociation();
+
+        if (association == null || association.length == 0) {
+            throw new RuntimeException("Property association target not selected.");
+        }
+
+        for (String assoc : association) {
+            switch (assoc) {
+            case PropertyAssociation.ALIGNMENT:
+                property.setAlignmentAssociation(true);
+                break;
+            case PropertyAssociation.DEVICE:
+                property.setDeviceAssociation(true);
+                break;
+            case PropertyAssociation.SLOT:
+                property.setSlotAssociation(true);
+                break;
+            case PropertyAssociation.TYPE:
+                property.setTypeAssociation(true);
+                break;
+            default:
+                throw new RuntimeException("Unknow property associaton target.");
+            }
+        }
+    }
+
     public void setIsUnitComboEnabled() {
-        if (dataType.getName().equalsIgnoreCase("integer") || dataType.getName().equalsIgnoreCase("double") || dataType.getName().equalsIgnoreCase("integers vector") || dataType.getName().equalsIgnoreCase("doubles vector" ) || dataType.getName().equalsIgnoreCase("doubles table")) {
+        if (dataType.getName().equalsIgnoreCase("integer") || dataType.getName().equalsIgnoreCase("double")
+                || dataType.getName().equalsIgnoreCase("integers vector")
+                || dataType.getName().equalsIgnoreCase("doubles vector" )
+                || dataType.getName().equalsIgnoreCase("doubles table")) {
             unitComboEnabled = true;
         } else {
             unitComboEnabled = false;
