@@ -9,7 +9,7 @@
             <f:facet name="header">
                 <h:outputText value="#{dialogTitle}" />
             </f:facet>
-            <p:panelGrid id="grp" styleClass="dialog-grid-panel noBorders" columns="2">
+            <p:panelGrid id="grp" styleClass="dialog-grid-panel noBorders" columns="2" columnClasses="alignRight">
             
                 <p:outputLabel for="propertyName" value="Name:" />
                 <h:panelGroup>
@@ -69,7 +69,8 @@
                 </h:panelGroup>
             </p:panelGrid>
             
-            <p:commandButton value="Cancel" style="float: right" onclick="#{widgetName}.hide();" update="grp" resetValues="true" />
+            <p:commandButton value="Cancel" style="float: right; margin-left: 1ex;" onclick="#{widgetName}.hide();" 
+                update="grp" resetValues="true" />
             <p:commandButton value="Save" style="float: right" update=":propertiesForm:propertiesTable grp" 
                 oncomplete="if (args &amp;&amp; !args.validationFailed) #{widgetName}.hide()" 
                 action="#{propertyManager[submitHandler]}"/>
