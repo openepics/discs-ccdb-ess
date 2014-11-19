@@ -222,3 +222,7 @@ a {
 .menu-selected {
 	font-weight: bold !important;
 }
+
+.dialog-labels-width-1 {
+	width: 18ex;
+}
