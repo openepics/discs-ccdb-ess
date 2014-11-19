@@ -86,7 +86,7 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
         super.addNewPropertyValue();
 
         if (propertyValueInstance.isPropertyDefinition()) {
-            if (propertyValueInstance.getProperty().isSlotAssociation()) {
+            if (propertyValueInstance.isDefinitionTargetSlot()) {
                 for (Slot slot : slotEJB.findByComponentType(compType)) {
                     final SlotPropertyValue newSlotProperty = new SlotPropertyValue();
                     newSlotProperty.setProperty(propertyValueInstance.getProperty());
@@ -95,7 +95,7 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
                 }
             }
 
-            if (propertyValueInstance.getProperty().isDeviceAssociation()) {
+            if (propertyValueInstance.isDefinitionTargetDevice()) {
                 for (Device device : deviceEJB.findDevicesByComponentType(compType)) {
                     final DevicePropertyValue newDeviceProperty = new DevicePropertyValue();
                     newDeviceProperty.setProperty(propertyValueInstance.getProperty());
