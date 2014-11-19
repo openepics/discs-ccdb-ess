@@ -243,5 +243,15 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
         }
     }
 
+    @Override
+    protected void propertyValueInstanceSpecificAction(ComptypePropertyValue propValue) {
+        if (propValue.isPropertyDefinition()) {
+            if (propValue.isDefinitionTargetSlot()) {
+                slotEJB.bulkDeleteUndefinedSlotProps(compType, propValue.getProperty());
+            } else {
+                deviceEJB.bulkDeleteUndefinedDeviceProps(compType, propValue.getProperty());
+            }
+        }
+    }
 }
 

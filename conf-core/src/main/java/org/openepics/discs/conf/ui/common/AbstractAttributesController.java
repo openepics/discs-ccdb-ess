@@ -248,8 +248,13 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
     @SuppressWarnings("unchecked")
     protected void deletePropertyValue() {
         final T propValue = (T) selectedAttribute.getEntity();
+        propertyValueInstanceSpecificAction(propValue);
         dao.deleteChild(propValue);
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Property value has been deleted");
+    }
+
+    protected void propertyValueInstanceSpecificAction(T propValue) {
+        // default implementation doesn't perform any action.
     }
 
     @SuppressWarnings("unchecked")
