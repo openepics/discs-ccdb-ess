@@ -123,9 +123,6 @@
                 <h:panelGroup class="property-values" layout="block">
                    <p:commandButton id="addButton" value="Add" type="button" icon="ui-icon-plus"/>
                    <p:menu overlay="true" trigger="addButton" my="left top" at="left bottom">
-                         <p:menuitem value="Property" oncomplete="addPropertyValue.show()" 
-                                 actionListener="#{slotAttributesController.prepareForPropertyValueAdd}" 
-                                 update=":addPropertyValueForm:addPropertyValue"/>
                          <p:menuitem value="Tag" oncomplete="containerTag.show()" update=":containerTagForm" 
                                  actionListener="#{slotAttributesController.prepareForTagAdd}"/>
                          <p:menuitem value="Artifact" oncomplete="addArtifact.show()" 
@@ -193,15 +190,6 @@
             <ui:param name="formToUpdate" value=":installSlotPropertiesManagerForm:attributesDataTable" />
         </ui:include>
             
-        <ui:include src="../add-or-modify-dialogs/property-value.xhtml" >
-            <ui:param name="formId" value="addPropertyValueForm" />
-            <ui:param name="dialogTitle" value="Add new installation slot property" />
-            <ui:param name="widgetName" value="addPropertyValue" />
-            <ui:param name="controller" value="#{slotAttributesController}" />
-            <ui:param name="submitHandler" value="addNewPropertyValue" />
-            <ui:param name="componentToUpdate" value=":installSlotPropertiesManagerForm:attributesDataTable" />
-        </ui:include>
-        
         <ui:include src="../add-or-modify-dialogs/property-value.xhtml" >
             <ui:param name="formId" value="modifyPropertyValueForm" />
             <ui:param name="dialogTitle" value="Modify installation slot property" />

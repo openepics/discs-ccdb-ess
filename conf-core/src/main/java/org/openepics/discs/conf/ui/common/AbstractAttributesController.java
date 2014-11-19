@@ -159,9 +159,13 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
             dao.addChild(propertyValueInstance);
 
             if (isPropertyDefinition) {
-                Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "New property definition has been created");
+                if (definitionTarget == DefinitionTarget.SLOT) {
+                    Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "New installation slot property has been created");
+                } else {
+                    Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "New device instance property has been created");
+                }
             } else {
-                Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "New property value has been created");
+                Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "New property has been created");
             }
         } finally {
             internalPopulateAttributesList();
