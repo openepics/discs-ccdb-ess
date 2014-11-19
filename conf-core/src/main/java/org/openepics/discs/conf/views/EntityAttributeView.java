@@ -76,10 +76,17 @@ public class EntityAttributeView {
 
     private void setComponentTypeParameters() {
         setPropValueParameters();
-        if (value == null) {
-            kind = "Definition";
+        final ComptypePropertyValue comptypePropertyValue = (ComptypePropertyValue) entity;
+        if (!comptypePropertyValue.isPropertyDefinition()) {
+            kind = "Device type property";
         } else {
-            kind = "Type property";
+            if (comptypePropertyValue.isDefinitionTargetSlot()) {
+                kind = "Installation slot property";
+            } else if (comptypePropertyValue.isDefinitionTargetDevice()) {
+                kind = "Device instance property";
+            } else {
+                kind = "Unknown type property";
+            }
         }
     }
 

@@ -164,10 +164,12 @@ public class SlotEJB extends DAO<Slot> {
             slotPairEJB.add(new SlotPair(newSlot, getRootNode(), slotRelationEJB.findBySlotRelationName(SlotRelationName.CONTAINS)));
         }
         for (ComptypePropertyValue propertyDefinition : propertyDefinitions) {
-            final SlotPropertyValue slotPropertyValue = new SlotPropertyValue(false);
-            slotPropertyValue.setProperty(propertyDefinition.getProperty());
-            slotPropertyValue.setSlot(newSlot);
-            addChild(slotPropertyValue);
+            if (propertyDefinition.isDefinitionTargetSlot()) {
+                final SlotPropertyValue slotPropertyValue = new SlotPropertyValue(false);
+                slotPropertyValue.setProperty(propertyDefinition.getProperty());
+                slotPropertyValue.setSlot(newSlot);
+                addChild(slotPropertyValue);
+            }
         }
     }
 }

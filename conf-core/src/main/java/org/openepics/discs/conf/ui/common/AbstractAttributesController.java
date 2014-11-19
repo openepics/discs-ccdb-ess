@@ -80,6 +80,8 @@ import com.google.common.io.ByteStreams;
  */
 public abstract class AbstractAttributesController<T extends PropertyValue,S extends Artifact> implements Serializable {
 
+    protected static enum DefinitionTarget { SLOT, DEVICE }
+
     @Inject protected BlobStore blobStore;
     @Inject protected TagEJB tagEJB;
 
@@ -90,6 +92,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
     private boolean propertyNameChangeDisabled;
     protected PropertyValueUIElement propertyValueUIElement;
     protected boolean isPropertyDefinition;
+    protected DefinitionTarget definitionTarget;
 
     protected String tag;
     protected List<String> tagsForAutocomplete;
@@ -141,7 +144,15 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
         setPropertyValueParent(propertyValueInstance);
 
         if (propertyValueInstance instanceof ComptypePropertyValue) {
-            ((ComptypePropertyValue) propertyValueInstance).setPropertyDefinition(isPropertyDefinition);
+            if (isPropertyDefinition) {
+                final ComptypePropertyValue ctPropValueInstance = ((ComptypePropertyValue) propertyValueInstance);
+                ctPropValueInstance.setPropertyDefinition(true);
+                if (definitionTarget == DefinitionTarget.SLOT) {
+                    ctPropValueInstance.setDefinitionTargetSlot(true);
+                } else {
+                    ctPropValueInstance.setDefinitionTargetDevice(true);
+                }
+            }
         }
 
         try {

@@ -199,21 +199,40 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
     }
 
     /**
-     * Prepares the data for property definition creation.
+     * Prepares the data for slot property (definition) creation
      */
-    public void prepareForPropertyDefAdd() {
+    public void prepareForSlotPropertyAdd() {
+        definitionTarget = AbstractAttributesController.DefinitionTarget.SLOT;
+        isPropertyDefinition = true;
+        super.prepareForPropertyValueAdd();
+    }
+
+    /**
+     * Prepares the data for device property (definition) creation
+     */
+    public void prepareForDevicePropertyAdd() {
+        definitionTarget = AbstractAttributesController.DefinitionTarget.DEVICE;
         isPropertyDefinition = true;
         super.prepareForPropertyValueAdd();
     }
 
     private Predicate<Property> getPropertyFilterPredicate() {
         if (isPropertyDefinition) {
-            return new Predicate<Property>() {
-                @Override
-                public boolean apply(Property property) {
-                    return property.isDeviceAssociation() || property.isSlotAssociation();
-                }
-            };
+            if (definitionTarget == AbstractAttributesController.DefinitionTarget.SLOT) {
+                return new Predicate<Property>() {
+                    @Override
+                    public boolean apply(Property property) {
+                        return property.isSlotAssociation();
+                    }
+                };
+            } else {
+                return new Predicate<Property>() {
+                    @Override
+                    public boolean apply(Property property) {
+                        return property.isDeviceAssociation();
+                    }
+                };
+            }
         } else {
             return new Predicate<Property>() {
                 @Override

@@ -20,6 +20,7 @@ package org.openepics.discs.conf.ui;
 import java.io.Serializable;
 import java.util.List;
 import java.util.ListIterator;
+
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -103,10 +104,12 @@ public class DevicesByTypeManager implements Serializable {
         // Get all property definitions and create device properties
         List<ComptypePropertyValue> propertyDefinitions = componentTypesEJB.findPropertyDefinitions(selectedComponentType);
         for (ComptypePropertyValue propertyDefinition : propertyDefinitions) {
-            final DevicePropertyValue devicePropertyValue = new DevicePropertyValue(false);
-            devicePropertyValue.setProperty(propertyDefinition.getProperty());
-            devicePropertyValue.setDevice(newDevice);
-            deviceEJB.addChild(devicePropertyValue);
+            if (propertyDefinition.isDefinitionTargetDevice()) {
+                final DevicePropertyValue devicePropertyValue = new DevicePropertyValue(false);
+                devicePropertyValue.setProperty(propertyDefinition.getProperty());
+                devicePropertyValue.setDevice(newDevice);
+                deviceEJB.addChild(devicePropertyValue);
+            }
         }
 
         resetDeviceDialogFields();

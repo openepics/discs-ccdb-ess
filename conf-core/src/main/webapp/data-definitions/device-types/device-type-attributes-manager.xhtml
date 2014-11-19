@@ -34,11 +34,14 @@
                 <h:panelGroup class="property-values" layout="block">
                     <p:commandButton id="addButton" value="Add" type="button" icon="ui-icon-plus" />
                     <p:menu overlay="true" trigger="addButton" my="left top" at="left bottom">
-                        <p:menuitem value="Type Property" oncomplete="addPropertyValue.show()" 
+                        <p:menuitem value="Device Type Property" oncomplete="addPropertyValue.show()" 
                             actionListener="#{comptypeAttributesController.prepareForPropertyValueAdd}" 
                             update=":addPropertyValueForm:addPropertyValue" />
-                        <p:menuitem value="Property Definition" oncomplete="deviceTypePropertyDefinition.show()" 
-                            actionListener="#{comptypeAttributesController.prepareForPropertyDefAdd()}" 
+                        <p:menuitem value="Installation Slot Property" oncomplete="deviceTypePropertyDefinition.show()" 
+                            actionListener="#{comptypeAttributesController.prepareForSlotPropertyAdd()}" 
+                            update=":deviceTypePropertyDefinitionForm:deviceTypePropertyDefinition" />
+                        <p:menuitem value="Device Instance Property" oncomplete="deviceTypePropertyDefinition.show()" 
+                            actionListener="#{comptypeAttributesController.prepareForDevicePropertyAdd()}" 
                             update=":deviceTypePropertyDefinitionForm:deviceTypePropertyDefinition" />
                         <p:menuitem value="Tag" oncomplete="deviceTypeTag.show()" update=":deviceTypeTagForm" 
                                    actionListener="#{comptypeAttributesController.prepareForTagAdd}" />

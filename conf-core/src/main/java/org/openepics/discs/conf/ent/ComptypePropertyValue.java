@@ -39,6 +39,16 @@ public class ComptypePropertyValue extends PropertyValue {
     @Column(name = "is_property_definition")
     private boolean isPropertyDefinition;
 
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "is_def_target_slot")
+    private boolean isDefinitionTargetSlot;
+
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "is_def_target_device")
+    private boolean isDefinitionTargetDevice;
+
     public ComptypePropertyValue() { }
 
     public ComptypePropertyValue(boolean inRepository) {
@@ -58,6 +68,22 @@ public class ComptypePropertyValue extends PropertyValue {
 
     public void setPropertyDefinition(boolean isPropertyDefinition) {
         this.isPropertyDefinition = isPropertyDefinition;
+    }
+
+    public boolean isDefinitionTargetSlot() {
+        return isDefinitionTargetSlot;
+    }
+
+    public void setDefinitionTargetSlot(boolean isDefinitionTargetSlot) {
+        this.isDefinitionTargetSlot = isDefinitionTargetSlot;
+    }
+
+    public boolean isDefinitionTargetDevice() {
+        return isDefinitionTargetDevice;
+    }
+
+    public void setDefinitionTargetDevice(boolean isDefinitionTargetDevice) {
+        this.isDefinitionTargetDevice = isDefinitionTargetDevice;
     }
 
     @Override
