@@ -70,7 +70,7 @@
             
                         <p:column headerText="Actions" width="70">
                             <p:commandLink ajax="true" title="Edit" update=":modifyPropertyValueForm :modifyArtifactForm" 
-                                    rendered="#{attribute.kind != 'Definition' and attribute.kind != 'Tag'}">
+                                    rendered="#{attribute.kind != 'Installation slot property' and attribute.kind != 'Device instance property' and attribute.kind != 'Tag'}">
                                 <h:outputText styleClass="ui-icon ui-icon-pencil" style="display: inline-block !important; margin-right: 6px;" />
                                 <f:setPropertyActionListener value="#{attribute}" target="#{comptypeAttributesController.selectedAttributeToModify}" />
                             </p:commandLink>
