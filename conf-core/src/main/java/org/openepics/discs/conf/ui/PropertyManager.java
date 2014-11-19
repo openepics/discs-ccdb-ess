@@ -66,7 +66,7 @@ public class PropertyManager implements Serializable {
     private String[] association = new String[] {};;
     private Property selectedProperty;
     private boolean unitComboEnabled;
-
+    private boolean isPropertyUsed;
 
     /**
      * Creates a new instance of PropertyManager
@@ -110,6 +110,7 @@ public class PropertyManager implements Serializable {
 
     public void prepareAddPopup() {
         resetFields();
+        isPropertyUsed = false;
         RequestContext.getCurrentInstance().update("addPropertyForm:addProperty");
     }
 
@@ -119,6 +120,7 @@ public class PropertyManager implements Serializable {
         dataType = selectedProperty.getDataType();
         unit = selectedProperty.getUnit();
         association = constructSetAssociations(selectedProperty);
+        isPropertyUsed = propertyEJB.isPropertyUsed(selectedProperty);
         setIsUnitComboEnabled();
         RequestContext.getCurrentInstance().update("modifyPropertyForm:modifyProperty");
     }
@@ -303,5 +305,9 @@ public class PropertyManager implements Serializable {
         unit = null;
         association = null;
         unitComboEnabled = true;
+    }
+
+    public boolean isPropertyUsed() {
+        return isPropertyUsed;
     }
 }

@@ -23,7 +23,10 @@ import java.util.List;
 
 import javax.ejb.Stateless;
 
+import org.openepics.discs.conf.ent.ComptypePropertyValue;
+import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ent.Property;
+import org.openepics.discs.conf.ent.SlotPropertyValue;
 
 /**
  * DAO Service for accesing {@link Property} entities
@@ -41,5 +44,23 @@ public class PropertyEJB extends DAO<Property> {
 
     public List<Property> findAllOrderedByName() {
         return em.createNamedQuery("Property.findAllOrderedByName", Property.class).getResultList();
+    }
+
+    public boolean isPropertyUsed(Property property) {
+        List<SlotPropertyValue> slotPropertyValues = em.createQuery("SELECT pv FROM SlotPropertyValue pv "
+                + "WHERE pv.property = :property", SlotPropertyValue.class).setParameter("property", property)
+                .setMaxResults(1).getResultList();
+        if (!slotPropertyValues.isEmpty()) return true;
+
+        List<DevicePropertyValue> devicePropertyValues = em.createQuery("SELECT pv FROM DevicePropertyValue pv "
+                + "WHERE pv.property = :property", DevicePropertyValue.class).setParameter("property", property)
+                .setMaxResults(1).getResultList();
+        if (!devicePropertyValues.isEmpty()) return true;
+
+        List<ComptypePropertyValue> typePropertyValues = em.createQuery("SELECT pv FROM ComptypePropertyValue pv "
+                + "WHERE pv.property = :property", ComptypePropertyValue.class).setParameter("property", property)
+                .setMaxResults(1).getResultList();
+
+        return !typePropertyValues.isEmpty();
     }
 }

@@ -8,8 +8,10 @@
         <h:form id="propertiesForm">
             <p:commandButton ajax="true" actionListener="#{propertyManager.prepareAddPopup()}" value="Add new"
                     oncomplete="addProperty.show()" />
-            <p:dataTable var="property" id="propertiesTable" value="#{propertyManager.properties}" resizableColumns="true" style="table-layout: fixed; word-wrap: break-word;" filteredValue="#{propertyManager.filteredProperties}"
-                rows="15" paginator="true" paginatorPosition="bottom">
+            <p:dataTable var="property" id="propertiesTable" value="#{propertyManager.properties}" 
+                    resizableColumns="true" style="table-layout: fixed; word-wrap: break-word;" 
+                    filteredValue="#{propertyManager.filteredProperties}"
+                    rows="15" paginator="true" paginatorPosition="bottom">
                 <p:column headerText="Name" sortBy="#{property.name}" filterBy="#{property.name}" width="20%">
                     <h:outputText value="#{property.name}" />
                 </p:column>

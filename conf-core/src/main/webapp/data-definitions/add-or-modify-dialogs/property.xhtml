@@ -9,64 +9,90 @@
             <f:facet name="header">
                 <h:outputText value="#{dialogTitle}" />
             </f:facet>
-            <p:panelGrid id="grp" styleClass="dialog-grid-panel noBorders" columns="2" columnClasses="alignRight">
-            
-                <p:outputLabel for="propertyName" value="Name:" />
-                <h:panelGroup>
-                    <p:inputText id="propertyName" value="#{propertyManager.name}" required="true" 
-                        requiredMessage="Please enter a name"/>
-                    <p:message for="propertyName"/>
-                </h:panelGroup>
+            <p:panelGrid id="grp" styleClass="dialog-grid-panel noBorders">
+                <p:row>
+                    <p:column styleClass="alignRight">
+                        <p:outputLabel for="propertyName" value="Name:" />
+                    </p:column>
+                    <p:column>
+                        <p:inputText id="propertyName" value="#{propertyManager.name}" required="true" 
+                            requiredMessage="Please enter a name"/>
+                        <p:message for="propertyName"/>
+                    </p:column>
+                </p:row>
                 
-                <p:outputLabel for="propertyDesc" value="Description:" />
-                <h:panelGroup style="width: 100%">
-                    <p:inputTextarea id="propertyDesc" rows="5" style="width: 100%" counter="icounter" maxlength="254" 
-                        counterTemplate="{0} characters remaining." required="true" 
-                        requiredMessage="Please enter a description" value="#{propertyManager.description}" />
-                    <br/>
-                    <h:outputText id="icounter" />
-                    <p:message for="propertyDesc"/>
-                </h:panelGroup>
+                <p:row>
+                    <p:column styleClass="alignRight">
+                        <p:outputLabel for="propertyDesc" value="Description:" />
+                    </p:column>
+                    <p:column>
+                        <p:inputTextarea id="propertyDesc" rows="5" style="width: 100%" counter="icounter" maxlength="254" 
+                            counterTemplate="{0} characters remaining." required="true" 
+                            requiredMessage="Please enter a description" value="#{propertyManager.description}" />
+                        <br/>
+                        <h:outputText id="icounter" />
+                        <p:message for="propertyDesc"/>
+                    </p:column>
+                </p:row>
 
-                <p:outputLabel for="propertyDataType" value="Data Type:" />
-                <h:panelGroup>
-                    <p:selectOneMenu id="propertyDataType" value="#{propertyManager.dataType}" var="dt" 
-                            converter="#{dataTypeConverter}" rendered="true" required="true" 
-                            requiredMessage="Please select data type" >
-                        <p:ajax update=":#{formId}:propertyUnit" listener="#{propertyManager.setIsUnitComboEnabled}"/>
-                        <f:selectItem itemLabel="Select One" itemValue="" />
-                        <f:selectItems value="#{dataTypeManager.dataTypes}" var="dataType" itemLabel="#{dataType.name}" 
-                            itemValue="#{dataType}" />
-                        <p:column>
-                            <h:outputText value="#{dt.name}" />
-                        </p:column>                    
-                    </p:selectOneMenu>
-                    <p:message for="propertyDataType"/>
-                </h:panelGroup>
+                <p:row rendered="#{propertyManager.propertyUsed}">
+                    <p:column colspan="2" style="text-align: center; font-weight: bold;">
+                        Property is already in use.
+                    </p:column>
+                </p:row>
 
-                <p:outputLabel for="propertyUnit" value="Unit:" />
-                <h:panelGroup>
-                    <p:selectOneMenu id="propertyUnit" value="#{propertyManager.unit}" var="u" 
-                            converter="#{unitConverter}" rendered="true" disabled="#{!propertyManager.unitComboEnabled}">
-                        <f:selectItem itemLabel="Select One" itemValue="" />
-                        <f:selectItems value="#{unitManager.units}" var="unit" itemLabel="#{unit.name}" itemValue="#{unit}" />
-                        <p:column>
-                            <h:outputText value="#{u.name}" />
-                        </p:column>
-                    </p:selectOneMenu>
-                </h:panelGroup>
+                <p:row>
+                    <p:column styleClass="alignRight">
+                        <p:outputLabel for="propertyDataType" value="Data Type:" />
+                    </p:column>
+                    <p:column>
+                        <p:selectOneMenu id="propertyDataType" value="#{propertyManager.dataType}" var="dt" 
+                                converter="#{dataTypeConverter}" required="true" requiredMessage="Please select data type" 
+                                disabled="#{propertyManager.propertyUsed}">
+                            <p:ajax update=":#{formId}:propertyUnit" listener="#{propertyManager.setIsUnitComboEnabled}"/>
+                            <f:selectItem itemLabel="Select One" itemValue="" />
+                            <f:selectItems value="#{dataTypeManager.dataTypes}" var="dataType" itemLabel="#{dataType.name}" 
+                                itemValue="#{dataType}" />
+                            <p:column>
+                                <h:outputText value="#{dt.name}" />
+                            </p:column>                    
+                        </p:selectOneMenu>
+                        <p:message for="propertyDataType"/>
+                    </p:column>
+                </p:row>
+                
+                <p:row>
+                    <p:column styleClass="alignRight">
+                        <p:outputLabel for="propertyUnit" value="Unit:" />
+                    </p:column>
+                    <p:column>
+                        <p:selectOneMenu id="propertyUnit" value="#{propertyManager.unit}" var="u" converter="#{unitConverter}"  
+                                disabled="#{!propertyManager.unitComboEnabled || propertyManager.propertyUsed}">
+                            <f:selectItem itemLabel="Select One" itemValue="" />
+                            <f:selectItems value="#{unitManager.units}" var="unit" itemLabel="#{unit.name}" itemValue="#{unit}" />
+                            <p:column>
+                                <h:outputText value="#{u.name}" />
+                            </p:column>
+                        </p:selectOneMenu>
+                    </p:column>
+                </p:row>
 
-                <p:outputLabel for="propertyAssociation" value="Association:" />
-                <h:panelGroup>
-                    <p:selectManyCheckbox id="propertyAssociation" value="#{propertyManager.propertyAssociation}" 
-                            rendered="true" required="true" requiredMessage="Please select association">
-                        <f:selectItem itemLabel="Type" itemValue="TYPE" />
-                        <f:selectItem itemLabel="Slot" itemValue="SLOT" />
-                        <f:selectItem itemLabel="Device" itemValue="DEVICE" />
-                        <f:selectItem itemLabel="Alignment" itemValue="ALIGNMENT" />
-                    </p:selectManyCheckbox>
-                    <p:message for="propertyAssociation"/>
-                </h:panelGroup>
+                <p:row>
+                    <p:column styleClass="alignRight">
+                        <p:outputLabel for="propertyAssociation" value="Association:" />
+                    </p:column>
+                    <p:column>
+                        <p:selectManyCheckbox id="propertyAssociation" value="#{propertyManager.propertyAssociation}" 
+                                required="true" requiredMessage="Please select association" 
+                                disabled="#{propertyManager.propertyUsed}">
+                            <f:selectItem itemLabel="Type" itemValue="TYPE" />
+                            <f:selectItem itemLabel="Slot" itemValue="SLOT" />
+                            <f:selectItem itemLabel="Device" itemValue="DEVICE" />
+                            <f:selectItem itemLabel="Alignment" itemValue="ALIGNMENT" />
+                        </p:selectManyCheckbox>
+                        <p:message for="propertyAssociation"/>
+                    </p:column>
+                </p:row>
             </p:panelGrid>
             
             <p:commandButton value="Cancel" style="float: right; margin-left: 1ex;" onclick="#{widgetName}.hide();" 
