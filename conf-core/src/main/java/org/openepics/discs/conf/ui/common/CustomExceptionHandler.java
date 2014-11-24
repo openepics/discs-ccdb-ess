@@ -59,15 +59,15 @@ public class CustomExceptionHandler extends ExceptionHandlerWrapper {
         while (iterator.hasNext()) {
             final ExceptionQueuedEvent event = iterator.next();
             final ExceptionQueuedEventContext context = (ExceptionQueuedEventContext) event.getSource();
-            
+
             // Handle UIException case which requires redirect to another page
             final InvocationTargetException ite = getInvocationTargetException(context.getException());
-            if (ite.getTargetException() instanceof UIException) {
+            if ((ite != null) && (ite.getTargetException() instanceof UIException)) {
                 final ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
                 try {
                     // ExternalContext.redirect is the most low-level redirect I could find, and using uri parameters
-                    // seems like the most straight-forward way of doing it. 
-                    ec.redirect(ec.getRequestContextPath() + "/error.xhtml?errorMsg=" + 
+                    // seems like the most straight-forward way of doing it.
+                    ec.redirect(ec.getRequestContextPath() + "/error.xhtml?errorMsg=" +
                             URLEncoder.encode(((UIException)ite.getTargetException()).getMessage(), "UTF-8"));
                 } catch (Exception e) {
                     LOG.log(Level.SEVERE, "Failed to redirect to error page");
@@ -89,22 +89,22 @@ public class CustomExceptionHandler extends ExceptionHandlerWrapper {
 
     /**
      * Check for leaf {@link InvocationTargetException}.
-     * 
+     *
      * @param exception The top exception
      * @return The invocation target exception or <code>null</code>
      */
     private InvocationTargetException getInvocationTargetException(Throwable exception) {
         Throwable iterated = exception;
         while (iterated!=null && iterated.getCause()!=null) {
-            if (iterated instanceof InvocationTargetException) 
+            if (iterated instanceof InvocationTargetException)
                 return (InvocationTargetException) iterated;
 
            iterated = iterated.getCause();
         }
-            
+
         return null;
     }
-    
+
     /* Returns the nested exception cause that is not Faces or EJB exception, if it exists. */
     private Throwable getExceptionNonframeworkCause(Throwable exception) {
         return (exception instanceof FacesException || exception instanceof EJBException) && (exception.getCause() != null)
