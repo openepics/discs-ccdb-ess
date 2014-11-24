@@ -90,23 +90,42 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
         if (propertyValueInstance.isPropertyDefinition()) {
             if (propertyValueInstance.isDefinitionTargetSlot()) {
                 for (Slot slot : slotEJB.findByComponentType(compType)) {
-                    final SlotPropertyValue newSlotProperty = new SlotPropertyValue();
-                    newSlotProperty.setProperty(propertyValueInstance.getProperty());
-                    newSlotProperty.setSlot(slot);
-                    slotEJB.addChild(newSlotProperty);
+                    if (canAddProperty(slot.getSlotPropertyList(), propertyValueInstance.getProperty())) {
+                        final SlotPropertyValue newSlotProperty = new SlotPropertyValue();
+                        newSlotProperty.setProperty(propertyValueInstance.getProperty());
+                        newSlotProperty.setSlot(slot);
+                        slotEJB.addChild(newSlotProperty);
+                    }
                 }
             }
 
             if (propertyValueInstance.isDefinitionTargetDevice()) {
                 for (Device device : deviceEJB.findDevicesByComponentType(compType)) {
-                    final DevicePropertyValue newDeviceProperty = new DevicePropertyValue();
-                    newDeviceProperty.setProperty(propertyValueInstance.getProperty());
-                    newDeviceProperty.setDevice(device);
-                    deviceEJB.addChild(newDeviceProperty);
+                    if (canAddProperty(device.getDevicePropertyList(), propertyValueInstance.getProperty())) {
+                        final DevicePropertyValue newDeviceProperty = new DevicePropertyValue();
+                        newDeviceProperty.setProperty(propertyValueInstance.getProperty());
+                        newDeviceProperty.setDevice(device);
+                        deviceEJB.addChild(newDeviceProperty);
+                    }
                 }
             }
         }
     }
+
+    /** Checks whether it is safe to add a new property (definition) to the entity.
+     * @param entityProperties the list of properties the entity already has
+     * @param propertyToAdd the property we want to add
+     * @return <code>true</code> if the property is safe to add, <code>false</code> otherwise (it already exists).
+     */
+    private <T extends PropertyValue> boolean canAddProperty(final List<T> entityProperties, final Property propertyToAdd) {
+        for (T entityProperty : entityProperties) {
+            if (entityProperty.getProperty().equals(propertyToAdd)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
 
     @Override
     protected void deletePropertyValue() {
@@ -128,7 +147,8 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
         }
     }
 
-    private <T extends PropertyValue> void removeUndefinedProperty(List<T> entityProperties, Property propertyToDelete, DAO<?> daoEJB) {
+    private <T extends PropertyValue> void removeUndefinedProperty(final List<T> entityProperties,
+                                                final Property propertyToDelete, final DAO<?> daoEJB) {
         T propValueToDelete = null;
         for (T entityPropValue : entityProperties) {
             if (entityPropValue.getProperty().equals(propertyToDelete)) {
