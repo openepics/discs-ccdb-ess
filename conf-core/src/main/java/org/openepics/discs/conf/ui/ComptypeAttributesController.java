@@ -22,6 +22,7 @@ import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
 import org.openepics.discs.conf.ejb.ComptypeEJB;
+import org.openepics.discs.conf.ejb.DAO;
 import org.openepics.discs.conf.ejb.DeviceEJB;
 import org.openepics.discs.conf.ejb.PropertyEJB;
 import org.openepics.discs.conf.ejb.SlotEJB;
@@ -31,6 +32,7 @@ import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ent.Property;
+import org.openepics.discs.conf.ent.PropertyValue;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.ent.Tag;
@@ -111,22 +113,35 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
         super.deletePropertyValue();
 
         final ComptypePropertyValue propValue = (ComptypePropertyValue) selectedAttribute.getEntity();
-        if (propValue.getPropValue() == null) {
-            for (Slot slot : slotEJB.findByComponentType(compType)) {
-                for (SlotPropertyValue slotPropValue : slot.getSlotPropertyList()) {
-                    if (slotPropValue.getProperty().equals(propValue.getProperty()) && slotPropValue.getPropValue() == null) {
-                        slotEJB.deleteChild(slotPropValue);
-                    }
+        if (propValue.isPropertyDefinition()) {
+            if (propValue.isDefinitionTargetSlot()) {
+                for (Slot slot : slotEJB.findByComponentType(compType)) {
+                    removeUndefinedProperty(slot.getSlotPropertyList(), propValue.getProperty(), slotEJB);
                 }
             }
 
-            for (Device device : deviceEJB.findDevicesByComponentType(compType)) {
-                for (DevicePropertyValue devicePropValue : device.getDevicePropertyList()) {
-                    if (devicePropValue.getProperty().equals(propValue.getProperty()) && devicePropValue.getPropValue() == null) {
-                        deviceEJB.deleteChild(devicePropValue);
-                    }
+            if (propValue.isDefinitionTargetDevice()) {
+                for (Device device : deviceEJB.findDevicesByComponentType(compType)) {
+                    removeUndefinedProperty(device.getDevicePropertyList(), propValue.getProperty(), deviceEJB);
                 }
             }
+        }
+    }
+
+    private <T extends PropertyValue> void removeUndefinedProperty(List<T> entityProperties, Property propertyToDelete, DAO<?> daoEJB) {
+        T propValueToDelete = null;
+        for (T entityPropValue : entityProperties) {
+            if (entityPropValue.getProperty().equals(propertyToDelete)) {
+                if (entityPropValue.getPropValue() == null) {
+                    // value not defined, safe to delete
+                    propValueToDelete = entityPropValue;
+                }
+                // attribute found
+                break;
+            }
+        }
+        if (propValueToDelete != null) {
+            daoEJB.deleteChild(propValueToDelete);
         }
     }
 
