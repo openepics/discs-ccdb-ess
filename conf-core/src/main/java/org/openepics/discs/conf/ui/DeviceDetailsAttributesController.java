@@ -35,6 +35,7 @@ import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.Tag;
 import org.openepics.discs.conf.ui.common.AbstractAttributesController;
+import org.openepics.discs.conf.ui.common.UIException;
 import org.openepics.discs.conf.views.EntityAttributeView;
 
 import com.google.common.base.Predicate;
@@ -58,16 +59,20 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
 
     @PostConstruct
     public void init() {
-        final Long id = Long.parseLong(((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest()).getParameter("id"));
-        device = deviceEJB.findById(id);
-        super.setArtifactClass(DeviceArtifact.class);
-        super.setPropertyValueClass(DevicePropertyValue.class);
-        super.setDao(deviceEJB);
+        try {
+            final Long id = Long.parseLong(((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest()).getParameter("id"));
+            device = deviceEJB.findById(id);
+            super.setArtifactClass(DeviceArtifact.class);
+            super.setPropertyValueClass(DevicePropertyValue.class);
+            super.setDao(deviceEJB);
 
-        parentProperties = device.getComponentType().getComptypePropertyList();
+            parentProperties = device.getComponentType().getComptypePropertyList();
 
-        populateAttributesList();
-        filterProperties();
+            populateAttributesList();
+            filterProperties();
+        } catch(Exception e) {
+            throw new UIException("Device details display initialization fialed: " + e.getMessage(), e);
+        }
     }
 
     @Override

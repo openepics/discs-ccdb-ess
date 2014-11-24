@@ -28,6 +28,7 @@ import org.openepics.discs.conf.ent.AuditRecord;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
+import org.openepics.discs.conf.ui.common.UIException;
 import org.openepics.discs.conf.util.Utility;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
@@ -71,8 +72,12 @@ public class ComponentTypeManager implements Serializable {
 
     @PostConstruct
     public void init() {
-        objects = comptypeEJB.findAll();
-        resetFields();
+        try {
+            objects = comptypeEJB.findAll();
+            resetFields();
+        } catch(Exception e) {
+            throw new UIException("Device type display initialization fialed: " + e.getMessage(), e);
+        }
     }
 
     public String deviceTypePropertyRedirect(Long id) {

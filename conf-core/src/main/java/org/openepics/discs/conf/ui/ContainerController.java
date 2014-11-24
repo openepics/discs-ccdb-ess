@@ -40,7 +40,7 @@ import org.openepics.discs.conf.ui.common.UIException;
 public class ContainerController extends AbstractSlotsController {
 
     @PostConstruct
-    public void init() throws UIException {
+    public void init() {
         try {
             updateRootNode();
         } catch(Exception e) {

@@ -37,6 +37,7 @@ import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.ent.Tag;
 import org.openepics.discs.conf.ui.common.AbstractAttributesController;
+import org.openepics.discs.conf.ui.common.UIException;
 import org.openepics.discs.conf.views.EntityAttributeView;
 
 import com.google.common.base.Predicate;
@@ -63,13 +64,17 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
 
     @PostConstruct
     public void init() {
-        final Long id = Long.parseLong(((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest()).getParameter("id"));
-        compType = comptypeEJB.findById(id);
-        super.setArtifactClass(ComptypeArtifact.class);
-        super.setPropertyValueClass(ComptypePropertyValue.class);
-        super.setDao(comptypeEJB);
-        populateAttributesList();
-        filterProperties();
+        try {
+            final Long id = Long.parseLong(((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest()).getParameter("id"));
+            compType = comptypeEJB.findById(id);
+            super.setArtifactClass(ComptypeArtifact.class);
+            super.setPropertyValueClass(ComptypePropertyValue.class);
+            super.setDao(comptypeEJB);
+            populateAttributesList();
+            filterProperties();
+        } catch(Exception e) {
+            throw new UIException("Device type details display initialization fialed: " + e.getMessage(), e);
+        }
     }
 
     /**

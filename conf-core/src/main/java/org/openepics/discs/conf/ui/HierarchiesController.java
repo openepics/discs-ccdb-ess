@@ -45,6 +45,7 @@ import org.openepics.discs.conf.ent.SlotArtifact;
 import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.ent.Tag;
+import org.openepics.discs.conf.ui.common.UIException;
 import org.openepics.discs.conf.views.EntityAttributeView;
 import org.openepics.discs.conf.views.SlotRelationshipView;
 import org.openepics.discs.conf.views.SlotView;
@@ -72,7 +73,11 @@ public class HierarchiesController implements Serializable {
 
     @PostConstruct
     public void init() {
-        rootNode = slotsTreeBuilder.newSlotsTree(slotEJB.findAll(), null, true);
+        try {
+            rootNode = slotsTreeBuilder.newSlotsTree(slotEJB.findAll(), null, true);
+        } catch(Exception e) {
+            throw new UIException("Hierarchies display initialization fialed: " + e.getMessage(), e);
+        }
     }
 
     /**

@@ -40,6 +40,7 @@ import org.openepics.discs.conf.ent.SlotArtifact;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.ent.Tag;
 import org.openepics.discs.conf.ui.common.AbstractAttributesController;
+import org.openepics.discs.conf.ui.common.UIException;
 import org.openepics.discs.conf.views.EntityAttributeView;
 
 import com.google.common.base.Predicate;
@@ -62,20 +63,24 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
 
     @PostConstruct
     public void init() {
-        final Long id = Long.parseLong(((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext()
-                .getRequest()).getParameter("id"));
-        slot = slotEJB.findById(id);
-        super.setArtifactClass(SlotArtifact.class);
-        super.setPropertyValueClass(SlotPropertyValue.class);
-        super.setDao(slotEJB);
+        try {
+            final Long id = Long.parseLong(((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext()
+                    .getRequest()).getParameter("id"));
+            slot = slotEJB.findById(id);
+            super.setArtifactClass(SlotArtifact.class);
+            super.setPropertyValueClass(SlotPropertyValue.class);
+            super.setDao(slotEJB);
 
-        parentProperties = slot.getComponentType().getComptypePropertyList();
+            parentProperties = slot.getComponentType().getComptypePropertyList();
 
-        populateAttributesList();
-        filterProperties();
-        parentSlot = slot.getChildrenSlotsPairList().size() > 0
-                ? slot.getChildrenSlotsPairList().get(0).getParentSlot().getName()
-                        : null;
+            populateAttributesList();
+            filterProperties();
+            parentSlot = slot.getChildrenSlotsPairList().size() > 0
+                    ? slot.getChildrenSlotsPairList().get(0).getParentSlot().getName()
+                            : null;
+        } catch(Exception e) {
+            throw new UIException("Slot details display initialization fialed: " + e.getMessage(), e);
+        }
     }
 
     /**

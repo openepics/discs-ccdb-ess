@@ -30,6 +30,7 @@ import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotRelation;
 import org.openepics.discs.conf.ent.SlotRelationName;
 import org.openepics.discs.conf.ui.common.AbstractSlotsController;
+import org.openepics.discs.conf.ui.common.UIException;
 import org.openepics.discs.conf.util.names.Names;
 import org.openepics.discs.conf.views.SlotRelationshipView;
 import org.openepics.discs.conf.views.SlotView;
@@ -72,16 +73,20 @@ public class InstallationSlotsController extends AbstractSlotsController {
 
     @PostConstruct
     public void init() {
-        updateRootNode();
-        fillNamesAutocomplete();
+        try {
+            updateRootNode();
+            fillNamesAutocomplete();
 
-        final List<SlotRelation> slotRelations = slotRelationEJB.findAll();
-        slotRelationBySlotRelationStringName = new HashMap<>();
-        for (SlotRelation slotRelation : slotRelations) {
-            slotRelationBySlotRelationStringName.put(slotRelation.getNameAsString(), slotRelation);
-            slotRelationBySlotRelationStringName.put(slotRelation.getIname(), slotRelation);
+            final List<SlotRelation> slotRelations = slotRelationEJB.findAll();
+            slotRelationBySlotRelationStringName = new HashMap<>();
+            for (SlotRelation slotRelation : slotRelations) {
+                slotRelationBySlotRelationStringName.put(slotRelation.getNameAsString(), slotRelation);
+                slotRelationBySlotRelationStringName.put(slotRelation.getIname(), slotRelation);
+            }
+            relationshipTypes = ImmutableList.copyOf(slotRelationBySlotRelationStringName.keySet().iterator());
+        } catch(Exception e) {
+            throw new UIException("Installation slot display initialization fialed: " + e.getMessage(), e);
         }
-        relationshipTypes = ImmutableList.copyOf(slotRelationBySlotRelationStringName.keySet().iterator());
     }
 
     @Override
