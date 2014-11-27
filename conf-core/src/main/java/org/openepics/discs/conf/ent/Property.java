@@ -52,19 +52,19 @@ public class Property extends ConfigurationEntity {
 
     /* * * * * Property association section * * * * * * * * */
     @Basic
-    @Column(name = "is_type_asspociation")
+    @Column(name = "is_type_association")
     private Boolean isTypeAssociation = Boolean.FALSE;
 
     @Basic
-    @Column(name = "is_slot_asspociation")
+    @Column(name = "is_slot_association")
     private Boolean isSlotAssociation = Boolean.FALSE;
 
     @Basic
-    @Column(name = "is_device_asspociation")
+    @Column(name = "is_device_association")
     private Boolean isDeviceAssociation = Boolean.FALSE;
 
     @Basic
-    @Column(name = "is_alignment_asspociation")
+    @Column(name = "is_alignment_association")
     private Boolean isAlignmentAssociation = Boolean.FALSE;
 
     protected Property() {
