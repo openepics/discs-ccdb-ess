@@ -15,7 +15,6 @@
 package org.openepics.discs.conf.ui;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -26,21 +25,14 @@ import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
 import org.openepics.discs.conf.ejb.DeviceEJB;
-import org.openepics.discs.conf.ejb.PropertyEJB;
-import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.DeviceArtifact;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
-import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.Tag;
 import org.openepics.discs.conf.ui.common.AbstractAttributesController;
 import org.openepics.discs.conf.ui.common.UIException;
 import org.openepics.discs.conf.views.EntityAttributeView;
-
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
-import com.google.common.collect.ImmutableList;
 
 /**
  * Controller bean for manipulation of {@link Device} attributes
@@ -53,7 +45,6 @@ import com.google.common.collect.ImmutableList;
 public class DeviceDetailsAttributesController extends AbstractAttributesController<DevicePropertyValue, DeviceArtifact> {
 
     @Inject private DeviceEJB deviceEJB;
-    @Inject private PropertyEJB propertyEJB;
 
     private Device device;
 
@@ -69,7 +60,6 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
             parentProperties = device.getComponentType().getComptypePropertyList();
 
             populateAttributesList();
-            filterProperties();
         } catch(Exception e) {
             throw new UIException("Device details display initialization fialed: " + e.getMessage(), e);
         }
@@ -102,25 +92,7 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
 
     @Override
     protected void filterProperties() {
-        List<Property> propertyCandidates = propertyEJB.findAllOrderedByName();
-
-        // remove all properties that are already defined in device type either as value or as property.
-        ComponentType compType = device.getComponentType();
-        for (ComptypePropertyValue comptypePropertyValue : compType.getComptypePropertyList()) {
-            propertyCandidates.remove(comptypePropertyValue.getProperty());
-        }
-
-        // remove all properties that are already defined.
-        for (DevicePropertyValue devicePropertyValue : device.getDevicePropertyList()) {
-            propertyCandidates.remove(devicePropertyValue.getProperty());
-        }
-
-        filteredProperties = ImmutableList.copyOf(Collections2.filter(propertyCandidates, new Predicate<Property>() {
-            @Override
-            public boolean apply(Property property) {
-                return property.isDeviceAssociation();
-            }
-        }));
+        // nothing to do
     }
 
     @Override
@@ -154,11 +126,5 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
     }
     public void setDevice(Device device) {
         this.device = device;
-    }
-
-    @Override
-    public void prepareForPropertyValueAdd() {
-        isPropertyDefinition = false;
-        super.prepareForPropertyValueAdd();
     }
 }

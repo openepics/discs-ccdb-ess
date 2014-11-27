@@ -25,7 +25,11 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import joptsimple.internal.Strings;
+
 import org.openepics.discs.conf.ent.Tag;
+
+import com.google.common.base.Preconditions;
 
 /**
  * Service that is used to query tags in the database
@@ -47,9 +51,7 @@ public class TagEJB {
     }
 
     public Tag findById(String tag) {
-        if (tag == null || tag.isEmpty()) {
-            return null;
-        }
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(tag));
         return em.find(Tag.class, tag);
     }
 

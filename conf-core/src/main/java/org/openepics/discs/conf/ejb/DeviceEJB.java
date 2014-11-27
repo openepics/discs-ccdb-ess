@@ -24,15 +24,10 @@ import java.util.List;
 
 import javax.ejb.Stateless;
 
-import org.openepics.discs.conf.auditlog.Audit;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.DeviceArtifact;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
-import org.openepics.discs.conf.ent.EntityTypeOperation;
-import org.openepics.discs.conf.ent.Property;
-import org.openepics.discs.conf.security.Authorized;
-import org.openepics.discs.conf.util.CRUDOperation;
 
 /**
  * DAO service for accessing device instances.
@@ -94,25 +89,5 @@ public class DeviceEJB extends DAO<Device> {
                 return child.getDevice();
             }
         });
-    }
-
-    @CRUDOperation(operation=EntityTypeOperation.DELETE)
-    @Audit
-    @Authorized
-    public void bulkDeleteUndefinedDeviceProps(ComponentType compType, Property prop) {
-        List<Device> devicesOfAppropriateType = em.createNamedQuery("Device.findByComponentType", Device.class)
-                .setParameter("componentType", compType).getResultList();
-        for (Device dev : devicesOfAppropriateType) {
-            DevicePropertyValue valueToDelete = null;
-            for (DevicePropertyValue dpv : dev.getDevicePropertyList()) {
-                if (dpv.getProperty().equals(prop) && dpv.getPropValue() == null) {
-                    valueToDelete = dpv;
-                    break;
-                }
-            }
-            if (valueToDelete != null) {
-                deleteChild(valueToDelete);
-            }
-        }
     }
 }

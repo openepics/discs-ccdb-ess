@@ -29,7 +29,6 @@ import org.openepics.discs.conf.auditlog.Audit;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
-import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotArtifact;
 import org.openepics.discs.conf.ent.SlotPair;
@@ -170,27 +169,6 @@ public class SlotEJB extends DAO<Slot> {
                 slotPropertyValue.setProperty(propertyDefinition.getProperty());
                 slotPropertyValue.setSlot(newSlot);
                 addChild(slotPropertyValue);
-            }
-        }
-    }
-
-    @CRUDOperation(operation=EntityTypeOperation.DELETE)
-    @Audit
-    @Authorized
-    public void bulkDeleteUndefinedSlotProps(ComponentType compType, Property prop) {
-        List<Slot> slotsOfAppropriateType = em.createNamedQuery("Slot.findByComponentType", Slot.class)
-                                                    .setParameter("componentType", compType).getResultList();
-        for (Slot slot : slotsOfAppropriateType) {
-            // cannot remove directly from collection
-            SlotPropertyValue valueToDelete = null;
-            for (SlotPropertyValue spv : slot.getSlotPropertyList()) {
-                if (spv.getProperty().equals(prop) && spv.getPropValue() == null) {
-                    valueToDelete = spv;
-                    break;
-                }
-            }
-            if (valueToDelete != null) {
-                deleteChild(valueToDelete);
             }
         }
     }

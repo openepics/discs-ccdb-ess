@@ -49,8 +49,6 @@ public class InstallationManager implements Serializable {
     @Inject @DeviceInstallation private SlotsTreeBuilder slotsTreeBuilder;
 
     private Device installedDevice;
-    private InstallationRecord installationRecord;
-    private Slot installationSlot;
     private TreeNode installableSlots;
     private TreeNode selectedSlot;
 
@@ -66,7 +64,7 @@ public class InstallationManager implements Serializable {
      */
     public boolean isDeviceInstalled(Device device) {
         if (!device.equals(this.installedDevice)) {
-            setInstallationRecord(installationEJB.getActiveInstallationRecordForDevice(device));
+            setInstalledDevice(installationEJB.getActiveInstallationRecordForDevice(device));
         }
         return this.installedDevice != null;
     }
@@ -80,14 +78,11 @@ public class InstallationManager implements Serializable {
         return record == null ? "-" : record.getSlot().getName();
     }
 
-    private void setInstallationRecord(InstallationRecord installationRecord) {
-        this.installationRecord = installationRecord;
+    private void setInstalledDevice(InstallationRecord installationRecord) {
         if (installationRecord != null) {
             this.installedDevice = installationRecord.getDevice();
-            this.installationSlot = installationRecord.getSlot();
         } else {
             this.installedDevice = null;
-            this.installationSlot = null;
         }
     }
 
@@ -162,8 +157,7 @@ public class InstallationManager implements Serializable {
 
     private List<String> buildInstalledSlotInformation(Slot slot) {
         if (slot.getComponentType().getName().equals(SlotEJB.ROOT_COMPONENT_TYPE)) {
-            final List<String> list = new ArrayList<>();
-            return list;
+            return new ArrayList<>();
         } else {
             final List<String> list = new ArrayList<>();
             for (SlotPair pair : slot.getChildrenSlotsPairList()) {
@@ -209,8 +203,6 @@ public class InstallationManager implements Serializable {
         deviceInstallationRecord.setUninstallDate(new Date());
         installationEJB.save(deviceInstallationRecord);
         // the device is not installed any more. Clear the installation state information.
-        this.installationRecord = null;
         this.installedDevice = null;
-        this.installationSlot = null;
     }
 }

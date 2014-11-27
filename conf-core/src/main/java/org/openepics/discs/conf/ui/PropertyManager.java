@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.faces.application.FacesMessage;
@@ -28,6 +29,7 @@ import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyAssociation;
 import org.openepics.discs.conf.ent.Unit;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
+import org.openepics.discs.conf.util.PropertyDataType;
 import org.openepics.discs.conf.util.Utility;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
@@ -63,7 +65,7 @@ public class PropertyManager implements Serializable {
     private String description;
     private DataType dataType;
     private Unit unit;
-    private String[] association = new String[] {};;
+    private String[] association = new String[] {};
     private Property selectedProperty;
     private boolean unitComboEnabled;
     private boolean isPropertyUsed;
@@ -256,14 +258,10 @@ public class PropertyManager implements Serializable {
     }
 
     public void setIsUnitComboEnabled() {
-        if (dataType.getName().equalsIgnoreCase("integer") || dataType.getName().equalsIgnoreCase("double")
-                || dataType.getName().equalsIgnoreCase("integers vector")
-                || dataType.getName().equalsIgnoreCase("doubles vector" )
-                || dataType.getName().equalsIgnoreCase("doubles table")) {
-            unitComboEnabled = true;
-        } else {
-            unitComboEnabled = false;
-        }
+        final List<String> possibleTypes = Arrays.asList(new String[] {PropertyDataType.INT_NAME,
+                                                PropertyDataType.DBL_NAME, PropertyDataType.INT_VECTOR_NAME,
+                                                PropertyDataType.DBL_VECTOR_NAME, PropertyDataType.DBL_TABLE_NAME } );
+        unitComboEnabled = possibleTypes.contains(dataType.getName());
     }
 
     public boolean isUnitComboEnabled() {

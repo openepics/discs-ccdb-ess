@@ -134,8 +134,6 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
 
     @Override
     protected void deletePropertyValue() {
-        super.deletePropertyValue();
-
         final ComptypePropertyValue propValue = (ComptypePropertyValue) selectedAttribute.getEntity();
         if (propValue.isPropertyDefinition()) {
             if (propValue.isDefinitionTargetSlot()) {
@@ -150,6 +148,7 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
                 }
             }
         }
+        super.deletePropertyValue();
     }
 
     private <T extends PropertyValue> void removeUndefinedProperty(final List<T> entityProperties,
@@ -280,17 +279,6 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
                     return property.isTypeAssociation();
                 }
             };
-        }
-    }
-
-    @Override
-    protected void propertyValueInstanceSpecificAction(ComptypePropertyValue propValue) {
-        if (propValue.isPropertyDefinition()) {
-            if (propValue.isDefinitionTargetSlot()) {
-                slotEJB.bulkDeleteUndefinedSlotProps(compType, propValue.getProperty());
-            } else {
-                deviceEJB.bulkDeleteUndefinedDeviceProps(compType, propValue.getProperty());
-            }
         }
     }
 }
