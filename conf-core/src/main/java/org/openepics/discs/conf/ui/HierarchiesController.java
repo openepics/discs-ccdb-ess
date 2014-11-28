@@ -153,11 +153,15 @@ public class HierarchiesController implements Serializable {
      */
     public List<SlotRelationshipView> getRelationships() {
         final List<SlotRelationshipView> relationships = new ArrayList<>();
+
+        final Slot rootSlot = slotEJB.getRootNode();
         if (selectedNode != null) {
             final List<SlotPair> slotPairs = slotPairEJB.getSlotRleations(selectedSlot);
 
             for (SlotPair slotPair : slotPairs) {
-                relationships.add(new SlotRelationshipView(slotPair, selectedSlot));
+                if (!slotPair.getParentSlot().equals(rootSlot)) {
+                    relationships.add(new SlotRelationshipView(slotPair, selectedSlot));
+                }
             }
         }
         return relationships;
