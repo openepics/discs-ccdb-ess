@@ -182,6 +182,7 @@ public abstract class AbstractSlotsController implements Serializable{
                 listIterator.add(currentNode);
                 slotPairEJB.moveUp(parentSlotView.getSlot(), movedSlotView.getSlot());
                 selectedNode = null;
+                currentNode.setSelected(false);
                 break;
             }
         }
@@ -216,6 +217,7 @@ public abstract class AbstractSlotsController implements Serializable{
                 listIterator.add(currentNode);
                 slotPairEJB.moveDown(parentSlotView.getSlot(), movedSlotView.getSlot());
                 selectedNode = null;
+                currentNode.setSelected(false);
                 break;
             }
         }
