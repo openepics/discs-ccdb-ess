@@ -85,9 +85,9 @@
                         <p:selectManyCheckbox id="propertyAssociation" value="#{propertyManager.propertyAssociation}" 
                                 required="true" requiredMessage="Please select association" 
                                 disabled="#{propertyManager.propertyUsed}">
-                            <f:selectItem itemLabel="Type" itemValue="TYPE" />
-                            <f:selectItem itemLabel="Slot" itemValue="SLOT" />
-                            <f:selectItem itemLabel="Device" itemValue="DEVICE" />
+                            <f:selectItem itemLabel="Device type" itemValue="TYPE" />
+                            <f:selectItem itemLabel="Installation Slot" itemValue="SLOT" />
+                            <f:selectItem itemLabel="Device instance" itemValue="DEVICE" />
                             <f:selectItem itemLabel="Alignment" itemValue="ALIGNMENT" />
                         </p:selectManyCheckbox>
                         <p:message for="propertyAssociation"/>

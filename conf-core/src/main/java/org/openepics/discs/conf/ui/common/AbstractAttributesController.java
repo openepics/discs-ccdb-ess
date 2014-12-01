@@ -281,6 +281,9 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
                 enumSelections = null;
             }
 
+            // prepare the property selection list
+            filterProperties();
+
             RequestContext.getCurrentInstance().update("modifyPropertyValueForm:modifyPropertyValue");
             RequestContext.getCurrentInstance().execute("PF('modifyPropertyValue').show()");
         } else if (selectedAttribute.getEntity().getClass().equals(artifactClass)) {

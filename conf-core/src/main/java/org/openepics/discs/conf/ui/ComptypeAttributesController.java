@@ -192,7 +192,11 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
         List<Property> propertyCandidates = propertyEJB.findAllOrderedByName();
 
         for (ComptypePropertyValue comptypePropertyValue : compType.getComptypePropertyList()) {
-            propertyCandidates.remove(comptypePropertyValue.getProperty());
+            final Property currentProperty = comptypePropertyValue.getProperty();
+            // in modify dialog the 'property' is set to the property of the current value
+            if (!currentProperty.equals(property)) {
+                propertyCandidates.remove(currentProperty);
+            }
         }
 
         filteredProperties = ImmutableList.copyOf(Collections2.filter(propertyCandidates, getPropertyFilterPredicate()));
