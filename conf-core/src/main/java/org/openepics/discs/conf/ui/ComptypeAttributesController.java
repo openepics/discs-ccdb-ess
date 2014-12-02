@@ -61,8 +61,6 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
     @Inject private DeviceEJB deviceEJB;
 
     private ComponentType compType;
-    private String deviceTypeName;
-    private String deviceTypeDescription;
 
     @PostConstruct
     public void init() {
@@ -72,7 +70,6 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
             super.setArtifactClass(ComptypeArtifact.class);
             super.setPropertyValueClass(ComptypePropertyValue.class);
             super.setDao(comptypeEJB);
-            refreshDeviceTypeInfo();
             populateAttributesList();
             filterProperties();
         } catch(Exception e) {
@@ -211,33 +208,6 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
      */
     public ComponentType getDeviceType() {
         return compType;
-    }
-
-    public void refreshDeviceTypeInfo() {
-        deviceTypeName = compType.getName();
-        deviceTypeDescription = compType.getDescription();
-    }
-
-    public String getDeviceTypeName() {
-        return deviceTypeName;
-    }
-
-    public void setDeviceTypeName(String deviceTypeName) {
-        this.deviceTypeName = deviceTypeName;
-    }
-
-    public String getDeviceTypeDescription() {
-        return deviceTypeDescription;
-    }
-
-    public void setDeviceTypeDescription(String deviceTypeDescription) {
-        this.deviceTypeDescription = deviceTypeDescription;
-    }
-
-    public void saveDeviceTypeInfo() {
-        compType.setName(deviceTypeName);
-        compType.setDescription(deviceTypeDescription);
-        comptypeEJB.save(compType);
     }
 
     @Override

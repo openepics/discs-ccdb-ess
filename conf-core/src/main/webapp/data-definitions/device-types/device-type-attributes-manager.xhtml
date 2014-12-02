@@ -9,50 +9,26 @@
             <p:growl showDetail="true" globalOnly="true" autoUpdate="true"/>
             <h:form id="deviceTypePropertiesManagerForm" enctype="multipart/form-data">
              
-                <h:panelGroup id="devTypeInfo" class="properties-parent-info" layout="block">
-                    <p:panelGrid columns="2" style="width: 100%;" columnClasses="alignTop alignRight, alignTop" 
-                            styleClass="noBorders"> 
-                        <p:outputLabel for="deviceTypeName" value="Device type name:" />
-                        <h:panelGroup>
-                            <p:inputText id="deviceTypeName" value="#{comptypeAttributesController.deviceTypeName}" 
-                                    required="true" style="width: 100%;" requiredMessage="Please enter a name">
-                                <p:ajax event="keyup" update=":deviceTypePropertiesManagerForm:discardBtn :deviceTypePropertiesManagerForm:saveBtn" />
-                            </p:inputText>
-                            <p:message for="deviceTypeName"/>
-                        </h:panelGroup>
-                                           
-                        <p:outputLabel for="deviceTypeDesc" value="Description:" />
-                        <h:panelGroup>
-                            <p:inputTextarea id="deviceTypeDesc" rows="5" cols="60" counter="icounter" maxlength="254" 
-                                    counterTemplate="{0} characters remaining." required="true" style="width: 100%;" 
-                                    requiredMessage="Please enter a description" 
-                                    value="#{comptypeAttributesController.deviceTypeDescription}">
-                                <p:ajax event="keyup" update=":deviceTypePropertiesManagerForm:discardBtn :deviceTypePropertiesManagerForm:saveBtn" />
-                            </p:inputTextarea>
-                            <br/>
-                            <h:outputText id="icounter" />
-                            <p:message for="deviceTypeDesc"/>
-                        </h:panelGroup>
+                <h:panelGroup class="properties-parent-info" layout="block">
+                    <p:panelGrid columns="2" style="width: 100%;" columnClasses="alignTop, alignTop" styleClass="noBorders"> 
+                                                 
+                        <h:outputLabel value="Device type name:" />
+                        <h:outputText value="#{comptypeAttributesController.deviceType.name}" style="width: 100%;" />
+                                                                               
+                        <h:outputLabel value="Description:" />
+                        <p:inputTextarea value="#{comptypeAttributesController.deviceType.description}"  rows="5" cols="51" disabled="true" style="width: 100%;"/>
                     </p:panelGrid>
                          
                     <br/>
                     <br/>
                      
                     <p:commandButton value="History" icon="ui-icon-clock" style="float: right; margin: 10px 10px " 
-                                update=":deviceTypeLogForm" oncomplete="deviceTypeLog.show()">
+                                update=":deviceTypeLogForm" oncomplete="deviceTypeLog.show()" >
                         <f:ajax event="click" listener="#{auditManager.selectEntityForLog(comptypeAttributesController.deviceType, 'COMPONENT_TYPE')}" />
                     </p:commandButton>
-                    <p:commandButton value="Back" style="float: right; margin: 10px 0px 10px 10px" ajax="false">
+                    <p:commandButton value="Back" style="float: right; margin: 10px 0px 10px 10px" ajax="false" >
                         <f:ajax event="click" listener="#{comptypeAttributesController.deviceTypeRedirect()}" />
                     </p:commandButton>
-                    <p:commandButton id="discardBtn" value="Discard" style="float: right; margin: 10px 0px 10px 10px" 
-                            update=":deviceTypePropertiesManagerForm:devTypeInfo" 
-                            disabled="#{comptypeAttributesController.deviceType.name == comptypeAttributesController.deviceTypeName and comptypeAttributesController.deviceType.description == comptypeAttributesController.deviceTypeDescription}"
-                            action="#{comptypeAttributesController.refreshDeviceTypeInfo()}" />
-                    <p:commandButton id="saveBtn" value="Save" style="float: right; margin: 10px 0px 10px 10px" 
-                            update=":deviceTypePropertiesManagerForm:devTypeInfo" 
-                            disabled="#{comptypeAttributesController.deviceType.name == comptypeAttributesController.deviceTypeName and comptypeAttributesController.deviceType.description == comptypeAttributesController.deviceTypeDescription}"
-                            action="#{comptypeAttributesController.saveDeviceTypeInfo()}" />
                 </h:panelGroup>
                        
                 <h:panelGroup class="property-values" layout="block">
