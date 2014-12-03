@@ -19,18 +19,15 @@
  */
 package org.openepics.discs.conf.auditlog;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 import org.openepics.discs.conf.ent.AuditRecord;
-import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.InstallationArtifact;
 import org.openepics.discs.conf.ent.InstallationRecord;
-
-import com.google.common.collect.ImmutableList;
 
 /**
  * {@link AuditRecord} maker for {@link InstallationRecord}
@@ -55,14 +52,14 @@ public class InstallationRecordEntityLogger implements EntityLogger<Installation
                 artifactsMap.put(artifact.getName(), artifact.getUri());
             }
         }
+        
+        final DeviceEntityLogger deviceEntityLogger = new DeviceEntityLogger();
+        final SlotEntityLogger slotEntityLogger = new SlotEntityLogger();
 
-        return ImmutableList.of(new AuditLogUtil(installationRecord)
-                                .removeTopProperties(Arrays.asList("id", "modifiedAt", "modifiedBy", "version",
-                                        "recordNumber", "slot", "device"))
-                                .addStringProperty("slot", installationRecord.getSlot().getName())
-                                .addStringProperty("device", installationRecord.getDevice().getSerialNumber())
-                                .addArrayOfMappedProperties("installationArtifactList", artifactsMap)
-                                .auditEntry(operation, EntityType.INSTALLATION_RECORD,
-                                        installationRecord.getRecordNumber(), installationRecord.getId()));
+        List<AuditRecord> installationRecordAuditRecords = new ArrayList<>();        
+        installationRecordAuditRecords.addAll(deviceEntityLogger.auditEntries(installationRecord.getDevice(), operation));
+        installationRecordAuditRecords.addAll(slotEntityLogger.auditEntries(installationRecord.getSlot(), operation));
+        
+        return installationRecordAuditRecords;
     }
 }

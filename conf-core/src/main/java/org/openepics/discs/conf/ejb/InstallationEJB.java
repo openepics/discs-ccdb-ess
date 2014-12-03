@@ -131,7 +131,19 @@ public class InstallationEJB extends DAO<InstallationRecord> {
             logger.log(Level.WARNING, "An attempt was made to install a device that is already installed.");
             throw new RuntimeException("Device already installed.");
         }
-
+        
+        device.getInstallationRecordList().add(record);
+        slot.getInstallationRecordList().add(record);
         super.add(record);
+    }
+    
+    @Override
+    @CRUDOperation(operation=EntityTypeOperation.UPDATE)
+    @Audit
+    @Authorized
+    public void save(InstallationRecord record) {
+        record.getDevice().getInstallationRecordList().set(record.getDevice().getInstallationRecordList().size() - 1, record);
+        record.getSlot().getInstallationRecordList().set(record.getSlot().getInstallationRecordList().size() - 1, record);
+        super.save(record);
     }
 }

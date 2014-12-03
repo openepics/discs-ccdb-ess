@@ -32,6 +32,7 @@ import org.openepics.discs.conf.ent.DeviceArtifact;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
+import org.openepics.discs.conf.ent.InstallationRecord;
 
 import com.google.common.collect.ImmutableList;
 
@@ -67,12 +68,25 @@ public class DeviceEntityLogger implements EntityLogger<Device> {
                 artifactsMap.put(artifact.getName(), artifact.getUri());
             }
         }
-
+        
+        final Map<String, String> installationSlotMap = new TreeMap<>();
+        if (device.getInstallationRecordList() != null && device.getInstallationRecordList().size() > 0) {
+            final InstallationRecord lastInstallationRecord = device.getInstallationRecordList().get(device.getInstallationRecordList().size() - 1);
+            
+            installationSlotMap.put("slotName", lastInstallationRecord.getSlot().getName());
+            if (lastInstallationRecord.getUninstallDate() == null) {
+                installationSlotMap.put("installationDate", lastInstallationRecord.getInstallDate().toString());
+            } else {
+                installationSlotMap.put("uninstallationDate", lastInstallationRecord.getUninstallDate().toString());
+            }            
+        }
+           
         return ImmutableList.of(new AuditLogUtil(device)
                                 .removeTopProperties(Arrays.asList("id", "modifiedAt", "modifiedBy",
                                         "version", "serialNumber", "componentType"))
                                 .addStringProperty("componentType",
                                         device.getComponentType() != null ? device.getComponentType().getName() : null)
+                                .addArrayOfMappedProperties("installationSlot", installationSlotMap)
                                 .addArrayOfMappedProperties("devicePropertyList", propertiesMap)
                                 .addArrayOfMappedProperties("deviceArtifactList", artifactsMap)
                                 .auditEntry(operation, EntityType.DEVICE, device.getSerialNumber(), device.getId()));

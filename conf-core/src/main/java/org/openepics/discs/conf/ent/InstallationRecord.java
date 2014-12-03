@@ -35,12 +35,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
         @Index(columnList = "device, uninstall_date") })
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "InstallationRecord.findByName", query = "SELECT i FROM InstallationRecord i "
-            + "WHERE i.recordNumber = :name"),
-    @NamedQuery(name = "InstallationRecord.findByUninstallDate", query = "SELECT i FROM InstallationRecord i "
-            + "WHERE i.uninstallDate = :uninstallDate"),
-    @NamedQuery(name = "InstallationRecord.findByModifiedBy", query = "SELECT i FROM InstallationRecord i "
-            + "WHERE i.modifiedBy = :modifiedBy"),
     @NamedQuery(name = "InstallationRecord.activeRecordForSlot", query = "SELECT i FROM InstallationRecord i "
             + "WHERE i.slot = :slot AND i.uninstallDate IS NULL "),
     @NamedQuery(name = "InstallationRecord.activeRecordForDevice", query = "SELECT i FROM InstallationRecord i "

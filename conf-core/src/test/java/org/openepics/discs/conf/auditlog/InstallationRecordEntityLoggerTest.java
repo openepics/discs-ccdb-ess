@@ -16,6 +16,7 @@ import java.util.Date;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.InstallationArtifact;
@@ -27,7 +28,7 @@ import org.openepics.discs.conf.ent.Slot;
  *
  */
 public class InstallationRecordEntityLoggerTest {
-    private final InstallationRecord installationRecord = new InstallationRecord("record1", new Date(213123213));
+    private InstallationRecord installationRecord;
     private final Slot slot = new Slot("slot1", true);
     private final Device device = new Device("device1");
     private final InstallationArtifact artifact1 = new InstallationArtifact("CAT Image", true, "Simple CAT image", "/var/usr/images/CAT");
@@ -37,10 +38,15 @@ public class InstallationRecordEntityLoggerTest {
 
     @Before
     public void setUp() {
+        installationRecord = new InstallationRecord("record1", new Date(213123213));
+        slot.setComponentType(new ComponentType());
         installationRecord.setSlot(slot);
         installationRecord.setDevice(device);
         installationRecord.getInstallationArtifactList().add(artifact1);
         installationRecord.getInstallationArtifactList().add(artifact2);
+        device.getInstallationRecordList().add(installationRecord);
+        slot.getInstallationRecordList().add(installationRecord);
+        
     }
 
     @Test
@@ -49,9 +55,22 @@ public class InstallationRecordEntityLoggerTest {
     }
 
     @Test
-    public void testSerializeEntity() {
-        final String RESULT = "{\"installDate\":\"1970-01-03T11:12:03.213+0000\",\"slot\":\"slot1\",\"device\":\"device1\",\"installationArtifactList\":[{\"CAT Image\":\"/var/usr/images/CAT\"},{\"Manual\":\"www.deteriorator.com/user-manual\"}]}";
-
-        assertEquals(RESULT, installationRecordEntityLogger.auditEntries(installationRecord, EntityTypeOperation.CREATE).get(0).getEntry());
+    public void testSerializeEntityInstallationDate() {
+        final String DEVICE_LOG_ENTRY = "{\"installationSlot\":[{\"installationDate\":\"Sat Jan 03 12:12:03 CET 1970\"},{\"slotName\":\"slot1\"}]}";
+        assertEquals(DEVICE_LOG_ENTRY, installationRecordEntityLogger.auditEntries(installationRecord, EntityTypeOperation.CREATE).get(0).getEntry());
+        
+        final String SLOT_LOG_ENTRY = "{\"hostingSlot\":true,\"installedDevice\":[{\"deviceSerialNumber\":\"device1\"},{\"installationDate\":\"Sat Jan 03 12:12:03 CET 1970\"}]}";
+        assertEquals(SLOT_LOG_ENTRY, installationRecordEntityLogger.auditEntries(installationRecord, EntityTypeOperation.CREATE).get(1).getEntry());
+        
+    }
+    
+    @Test 
+    public void testSerializeEntityUninstallDate() {
+        installationRecord.setUninstallDate(new Date(213123213));
+        final String DEVICE_LOG_ENTRY = "{\"installationSlot\":[{\"slotName\":\"slot1\"},{\"uninstallationDate\":\"Sat Jan 03 12:12:03 CET 1970\"}]}";
+        assertEquals(DEVICE_LOG_ENTRY, installationRecordEntityLogger.auditEntries(installationRecord, EntityTypeOperation.CREATE).get(0).getEntry());
+        
+        final String SLOT_LOG_ENTRY = "{\"hostingSlot\":true,\"installedDevice\":[{\"deviceSerialNumber\":\"device1\"},{\"uninstallationDate\":\"Sat Jan 03 12:12:03 CET 1970\"}]}";
+        assertEquals(SLOT_LOG_ENTRY, installationRecordEntityLogger.auditEntries(installationRecord, EntityTypeOperation.CREATE).get(1).getEntry());
     }
 }

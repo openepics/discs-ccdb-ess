@@ -29,6 +29,7 @@ import org.openepics.discs.conf.auditlog.Audit;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
+import org.openepics.discs.conf.ent.InstallationRecord;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotArtifact;
 import org.openepics.discs.conf.ent.SlotPair;
@@ -84,6 +85,18 @@ public class SlotEJB extends DAO<Slot> {
 
             @Override
             public Slot getParentFromChild(SlotArtifact child) {
+                return child.getSlot();
+            }
+        });
+        
+        defineParentChildInterface(InstallationRecord.class, new ParentChildInterface<Slot, InstallationRecord>() {
+            @Override
+            public List<InstallationRecord> getChildCollection(Slot slot) {
+                return slot.getInstallationRecordList();
+            }
+
+            @Override
+            public Slot getParentFromChild(InstallationRecord child) {
                 return child.getSlot();
             }
         });

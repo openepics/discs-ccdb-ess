@@ -104,6 +104,9 @@ public class Slot extends ConfigurationEntity {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "slot")
     private List<SlotPropertyValue> slotPropertyList = new ArrayList<>();
+    
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "slot")
+    private List<InstallationRecord> installationRecordList = new ArrayList<>();
 
     @ManyToMany(cascade=CascadeType.ALL)
     @JoinTable(name = "slot_tag",
@@ -219,6 +222,12 @@ public class Slot extends ConfigurationEntity {
     @JsonIgnore
     public List<SlotPropertyValue> getSlotPropertyList() {
         return slotPropertyList;
+    }
+    
+    @XmlTransient
+    @JsonIgnore
+    public List<InstallationRecord> getInstallationRecordList() {
+        return installationRecordList;
     }
 
     @XmlTransient

@@ -28,6 +28,7 @@ import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.DeviceArtifact;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
+import org.openepics.discs.conf.ent.InstallationRecord;
 
 /**
  * DAO service for accessing device instances.
@@ -77,7 +78,6 @@ public class DeviceEJB extends DAO<Device> {
         });
 
         defineParentChildInterface(DeviceArtifact.class, new ParentChildInterface<Device, DeviceArtifact>() {
-
             @Override
             public List<DeviceArtifact> getChildCollection(Device device) {
                 return device.getDeviceArtifactList();
@@ -86,6 +86,19 @@ public class DeviceEJB extends DAO<Device> {
 
             @Override
             public Device getParentFromChild(DeviceArtifact child) {
+                return child.getDevice();
+            }
+        });
+        
+        defineParentChildInterface(InstallationRecord.class, new ParentChildInterface<Device, InstallationRecord>() {
+            @Override
+            public List<InstallationRecord> getChildCollection(Device device) {
+                return device.getInstallationRecordList();
+
+            }
+
+            @Override
+            public Device getParentFromChild(InstallationRecord child) {
                 return child.getDevice();
             }
         });

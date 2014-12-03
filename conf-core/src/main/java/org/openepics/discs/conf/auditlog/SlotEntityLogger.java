@@ -27,6 +27,7 @@ import java.util.TreeMap;
 import org.openepics.discs.conf.ent.AuditRecord;
 import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
+import org.openepics.discs.conf.ent.InstallationRecord;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotArtifact;
 import org.openepics.discs.conf.ent.SlotPair;
@@ -76,6 +77,19 @@ public class SlotEntityLogger implements EntityLogger<Slot> {
                 parentsMap.put(slotPair.getParentSlot().getName(), slotPair.getSlotRelation().getName().toString());
             }
         }
+        
+        final Map<String, String> installationDeviceMap = new TreeMap<>();
+        if (slot.getInstallationRecordList() != null && slot.getInstallationRecordList().size() > 0) {
+            final InstallationRecord lastInstallationRecord = slot.getInstallationRecordList().get(slot.getInstallationRecordList().size() - 1);
+            
+            final String installationDeviceSerial = lastInstallationRecord.getDevice().getSerialNumber();
+            installationDeviceMap.put("deviceSerialNumber", installationDeviceSerial);
+            if (lastInstallationRecord.getUninstallDate() == null) {
+                installationDeviceMap.put("installationDate", lastInstallationRecord.getInstallDate().toString());
+            } else {
+                installationDeviceMap.put("uninstallationDate", lastInstallationRecord.getUninstallDate().toString());
+            }            
+        }
 
         final AuditLogUtil logUtil = new AuditLogUtil(slot)
                         .removeTopProperties(Arrays.asList("id", "modifiedAt", "modifiedBy", "version",
@@ -84,7 +98,8 @@ public class SlotEntityLogger implements EntityLogger<Slot> {
                         .addArrayOfMappedProperties("slotPropertyList", propertiesMap)
                         .addArrayOfMappedProperties("slotArtifactList", artifactsMap)
                         .addArrayOfMappedProperties("childrenSlots", childrenMap)
-                        .addArrayOfMappedProperties("parentSlots", parentsMap);
+                        .addArrayOfMappedProperties("parentSlots", parentsMap)
+                        .addArrayOfMappedProperties("installedDevice", installationDeviceMap);
         
         // If positionInformation is empty do not add it
         if (slot.getPositionInformation().isEmpty()) 
