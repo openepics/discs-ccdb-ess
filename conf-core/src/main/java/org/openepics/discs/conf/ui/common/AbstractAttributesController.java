@@ -44,10 +44,12 @@ import javax.json.JsonReader;
 
 import org.apache.commons.io.FilenameUtils;
 import org.openepics.discs.conf.ejb.DAO;
+import org.openepics.discs.conf.ejb.DataTypeEJB;
 import org.openepics.discs.conf.ejb.TagEJB;
 import org.openepics.discs.conf.ent.Artifact;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.ConfigurationEntity;
+import org.openepics.discs.conf.ent.DataType;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyValue;
 import org.openepics.discs.conf.ent.Tag;
@@ -58,6 +60,7 @@ import org.openepics.discs.conf.util.PropertyDataType;
 import org.openepics.discs.conf.util.PropertyValueUIElement;
 import org.openepics.discs.conf.util.UnhandledCaseException;
 import org.openepics.discs.conf.util.Utility;
+import org.openepics.discs.conf.views.BuiltInProperty;
 import org.openepics.discs.conf.views.EntityAttributeView;
 import org.openepics.seds.api.datatypes.SedsEnum;
 import org.openepics.seds.api.datatypes.SedsType;
@@ -84,12 +87,15 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
 
     @Inject protected BlobStore blobStore;
     @Inject protected TagEJB tagEJB;
+    @Inject protected DataTypeEJB dataTypeEJB;
 
     protected Property property;
     protected Value propertyValue;
     protected List<String> enumSelections;
     protected List<Property> filteredProperties;
     private boolean propertyNameChangeDisabled;
+    protected String builtInProperteryName;
+    protected String builtInPropertyDataType;
     protected PropertyValueUIElement propertyValueUIElement;
     protected boolean isPropertyDefinition;
     protected DefinitionTarget definitionTarget;
@@ -114,6 +120,17 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
 
     protected List<ComptypePropertyValue> parentProperties;
     protected T propertyValueInstance;
+
+    protected DataType strDataType;
+    protected DataType dblDataType;
+    protected DataType enumDataType;
+
+    protected void init() {
+        strDataType = dataTypeEJB.findByName(PropertyDataType.STR_NAME);
+        dblDataType = dataTypeEJB.findByName(PropertyDataType.DBL_NAME);
+        // TODO this is incorrect. Construct specific enumeration used in device.
+        enumDataType = dataTypeEJB.findByName(PropertyDataType.ENUM_NAME);
+    }
 
     protected void resetFields() {
         property = null;
@@ -265,6 +282,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
     @SuppressWarnings("unchecked")
     protected void prepareModifyPropertyPopUp() {
         if (selectedAttribute.getEntity().getClass().equals(propertyValueClass)) {
+            builtInProperteryName = null;
             final T selectedPropertyValue = (T) selectedAttribute.getEntity();
             property = selectedPropertyValue.getProperty();
             propertyValue = selectedPropertyValue.getPropValue();
@@ -274,7 +292,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
             }
 
             propertyValueUIElement = Conversion.getUIElementFromProperty(property);
-            if (Conversion.getDataType(property) == PropertyDataType.ENUM) {
+            if (Conversion.getDataType(property.getDataType()) == PropertyDataType.ENUM) {
                 // if it is an enumeration, get the list of its options from the data type definition field
                 enumSelections = prepareEnumSelections(property);
             } else {
@@ -287,6 +305,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
             RequestContext.getCurrentInstance().update("modifyPropertyValueForm:modifyPropertyValue");
             RequestContext.getCurrentInstance().execute("PF('modifyPropertyValue').show()");
         } else if (selectedAttribute.getEntity().getClass().equals(artifactClass)) {
+            builtInProperteryName = null;
             final S selectedArtifact = (S) selectedAttribute.getEntity();
             if (selectedArtifact.isInternal()) {
                 importFileName = selectedArtifact.getName();
@@ -299,6 +318,18 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
 
             RequestContext.getCurrentInstance().update("modifyArtifactForm:modifyArtifact");
             RequestContext.getCurrentInstance().execute("PF('modifyArtifact').show()");
+        } else if (selectedAttribute.getEntity().getClass().equals(BuiltInProperty.class)) {
+            property = null;
+            final BuiltInProperty builtInProperty = (BuiltInProperty) selectedAttribute.getEntity();
+            builtInProperteryName = builtInProperty.getName();
+            builtInPropertyDataType = builtInProperty.getDataType().getName();
+            propertyValueUIElement = Conversion.getUIElementFromPropertyDataType(Conversion
+                                                                .getDataType(builtInProperty.getDataType()));
+            propertyValue = builtInProperty.getValue();
+            propertyNameChangeDisabled = true;
+
+            RequestContext.getCurrentInstance().update("modifyBuiltInPropertyForm:modifyBuiltInProperty");
+            RequestContext.getCurrentInstance().execute("PF('modifyBuiltInProperty').show()");
         } else {
             throw new UnhandledCaseException();
         }
@@ -318,6 +349,18 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Property value has been modified");
         } finally {
             internalPopulateAttributesList();
+        }
+    }
+
+    public abstract void modifyBuiltInProperty();
+
+    protected void updateBuiltInAttribute(String name, Value value) {
+        for (EntityAttributeView attribute : attributes) {
+            if (attribute.getName().equals(name) && attribute.getEntity() instanceof BuiltInProperty) {
+                BuiltInProperty builtInProperty = (BuiltInProperty) attribute.getEntity();
+                builtInProperty.setValue(value);
+                break;
+            }
         }
     }
 
@@ -483,7 +526,8 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
     }
 
     public void setPropertyValue(String propertyValue) {
-        this.propertyValue = Conversion.stringToValue(propertyValue, property);
+        final DataType dataType = selectedAttribute.getType();
+        this.propertyValue = Conversion.stringToValue(propertyValue, dataType);
     }
     public String getPropertyValue() {
         return Conversion.valueToString(propertyValue);
@@ -583,7 +627,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
             final Property newProperty = (Property) event.getNewValue();
             propertyValueUIElement = Conversion.getUIElementFromProperty(newProperty);
             propertyValue = null;
-            if (Conversion.getDataType(newProperty) == PropertyDataType.ENUM) {
+            if (Conversion.getDataType(newProperty.getDataType()) == PropertyDataType.ENUM) {
                 // if it is an enumeration, get the list of its options from the data type definition field
                 enumSelections = prepareEnumSelections(newProperty);
             } else {
@@ -610,13 +654,15 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
         if (value == null) {
             throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_FATAL, "Error", "No value to parse."));
         }
-        if (property == null) {
+        if (property == null && builtInProperteryName == null) {
             throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
                     "You must select a property first."));
         }
 
+        DataType dataType = property != null ? property.getDataType() : selectedAttribute.getType();
+
         String strValue = value.toString();
-        switch (Conversion.getDataType(property)) {
+        switch (Conversion.getDataType(dataType)) {
         case DBL_TABLE:
             validateTable(strValue);
             break;
@@ -706,13 +752,16 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
         if (value == null) {
             throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_FATAL, "Error", "No value to parse."));
         }
-        if (property == null) {
+
+        if (property == null && builtInProperteryName == null) {
             throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
                     "You must select a property first."));
         }
 
+        DataType dataType = property != null ? property.getDataType() : selectedAttribute.getType();
+
         String strValue = value.toString();
-        switch (Conversion.getDataType(property)) {
+        switch (Conversion.getDataType(dataType)) {
         case DOUBLE:
             try {
                 Double.parseDouble(strValue.trim());
@@ -742,5 +791,13 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
             throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
                     "Incorrect property data type."));
         }
+    }
+
+    public String getBuiltInProperteryName() {
+        return builtInProperteryName;
+    }
+
+    public String getBuiltInPropertyDataType() {
+        return builtInPropertyDataType;
     }
 }

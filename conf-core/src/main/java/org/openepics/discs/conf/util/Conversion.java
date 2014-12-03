@@ -73,15 +73,15 @@ public class Conversion {
     public static final String DATE_TIME_FORMAT = DATE_ONLY_FORMAT + " " + TIME_ONLY_FORMAT;
 
     /**
-     * Returns a data type used for this property.
+     * Returns a data type based on the DataType entity.
      * <br/>
      * See: {@link PropertyDataType}
-     * @param prop The property to check data type on.
+     * @param dataType The property to check data type on.
      * @return The data type that has been selected for this property.
      */
-    public static PropertyDataType getDataType(Property prop) {
-        Preconditions.checkNotNull(prop);
-        switch (prop.getDataType().getName()) {
+    public static PropertyDataType getDataType(DataType dataType) {
+        Preconditions.checkNotNull(dataType);
+        switch (dataType.getName()) {
         case PropertyDataType.INT_NAME :
             return PropertyDataType.INTEGER;
         case PropertyDataType.DBL_NAME :
@@ -135,11 +135,11 @@ public class Conversion {
      * <br/>
      * See: {@link PropertyValueUIElement}
      *
-     * @param property the property to chekc for data type
+     * @param property the property to check for data type
      * @return the UI element to use
      */
     public static PropertyValueUIElement getUIElementFromProperty(Property property) {
-        return getUIElementFromPropertyDataType(getDataType(property));
+        return getUIElementFromPropertyDataType(getDataType(property.getDataType()));
     }
 
     /**
@@ -153,12 +153,12 @@ public class Conversion {
      *                     from {@link org.openepics.discs.conf.ent.PropertyValue})
      * @return The {@link Value} of the property.
      */
-    public static Value stringToValue(String strValue, Property property) {
-        Preconditions.checkNotNull(property);
+    public static Value stringToValue(String strValue, DataType dataType) {
+        Preconditions.checkNotNull(dataType);
         if (strValue == null) {
             return null;
         }
-        switch (Conversion.getDataType(property)) {
+        switch (Conversion.getDataType(dataType)) {
         case DBL_TABLE:
             return new DblTableValue(Conversion.toDblTable(strValue));
         case DBL_VECTOR:
@@ -166,7 +166,7 @@ public class Conversion {
         case DOUBLE:
             return new DblValue(Conversion.toDouble(strValue));
         case ENUM:
-            return new EnumValue(Conversion.toEnum(strValue, property.getDataType()));
+            return new EnumValue(Conversion.toEnum(strValue, dataType));
         case INTEGER:
             return new IntValue(Conversion.toInteger(strValue));
         case INT_VECTOR:

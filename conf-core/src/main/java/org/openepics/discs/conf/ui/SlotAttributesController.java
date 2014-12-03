@@ -61,9 +61,11 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
     private Slot slot;
     private String parentSlot;
 
+    @Override
     @PostConstruct
     public void init() {
         try {
+            super.init();
             final Long id = Long.parseLong(((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext()
                     .getRequest()).getParameter("id"));
             slot = slotEJB.findById(id);
@@ -180,5 +182,10 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
     public void prepareForPropertyValueAdd() {
         isPropertyDefinition = false;
         super.prepareForPropertyValueAdd();
+    }
+
+    @Override
+    public void modifyBuiltInProperty() {
+
     }
 }

@@ -48,9 +48,11 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
 
     private Device device;
 
+    @Override
     @PostConstruct
     public void init() {
         try {
+            super.init();
             final Long id = Long.parseLong(((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest()).getParameter("id"));
             device = deviceEJB.findById(id);
             super.setArtifactClass(DeviceArtifact.class);
@@ -119,6 +121,11 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
         for (Tag tag : device.getTags()) {
             attributes.add(new EntityAttributeView(tag));
         }
+    }
+
+    @Override
+    public void modifyBuiltInProperty() {
+
     }
 
     public Device getDevice() {

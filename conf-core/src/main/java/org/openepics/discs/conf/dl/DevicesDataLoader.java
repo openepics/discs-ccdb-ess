@@ -275,14 +275,14 @@ public class DevicesDataLoader extends AbstractDataLoader implements DataLoader 
                 if (propertyValue == null) {
                     deviceEJB.deleteChild(devicePropertyToUpdate);
                 } else {
-                    devicePropertyToUpdate.setPropValue(Conversion.stringToValue(propertyValue, property));
+                    devicePropertyToUpdate.setPropValue(Conversion.stringToValue(propertyValue, property.getDataType()));
                     deviceEJB.saveChild(devicePropertyToUpdate);
                 }
 
             } else if (propertyValue != null) {
                 final DevicePropertyValue devicePropertyToAdd = new DevicePropertyValue(false);
                 devicePropertyToAdd.setProperty(property);
-                devicePropertyToAdd.setPropValue(Conversion.stringToValue(propertyValue, property));
+                devicePropertyToAdd.setPropValue(Conversion.stringToValue(propertyValue, property.getDataType()));
                 devicePropertyToAdd.setDevice(device);
                 deviceEJB.addChild(devicePropertyToAdd);
             }

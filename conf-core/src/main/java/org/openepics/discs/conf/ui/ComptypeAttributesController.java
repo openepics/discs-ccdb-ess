@@ -36,8 +36,11 @@ import org.openepics.discs.conf.ent.PropertyValue;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.ent.Tag;
+import org.openepics.discs.conf.ent.values.StrValue;
 import org.openepics.discs.conf.ui.common.AbstractAttributesController;
 import org.openepics.discs.conf.ui.common.UIException;
+import org.openepics.discs.conf.util.UnhandledCaseException;
+import org.openepics.discs.conf.views.BuiltInProperty;
 import org.openepics.discs.conf.views.EntityAttributeView;
 
 import com.google.common.base.Predicate;
@@ -55,6 +58,10 @@ import com.google.common.collect.ImmutableList;
 @ViewScoped
 public class ComptypeAttributesController extends AbstractAttributesController<ComptypePropertyValue, ComptypeArtifact> {
 
+    // BIP = Built-In Property
+    private static final String BIP_NAME = "Name";
+    private static final String BIP_DESCRIPTION = "Description";
+
     @Inject private ComptypeEJB comptypeEJB;
     @Inject private PropertyEJB propertyEJB;
     @Inject private SlotEJB slotEJB;
@@ -62,9 +69,11 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
 
     private ComponentType compType;
 
+    @Override
     @PostConstruct
     public void init() {
         try {
+            super.init();
             final Long id = Long.parseLong(((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest()).getParameter("id"));
             compType = comptypeEJB.findById(id);
             super.setArtifactClass(ComptypeArtifact.class);
@@ -174,6 +183,10 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
         attributes = new ArrayList<>();
         // refresh the component type from database. This refreshes all related collections as well.
         compType = comptypeEJB.findById(this.compType.getId());
+
+        attributes.add(new EntityAttributeView(new BuiltInProperty(BIP_NAME, compType.getName(), strDataType)));
+        attributes.add(new EntityAttributeView(new BuiltInProperty(BIP_DESCRIPTION, compType.getDescription(), strDataType)));
+
         for (ComptypePropertyValue prop : compType.getComptypePropertyList()) {
             attributes.add(new EntityAttributeView(prop));
         }
@@ -239,6 +252,32 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
     public void prepareForPropertyValueAdd() {
         isPropertyDefinition = false;
         super.prepareForPropertyValueAdd();
+    }
+
+    @Override
+    public void modifyBuiltInProperty() {
+        final BuiltInProperty builtInProperty = (BuiltInProperty) selectedAttribute.getEntity();
+        final String userValue = ((StrValue)propertyValue).getStrValue();
+        switch (builtInProperty.getName()) {
+        case BIP_NAME:
+            if (!userValue.equals(compType.getName())) {
+                compType.setName(userValue);
+                comptypeEJB.save(compType);
+                compType = comptypeEJB.findById(compType.getId());
+                updateBuiltInAttribute(BIP_NAME, propertyValue);
+            }
+            break;
+        case BIP_DESCRIPTION:
+            if (!userValue.equals(compType.getDescription())) {
+                compType.setDescription(userValue);
+                comptypeEJB.save(compType);
+                compType = comptypeEJB.findById(compType.getId());
+                updateBuiltInAttribute(BIP_DESCRIPTION, propertyValue);
+            }
+            break;
+        default:
+            throw new UnhandledCaseException();
+        }
     }
 
     /**
