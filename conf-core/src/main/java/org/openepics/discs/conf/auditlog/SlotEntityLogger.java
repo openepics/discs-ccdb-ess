@@ -83,10 +83,9 @@ public class SlotEntityLogger implements EntityLogger<Slot> {
             final InstallationRecord lastInstallationRecord = slot.getInstallationRecordList().get(slot.getInstallationRecordList().size() - 1);
             
             final String installationDeviceSerial = lastInstallationRecord.getDevice().getSerialNumber();
-            installationDeviceMap.put("deviceSerialNumber", installationDeviceSerial);
-            if (lastInstallationRecord.getUninstallDate() == null) {
-                installationDeviceMap.put("installationDate", lastInstallationRecord.getInstallDate().toString());
-            } else {
+            installationDeviceMap.put("inventoryID", installationDeviceSerial);
+            installationDeviceMap.put("installationDate", lastInstallationRecord.getInstallDate().toString());
+            if (lastInstallationRecord.getUninstallDate() != null) {
                 installationDeviceMap.put("uninstallationDate", lastInstallationRecord.getUninstallDate().toString());
             }            
         }
@@ -99,7 +98,7 @@ public class SlotEntityLogger implements EntityLogger<Slot> {
                         .addArrayOfMappedProperties("slotArtifactList", artifactsMap)
                         .addArrayOfMappedProperties("childrenSlots", childrenMap)
                         .addArrayOfMappedProperties("parentSlots", parentsMap)
-                        .addArrayOfMappedProperties("installedDevice", installationDeviceMap);
+                        .addArrayOfMappedProperties("installation", installationDeviceMap);
         
         // If positionInformation is empty do not add it
         if (slot.getPositionInformation().isEmpty()) 

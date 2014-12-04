@@ -38,7 +38,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
     @NamedQuery(name = "InstallationRecord.activeRecordForSlot", query = "SELECT i FROM InstallationRecord i "
             + "WHERE i.slot = :slot AND i.uninstallDate IS NULL "),
     @NamedQuery(name = "InstallationRecord.activeRecordForDevice", query = "SELECT i FROM InstallationRecord i "
-            + "WHERE i.device = :device AND i.uninstallDate IS NULL ")
+            + "WHERE i.device = :device AND i.uninstallDate IS NULL "),
+    @NamedQuery(name = "InstallationRecord.lastRecordForSlot", query = "SELECT i FROM InstallationRecord i WHERE i.id = (SELECT MAX (ii.id) FROM InstallationRecord ii "
+            + "WHERE ii.slot = :slot) "),
+    @NamedQuery(name = "InstallationRecord.lastRecordForDevice", query = "SELECT i FROM InstallationRecord i WHERE i.id = (SELECT MAX (ii.id) FROM InstallationRecord ii "
+            + "WHERE ii.device = :device) ")
 })
 public class InstallationRecord extends ConfigurationEntity {
     @Basic(optional = false)

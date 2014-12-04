@@ -73,12 +73,11 @@ public class DeviceEntityLogger implements EntityLogger<Device> {
         if (device.getInstallationRecordList() != null && device.getInstallationRecordList().size() > 0) {
             final InstallationRecord lastInstallationRecord = device.getInstallationRecordList().get(device.getInstallationRecordList().size() - 1);
             
-            installationSlotMap.put("slotName", lastInstallationRecord.getSlot().getName());
-            if (lastInstallationRecord.getUninstallDate() == null) {
-                installationSlotMap.put("installationDate", lastInstallationRecord.getInstallDate().toString());
-            } else {
+            installationSlotMap.put("installationSlot", lastInstallationRecord.getSlot().getName());
+            installationSlotMap.put("installationDate", lastInstallationRecord.getInstallDate().toString());
+            if (lastInstallationRecord.getUninstallDate() != null) {
                 installationSlotMap.put("uninstallationDate", lastInstallationRecord.getUninstallDate().toString());
-            }            
+            }        
         }
            
         return ImmutableList.of(new AuditLogUtil(device)
@@ -86,7 +85,7 @@ public class DeviceEntityLogger implements EntityLogger<Device> {
                                         "version", "serialNumber", "componentType"))
                                 .addStringProperty("componentType",
                                         device.getComponentType() != null ? device.getComponentType().getName() : null)
-                                .addArrayOfMappedProperties("installationSlot", installationSlotMap)
+                                .addArrayOfMappedProperties("installation", installationSlotMap)
                                 .addArrayOfMappedProperties("devicePropertyList", propertiesMap)
                                 .addArrayOfMappedProperties("deviceArtifactList", artifactsMap)
                                 .auditEntry(operation, EntityType.DEVICE, device.getSerialNumber(), device.getId()));
