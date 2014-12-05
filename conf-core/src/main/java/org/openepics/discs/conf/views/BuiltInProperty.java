@@ -14,15 +14,23 @@ public class BuiltInProperty {
     private Value value;
     private DataType dataType;
 
-    public BuiltInProperty(String name, double value, DataType dataType) {
+    public BuiltInProperty(String name, Double value, DataType dataType) {
         this.name = name;
-        this.value = new DblValue(value);
+        if (value == null) {
+            this.value = null;
+        } else {
+            this.value = new DblValue(value);
+        }
         this.dataType = dataType;
     }
 
     public BuiltInProperty(String name, String value, DataType dataType) {
         this.name = name;
-        this.value = new StrValue(value);
+        if (value == null) {
+            this.value = null;
+        } else {
+            this.value = new StrValue(value);
+        }
         this.dataType = dataType;
     }
 

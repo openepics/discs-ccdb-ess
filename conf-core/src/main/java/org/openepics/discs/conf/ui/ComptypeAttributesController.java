@@ -257,16 +257,16 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
     @Override
     public void modifyBuiltInProperty() {
         final BuiltInProperty builtInProperty = (BuiltInProperty) selectedAttribute.getEntity();
-        final String userValue = ((StrValue)propertyValue).getStrValue();
+        final String userValue = propertyValue == null ? null : ((StrValue)propertyValue).getStrValue();
         switch (builtInProperty.getName()) {
         case BIP_NAME:
-            if (!userValue.equals(compType.getName())) {
+            if ((userValue == null) || !userValue.equals(compType.getName())) {
                 compType.setName(userValue);
                 comptypeEJB.save(compType);
             }
             break;
         case BIP_DESCRIPTION:
-            if (!userValue.equals(compType.getDescription())) {
+            if ((userValue == null) || !userValue.equals(compType.getDescription())) {
                 compType.setDescription(userValue);
                 comptypeEJB.save(compType);
             }

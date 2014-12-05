@@ -104,7 +104,7 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
                 parentSlot = null;
             }
         } catch(Exception e) {
-            throw new UIException("Slot details display initialization fialed: " + e.getMessage(), e);
+            throw new UIException("Slot details display initialization failed: " + e.getMessage(), e);
         }
     }
 
@@ -125,6 +125,7 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
     @Override
     protected void populateAttributesList() {
         attributes = new ArrayList<>();
+        // refresh the component type from database. This refreshes all related collections as well.
         slot = slotEJB.findById(slot.getId());
 
         attributes.add(new EntityAttributeView(new BuiltInProperty(BIP_NAME, slot.getName(), strDataType)));
@@ -231,68 +232,61 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
             return;
         }
 
-        final String userValueStr;
-        final Double userValueDbl;
+        final String userValueStr = (propertyValue == null ? null
+                        : (propertyValue instanceof StrValue ? ((StrValue)propertyValue).getStrValue() : null));
+        final Double userValueDbl = (propertyValue == null ? null
+                        : (propertyValue instanceof DblValue ? ((DblValue)propertyValue).getDblValue() : null));
         switch (builtInPropertyName) {
             case BIP_NAME:
-                userValueStr = ((StrValue)propertyValue).getStrValue();
-                if (!userValueStr.equals(slot.getName())) {
+                if ((userValueStr == null) || !userValueStr.equals(slot.getName())) {
                     slot.setName(userValueStr);
                     slotEJB.save(slot);
                 }
                 break;
             case BIP_DESCRIPTION:
-                userValueStr = ((StrValue)propertyValue).getStrValue();
-                if (!userValueStr.equals(slot.getDescription())) {
+                if ((userValueStr == null) || !userValueStr.equals(slot.getDescription())) {
                     slot.setDescription(userValueStr);
                     slotEJB.save(slot);
                 }
                 break;
             case BIP_BEAMLINE_POS:
-                userValueDbl = ((DblValue)propertyValue).getDblValue();
-                if ((userValueDbl != null) && (userValueDbl.compareTo(slot.getBeamlinePosition()) != 0)) {
+                if ((userValueDbl == null) || !userValueDbl.equals(slot.getBeamlinePosition())) {
                     slot.setBeamlinePosition(userValueDbl);
                     slotEJB.save(slot);
                 }
                 break;
             case BIP_GLOBAL_X:
-                userValueDbl = ((DblValue)propertyValue).getDblValue();
-                if ((userValueDbl != null) && (userValueDbl.compareTo(slot.getPositionInformation().getGlobalX()) != 0)) {
+                if ((userValueDbl == null) || !userValueDbl.equals(slot.getPositionInformation().getGlobalX())) {
                     slot.getPositionInformation().setGlobalX(userValueDbl);;
                     slotEJB.save(slot);
                 }
                 break;
             case BIP_GLOBAL_Y:
-                userValueDbl = ((DblValue)propertyValue).getDblValue();
-                if ((userValueDbl != null) && (userValueDbl.compareTo(slot.getPositionInformation().getGlobalY()) != 0)) {
+                if ((userValueDbl == null) || !userValueDbl.equals(slot.getPositionInformation().getGlobalY())) {
                     slot.getPositionInformation().setGlobalY(userValueDbl);;
                     slotEJB.save(slot);
                 }
                 break;
             case BIP_GLOBAL_Z:
-                userValueDbl = ((DblValue)propertyValue).getDblValue();
-                if ((userValueDbl != null) && (userValueDbl.compareTo(slot.getPositionInformation().getGlobalZ()) != 0)) {
+                if ((userValueDbl != null) && !userValueDbl.equals(slot.getPositionInformation().getGlobalZ())) {
                     slot.getPositionInformation().setGlobalZ(userValueDbl);;
                     slotEJB.save(slot);
                 }
                 break;
             case BIP_GLOBAL_PITCH:
-                userValueDbl = ((DblValue)propertyValue).getDblValue();
-                if ((userValueDbl != null) && (userValueDbl.compareTo(slot.getPositionInformation().getGlobalPitch()) != 0)) {
+                if ((userValueDbl != null) && !userValueDbl.equals(slot.getPositionInformation().getGlobalPitch())) {
                     slot.getPositionInformation().setGlobalPitch(userValueDbl);;
                     slotEJB.save(slot);
                 }
                 break;
             case BIP_GLOBAL_ROLL:
-                userValueDbl = ((DblValue)propertyValue).getDblValue();
-                if ((userValueDbl != null) && (userValueDbl.compareTo(slot.getPositionInformation().getGlobalRoll()) != 0)) {
+                if ((userValueDbl != null) && !userValueDbl.equals(slot.getPositionInformation().getGlobalRoll())) {
                     slot.getPositionInformation().setGlobalRoll(userValueDbl);;
                     slotEJB.save(slot);
                 }
                 break;
             case BIP_GLOBAL_YAW:
-                userValueDbl = ((DblValue)propertyValue).getDblValue();
-                if ((userValueDbl != null) && (userValueDbl.compareTo(slot.getPositionInformation().getGlobalYaw()) != 0)) {
+                if ((userValueDbl != null) && !userValueDbl.equals(slot.getPositionInformation().getGlobalYaw())) {
                     slot.getPositionInformation().setGlobalYaw(userValueDbl);;
                     slotEJB.save(slot);
                 }
