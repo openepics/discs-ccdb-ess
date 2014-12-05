@@ -6,9 +6,12 @@
     xmlns:p="http://primefaces.org/ui">
     <ui:define name="dataDefContent">
         <h:form id="containersForm">
-            <p:commandButton ajax="true" id="addSlot"
-                actionListener="#{containerController.prepareAddPopup()}" value="Add new container to parent" oncomplete="addContainer.show()" update=":addContainerForm:addContainer"/>
-            <p:treeTable id="containersTree" value="#{containerController.rootNode}" var="container" liveResize="true" selection="#{containerController.selectedNode}" selectionMode="single" scrollable="true" scrollWidth="auto">
+            <p:commandButton ajax="true" id="addSlot" actionListener="#{containerController.prepareAddPopup()}" 
+                value="Add new container to parent" oncomplete="addContainer.show()" 
+                update=":addContainerForm:addContainer" style="margin-bottom: 1em;" />
+            <p:treeTable id="containersTree" value="#{containerController.rootNode}" var="container" liveResize="true" 
+                    selection="#{containerController.selectedNode}" selectionMode="single" scrollable="true" 
+                    scrollWidth="auto">
                 <p:ajax event="collapse" listener="#{containerController.onNodeCollapse}" />
                 <p:ajax event="expand" listener="#{containerController.onNodeExpand}" />
                 
@@ -20,13 +23,9 @@
                     <h:outputText value="#{container.description}"/>
                 </p:column>
                 
-                <p:column headerText="Actions" style="padding: 0px !important; width: 166; text-align: center">                    
-                    <p:commandLink ajax="true" title="Add properties" action="#{containerController.redirectToAttributes(container.id)}">
-                        <h:outputText styleClass="ui-icon ui-icon-contact" style="display: inline-block !important; margin-right: 6px;" />
-                    </p:commandLink>
-                    <p:commandLink ajax="true" title="Edit" update=":modifyContainerForm" oncomplete="modifyContainer.show()">
+                <p:column headerText="Actions" style="padding: 0px !important; text-align: center;" width="144">                    
+                    <p:commandLink ajax="true" title="Edit" action="#{containerController.redirectToAttributes(container.id)}">
                         <h:outputText styleClass="ui-icon ui-icon-pencil" style="display: inline-block !important; margin-right: 6px;" />
-                        <f:setPropertyActionListener value="#{container}" target="#{containerController.selectedSlotViewToModify}" />
                     </p:commandLink>
                     <p:commandLink ajax="true" title="Move up" actionListener="#{containerController.moveUp}" 
                             disabled="#{container.first}" update=":containersForm:containersTree">

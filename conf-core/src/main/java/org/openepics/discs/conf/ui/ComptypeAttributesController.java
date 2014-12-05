@@ -263,21 +263,18 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
             if (!userValue.equals(compType.getName())) {
                 compType.setName(userValue);
                 comptypeEJB.save(compType);
-                compType = comptypeEJB.findById(compType.getId());
-                updateBuiltInAttribute(BIP_NAME, propertyValue);
             }
             break;
         case BIP_DESCRIPTION:
             if (!userValue.equals(compType.getDescription())) {
                 compType.setDescription(userValue);
                 comptypeEJB.save(compType);
-                compType = comptypeEJB.findById(compType.getId());
-                updateBuiltInAttribute(BIP_DESCRIPTION, propertyValue);
             }
             break;
         default:
             throw new UnhandledCaseException();
         }
+        populateAttributesList();
     }
 
     /**

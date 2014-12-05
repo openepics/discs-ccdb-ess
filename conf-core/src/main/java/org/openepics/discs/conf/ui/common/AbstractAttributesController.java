@@ -354,16 +354,6 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
 
     public abstract void modifyBuiltInProperty();
 
-    protected void updateBuiltInAttribute(String name, Value value) {
-        for (EntityAttributeView attribute : attributes) {
-            if (attribute.getName().equals(name) && attribute.getEntity() instanceof BuiltInProperty) {
-                BuiltInProperty builtInProperty = (BuiltInProperty) attribute.getEntity();
-                builtInProperty.setValue(value);
-                break;
-            }
-        }
-    }
-
     /**
      * Modifies {@link Artifact}
      */
@@ -421,8 +411,8 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
 
     public boolean canEdit(Object attribute) {
         // TODO check whether to show inherited artifacts and prevent their editing
-        return attribute instanceof Artifact || attribute instanceof PropertyValue
-                && !(attribute instanceof ComptypePropertyValue) ;
+        return (attribute instanceof BuiltInProperty) ||  attribute instanceof Artifact
+                || attribute instanceof PropertyValue && !(attribute instanceof ComptypePropertyValue);
     }
 
     protected abstract void setPropertyValueParent(T child);

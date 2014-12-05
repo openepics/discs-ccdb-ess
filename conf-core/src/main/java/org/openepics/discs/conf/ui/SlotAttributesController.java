@@ -22,6 +22,8 @@ package org.openepics.discs.conf.ui;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
@@ -34,13 +36,18 @@ import org.openepics.discs.conf.ejb.PropertyEJB;
 import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
+import org.openepics.discs.conf.ent.PositionInformation;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotArtifact;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.ent.Tag;
+import org.openepics.discs.conf.ent.values.DblValue;
+import org.openepics.discs.conf.ent.values.StrValue;
 import org.openepics.discs.conf.ui.common.AbstractAttributesController;
 import org.openepics.discs.conf.ui.common.UIException;
+import org.openepics.discs.conf.util.UnhandledCaseException;
+import org.openepics.discs.conf.views.BuiltInProperty;
 import org.openepics.discs.conf.views.EntityAttributeView;
 
 import com.google.common.base.Predicate;
@@ -54,6 +61,19 @@ import com.google.common.collect.ImmutableList;
 @Named
 @ViewScoped
 public class SlotAttributesController extends AbstractAttributesController<SlotPropertyValue, SlotArtifact> {
+
+    private static final Logger logger = Logger.getLogger(SlotAttributesController.class.getCanonicalName());
+
+    // BIP = Built-In Property
+    private static final String BIP_NAME = "Name";
+    private static final String BIP_DESCRIPTION = "Description";
+    private static final String BIP_BEAMLINE_POS = "Beamline position";
+    private static final String BIP_GLOBAL_X = "Global X";
+    private static final String BIP_GLOBAL_Y = "Global Y";
+    private static final String BIP_GLOBAL_Z = "Global Z";
+    private static final String BIP_GLOBAL_PITCH = "Global pitch";
+    private static final String BIP_GLOBAL_ROLL = "Global roll";
+    private static final String BIP_GLOBAL_YAW = "Global yaw";
 
     @Inject private SlotEJB slotEJB;
     @Inject private PropertyEJB propertyEJB;
@@ -80,6 +100,9 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
             parentSlot = slot.getChildrenSlotsPairList().size() > 0
                     ? slot.getChildrenSlotsPairList().get(0).getParentSlot().getName()
                             : null;
+            if (parentSlot.equals("_ROOT")) {
+                parentSlot = null;
+            }
         } catch(Exception e) {
             throw new UIException("Slot details display initialization fialed: " + e.getMessage(), e);
         }
@@ -103,6 +126,19 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
     protected void populateAttributesList() {
         attributes = new ArrayList<>();
         slot = slotEJB.findById(slot.getId());
+
+        attributes.add(new EntityAttributeView(new BuiltInProperty(BIP_NAME, slot.getName(), strDataType)));
+        attributes.add(new EntityAttributeView(new BuiltInProperty(BIP_DESCRIPTION, slot.getDescription(), strDataType)));
+        if (slot.isHostingSlot()) {
+            attributes.add(new EntityAttributeView(new BuiltInProperty(BIP_BEAMLINE_POS, slot.getBeamlinePosition(), dblDataType)));
+            final PositionInformation slotPosition = slot.getPositionInformation();
+            attributes.add(new EntityAttributeView(new BuiltInProperty(BIP_GLOBAL_X, slotPosition.getGlobalX(), dblDataType)));
+            attributes.add(new EntityAttributeView(new BuiltInProperty(BIP_GLOBAL_Y, slotPosition.getGlobalY(), dblDataType)));
+            attributes.add(new EntityAttributeView(new BuiltInProperty(BIP_GLOBAL_Z, slotPosition.getGlobalZ(), dblDataType)));
+            attributes.add(new EntityAttributeView(new BuiltInProperty(BIP_GLOBAL_PITCH, slotPosition.getGlobalPitch(), dblDataType)));
+            attributes.add(new EntityAttributeView(new BuiltInProperty(BIP_GLOBAL_ROLL, slotPosition.getGlobalRoll(), dblDataType)));
+            attributes.add(new EntityAttributeView(new BuiltInProperty(BIP_GLOBAL_YAW, slotPosition.getGlobalYaw(), dblDataType)));
+        }
 
         for (ComptypePropertyValue parentProp : parentProperties) {
             if (parentProp.getPropValue() != null) attributes.add(new EntityAttributeView(parentProp));
@@ -186,6 +222,84 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
 
     @Override
     public void modifyBuiltInProperty() {
+        final BuiltInProperty builtInProperty = (BuiltInProperty) selectedAttribute.getEntity();
+        final String builtInPropertyName = builtInProperty.getName();
 
+        if (!slot.isHostingSlot() && !builtInPropertyName.equals(BIP_NAME)
+                && !builtInPropertyName.equals(BIP_DESCRIPTION)) {
+            logger.log(Level.WARNING, "Modifying built-in property on container that should not be used.");
+            return;
+        }
+
+        final String userValueStr;
+        final Double userValueDbl;
+        switch (builtInPropertyName) {
+            case BIP_NAME:
+                userValueStr = ((StrValue)propertyValue).getStrValue();
+                if (!userValueStr.equals(slot.getName())) {
+                    slot.setName(userValueStr);
+                    slotEJB.save(slot);
+                }
+                break;
+            case BIP_DESCRIPTION:
+                userValueStr = ((StrValue)propertyValue).getStrValue();
+                if (!userValueStr.equals(slot.getDescription())) {
+                    slot.setDescription(userValueStr);
+                    slotEJB.save(slot);
+                }
+                break;
+            case BIP_BEAMLINE_POS:
+                userValueDbl = ((DblValue)propertyValue).getDblValue();
+                if ((userValueDbl != null) && (userValueDbl.compareTo(slot.getBeamlinePosition()) != 0)) {
+                    slot.setBeamlinePosition(userValueDbl);
+                    slotEJB.save(slot);
+                }
+                break;
+            case BIP_GLOBAL_X:
+                userValueDbl = ((DblValue)propertyValue).getDblValue();
+                if ((userValueDbl != null) && (userValueDbl.compareTo(slot.getPositionInformation().getGlobalX()) != 0)) {
+                    slot.getPositionInformation().setGlobalX(userValueDbl);;
+                    slotEJB.save(slot);
+                }
+                break;
+            case BIP_GLOBAL_Y:
+                userValueDbl = ((DblValue)propertyValue).getDblValue();
+                if ((userValueDbl != null) && (userValueDbl.compareTo(slot.getPositionInformation().getGlobalY()) != 0)) {
+                    slot.getPositionInformation().setGlobalY(userValueDbl);;
+                    slotEJB.save(slot);
+                }
+                break;
+            case BIP_GLOBAL_Z:
+                userValueDbl = ((DblValue)propertyValue).getDblValue();
+                if ((userValueDbl != null) && (userValueDbl.compareTo(slot.getPositionInformation().getGlobalZ()) != 0)) {
+                    slot.getPositionInformation().setGlobalZ(userValueDbl);;
+                    slotEJB.save(slot);
+                }
+                break;
+            case BIP_GLOBAL_PITCH:
+                userValueDbl = ((DblValue)propertyValue).getDblValue();
+                if ((userValueDbl != null) && (userValueDbl.compareTo(slot.getPositionInformation().getGlobalPitch()) != 0)) {
+                    slot.getPositionInformation().setGlobalPitch(userValueDbl);;
+                    slotEJB.save(slot);
+                }
+                break;
+            case BIP_GLOBAL_ROLL:
+                userValueDbl = ((DblValue)propertyValue).getDblValue();
+                if ((userValueDbl != null) && (userValueDbl.compareTo(slot.getPositionInformation().getGlobalRoll()) != 0)) {
+                    slot.getPositionInformation().setGlobalRoll(userValueDbl);;
+                    slotEJB.save(slot);
+                }
+                break;
+            case BIP_GLOBAL_YAW:
+                userValueDbl = ((DblValue)propertyValue).getDblValue();
+                if ((userValueDbl != null) && (userValueDbl.compareTo(slot.getPositionInformation().getGlobalYaw()) != 0)) {
+                    slot.getPositionInformation().setGlobalYaw(userValueDbl);;
+                    slotEJB.save(slot);
+                }
+                break;
+            default:
+                throw new UnhandledCaseException();
+        }
+        populateAttributesList();
     }
 }
