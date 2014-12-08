@@ -84,7 +84,7 @@
                     <p:column>
                         <p:selectManyCheckbox id="propertyAssociation" value="#{propertyManager.propertyAssociation}" 
                                 required="true" requiredMessage="Please select association" 
-                                disabled="#{propertyManager.propertyUsed}">
+                                disabled="#{propertyManager.propertyUsed}" layout="grid" columns="1">
                             <f:selectItem itemLabel="Device type" itemValue="TYPE" />
                             <f:selectItem itemLabel="Installation Slot" itemValue="SLOT" />
                             <f:selectItem itemLabel="Device instance" itemValue="DEVICE" />
