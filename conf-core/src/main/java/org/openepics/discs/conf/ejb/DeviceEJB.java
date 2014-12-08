@@ -23,12 +23,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 
+import org.openepics.discs.conf.auditlog.Audit;
 import org.openepics.discs.conf.ent.ComponentType;
+import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.DeviceArtifact;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
+import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.InstallationRecord;
+import org.openepics.discs.conf.security.Authorized;
+import org.openepics.discs.conf.util.CRUDOperation;
 
 /**
  * DAO service for accessing device instances.
@@ -39,6 +45,9 @@ import org.openepics.discs.conf.ent.InstallationRecord;
  */
 @Stateless
 public class DeviceEJB extends DAO<Device> {
+    
+    @Inject private ComptypeEJB componentTypesEJB;
+    
     /**
      * Searches for a device instance in the database, by its serial number
      *
@@ -102,5 +111,21 @@ public class DeviceEJB extends DAO<Device> {
                 return child.getDevice();
             }
         });
+    }
+    
+    @CRUDOperation(operation=EntityTypeOperation.CREATE)
+    @Audit
+    @Authorized
+    public void addDeviceAndPropertyDefs(Device device) {
+        add(device);
+        List<ComptypePropertyValue> propertyDefinitions = componentTypesEJB.findPropertyDefinitions(device.getComponentType());
+        for (ComptypePropertyValue propertyDefinition : propertyDefinitions) {
+            if (propertyDefinition.isDefinitionTargetDevice()) {
+                final DevicePropertyValue devicePropertyValue = new DevicePropertyValue(false);
+                devicePropertyValue.setProperty(propertyDefinition.getProperty());
+                devicePropertyValue.setDevice(device);
+                addChild(devicePropertyValue);
+            }
+        }
     }
 }

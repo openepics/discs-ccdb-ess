@@ -99,18 +99,7 @@ public class DevicesByTypeManager implements Serializable {
         newDevice.setManufacturerModel(manufModel);
         newDevice.setManufacturerSerialNumber(manufSerialNumber);
 
-        deviceEJB.add(newDevice);
-
-        // Get all property definitions and create device properties
-        List<ComptypePropertyValue> propertyDefinitions = componentTypesEJB.findPropertyDefinitions(selectedComponentType);
-        for (ComptypePropertyValue propertyDefinition : propertyDefinitions) {
-            if (propertyDefinition.isDefinitionTargetDevice()) {
-                final DevicePropertyValue devicePropertyValue = new DevicePropertyValue(false);
-                devicePropertyValue.setProperty(propertyDefinition.getProperty());
-                devicePropertyValue.setDevice(newDevice);
-                deviceEJB.addChild(devicePropertyValue);
-            }
-        }
+        deviceEJB.addDeviceAndPropertyDefs(newDevice);
 
         resetDeviceDialogFields();
         prepareDevicesForDisplay();

@@ -19,6 +19,7 @@
  */
 package org.openepics.discs.conf.ejb;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Nullable;
@@ -26,6 +27,8 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 
 import org.openepics.discs.conf.auditlog.Audit;
+import org.openepics.discs.conf.auditlog.AuditLogEntryCreator;
+import org.openepics.discs.conf.ent.AuditRecord;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
@@ -36,7 +39,9 @@ import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.ent.SlotRelationName;
 import org.openepics.discs.conf.security.Authorized;
+import org.openepics.discs.conf.security.SecurityPolicy;
 import org.openepics.discs.conf.util.CRUDOperation;
+import org.openepics.discs.conf.util.ParentEntityResolver;
 
 /**
  * DAO Service for accessing Installation Slot entities ( {@link Slot} )
@@ -60,6 +65,9 @@ public class SlotEJB extends DAO<Slot> {
     @Inject private SlotPairEJB slotPairEJB;
     @Inject private SlotRelationEJB slotRelationEJB;
     @Inject private ComptypeEJB comptypeEJB;
+    
+    @Inject private AuditLogEntryCreator auditLogEntryCreator;
+    @Inject private SecurityPolicy securityPolicy;
 
     @Override
     protected void defineEntity() {
@@ -166,22 +174,23 @@ public class SlotEJB extends DAO<Slot> {
      * 
      * @param newSlot the Container or Installation slot to be added
      * @param parentSlot its parent. <code>null</code> if the container is a new root.
-     * @param propertyDefinitions a list of property definitions that are automatically added to this slot.
+     * @param fromDataLoader is data being imported via {@link SlotsAndSlotPairsDataLoader}. If it is slot pair should never be created
+     *        since it is separately created from data loader.
      */
-    public Slot addSlotToParentWithPropertyDefs(Slot newSlot, @Nullable Slot parentSlot) {
-        if (parentSlot != null) {
-            slotPairEJB.add(new SlotPair(newSlot, parentSlot, slotRelationEJB.findBySlotRelationName(SlotRelationName.CONTAINS)));
-        } else {
-            slotPairEJB.add(new SlotPair(newSlot, getRootNode(), slotRelationEJB.findBySlotRelationName(SlotRelationName.CONTAINS)));
-        }
-        
-        return em.find(Slot.class, newSlot.getId());
-    }
-    
-    @CRUDOperation(operation=EntityTypeOperation.UPDATE)
+    @CRUDOperation(operation=EntityTypeOperation.CREATE)
     @Audit
     @Authorized
-    public void addParentPropertyDefsToNewSlot(Slot newSlot, List<ComptypePropertyValue> propertyDefinitions) {
+    public void addSlotToParentWithPropertyDefs(Slot newSlot, @Nullable Slot parentSlot, boolean fromDataLoader) {
+        super.add(newSlot);
+        if (!fromDataLoader) {
+            if (parentSlot != null) {
+                slotPairEJB.addWithoutInterceptors(new SlotPair(newSlot, parentSlot, slotRelationEJB.findBySlotRelationName(SlotRelationName.CONTAINS)));
+            } else {
+                slotPairEJB.addWithoutInterceptors(new SlotPair(newSlot, getRootNode(), slotRelationEJB.findBySlotRelationName(SlotRelationName.CONTAINS)));
+            }
+        }
+       
+        final List<ComptypePropertyValue> propertyDefinitions = comptypeEJB.findPropertyDefinitions(newSlot.getComponentType());
         for (ComptypePropertyValue propertyDefinition : propertyDefinitions) {
             if (propertyDefinition.isDefinitionTargetSlot()) {
                 final SlotPropertyValue slotPropertyValue = new SlotPropertyValue(false);
@@ -189,7 +198,6 @@ public class SlotEJB extends DAO<Slot> {
                 slotPropertyValue.setSlot(newSlot);
                 addChild(slotPropertyValue);
             }
-        }
+        }        
     }
-
 }

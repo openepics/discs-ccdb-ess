@@ -210,7 +210,7 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                                     }
                                     final Slot newSlot = new Slot(name, isHosting);
                                     addOrUpdateSlot(newSlot, compType, isHosting, description, blp, globalX, globalY, globalZ, globalRoll, globalPitch, globalYaw, asmComment, asmPosition, comment);
-                                    slotEJB.add(newSlot);
+                                    slotEJB.addSlotToParentWithPropertyDefs(newSlot,null, true);
                                     addOrUpdateProperties(newSlot, indexByPropertyName, row, rowNumber);
                                     newSlots.add(newSlot);
                                     if (rowResult.isError()) {

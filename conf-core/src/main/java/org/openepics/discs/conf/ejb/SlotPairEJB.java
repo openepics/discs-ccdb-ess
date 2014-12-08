@@ -116,6 +116,10 @@ public class SlotPairEJB extends DAO<SlotPair> {
         parentSlot.getChildrenSlotsPairList().add(entity);
         super.add(entity);
 	}
+    
+    public void addWithoutInterceptors(SlotPair entity) {
+        add(entity);
+    }
 
     /**
      * Check if by adding new slot pair with {@link SlotRelationName} CONTAINS

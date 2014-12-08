@@ -153,7 +153,7 @@ public class DevicesDataLoader extends AbstractDataLoader implements DataLoader 
                                 try {
                                     final Device newDevice = new Device(serial);
                                     addOrUpdateDevice(newDevice, compType, description, status, manufSerial, location, purchaseOrder, asmPosition, asmDescription, manufacturer, manufModel);
-                                    deviceEJB.add(newDevice);
+                                    deviceEJB.addDeviceAndPropertyDefs(newDevice);
                                     addOrUpdateProperties(newDevice, indexByPropertyName, row, rowNumber);
                                 } catch (Exception e) {
                                     rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));

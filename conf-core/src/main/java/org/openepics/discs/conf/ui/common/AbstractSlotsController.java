@@ -82,12 +82,7 @@ public abstract class AbstractSlotsController implements Serializable{
      */
     protected void onSlotAdd() {
         final Slot parentSlot = selectedNode != null ? ((SlotView) selectedNode.getData()).getSlot() : null;
-        slotEJB.add(newSlot);
-        final Slot addedSlot = slotEJB.addSlotToParentWithPropertyDefs(newSlot, parentSlot);
-        final List<ComptypePropertyValue> propertyList = comptypeEJB.findPropertyDefinitions(addedSlot.getComponentType());
-        if (propertyList.size() > 0) {
-            slotEJB.addParentPropertyDefsToNewSlot(addedSlot, propertyList);
-        }
+        slotEJB.addSlotToParentWithPropertyDefs(newSlot, parentSlot, false);
 
         updateRootNode();
     }
