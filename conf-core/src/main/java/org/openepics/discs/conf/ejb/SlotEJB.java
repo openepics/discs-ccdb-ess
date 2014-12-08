@@ -160,22 +160,28 @@ public class SlotEJB extends DAO<Slot> {
                 .setParameter("isHostingSlot", isHostingSlot).getResultList();
     }
 
-    /** The method takes care of adding a new Slot and all its dependencies in one transaction. Called from Container
+    /** 
+     * The method takes care of adding a new Slot and all its dependencies in one transaction. Called from Container
      * and iInstallation slot managed beans.
+     * 
      * @param newSlot the Container or Installation slot to be added
      * @param parentSlot its parent. <code>null</code> if the container is a new root.
      * @param propertyDefinitions a list of property definitions that are automatically added to this slot.
      */
-    @CRUDOperation(operation=EntityTypeOperation.CREATE)
-    @Audit
-    @Authorized
-    public void addSlotToParentWithPropertyDefs(Slot newSlot, @Nullable Slot parentSlot, List<ComptypePropertyValue> propertyDefinitions) {
-        add(newSlot);
+    public Slot addSlotToParentWithPropertyDefs(Slot newSlot, @Nullable Slot parentSlot) {
         if (parentSlot != null) {
             slotPairEJB.add(new SlotPair(newSlot, parentSlot, slotRelationEJB.findBySlotRelationName(SlotRelationName.CONTAINS)));
         } else {
             slotPairEJB.add(new SlotPair(newSlot, getRootNode(), slotRelationEJB.findBySlotRelationName(SlotRelationName.CONTAINS)));
         }
+        
+        return em.find(Slot.class, newSlot.getId());
+    }
+    
+    @CRUDOperation(operation=EntityTypeOperation.UPDATE)
+    @Audit
+    @Authorized
+    public void addParentPropertyDefsToNewSlot(Slot newSlot, List<ComptypePropertyValue> propertyDefinitions) {
         for (ComptypePropertyValue propertyDefinition : propertyDefinitions) {
             if (propertyDefinition.isDefinitionTargetSlot()) {
                 final SlotPropertyValue slotPropertyValue = new SlotPropertyValue(false);
@@ -185,4 +191,5 @@ public class SlotEJB extends DAO<Slot> {
             }
         }
     }
+
 }

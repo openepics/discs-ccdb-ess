@@ -16,6 +16,7 @@ package org.openepics.discs.conf.ui.common;
 
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
 
@@ -25,6 +26,7 @@ import javax.inject.Inject;
 import org.openepics.discs.conf.ejb.ComptypeEJB;
 import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ejb.SlotPairEJB;
+import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ui.SlotsTreeBuilder;
 import org.openepics.discs.conf.views.SlotView;
@@ -80,9 +82,12 @@ public abstract class AbstractSlotsController implements Serializable{
      */
     protected void onSlotAdd() {
         final Slot parentSlot = selectedNode != null ? ((SlotView) selectedNode.getData()).getSlot() : null;
-
-        slotEJB.addSlotToParentWithPropertyDefs(newSlot, parentSlot,
-                comptypeEJB.findPropertyDefinitions(newSlot.getComponentType()));
+        slotEJB.add(newSlot);
+        final Slot addedSlot = slotEJB.addSlotToParentWithPropertyDefs(newSlot, parentSlot);
+        final List<ComptypePropertyValue> propertyList = comptypeEJB.findPropertyDefinitions(addedSlot.getComponentType());
+        if (propertyList.size() > 0) {
+            slotEJB.addParentPropertyDefsToNewSlot(addedSlot, propertyList);
+        }
 
         updateRootNode();
     }

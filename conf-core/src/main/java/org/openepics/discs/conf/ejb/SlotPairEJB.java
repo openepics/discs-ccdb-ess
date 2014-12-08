@@ -80,7 +80,7 @@ public class SlotPairEJB extends DAO<SlotPair> {
 	}
 
 	@Override
-    @CRUDOperation(operation=EntityTypeOperation.DELETE)
+    @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
     @Authorized
 	public void delete(SlotPair entity) {
@@ -94,7 +94,7 @@ public class SlotPairEJB extends DAO<SlotPair> {
 
 
     @Override
-    @CRUDOperation(operation=EntityTypeOperation.CREATE)
+    @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
     @Authorized
     public void add(SlotPair entity) {
@@ -112,8 +112,8 @@ public class SlotPairEJB extends DAO<SlotPair> {
             highestOrderNumberForNewPair = maxResult.intValue() + 1;
         }
         entity.setSlotOrder(highestOrderNumberForNewPair);
-        childSlot.getChildrenSlotsPairList().add(entity);
-        parentSlot.getParentSlotsPairList().add(entity);
+        childSlot.getParentSlotsPairList().add(entity);
+        parentSlot.getChildrenSlotsPairList().add(entity);
         super.add(entity);
 	}
 
