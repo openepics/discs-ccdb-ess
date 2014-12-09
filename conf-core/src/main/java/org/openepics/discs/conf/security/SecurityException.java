@@ -58,12 +58,11 @@ public class SecurityException extends RuntimeException {
     public static SecurityException generateExceptionMessage(Object entity,
             EntityType entityType, EntityTypeOperation operationType)
     {
-        final StringBuilder sb = new StringBuilder("Access Denied: No permission to access entity type ");
-        sb.append(entityType.toString());
-        sb.append(" with id ");
-        sb.append(((ConfigurationEntity) entity).getId());
-        sb.append(" using operation ");
+        final StringBuilder sb = new StringBuilder("Access Denied: No permission to perform ");
         sb.append(operationType.toString());
+        sb.append(" on entity ");
+        sb.append(entityType.toString());
+        
 
         return new SecurityException(sb.toString());
     }

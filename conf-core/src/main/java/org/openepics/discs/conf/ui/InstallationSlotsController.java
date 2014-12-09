@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
+import javax.faces.application.FacesMessage;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -31,6 +32,7 @@ import org.openepics.discs.conf.ent.SlotRelation;
 import org.openepics.discs.conf.ent.SlotRelationName;
 import org.openepics.discs.conf.ui.common.AbstractSlotsController;
 import org.openepics.discs.conf.ui.common.UIException;
+import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.util.names.Names;
 import org.openepics.discs.conf.views.SlotRelationshipView;
 import org.openepics.discs.conf.views.SlotView;
@@ -251,13 +253,17 @@ public class InstallationSlotsController extends AbstractSlotsController {
             parentSlot = ((SlotView) selectedTreeNodeForRelationshipAdd.getData()).getSlot();
         }
         // TODO do not create the same relationship twice
-        final SlotPair newSlotPair = new SlotPair(childSlot, parentSlot, slotRelation);
-        if (!slotPairEJB.slotPairCreatesLoop(newSlotPair, childSlot)) {
-            slotPairEJB.add(newSlotPair);
+        if (slotPairEJB.findSlotPairsByParentChildRelation(childSlot.getName(), parentSlot.getName(), slotRelation.getName()).size() == 0) {
+            final SlotPair newSlotPair = new SlotPair(childSlot, parentSlot, slotRelation);
+            if (!slotPairEJB.slotPairCreatesLoop(newSlotPair, childSlot)) {
+                slotPairEJB.add(newSlotPair);
+            } else {
+                RequestContext.getCurrentInstance().execute("PF('slotPairLoopNotification').show()");
+            }
+            prepareRelationshipsPopup();
         } else {
-            RequestContext.getCurrentInstance().execute("PF('slotPairLoopNotification').show()");
+            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Duplicate relationship", "This relationship already exists.");
         }
-        prepareRelationshipsPopup();
     }
 
     @Override
