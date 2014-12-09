@@ -94,6 +94,7 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
             super.setDao(slotEJB);
 
             parentProperties = slot.getComponentType().getComptypePropertyList();
+            entityName = slot.getName();
 
             populateAttributesList();
             filterProperties();
@@ -295,5 +296,11 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
                 throw new UnhandledCaseException();
         }
         populateAttributesList();
+    }
+
+    @Override
+    public void saveNewName() {
+        // TODO Auto-generated method stub
+
     }
 }

@@ -124,6 +124,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
     protected DataType strDataType;
     protected DataType dblDataType;
     protected DataType enumDataType;
+    protected String entityName;
 
     protected void init() {
         strDataType = dataTypeEJB.findByName(PropertyDataType.STR_NAME);
@@ -357,6 +358,9 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
             internalPopulateAttributesList();
         }
     }
+
+    public abstract void saveNewName();
+
 
     public abstract void modifyBuiltInProperty();
 
@@ -795,5 +799,12 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
 
     public String getBuiltInPropertyDataType() {
         return builtInPropertyDataType;
+    }
+
+    public String getEntityName() {
+        return entityName;
+    }
+    public void setEntityName(String entityName) {
+        this.entityName = entityName;
     }
 }

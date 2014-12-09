@@ -10,11 +10,19 @@
             <h:form id="deviceTypePropertiesManagerForm" enctype="multipart/form-data">
              
                 <h:panelGroup id="basic-info" layout="block" style="margin-bottom: 1em;">
-                        <h2>
-                        <h:outputText value="Device type: #{comptypeAttributesController.deviceType.name}" />
-                        </h2>
+                    <h2>
+                        <h:outputText value="Device type: " />
+                        <p:inputText value="#{comptypeAttributesController.entityName}" size="20" 
+                                style="font-size: 1.3em; margin-left: 1em; margin-right: 1em;">
+                            <p:ajax event="keyup" update="saveButton"/>
+                        </p:inputText>
+                        <p:commandButton id="saveButton" value="Save" type="button" icon="ui-icon-disk" 
+                                disabled="#{comptypeAttributesController.entityName == comptypeAttributesController.deviceType.name}">
+                            <f:ajax event="click" listener="#{comptypeAttributesController.saveNewName()}" />
+                        </p:commandButton>
+                    </h2>
                                                                                
-                        <h:outputText value="#{comptypeAttributesController.deviceType.description}" />
+                    <h:outputText value="#{comptypeAttributesController.deviceType.description}" />
                 </h:panelGroup>
                        
                 <h:panelGroup layout="block">

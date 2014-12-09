@@ -80,6 +80,7 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
             super.setDao(deviceEJB);
 
             parentProperties = device.getComponentType().getComptypePropertyList();
+            entityName = device.getSerialNumber();
 
             constructDeviceStatusEnum();
             populateAttributesList();
@@ -239,5 +240,11 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
     }
     public void setDevice(Device device) {
         this.device = device;
+    }
+
+    @Override
+    public void saveNewName() {
+        // TODO Auto-generated method stub
+
     }
 }
