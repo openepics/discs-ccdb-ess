@@ -12,8 +12,8 @@
             <p:panelGrid id="grp" styleClass="dialog-grid-panel noBorders" columns="2">
             
                 <p:outputLabel for="propertySelect" value="Property:" />
-                <h:outputText value="#{controller.property.name}" rendered="#{controller.propertyNameChangeDisabled}" />
-                <h:panelGroup rendered="#{!controller.propertyNameChangeDisabled}">
+                <h:outputText value="#{controller.property.name}" rendered="#{controller.propertyNameChangeDisabled or componentToUpdate.contains('installSlot')}" />
+                <h:panelGroup rendered="#{!controller.propertyNameChangeDisabled and !componentToUpdate.contains('installSlot')}">
                     <p:selectOneMenu id="propertySelect" value="#{controller.property}" var="prop" converter="#{propertyConverter}" 
                             rendered="true" required="true" requiredMessage="Please select a property"
                             disabled="#{controller.propertyNameChangeDisabled}" valueChangeListener="#{controller.propertyChangeListener}">
