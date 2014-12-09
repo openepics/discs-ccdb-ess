@@ -34,7 +34,6 @@ import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
-import org.openepics.discs.conf.ent.DeviceStatus;
 import org.openepics.discs.conf.util.Utility;
 
 import com.google.common.base.Preconditions;
@@ -58,13 +57,7 @@ public class DevicesByTypeManager implements Serializable {
     private Device selectedDevice;
 
     private String serialNumber;
-    private String location;
-    private String purchaseOrder;
-    private DeviceStatus status;
     private String description;
-    private String manufacturer;
-    private String manufModel;
-    private String manufSerialNumber;
 
     public DevicesByTypeManager() {
     }
@@ -91,13 +84,7 @@ public class DevicesByTypeManager implements Serializable {
     public void onDeviceAdd() {
         final Device newDevice = new Device(serialNumber);
         newDevice.setComponentType(selectedComponentType);
-        newDevice.setLocation(location);
-        newDevice.setPurchaseOrder(purchaseOrder);
-        newDevice.setStatus(status);
         newDevice.setDescription(description);
-        newDevice.setManufacturer(manufacturer);
-        newDevice.setManufacturerModel(manufModel);
-        newDevice.setManufacturerSerialNumber(manufSerialNumber);
 
         deviceEJB.add(newDevice);
 
@@ -148,13 +135,7 @@ public class DevicesByTypeManager implements Serializable {
         Preconditions.checkNotNull(selectedDevice);
 
         selectedDevice.setSerialNumber(serialNumber);
-        selectedDevice.setLocation(location);
-        selectedDevice.setPurchaseOrder(purchaseOrder);
-        selectedDevice.setStatus(status);
         selectedDevice.setDescription(description);
-        selectedDevice.setManufacturer(manufacturer);
-        selectedDevice.setManufacturerModel(manufModel);
-        selectedDevice.setManufacturerSerialNumber(manufSerialNumber);
 
         deviceEJB.save(selectedDevice);
 
@@ -166,13 +147,7 @@ public class DevicesByTypeManager implements Serializable {
 
     private void resetDeviceDialogFields() {
         serialNumber = null;
-        location = null;
-        purchaseOrder = null;
-        status = null;
         description = null;
-        manufacturer = null;
-        manufModel = null;
-        manufSerialNumber = null;
     }
 
     /**
@@ -182,13 +157,7 @@ public class DevicesByTypeManager implements Serializable {
         Preconditions.checkNotNull(selectedDevice);
 
         serialNumber = selectedDevice.getSerialNumber();
-        location = selectedDevice.getLocation();
-        purchaseOrder = selectedDevice.getPurchaseOrder();
-        status = selectedDevice.getStatus();
         description = selectedDevice.getDescription();
-        manufacturer = selectedDevice.getManufacturer();
-        manufModel = selectedDevice.getManufacturerModel();
-        manufSerialNumber = selectedDevice.getManufacturerSerialNumber();
     }
 
     public String deviceDetailsRedirect(Long id) {
@@ -238,56 +207,11 @@ public class DevicesByTypeManager implements Serializable {
         this.serialNumber = serialNumber;
     }
 
-    public String getLocation() {
-        return location;
-    }
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
-    public String getPurchaseOrder() {
-        return purchaseOrder;
-    }
-    public void setPurchaseOrder(String purchaseOrder) {
-        this.purchaseOrder = purchaseOrder;
-    }
-
-    public DeviceStatus getStatus() {
-        return status;
-    }
-    public void setStatus(DeviceStatus status) {
-        this.status = status;
-    }
-    public DeviceStatus[] getStatuses() {
-        return DeviceStatus.values();
-    }
-
     public String getDescription() {
         return description;
     }
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getManufacturer() {
-        return manufacturer;
-    }
-    public void setManufacturer(String manufacturer) {
-        this.manufacturer = manufacturer;
-    }
-
-    public String getManufModel() {
-        return manufModel;
-    }
-    public void setManufModel(String manufModel) {
-        this.manufModel = manufModel;
-    }
-
-    public String getManufSerialNumber() {
-        return manufSerialNumber;
-    }
-    public void setManufSerialNumber(String manufSerialNumber) {
-        this.manufSerialNumber = manufSerialNumber;
     }
 
     public List<ComponentType> getFilteredComponentTypes() {
@@ -296,5 +220,4 @@ public class DevicesByTypeManager implements Serializable {
     public void setFilteredComponentTypes(List<ComponentType> filteredComponentTypes) {
         this.filteredComponentTypes = filteredComponentTypes;
     }
-
 }

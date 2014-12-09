@@ -54,13 +54,6 @@ public class InstallationSlotsController extends AbstractSlotsController {
     @Inject private SlotRelationEJB slotRelationEJB;
 
     private ComponentType deviceType;
-    private Double beamlinePosition;
-    private Double globalX;
-    private Double globalY;
-    private Double globalZ;
-    private Double globalPitch;
-    private Double globalRoll;
-    private Double globalYaw;
 
     private List<String> namesForAutoComplete;
     private List<SlotRelationshipView> relationships;
@@ -107,13 +100,6 @@ public class InstallationSlotsController extends AbstractSlotsController {
     public void prepareAddPopup() {
         super.prepareAddPopup();
         deviceType = null;
-        beamlinePosition = null;
-        globalX = null;
-        globalY = null;
-        globalZ = null;
-        globalPitch = null;
-        globalRoll = null;
-        globalYaw = null;
     }
 
     @Override
@@ -121,13 +107,6 @@ public class InstallationSlotsController extends AbstractSlotsController {
         newSlot = new Slot(name, true);
         newSlot.setDescription(description);
         newSlot.setComponentType(deviceType);
-        newSlot.setBeamlinePosition(beamlinePosition);
-        newSlot.getPositionInformation().setGlobalX(globalX);
-        newSlot.getPositionInformation().setGlobalY(globalY);
-        newSlot.getPositionInformation().setGlobalZ(globalZ);
-        newSlot.getPositionInformation().setGlobalPitch(globalPitch);
-        newSlot.getPositionInformation().setGlobalRoll(globalRoll);
-        newSlot.getPositionInformation().setGlobalYaw(globalYaw);
         super.onSlotAdd();
     }
 
@@ -135,13 +114,6 @@ public class InstallationSlotsController extends AbstractSlotsController {
     protected void prepareModifyPopup() {
         super.prepareModifyPopup();
         deviceType = selectedSlotView.getDeviceType();
-        beamlinePosition = selectedSlotView.getBeamlinePosition();
-        globalX = selectedSlotView.getGlobalX();
-        globalY = selectedSlotView.getGlobalY();
-        globalZ = selectedSlotView.getGlobalZ();
-        globalPitch = selectedSlotView.getGlobalPitch();
-        globalRoll = selectedSlotView.getGlobalRoll();
-        globalYaw = selectedSlotView.getGlobalYaw();
     }
 
     @Override
@@ -150,13 +122,6 @@ public class InstallationSlotsController extends AbstractSlotsController {
         slotToModify.setName(name);
         slotToModify.setDescription(description);
         slotToModify.setComponentType(deviceType);
-        slotToModify.setBeamlinePosition(beamlinePosition);
-        slotToModify.getPositionInformation().setGlobalX(globalX);
-        slotToModify.getPositionInformation().setGlobalY(globalY);
-        slotToModify.getPositionInformation().setGlobalZ(globalZ);
-        slotToModify.getPositionInformation().setGlobalPitch(globalPitch);
-        slotToModify.getPositionInformation().setGlobalRoll(globalRoll);
-        slotToModify.getPositionInformation().setGlobalYaw(globalYaw);
         slotEJB.save(slotToModify);
 
         updateRootNode();
@@ -271,27 +236,6 @@ public class InstallationSlotsController extends AbstractSlotsController {
 
     public ComponentType getDeviceType() { return deviceType; }
     public void setDeviceType(ComponentType deviceType) { this.deviceType = deviceType; }
-
-    public Double getBeamlinePosition() { return beamlinePosition; }
-    public void setBeamlinePosition(Double beamlinePosition) { this.beamlinePosition = beamlinePosition; }
-
-    public Double getGlobalX() { return globalX; }
-    public void setGlobalX(Double globalX) { this.globalX = globalX; }
-
-    public Double getGlobalY() { return globalY; }
-    public void setGlobalY(Double globalY) { this.globalY = globalY; }
-
-    public Double getGlobalZ() { return globalZ; }
-    public void setGlobalZ(Double globalZ) { this.globalZ = globalZ; }
-
-    public Double getGlobalPitch() { return globalPitch; }
-    public void setGlobalPitch(Double globalPitch) { this.globalPitch = globalPitch; }
-
-    public Double getGlobalRoll() { return globalRoll; }
-    public void setGlobalRoll(Double globalRoll) { this.globalRoll = globalRoll; }
-
-    public Double getGlobalYaw() { return globalYaw; }
-    public void setGlobalYaw(Double globalYaw) { this.globalYaw = globalYaw; }
 
     /**
      * Helper method for auto complete when entering a name for new installation {@link Slot}.

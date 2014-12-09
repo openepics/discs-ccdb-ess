@@ -23,7 +23,8 @@
                     </p:column>            
                     <p:column style="width: 80%; vertical-align: top;">
                         <p:commandButton value="Add new" oncomplete="addDeviceDialog.show()" id="addDeviceButton" 
-                            disabled="#{empty devicesByTypeManager.selectedComponentType}" update=":deviceAddForm" />                        
+                            disabled="#{empty devicesByTypeManager.selectedComponentType}" update=":deviceAddForm"
+                            style="margin-bottom: 1em;" />                        
                         
                         <p:dataTable id="devicesTable" var="device" rows="15" paginator="true" paginatorPosition="bottom"
                                 value="#{devicesByTypeManager.devices}" emptyMessage="No devices.">
@@ -40,13 +41,9 @@
                                 <h:outputText value="#{installationManager.getInstalledSlotForDevice(device)}" />
                             </p:column>
                    
-                            <p:column headerText="Actions" width="92">
-                                <p:commandLink ajax="true" title="Add properties" action="#{devicesByTypeManager.deviceDetailsRedirect(device.id)}">
-                                    <h:outputText styleClass="ui-icon ui-icon-contact" style="display: inline-block !important; margin-right: 6px;" />
-                                </p:commandLink>
-                                <p:commandLink ajax="true" title="Edit" update=":deviceModifyForm" action="#{devicesByTypeManager.prepareForModify()}" oncomplete="modifyDeviceDialog.show()">
+                            <p:column headerText="Actions" width="70">
+                                <p:commandLink ajax="true" title="Edit" action="#{devicesByTypeManager.deviceDetailsRedirect(device.id)}">
                                     <h:outputText styleClass="ui-icon ui-icon-pencil" style="display: inline-block !important; margin-right: 6px;" />
-                                    <f:setPropertyActionListener value="#{device}" target="#{devicesByTypeManager.selectedDevice}" />
                                 </p:commandLink>
                                 <p:commandLink ajax="true" title="Delete" oncomplete="deleteDevice.show()">
                                     <h:outputText styleClass="ui-icon ui-icon-trash" style="display: inline-block !important; margin-right: 6px;" />

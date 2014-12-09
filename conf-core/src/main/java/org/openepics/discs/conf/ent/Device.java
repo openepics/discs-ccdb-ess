@@ -58,7 +58,7 @@ public class Device extends ConfigurationEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    private DeviceStatus status;
+    private DeviceStatus status = DeviceStatus.DEFINED;
 
     @Size(max = 64)
     @Column(name = "manuf_serial_number")

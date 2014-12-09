@@ -128,8 +128,6 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
     protected void init() {
         strDataType = dataTypeEJB.findByName(PropertyDataType.STR_NAME);
         dblDataType = dataTypeEJB.findByName(PropertyDataType.DBL_NAME);
-        // TODO this is incorrect. Construct specific enumeration used in device.
-        enumDataType = dataTypeEJB.findByName(PropertyDataType.ENUM_NAME);
     }
 
     protected void resetFields() {
@@ -294,7 +292,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
             propertyValueUIElement = Conversion.getUIElementFromProperty(property);
             if (Conversion.getDataType(property.getDataType()) == PropertyDataType.ENUM) {
                 // if it is an enumeration, get the list of its options from the data type definition field
-                enumSelections = prepareEnumSelections(property);
+                enumSelections = prepareEnumSelections(property.getDataType());
             } else {
                 enumSelections = null;
             }
@@ -323,10 +321,18 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
             final BuiltInProperty builtInProperty = (BuiltInProperty) selectedAttribute.getEntity();
             builtInProperteryName = builtInProperty.getName();
             builtInPropertyDataType = builtInProperty.getDataType().getName();
-            propertyValueUIElement = Conversion.getUIElementFromPropertyDataType(Conversion
-                                                                .getDataType(builtInProperty.getDataType()));
+
+            final PropertyDataType propertyDataType = Conversion.getDataType(builtInProperty.getDataType());
+            propertyValueUIElement = Conversion.getUIElementFromPropertyDataType(propertyDataType);
+
             propertyValue = builtInProperty.getValue();
             propertyNameChangeDisabled = true;
+
+            if ((enumDataType != null) && (propertyDataType == PropertyDataType.ENUM)) {
+                enumSelections = prepareEnumSelections(enumDataType);
+            } else {
+                enumSelections = null;
+            }
 
             RequestContext.getCurrentInstance().update("modifyBuiltInPropertyForm:modifyBuiltInProperty");
             RequestContext.getCurrentInstance().execute("PF('modifyBuiltInProperty').show()");
@@ -604,8 +610,8 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
         return resultList;
     }
 
-    private List<String> prepareEnumSelections(Property prop) {
-        JsonReader reader = Json.createReader(new StringReader(prop.getDataType().getDefinition()));
+    protected List<String> prepareEnumSelections(DataType dataType) {
+        JsonReader reader = Json.createReader(new StringReader(dataType.getDefinition()));
         final SedsType seds = Seds.newDBConverter().deserialize(reader.readObject());
         final SedsEnum sedsEnum = (SedsEnum) seds;
         return Arrays.asList(sedsEnum.getElements());
@@ -619,7 +625,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
             propertyValue = null;
             if (Conversion.getDataType(newProperty.getDataType()) == PropertyDataType.ENUM) {
                 // if it is an enumeration, get the list of its options from the data type definition field
-                enumSelections = prepareEnumSelections(newProperty);
+                enumSelections = prepareEnumSelections(newProperty.getDataType());
             } else {
                 enumSelections = null;
             }
