@@ -110,23 +110,6 @@ public class InstallationSlotsController extends AbstractSlotsController {
         super.onSlotAdd();
     }
 
-    @Override
-    protected void prepareModifyPopup() {
-        super.prepareModifyPopup();
-        deviceType = selectedSlotView.getDeviceType();
-    }
-
-    @Override
-    public void onSlotModify() {
-        final Slot slotToModify = selectedSlotView.getSlot();
-        slotToModify.setName(name);
-        slotToModify.setDescription(description);
-        slotToModify.setComponentType(deviceType);
-        slotEJB.save(slotToModify);
-
-        updateRootNode();
-    }
-
     private void prepareRelationshipsPopup() {
         Preconditions.checkNotNull(selectedSlotForRelationships);
         selectedRelationship = null;
