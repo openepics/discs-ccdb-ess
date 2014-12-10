@@ -43,8 +43,7 @@
                          update=":containerLogForm" oncomplete="containerLog.show()" >
                        <f:ajax event="click" listener="#{auditManager.selectEntityForLog(slotAttributesController.slot, 'SLOT')}" />
                     </p:commandButton>
-                    <p:commandButton value="Back" style="margin-left: 1ex;" ajax="false" 
-                         action="#{slotAttributesController.containerRedirect()}" />
+                    <p:commandButton value="Close" style="margin-left: 1ex;" action="containers-manager.xhtml?faces-redirect=true" />
 
                     <p:dataTable id="attributesDataTable" var="attribute" value="#{slotAttributesController.attributes}" 
                             style="table-layout: fixed; word-wrap: break-word; margin-top: 1em;" rows="15" paginator="true" 

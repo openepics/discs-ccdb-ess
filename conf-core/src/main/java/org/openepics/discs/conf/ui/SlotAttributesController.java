@@ -109,20 +109,6 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
         }
     }
 
-    /**
-     * Redirection back to view of all container {@link Slot}s
-     */
-    public String containerRedirect() {
-        return "containers-manager.xhtml?faces-redirect=true";
-    }
-
-    /**
-     * Redirection back to view of all installation {@link Slot}s
-     */
-    public String installSlotRedirect() {
-        return "installation-slots-manager.xhtml?faces-redirect=true";
-    }
-
     @Override
     protected void populateAttributesList() {
         attributes = new ArrayList<>();

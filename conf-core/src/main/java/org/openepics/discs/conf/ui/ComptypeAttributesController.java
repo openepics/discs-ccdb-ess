@@ -9,7 +9,6 @@
  */
 package org.openepics.discs.conf.ui;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -84,17 +83,6 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
             filterProperties();
         } catch(Exception e) {
             throw new UIException("Device type details display initialization fialed: " + e.getMessage(), e);
-        }
-    }
-
-    /**
-     * Redirection back to view of all {@link ComponentType}s
-     */
-    public void deviceTypeRedirect() {
-        try {
-            FacesContext.getCurrentInstance().getExternalContext().redirect("device-types-manager.xhtml");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 

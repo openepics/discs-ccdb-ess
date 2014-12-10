@@ -48,9 +48,7 @@
                             style="margin-left: 1ex;" oncomplete="deviceTypeLog.show()" >
                         <f:ajax event="click" listener="#{auditManager.selectEntityForLog(comptypeAttributesController.deviceType, 'COMPONENT_TYPE')}" />
                     </p:commandButton>
-                    <p:commandButton value="Back" ajax="false" style="margin-left: 1ex;">
-                        <f:ajax event="click" listener="#{comptypeAttributesController.deviceTypeRedirect()}" />
-                    </p:commandButton>
+                    <p:commandButton value="Close" style="margin-left: 1ex;" action="device-types-manager.xhtml?faces-redirect=true" />
                     <p:dataTable id="attributesDataTable" var="attribute" value="#{comptypeAttributesController.attributes}" 
                             style="table-layout: fixed; word-wrap: break-word; margin-top: 1em;" rows="15" paginator="true" 
                             paginatorPosition="bottom">
