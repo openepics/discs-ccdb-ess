@@ -11,7 +11,16 @@
 
                 <h:panelGroup id="basic-info" layout="block" style="margin-bottom: 1em;">
                     <h2>
-                        <h:outputText value="Installation slot: #{slotAttributesController.slot.name}" />
+                        <h:outputText value="Installation slot: " />
+                        <p:inputText value="#{slotAttributesController.entityName}" 
+                                size="#{slotAttributesController.nameElementSize}"
+                                style="font-size: 1.3em; margin-left: 1em; margin-right: 1em;">
+                            <p:ajax event="keyup" update="saveButton"/>
+                        </p:inputText>
+                        <p:commandButton id="saveButton" value="Save" type="button" icon="ui-icon-disk" 
+                                disabled="#{slotAttributesController.entityName == slotAttributesController.slot.name}">
+                            <f:ajax event="click" listener="#{slotAttributesController.saveNewName()}" />
+                        </p:commandButton>
                     </h2>
 
                     <h:outputText value="Device type: #{slotAttributesController.slot.componentType.name}" /><br />

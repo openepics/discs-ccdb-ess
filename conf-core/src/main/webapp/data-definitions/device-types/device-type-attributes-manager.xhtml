@@ -12,7 +12,8 @@
                 <h:panelGroup id="basic-info" layout="block" style="margin-bottom: 1em;">
                     <h2>
                         <h:outputText value="Device type: " />
-                        <p:inputText value="#{comptypeAttributesController.entityName}" size="20" 
+                        <p:inputText value="#{comptypeAttributesController.entityName}"  
+                                size="#{comptypeAttributesController.nameElementSize}"
                                 style="font-size: 1.3em; margin-left: 1em; margin-right: 1em;">
                             <p:ajax event="keyup" update="saveButton"/>
                         </p:inputText>

@@ -807,4 +807,12 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
     public void setEntityName(String entityName) {
         this.entityName = entityName;
     }
+
+    public String getNameElementSize() {
+        if ((entityName == null) || (entityName.length() < 10)) {
+            return "20";
+        }
+        final int size = entityName.length() < 32 ? entityName.length() + 8 : 40;
+        return Integer.toString(size);
+    }
 }

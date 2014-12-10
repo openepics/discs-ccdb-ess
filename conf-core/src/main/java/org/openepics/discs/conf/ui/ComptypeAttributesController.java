@@ -228,7 +228,7 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
         compType.setName(entityName);
         comptypeEJB.save(compType);
         populateAttributesList();
-        RequestContext.getCurrentInstance().update("deviceTypePropertiesManagerForm:saveButton");
+        RequestContext.getCurrentInstance().update("deviceTypePropertiesManagerForm");
     }
 
     @Override

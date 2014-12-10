@@ -49,6 +49,7 @@ import org.openepics.discs.conf.ui.common.UIException;
 import org.openepics.discs.conf.util.UnhandledCaseException;
 import org.openepics.discs.conf.views.BuiltInProperty;
 import org.openepics.discs.conf.views.EntityAttributeView;
+import org.primefaces.context.RequestContext;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
@@ -65,7 +66,6 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
     private static final Logger logger = Logger.getLogger(SlotAttributesController.class.getCanonicalName());
 
     // BIP = Built-In Property
-    private static final String BIP_NAME = "Name";
     private static final String BIP_DESCRIPTION = "Description";
     private static final String BIP_BEAMLINE_POS = "Beamline position";
     private static final String BIP_GLOBAL_X = "Global X";
@@ -129,7 +129,6 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
         // refresh the component type from database. This refreshes all related collections as well.
         slot = slotEJB.findById(slot.getId());
 
-        attributes.add(new EntityAttributeView(new BuiltInProperty(BIP_NAME, slot.getName(), strDataType)));
         attributes.add(new EntityAttributeView(new BuiltInProperty(BIP_DESCRIPTION, slot.getDescription(), strDataType)));
         if (slot.isHostingSlot()) {
             attributes.add(new EntityAttributeView(new BuiltInProperty(BIP_BEAMLINE_POS, slot.getBeamlinePosition(), dblDataType)));
@@ -227,8 +226,7 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
         final BuiltInProperty builtInProperty = (BuiltInProperty) selectedAttribute.getEntity();
         final String builtInPropertyName = builtInProperty.getName();
 
-        if (!slot.isHostingSlot() && !builtInPropertyName.equals(BIP_NAME)
-                && !builtInPropertyName.equals(BIP_DESCRIPTION)) {
+        if (!slot.isHostingSlot() && !builtInPropertyName.equals(BIP_DESCRIPTION)) {
             logger.log(Level.WARNING, "Modifying built-in property on container that should not be used.");
             return;
         }
@@ -238,12 +236,6 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
         final Double userValueDbl = (propertyValue == null ? null
                         : (propertyValue instanceof DblValue ? ((DblValue)propertyValue).getDblValue() : null));
         switch (builtInPropertyName) {
-            case BIP_NAME:
-                if ((userValueStr == null) || !userValueStr.equals(slot.getName())) {
-                    slot.setName(userValueStr);
-                    slotEJB.save(slot);
-                }
-                break;
             case BIP_DESCRIPTION:
                 if ((userValueStr == null) || !userValueStr.equals(slot.getDescription())) {
                     slot.setDescription(userValueStr);
@@ -300,7 +292,10 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
 
     @Override
     public void saveNewName() {
-        // TODO Auto-generated method stub
-
+        slot.setName(entityName);
+        slotEJB.save(slot);
+        populateAttributesList();
+        RequestContext.getCurrentInstance().update("containerPropertiesManagerForm");
+        RequestContext.getCurrentInstance().update("installSLotPropertiesManager");
     }
 }
