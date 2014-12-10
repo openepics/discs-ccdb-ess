@@ -128,36 +128,9 @@ public class DevicesByTypeManager implements Serializable {
         }
     }
 
-    /**
-     * The event handler which saves the modifications to the device.
-     */
-    public void onDeviceModify() {
-        Preconditions.checkNotNull(selectedDevice);
-
-        selectedDevice.setSerialNumber(serialNumber);
-        selectedDevice.setDescription(description);
-
-        deviceEJB.save(selectedDevice);
-
-        resetDeviceDialogFields();
-        prepareDevicesForDisplay();
-
-        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Device updated.", null));
-    }
-
     private void resetDeviceDialogFields() {
         serialNumber = null;
         description = null;
-    }
-
-    /**
-     * This method sets the fields for to values that are displayed in the device modify dialog.
-     */
-    public void prepareForModify() {
-        Preconditions.checkNotNull(selectedDevice);
-
-        serialNumber = selectedDevice.getSerialNumber();
-        description = selectedDevice.getDescription();
     }
 
     public String deviceDetailsRedirect(Long id) {

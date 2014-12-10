@@ -73,33 +73,33 @@ public class Conversion {
     public static final String DATE_TIME_FORMAT = DATE_ONLY_FORMAT + " " + TIME_ONLY_FORMAT;
 
     /**
-     * Returns a data type based on the DataType entity.
+     * Returns a built-in data type enumeration (description) based on the DataType entity.
      * <br/>
-     * See: {@link PropertyDataType}
+     * See: {@link BuiltInDataType}
      * @param dataType The property to check data type on.
      * @return The data type that has been selected for this property.
      */
-    public static PropertyDataType getDataType(DataType dataType) {
+    public static BuiltInDataType getBuiltInDataType(DataType dataType) {
         Preconditions.checkNotNull(dataType);
         switch (dataType.getName()) {
-        case PropertyDataType.INT_NAME :
-            return PropertyDataType.INTEGER;
-        case PropertyDataType.DBL_NAME :
-            return PropertyDataType.DOUBLE;
-        case PropertyDataType.STR_NAME :
-            return PropertyDataType.STRING;
-        case PropertyDataType.TIMESTAMP_NAME :
-            return PropertyDataType.TIMESTAMP;
-        case PropertyDataType.INT_VECTOR_NAME :
-            return PropertyDataType.INT_VECTOR;
-        case PropertyDataType.DBL_VECTOR_NAME :
-            return PropertyDataType.DBL_VECTOR;
-        case PropertyDataType.STRING_LIST_NAME :
-            return PropertyDataType.STRING_LIST;
-        case PropertyDataType.DBL_TABLE_NAME :
-            return PropertyDataType.DBL_TABLE;
+        case BuiltInDataType.INT_NAME :
+            return BuiltInDataType.INTEGER;
+        case BuiltInDataType.DBL_NAME :
+            return BuiltInDataType.DOUBLE;
+        case BuiltInDataType.STR_NAME :
+            return BuiltInDataType.STRING;
+        case BuiltInDataType.TIMESTAMP_NAME :
+            return BuiltInDataType.TIMESTAMP;
+        case BuiltInDataType.INT_VECTOR_NAME :
+            return BuiltInDataType.INT_VECTOR;
+        case BuiltInDataType.DBL_VECTOR_NAME :
+            return BuiltInDataType.DBL_VECTOR;
+        case BuiltInDataType.STRING_LIST_NAME :
+            return BuiltInDataType.STRING_LIST;
+        case BuiltInDataType.DBL_TABLE_NAME :
+            return BuiltInDataType.DBL_TABLE;
         default:
-            return PropertyDataType.ENUM;
+            return BuiltInDataType.USER_DEFINED_ENUM;
         }
     }
 
@@ -111,14 +111,14 @@ public class Conversion {
      * @param dataType the data type
      * @return the UI element to use
      */
-    public static PropertyValueUIElement getUIElementFromPropertyDataType(PropertyDataType dataType) {
+    public static PropertyValueUIElement getUIElementFromBuiltInDataType(BuiltInDataType dataType) {
         switch (dataType) {
         case TIMESTAMP:
         case STRING:
         case INTEGER:
         case DOUBLE:
             return PropertyValueUIElement.INPUT;
-        case ENUM:
+        case USER_DEFINED_ENUM:
             return PropertyValueUIElement.SELECT_ONE_MENU;
         case INT_VECTOR:
         case DBL_VECTOR:
@@ -139,7 +139,7 @@ public class Conversion {
      * @return the UI element to use
      */
     public static PropertyValueUIElement getUIElementFromProperty(Property property) {
-        return getUIElementFromPropertyDataType(getDataType(property.getDataType()));
+        return getUIElementFromBuiltInDataType(getBuiltInDataType(property.getDataType()));
     }
 
     /**
@@ -158,14 +158,14 @@ public class Conversion {
         if (strValue == null) {
             return null;
         }
-        switch (Conversion.getDataType(dataType)) {
+        switch (Conversion.getBuiltInDataType(dataType)) {
         case DBL_TABLE:
             return new DblTableValue(Conversion.toDblTable(strValue));
         case DBL_VECTOR:
             return new DblVectorValue(Conversion.toDblVector(strValue));
         case DOUBLE:
             return new DblValue(Conversion.toDouble(strValue));
-        case ENUM:
+        case USER_DEFINED_ENUM:
             return new EnumValue(Conversion.toEnum(strValue, dataType));
         case INTEGER:
             return new IntValue(Conversion.toInteger(strValue));

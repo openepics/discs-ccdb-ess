@@ -5,9 +5,9 @@
     xmlns:ui="http://java.sun.com/jsf/facelets"
     xmlns:p="http://primefaces.org/ui">
     <ui:define name="content">
-        <h:panelGroup id="installSLotPropertiesManager" layout="block" class="container">
+        <h:panelGroup id="installSlotPropertiesManager" layout="block" class="container">
             <p:growl showDetail="true" globalOnly="true" autoUpdate="true"/>
-            <h:form id="installSlotPropertiesManagerForm" enctype="multipart/form-data">
+            <h:form id="slotPropertiesManagerForm" enctype="multipart/form-data">
 
                 <h:panelGroup id="basic-info" layout="block" style="margin-bottom: 1em;">
                     <h2>
@@ -103,7 +103,7 @@
             <ui:param name="widgetName" value="deleteAttribute" />
             <ui:param name="controller" value="#{slotAttributesController}" />
             <ui:param name="submitHandler" value="deleteAttribute" />
-            <ui:param name="formToUpdate" value=":installSlotPropertiesManagerForm:attributesDataTable" />
+            <ui:param name="formToUpdate" value=":slotPropertiesManagerForm:attributesDataTable" />
         </ui:include>
 
         <ui:include src="../add-or-modify-dialogs/property-value.xhtml" >
@@ -112,7 +112,7 @@
             <ui:param name="widgetName" value="modifyPropertyValue" />
             <ui:param name="controller" value="#{slotAttributesController}" />
             <ui:param name="submitHandler" value="modifyPropertyValue" />
-            <ui:param name="componentToUpdate" value=":installSlotPropertiesManagerForm:attributesDataTable" />
+            <ui:param name="componentToUpdate" value=":slotPropertiesManagerForm:attributesDataTable" />
         </ui:include>
 
         <ui:include src="../add-or-modify-dialogs/builtin-property-value.xhtml" >
@@ -121,7 +121,7 @@
             <ui:param name="widgetName" value="modifyBuiltInProperty" />
             <ui:param name="controller" value="#{slotAttributesController}" />
             <ui:param name="submitHandler" value="modifyBuiltInProperty" />
-            <ui:param name="componentToUpdate" value=":installSlotPropertiesManagerForm:attributesDataTable :installSlotPropertiesManagerForm:basic-info" />
+            <ui:param name="componentToUpdate" value=":slotPropertiesManagerForm:attributesDataTable :slotPropertiesManagerForm:basic-info" />
         </ui:include>
 
         <ui:include src="../add-or-modify-dialogs/tag.xhtml" >
@@ -130,7 +130,7 @@
             <ui:param name="widgetName" value="containerTag" />
             <ui:param name="controller" value="#{slotAttributesController}" />
             <ui:param name="submitHandler" value="addNewTag" />
-            <ui:param name="componentToUpdate" value=":installSlotPropertiesManagerForm:attributesDataTable" />
+            <ui:param name="componentToUpdate" value=":slotPropertiesManagerForm:attributesDataTable" />
         </ui:include>
 
         <ui:include src="../add-or-modify-dialogs/artifact.xhtml" >
@@ -139,7 +139,7 @@
             <ui:param name="widgetName" value="addArtifact" />
             <ui:param name="controller" value="#{slotAttributesController}" />
             <ui:param name="submitHandler" value="addNewArtifact" />
-            <ui:param name="componentToUpdate" value=":installSlotPropertiesManagerForm:attributesDataTable" />
+            <ui:param name="componentToUpdate" value=":slotPropertiesManagerForm:attributesDataTable" />
         </ui:include>
 
         <ui:include src="../add-or-modify-dialogs/artifact.xhtml" >
@@ -148,7 +148,7 @@
             <ui:param name="widgetName" value="modifyArtifact" />
             <ui:param name="controller" value="#{slotAttributesController}" />
             <ui:param name="submitHandler" value="modifyArtifact" />
-            <ui:param name="componentToUpdate" value=":installSlotPropertiesManagerForm:attributesDataTable" />
+            <ui:param name="componentToUpdate" value=":slotPropertiesManagerForm:attributesDataTable" />
         </ui:include>
     </ui:define>
 </ui:composition>

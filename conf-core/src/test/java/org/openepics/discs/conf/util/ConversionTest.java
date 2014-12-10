@@ -22,16 +22,16 @@ import org.openepics.discs.conf.ent.values.TimestampValue;
 
 public class ConversionTest {
 
-    private final DataType intDataType = new DataType(PropertyDataType.INT_NAME, "", true, null);
-    private final DataType dblDataType = new DataType(PropertyDataType.DBL_NAME, "", true, null);
-    private final DataType strDataType = new DataType(PropertyDataType.STR_NAME, "", true, null);
-    private final DataType timestampDataType = new DataType(PropertyDataType.TIMESTAMP_NAME, "", true, null);
+    private final DataType intDataType = new DataType(BuiltInDataType.INT_NAME, "", true, null);
+    private final DataType dblDataType = new DataType(BuiltInDataType.DBL_NAME, "", true, null);
+    private final DataType strDataType = new DataType(BuiltInDataType.STR_NAME, "", true, null);
+    private final DataType timestampDataType = new DataType(BuiltInDataType.TIMESTAMP_NAME, "", true, null);
 
-    private final DataType dblVectorDataType = new DataType(PropertyDataType.DBL_VECTOR_NAME, "", false, null);
-    private final DataType intVectorDataType = new DataType(PropertyDataType.INT_VECTOR_NAME, "", false, null);
-    private final DataType strVectorDataType = new DataType(PropertyDataType.STRING_LIST_NAME, "", false, null);
+    private final DataType dblVectorDataType = new DataType(BuiltInDataType.DBL_VECTOR_NAME, "", false, null);
+    private final DataType intVectorDataType = new DataType(BuiltInDataType.INT_VECTOR_NAME, "", false, null);
+    private final DataType strVectorDataType = new DataType(BuiltInDataType.STRING_LIST_NAME, "", false, null);
 
-    private final DataType dblTableDataType = new DataType(PropertyDataType.DBL_TABLE_NAME, "", false, null);
+    private final DataType dblTableDataType = new DataType(BuiltInDataType.DBL_TABLE_NAME, "", false, null);
     private final DataType enumDataType = new DataType("AnyRandomName", "", true,
             "{\"meta\":{\"type\":\"SedsEnum\",\"protocol\":\"SEDSv1\",\"version\":\"1.0.0\"},"
             + "\"data\":{\"selected\":\"TEST1\"},\"type\":{\"elements\":[\"TEST1\",\"TEST2\",\"TEST3\",\"TEST4\"]}}");
@@ -64,52 +64,52 @@ public class ConversionTest {
 
     @Test(expected = NullPointerException.class)
     public void dataTypeNotNull() {
-        Conversion.getDataType(null);
+        Conversion.getBuiltInDataType(null);
     }
 
     @Test
     public void dataTypeInt() {
-        assertEquals(PropertyDataType.INTEGER, Conversion.getDataType(intProperty.getDataType()));
+        assertEquals(BuiltInDataType.INTEGER, Conversion.getBuiltInDataType(intProperty.getDataType()));
     }
 
     @Test
     public void dataTypeDbl() {
-        assertEquals(PropertyDataType.DOUBLE, Conversion.getDataType(dblProperty.getDataType()));
+        assertEquals(BuiltInDataType.DOUBLE, Conversion.getBuiltInDataType(dblProperty.getDataType()));
     }
 
     @Test
     public void dataTypeStr() {
-        assertEquals(PropertyDataType.STRING, Conversion.getDataType(strProperty.getDataType()));
+        assertEquals(BuiltInDataType.STRING, Conversion.getBuiltInDataType(strProperty.getDataType()));
     }
 
     @Test
     public void dataTypeTimestamp() {
-        assertEquals(PropertyDataType.TIMESTAMP, Conversion.getDataType(timestampProperty.getDataType()));
+        assertEquals(BuiltInDataType.TIMESTAMP, Conversion.getBuiltInDataType(timestampProperty.getDataType()));
     }
 
     @Test
     public void dataTypeDblVector() {
-        assertEquals(PropertyDataType.DBL_VECTOR, Conversion.getDataType(dblVectorProperty.getDataType()));
+        assertEquals(BuiltInDataType.DBL_VECTOR, Conversion.getBuiltInDataType(dblVectorProperty.getDataType()));
     }
 
     @Test
     public void dataTypeIntVector() {
-        assertEquals(PropertyDataType.INT_VECTOR, Conversion.getDataType(intVectorProperty.getDataType()));
+        assertEquals(BuiltInDataType.INT_VECTOR, Conversion.getBuiltInDataType(intVectorProperty.getDataType()));
     }
 
     @Test
     public void dataTypeStrVector() {
-        assertEquals(PropertyDataType.STRING_LIST, Conversion.getDataType(strVectorProperty.getDataType()));
+        assertEquals(BuiltInDataType.STRING_LIST, Conversion.getBuiltInDataType(strVectorProperty.getDataType()));
     }
 
     @Test
     public void dataTypeDblTable() {
-        assertEquals(PropertyDataType.DBL_TABLE, Conversion.getDataType(dblTableProperty.getDataType()));
+        assertEquals(BuiltInDataType.DBL_TABLE, Conversion.getBuiltInDataType(dblTableProperty.getDataType()));
     }
 
     @Test
     public void dataTypeEnum() {
-        assertEquals(PropertyDataType.ENUM, Conversion.getDataType(enumProperty.getDataType()));
+        assertEquals(BuiltInDataType.USER_DEFINED_ENUM, Conversion.getBuiltInDataType(enumProperty.getDataType()));
     }
 
     @Test

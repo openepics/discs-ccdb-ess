@@ -101,7 +101,7 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
             parentSlot = slot.getChildrenSlotsPairList().size() > 0
                     ? slot.getChildrenSlotsPairList().get(0).getParentSlot().getName()
                             : null;
-            if (parentSlot.equals("_ROOT")) {
+            if ("_ROOT".equals(parentSlot)) {
                 parentSlot = null;
             }
         } catch(Exception e) {
@@ -295,7 +295,6 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
         slot.setName(entityName);
         slotEJB.save(slot);
         populateAttributesList();
-        RequestContext.getCurrentInstance().update("containerPropertiesManagerForm");
-        RequestContext.getCurrentInstance().update("installSLotPropertiesManager");
+        RequestContext.getCurrentInstance().update("slotPropertiesManagerForm");
     }
 }
