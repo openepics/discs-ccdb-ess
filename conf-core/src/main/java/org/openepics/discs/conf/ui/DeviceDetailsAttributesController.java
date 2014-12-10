@@ -43,6 +43,7 @@ import org.openepics.discs.conf.views.BuiltInProperty;
 import org.openepics.discs.conf.views.EntityAttributeView;
 import org.openepics.seds.api.datatypes.SedsEnum;
 import org.openepics.seds.core.Seds;
+import org.primefaces.context.RequestContext;
 
 /**
  * Controller bean for manipulation of {@link Device} attributes
@@ -55,7 +56,6 @@ import org.openepics.seds.core.Seds;
 public class DeviceDetailsAttributesController extends AbstractAttributesController<DevicePropertyValue, DeviceArtifact> {
 
     // BIP = Built-In Property
-    private static final String BIP_INVENTORY_ID = "Inventory ID";
     private static final String BIP_DESCRIPTION = "Description";
     private static final String BIP_LOCATION = "Location";
     private static final String BIP_MANUFACTURER = "Manufacturer";
@@ -126,7 +126,6 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
         // refresh the device from database. This refreshes all related collections as well.
         device = deviceEJB.findById(device.getId());
 
-        attributes.add(new EntityAttributeView(new BuiltInProperty(BIP_INVENTORY_ID, device.getSerialNumber(), strDataType)));
         attributes.add(new EntityAttributeView(new BuiltInProperty(BIP_DESCRIPTION, device.getDescription(), strDataType)));
         attributes.add(new EntityAttributeView(new BuiltInProperty(BIP_LOCATION, device.getLocation(), strDataType)));
         attributes.add(new EntityAttributeView(new BuiltInProperty(BIP_P_O_REFERENCE, device.getPurchaseOrder(), strDataType)));
@@ -163,12 +162,6 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
                 : (propertyValue instanceof StrValue ? ((StrValue)propertyValue).getStrValue() : null));
 
         switch (builtInPropertyName) {
-            case BIP_INVENTORY_ID:
-                if ((userValueStr == null) || !userValueStr.equals(device.getSerialNumber())) {
-                    device.setSerialNumber(userValueStr);
-                    deviceEJB.save(device);
-                }
-                break;
             case BIP_DESCRIPTION:
                 if ((userValueStr == null) || !userValueStr.equals(device.getDescription())) {
                     device.setDescription(userValueStr);
@@ -244,7 +237,9 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
 
     @Override
     public void saveNewName() {
-        // TODO Auto-generated method stub
-
+        device.setSerialNumber(entityName);
+        deviceEJB.save(device);
+        populateAttributesList();
+        RequestContext.getCurrentInstance().update("deviceDetailsForm");
     }
 }
