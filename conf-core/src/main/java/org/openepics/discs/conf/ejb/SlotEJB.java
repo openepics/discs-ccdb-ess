@@ -19,7 +19,6 @@
  */
 package org.openepics.discs.conf.ejb;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Nullable;
@@ -27,8 +26,6 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 
 import org.openepics.discs.conf.auditlog.Audit;
-import org.openepics.discs.conf.auditlog.AuditLogEntryCreator;
-import org.openepics.discs.conf.ent.AuditRecord;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
@@ -39,9 +36,7 @@ import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.ent.SlotRelationName;
 import org.openepics.discs.conf.security.Authorized;
-import org.openepics.discs.conf.security.SecurityPolicy;
 import org.openepics.discs.conf.util.CRUDOperation;
-import org.openepics.discs.conf.util.ParentEntityResolver;
 
 /**
  * DAO Service for accessing Installation Slot entities ( {@link Slot} )
@@ -66,9 +61,6 @@ public class SlotEJB extends DAO<Slot> {
     @Inject private SlotRelationEJB slotRelationEJB;
     @Inject private ComptypeEJB comptypeEJB;
     
-    @Inject private AuditLogEntryCreator auditLogEntryCreator;
-    @Inject private SecurityPolicy securityPolicy;
-
     @Override
     protected void defineEntity() {
         defineEntityClass(Slot.class);
@@ -198,6 +190,6 @@ public class SlotEJB extends DAO<Slot> {
                 slotPropertyValue.setSlot(newSlot);
                 addChild(slotPropertyValue);
             }
-        }        
+        }
     }
 }

@@ -114,7 +114,7 @@ public class DevicesByTypeManager implements Serializable {
         Preconditions.checkNotNull(selectedDevice);
 
         try {
-            // TODO check if the device is installed. Prevent deletion if yes.
+            // TODO [RETHINK] check if the device is installed. Prevent deletion if yes.
             deviceEJB.delete(selectedDevice);
 
             selectedDevice = null;

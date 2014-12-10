@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import javax.faces.application.FacesMessage;
@@ -46,6 +47,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.openepics.discs.conf.ejb.DAO;
 import org.openepics.discs.conf.ejb.TagEJB;
 import org.openepics.discs.conf.ent.Artifact;
+import org.openepics.discs.conf.ent.ComptypeArtifact;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.ConfigurationEntity;
 import org.openepics.discs.conf.ent.Property;
@@ -113,6 +115,8 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
     private Class<S> artifactClass;
 
     protected List<ComptypePropertyValue> parentProperties;
+    protected List<ComptypeArtifact> parentArtifacts;
+    protected Set<Tag> parentTags;
     protected T propertyValueInstance;
 
     protected void resetFields() {
@@ -270,7 +274,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
             propertyValue = selectedPropertyValue.getPropValue();
 
             if (selectedAttribute.getEntity() instanceof PropertyValue) {
-                propertyNameChangeDisabled = isInherited((PropertyValue)selectedAttribute.getEntity());
+                propertyNameChangeDisabled = isPropertyValueInherited((PropertyValue)selectedAttribute.getEntity());
             }
 
             propertyValueUIElement = Conversion.getUIElementFromProperty(property);
@@ -357,12 +361,12 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
     }
 
     public boolean canDelete(Object attribute) {
-        // TODO check whether to show inherited artifacts and prevent their deletion
-        return attribute instanceof Artifact || (attribute instanceof PropertyValue
-                && !isInherited((PropertyValue)attribute)) || attribute instanceof Tag;
+        // TODO [DONE] check whether to show inherited artifacts and prevent their deletion
+        return (attribute instanceof Artifact && !(attribute instanceof  ComptypeArtifact)) || (attribute instanceof PropertyValue
+                && !isPropertyValueInherited((PropertyValue)attribute)) || (attribute instanceof Tag && !isTagInherited((Tag)attribute));
     }
 
-    private boolean isInherited(PropertyValue propertyValue) {
+    private boolean isPropertyValueInherited(PropertyValue propertyValue) {
         if (parentProperties == null) {
             return false;
         }
@@ -375,10 +379,24 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
         }
         return false;
     }
+    
+    private boolean isTagInherited(Tag tag) {
+        if (parentTags == null) {
+            return false;
+        }
+
+        final String tagName = tag.getName();
+        for (Tag inheritedTags : parentTags) {
+            if (tagName.equals(inheritedTags.getName())) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     public boolean canEdit(Object attribute) {
-        // TODO check whether to show inherited artifacts and prevent their editing
-        return attribute instanceof Artifact || attribute instanceof PropertyValue
+        // TODO [DONE] check whether to show inherited artifacts and prevent their editing
+        return (attribute instanceof Artifact && !(attribute instanceof  ComptypeArtifact)) || attribute instanceof PropertyValue
                 && !(attribute instanceof ComptypePropertyValue) ;
     }
 

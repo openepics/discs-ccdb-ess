@@ -25,6 +25,7 @@ import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
 import org.openepics.discs.conf.ejb.DeviceEJB;
+import org.openepics.discs.conf.ent.ComptypeArtifact;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.DeviceArtifact;
@@ -58,6 +59,8 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
             super.setDao(deviceEJB);
 
             parentProperties = device.getComponentType().getComptypePropertyList();
+            parentArtifacts = device.getComponentType().getComptypeArtifactList();
+            parentTags = device.getComponentType().getTags();
 
             populateAttributesList();
         } catch(Exception e) {
@@ -105,12 +108,20 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
         for (ComptypePropertyValue parentProp : parentProperties) {
             if (parentProp.getPropValue() != null) attributes.add(new EntityAttributeView(parentProp));
         }
+        
+        for (ComptypeArtifact parentArtifact : parentArtifacts) {
+            attributes.add(new EntityAttributeView(parentArtifact));
+        }
+        
+        for (Tag parentTag : parentTags) {
+            attributes.add(new EntityAttributeView(parentTag)); 
+        }
 
         for (DevicePropertyValue propVal : device.getDevicePropertyList()) {
             attributes.add(new EntityAttributeView(propVal));
         }
 
-        // TODO check whether to show inherited artifacts and prevent their deletion
+        // TODO [DONE]check whether to show inherited artifacts and prevent their deletion
         for (DeviceArtifact artf : device.getDeviceArtifactList()) {
             attributes.add(new EntityAttributeView(artf));
         }
