@@ -23,15 +23,10 @@ import java.util.List;
 
 import javax.ejb.Stateless;
 
-import org.openepics.discs.conf.auditlog.Audit;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
-import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.Property;
-import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
-import org.openepics.discs.conf.security.Authorized;
-import org.openepics.discs.conf.util.CRUDOperation;
 
 /**
  * DAO Service for accesing {@link Property} entities
