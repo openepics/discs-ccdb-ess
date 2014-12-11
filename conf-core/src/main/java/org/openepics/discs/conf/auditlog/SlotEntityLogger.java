@@ -79,15 +79,20 @@ public class SlotEntityLogger implements EntityLogger<Slot> {
         }
         
         final Map<String, String> installationDeviceMap = new TreeMap<>();
-        if (slot.getInstallationRecordList() != null && slot.getInstallationRecordList().size() > 0) {
-            final InstallationRecord lastInstallationRecord = slot.getInstallationRecordList().get(slot.getInstallationRecordList().size() - 1);
-            
+        InstallationRecord lastInstallationRecord = null;
+        for (InstallationRecord installationRecord : slot.getInstallationRecordList()) {
+            if (lastInstallationRecord == null || installationRecord.getModifiedAt().after(lastInstallationRecord.getModifiedAt())) {
+                lastInstallationRecord = installationRecord;
+            }
+        }
+        
+        if (lastInstallationRecord != null) {
             final String installationDeviceSerial = lastInstallationRecord.getDevice().getSerialNumber();
             installationDeviceMap.put("inventoryID", installationDeviceSerial);
             installationDeviceMap.put("installationDate", lastInstallationRecord.getInstallDate().toString());
             if (lastInstallationRecord.getUninstallDate() != null) {
                 installationDeviceMap.put("uninstallationDate", lastInstallationRecord.getUninstallDate().toString());
-            }            
+            }   
         }
 
         final AuditLogUtil logUtil = new AuditLogUtil(slot)

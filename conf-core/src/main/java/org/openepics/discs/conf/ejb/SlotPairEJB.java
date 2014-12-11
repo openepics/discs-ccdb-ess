@@ -117,6 +117,12 @@ public class SlotPairEJB extends DAO<SlotPair> {
         super.add(entity);
 	}
     
+    /**
+     * Adds new slot pair but bypasses interceptors that create audit log and check
+     * if user is authorized.
+     * 
+     * @param entity
+     */
     public void addWithoutInterceptors(SlotPair entity) {
         add(entity);
     }
