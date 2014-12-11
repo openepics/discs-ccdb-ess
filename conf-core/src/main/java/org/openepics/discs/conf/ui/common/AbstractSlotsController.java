@@ -36,6 +36,7 @@ import org.primefaces.model.TreeNode;
 
 /**
  * @author Andraz Pozar <andraz.pozar@cosylab.com>
+ * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  *
  */
 public abstract class AbstractSlotsController implements Serializable{
