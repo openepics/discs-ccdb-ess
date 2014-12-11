@@ -249,14 +249,14 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
                 if (propertyValue == null) {
                     comptypeEJB.deleteChild(compTypePropertyToUpdate);
                 } else {
-                    compTypePropertyToUpdate.setPropValue(Conversion.stringToValue(propertyValue, property));
+                    compTypePropertyToUpdate.setPropValue(Conversion.stringToValue(propertyValue, property.getDataType()));
                     comptypeEJB.saveChild(compTypePropertyToUpdate);
                 }
 
             } else if (propertyValue != null) {
                 final ComptypePropertyValue comptypePropertyToAdd = new ComptypePropertyValue(false);
                 comptypePropertyToAdd.setProperty(property);
-                comptypePropertyToAdd.setPropValue(Conversion.stringToValue(propertyValue, property));
+                comptypePropertyToAdd.setPropValue(Conversion.stringToValue(propertyValue, property.getDataType()));
                 comptypePropertyToAdd.setComponentType(compType);
                 comptypeEJB.addChild(comptypePropertyToAdd);
             }

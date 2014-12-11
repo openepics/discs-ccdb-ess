@@ -7,32 +7,27 @@
     <ui:define name="content">
         <h:panelGroup id="containerPropertiesManager" layout="block" class="container">
             <p:growl showDetail="true" globalOnly="true" autoUpdate="true"/>
-            <h:form id="containerPropertiesManagerForm" enctype="multipart/form-data">
-               
-                <h:panelGroup class="properties-parent-info" layout="block">
-                    <p:panelGrid columns="2" style="width: 100%;" columnClasses="alignTop, alignTop" styleClass="noBorders"> 
-                        <h:outputLabel value="Device type name:" />
-                        <h:outputText value="#{slotAttributesController.slot.name}" style="width: 100%;" />
-                                                                    
-                        <h:outputLabel value="Description:" />
-                        <p:inputTextarea value="#{slotAttributesController.slot.description}"  rows="5" cols="51" disabled="true" style="width: 100%;"/>
-                        
-                        <h:outputLabel value="Parent container:" />
-                        <h:outputText value="#{slotAttributesController.parentSlot}" style="width: 100%;" />
-                    </p:panelGrid>
-                    
-                    <br/>
-                    <br/>
-                    
-                    <p:commandButton value="History" icon="ui-icon-clock" style="float: right; margin: 10px 10px " 
-                         update=":containerLogForm" oncomplete="containerLog.show()" >
-                       <f:ajax event="click" listener="#{auditManager.selectEntityForLog(slotAttributesController.slot, 'SLOT')}" />
-                    </p:commandButton>
-                    <p:commandButton value="Back" style="float: right; margin: 10px 0px 10px 10px" ajax="false" 
-                         action="#{slotAttributesController.containerRedirect()}" />
+            <h:form id="slotPropertiesManagerForm" enctype="multipart/form-data">
+
+                <h:panelGroup id="basic-info" layout="block" style="margin-bottom: 1em;">
+                    <h2>
+                        <h:outputText value="Container: " />
+                        <p:inputText value="#{slotAttributesController.entityName}" 
+                                size="#{slotAttributesController.nameElementSize}" 
+                                style="font-size: 1.3em; margin-left: 1em; margin-right: 1em;">
+                            <p:ajax event="keyup" update="saveButton"/>
+                        </p:inputText>
+                        <p:commandButton id="saveButton" value="Save" type="button" icon="ui-icon-disk" 
+                                disabled="#{slotAttributesController.entityName == slotAttributesController.slot.name}">
+                            <f:ajax event="click" listener="#{slotAttributesController.saveNewName()}" />
+                        </p:commandButton>
+                    </h2>
+
+                    <h:outputText value="Parent container: #{slotAttributesController.parentSlot}" />
+                    <br />
                 </h:panelGroup>
-                   
-                <h:panelGroup class="property-values" layout="block">
+
+                <h:panelGroup layout="block">
                     <p:commandButton id="addButton" value="Add" type="button" icon="ui-icon-plus"/>
                     <p:menu overlay="true" trigger="addButton" my="left top" at="left bottom">
                         <p:menuitem value="Property" oncomplete="addPropertyValue.show()" 
@@ -44,8 +39,14 @@
                                 actionListener="#{slotAttributesController.prepareForArtifactAdd}" 
                                 update=":addArtifactForm:addArtifact"/>
                     </p:menu>
+                    <p:commandButton value="History" icon="ui-icon-clock" style="margin-left: 1ex;" 
+                         update=":containerLogForm" oncomplete="containerLog.show()" >
+                       <f:ajax event="click" listener="#{auditManager.selectEntityForLog(slotAttributesController.slot, 'SLOT')}" />
+                    </p:commandButton>
+                    <p:commandButton value="Close" style="margin-left: 1ex;" action="containers-manager.xhtml?faces-redirect=true" />
+
                     <p:dataTable id="attributesDataTable" var="attribute" value="#{slotAttributesController.attributes}" 
-                            style="table-layout: fixed; word-wrap: break-word;" rows="15" paginator="true" 
+                            style="table-layout: fixed; word-wrap: break-word; margin-top: 1em;" rows="15" paginator="true" 
                             paginatorPosition="bottom">
                         <p:column headerText="Name" sortBy="#{attribute.name}">
                             <h:outputText value="#{attribute.name}" />
@@ -54,7 +55,7 @@
                         <p:column headerText="Value">
                             <h:outputText value="#{attribute.value}" />
                         </p:column>
-                                                     
+
                         <p:column headerText="Unit" >
                             <h:outputText value="#{!empty attribute.unit ? attribute.unit.name : '-'}" />
                         </p:column>
@@ -83,71 +84,80 @@
                 </h:panelGroup>
             </h:form>
         </h:panelGroup>
-        
+
         <ui:include src="../../audit/audit-log-table.xhtml">
             <ui:param name="formId" value="containerLogForm" />
             <ui:param name="dialogTitle" value="Container Log" />
             <ui:param name="widgetName" value="containerLog" />
         </ui:include>
-        
+
         <ui:include src="../../audit/audit-log-details.xhtml">
             <ui:param name="formId" value="logDetailsForm" />
             <ui:param name="dialogTitle" value="Long Entry Details" />
             <ui:param name="widgetName" value="logDetails" />
         </ui:include>
-        
+
         <ui:include src="../add-or-modify-dialogs/delete-confirmation.xhtml" >
             <ui:param name="formId" value="deleteAttributeForm" />
             <ui:param name="dialogTitle" value="Delete attribute" />
             <ui:param name="widgetName" value="deleteAttribute" />
             <ui:param name="controller" value="#{slotAttributesController}" />
             <ui:param name="submitHandler" value="deleteAttribute" />
-            <ui:param name="formToUpdate" value=":containerPropertiesManagerForm:attributesDataTable" />
+            <ui:param name="formToUpdate" value=":slotPropertiesManagerForm:attributesDataTable" />
         </ui:include>
-            
+
         <ui:include src="../add-or-modify-dialogs/property-value.xhtml" >
             <ui:param name="formId" value="addPropertyValueForm" />
             <ui:param name="dialogTitle" value="Add new container property" />
             <ui:param name="widgetName" value="addPropertyValue" />
             <ui:param name="controller" value="#{slotAttributesController}" />
             <ui:param name="submitHandler" value="addNewPropertyValue" />
-            <ui:param name="componentToUpdate" value=":containerPropertiesManagerForm:attributesDataTable" />
+            <ui:param name="componentToUpdate" value=":slotPropertiesManagerForm:attributesDataTable" />
         </ui:include>
-        
+
         <ui:include src="../add-or-modify-dialogs/property-value.xhtml" >
             <ui:param name="formId" value="modifyPropertyValueForm" />
             <ui:param name="dialogTitle" value="Modify container property" />
             <ui:param name="widgetName" value="modifyPropertyValue" />
             <ui:param name="controller" value="#{slotAttributesController}" />
             <ui:param name="submitHandler" value="modifyPropertyValue" />
-            <ui:param name="componentToUpdate" value=":containerPropertiesManagerForm:attributesDataTable" />
+            <ui:param name="componentToUpdate" value=":slotPropertiesManagerForm:attributesDataTable" />
         </ui:include>
-        
+
+        <ui:include src="../add-or-modify-dialogs/builtin-property-value.xhtml" >
+            <ui:param name="formId" value="modifyBuiltInPropertyForm" />
+            <ui:param name="dialogTitle" value="Modify container property" />
+            <ui:param name="widgetName" value="modifyBuiltInProperty" />
+            <ui:param name="controller" value="#{slotAttributesController}" />
+            <ui:param name="submitHandler" value="modifyBuiltInProperty" />
+            <ui:param name="componentToUpdate" value=":slotPropertiesManagerForm:attributesDataTable :slotPropertiesManagerForm:basic-info" />
+        </ui:include>
+
         <ui:include src="../add-or-modify-dialogs/tag.xhtml" >
             <ui:param name="formId" value="containerTagForm" />
             <ui:param name="dialogTitle" value="Add new container tag" />
             <ui:param name="widgetName" value="containerTag" />
             <ui:param name="controller" value="#{slotAttributesController}" />
             <ui:param name="submitHandler" value="addNewTag" />
-            <ui:param name="componentToUpdate" value=":containerPropertiesManagerForm:attributesDataTable" />
+            <ui:param name="componentToUpdate" value=":slotPropertiesManagerForm:attributesDataTable" />
         </ui:include>
-        
+
         <ui:include src="../add-or-modify-dialogs/artifact.xhtml" >
             <ui:param name="formId" value="addArtifactForm" />
             <ui:param name="dialogTitle" value="Add new container artifact" />
             <ui:param name="widgetName" value="addArtifact" />
             <ui:param name="controller" value="#{slotAttributesController}" />
             <ui:param name="submitHandler" value="addNewArtifact" />
-            <ui:param name="componentToUpdate" value=":containerPropertiesManagerForm:attributesDataTable" />
+            <ui:param name="componentToUpdate" value=":slotPropertiesManagerForm:attributesDataTable" />
         </ui:include>
-        
+
         <ui:include src="../add-or-modify-dialogs/artifact.xhtml" >
             <ui:param name="formId" value="modifyArtifactForm" />
             <ui:param name="dialogTitle" value="Modify container artifact" />
             <ui:param name="widgetName" value="modifyArtifact" />
             <ui:param name="controller" value="#{slotAttributesController}" />
             <ui:param name="submitHandler" value="modifyArtifact" />
-            <ui:param name="componentToUpdate" value=":containerPropertiesManagerForm:attributesDataTable" />
-        </ui:include>   
+            <ui:param name="componentToUpdate" value=":slotPropertiesManagerForm:attributesDataTable" />
+        </ui:include>
     </ui:define>
 </ui:composition>

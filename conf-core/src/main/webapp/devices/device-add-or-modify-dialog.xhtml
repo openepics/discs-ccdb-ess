@@ -5,116 +5,29 @@
 
     <h:form id="#{formId}">
         <p:dialog id="#{widgetName}" widgetVar="#{widgetName}" modal="true" resizable="false" closable="false"
-            width="55em" dynamic="true">
+            width="35em" dynamic="true">
             <f:facet name="header">
                 <h:outputText value="#{dialogTitle}" />
             </f:facet>
 
-            <p:panelGrid id="grp" width="100%" styleClass="noBorders">
-                <p:row>
-                    <p:column style="vertical-align: top;">
-                        <p:panelGrid id="deviceBasic" styleClass="noBorders">
-                            <p:row>
-                                <p:column style="text-align: right">
-                                    <h:outputText value="Device type:" />
-                                </p:column>
-                                <p:column>
-                                    <h:outputText value="#{devicesByTypeManager.selectedComponentType.name}" />
-                                </p:column>
-                            </p:row>
-                        
-                            <p:row>
-                                <p:column style="text-align: right">
-                                    <h:outputLabel for="devInventoryId" value="Inventory ID:" />
-                                </p:column>
-                                <p:column>
-                                    <h:panelGroup>
-                                        <p:inputText id="devInventoryId" value="#{devicesByTypeManager.serialNumber}" 
-                                            required="true" requiredMessage="Please enter an inventory ID" />
-                                        <p:message for="devInventoryId" />
-                                    </h:panelGroup>
-                                </p:column>
-                            </p:row>
-                                    
-                            <p:row>
-                                <p:column style="text-align: right">
-                                    <h:outputLabel for="devLocation" value="Location:" />
-                                </p:column>
-                                <p:column>
-                                    <p:inputText id="devLocation" value="#{devicesByTypeManager.location}" />
-                                </p:column>
-                            </p:row>
-                            
-                            <p:row>
-                                <p:column style="text-align: right">
-                                    <h:outputLabel for="purchaseOrderRef" value="Purchase order ref:" />
-                                </p:column>
-                                <p:column>
-                                    <p:inputText id="purchaseOrderRef" value="#{devicesByTypeManager.purchaseOrder}" />
-                                </p:column>
-                            </p:row>
-                            
-                            <p:row>
-                                <p:column style="text-align: right">
-                                    <h:outputLabel for="devStatus" value="Status:" />
-                                </p:column>
-                                <p:column>
-                                    <p:selectOneMenu id="devStatus" value="#{devicesByTypeManager.status}">
-                                        <f:selectItems value="#{devicesByTypeManager.statuses}" var="status" 
-                                            itemValue="#{status}" itemLabel="#{status.label}" />
-                                    </p:selectOneMenu>
-                                </p:column>
-                            </p:row>
-                        </p:panelGrid>
-                    </p:column>
-                    <p:column>
-                        <p:fieldset legend="Details">
-                            <p:panelGrid id="deviceDetails" styleClass="noBorders">
-                                <p:row>
-                                    <p:column colspan="2">
-                                        <h:outputText value="Description:" />
-                                    </p:column>
-                                </p:row>
-                                <p:row>
-                                    <p:column colspan="2">
-                                        <p:inputTextarea rows="5" style="width: 100%;" counter="counter" maxlength="255" 
-                                            counterTemplate="{0} character remaining" autoResize="false" 
-                                            value="#{devicesByTypeManager.description}" />
-                                        <h:outputText id="counter" />
-                                    </p:column>
-                                </p:row>
-                                
-                                <p:row>
-                                    <p:column style="text-align: right;">
-                                        <h:outputLabel for="devManufacturer" value="Manufacturer:" />
-                                    </p:column>
-                                    <p:column>
-                                        <h:inputText id="devManufacturer" value="#{devicesByTypeManager.manufacturer}" />
-                                    </p:column>
-                                </p:row>
-
-                                <p:row>
-                                    <p:column style="text-align: right;">
-                                        <h:outputLabel for="devManufacturerModel" value="Manufacturer model:" />
-                                    </p:column>
-                                    <p:column>
-                                        <h:inputText id="devManufacturerModel" value="#{devicesByTypeManager.manufModel}" />
-                                    </p:column>
-                                </p:row>
-
-                                <p:row>
-                                    <p:column style="text-align: right;">
-                                        <h:outputLabel for="devManufacturerSerial" value="Manufacturer serial #:" />
-                                    </p:column>
-                                    <p:column>
-                                        <h:inputText id="devManufacturerSerial" value="#{devicesByTypeManager.manufSerialNumber}" />
-                                    </p:column>
-                                </p:row>
-                                
-                            </p:panelGrid>
-                        </p:fieldset>
-                    </p:column>
-                </p:row>
+            <p:panelGrid id="grp" width="100%" styleClass="noBorders" columns="2" columnClasses="alignRight">
+                <h:outputText value="Device type:" />
+                <h:outputText value="#{devicesByTypeManager.selectedComponentType.name}" />
+    
+                <h:outputLabel for="devInventoryId" value="Inventory ID:" />
+                <h:panelGroup>
+                    <p:inputText id="devInventoryId" value="#{devicesByTypeManager.serialNumber}" 
+                        required="true" requiredMessage="Please enter an inventory ID" />
+                    <p:message for="devInventoryId" />
+                </h:panelGroup>
+    
+                <h:outputText value="Description:" />
+                <h:panelGroup>
+                    <p:inputTextarea rows="5" style="width: 100%;" counter="counter" maxlength="255" 
+                        counterTemplate="{0} character remaining" autoResize="false" 
+                        value="#{devicesByTypeManager.description}" />
+                    <h:outputText id="counter" />
+                </h:panelGroup>
             </p:panelGrid>
             
             <p:commandButton value="Cancel" style="float: right" onclick="#{widgetName}.hide();" update="grp" resetValues="true" />

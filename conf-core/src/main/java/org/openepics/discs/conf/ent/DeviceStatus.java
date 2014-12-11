@@ -7,6 +7,7 @@ package org.openepics.discs.conf.ent;
  *
  */
 public enum DeviceStatus {
+    DEFINED("Defined"),
     IN_FABRICATION("In fabrication"),
     UNDER_TESTING("Under testing"),
     UNDER_REPAIR("Under repair"),

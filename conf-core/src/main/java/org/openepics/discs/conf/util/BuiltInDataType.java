@@ -2,33 +2,31 @@ package org.openepics.discs.conf.util;
 
 /**
  *
- * An enumeration of possible (supported) data types in the CCDB application. The list has been predefined in the design phase
+ * An enumeration of built-in data types in the CCDB application. The list has been predefined in the design phase
  * and all property values can only contain a value of one of these types.
- * <br/>
- * See: {@link PropertyDataTypeConstants}
  *
  * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  *
  */
-public enum PropertyDataType {
+public enum BuiltInDataType {
     /** The property value can be a single signed 32-bit integer number */
-    INTEGER(PropertyDataType.INT_NAME),
+    INTEGER(BuiltInDataType.INT_NAME),
     /** The property value can be a single signed double precision number */
-    DOUBLE(PropertyDataType.DBL_NAME),
+    DOUBLE(BuiltInDataType.DBL_NAME),
     /** The property value can be any string of characters */
-    STRING(PropertyDataType.STR_NAME),
+    STRING(BuiltInDataType.STR_NAME),
     /** The property value can be a date and time timestamp */
-    TIMESTAMP(PropertyDataType.TIMESTAMP_NAME),
+    TIMESTAMP(BuiltInDataType.TIMESTAMP_NAME),
     /** The property value can be a 1-D vector of signed 32-bit integer numbers */
-    INT_VECTOR(PropertyDataType.INT_VECTOR_NAME),
+    INT_VECTOR(BuiltInDataType.INT_VECTOR_NAME),
     /** The property value can be a 1-D vector of double precision numbers */
-    DBL_VECTOR(PropertyDataType.DBL_VECTOR_NAME),
+    DBL_VECTOR(BuiltInDataType.DBL_VECTOR_NAME),
     /** the property value can be a list of strings. */
-    STRING_LIST(PropertyDataType.STRING_LIST_NAME),
+    STRING_LIST(BuiltInDataType.STRING_LIST_NAME),
     /** The property value can be a table (matrix) of double precision numbers. The rows of the table must all be of equal length. */
-    DBL_TABLE(PropertyDataType.DBL_TABLE_NAME),
-    /** The property value can be a string value selected out of a predefined list of possible values (enumeration). */
-    ENUM(PropertyDataType.ENUM_NAME);
+    DBL_TABLE(BuiltInDataType.DBL_TABLE_NAME),
+    /** The property value can be a string value selected out of a user-defined list of possible values (enumeration). */
+    USER_DEFINED_ENUM(BuiltInDataType.ENUM_NAME);
 
     public static final String INT_NAME = "Integer";
     public static final String DBL_NAME = "Double";
@@ -42,7 +40,7 @@ public enum PropertyDataType {
 
     private String dbName;
 
-    private PropertyDataType(String dbName) { this.dbName = dbName; }
+    private BuiltInDataType(String dbName) { this.dbName = dbName; }
 
     @Override public String toString() { return dbName; }
 }

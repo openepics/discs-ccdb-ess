@@ -9,7 +9,6 @@
  */
 package org.openepics.discs.conf.ui;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -36,9 +35,13 @@ import org.openepics.discs.conf.ent.PropertyValue;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.ent.Tag;
+import org.openepics.discs.conf.ent.values.StrValue;
 import org.openepics.discs.conf.ui.common.AbstractAttributesController;
 import org.openepics.discs.conf.ui.common.UIException;
+import org.openepics.discs.conf.util.UnhandledCaseException;
+import org.openepics.discs.conf.views.BuiltInProperty;
 import org.openepics.discs.conf.views.EntityAttributeView;
+import org.primefaces.context.RequestContext;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
@@ -55,6 +58,9 @@ import com.google.common.collect.ImmutableList;
 @ViewScoped
 public class ComptypeAttributesController extends AbstractAttributesController<ComptypePropertyValue, ComptypeArtifact> {
 
+    // BIP = Built-In Property
+    private static final String BIP_DESCRIPTION = "Description";
+
     @Inject private ComptypeEJB comptypeEJB;
     @Inject private PropertyEJB propertyEJB;
     @Inject private SlotEJB slotEJB;
@@ -62,29 +68,21 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
 
     private ComponentType compType;
 
+    @Override
     @PostConstruct
     public void init() {
         try {
+            super.init();
             final Long id = Long.parseLong(((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest()).getParameter("id"));
             compType = comptypeEJB.findById(id);
             super.setArtifactClass(ComptypeArtifact.class);
             super.setPropertyValueClass(ComptypePropertyValue.class);
             super.setDao(comptypeEJB);
+            entityName = compType.getName();
             populateAttributesList();
             filterProperties();
         } catch(Exception e) {
             throw new UIException("Device type details display initialization fialed: " + e.getMessage(), e);
-        }
-    }
-
-    /**
-     * Redirection back to view of all {@link ComponentType}s
-     */
-    public void deviceTypeRedirect() {
-        try {
-            FacesContext.getCurrentInstance().getExternalContext().redirect("device-types-manager.xhtml");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -174,6 +172,9 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
         attributes = new ArrayList<>();
         // refresh the component type from database. This refreshes all related collections as well.
         compType = comptypeEJB.findById(this.compType.getId());
+
+        attributes.add(new EntityAttributeView(new BuiltInProperty(BIP_DESCRIPTION, compType.getDescription(), strDataType)));
+
         for (ComptypePropertyValue prop : compType.getComptypePropertyList()) {
             attributes.add(new EntityAttributeView(prop));
         }
@@ -211,6 +212,14 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
     }
 
     @Override
+    public void saveNewName() {
+        compType.setName(entityName);
+        comptypeEJB.save(compType);
+        populateAttributesList();
+        RequestContext.getCurrentInstance().update("deviceTypePropertiesManagerForm");
+    }
+
+    @Override
     protected void setPropertyValueParent(ComptypePropertyValue child) {
         child.setComponentType(compType);
     }
@@ -244,6 +253,23 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
     @Override
     protected void populateParentTags() {
         // Nothing to do since component types don't inherit anything
+    }
+
+    @Override
+    public void modifyBuiltInProperty() {
+        final BuiltInProperty builtInProperty = (BuiltInProperty) selectedAttribute.getEntity();
+        final String userValue = propertyValue == null ? null : ((StrValue)propertyValue).getStrValue();
+        switch (builtInProperty.getName()) {
+        case BIP_DESCRIPTION:
+            if ((userValue == null) || !userValue.equals(compType.getDescription())) {
+                compType.setDescription(userValue);
+                comptypeEJB.save(compType);
+            }
+            break;
+        default:
+            throw new UnhandledCaseException();
+        }
+        populateAttributesList();
     }
 
     /**

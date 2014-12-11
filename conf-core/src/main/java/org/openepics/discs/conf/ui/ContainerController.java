@@ -62,19 +62,6 @@ public class ContainerController extends AbstractSlotsController {
         parentSlotView = slotsTreeBuilder.getInitiallySelectedSlotView();
     }
 
-    /**
-     * Saves modifications to the container
-     */
-    @Override
-    public void onSlotModify() {
-        final Slot slotToModify = selectedSlotView.getSlot();
-        slotToModify.setName(name);
-        slotToModify.setDescription(description);
-        slotEJB.save(slotToModify);
-
-        updateRootNode();
-    }
-
     @Override
     public void onSlotAdd() {
         newSlot = new Slot(name, false);

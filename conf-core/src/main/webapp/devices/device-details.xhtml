@@ -7,98 +7,46 @@
     <ui:define name="content">
         <p:growl showDetail="true" globalOnly="true" autoUpdate="true" />
         <h:form id="deviceDetailsForm">
+            <h:panelGroup id="basic-info" styleClass="noBorders" layout="block">
+                <h2>
+                    <h:outputText value="Inventory ID: " />
+                    <p:inputText value="#{deviceDetailsAttributesController.entityName}" 
+                            size="#{deviceDetailsAttributesController.nameElementSize}"
+                            style="font-size: 1.3em; margin-left: 1em; margin-right: 1em;">
+                        <p:ajax event="keyup" update="saveButton"/>
+                    </p:inputText>
+                    <p:commandButton id="saveButton" value="Save" type="button" icon="ui-icon-disk" 
+                            disabled="#{deviceDetailsAttributesController.entityName == deviceDetailsAttributesController.device.serialNumber}">
+                        <f:ajax event="click" listener="#{deviceDetailsAttributesController.saveNewName()}" />
+                    </p:commandButton>
+                </h2>
+                        
+                <h:outputText value="Device type: #{deviceDetailsAttributesController.device.componentType.name}" />
+                <br />
+                <br />
+            </h:panelGroup>
 
-            <h2>Device details</h2>
-
-            <p:panelGrid styleClass="noBorders">
-                <p:row>
-                    <p:column style="vertical-align: top;">
-                        <p:panelGrid id="deviceDetails" styleClass="noBorders">
-                            <p:row>
-                                <p:column style="text-align: right;">
-                                    Inventory ID:
-                                </p:column>
-                                <p:column>
-                                    <h:outputText value="#{deviceDetailsAttributesController.device.serialNumber}" />
-                                </p:column>
-                            </p:row>
-                            <p:row>
-                                <p:column style="text-align: right;">
-                                    Device type:
-                                </p:column>
-                                <p:column>
-                                    <h:outputText value="#{deviceDetailsAttributesController.device.componentType.name}" />
-                                </p:column>
-                            </p:row>
-                            <p:row>
-                                <p:column style="text-align: right;">
-                                    Location:
-                                </p:column>
-                                <p:column>
-                                    <h:outputText value="#{deviceDetailsAttributesController.device.location}" />
-                                </p:column>
-                            </p:row>
-                            <p:row>
-                                <p:column style="text-align: right;">
-                                    Manufacturer:
-                                </p:column>
-                                <p:column>
-                                    <h:outputText value="#{deviceDetailsAttributesController.device.manufacturer}" />
-                                </p:column>
-                            </p:row>
-                            <p:row>
-                                <p:column style="text-align: right;">
-                                    Manufacturer model:
-                                </p:column>
-                                <p:column>
-                                    <h:outputText value="#{deviceDetailsAttributesController.device.manufacturerModel}" />
-                                </p:column>
-                            </p:row>
-                            <p:row>
-                                <p:column style="text-align: right;">
-                                    Manufacturer serial #:
-                                </p:column>
-                                <p:column>
-                                    <h:outputText value="#{deviceDetailsAttributesController.device.manufacturerSerialNumber}" />
-                                </p:column>
-                            </p:row>
-                            <p:row>
-                                <p:column style="text-align: right;">
-                                    Purchase order reference:
-                                </p:column>
-                                <p:column>
-                                    <h:outputText value="#{deviceDetailsAttributesController.device.purchaseOrder}" />
-                                </p:column>
-                            </p:row>
-                            <p:row>
-                                <p:column style="text-align: right;">
-                                    Status:
-                                </p:column>
-                                <p:column>
-                                    <h:outputText value="#{deviceDetailsAttributesController.device.status.label}" />
-                                </p:column>
-                            </p:row>
-                            <p:row>
-                                <p:column style="text-align: right;">
-                                    Description:
-                                </p:column>
-                                <p:column>
-                                    <p:inputTextarea value="#{deviceDetailsAttributesController.device.description}" rows="7" cols="70"
-                                        readonly="true" disabled="true" style="width: 100%" />
-                                </p:column>
-                            </p:row>
-                            <p:row style="margin-top: 20px;">
-                                <p:column colspan="2">
-                                    <p:commandButton value="History" icon="ui-icon-clock" style="float: right; margin: 10px 10px " 
-                                            update=":deviceLogForm" oncomplete="deviceLog.show()" >
-                                        <f:ajax event="click" listener="#{auditManager.selectEntityForLog(deviceDetailsAttributesController.device, 'DEVICE')}" />
-                                    </p:commandButton>
-                                    <p:commandButton value="Back" style="float: right; margin: 10px 0px 10px 10px" ajax="false" action="index.html?faces-redirect=true" />
-                                </p:column>
-                            </p:row>
-                        </p:panelGrid>
+            <h:panelGroup style="vertical-align: top; margin-top: 1em;" layout="block">
+                <p:commandButton id="addButton" value="Add" type="button" icon="ui-icon-plus"/>
+                <p:menu overlay="true" trigger="addButton" my="left top" at="left bottom">
+                    <p:menuitem value="Tag" oncomplete="addDeviceTag.show()" update=":addDeviceTagForm" 
+                            actionListener="#{deviceDetailsAttributesController.prepareForTagAdd}"/>
+                    <p:menuitem value="Artifact" oncomplete="addArtifact.show()" 
+                            actionListener="#{deviceDetailsAttributesController.prepareForArtifactAdd}" update=":addArtifactForm:addArtifact"/>
+                </p:menu>
+                <p:commandButton value="History" icon="ui-icon-clock" style="margin-left: 1ex;" 
+                        update=":deviceLogForm" oncomplete="deviceLog.show()" >
+                    <f:ajax event="click" listener="#{auditManager.selectEntityForLog(deviceDetailsAttributesController.device, 'DEVICE')}" />
+                </p:commandButton>
+                <p:commandButton value="Close" style="margin-left: 1ex;" action="index.html?faces-redirect=true" />
+  
+                <p:dataTable id="devAttribs" var="attribute" value="#{deviceDetailsAttributesController.attributes}" 
+                        emptyMessage="No attributes." style="margin-top: 1em;">
+                    <p:column headerText="Name" sortBy="#{attribute.name}">
+                        <h:outputText value="#{attribute.name}" />
                     </p:column>
 
+<<<<<<< HEAD
                     <p:column style="width: 60%; vertical-align: top;">
                       <p:commandButton id="addButton" value="Add" type="button" icon="ui-icon-plus"/>
                       <p:menu overlay="true" trigger="addButton" my="left top" at="left bottom">
@@ -123,55 +71,52 @@
                                 <h:outputText value="#{attribute.kind}" />
                             </p:column>
 
-                            <p:column headerText="Unit" style="text-align: center;">
-                                <h:outputText value="#{empty attribute.unit.name ? '-' : attribute.unit.name}" />
-                            </p:column>
-
-                            <p:column headerText="Value" >
-                                <h:outputText value="#{attribute.value}" />
-                            </p:column>
-
-                            <p:column headerText="Actions" width="70">
-                                <p:commandLink ajax="true" rendered="#{deviceDetailsAttributesController.canEdit(attribute.entity)}" title="Edit">
-                                    <h:outputText styleClass="ui-icon ui-icon-pencil" style="display: inline-block !important; margin-right: 6px;" />
-                                    <f:setPropertyActionListener value="#{attribute}" target="#{deviceDetailsAttributesController.selectedAttributeToModify}" />
-                                </p:commandLink>
-                                <p:commandLink ajax="true" title="Delete" oncomplete="deleteAttribute.show()" 
-                                        rendered="#{deviceDetailsAttributesController.canDelete(attribute.entity)}">
-                                    <h:outputText styleClass="ui-icon ui-icon-trash" style="display: inline-block !important; margin-right: 6px;" />
-                                    <f:setPropertyActionListener value="#{attribute}" target="#{deviceDetailsAttributesController.selectedAttribute}" />
-                                </p:commandLink>
-                                <p:commandLink ajax="true" rendered="#{attribute.hasFile}" title="Download">
-                                    <h:outputText styleClass="ui-icon ui-icon-arrowthick-1-s" style="display: inline-block !important; margin-right: 6px;" />
-                                    <f:setPropertyActionListener value="#{attribute}" target="#{deviceDetailsAttributesController.selectedAttribute}" />
-                                    <p:fileDownload value="#{deviceDetailsAttributesController.downloadFile}" />
-                                </p:commandLink>
-                                <h:outputLink rendered="#{attribute.hasURL}" title="Go to URL" target="_blank" value="#{attribute.value}">
-                                    <h:outputText styleClass="ui-icon ui-icon-extlink" style="display: inline-block !important; margin-right: 6px;" />
-                                </h:outputLink>
-                            </p:column>
-                        </p:dataTable>
-                        
-                        <h:panelGroup id="installationDetails" style="float: left; margin-top: 30px;">
-                            <p:commandButton title="Install" label="Install" value="Install" 
-                                type="button" update=":installDeviceForm:installationDetails" onclick="installDevice.show()"
-                                disabled="#{installationManager.isDeviceInstalled(deviceDetailsAttributesController.device)}" />
-                            <p:commandButton title="Uninstall" label="Uninstall" value="Uninstall" 
-                                update=":deviceDetailsForm:installationDetails"
-                                action="#{installationManager.uninstallDevice(deviceDetailsAttributesController.device)}"
-                                disabled="#{!installationManager.isDeviceInstalled(deviceDetailsAttributesController.device)}" />
-                            <p:dataTable 
-                                rendered="#{installationManager.isDeviceInstalled(deviceDetailsAttributesController.device)}"
-                                value="#{installationManager.getInstalledSlotInformation(deviceDetailsAttributesController.device)}"
-                                var="installationPath" style="margin-top: 1em;">
-                                <p:column headerText="Path">
-                                    <h:outputText value="#{installationPath}" />
-                                </p:column>
-                            </p:dataTable>
-                        </h:panelGroup>
+                    <p:column headerText="Unit" style="text-align: center;">
+                        <h:outputText value="#{empty attribute.unit.name ? '-' : attribute.unit.name}" />
                     </p:column>
-                </p:row>
-            </p:panelGrid>
+
+                    <p:column headerText="Value" >
+                        <h:outputText value="#{attribute.value}" />
+                    </p:column>
+
+                    <p:column headerText="Actions" width="70">
+                        <p:commandLink ajax="true" rendered="#{deviceDetailsAttributesController.canEdit(attribute.entity)}" title="Edit">
+                            <h:outputText styleClass="ui-icon ui-icon-pencil" style="display: inline-block !important; margin-right: 6px;" />
+                            <f:setPropertyActionListener value="#{attribute}" target="#{deviceDetailsAttributesController.selectedAttributeToModify}" />
+                        </p:commandLink>
+                        <p:commandLink ajax="true" title="Delete" oncomplete="deleteAttribute.show()" 
+                                rendered="#{deviceDetailsAttributesController.canDelete(attribute.entity)}">
+                            <h:outputText styleClass="ui-icon ui-icon-trash" style="display: inline-block !important; margin-right: 6px;" />
+                            <f:setPropertyActionListener value="#{attribute}" target="#{deviceDetailsAttributesController.selectedAttribute}" />
+                        </p:commandLink>
+                        <p:commandLink ajax="true" rendered="#{attribute.hasFile}" title="Download">
+                            <h:outputText styleClass="ui-icon ui-icon-arrowthick-1-s" style="display: inline-block !important; margin-right: 6px;" />
+                            <f:setPropertyActionListener value="#{attribute}" target="#{deviceDetailsAttributesController.selectedAttribute}" />
+                            <p:fileDownload value="#{deviceDetailsAttributesController.downloadFile}" />
+                        </p:commandLink>
+                        <h:outputLink rendered="#{attribute.hasURL}" title="Go to URL" target="_blank" value="#{attribute.value}">
+                            <h:outputText styleClass="ui-icon ui-icon-extlink" style="display: inline-block !important; margin-right: 6px;" />
+                        </h:outputLink>
+                    </p:column>
+                </p:dataTable>
+            </h:panelGroup>
+            <h:panelGroup id="installationDetails" style="margin-top: 30px;" layout="block">
+                <p:commandButton title="Install" label="Install" value="Install" 
+                    type="button" update=":installDeviceForm:installationDetails" onclick="installDevice.show()" 
+                    disabled="#{installationManager.isDeviceInstalled(deviceDetailsAttributesController.device)}" />
+                <p:commandButton title="Uninstall" label="Uninstall" value="Uninstall" 
+                    update=":deviceDetailsForm:installationDetails" 
+                    action="#{installationManager.uninstallDevice(deviceDetailsAttributesController.device)}" 
+                    disabled="#{!installationManager.isDeviceInstalled(deviceDetailsAttributesController.device)}" />
+                <p:dataTable 
+                    rendered="#{installationManager.isDeviceInstalled(deviceDetailsAttributesController.device)}" 
+                    value="#{installationManager.getInstalledSlotInformation(deviceDetailsAttributesController.device)}" 
+                    var="installationPath" style="margin-top: 1em;">
+                    <p:column headerText="Path">
+                        <h:outputText value="#{installationPath}" />
+                    </p:column>
+                </p:dataTable>
+            </h:panelGroup>
         </h:form>
 
         <ui:include src="../audit/audit-log-table.xhtml">
@@ -204,6 +149,15 @@
             <ui:param name="componentToUpdate" value=":deviceDetailsForm:devAttribs" />
         </ui:include>
 
+        <ui:include src="../data-definitions/add-or-modify-dialogs/builtin-property-value.xhtml" >
+            <ui:param name="formId" value="modifyBuiltInPropertyForm" />
+            <ui:param name="dialogTitle" value="Modify device instance property" />
+            <ui:param name="widgetName" value="modifyBuiltInProperty" />
+            <ui:param name="controller" value="#{deviceDetailsAttributesController}" />
+            <ui:param name="submitHandler" value="modifyBuiltInProperty" />
+            <ui:param name="componentToUpdate" value=":deviceDetailsForm:devAttribs :deviceDetailsForm:basic-info" />
+        </ui:include>
+
         <ui:include src="../data-definitions/add-or-modify-dialogs/tag.xhtml" >
             <ui:param name="formId" value="addDeviceTagForm" />
             <ui:param name="dialogTitle" value="Add new device tag" />
@@ -230,7 +184,7 @@
             <ui:param name="submitHandler" value="modifyArtifact" />
             <ui:param name="componentToUpdate" value=":deviceDetailsForm:devAttribs" />
         </ui:include>
-        
+
         <ui:include src="install-device.xhtml">
             <ui:param name="formId" value="installDeviceForm" />
             <ui:param name="dialogTitle" value="Select installation slot" />

@@ -36,6 +36,7 @@ import com.google.common.base.Preconditions;
 
 /**
  * @author Andraz Pozar <andraz.pozar@cosylab.com>
+ * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  *
  */
 public class EntityAttributeView {
@@ -46,6 +47,7 @@ public class EntityAttributeView {
     private String kind;
     private boolean hasFile;
     private boolean hasURL;
+    private boolean isBuiltIn;
     private Object entity;
 
     public EntityAttributeView(Object entity, String kind) {
@@ -61,7 +63,9 @@ public class EntityAttributeView {
     }
 
     private void setParameters() {
-        if (entity instanceof ComptypePropertyValue) {
+        if (entity instanceof BuiltInProperty) {
+            setBuiltInProperty();
+        } else  if (entity instanceof ComptypePropertyValue) {
             setComponentTypeParameters();
         } else if (entity instanceof PropertyValue) {
             setPropValueParameters();
@@ -114,6 +118,14 @@ public class EntityAttributeView {
         value = new StrValue("-");
     }
 
+    private void setBuiltInProperty() {
+        name = ((BuiltInProperty) entity).getName();
+        value = ((BuiltInProperty) entity).getValue();
+        type = ((BuiltInProperty) entity).getDataType();
+        kind = "Built-in property";
+        isBuiltIn = true;
+    }
+
     public String getName() {
         return name;
     }
@@ -144,5 +156,9 @@ public class EntityAttributeView {
 
     public boolean getHasURL() {
         return hasURL;
+    }
+
+    public boolean isBuiltIn() {
+        return isBuiltIn;
     }
 }

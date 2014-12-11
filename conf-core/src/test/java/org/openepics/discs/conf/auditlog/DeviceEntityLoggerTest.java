@@ -45,7 +45,7 @@ public class DeviceEntityLoggerTest {
 
     @Test
     public void testSerializeEntity() {
-        final String RESULT = "{\"componentType\":\"Devices component\",\"devicePropertyList\":[{\"APERTURE\":\"20\"},{\"DETER\":\"10\"}],\"deviceArtifactList\":[{\"CAT Image\":\"/var/usr/images/CAT\"},{\"Manual\":\"www.deteriorator.com/user-manual\"}]}";
+        final String RESULT = "{\"status\":\"DEFINED\",\"componentType\":\"Devices component\",\"devicePropertyList\":[{\"APERTURE\":\"20\"},{\"DETER\":\"10\"}],\"deviceArtifactList\":[{\"CAT Image\":\"/var/usr/images/CAT\"},{\"Manual\":\"www.deteriorator.com/user-manual\"}]}";
 
         assertTrue(RESULT.equals(deviceEntityLogger.auditEntries(device, EntityTypeOperation.CREATE).get(0).getEntry()));
     }

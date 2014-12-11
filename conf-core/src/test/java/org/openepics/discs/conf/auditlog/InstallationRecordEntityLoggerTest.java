@@ -46,7 +46,7 @@ public class InstallationRecordEntityLoggerTest {
         installationRecord.getInstallationArtifactList().add(artifact2);
         device.getInstallationRecordList().add(installationRecord);
         slot.getInstallationRecordList().add(installationRecord);
-        
+
     }
 
     @Test
@@ -56,20 +56,20 @@ public class InstallationRecordEntityLoggerTest {
 
     @Test
     public void testSerializeEntityInstallationDate() {
-        final String DEVICE_LOG_ENTRY = "{\"installation\":[{\"installationDate\":\"Sat Jan 03 12:12:03 CET 1970\"},{\"installationSlot\":\"slot1\"}]}";
+        final String DEVICE_LOG_ENTRY = "{\"status\":\"DEFINED\",\"installation\":[{\"installationDate\":\"Sat Jan 03 12:12:03 CET 1970\"},{\"installationSlot\":\"slot1\"}]}";
         assertEquals(DEVICE_LOG_ENTRY, installationRecordEntityLogger.auditEntries(installationRecord, EntityTypeOperation.CREATE).get(0).getEntry());
-        
+
         final String SLOT_LOG_ENTRY = "{\"hostingSlot\":true,\"installation\":[{\"installationDate\":\"Sat Jan 03 12:12:03 CET 1970\"},{\"inventoryID\":\"device1\"}]}";
         assertEquals(SLOT_LOG_ENTRY, installationRecordEntityLogger.auditEntries(installationRecord, EntityTypeOperation.CREATE).get(1).getEntry());
-        
+
     }
-    
-    @Test 
+
+    @Test
     public void testSerializeEntityUninstallDate() {
         installationRecord.setUninstallDate(new Date(213123213));
-        final String DEVICE_LOG_ENTRY = "{\"installation\":[{\"installationDate\":\"Sat Jan 03 12:12:03 CET 1970\"},{\"installationSlot\":\"slot1\"},{\"uninstallationDate\":\"Sat Jan 03 12:12:03 CET 1970\"}]}";
+        final String DEVICE_LOG_ENTRY = "{\"status\":\"DEFINED\",\"installation\":[{\"installationDate\":\"Sat Jan 03 12:12:03 CET 1970\"},{\"installationSlot\":\"slot1\"},{\"uninstallationDate\":\"Sat Jan 03 12:12:03 CET 1970\"}]}";
         assertEquals(DEVICE_LOG_ENTRY, installationRecordEntityLogger.auditEntries(installationRecord, EntityTypeOperation.CREATE).get(0).getEntry());
-        
+
         final String SLOT_LOG_ENTRY = "{\"hostingSlot\":true,\"installation\":[{\"installationDate\":\"Sat Jan 03 12:12:03 CET 1970\"},{\"inventoryID\":\"device1\"},{\"uninstallationDate\":\"Sat Jan 03 12:12:03 CET 1970\"}]}";
         assertEquals(SLOT_LOG_ENTRY, installationRecordEntityLogger.auditEntries(installationRecord, EntityTypeOperation.CREATE).get(1).getEntry());
     }

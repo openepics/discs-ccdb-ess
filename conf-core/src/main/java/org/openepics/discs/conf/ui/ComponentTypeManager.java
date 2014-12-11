@@ -89,12 +89,6 @@ public class ComponentTypeManager implements Serializable {
         RequestContext.getCurrentInstance().update("addDeviceTypeForm:addDeviceType");
     }
 
-    public void prepareModifyPopup() {
-        name = selectedDeviceType.getName();
-        description = selectedDeviceType.getDescription();
-        RequestContext.getCurrentInstance().update("modifyDeviceTypeForm:modifyDeviceType");
-    }
-
     private void resetFields() {
         name = null;
         description = null;
@@ -106,18 +100,6 @@ public class ComponentTypeManager implements Serializable {
         try {
             comptypeEJB.add(componentTypeToAdd);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "New device type has been created");
-        } finally {
-            init();
-        }
-    }
-
-    public void onModify() {
-        selectedDeviceType.setName(name);
-        selectedDeviceType.setDescription(description);
-
-        try {
-            comptypeEJB.save(selectedDeviceType);
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Device type was modified");
         } finally {
             init();
         }
@@ -172,14 +154,6 @@ public class ComponentTypeManager implements Serializable {
     }
     public void setSelectedDeviceType(ComponentType selectedDeviceType) {
         this.selectedDeviceType = selectedDeviceType;
-    }
-
-    public ComponentType getSelectedDeviceTypeToModify() {
-        return selectedDeviceType;
-    }
-    public void setSelectedDeviceTypeToModify(ComponentType selectedDeviceType) {
-        this.selectedDeviceType = selectedDeviceType;
-        prepareModifyPopup();
     }
 
     public ComponentType getSelectedDeviceTypeForLog() {
