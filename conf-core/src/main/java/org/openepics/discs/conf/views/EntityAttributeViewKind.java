@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.util;
+package org.openepics.discs.conf.views;
 
 /**
  * @author Andraz Pozar <andraz.pozar@cosylab.com>
@@ -28,11 +28,15 @@ public enum EntityAttributeViewKind {
     INSTALL_SLOT("Installation slot"),
     CONTAINER_SLOT("Container"),
     DEVICE("Device"),
-    DEVICE_TYPE("Device type"),
-    PROPERTY("property"),
-    ARTIFACT("artifact"),
-    TAG("tag");
-       
+    DEVICE_TYPE("Device type"), 
+    BUILT_IN("Built-in"),
+    PROPERTY_SUFFIX("property"),
+    ARTIFACT_SUFFIX("artifact"),
+    ARTIFACT("Artifact"),
+    PROPERTY("Property"),
+    TAG_SUFFIX("tag"),
+    TAG("Tag"),
+    UNKNOWN("Unknown type");       
     
     private final String text;
 

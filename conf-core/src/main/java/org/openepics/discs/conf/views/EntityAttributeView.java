@@ -82,14 +82,14 @@ public class EntityAttributeView {
         setPropValueParameters();
         final ComptypePropertyValue comptypePropertyValue = (ComptypePropertyValue) entity;
         if (!comptypePropertyValue.isPropertyDefinition()) {
-            kind = "Device type property";
+            kind = EntityAttributeViewKind.DEVICE_TYPE.toString() + " " + EntityAttributeViewKind.PROPERTY_SUFFIX.toString();
         } else {
             if (comptypePropertyValue.isDefinitionTargetSlot()) {
-                kind = "Installation slot property";
+                kind = EntityAttributeViewKind.INSTALL_SLOT.toString() + " " + EntityAttributeViewKind.PROPERTY_SUFFIX.toString();
             } else if (comptypePropertyValue.isDefinitionTargetDevice()) {
-                kind = "Device instance property";
+                kind = EntityAttributeViewKind.DEVICE.toString() + " " + EntityAttributeViewKind.PROPERTY_SUFFIX.toString();
             } else {
-                kind = "Unknown type property";
+                kind = EntityAttributeViewKind.UNKNOWN.toString() + " " + EntityAttributeViewKind.PROPERTY_SUFFIX.toString();
             }
         }
     }
@@ -100,7 +100,7 @@ public class EntityAttributeView {
         type = devicePropertyValue.getProperty().getDataType();
         unit = devicePropertyValue.getProperty().getUnit();
         value = devicePropertyValue.getPropValue();
-        kind = "Property";
+        kind =  EntityAttributeViewKind.PROPERTY.toString();
     }
 
     private void setArtifactParameters() {
@@ -109,12 +109,12 @@ public class EntityAttributeView {
         hasFile = artifact.isInternal();
         hasURL = !artifact.isInternal();
         value = hasURL ? new StrValue(artifact.getUri()) : null;
-        kind = "Artifact";
+        kind =  EntityAttributeViewKind.ARTIFACT.toString();
     }
 
     private void setTagParameters() {
         name = ((Tag) entity).getName();
-        kind = "Tag";
+        kind =  EntityAttributeViewKind.TAG.toString();
         value = new StrValue("-");
     }
 
@@ -122,7 +122,7 @@ public class EntityAttributeView {
         name = ((BuiltInProperty) entity).getName();
         value = ((BuiltInProperty) entity).getValue();
         type = ((BuiltInProperty) entity).getDataType();
-        kind = "Built-in property";
+        kind = EntityAttributeViewKind.BUILT_IN.toString() + " " + EntityAttributeViewKind.PROPERTY_SUFFIX.toString();
         isBuiltIn = true;
     }
 

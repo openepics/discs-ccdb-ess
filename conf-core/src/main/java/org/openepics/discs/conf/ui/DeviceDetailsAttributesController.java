@@ -40,10 +40,10 @@ import org.openepics.discs.conf.ent.values.EnumValue;
 import org.openepics.discs.conf.ent.values.StrValue;
 import org.openepics.discs.conf.ui.common.AbstractAttributesController;
 import org.openepics.discs.conf.ui.common.UIException;
-import org.openepics.discs.conf.util.EntityAttributeViewKind;
 import org.openepics.discs.conf.util.UnhandledCaseException;
 import org.openepics.discs.conf.views.BuiltInProperty;
 import org.openepics.discs.conf.views.EntityAttributeView;
+import org.openepics.discs.conf.views.EntityAttributeViewKind;
 import org.openepics.seds.api.datatypes.SedsEnum;
 import org.openepics.seds.core.Seds;
 import org.primefaces.context.RequestContext;
@@ -141,27 +141,27 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
         attributes.add(new EntityAttributeView(new BuiltInProperty(BIP_MANUFACTURER_SERIAL_NO, device.getManufacturerSerialNumber(), strDataType)));
 
         for (ComptypePropertyValue parentProp : parentProperties) {
-            if (parentProp.getPropValue() != null) attributes.add(new EntityAttributeView(parentProp, EntityAttributeViewKind.DEVICE_TYPE.toString() + " " + EntityAttributeViewKind.PROPERTY.toString()));
+            if (parentProp.getPropValue() != null) attributes.add(new EntityAttributeView(parentProp, EntityAttributeViewKind.DEVICE_TYPE.toString() + " " + EntityAttributeViewKind.PROPERTY_SUFFIX.toString()));
         }
 
         for (ComptypeArtifact parentArtifact : parentArtifacts) {
-            attributes.add(new EntityAttributeView(parentArtifact, EntityAttributeViewKind.DEVICE_TYPE.toString() + " " + EntityAttributeViewKind.ARTIFACT.toString()));
+            attributes.add(new EntityAttributeView(parentArtifact, EntityAttributeViewKind.DEVICE_TYPE.toString() + " " + EntityAttributeViewKind.ARTIFACT_SUFFIX.toString()));
         }
 
         for (Tag parentTag : parentTags) {
-            attributes.add(new EntityAttributeView(parentTag, EntityAttributeViewKind.DEVICE_TYPE.toString() + " " + EntityAttributeViewKind.TAG.toString())); 
+            attributes.add(new EntityAttributeView(parentTag, EntityAttributeViewKind.DEVICE_TYPE.toString() + " " + EntityAttributeViewKind.TAG_SUFFIX.toString())); 
         }
 
         for (DevicePropertyValue propVal : device.getDevicePropertyList()) {
-            attributes.add(new EntityAttributeView(propVal, EntityAttributeViewKind.DEVICE.toString() + " " + EntityAttributeViewKind.PROPERTY.toString()));
+            attributes.add(new EntityAttributeView(propVal, EntityAttributeViewKind.DEVICE.toString() + " " + EntityAttributeViewKind.PROPERTY_SUFFIX.toString()));
         }
 
         for (DeviceArtifact artf : device.getDeviceArtifactList()) {
-            attributes.add(new EntityAttributeView(artf, EntityAttributeViewKind.DEVICE.toString() + " " + EntityAttributeViewKind.ARTIFACT.toString()));
+            attributes.add(new EntityAttributeView(artf, EntityAttributeViewKind.DEVICE.toString() + " " + EntityAttributeViewKind.ARTIFACT_SUFFIX.toString()));
         }
 
         for (Tag tag : device.getTags()) {
-            attributes.add(new EntityAttributeView(tag, EntityAttributeViewKind.DEVICE.toString() + " " + EntityAttributeViewKind.TAG.toString()));
+            attributes.add(new EntityAttributeView(tag, EntityAttributeViewKind.DEVICE.toString() + " " + EntityAttributeViewKind.TAG_SUFFIX.toString()));
         }
     }
     

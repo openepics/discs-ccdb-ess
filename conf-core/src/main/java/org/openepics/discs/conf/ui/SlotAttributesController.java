@@ -48,10 +48,10 @@ import org.openepics.discs.conf.ent.values.DblValue;
 import org.openepics.discs.conf.ent.values.StrValue;
 import org.openepics.discs.conf.ui.common.AbstractAttributesController;
 import org.openepics.discs.conf.ui.common.UIException;
-import org.openepics.discs.conf.util.EntityAttributeViewKind;
 import org.openepics.discs.conf.util.UnhandledCaseException;
 import org.openepics.discs.conf.views.BuiltInProperty;
 import org.openepics.discs.conf.views.EntityAttributeView;
+import org.openepics.discs.conf.views.EntityAttributeViewKind;
 import org.primefaces.context.RequestContext;
 
 import com.google.common.base.Predicate;
@@ -133,27 +133,27 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
         }
 
         for (ComptypePropertyValue parentProp : parentProperties) {
-            if (parentProp.getPropValue() != null) attributes.add(new EntityAttributeView(parentProp, EntityAttributeViewKind.DEVICE_TYPE.toString() + " " + EntityAttributeViewKind.PROPERTY.toString()));
+            if (parentProp.getPropValue() != null) attributes.add(new EntityAttributeView(parentProp, EntityAttributeViewKind.DEVICE_TYPE.toString() + " " + EntityAttributeViewKind.PROPERTY_SUFFIX.toString()));
         }
 
         for (ComptypeArtifact parentArtifact : parentArtifacts) {
-            attributes.add(new EntityAttributeView(parentArtifact, EntityAttributeViewKind.DEVICE_TYPE.toString() + " " + EntityAttributeViewKind.ARTIFACT.toString()));
+            attributes.add(new EntityAttributeView(parentArtifact, EntityAttributeViewKind.DEVICE_TYPE.toString() + " " + EntityAttributeViewKind.ARTIFACT_SUFFIX.toString()));
         }
 
         for (Tag parentTag : parentTags) {
-            attributes.add(new EntityAttributeView(parentTag, EntityAttributeViewKind.DEVICE_TYPE.toString() + " " + EntityAttributeViewKind.TAG.toString())); 
+            attributes.add(new EntityAttributeView(parentTag, EntityAttributeViewKind.DEVICE_TYPE.toString() + " " + EntityAttributeViewKind.TAG_SUFFIX.toString())); 
         }
 
         for (SlotPropertyValue prop : slot.getSlotPropertyList()) {
-            attributes.add(new EntityAttributeView(prop, EntityAttributeViewKind.INSTALL_SLOT.toString() + " " + EntityAttributeViewKind.PROPERTY.toString()));
+            attributes.add(new EntityAttributeView(prop, EntityAttributeViewKind.INSTALL_SLOT.toString() + " " + EntityAttributeViewKind.PROPERTY_SUFFIX.toString()));
         }
 
         for (SlotArtifact art : slot.getSlotArtifactList()) {
-            attributes.add(new EntityAttributeView(art, EntityAttributeViewKind.INSTALL_SLOT.toString() + " " + EntityAttributeViewKind.ARTIFACT.toString()));
+            attributes.add(new EntityAttributeView(art, EntityAttributeViewKind.INSTALL_SLOT.toString() + " " + EntityAttributeViewKind.ARTIFACT_SUFFIX.toString()));
         }
 
         for (Tag tag : slot.getTags()) {
-            attributes.add(new EntityAttributeView(tag, EntityAttributeViewKind.INSTALL_SLOT.toString() + " " + EntityAttributeViewKind.TAG.toString()));
+            attributes.add(new EntityAttributeView(tag, EntityAttributeViewKind.INSTALL_SLOT.toString() + " " + EntityAttributeViewKind.TAG_SUFFIX.toString()));
         }
     }
 
