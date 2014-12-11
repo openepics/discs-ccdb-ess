@@ -15,6 +15,7 @@
 package org.openepics.discs.conf.ui;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -33,6 +34,7 @@ import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ent.Tag;
 import org.openepics.discs.conf.ui.common.AbstractAttributesController;
 import org.openepics.discs.conf.ui.common.UIException;
+import org.openepics.discs.conf.util.EntityAttributeViewKind;
 import org.openepics.discs.conf.views.EntityAttributeView;
 
 /**
@@ -60,8 +62,8 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
 
             parentProperties = device.getComponentType().getComptypePropertyList();
             parentArtifacts = device.getComponentType().getComptypeArtifactList();
-            parentTags = device.getComponentType().getTags();
-
+            populateParentTags();
+            
             populateAttributesList();
         } catch(Exception e) {
             throw new UIException("Device details display initialization fialed: " + e.getMessage(), e);
@@ -106,29 +108,37 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
         device = deviceEJB.findById(device.getId());
 
         for (ComptypePropertyValue parentProp : parentProperties) {
-            if (parentProp.getPropValue() != null) attributes.add(new EntityAttributeView(parentProp));
+            if (parentProp.getPropValue() != null) attributes.add(new EntityAttributeView(parentProp, EntityAttributeViewKind.DEVICE_TYPE.toString() + " " + EntityAttributeViewKind.PROPERTY.toString()));
         }
         
         for (ComptypeArtifact parentArtifact : parentArtifacts) {
-            attributes.add(new EntityAttributeView(parentArtifact));
+            attributes.add(new EntityAttributeView(parentArtifact, EntityAttributeViewKind.DEVICE_TYPE.toString() + " " + EntityAttributeViewKind.ARTIFACT.toString()));
         }
         
         for (Tag parentTag : parentTags) {
-            attributes.add(new EntityAttributeView(parentTag)); 
+            attributes.add(new EntityAttributeView(parentTag, EntityAttributeViewKind.DEVICE_TYPE.toString() + " " + EntityAttributeViewKind.TAG.toString())); 
         }
 
         for (DevicePropertyValue propVal : device.getDevicePropertyList()) {
-            attributes.add(new EntityAttributeView(propVal));
+            attributes.add(new EntityAttributeView(propVal, EntityAttributeViewKind.DEVICE.toString() + " " + EntityAttributeViewKind.PROPERTY.toString()));
         }
 
-        // TODO [DONE]check whether to show inherited artifacts and prevent their deletion
         for (DeviceArtifact artf : device.getDeviceArtifactList()) {
-            attributes.add(new EntityAttributeView(artf));
+            attributes.add(new EntityAttributeView(artf, EntityAttributeViewKind.DEVICE.toString() + " " + EntityAttributeViewKind.ARTIFACT.toString()));
         }
 
-        // TODO solve and add inherited tags.
         for (Tag tag : device.getTags()) {
-            attributes.add(new EntityAttributeView(tag));
+            attributes.add(new EntityAttributeView(tag, EntityAttributeViewKind.DEVICE.toString() + " " + EntityAttributeViewKind.TAG.toString()));
+        }
+    }
+    
+    @Override
+    protected void populateParentTags() {
+        parentTags = new HashSet<Tag>();
+        for (Tag parentTag : device.getComponentType().getTags()) {
+            if (!device.getTags().contains(parentTag)) {
+                parentTags.add(parentTag);
+            }
         }
     }
 

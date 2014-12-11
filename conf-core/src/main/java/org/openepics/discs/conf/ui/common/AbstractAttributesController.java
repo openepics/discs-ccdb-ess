@@ -47,11 +47,14 @@ import org.apache.commons.io.FilenameUtils;
 import org.openepics.discs.conf.ejb.DAO;
 import org.openepics.discs.conf.ejb.TagEJB;
 import org.openepics.discs.conf.ent.Artifact;
+import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypeArtifact;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.ConfigurationEntity;
+import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyValue;
+import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.ent.Tag;
 import org.openepics.discs.conf.ent.values.Value;
 import org.openepics.discs.conf.util.BlobStore;
@@ -146,7 +149,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
         propertyValueInstance.setProperty(property);
         propertyValueInstance.setPropValue(propertyValue);
         setPropertyValueParent(propertyValueInstance);
-
+        
         if (propertyValueInstance instanceof ComptypePropertyValue) {
             if (isPropertyDefinition) {
                 final ComptypePropertyValue ctPropValueInstance = ((ComptypePropertyValue) propertyValueInstance);
@@ -274,7 +277,9 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
             propertyValue = selectedPropertyValue.getPropValue();
 
             if (selectedAttribute.getEntity() instanceof PropertyValue) {
-                propertyNameChangeDisabled = isPropertyValueInherited((PropertyValue)selectedAttribute.getEntity());
+                propertyNameChangeDisabled = selectedAttribute.getEntity() instanceof DevicePropertyValue
+                        || selectedAttribute.getEntity() instanceof SlotPropertyValue
+                        || isPropertyValueInherited((PropertyValue)selectedAttribute.getEntity()) ;
             }
 
             propertyValueUIElement = Conversion.getUIElementFromProperty(property);
@@ -414,6 +419,8 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
     protected abstract void filterProperties();
 
     protected abstract void populateAttributesList();
+    
+    protected abstract void populateParentTags();
 
     private void internalPopulateAttributesList() {
         fillTagsAutocomplete();

@@ -39,6 +39,8 @@ import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.DeviceArtifact;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
+import org.openepics.discs.conf.ent.EntityType;
+import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.InstallationRecord;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotArtifact;
@@ -46,6 +48,7 @@ import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.ent.Tag;
 import org.openepics.discs.conf.ui.common.UIException;
+import org.openepics.discs.conf.util.EntityAttributeViewKind;
 import org.openepics.discs.conf.views.EntityAttributeView;
 import org.openepics.discs.conf.views.SlotRelationshipView;
 import org.openepics.discs.conf.views.SlotView;
@@ -92,49 +95,49 @@ public class HierarchiesController implements Serializable {
         final List<EntityAttributeView> attributesList = new ArrayList<>();
 
         if (selectedNode != null) {
-            final String slotType = selectedSlot.isHostingSlot() ? "Installation slot" : "Container";
-
+            final String slotType = selectedSlot.isHostingSlot() ? EntityAttributeViewKind.INSTALL_SLOT.toString() : EntityAttributeViewKind.CONTAINER_SLOT.toString();
+            
             for (ComptypePropertyValue value : selectedSlot.getComponentType().getComptypePropertyList()) {
                 if (!value.isPropertyDefinition()) {
-                    attributesList.add(new EntityAttributeView(value, "Type property"));
+                    attributesList.add(new EntityAttributeView(value, EntityAttributeViewKind.DEVICE_TYPE.toString() + " " + EntityAttributeViewKind.PROPERTY.toString()));
                 }
             }
 
             for (SlotPropertyValue value : selectedSlot.getSlotPropertyList()) {
-                attributesList.add(new EntityAttributeView(value, slotType + " property"));
+                attributesList.add(new EntityAttributeView(value, slotType + " " + EntityAttributeViewKind.PROPERTY.toString()));
             }
-
+            
             if (installationRecord != null) {
                 for (DevicePropertyValue value : installationRecord.getDevice().getDevicePropertyList()) {
-                    attributesList.add(new EntityAttributeView(value, "Device property"));
+                    attributesList.add(new EntityAttributeView(value, EntityAttributeViewKind.DEVICE + " "  + EntityAttributeViewKind.PROPERTY.toString()));
                 }
             }
 
             for (ComptypeArtifact artifact : selectedSlot.getComponentType().getComptypeArtifactList()) {
-                attributesList.add(new EntityAttributeView(artifact, "Type artifact"));
+                attributesList.add(new EntityAttributeView(artifact, EntityAttributeViewKind.DEVICE_TYPE.toString()  + " " +  EntityAttributeViewKind.ARTIFACT.toString()));
             }
 
             for (SlotArtifact artifact : selectedSlot.getSlotArtifactList()) {
-                attributesList.add(new EntityAttributeView(artifact, slotType + " artifact"));
+                attributesList.add(new EntityAttributeView(artifact, slotType + " " + EntityAttributeViewKind.ARTIFACT.toString()));
             }
 
             if (installationRecord != null) {
                 for (DeviceArtifact artifact : installationRecord.getDevice().getDeviceArtifactList()) {
-                    attributesList.add(new EntityAttributeView(artifact, "Device artifact"));
+                    attributesList.add(new EntityAttributeView(artifact, EntityAttributeViewKind.DEVICE.toString()  + " " +  EntityAttributeViewKind.ARTIFACT.toString()));
                 }
             }
 
             for (Tag tag : selectedSlot.getComponentType().getTags()) {
-                attributesList.add(new EntityAttributeView(tag, "Type tag"));
+                attributesList.add(new EntityAttributeView(tag, EntityAttributeViewKind.DEVICE_TYPE.toString()  + " " +  EntityAttributeViewKind.TAG.toString()));
             }
 
             for (Tag tag : selectedSlot.getTags()) {
-                attributesList.add(new EntityAttributeView(tag, slotType + " tag"));
+                attributesList.add(new EntityAttributeView(tag, slotType + " " +  EntityAttributeViewKind.TAG.toString()));
             }
 
             if (installationRecord != null) {
                 for (Tag tag : installationRecord.getDevice().getTags()) {
-                    attributesList.add(new EntityAttributeView(tag, "Device tag"));
+                    attributesList.add(new EntityAttributeView(tag, EntityAttributeViewKind.DEVICE.toString()  + " " +  EntityAttributeViewKind.TAG.toString()));
                 }
             }
         }

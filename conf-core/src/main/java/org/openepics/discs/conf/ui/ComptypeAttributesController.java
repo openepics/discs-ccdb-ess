@@ -240,6 +240,11 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
         isPropertyDefinition = false;
         super.prepareForPropertyValueAdd();
     }
+    
+    @Override
+    protected void populateParentTags() {
+        // Nothing to do since component types don't inherit anything
+    }
 
     /**
      * Prepares the data for slot property (definition) creation

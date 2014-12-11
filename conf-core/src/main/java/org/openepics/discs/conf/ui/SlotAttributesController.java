@@ -20,6 +20,7 @@
 package org.openepics.discs.conf.ui;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -42,6 +43,7 @@ import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.ent.Tag;
 import org.openepics.discs.conf.ui.common.AbstractAttributesController;
 import org.openepics.discs.conf.ui.common.UIException;
+import org.openepics.discs.conf.util.EntityAttributeViewKind;
 import org.openepics.discs.conf.views.EntityAttributeView;
 
 import com.google.common.base.Predicate;
@@ -74,7 +76,7 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
 
             parentProperties = slot.getComponentType().getComptypePropertyList();
             parentArtifacts = slot.getComponentType().getComptypeArtifactList();
-            parentTags = slot.getComponentType().getTags();
+            populateParentTags();
 
             populateAttributesList();
             filterProperties();
@@ -106,27 +108,27 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
         slot = slotEJB.findById(slot.getId());
 
         for (ComptypePropertyValue parentProp : parentProperties) {
-            if (parentProp.getPropValue() != null) attributes.add(new EntityAttributeView(parentProp));
+            if (parentProp.getPropValue() != null) attributes.add(new EntityAttributeView(parentProp, EntityAttributeViewKind.DEVICE_TYPE.toString() + " " + EntityAttributeViewKind.PROPERTY.toString()));
         }
         
         for (ComptypeArtifact parentArtifact : parentArtifacts) {
-            attributes.add(new EntityAttributeView(parentArtifact));
+            attributes.add(new EntityAttributeView(parentArtifact, EntityAttributeViewKind.DEVICE_TYPE.toString() + " " + EntityAttributeViewKind.ARTIFACT.toString()));
         }
         
         for (Tag parentTag : parentTags) {
-            attributes.add(new EntityAttributeView(parentTag)); 
+            attributes.add(new EntityAttributeView(parentTag, EntityAttributeViewKind.DEVICE_TYPE.toString() + " " + EntityAttributeViewKind.TAG.toString())); 
         }
 
         for (SlotPropertyValue prop : slot.getSlotPropertyList()) {
-            attributes.add(new EntityAttributeView(prop));
+            attributes.add(new EntityAttributeView(prop, EntityAttributeViewKind.INSTALL_SLOT.toString() + " " + EntityAttributeViewKind.PROPERTY.toString()));
         }
 
         for (SlotArtifact art : slot.getSlotArtifactList()) {
-            attributes.add(new EntityAttributeView(art));
+            attributes.add(new EntityAttributeView(art, EntityAttributeViewKind.INSTALL_SLOT.toString() + " " + EntityAttributeViewKind.ARTIFACT.toString()));
         }
 
         for (Tag tag : slot.getTags()) {
-            attributes.add(new EntityAttributeView(tag));
+            attributes.add(new EntityAttributeView(tag, EntityAttributeViewKind.INSTALL_SLOT.toString() + " " + EntityAttributeViewKind.TAG.toString()));
         }
     }
 
@@ -191,5 +193,15 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
     public void prepareForPropertyValueAdd() {
         isPropertyDefinition = false;
         super.prepareForPropertyValueAdd();
+    }
+    
+    @Override
+    protected void populateParentTags() {
+        parentTags = new HashSet<Tag>();
+        for (Tag parentTag : slot.getComponentType().getTags()) {
+            if (!slot.getTags().contains(parentTag)) {
+                parentTags.add(parentTag);
+            }
+        }
     }
 }
