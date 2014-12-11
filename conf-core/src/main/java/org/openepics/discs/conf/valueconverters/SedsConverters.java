@@ -12,7 +12,7 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 import org.openepics.discs.conf.ent.values.Value;
-import org.openepics.discs.conf.util.PropertyDataType;
+import org.openepics.discs.conf.util.BuiltInDataType;
 
 /**
  * This class initializes a mapping between various Value classes and the implementation of the converter. The class is a
@@ -45,8 +45,8 @@ public class SedsConverters {
         }
 
         logger.log(Level.INFO, "Loaded " + convertersFound + " data type converters.");
-        if (convertersFound != PropertyDataType.values().length) {
-            logger.log(Level.SEVERE, "Converter data type implementation number mismatch. Expected: " + PropertyDataType.values().length
+        if (convertersFound != BuiltInDataType.values().length) {
+            logger.log(Level.SEVERE, "Converter data type implementation number mismatch. Expected: " + BuiltInDataType.values().length
                     + ", found: " + convertersFound);
         }
     }

@@ -9,29 +9,24 @@
             <p:growl showDetail="true" globalOnly="true" autoUpdate="true"/>
             <h:form id="deviceTypePropertiesManagerForm" enctype="multipart/form-data">
              
-                <h:panelGroup class="properties-parent-info" layout="block">
-                    <p:panelGrid columns="2" style="width: 100%;" columnClasses="alignTop, alignTop" styleClass="noBorders"> 
-                                                 
-                        <h:outputLabel value="Device type name:" />
-                        <h:outputText value="#{comptypeAttributesController.deviceType.name}" style="width: 100%;" />
+                <h:panelGroup id="basic-info" layout="block" style="margin-bottom: 1em;">
+                    <h2>
+                        <h:outputText value="Device type: " />
+                        <p:inputText value="#{comptypeAttributesController.entityName}"  
+                                size="#{comptypeAttributesController.nameElementSize}"
+                                style="font-size: 1.3em; margin-left: 1em; margin-right: 1em;">
+                            <p:ajax event="keyup" update="saveButton"/>
+                        </p:inputText>
+                        <p:commandButton id="saveButton" value="Save" type="button" icon="ui-icon-disk" 
+                                disabled="#{comptypeAttributesController.entityName == comptypeAttributesController.deviceType.name}">
+                            <f:ajax event="click" listener="#{comptypeAttributesController.saveNewName()}" />
+                        </p:commandButton>
+                    </h2>
                                                                                
-                        <h:outputLabel value="Description:" />
-                        <p:inputTextarea value="#{comptypeAttributesController.deviceType.description}"  rows="5" cols="51" disabled="true" style="width: 100%;"/>
-                    </p:panelGrid>
-                         
-                    <br/>
-                    <br/>
-                     
-                    <p:commandButton value="History" icon="ui-icon-clock" style="float: right; margin: 10px 10px " 
-                                update=":deviceTypeLogForm" oncomplete="deviceTypeLog.show()" >
-                        <f:ajax event="click" listener="#{auditManager.selectEntityForLog(comptypeAttributesController.deviceType, 'COMPONENT_TYPE')}" />
-                    </p:commandButton>
-                    <p:commandButton value="Back" style="float: right; margin: 10px 0px 10px 10px" ajax="false" >
-                        <f:ajax event="click" listener="#{comptypeAttributesController.deviceTypeRedirect()}" />
-                    </p:commandButton>
+                    <h:outputText value="#{comptypeAttributesController.deviceType.description}" />
                 </h:panelGroup>
                        
-                <h:panelGroup class="property-values" layout="block">
+                <h:panelGroup layout="block">
                     <p:commandButton id="addButton" value="Add" type="button" icon="ui-icon-plus" />
                     <p:menu overlay="true" trigger="addButton" my="left top" at="left bottom">
                         <p:menuitem value="Device Type Property" oncomplete="addPropertyValue.show()" 
@@ -49,8 +44,13 @@
                             actionListener="#{comptypeAttributesController.prepareForArtifactAdd}" 
                             update=":addArtifactForm:addArtifact" />
                     </p:menu>
+                    <p:commandButton value="History" icon="ui-icon-clock" update=":deviceTypeLogForm" 
+                            style="margin-left: 1ex;" oncomplete="deviceTypeLog.show()" >
+                        <f:ajax event="click" listener="#{auditManager.selectEntityForLog(comptypeAttributesController.deviceType, 'COMPONENT_TYPE')}" />
+                    </p:commandButton>
+                    <p:commandButton value="Close" style="margin-left: 1ex;" action="device-types-manager.xhtml?faces-redirect=true" />
                     <p:dataTable id="attributesDataTable" var="attribute" value="#{comptypeAttributesController.attributes}" 
-                            style="table-layout: fixed; word-wrap: break-word;" rows="15" paginator="true" 
+                            style="table-layout: fixed; word-wrap: break-word; margin-top: 1em;" rows="15" paginator="true" 
                             paginatorPosition="bottom">
                         <p:column headerText="Name" sortBy="#{attribute.name}">
                             <h:outputText value="#{attribute.name}" />
@@ -74,7 +74,8 @@
                                 <h:outputText styleClass="ui-icon ui-icon-pencil" style="display: inline-block !important; margin-right: 6px;" />
                                 <f:setPropertyActionListener value="#{attribute}" target="#{comptypeAttributesController.selectedAttributeToModify}" />
                             </p:commandLink>
-                            <p:commandLink ajax="true" title="Delete" oncomplete="deleteAttribute.show()">
+                            <p:commandLink ajax="true" title="Delete" oncomplete="deleteAttribute.show()" 
+                                    rendered="#{!attribute.builtIn}">
                                 <h:outputText styleClass="ui-icon ui-icon-trash" style="display: inline-block !important; margin-right: 6px;" />
                                 <f:setPropertyActionListener value="#{attribute}" target="#{comptypeAttributesController.selectedAttribute}" />
                             </p:commandLink>
@@ -129,6 +130,15 @@
             <ui:param name="controller" value="#{comptypeAttributesController}" />
             <ui:param name="submitHandler" value="modifyPropertyValue" />
             <ui:param name="componentToUpdate" value=":deviceTypePropertiesManagerForm:attributesDataTable" />
+        </ui:include>
+
+        <ui:include src="../add-or-modify-dialogs/builtin-property-value.xhtml" >
+            <ui:param name="formId" value="modifyBuiltInPropertyForm" />
+            <ui:param name="dialogTitle" value="Modify device type property" />
+            <ui:param name="widgetName" value="modifyBuiltInProperty" />
+            <ui:param name="controller" value="#{comptypeAttributesController}" />
+            <ui:param name="submitHandler" value="modifyBuiltInProperty" />
+            <ui:param name="componentToUpdate" value=":deviceTypePropertiesManagerForm:attributesDataTable :deviceTypePropertiesManagerForm:basic-info" />
         </ui:include>
         
         <ui:include src="../add-or-modify-dialogs/property-definition.xhtml" >

@@ -29,7 +29,7 @@ import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyAssociation;
 import org.openepics.discs.conf.ent.Unit;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
-import org.openepics.discs.conf.util.PropertyDataType;
+import org.openepics.discs.conf.util.BuiltInDataType;
 import org.openepics.discs.conf.util.Utility;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
@@ -258,9 +258,9 @@ public class PropertyManager implements Serializable {
     }
 
     public void setIsUnitComboEnabled() {
-        final List<String> possibleTypes = Arrays.asList(new String[] {PropertyDataType.INT_NAME,
-                                                PropertyDataType.DBL_NAME, PropertyDataType.INT_VECTOR_NAME,
-                                                PropertyDataType.DBL_VECTOR_NAME, PropertyDataType.DBL_TABLE_NAME } );
+        final List<String> possibleTypes = Arrays.asList(new String[] {BuiltInDataType.INT_NAME,
+                                                BuiltInDataType.DBL_NAME, BuiltInDataType.INT_VECTOR_NAME,
+                                                BuiltInDataType.DBL_VECTOR_NAME, BuiltInDataType.DBL_TABLE_NAME } );
         unitComboEnabled = possibleTypes.contains(dataType.getName());
     }
 

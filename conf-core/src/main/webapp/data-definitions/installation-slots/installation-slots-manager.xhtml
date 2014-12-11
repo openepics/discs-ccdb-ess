@@ -35,14 +35,9 @@
                 
 
                 <p:column headerText="Actions" style="padding: 0px !important; width: 164; text-align: center">
-                    <p:commandLink ajax="true" title="Add properties" rendered="#{installationSlot.isHostingSlot}" 
-                            action="#{installationSlotsController.redirectToAttributes(installationSlot.id)}">
-                        <h:outputText styleClass="ui-icon ui-icon-contact" style="display: inline-block !important; margin-right: 6px;" />
-                    </p:commandLink>
                     <p:commandLink ajax="true" title="Edit" rendered="#{installationSlot.isHostingSlot}" 
-                            update=":slotModifyForm" oncomplete="modifySlotDialog.show()">
+                            action="#{installationSlotsController.redirectToAttributes(installationSlot.id)}">
                         <h:outputText styleClass="ui-icon ui-icon-pencil" style="display: inline-block !important; margin-right: 6px;" />
-                        <f:setPropertyActionListener value="#{installationSlot}" target="#{installationSlotsController.selectedSlotViewToModify}" />
                     </p:commandLink>
                     <p:commandLink ajax="true" title="Relationships" rendered="#{installationSlot.isHostingSlot}" 
                             oncomplete="slotRelationships.show()" update=":slotRelationshipsForm">
@@ -79,15 +74,8 @@
             <ui:param name="dialogTitle" value="Add installation slot" />
             <ui:param name="submitHandler" value="onSlotAdd" />
         </ui:include>
-        
-        <ui:include src="add-or-modify-installation-slot.xhtml">
-            <ui:param name="formId" value="slotModifyForm" />
-            <ui:param name="widgetName" value="modifySlotDialog" />
-            <ui:param name="dialogTitle" value="Modify installation slot" />
-            <ui:param name="submitHandler" value="onSlotModify" />
-        </ui:include>
                 
-         <ui:include src="../../audit/audit-log-table.xhtml">
+        <ui:include src="../../audit/audit-log-table.xhtml">
             <ui:param name="formId" value="installationSlotLogForm" />
             <ui:param name="dialogTitle" value="Installation Slot Log" />
             <ui:param name="widgetName" value="installationSlotLog" />

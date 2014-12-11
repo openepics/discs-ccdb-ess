@@ -98,23 +98,6 @@ public abstract class AbstractSlotsController implements Serializable{
     }
 
     /**
-     * Sets selected {@link SlotView} and prepares fields that are used in pop up for container modification
-     *
-     * @param selectedSlotView selected {@link SlotView} node
-     */
-    public void setSelectedSlotViewToModify(SlotView selectedSlotView) {
-        this.selectedSlotView = selectedSlotView;
-        prepareModifyPopup();
-    }
-    public SlotView getSelectedSlotViewToModify() { return selectedSlotView; }
-
-    protected void prepareModifyPopup() {
-        name = selectedSlotView.getName();
-        description = selectedSlotView.getDescription();
-        parentSlotView = selectedSlotView.getParentNode();
-    }
-
-    /**
      * Returns root node of a tree of containers
      *
      * @return root {@link TreeNode} of tree of containers
@@ -225,8 +208,6 @@ public abstract class AbstractSlotsController implements Serializable{
     }
 
     protected abstract void updateRootNode();
-
-    public abstract void onSlotModify();
 
     public abstract String redirectToAttributes(Long id);
 

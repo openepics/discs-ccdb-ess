@@ -550,14 +550,14 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                 if (propertyValue == null) {
                     slotEJB.deleteChild(slotPropertyToUpdate);
                 } else {
-                    slotPropertyToUpdate.setPropValue(Conversion.stringToValue(propertyValue, property));
+                    slotPropertyToUpdate.setPropValue(Conversion.stringToValue(propertyValue, property.getDataType()));
                     slotEJB.saveChild(slotPropertyToUpdate);
                 }
 
             } else if (propertyValue != null) {
                 final SlotPropertyValue slotPropertyToAdd = new SlotPropertyValue(false);
                 slotPropertyToAdd.setProperty(property);
-                slotPropertyToAdd.setPropValue(Conversion.stringToValue(propertyValue, property));
+                slotPropertyToAdd.setPropValue(Conversion.stringToValue(propertyValue, property.getDataType()));
                 slotPropertyToAdd.setSlot(slot);
                 slotEJB.addChild(slotPropertyToAdd);
             }
