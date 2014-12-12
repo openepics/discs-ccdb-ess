@@ -1,8 +1,8 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:p="http://primefaces.org/ui"
-	xmlns:fc="http://java.sun.com/jsf/composite/comps"
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:ui="http://java.sun.com/jsf/facelets" 
+	xmlns:f="http://java.sun.com/jsf/core" 
+	xmlns:p="http://primefaces.org/ui" 
+	xmlns:fc="http://java.sun.com/jsf/composite/comps" 
 	xmlns:h="http://java.sun.com/jsf/html">
 
 	<h:form id="menuform">
@@ -14,72 +14,42 @@
 			<p:menuitem value="Devices" icon="ui-icon-gear" title="Devices" url="/devices/index.xhtml" />
 			<p:menuitem value="Reports" icon="ui-icon-home" title="Reports" url="/" disabled="true" />
 			<p:submenu label="Import" icon="ui-icon-folder-open" rendered="true">
-                <p:menuitem value="Import Units" update=":importUnitsForm"
-                    oncomplete="importUnits.show()" title="Import Units"
-                    actionListener="#{unitManager.prepareImportPopup()}"
+                <p:menuitem value="Import Units" update=":importUnitsForm" 
+                    oncomplete="importUnits.show()" title="Import Units" 
+                    actionListener="#{unitManager.prepareImportPopup()}" 
                     disabled="#{!securityPolicy.getUIHint('UNIT')}" />
-                    
-                <p:menuitem value="Import Properties" update=":importPropertiesForm"
-                    oncomplete="importProperties.show()" title="Import Properties"
-                    actionListener="#{propertyManager.prepareImportPopup()}"
-                    disabled="#{!securityPolicy.getUIHint('PROPERTY')}" />
-                    
-                <p:menuitem value="Import Component Types" update=":importCompTypesForm"
-                    oncomplete="importCompTypes.show()" title="Import Component Types"
-                    actionListener="#{componentTypeManager.prepareImportPopup()}"
-                    disabled="#{! securityPolicy.getUIHint('COMPONENT_TYPE')}" />
-                    
-                <p:menuitem value="Import Slots and Slot Relationships" update=":importSlotsForm"
-                    oncomplete="importSlots.show()" title="Import Slots"
-                    actionListener="#{slotManager.prepareImportPopup()}"
-                    disabled="#{!securityPolicy.getUIHint('SLOT')}"/>
-                  
-                <p:menuitem value="Import Device Instances" update=":importDevicesForm"
-                    oncomplete="importDevices.show()" title="Import Devices"
-                    actionListener="#{deviceManager.prepareImportPopup()}"
-                    disabled="#{!securityPolicy.getUIHint('DEVICE')}"/>
 
-                
+                <p:menuitem value="Import Properties" update=":importPropertiesForm" 
+                    oncomplete="importProperties.show()" title="Import Properties" 
+                    actionListener="#{propertyManager.prepareImportPopup()}" 
+                    disabled="#{!securityPolicy.getUIHint('PROPERTY')}" />
+
+                <p:menuitem value="Import Component Types" update=":importCompTypesForm" 
+                    oncomplete="importCompTypes.show()" title="Import Component Types" 
+                    actionListener="#{componentTypeManager.prepareImportPopup()}" 
+                    disabled="#{! securityPolicy.getUIHint('COMPONENT_TYPE')}" />
+
+                <p:menuitem value="Import Slots and Slot Relationships" update=":importSlotsForm" 
+                    oncomplete="importSlots.show()" title="Import Slots" 
+                    actionListener="#{slotManager.prepareImportPopup()}" 
+                    disabled="#{!securityPolicy.getUIHint('SLOT')}"/>
+
+                <p:menuitem value="Import Device Instances" update=":importDevicesForm" 
+                    oncomplete="importDevices.show()" title="Import Devices" 
+                    actionListener="#{deviceManager.prepareImportPopup()}" 
+                    disabled="#{!securityPolicy.getUIHint('DEVICE')}"/>
             </p:submenu>
 
-			<p:menuitem value="Data Definitions" icon="ui-icon-script" title="Data Definitions" url="/data-definitions/properties/properties-manager.xhtml"/>
+			<p:menuitem value="Data Definitions" icon="ui-icon-script" title="Data Definitions" 
+                    url="/data-definitions/properties/properties-manager.xhtml"/>
 			<p:menuitem value="Deleted" icon="ui-icon-home" title="Deleted" url="/" disabled="true"/>
-			<p:menuitem value="Help" icon="ui-icon-home" title="Help" url="/" disabled="true"/>	
-			
+			<p:menuitem value="Help" icon="ui-icon-home" title="Help" url="/" disabled="true"/>
+
 			<f:facet name="options">
                 <fc:logincomp ajax="false" />
-            </f:facet>	
-		</p:menubar>	   
-	</h:form>
-	
-	<h:form>         
-            <p:dialog id="loginDialog" widgetVar="loginDialog" modal="true" closable="false" visible="#{!loginManager.isLoggedIn()}" resizable="false">
-
-            <f:facet name="header">
-                <h:outputText value="Sign In" />
             </f:facet>
-            <p:panelGrid id="grid" columns="2" styleClass="noBorders">
-                <p:outputLabel for="userid" value="Username" />
-                <h:panelGroup>
-                    <p:inputText id="userid" value="#{loginManager.userId}"
-                        label="Username" required="true" />
-                    <p:watermark for="userid" value="Enter username" />
-                    <p:message for="userid" />
-                </h:panelGroup>
-                <p:outputLabel for="passwd" value="Password" />
-                <h:panelGroup>
-                    <p:password id="passwd" value="#{loginManager.password}"
-                        label="Password" required="true"/>
-                    <p:watermark for="passwd" value="Enter password" />
-                    <p:message for="passwd" />
-                </h:panelGroup>
-            </p:panelGrid>
-            <p:separator />
-
-            <p:commandButton value="Sign In" update=":top" action="#{loginManager.onLogin}" style="float: left" />
-        </p:dialog>
-            
-        </h:form>
+		</p:menubar>
+	</h:form>
 	
 	<ui:include src="../loaders/single-file-DL.xhtml">
         <ui:param name="formId" value="importUnitsForm" />
@@ -87,8 +57,7 @@
         <ui:param name="widgetName" value="importUnits" />
         <ui:param name="controller" value="#{unitManager}" />
     </ui:include>
-    
-    
+
     <ui:include src="../loaders/single-file-DL.xhtml">
         <ui:param name="formId" value="importPropertiesForm" />
         <ui:param name="dialogTitle" value="Properties Import" />
@@ -102,7 +71,7 @@
         <ui:param name="widgetName" value="importCompTypes" />
         <ui:param name="controller" value="#{componentTypeManager}" />
     </ui:include>
-    
+
     <ui:include src="../loaders/multiple-files-DL.xhtml">
         <ui:param name="formId" value="importSlotsForm" />
         <ui:param name="dialogTitle" value="Slots and Slot Relationships Import" />
@@ -111,7 +80,7 @@
         <ui:param name="firstFileContents" value="slots" />
         <ui:param name="secondFileContents" value="slot pairs" />
     </ui:include>
-    
+
     <ui:include src="../loaders/single-file-DL.xhtml">
         <ui:param name="formId" value="importDevicesForm" />
         <ui:param name="dialogTitle" value="Devices Import" />
