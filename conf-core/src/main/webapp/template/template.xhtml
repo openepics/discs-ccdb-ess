@@ -1,11 +1,10 @@
-<?xml version='1.0' encoding='UTF-8' ?> 
+<?xml version='1.0' encoding='UTF-8' ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:p="http://primefaces.org/ui"
-      xmlns:f="http://java.sun.com/jsf/core"
+<html xmlns="http://www.w3.org/1999/xhtml" 
+      xmlns:ui="http://java.sun.com/jsf/facelets" 
+      xmlns:p="http://primefaces.org/ui" 
+      xmlns:f="http://java.sun.com/jsf/core" 
       xmlns:h="http://xmlns.jcp.org/jsf/html">
-
 
     <h:head>
         <f:facet name="first"> 
@@ -48,16 +47,42 @@
                     <ui:include src="menu.xhtml" />
                 </h:panelGroup>
             </ui:insert>
-
         </h:panelGroup>
 
-        <h:panelGroup layout="block" >
+        <h:panelGroup id="content" layout="block" >
             <ui:insert name="content">Content</ui:insert>
         </h:panelGroup>
         
-        <p:dialog modal="true" widgetVar="statusDialog" showHeader="false" draggable="false" closable="false" resizable="false">  
+        <p:dialog modal="true" widgetVar="statusDialog" showHeader="false" draggable="false" closable="false" 
+                resizable="false">  
             <p:graphicImage value="/resources/images/ajax-loader.gif" />  
         </p:dialog>
+        
+        <h:form id="loginDialogForm">         
+            <p:dialog id="loginDialog" widgetVar="loginDialog" modal="true" closable="false" 
+                    visible="#{!loginManager.isLoggedIn()}" resizable="false">
+                <f:facet name="header">
+                    <h:outputText value="Sign In" />
+                </f:facet>
+                <p:panelGrid id="grid" columns="2" styleClass="noBorders">
+                    <p:outputLabel for="userid" value="Username" />
+                    <h:panelGroup>
+                        <p:inputText id="userid" value="#{loginManager.userId}" label="Username" required="true" />
+                        <p:watermark for="userid" value="Enter username" />
+                        <p:message for="userid" />
+                    </h:panelGroup>
+                    <p:outputLabel for="passwd" value="Password" />
+                    <h:panelGroup>
+                        <p:password id="passwd" value="#{loginManager.password}" label="Password" required="true"/>
+                        <p:watermark for="passwd" value="Enter password" />
+                        <p:message for="passwd" />
+                    </h:panelGroup>
+                </p:panelGrid>
+                <p:separator />
+                <p:commandButton value="Sign In" update=":loginDialogForm :top :content" action="#{loginManager.onLogin}" 
+                        style="float: left" />
+            </p:dialog>
+        </h:form>
 
     </h:body>
 

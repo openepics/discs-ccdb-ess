@@ -14,74 +14,39 @@
     <!-- IMPLEMENTATION -->
     <!-- ToDo: Still not good. needs lots of improvements. too flaky  -->
     <cc:implementation> 
-        <h:form id="_loginForm">                
+        <h:form id="_loginForm" rendered="#{loginManager.loggedIn}">                
             <p:growl id="_loginGrowl"  showDetail="true"/>            
-            <ui:remove> -------------------- Login -------------------</ui:remove>
-            <p:commandButton id="_loginButton" type="button" 
-                             value="#{msgs.loginBtn}" 
-                             icon="ui-icon-person" rendered="#{!loginManager.loggedIn}"/>
-            <p:overlayPanel id="_loginSigninPanel" for="_loginButton" 
-                            widgetVar="_loginSigninWidget" style="border: 0px" 
-                            rendered="#{!loginManager.loggedIn}"  dismissable="false">              
-                <p:panelGrid id="_loginSigninGrid" styleClass="noBorders">
-                    
-                    <p:row>
-                        <p:column><p:outputLabel for="userid" value="#{msgs.loginUser}" /> </p:column>
-                        <p:column><p:inputText id="userid" value="#{loginManager.userId}" required="true"/> </p:column>
-                    </p:row>
-                    <p:row>
-                        <p:column><p:outputLabel for="passwd" value="#{msgs.loginPass} " />     </p:column>                       
-                        <p:column><p:password id="passwd" value="#{loginManager.password}" />  </p:column>
-                    </p:row>                  
-                    
-                        <p:row>
-                            <p:column colspan="2">                                                           
-                                <p:commandButton  value="#{msgs.loginCancelBtn}" style="float: left" 
-                                                  type="button" onclick="_loginSigninWidget.hide()"/>    
-                                <p:commandButton  id="_loginBtn" value="#{msgs.loginBtn}" process="_loginSigninPanel"
-                                                  update="@form #{cc.attrs.update}"  
-                                                  style="float: right" action="#{loginManager.onLogin}"  ajax="#{cc.attrs.ajax}"/>
-                                <ui:remove> ToDo: can ajax=false be removed </ui:remove>
-                            </p:column>
-                        </p:row> 
-                    
-                </p:panelGrid>
-                <p:watermark for="userid" value="#{msgs.loginUserWM}" /> 
-                <p:watermark for="passwd" value="#{msgs.loginPassWM}" />
-                <p:blockUI block="_loginSigninGrid" trigger="_loginBtn" >                   
-                    <p:graphicImage value="/resources/images/ajax-loader.gif" 
-                                    style="background-color: transparent" />                   
-                </p:blockUI>
-            </p:overlayPanel>
             <ui:remove> -------------------- Logout -------------------</ui:remove>
             <p:commandButton id="_loginOutButton" type="button" 
                              value="#{loginManager.userId}" 
                              icon="ui-icon-person" rendered="#{loginManager.loggedIn}" />
             <p:overlayPanel id="_loginExitPanel" for="_loginOutButton" 
-                            widgetVar="_loginExitWidget" style="border: 0px" rendered="#{loginManager.loggedIn}" >               
+                            widgetVar="_loginExitWidget" style="border: 0px" rendered="#{loginManager.loggedIn}" >
                 <p:panelGrid styleClass="noBorders">
                     <p:row>
-                        <p:column colspan="2">  
+                        <p:column>
                             <h:outputText value="You are logged in as #{loginManager.userId}" />
-                        </p:column>                        
+                        </p:column>                   
                     </p:row>
-                    <f:facet name="footer">
-                        <p:row>
-                            <p:column> 
-                                <p:commandButton  value="#{msgs.loginCancelBtn}" 
-                                                  type="button" onclick="_loginExitWidget.hide()"/>
-                            </p:column>
-                            <p:column >
-                                <p:commandButton value="#{msgs.loginLogoutBtn}"  process="@this" 
-                                                 update="@form #{cc.attrs.update}" 
-                                                 action="#{loginManager.onLogout()}" ajax="#{cc.attrs.ajax}"/>  
-                            </p:column>
-                        </p:row>
-                    </f:facet>
+                    <p:row>
+                        <p:column>
+                            <p:panelGrid styleClass="noBorders">
+                                <p:row>
+                                    <p:column>  
+				                        <p:commandButton  value="#{msgs.loginCancelBtn}" 
+				                                              type="button" onclick="_loginExitWidget.hide()"/>
+				                    </p:column>
+				                    <p:column>
+						                <p:commandButton value="#{msgs.loginLogoutBtn}"  process="@this" 
+						                                             update="@form #{cc.attrs.update}" 
+						                                             action="#{loginManager.onLogout()}" ajax="#{cc.attrs.ajax}"/>  
+						            </p:column>
+						        </p:row>
+						    </p:panelGrid>
+						</p:column>
+                    </p:row>
                 </p:panelGrid>
             </p:overlayPanel>
-
         </h:form>
-
     </cc:implementation>
 </html>
