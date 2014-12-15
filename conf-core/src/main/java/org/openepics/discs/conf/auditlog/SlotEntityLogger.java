@@ -65,16 +65,16 @@ public class SlotEntityLogger implements EntityLogger<Slot> {
         }
 
         final Map<String, String> childrenMap = new TreeMap<>();
-        if (slot.getChildrenSlotsPairList() != null) {
-            for (SlotPair slotPair : slot.getChildrenSlotsPairList()) {
+        if (slot.getPairsInWhichThisSlotIsAParentList() != null) {
+            for (SlotPair slotPair : slot.getPairsInWhichThisSlotIsAParentList()) {
                 childrenMap.put(slotPair.getChildSlot().getName(), slotPair.getSlotRelation().getName().toString());
             }
         }
 
         final Map<String, String> parentsMap = new TreeMap<>();
-        if (slot.getParentSlotsPairList() != null) {
-            for (SlotPair slotPair : slot.getParentSlotsPairList()) {
-                parentsMap.put(slotPair.getParentSlot().getName(), slotPair.getSlotRelation().getName().toString());
+        if (slot.getPairsInWhichThisSlotIsAChildList() != null) {
+            for (SlotPair slotPair : slot.getPairsInWhichThisSlotIsAChildList()) {
+                parentsMap.put(slotPair.getParentSlot().getName(), slotPair.getSlotRelation().getIname());
             }
         }
         

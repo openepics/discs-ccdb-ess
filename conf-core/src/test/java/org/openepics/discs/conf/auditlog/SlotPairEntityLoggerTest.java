@@ -40,8 +40,8 @@ public class SlotPairEntityLoggerTest {
     public void setUp() throws Exception {
         parentSlot.setComponentType(new ComponentType());
         childSlot.setComponentType(new ComponentType());
-        parentSlot.getChildrenSlotsPairList().add(slotPair);
-        childSlot.getParentSlotsPairList().add(slotPair);
+        parentSlot.getPairsInWhichThisSlotIsAChildList().add(slotPair);
+        childSlot.getPairsInWhichThisSlotIsAParentList().add(slotPair);
     }
 
     @Test

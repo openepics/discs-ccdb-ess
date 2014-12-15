@@ -97,10 +97,10 @@ public class Slot extends ConfigurationEntity {
     private Slot asmSlot;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "childSlot")
-    private List<SlotPair> childrenSlots = new ArrayList<>();
+    private List<SlotPair> pairsInWhichThisSlotIsAChild = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "parentSlot")
-    private List<SlotPair> parentSlots = new ArrayList<>();
+    private List<SlotPair> pairsInWhichThisSlotIsAParent = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "slot")
     private List<SlotPropertyValue> slotPropertyList = new ArrayList<>();
@@ -208,14 +208,14 @@ public class Slot extends ConfigurationEntity {
 
     @XmlTransient
     @JsonIgnore
-    public List<SlotPair> getChildrenSlotsPairList() {
-        return childrenSlots;
+    public List<SlotPair> getPairsInWhichThisSlotIsAChildList() {
+        return pairsInWhichThisSlotIsAChild;
     }
 
     @XmlTransient
     @JsonIgnore
-    public List<SlotPair> getParentSlotsPairList() {
-        return parentSlots;
+    public List<SlotPair> getPairsInWhichThisSlotIsAParentList() {
+        return pairsInWhichThisSlotIsAParent;
     }
 
     @XmlTransient

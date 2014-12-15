@@ -94,8 +94,8 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
 
             populateAttributesList();
             filterProperties();
-            parentSlot = slot.getChildrenSlotsPairList().size() > 0
-                    ? slot.getChildrenSlotsPairList().get(0).getParentSlot().getName()
+            parentSlot = slot.getPairsInWhichThisSlotIsAChildList().size() > 0
+                    ? slot.getPairsInWhichThisSlotIsAChildList().get(0).getParentSlot().getName()
                             : null;
             if ("_ROOT".equals(parentSlot)) {
                 parentSlot = null;

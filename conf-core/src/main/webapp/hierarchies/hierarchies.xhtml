@@ -100,45 +100,44 @@
                 </p:row>
                 <p:row>
                     <p:column>
-                        <h3>Installation details</h3>
-                        <p:panel id="installationDetails" styleClass="noBorders installation-details">
-                                              
-                            <h:outputText rendered="#{empty hierarchiesController.selectedNode}" value="No element selected." />
-                            <h:outputText rendered="#{!empty hierarchiesController.selectedNode and !hierarchiesController.selectedNodeSlot.hostingSlot}" value="Can not install device on container" />
-                            
-                            <p:dataTable id="installationTable"
-                                value="#{hierarchiesController.installationRecord}"
-                                var="installationRecord"
-                                style="width: 100%;"
-                                rendered="#{!empty hierarchiesController.selectedNode and hierarchiesController.selectedNodeSlot.hostingSlot and not empty hierarchiesController.installedDevice}">
-                                <p:column
-                                    headerText="Installed device inventory ID">
-                                    <h:link outcome="deviceDetails" value="#{installationRecord.device.serialNumber}" class="link">
-                                        <f:param name="id" value="#{installationRecord.device.id}" />
-                                    </h:link>                                    
-                                </p:column>
-                                <p:column headerText="Installation date">
-                                    <h:outputText
-                                        value="#{installationRecord.installDate}">
-                                        <f:convertDateTime
-                                            pattern="dd.MM.yyyy" />
-                                    </h:outputText>
-                                </p:column>
-                                <p:column headerText="Uninstall">
-                                    <p:commandButton title="Uninstall"
-                                        label="Uninstall"
-                                        value="Uninstall" ajax="false"
-                                        action="#{hierarchiesController.uninstallDevice(installationRecord.device)}"
-                                        update=":hierarchies:installationDetails"/>
-                                </p:column>
-                            </p:dataTable>
-                            <p:commandButton title="Install device to this slot"
-                                value="Install device to this slot"
-                                rendered="#{!empty hierarchiesController.selectedNode and hierarchiesController.selectedNodeSlot.hostingSlot and empty hierarchiesController.installedDevice}"
-                                type="button"
-                                onclick="installDevice.show()"
-                                update=":hierarchies:installationDetails" />
-                        </p:panel>
+                        <h:panelGroup id="installationDetails" layout="block">
+                            <p:panel styleClass="noBorders installation-details" rendered="#{hierarchiesController.selectedNodeSlot.hostingSlot}">
+                                <h3>Installation details</h3>
+                                
+                                <p:dataTable id="installationTable"
+                                    value="#{hierarchiesController.installationRecord}"
+                                    var="installationRecord"
+                                    style="width: 100%;"
+                                    rendered="#{not empty hierarchiesController.installedDevice}">
+                                    <p:column
+                                        headerText="Installed device inventory ID">
+                                        <h:link outcome="deviceDetails" value="#{installationRecord.device.serialNumber}" class="link">
+                                            <f:param name="id" value="#{installationRecord.device.id}" />
+                                        </h:link>                                    
+                                    </p:column>
+                                    <p:column headerText="Installation date">
+                                        <h:outputText
+                                            value="#{installationRecord.installDate}">
+                                            <f:convertDateTime
+                                                pattern="dd.MM.yyyy" />
+                                        </h:outputText>
+                                    </p:column>
+                                    <p:column headerText="Uninstall">
+                                        <p:commandButton title="Uninstall"
+                                            label="Uninstall"
+                                            value="Uninstall" ajax="false"
+                                            action="#{hierarchiesController.uninstallDevice(installationRecord.device)}"
+                                            update=":hierarchies:installationDetails"/>
+                                    </p:column>
+                                </p:dataTable>
+                                <p:commandButton title="Install device to this slot"
+                                    value="Install device to this slot"
+                                    rendered="#{empty hierarchiesController.installedDevice}"
+                                    type="button"
+                                    onclick="installDevice.show()"
+                                    update=":hierarchies:installationDetails" />
+                            </p:panel>
+                        </h:panelGroup>
                     </p:column>
                 </p:row>
                 <p:row>

@@ -415,7 +415,6 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
     }
 
     public boolean canDelete(Object attribute) {
-        // TODO [DONE] check whether to show inherited artifacts and prevent their deletion
         return (attribute instanceof Artifact && !(attribute instanceof  ComptypeArtifact)) || (attribute instanceof PropertyValue
                 && !isPropertyValueInherited((PropertyValue)attribute)) || (attribute instanceof Tag && !isTagInherited((Tag)attribute));
     }

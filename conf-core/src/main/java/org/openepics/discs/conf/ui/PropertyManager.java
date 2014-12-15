@@ -48,7 +48,6 @@ import com.google.common.io.ByteStreams;
 @ViewScoped
 public class PropertyManager implements Serializable {
     @Inject private PropertyEJB propertyEJB;
-    // @Inject private AuditRecordEJB auditRecordEJB; TODO merge conflict piece
 
     @Inject private DataLoaderHandler dataLoaderHandler;
     @Inject @PropertiesLoaderQualifier private DataLoader propertiesDataLoader;
