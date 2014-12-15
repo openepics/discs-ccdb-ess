@@ -124,27 +124,27 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
         }
 
         for (ComptypePropertyValue parentProp : parentProperties) {
-            if (parentProp.getPropValue() != null) attributes.add(new EntityAttributeView(parentProp, EntityAttributeViewKind.DEVICE_TYPE.toString() + " " + EntityAttributeViewKind.PROPERTY_SUFFIX.toString()));
+            if (parentProp.getPropValue() != null) attributes.add(new EntityAttributeView(parentProp, EntityAttributeViewKind.DEVICE_TYPE_PROPERTY));
         }
 
         for (ComptypeArtifact parentArtifact : parentArtifacts) {
-            attributes.add(new EntityAttributeView(parentArtifact, EntityAttributeViewKind.DEVICE_TYPE.toString() + " " + EntityAttributeViewKind.ARTIFACT_SUFFIX.toString()));
+            attributes.add(new EntityAttributeView(parentArtifact, EntityAttributeViewKind.DEVICE_TYPE_ARTIFACT));
         }
 
         for (Tag parentTag : parentTags) {
-            attributes.add(new EntityAttributeView(parentTag, EntityAttributeViewKind.DEVICE_TYPE.toString() + " " + EntityAttributeViewKind.TAG_SUFFIX.toString())); 
+            attributes.add(new EntityAttributeView(parentTag, EntityAttributeViewKind.DEVICE_TYPE_TAG)); 
         }
 
         for (SlotPropertyValue prop : slot.getSlotPropertyList()) {
-            attributes.add(new EntityAttributeView(prop, EntityAttributeViewKind.INSTALL_SLOT.toString() + " " + EntityAttributeViewKind.PROPERTY_SUFFIX.toString()));
+            attributes.add(new EntityAttributeView(prop, EntityAttributeViewKind.INSTALL_SLOT_PROPERTY));
         }
 
         for (SlotArtifact art : slot.getSlotArtifactList()) {
-            attributes.add(new EntityAttributeView(art, EntityAttributeViewKind.INSTALL_SLOT.toString() + " " + EntityAttributeViewKind.ARTIFACT_SUFFIX.toString()));
+            attributes.add(new EntityAttributeView(art, EntityAttributeViewKind.INSTALL_SLOT_ARTIFACT));
         }
 
         for (Tag tag : slot.getTags()) {
-            attributes.add(new EntityAttributeView(tag, EntityAttributeViewKind.INSTALL_SLOT.toString() + " " + EntityAttributeViewKind.TAG_SUFFIX.toString()));
+            attributes.add(new EntityAttributeView(tag, EntityAttributeViewKind.INSTALL_SLOT_TAG));
         }
     }
 

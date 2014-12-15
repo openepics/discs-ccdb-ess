@@ -133,27 +133,27 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
         attributes.add(new EntityAttributeView(new BuiltInProperty(DeviceBuiltInPropertyName.BIP_MANUFACTURER_SERIAL_NO, device.getManufacturerSerialNumber(), strDataType)));
 
         for (ComptypePropertyValue parentProp : parentProperties) {
-            if (parentProp.getPropValue() != null) attributes.add(new EntityAttributeView(parentProp, EntityAttributeViewKind.DEVICE_TYPE.toString() + " " + EntityAttributeViewKind.PROPERTY_SUFFIX.toString()));
+            if (parentProp.getPropValue() != null) attributes.add(new EntityAttributeView(parentProp, EntityAttributeViewKind.DEVICE_TYPE_PROPERTY));
         }
 
         for (ComptypeArtifact parentArtifact : parentArtifacts) {
-            attributes.add(new EntityAttributeView(parentArtifact, EntityAttributeViewKind.DEVICE_TYPE.toString() + " " + EntityAttributeViewKind.ARTIFACT_SUFFIX.toString()));
+            attributes.add(new EntityAttributeView(parentArtifact, EntityAttributeViewKind.DEVICE_TYPE_ARTIFACT));
         }
 
         for (Tag parentTag : parentTags) {
-            attributes.add(new EntityAttributeView(parentTag, EntityAttributeViewKind.DEVICE_TYPE.toString() + " " + EntityAttributeViewKind.TAG_SUFFIX.toString())); 
+            attributes.add(new EntityAttributeView(parentTag, EntityAttributeViewKind.DEVICE_TYPE_TAG)); 
         }
 
         for (DevicePropertyValue propVal : device.getDevicePropertyList()) {
-            attributes.add(new EntityAttributeView(propVal, EntityAttributeViewKind.DEVICE.toString() + " " + EntityAttributeViewKind.PROPERTY_SUFFIX.toString()));
+            attributes.add(new EntityAttributeView(propVal, EntityAttributeViewKind.DEVICE_PROPERTY));
         }
 
         for (DeviceArtifact artf : device.getDeviceArtifactList()) {
-            attributes.add(new EntityAttributeView(artf, EntityAttributeViewKind.DEVICE.toString() + " " + EntityAttributeViewKind.ARTIFACT_SUFFIX.toString()));
+            attributes.add(new EntityAttributeView(artf, EntityAttributeViewKind.DEVICE_ARTIFACT));
         }
 
         for (Tag tag : device.getTags()) {
-            attributes.add(new EntityAttributeView(tag, EntityAttributeViewKind.DEVICE.toString() + " " + EntityAttributeViewKind.TAG_SUFFIX.toString()));
+            attributes.add(new EntityAttributeView(tag, EntityAttributeViewKind.DEVICE_TAG));
         }
     }
     

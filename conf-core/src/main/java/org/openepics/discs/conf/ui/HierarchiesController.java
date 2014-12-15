@@ -105,7 +105,7 @@ public class HierarchiesController implements Serializable {
         final List<EntityAttributeView> attributesList = new ArrayList<>();
 
         if (selectedNode != null) {
-            final String slotType = selectedSlot.isHostingSlot() ? EntityAttributeViewKind.INSTALL_SLOT.toString() : EntityAttributeViewKind.CONTAINER_SLOT.toString();
+            final boolean isHostingSlot = selectedSlot.isHostingSlot();
 
             attributesList.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_DESCRIPTION, selectedSlot.getDescription(), strDataType)));
             if (selectedSlot.isHostingSlot()) {
@@ -122,28 +122,28 @@ public class HierarchiesController implements Serializable {
             
             for (ComptypePropertyValue value : selectedSlot.getComponentType().getComptypePropertyList()) {
                 if (!value.isPropertyDefinition()) {
-                    attributesList.add(new EntityAttributeView(value, EntityAttributeViewKind.DEVICE_TYPE.toString() + " " + EntityAttributeViewKind.PROPERTY_SUFFIX.toString()));
+                    attributesList.add(new EntityAttributeView(value, EntityAttributeViewKind.DEVICE_TYPE_PROPERTY));
                 }
             }
 
             for (SlotPropertyValue value : selectedSlot.getSlotPropertyList()) {
-                attributesList.add(new EntityAttributeView(value, slotType + " " + EntityAttributeViewKind.PROPERTY_SUFFIX.toString()));
+                attributesList.add(new EntityAttributeView(value, isHostingSlot ? EntityAttributeViewKind.INSTALL_SLOT_PROPERTY : EntityAttributeViewKind.CONTAINER_SLOT_PROPERTY));
             }
 
             for (ComptypeArtifact artifact : selectedSlot.getComponentType().getComptypeArtifactList()) {
-                attributesList.add(new EntityAttributeView(artifact, EntityAttributeViewKind.DEVICE_TYPE.toString()  + " " +  EntityAttributeViewKind.ARTIFACT_SUFFIX.toString()));
+                attributesList.add(new EntityAttributeView(artifact, EntityAttributeViewKind.DEVICE_TYPE_ARTIFACT));
             }
 
             for (SlotArtifact artifact : selectedSlot.getSlotArtifactList()) {
-                attributesList.add(new EntityAttributeView(artifact, slotType + " " + EntityAttributeViewKind.ARTIFACT_SUFFIX.toString()));
+                attributesList.add(new EntityAttributeView(artifact, isHostingSlot ? EntityAttributeViewKind.INSTALL_SLOT_ARTIFACT : EntityAttributeViewKind.CONTAINER_SLOT_ARTIFACT));
             }
 
             for (Tag tag : selectedSlot.getComponentType().getTags()) {
-                attributesList.add(new EntityAttributeView(tag, EntityAttributeViewKind.DEVICE_TYPE.toString()  + " " +  EntityAttributeViewKind.TAG_SUFFIX.toString()));
+                attributesList.add(new EntityAttributeView(tag, EntityAttributeViewKind.DEVICE_TYPE_TAG));
             }
 
             for (Tag tag : selectedSlot.getTags()) {
-                attributesList.add(new EntityAttributeView(tag, slotType + " " +  EntityAttributeViewKind.TAG_SUFFIX.toString()));
+                attributesList.add(new EntityAttributeView(tag, isHostingSlot ? EntityAttributeViewKind.INSTALL_SLOT_TAG : EntityAttributeViewKind.CONTAINER_SLOT_TAG));
             }
         }
         return attributesList;
