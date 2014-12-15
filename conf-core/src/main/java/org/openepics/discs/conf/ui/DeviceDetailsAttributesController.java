@@ -42,6 +42,7 @@ import org.openepics.discs.conf.ui.common.AbstractAttributesController;
 import org.openepics.discs.conf.ui.common.UIException;
 import org.openepics.discs.conf.util.UnhandledCaseException;
 import org.openepics.discs.conf.views.BuiltInProperty;
+import org.openepics.discs.conf.views.DeviceBuiltInPropertyName;
 import org.openepics.discs.conf.views.EntityAttributeView;
 import org.openepics.discs.conf.views.EntityAttributeViewKind;
 import org.openepics.seds.api.datatypes.SedsEnum;
@@ -57,15 +58,6 @@ import org.primefaces.context.RequestContext;
 @Named
 @ViewScoped
 public class DeviceDetailsAttributesController extends AbstractAttributesController<DevicePropertyValue, DeviceArtifact> {
-
-    // BIP = Built-In Property
-    private static final String BIP_DESCRIPTION = "Description";
-    private static final String BIP_LOCATION = "Location";
-    private static final String BIP_MANUFACTURER = "Manufacturer";
-    private static final String BIP_MANUFACTURER_MODEL = "Manufacturer model";
-    private static final String BIP_MANUFACTURER_SERIAL_NO = "Manufacturer serial #";
-    private static final String BIP_P_O_REFERENCE = "Purchase order reference";
-    private static final String BIP_STATUS = "Status";
 
     @Inject private DeviceEJB deviceEJB;
 
@@ -132,13 +124,13 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
         // refresh the device from database. This refreshes all related collections as well.
         device = deviceEJB.findById(device.getId());
 
-        attributes.add(new EntityAttributeView(new BuiltInProperty(BIP_DESCRIPTION, device.getDescription(), strDataType)));
-        attributes.add(new EntityAttributeView(new BuiltInProperty(BIP_LOCATION, device.getLocation(), strDataType)));
-        attributes.add(new EntityAttributeView(new BuiltInProperty(BIP_P_O_REFERENCE, device.getPurchaseOrder(), strDataType)));
-        attributes.add(new EntityAttributeView(new BuiltInProperty(BIP_STATUS, new EnumValue(device.getStatus().name()), enumDataType)));
-        attributes.add(new EntityAttributeView(new BuiltInProperty(BIP_MANUFACTURER, device.getManufacturer(), strDataType)));
-        attributes.add(new EntityAttributeView(new BuiltInProperty(BIP_MANUFACTURER_MODEL, device.getManufacturerModel(), strDataType)));
-        attributes.add(new EntityAttributeView(new BuiltInProperty(BIP_MANUFACTURER_SERIAL_NO, device.getManufacturerSerialNumber(), strDataType)));
+        attributes.add(new EntityAttributeView(new BuiltInProperty(DeviceBuiltInPropertyName.BIP_DESCRIPTION, device.getDescription(), strDataType)));
+        attributes.add(new EntityAttributeView(new BuiltInProperty(DeviceBuiltInPropertyName.BIP_LOCATION, device.getLocation(), strDataType)));
+        attributes.add(new EntityAttributeView(new BuiltInProperty(DeviceBuiltInPropertyName.BIP_P_O_REFERENCE, device.getPurchaseOrder(), strDataType)));
+        attributes.add(new EntityAttributeView(new BuiltInProperty(DeviceBuiltInPropertyName.BIP_STATUS, new EnumValue(device.getStatus().name()), enumDataType)));
+        attributes.add(new EntityAttributeView(new BuiltInProperty(DeviceBuiltInPropertyName.BIP_MANUFACTURER, device.getManufacturer(), strDataType)));
+        attributes.add(new EntityAttributeView(new BuiltInProperty(DeviceBuiltInPropertyName.BIP_MANUFACTURER_MODEL, device.getManufacturerModel(), strDataType)));
+        attributes.add(new EntityAttributeView(new BuiltInProperty(DeviceBuiltInPropertyName.BIP_MANUFACTURER_SERIAL_NO, device.getManufacturerSerialNumber(), strDataType)));
 
         for (ComptypePropertyValue parentProp : parentProperties) {
             if (parentProp.getPropValue() != null) attributes.add(new EntityAttributeView(parentProp, EntityAttributeViewKind.DEVICE_TYPE.toString() + " " + EntityAttributeViewKind.PROPERTY_SUFFIX.toString()));
@@ -178,7 +170,7 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
     @Override
     public void modifyBuiltInProperty() {
         final BuiltInProperty builtInProperty = (BuiltInProperty) selectedAttribute.getEntity();
-        final String builtInPropertyName = builtInProperty.getName();
+        final DeviceBuiltInPropertyName builtInPropertyName = (DeviceBuiltInPropertyName)builtInProperty.getName();
 
         final String userValueStr = (propertyValue == null ? null
                 : (propertyValue instanceof StrValue ? ((StrValue)propertyValue).getStrValue() : null));

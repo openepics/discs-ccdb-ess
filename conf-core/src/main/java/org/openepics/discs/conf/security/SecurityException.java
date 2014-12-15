@@ -19,7 +19,6 @@
  */
 package org.openepics.discs.conf.security;
 
-import org.openepics.discs.conf.ent.ConfigurationEntity;
 import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
 

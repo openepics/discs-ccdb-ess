@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
@@ -31,28 +32,32 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.openepics.discs.conf.ejb.DataTypeEJB;
 import org.openepics.discs.conf.ejb.InstallationEJB;
 import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ejb.SlotPairEJB;
 import org.openepics.discs.conf.ent.ComptypeArtifact;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
+import org.openepics.discs.conf.ent.DataType;
 import org.openepics.discs.conf.ent.Device;
-import org.openepics.discs.conf.ent.DeviceArtifact;
-import org.openepics.discs.conf.ent.DevicePropertyValue;
-import org.openepics.discs.conf.ent.EntityType;
-import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.InstallationRecord;
+import org.openepics.discs.conf.ent.PositionInformation;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotArtifact;
 import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.ent.Tag;
 import org.openepics.discs.conf.ui.common.UIException;
+import org.openepics.discs.conf.util.BuiltInDataType;
+import org.openepics.discs.conf.views.BuiltInProperty;
 import org.openepics.discs.conf.views.EntityAttributeView;
 import org.openepics.discs.conf.views.EntityAttributeViewKind;
+import org.openepics.discs.conf.views.SlotBuiltInPropertyName;
 import org.openepics.discs.conf.views.SlotRelationshipView;
 import org.openepics.discs.conf.views.SlotView;
 import org.primefaces.model.TreeNode;
+
+import com.google.common.base.Preconditions;
 
 /**
  * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
@@ -67,17 +72,22 @@ public class HierarchiesController implements Serializable {
     @Inject private SlotEJB slotEJB;
     @Inject private SlotPairEJB slotPairEJB;
     @Inject private InstallationEJB installationEJB;
+    @Inject private DataTypeEJB dataTypeEJB;
 
     private TreeNode rootNode;
     private TreeNode selectedNode;
     private InstallationRecord installationRecord;
     private Device deviceToInstall;
     private Slot selectedSlot;
+    protected DataType strDataType;
+    protected DataType dblDataType;
 
     @PostConstruct
     public void init() {
         try {
             rootNode = slotsTreeBuilder.newSlotsTree(slotEJB.findAll(), null, true);
+            strDataType = dataTypeEJB.findByName(BuiltInDataType.STR_NAME);
+            dblDataType = dataTypeEJB.findByName(BuiltInDataType.DBL_NAME);
         } catch(Exception e) {
             throw new UIException("Hierarchies display initialization fialed: " + e.getMessage(), e);
         }
@@ -96,6 +106,19 @@ public class HierarchiesController implements Serializable {
 
         if (selectedNode != null) {
             final String slotType = selectedSlot.isHostingSlot() ? EntityAttributeViewKind.INSTALL_SLOT.toString() : EntityAttributeViewKind.CONTAINER_SLOT.toString();
+
+            attributesList.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_DESCRIPTION, selectedSlot.getDescription(), strDataType)));
+            if (selectedSlot.isHostingSlot()) {
+                attributesList.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_BEAMLINE_POS, selectedSlot.getBeamlinePosition(), dblDataType)));
+                final PositionInformation slotPosition = selectedSlot.getPositionInformation();
+                attributesList.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_GLOBAL_X, slotPosition.getGlobalX(), dblDataType)));
+                attributesList.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_GLOBAL_Y, slotPosition.getGlobalY(), dblDataType)));
+                attributesList.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_GLOBAL_Z, slotPosition.getGlobalZ(), dblDataType)));
+                attributesList.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_GLOBAL_PITCH, slotPosition.getGlobalPitch(), dblDataType)));
+                attributesList.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_GLOBAL_ROLL, slotPosition.getGlobalRoll(), dblDataType)));
+                attributesList.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_GLOBAL_YAW, slotPosition.getGlobalYaw(), dblDataType)));
+            }
+            
             
             for (ComptypePropertyValue value : selectedSlot.getComponentType().getComptypePropertyList()) {
                 if (!value.isPropertyDefinition()) {
@@ -106,12 +129,6 @@ public class HierarchiesController implements Serializable {
             for (SlotPropertyValue value : selectedSlot.getSlotPropertyList()) {
                 attributesList.add(new EntityAttributeView(value, slotType + " " + EntityAttributeViewKind.PROPERTY_SUFFIX.toString()));
             }
-            
-            if (installationRecord != null) {
-                for (DevicePropertyValue value : installationRecord.getDevice().getDevicePropertyList()) {
-                    attributesList.add(new EntityAttributeView(value, EntityAttributeViewKind.DEVICE + " "  + EntityAttributeViewKind.PROPERTY_SUFFIX.toString()));
-                }
-            }
 
             for (ComptypeArtifact artifact : selectedSlot.getComponentType().getComptypeArtifactList()) {
                 attributesList.add(new EntityAttributeView(artifact, EntityAttributeViewKind.DEVICE_TYPE.toString()  + " " +  EntityAttributeViewKind.ARTIFACT_SUFFIX.toString()));
@@ -121,24 +138,12 @@ public class HierarchiesController implements Serializable {
                 attributesList.add(new EntityAttributeView(artifact, slotType + " " + EntityAttributeViewKind.ARTIFACT_SUFFIX.toString()));
             }
 
-            if (installationRecord != null) {
-                for (DeviceArtifact artifact : installationRecord.getDevice().getDeviceArtifactList()) {
-                    attributesList.add(new EntityAttributeView(artifact, EntityAttributeViewKind.DEVICE.toString()  + " " +  EntityAttributeViewKind.ARTIFACT_SUFFIX.toString()));
-                }
-            }
-
             for (Tag tag : selectedSlot.getComponentType().getTags()) {
                 attributesList.add(new EntityAttributeView(tag, EntityAttributeViewKind.DEVICE_TYPE.toString()  + " " +  EntityAttributeViewKind.TAG_SUFFIX.toString()));
             }
 
             for (Tag tag : selectedSlot.getTags()) {
                 attributesList.add(new EntityAttributeView(tag, slotType + " " +  EntityAttributeViewKind.TAG_SUFFIX.toString()));
-            }
-
-            if (installationRecord != null) {
-                for (Tag tag : installationRecord.getDevice().getTags()) {
-                    attributesList.add(new EntityAttributeView(tag, EntityAttributeViewKind.DEVICE.toString()  + " " +  EntityAttributeViewKind.TAG_SUFFIX.toString()));
-                }
             }
         }
         return attributesList;
@@ -205,6 +210,10 @@ public class HierarchiesController implements Serializable {
     public Device getInstalledDevice() {
         return installationRecord == null ? null : installationRecord.getDevice();
     }
+    
+    public InstallationRecord getInstallationRecord() {
+        return installationRecord;
+    }
 
 
     /**
@@ -254,5 +263,20 @@ public class HierarchiesController implements Serializable {
 
         deviceToInstall = null;
         installationRecord = installationEJB.getActiveInstallationRecordForSlot(selectedSlot);
+    }
+    
+    public void uninstallDevice(Device device) {
+        Preconditions.checkNotNull(device);
+        final InstallationRecord deviceInstallationRecord = installationEJB.getActiveInstallationRecordForDevice(device);
+        if (deviceInstallationRecord == null) {
+            logger.log(Level.WARNING, "The device appears installed, but no active installation record for "
+                    + "it could be retrieved. Device db ID: " + device.getId()
+                    + ", serial number: " + device.getSerialNumber());
+            throw new RuntimeException("No installation record for the device exists.");
+        }
+        deviceInstallationRecord.setUninstallDate(new Date());
+        installationEJB.save(deviceInstallationRecord);
+        // the device is not installed any more. Clear the installation state information.
+        this.installationRecord = null;
     }
 }

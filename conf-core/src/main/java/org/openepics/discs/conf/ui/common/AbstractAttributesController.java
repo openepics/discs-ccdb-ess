@@ -65,6 +65,7 @@ import org.openepics.discs.conf.util.PropertyValueUIElement;
 import org.openepics.discs.conf.util.UnhandledCaseException;
 import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.views.BuiltInProperty;
+import org.openepics.discs.conf.views.BuiltInPropertyName;
 import org.openepics.discs.conf.views.EntityAttributeView;
 import org.openepics.seds.api.datatypes.SedsEnum;
 import org.openepics.seds.api.datatypes.SedsType;
@@ -104,7 +105,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
     protected List<String> enumSelections;
     protected List<Property> filteredProperties;
     private boolean propertyNameChangeDisabled;
-    protected String builtInProperteryName;
+    protected BuiltInPropertyName builtInProperteryName;
     protected String builtInPropertyDataType;
     protected PropertyValueUIElement propertyValueUIElement;
     protected boolean isPropertyDefinition;
@@ -448,9 +449,8 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
     }
 
     public boolean canEdit(Object attribute) {
-        return (attribute instanceof BuiltInProperty) || attribute instanceof PropertyValue
-                || (attribute instanceof Artifact && !(attribute instanceof  ComptypeArtifact))
-                && !(attribute instanceof ComptypePropertyValue) ;
+        return attribute instanceof BuiltInProperty || (attribute instanceof PropertyValue && !(attribute instanceof ComptypePropertyValue))
+                || (attribute instanceof Artifact && !(attribute instanceof  ComptypeArtifact));
     }
 
     protected abstract void setPropertyValueParent(T child);
@@ -823,7 +823,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
         }
     }
 
-    public String getBuiltInProperteryName() {
+    public BuiltInPropertyName getBuiltInProperteryName() {
         return builtInProperteryName;
     }
 

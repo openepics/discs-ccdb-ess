@@ -25,6 +25,13 @@
             <to-view-id>/index.xhtml</to-view-id>
         </navigation-case> 
     </navigation-rule>
+    <navigation-rule>
+	    <from-view-id>/hierarchies/hierarchies.xhtml</from-view-id>
+        <navigation-case>
+            <from-outcome>deviceDetails</from-outcome>
+            <to-view-id>/devices/device-details.xhtml</to-view-id>
+        </navigation-case>
+    </navigation-rule>
     <render-kit>      
         <renderer>
             <component-family>org.primefaces.component</component-family>

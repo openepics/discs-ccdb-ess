@@ -119,7 +119,7 @@ public class EntityAttributeView {
     }
 
     private void setBuiltInProperty() {
-        name = ((BuiltInProperty) entity).getName();
+        name = ((BuiltInProperty) entity).getName().toString();
         value = ((BuiltInProperty) entity).getValue();
         type = ((BuiltInProperty) entity).getDataType();
         kind = EntityAttributeViewKind.BUILT_IN.toString() + " " + EntityAttributeViewKind.PROPERTY_SUFFIX.toString();

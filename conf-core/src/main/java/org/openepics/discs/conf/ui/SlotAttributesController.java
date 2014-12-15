@@ -52,6 +52,7 @@ import org.openepics.discs.conf.util.UnhandledCaseException;
 import org.openepics.discs.conf.views.BuiltInProperty;
 import org.openepics.discs.conf.views.EntityAttributeView;
 import org.openepics.discs.conf.views.EntityAttributeViewKind;
+import org.openepics.discs.conf.views.SlotBuiltInPropertyName;
 import org.primefaces.context.RequestContext;
 
 import com.google.common.base.Predicate;
@@ -67,16 +68,6 @@ import com.google.common.collect.ImmutableList;
 public class SlotAttributesController extends AbstractAttributesController<SlotPropertyValue, SlotArtifact> {
 
     private static final Logger logger = Logger.getLogger(SlotAttributesController.class.getCanonicalName());
-
-    // BIP = Built-In Property
-    private static final String BIP_DESCRIPTION = "Description";
-    private static final String BIP_BEAMLINE_POS = "Beamline position";
-    private static final String BIP_GLOBAL_X = "Global X";
-    private static final String BIP_GLOBAL_Y = "Global Y";
-    private static final String BIP_GLOBAL_Z = "Global Z";
-    private static final String BIP_GLOBAL_PITCH = "Global pitch";
-    private static final String BIP_GLOBAL_ROLL = "Global roll";
-    private static final String BIP_GLOBAL_YAW = "Global yaw";
 
     @Inject private SlotEJB slotEJB;
     @Inject private PropertyEJB propertyEJB;
@@ -120,16 +111,16 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
         // refresh the component type from database. This refreshes all related collections as well.
         slot = slotEJB.findById(slot.getId());
 
-        attributes.add(new EntityAttributeView(new BuiltInProperty(BIP_DESCRIPTION, slot.getDescription(), strDataType)));
+        attributes.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_DESCRIPTION, slot.getDescription(), strDataType)));
         if (slot.isHostingSlot()) {
-            attributes.add(new EntityAttributeView(new BuiltInProperty(BIP_BEAMLINE_POS, slot.getBeamlinePosition(), dblDataType)));
+            attributes.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_BEAMLINE_POS, slot.getBeamlinePosition(), dblDataType)));
             final PositionInformation slotPosition = slot.getPositionInformation();
-            attributes.add(new EntityAttributeView(new BuiltInProperty(BIP_GLOBAL_X, slotPosition.getGlobalX(), dblDataType)));
-            attributes.add(new EntityAttributeView(new BuiltInProperty(BIP_GLOBAL_Y, slotPosition.getGlobalY(), dblDataType)));
-            attributes.add(new EntityAttributeView(new BuiltInProperty(BIP_GLOBAL_Z, slotPosition.getGlobalZ(), dblDataType)));
-            attributes.add(new EntityAttributeView(new BuiltInProperty(BIP_GLOBAL_PITCH, slotPosition.getGlobalPitch(), dblDataType)));
-            attributes.add(new EntityAttributeView(new BuiltInProperty(BIP_GLOBAL_ROLL, slotPosition.getGlobalRoll(), dblDataType)));
-            attributes.add(new EntityAttributeView(new BuiltInProperty(BIP_GLOBAL_YAW, slotPosition.getGlobalYaw(), dblDataType)));
+            attributes.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_GLOBAL_X, slotPosition.getGlobalX(), dblDataType)));
+            attributes.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_GLOBAL_Y, slotPosition.getGlobalY(), dblDataType)));
+            attributes.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_GLOBAL_Z, slotPosition.getGlobalZ(), dblDataType)));
+            attributes.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_GLOBAL_PITCH, slotPosition.getGlobalPitch(), dblDataType)));
+            attributes.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_GLOBAL_ROLL, slotPosition.getGlobalRoll(), dblDataType)));
+            attributes.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_GLOBAL_YAW, slotPosition.getGlobalYaw(), dblDataType)));
         }
 
         for (ComptypePropertyValue parentProp : parentProperties) {
@@ -233,9 +224,9 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
     @Override
     public void modifyBuiltInProperty() {
         final BuiltInProperty builtInProperty = (BuiltInProperty) selectedAttribute.getEntity();
-        final String builtInPropertyName = builtInProperty.getName();
+        final SlotBuiltInPropertyName builtInPropertyName = (SlotBuiltInPropertyName)builtInProperty.getName();
 
-        if (!slot.isHostingSlot() && !builtInPropertyName.equals(BIP_DESCRIPTION)) {
+        if (!slot.isHostingSlot() && !builtInPropertyName.equals(SlotBuiltInPropertyName.BIP_DESCRIPTION)) {
             logger.log(Level.WARNING, "Modifying built-in property on container that should not be used.");
             return;
         }
