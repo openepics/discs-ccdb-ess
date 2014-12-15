@@ -18,13 +18,30 @@
                             <p:ajax event="keyup" update="saveButton"/>
                         </p:inputText>
                         <p:commandButton id="saveButton" value="Save" type="button" icon="ui-icon-disk" 
-                                disabled="#{slotAttributesController.entityName == slotAttributesController.slot.name}">
+                                disabled="#{slotAttributesController.basicInfoUnchanged}">
                             <f:ajax event="click" listener="#{slotAttributesController.saveNewName()}" />
                         </p:commandButton>
                     </h2>
 
-                    <h:outputText value="Device type: #{slotAttributesController.slot.componentType.name}" /><br />
-                    <br />
+                    <h:panelGroup layout="block" style="margin-bottom: 1em;" rendered="#{slotAttributesController.installationSlotFull}">
+                        <h:outputText value="Device type: #{slotAttributesController.slot.componentType.name}" />
+                        <h:outputText value="(device installed)" style="color: #aaaaaa; margin-left: 2em;" />
+                    </h:panelGroup>
+                    <h:panelGroup layout="block" style="margin-bottom: 1em;" rendered="#{!slotAttributesController.installationSlotFull}">
+                        <h:outputText value="Device type:" style="margin-right: 1em;" />
+                        <p:selectOneMenu id="compTypeSelect" value="#{slotAttributesController.deviceType}" 
+                                var="dev" converter="#{componentTypeConverter}" required="true" 
+                                requiredMessage="Please select a device type" style="vertical-align: middle;">
+                            <p:ajax event="change" update="saveButton"/>
+                            <f:selectItems value="#{componentTypeManager.objects}" var="deviceType" 
+                                itemLabel="#{deviceType.name}" itemValue="#{deviceType}" />
+                            <p:column>
+                                #{dev.name}
+                            </p:column>
+                        </p:selectOneMenu>
+                        <p:message for="compTypeSelect"/>
+                    </h:panelGroup>
+                    
 
                     <h:outputText value="Parent: #{slotAttributesController.parentSlot}" style="width: 100%;" /><br />
                 </h:panelGroup>

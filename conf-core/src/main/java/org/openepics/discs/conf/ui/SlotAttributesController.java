@@ -37,6 +37,7 @@ import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypeArtifact;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
+import org.openepics.discs.conf.ent.InstallationRecord;
 import org.openepics.discs.conf.ent.PositionInformation;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.Slot;
@@ -82,6 +83,8 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
     private Slot slot;
     private String parentSlot;
 
+    private ComponentType deviceType;
+
     @Override
     @PostConstruct
     public void init() {
@@ -98,6 +101,7 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
             parentArtifacts = slot.getComponentType().getComptypeArtifactList();
             parentTags = slot.getComponentType().getTags();
             entityName = slot.getName();
+            deviceType = slot.getComponentType();
 
             populateAttributesList();
             filterProperties();
@@ -290,8 +294,32 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
     @Override
     public void saveNewName() {
         slot.setName(entityName);
+        slot.setComponentType(deviceType);
         slotEJB.save(slot);
         populateAttributesList();
         RequestContext.getCurrentInstance().update("slotPropertiesManagerForm");
+    }
+
+    public boolean isInstallationSlotFull() {
+        if (!slot.isHostingSlot()) {
+            throw new IllegalStateException("Installation information required on non installation slot.");
+        }
+        for (InstallationRecord installationRecord : slot.getInstallationRecordList()) {
+            if (installationRecord.getUninstallDate() == null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public ComponentType getDeviceType() {
+        return deviceType;
+    }
+    public void setDeviceType(ComponentType deviceType) {
+        this.deviceType = deviceType;
+    }
+
+    public boolean isBasicInfoUnchanged() {
+        return (slot.getName().equals(entityName) && slot.getComponentType().equals(deviceType));
     }
 }
