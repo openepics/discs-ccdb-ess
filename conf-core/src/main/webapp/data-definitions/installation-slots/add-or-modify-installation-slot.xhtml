@@ -17,18 +17,18 @@
                     </p:column>
                     <p:column>
                         <h:panelGroup>
-                        <p:selectOneMenu id="compTypeSelect" value="#{installationSlotsController.deviceType}" 
-                                var="dev" converter="#{componentTypeConverter}" rendered="true" required="true" 
-                                requiredMessage="Please select a device type" style="width: 100%">
-                            <f:selectItem itemLabel="Select One" itemValue="" />
-                            <f:selectItems value="#{componentTypeManager.objects}" var="deviceType" 
-                                itemLabel="#{deviceType.name}" itemValue="#{deviceType}" />
-                            <p:column>
-                                #{dev.name}
-                            </p:column>
-                        </p:selectOneMenu>
-                        <p:message for="compTypeSelect"/>
-                    </h:panelGroup>
+                            <p:selectOneMenu id="compTypeSelect" value="#{installationSlotsController.deviceType}" 
+                                    var="dev" converter="#{componentTypeConverter}" rendered="true" required="true" 
+                                    requiredMessage="Please select a device type" style="width: 100%">
+                                <f:selectItem itemLabel="Select One" itemValue="" />
+                                <f:selectItems value="#{componentTypeManager.objects}" var="deviceType" 
+                                    itemLabel="#{deviceType.name}" itemValue="#{deviceType}" />
+                                <p:column>
+                                    #{dev.name}
+                                </p:column>
+                            </p:selectOneMenu>
+                            <p:message for="compTypeSelect"/>
+                        </h:panelGroup>
                     </p:column>
                 </p:row>
 

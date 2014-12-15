@@ -36,6 +36,7 @@ import org.primefaces.model.TreeNode;
 
 /**
  * @author Andraz Pozar <andraz.pozar@cosylab.com>
+ * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  *
  */
 public abstract class AbstractSlotsController implements Serializable{
@@ -162,7 +163,7 @@ public abstract class AbstractSlotsController implements Serializable{
                 movedSlotView.setFirst(!listIterator.hasPrevious());
                 listIterator.add(currentNode);
                 slotPairEJB.moveUp(parentSlotView.getSlot(), movedSlotView.getSlot());
-                selectedNode = null;
+                clearSelectedNode();
                 currentNode.setSelected(false);
                 break;
             }
@@ -197,12 +198,19 @@ public abstract class AbstractSlotsController implements Serializable{
                 movedSlotView.setLast(!listIterator.hasNext());
                 listIterator.add(currentNode);
                 slotPairEJB.moveDown(parentSlotView.getSlot(), movedSlotView.getSlot());
-                selectedNode = null;
+                clearSelectedNode();
                 currentNode.setSelected(false);
                 break;
             }
         }
         // TODO see what is the easiest way to update only the parent of the moved node
+    }
+
+    private void clearSelectedNode() {
+        if (selectedNode != null) {
+            selectedNode.setSelected(false);
+        }
+        selectedNode = null;
     }
 
     protected abstract void updateRootNode();

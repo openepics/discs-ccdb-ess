@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -54,6 +55,8 @@ public class LoginManager implements Serializable {
             securityPolicy.logout();
             loggedIn = false;
             userId = null;
+            final ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
+            ec.redirect(ec.getRequestContextPath());
             showMessage(FacesMessage.SEVERITY_INFO, "You have been logged out.", "Thank you!");
         } catch (Exception e) {
             showMessage(FacesMessage.SEVERITY_ERROR, "Strangely, logout has failed", "That's odd!");
