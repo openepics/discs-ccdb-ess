@@ -10,18 +10,18 @@
             <h:form id="slotPropertiesManagerForm" enctype="multipart/form-data">
 
                 <h:panelGroup id="basic-info" layout="block" style="margin-bottom: 1em;">
-                    <h2>
+                    <h3>
                         <h:outputText value="Installation slot: " />
                         <p:inputText value="#{slotAttributesController.entityName}" 
                                 size="#{slotAttributesController.nameElementSize}"
                                 style="font-size: 1em; margin-left: 1em; margin-right: 1em;">
                             <p:ajax event="keyup" update="saveButton"/>
                         </p:inputText>
-                        <p:commandButton id="saveButton" value="Save" type="button" icon="ui-icon-disk" 
+                        <p:commandButton id="saveButton" value="Save changes" type="button" icon="ui-icon-disk" 
                                 disabled="#{slotAttributesController.basicInfoUnchanged}">
                             <f:ajax event="click" listener="#{slotAttributesController.saveNewName()}" />
                         </p:commandButton>
-                    </h2>
+                    </h3>
 
                     <h:panelGroup layout="block" style="margin-bottom: 1em;" rendered="#{slotAttributesController.installationSlotFull}">
                         <h:outputText value="Device type: #{slotAttributesController.slot.componentType.name}" />

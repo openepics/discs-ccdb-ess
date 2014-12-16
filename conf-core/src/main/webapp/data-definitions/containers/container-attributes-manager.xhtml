@@ -17,7 +17,7 @@
                                 style="font-size: 1em; margin-left: 1em; margin-right: 1em;">
                             <p:ajax event="keyup" update="saveButton"/>
                         </p:inputText>
-                        <p:commandButton id="saveButton" value="Save" type="button" icon="ui-icon-disk" 
+                        <p:commandButton id="saveButton" value="Save changes" type="button" icon="ui-icon-disk" 
                                 disabled="#{slotAttributesController.entityName == slotAttributesController.slot.name}">
                             <f:ajax event="click" listener="#{slotAttributesController.saveNewName()}" />
                         </p:commandButton>
