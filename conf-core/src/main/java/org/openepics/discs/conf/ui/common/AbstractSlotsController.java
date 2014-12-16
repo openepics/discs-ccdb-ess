@@ -19,14 +19,17 @@ import java.util.HashSet;
 import java.util.ListIterator;
 import java.util.Set;
 
+import javax.faces.application.FacesMessage;
 import javax.faces.event.ActionEvent;
 import javax.inject.Inject;
 
 import org.openepics.discs.conf.ejb.ComptypeEJB;
+import org.openepics.discs.conf.ejb.InstallationEJB;
 import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ejb.SlotPairEJB;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ui.SlotsTreeBuilder;
+import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.views.SlotView;
 import org.primefaces.component.commandlink.CommandLink;
 import org.primefaces.component.treetable.TreeTable;
@@ -45,6 +48,7 @@ public abstract class AbstractSlotsController implements Serializable{
     @Inject protected SlotEJB slotEJB;
     @Inject protected ComptypeEJB comptypeEJB;
     @Inject protected SlotPairEJB slotPairEJB;
+    @Inject private InstallationEJB installationEJB;
 
     protected TreeNode rootNode;
     /** The currently selected PrimeFaces tree node */
@@ -90,10 +94,14 @@ public abstract class AbstractSlotsController implements Serializable{
      * Deletes selected container
      */
     public void onDelete() {
-        slotEJB.delete(selectedSlotView.getSlot());
-        selectedSlotView = null;
-        selectedNode = null;
-        updateRootNode();
+        if (!selectedSlotView.getIsHostingSlot() || installationEJB.getActiveInstallationRecordForSlot(selectedSlotView.getSlot()) == null) {
+            slotEJB.delete(selectedSlotView.getSlot());
+            selectedSlotView = null;
+            selectedNode = null;
+            updateRootNode();
+        } else {
+            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Deletion failed", "Installation slot could not be deleted because it has a device installed on it.");
+        }
     }
 
     /**

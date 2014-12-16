@@ -21,14 +21,15 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.ListIterator;
 
-import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.openepics.discs.conf.ejb.ComptypeEJB;
 import org.openepics.discs.conf.ejb.DeviceEJB;
+import org.openepics.discs.conf.ejb.InstallationEJB;
 import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.Device;
@@ -44,8 +45,9 @@ import com.google.common.base.Preconditions;
 @Named
 @ViewScoped
 public class DevicesByTypeManager implements Serializable {
-    @EJB private ComptypeEJB componentTypesEJB;
-    @EJB private DeviceEJB deviceEJB;
+    @Inject private ComptypeEJB componentTypesEJB;
+    @Inject private DeviceEJB deviceEJB;
+    @Inject private InstallationEJB installationEJB;
 
     private List<ComponentType> deviceTypes;
     private List<ComponentType> filteredComponentTypes;
@@ -97,21 +99,24 @@ public class DevicesByTypeManager implements Serializable {
      */
     public void onDeviceDelete() {
         Preconditions.checkNotNull(selectedDevice);
-
-        try {
-            // TODO [RETHINK] check if the device is installed. Prevent deletion if yes.
-            deviceEJB.delete(selectedDevice);
-
-            selectedDevice = null;
-            prepareDevicesForDisplay();
-
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Device deleted.", null));
-        } catch (Exception e) {
-            if (Utility.causedByPersistenceException(e)) {
-                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Deletion failed", "The property could not be deleted because it is used.");
-            } else {
-                throw e;
+        
+        if (installationEJB.getActiveInstallationRecordForDevice(selectedDevice) == null) {
+            try {                
+                deviceEJB.delete(selectedDevice);
+    
+                selectedDevice = null;
+                prepareDevicesForDisplay();
+    
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Device deleted.", null));
+            } catch (Exception e) {
+                if (Utility.causedByPersistenceException(e)) {
+                    Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Deletion failed", "The property could not be deleted because it is used.");
+                } else {
+                    throw e;
+                }
             }
+        } else {
+            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Deletion failed", "Device instance could not be deleted because it is installed.");
         }
     }
 
