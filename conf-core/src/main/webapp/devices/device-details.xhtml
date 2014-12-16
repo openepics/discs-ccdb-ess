@@ -8,18 +8,18 @@
         <p:growl showDetail="true" globalOnly="true" autoUpdate="true" />
         <h:form id="deviceDetailsForm">
             <h:panelGroup id="basic-info" styleClass="noBorders" layout="block">
-                <h2>
+                <h3>
                     <h:outputText value="Inventory ID: " />
                     <p:inputText value="#{deviceDetailsAttributesController.entityName}" 
                             size="#{deviceDetailsAttributesController.nameElementSize}"
                             style="font-size: 1em; margin-left: 1em; margin-right: 1em;">
                         <p:ajax event="keyup" update="saveButton"/>
                     </p:inputText>
-                    <p:commandButton id="saveButton" value="Save" type="button" icon="ui-icon-disk" 
+                    <p:commandButton id="saveButton" value="Save changes" type="button" icon="ui-icon-disk" 
                             disabled="#{deviceDetailsAttributesController.entityName == deviceDetailsAttributesController.device.serialNumber}">
                         <f:ajax event="click" listener="#{deviceDetailsAttributesController.saveNewName()}" />
                     </p:commandButton>
-                </h2>
+                </h3>
                         
                 <h:outputText value="Device type: #{deviceDetailsAttributesController.device.componentType.name}" />
                 <br />

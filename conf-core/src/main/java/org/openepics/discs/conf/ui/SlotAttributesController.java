@@ -33,6 +33,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
+import org.openepics.discs.conf.ejb.InstallationEJB;
 import org.openepics.discs.conf.ejb.PropertyEJB;
 import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.ComponentType;
@@ -72,6 +73,7 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
 
     @Inject private SlotEJB slotEJB;
     @Inject private PropertyEJB propertyEJB;
+    @Inject private InstallationEJB installationEJB;
 
     private Slot slot;
     private String parentSlot;
@@ -307,12 +309,8 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
         if (!slot.isHostingSlot()) {
             throw new IllegalStateException("Installation information required on non installation slot.");
         }
-        for (InstallationRecord installationRecord : slot.getInstallationRecordList()) {
-            if (installationRecord.getUninstallDate() == null) {
-                return true;
-            }
-        }
-        return false;
+        InstallationRecord installationRecord = installationEJB.getLastInstallationRecordForSlot(slot);
+        return (installationRecord != null) && (installationRecord.getUninstallDate() == null);
     }
 
     public ComponentType getDeviceType() {
