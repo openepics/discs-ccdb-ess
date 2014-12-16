@@ -6,16 +6,24 @@
 
     <ui:define name="content">
         <h:form id="hierarchies">
-            <p:growl showDetail="true" globalOnly="true" autoUpdate="true"/>
-            <p:panelGrid id="hierarchiesContainer" style="width: 100%;" styleClass="noBorders">
+            <p:growl showDetail="true" globalOnly="true"
+                autoUpdate="true" />
+            <p:panelGrid id="hierarchiesContainer" style="width: 100%;"
+                styleClass="noBorders">
                 <p:row>
-                    <p:column rowspan="2">
-                        <p:treeTable value="#{hierarchiesController.rootNode}" var="installationSlot" 
-                                selectionMode="single" selection="#{hierarchiesController.selectedNode}" 
-                                scrollable="true" scrollHeight="800" scrollWidth="auto" style="width: 300px;">
-                            <p:ajax event="select" update=":hierarchies:attributesTable :hierarchies:relationsTable :hierarchies:slotDetails" />
-                            <p:ajax event="unselect" update=":hierarchies:attributesTable :hierarchies:relationsTable :hierarchies:slotDetails" />
-                                
+                    <p:column rowspan="4">
+                        <p:treeTable
+                            value="#{hierarchiesController.rootNode}"
+                            var="installationSlot"
+                            selectionMode="single"
+                            selection="#{hierarchiesController.selectedNode}"
+                            scrollable="true" scrollHeight="800"
+                            scrollWidth="auto" style="width: 300px;">
+                            <p:ajax event="select"
+                                update=":hierarchies:attributesTable :hierarchies:relationsTable :hierarchies:installationDetails" />
+                            <p:ajax event="unselect"
+                                update=":hierarchies:attributesTable :hierarchies:relationsTable :hierarchies:installationDetails" />
+
                             <p:column id="name" headerText="Name">
                                 <h:outputText value=""
                                     style="display:inline-block; vertical-align:bottom !important"
@@ -25,83 +33,133 @@
                                     style="display:inline-block; vertical-align:bottom !important"
                                     styleClass="ui-icon ui-icon-folder-collapsed"
                                     rendered="#{!installationSlot.isHostingSlot}" />
-                                <h:outputText value="#{installationSlot.name}" />
+                                <h:outputText
+                                    value="#{installationSlot.name}" />
                             </p:column>
                         </p:treeTable>
                     </p:column>
-                    <p:column styleClass="alignTop" style="height: 50%" colspan="2">
-                        <p:dataTable id="attributesTable" value="#{hierarchiesController.attributes}" var="attribute" 
-                                style="width: 100%;" scrollable="true" scrollHeight="380">
+                    <p:column styleClass="alignTop">
+                        <h3>Slot attributes</h3>
+                        
+                        <p:dataTable id="attributesTable"
+                            class="hierarchies-attributes-cell"
+                            value="#{hierarchiesController.attributes}"
+                            var="attribute"
+                            style="width: 100%; overflow-y: hidden; max-height: 324px;"
+                            emptyMessage="No element selected."
+                            scrollable="true">
+                            
                             <p:column headerText="Name">
                                 <h:outputText value="#{attribute.name}" />
                             </p:column>
-                            
+
                             <p:column headerText="Kind">
                                 <h:outputText value="#{attribute.kind}" />
                             </p:column>
-        
+
                             <p:column headerText="Data type">
-                                <h:outputText value="#{attribute.type.name}" />
+                                <h:outputText
+                                    value="#{attribute.type.name}" />
                             </p:column>
-        
+
                             <p:column headerText="Unit">
-                                <h:outputText value="#{empty attribute.unit ? '-' : attribute.unit.name}" />
+                                <h:outputText
+                                    value="#{empty attribute.unit ? '-' : attribute.unit.name}" />
                             </p:column>
-        
-                            <p:column headerText="Value" style="width: 400px;">
+
+                            <p:column headerText="Value"
+                                style="width: 400px;">
                                 <h:outputText value="#{attribute.value}" />
                             </p:column>
                         </p:dataTable>
                     </p:column>
                 </p:row>
-                <p:row style="height: 50%">
-                    <p:column styleClass="alignTop" style="width: 30%">
-                        <p:dataTable id="relationsTable" value="#{hierarchiesController.relationships}" 
-                            var="relationship" style="width: 100%;">
+                <p:row>
+                    <p:column styleClass="alignTop">
+                        <h3>Slot relationships</h3>
+                        
+                        <p:dataTable id="relationsTable"
+                            value="#{hierarchiesController.relationships}"
+                            class="hierarchies-attributes-cell"
+                            style="width: 100%; overflow-y: hidden; max-height: 324px;"
+                            emptyMessage="No element selected."
+                            scrollable="true"
+                            var="relationship">
+                                                        
                             <p:column headerText="Relationship">
-                                <h:outputText value="#{relationship.relationshipName}" />
+                                <h:outputText
+                                    value="#{relationship.relationshipName}" />
                             </p:column>
-                            
+
                             <p:column headerText="Target">
-                                <h:outputText value="#{relationship.targetSlotName}" />
+                                <h:outputText
+                                    value="#{relationship.targetSlotName}" />
                             </p:column>
                         </p:dataTable>
                     </p:column>
-                    <p:column styleClass="alignTop" style="width: 70%">
-                        <p:panel id="slotDetails" styleClass="noBorders" style="padding: 0;">
-                            <h:outputText rendered="#{empty hierarchiesController.selectedNode}" value="No element selected." />
-    
-                            <p:tabView style="height: 100%;" rendered="#{!empty hierarchiesController.selectedNode}">
-                                <p:tab title="Container" rendered="#{!empty hierarchiesController.selectedNode and !hierarchiesController.selectedNodeSlot.hostingSlot}">
-                                    <ui:include src="tabs/container-tab.xhtml" />
-                                </p:tab>
+                </p:row>
+                <p:row>
+                    <p:column>
+                        <h:panelGroup id="installationDetails" layout="block">
+                            <p:panel styleClass="noBorders installation-details" rendered="#{hierarchiesController.selectedNodeSlot.hostingSlot}">
+                                <h3>Installation details</h3>
                                 
-                                <p:tab title="Installation slot" rendered="#{!empty hierarchiesController.selectedNode and hierarchiesController.selectedNodeSlot.hostingSlot}">
-                                    <ui:include src="tabs/installation-slot-tab.xhtml" />
-                                </p:tab>
-                                <p:tab title="Device" rendered="#{!empty hierarchiesController.selectedNode and hierarchiesController.selectedNodeSlot.hostingSlot}">
-                                    <p:commandButton title="Install" label="Install" value="Install" 
-                                        rendered="#{empty hierarchiesController.installedDevice}"
-                                        type="button" onclick="installDevice.show()"
-                                        update=":hierarchies:attributesTable :hierarchies:relationsTable :hierarchies:slotDetails"/>
-                                    
-                                    <ui:include src="tabs/device-tab.xhtml" />
-                                </p:tab>
-                            </p:tabView>
-                        </p:panel>
+                                <p:dataTable id="installationTable"
+                                    value="#{hierarchiesController.installationRecord}"
+                                    var="installationRecord"
+                                    style="width: 100%;"
+                                    rendered="#{not empty hierarchiesController.installedDevice}">
+                                    <p:column
+                                        headerText="Installed device inventory ID">
+                                        <h:link outcome="deviceDetails" value="#{installationRecord.device.serialNumber}" class="link">
+                                            <f:param name="id" value="#{installationRecord.device.id}" />
+                                        </h:link>                                    
+                                    </p:column>
+                                    <p:column headerText="Installation date">
+                                        <h:outputText
+                                            value="#{installationRecord.installDate}">
+                                            <f:convertDateTime
+                                                pattern="dd.MM.yyyy" />
+                                        </h:outputText>
+                                    </p:column>
+                                    <p:column headerText="Uninstall" style="text-align: center;">
+                                        <p:commandButton title="Uninstall"
+                                            label="Uninstall"
+                                            value="Uninstall" ajax="false"
+                                            action="#{hierarchiesController.uninstallDevice(installationRecord.device)}"
+                                            update=":hierarchies:installationDetails"/>
+                                    </p:column>
+                                </p:dataTable>
+                                <p:commandButton title="Install device to this slot"
+                                    value="Install device to this slot"
+                                    rendered="#{empty hierarchiesController.installedDevice}"
+                                    type="button"
+                                    onclick="installDevice.show()"
+                                    update=":hierarchies:installationDetails" />
+                            </p:panel>
+                        </h:panelGroup>
+                    </p:column>
+                </p:row>
+                <p:row>
+                    <!-- 
+                    Added row with 100% width to fill in the space below other tables and to push tables
+                    close together
+                      -->
+                    <p:column style="height: 100%">
                     </p:column>
                 </p:row>
             </p:panelGrid>
         </h:form>
-        
 
         <ui:include src="install-device.xhtml">
             <ui:param name="formId" value="installDeviceForm" />
             <ui:param name="dialogTitle" value="Select device instance" />
             <ui:param name="widgetName" value="installDevice" />
-            <ui:param name="slot" value="#{hierarchiesController.selectedNodeSlot}" />
-            <ui:param name="componentToUpdate" value=":hierarchies:attributesTable :hierarchies:relationsTable :hierarchies:slotDetails" />
+            <ui:param name="slot"
+                value="#{hierarchiesController.selectedNodeSlot}" />
+            <ui:param name="componentToUpdate"
+                value=":hierarchies:attributesTable :hierarchies:relationsTable :hierarchies:installationDetails" />
         </ui:include>
-        
+
     </ui:define>
 </ui:composition>

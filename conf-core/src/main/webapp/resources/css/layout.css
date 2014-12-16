@@ -107,6 +107,16 @@ body {
 .export-grid  img {
     border: none;
 }
+.hierarchies-attributes-cell .ui-datatable-scrollable-body {
+	margin-right: 0 !important;
+	overflow-y: scroll;
+	max-height: 300px;
+	overflow-x: hidden;
+}
+
+.installation-details .ui-widget-content {
+	padding: 0 !important;
+}
 
 .export-grid {
     margin: 5px auto;
@@ -121,7 +131,7 @@ body {
 }
 
 .link {
-    text-decoration: underline;
+    text-decoration: underline !important;
 }
 
 .boxf {

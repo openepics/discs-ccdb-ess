@@ -44,13 +44,13 @@ public class EntityAttributeView {
     private @Nullable DataType type;
     private @Nullable Unit unit;
     private @Nullable Value value;
-    private String kind;
+    private EntityAttributeViewKind kind;
     private boolean hasFile;
     private boolean hasURL;
     private boolean isBuiltIn;
     private Object entity;
 
-    public EntityAttributeView(Object entity, String kind) {
+    public EntityAttributeView(Object entity, EntityAttributeViewKind kind) {
         Preconditions.checkNotNull(kind);
         this.entity = entity;
         setParameters();
@@ -82,14 +82,14 @@ public class EntityAttributeView {
         setPropValueParameters();
         final ComptypePropertyValue comptypePropertyValue = (ComptypePropertyValue) entity;
         if (!comptypePropertyValue.isPropertyDefinition()) {
-            kind = "Device type property";
+            kind = EntityAttributeViewKind.DEVICE_TYPE_PROPERTY;
         } else {
             if (comptypePropertyValue.isDefinitionTargetSlot()) {
-                kind = "Installation slot property";
+                kind = EntityAttributeViewKind.INSTALL_SLOT_PROPERTY;
             } else if (comptypePropertyValue.isDefinitionTargetDevice()) {
-                kind = "Device instance property";
+                kind = EntityAttributeViewKind.DEVICE_PROPERTY;
             } else {
-                kind = "Unknown type property";
+                kind = EntityAttributeViewKind.UNKNOWN_PROPERTY;
             }
         }
     }
@@ -100,7 +100,7 @@ public class EntityAttributeView {
         type = devicePropertyValue.getProperty().getDataType();
         unit = devicePropertyValue.getProperty().getUnit();
         value = devicePropertyValue.getPropValue();
-        kind = "Property";
+        kind =  EntityAttributeViewKind.PROPERTY;
     }
 
     private void setArtifactParameters() {
@@ -109,20 +109,20 @@ public class EntityAttributeView {
         hasFile = artifact.isInternal();
         hasURL = !artifact.isInternal();
         value = hasURL ? new StrValue(artifact.getUri()) : null;
-        kind = "Artifact";
+        kind =  EntityAttributeViewKind.ARTIFACT;
     }
 
     private void setTagParameters() {
         name = ((Tag) entity).getName();
-        kind = "Tag";
+        kind =  EntityAttributeViewKind.TAG;
         value = new StrValue("-");
     }
 
     private void setBuiltInProperty() {
-        name = ((BuiltInProperty) entity).getName();
+        name = ((BuiltInProperty) entity).getName().toString();
         value = ((BuiltInProperty) entity).getValue();
         type = ((BuiltInProperty) entity).getDataType();
-        kind = "Built-in property";
+        kind = EntityAttributeViewKind.BUILT_IN_PROPERTY;
         isBuiltIn = true;
     }
 
@@ -143,7 +143,7 @@ public class EntityAttributeView {
     }
 
     public String getKind() {
-        return kind;
+        return kind.toString();
     }
 
     public Object getEntity() {

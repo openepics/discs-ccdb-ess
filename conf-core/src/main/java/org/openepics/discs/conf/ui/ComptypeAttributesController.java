@@ -40,6 +40,7 @@ import org.openepics.discs.conf.ui.common.AbstractAttributesController;
 import org.openepics.discs.conf.ui.common.UIException;
 import org.openepics.discs.conf.util.UnhandledCaseException;
 import org.openepics.discs.conf.views.BuiltInProperty;
+import org.openepics.discs.conf.views.ComptypeBuiltInPropertyName;
 import org.openepics.discs.conf.views.EntityAttributeView;
 import org.primefaces.context.RequestContext;
 
@@ -57,9 +58,6 @@ import com.google.common.collect.ImmutableList;
 @Named
 @ViewScoped
 public class ComptypeAttributesController extends AbstractAttributesController<ComptypePropertyValue, ComptypeArtifact> {
-
-    // BIP = Built-In Property
-    private static final String BIP_DESCRIPTION = "Description";
 
     @Inject private ComptypeEJB comptypeEJB;
     @Inject private PropertyEJB propertyEJB;
@@ -173,7 +171,7 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
         // refresh the component type from database. This refreshes all related collections as well.
         compType = comptypeEJB.findById(this.compType.getId());
 
-        attributes.add(new EntityAttributeView(new BuiltInProperty(BIP_DESCRIPTION, compType.getDescription(), strDataType)));
+        attributes.add(new EntityAttributeView(new BuiltInProperty(ComptypeBuiltInPropertyName.BIP_DESCRIPTION, compType.getDescription(), strDataType)));
 
         for (ComptypePropertyValue prop : compType.getComptypePropertyList()) {
             attributes.add(new EntityAttributeView(prop));
@@ -249,12 +247,17 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
         isPropertyDefinition = false;
         super.prepareForPropertyValueAdd();
     }
+    
+    @Override
+    protected void populateParentTags() {
+        // Nothing to do since component types don't inherit anything
+    }
 
     @Override
     public void modifyBuiltInProperty() {
         final BuiltInProperty builtInProperty = (BuiltInProperty) selectedAttribute.getEntity();
         final String userValue = propertyValue == null ? null : ((StrValue)propertyValue).getStrValue();
-        switch (builtInProperty.getName()) {
+        switch ((ComptypeBuiltInPropertyName)builtInProperty.getName()) {
         case BIP_DESCRIPTION:
             if ((userValue == null) || !userValue.equals(compType.getDescription())) {
                 compType.setDescription(userValue);

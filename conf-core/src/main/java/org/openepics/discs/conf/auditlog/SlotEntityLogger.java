@@ -65,29 +65,34 @@ public class SlotEntityLogger implements EntityLogger<Slot> {
         }
 
         final Map<String, String> childrenMap = new TreeMap<>();
-        if (slot.getChildrenSlotsPairList() != null) {
-            for (SlotPair slotPair : slot.getChildrenSlotsPairList()) {
+        if (slot.getPairsInWhichThisSlotIsAParentList() != null) {
+            for (SlotPair slotPair : slot.getPairsInWhichThisSlotIsAParentList()) {
                 childrenMap.put(slotPair.getChildSlot().getName(), slotPair.getSlotRelation().getName().toString());
             }
         }
 
         final Map<String, String> parentsMap = new TreeMap<>();
-        if (slot.getParentSlotsPairList() != null) {
-            for (SlotPair slotPair : slot.getParentSlotsPairList()) {
-                parentsMap.put(slotPair.getParentSlot().getName(), slotPair.getSlotRelation().getName().toString());
+        if (slot.getPairsInWhichThisSlotIsAChildList() != null) {
+            for (SlotPair slotPair : slot.getPairsInWhichThisSlotIsAChildList()) {
+                parentsMap.put(slotPair.getParentSlot().getName(), slotPair.getSlotRelation().getIname());
             }
         }
         
         final Map<String, String> installationDeviceMap = new TreeMap<>();
-        if (slot.getInstallationRecordList() != null && slot.getInstallationRecordList().size() > 0) {
-            final InstallationRecord lastInstallationRecord = slot.getInstallationRecordList().get(slot.getInstallationRecordList().size() - 1);
-            
+        InstallationRecord lastInstallationRecord = null;
+        for (InstallationRecord installationRecord : slot.getInstallationRecordList()) {
+            if (lastInstallationRecord == null || installationRecord.getModifiedAt().after(lastInstallationRecord.getModifiedAt())) {
+                lastInstallationRecord = installationRecord;
+            }
+        }
+        
+        if (lastInstallationRecord != null) {
             final String installationDeviceSerial = lastInstallationRecord.getDevice().getSerialNumber();
             installationDeviceMap.put("inventoryID", installationDeviceSerial);
             installationDeviceMap.put("installationDate", lastInstallationRecord.getInstallDate().toString());
             if (lastInstallationRecord.getUninstallDate() != null) {
                 installationDeviceMap.put("uninstallationDate", lastInstallationRecord.getUninstallDate().toString());
-            }            
+            }   
         }
 
         final AuditLogUtil logUtil = new AuditLogUtil(slot)

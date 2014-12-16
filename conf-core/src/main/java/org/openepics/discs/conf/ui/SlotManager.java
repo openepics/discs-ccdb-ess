@@ -112,7 +112,7 @@ public class SlotManager implements Serializable {
 
         selectedProperties = selectedObject.getSlotPropertyList();
         selectedArtifacts = selectedObject.getSlotArtifactList();
-        relatedSlots = selectedObject.getParentSlotsPairList();
+        relatedSlots = selectedObject.getPairsInWhichThisSlotIsAParentList();
         asmSlots = selectedObject.getSlotList();
 
 

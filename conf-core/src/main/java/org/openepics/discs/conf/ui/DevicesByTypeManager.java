@@ -31,9 +31,7 @@ import org.openepics.discs.conf.ejb.ComptypeEJB;
 import org.openepics.discs.conf.ejb.DeviceEJB;
 import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.ComponentType;
-import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.Device;
-import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.util.Utility;
 
 import com.google.common.base.Preconditions;

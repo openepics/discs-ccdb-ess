@@ -122,12 +122,12 @@ public class SlotsTreeBuilder implements Serializable {
 
     private void addSlotNode(SlotTree slotTree, Slot slot, ComponentType installationSlotType) {
         if (!slotTree.hasNode(slot)) {
-            if (slot.getChildrenSlotsPairList().isEmpty()) {
+            if (slot.getPairsInWhichThisSlotIsAChildList().isEmpty()) {
                 throw new IllegalStateException("Illegal state in the database. "
                         + "Please contact the administrator.\nDetails: Slot " + slot.getName() + " is orphaned "
                                 + "(not a child, not involved in any parent-child relationships)");
             }
-            final List<SlotPair> parentSlotPairs = slot.getChildrenSlotsPairList();
+            final List<SlotPair> parentSlotPairs = slot.getPairsInWhichThisSlotIsAChildList();
             for (SlotPair parentSlotPair : parentSlotPairs) {
                 if (parentSlotPair.getSlotRelation().getName() == SlotRelationName.CONTAINS) {
                     final Slot parentSlot = parentSlotPair.getParentSlot();
@@ -176,7 +176,7 @@ public class SlotsTreeBuilder implements Serializable {
             private void addNewNode(Slot slot, SlotView parent, TreeNode parentNode, Device installedDevice,
                     boolean selectable, int order) {
                 final TreeNode newNode = new DefaultTreeNode(
-                        new SlotView(slot, parent, slot.getParentSlotsPairList(), installedDevice, order));
+                        new SlotView(slot, parent, slot.getPairsInWhichThisSlotIsAParentList(), installedDevice, order));
 
                 orderedInsert(parentNode, newNode);
                 addToCache(newNode);

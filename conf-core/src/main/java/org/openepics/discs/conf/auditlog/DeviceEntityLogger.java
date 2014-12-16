@@ -70,14 +70,20 @@ public class DeviceEntityLogger implements EntityLogger<Device> {
         }
         
         final Map<String, String> installationSlotMap = new TreeMap<>();
-        if (device.getInstallationRecordList() != null && device.getInstallationRecordList().size() > 0) {
-            final InstallationRecord lastInstallationRecord = device.getInstallationRecordList().get(device.getInstallationRecordList().size() - 1);
-            
+        
+        InstallationRecord lastInstallationRecord = null;
+        for (InstallationRecord installationRecord : device.getInstallationRecordList()) {
+            if (lastInstallationRecord == null || installationRecord.getModifiedAt().after(lastInstallationRecord.getModifiedAt())) {
+                lastInstallationRecord = installationRecord;
+            }
+        }
+           
+        if (lastInstallationRecord != null) {
             installationSlotMap.put("installationSlot", lastInstallationRecord.getSlot().getName());
             installationSlotMap.put("installationDate", lastInstallationRecord.getInstallDate().toString());
             if (lastInstallationRecord.getUninstallDate() != null) {
                 installationSlotMap.put("uninstallationDate", lastInstallationRecord.getUninstallDate().toString());
-            }        
+            } 
         }
            
         return ImmutableList.of(new AuditLogUtil(device)

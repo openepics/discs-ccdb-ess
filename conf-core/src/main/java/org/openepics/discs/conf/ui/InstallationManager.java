@@ -160,7 +160,7 @@ public class InstallationManager implements Serializable {
             return new ArrayList<>();
         } else {
             final List<String> list = new ArrayList<>();
-            for (SlotPair pair : slot.getChildrenSlotsPairList()) {
+            for (SlotPair pair : slot.getPairsInWhichThisSlotIsAChildList()) {
                 if (pair.getSlotRelation().getName() == SlotRelationName.CONTAINS) {
                     List<String> parentList = buildInstalledSlotInformation(pair.getParentSlot());
                     if (!parentList.isEmpty()) {

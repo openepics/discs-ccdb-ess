@@ -85,8 +85,8 @@ public class SlotPairEJB extends DAO<SlotPair> {
     @Authorized
 	public void delete(SlotPair entity) {
 	    Preconditions.checkNotNull(entity);
-        entity.getChildSlot().getChildrenSlotsPairList().remove(entity);
-        entity.getParentSlot().getParentSlotsPairList().remove(entity);
+        entity.getChildSlot().getPairsInWhichThisSlotIsAChildList().remove(entity);
+        entity.getParentSlot().getPairsInWhichThisSlotIsAParentList().remove(entity);
         em.merge(entity.getChildSlot());
         em.merge(entity.getParentSlot());
         super.delete(entity);
@@ -112,11 +112,17 @@ public class SlotPairEJB extends DAO<SlotPair> {
             highestOrderNumberForNewPair = maxResult.intValue() + 1;
         }
         entity.setSlotOrder(highestOrderNumberForNewPair);
-        childSlot.getParentSlotsPairList().add(entity);
-        parentSlot.getChildrenSlotsPairList().add(entity);
+        childSlot.getPairsInWhichThisSlotIsAChildList().add(entity);
+        parentSlot.getPairsInWhichThisSlotIsAParentList().add(entity);
         super.add(entity);
 	}
     
+    /**
+     * Adds new slot pair but bypasses interceptors that create audit log and check
+     * if user is authorized.
+     * 
+     * @param entity
+     */
     public void addWithoutInterceptors(SlotPair entity) {
         add(entity);
     }
@@ -134,7 +140,7 @@ public class SlotPairEJB extends DAO<SlotPair> {
 	        if (slotPair.getParentSlot().equals(childSlot)) {
 	            return true;
 	        } else {
-	            for (SlotPair parentSlotPair : slotPair.getParentSlot().getChildrenSlotsPairList()) {
+	            for (SlotPair parentSlotPair : slotPair.getParentSlot().getPairsInWhichThisSlotIsAChildList()) {
 	                if (slotPairCreatesLoop(parentSlotPair, childSlot)) {
 	                    return true;
 	                }
@@ -185,7 +191,7 @@ public class SlotPairEJB extends DAO<SlotPair> {
 
 	private void moveUpOrDown(Slot parentSlot, Slot slot, String queryName) {
         SlotPair mySlotPair = null;
-        for (SlotPair pair : slot.getChildrenSlotsPairList()) {
+        for (SlotPair pair : slot.getPairsInWhichThisSlotIsAChildList()) {
             if (pair.getParentSlot().equals(parentSlot) &&
                     pair.getSlotRelation().getName() == SlotRelationName.CONTAINS) {
                 // when moving the slot, this "pair" information gets stale very fast. We need to fetch from DB.

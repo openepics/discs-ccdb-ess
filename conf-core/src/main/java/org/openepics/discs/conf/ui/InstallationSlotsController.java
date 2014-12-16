@@ -117,11 +117,11 @@ public class InstallationSlotsController extends AbstractSlotsController {
         selectedRelationship = null;
         final Slot freshSlot = slotEJB.findById(selectedSlotForRelationships.getSlot().getId());
         relationships = Lists.newArrayList();
-        for (SlotPair slotPair : freshSlot.getChildrenSlotsPairList()) {
+        for (SlotPair slotPair : freshSlot.getPairsInWhichThisSlotIsAChildList()) {
             relationships.add(new SlotRelationshipView(slotPair, selectedSlotForRelationships.getSlot()));
         }
 
-        for (SlotPair slotPair : freshSlot.getParentSlotsPairList()) {
+        for (SlotPair slotPair : freshSlot.getPairsInWhichThisSlotIsAParentList()) {
             relationships.add(new SlotRelationshipView(slotPair, selectedSlotForRelationships.getSlot()));
         }
     }
@@ -200,7 +200,7 @@ public class InstallationSlotsController extends AbstractSlotsController {
             childSlot = selectedSlotForRelationships.getSlot();
             parentSlot = ((SlotView) selectedTreeNodeForRelationshipAdd.getData()).getSlot();
         }
-        // TODO [DONE]do not create the same relationship twice
+
         if (slotPairEJB.findSlotPairsByParentChildRelation(childSlot.getName(), parentSlot.getName(), slotRelation.getName()).size() == 0) {
             final SlotPair newSlotPair = new SlotPair(childSlot, parentSlot, slotRelation);
             if (!slotPairEJB.slotPairCreatesLoop(newSlotPair, childSlot)) {

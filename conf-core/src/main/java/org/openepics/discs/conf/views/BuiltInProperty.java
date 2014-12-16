@@ -10,11 +10,11 @@ import com.google.common.base.Preconditions;
 
 public class BuiltInProperty {
 
-    private String name;
+    private BuiltInPropertyName name;
     private Value value;
     private DataType dataType;
 
-    public BuiltInProperty(String name, Double value, DataType dataType) {
+    public BuiltInProperty(BuiltInPropertyName name, Double value, DataType dataType) {
         this.name = name;
         if (value == null) {
             this.value = null;
@@ -24,7 +24,7 @@ public class BuiltInProperty {
         this.dataType = dataType;
     }
 
-    public BuiltInProperty(String name, String value, DataType dataType) {
+    public BuiltInProperty(BuiltInPropertyName name, String value, DataType dataType) {
         this.name = name;
         if (value == null) {
             this.value = null;
@@ -34,7 +34,7 @@ public class BuiltInProperty {
         this.dataType = dataType;
     }
 
-    public BuiltInProperty(String name, EnumValue value, DataType dataType) {
+    public BuiltInProperty(BuiltInPropertyName name, EnumValue value, DataType dataType) {
         this.name = name;
         this.value = value;
         this.dataType = dataType;
@@ -49,7 +49,7 @@ public class BuiltInProperty {
         this.value = value;
     }
 
-    public String getName() {
+    public BuiltInPropertyName getName() {
         return name;
     }
 

@@ -15,6 +15,7 @@
 package org.openepics.discs.conf.ui;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Date;
 import java.util.Set;
 
@@ -41,7 +42,9 @@ import org.openepics.discs.conf.ui.common.AbstractAttributesController;
 import org.openepics.discs.conf.ui.common.UIException;
 import org.openepics.discs.conf.util.UnhandledCaseException;
 import org.openepics.discs.conf.views.BuiltInProperty;
+import org.openepics.discs.conf.views.DeviceBuiltInPropertyName;
 import org.openepics.discs.conf.views.EntityAttributeView;
+import org.openepics.discs.conf.views.EntityAttributeViewKind;
 import org.openepics.seds.api.datatypes.SedsEnum;
 import org.openepics.seds.core.Seds;
 import org.primefaces.context.RequestContext;
@@ -55,15 +58,6 @@ import org.primefaces.context.RequestContext;
 @Named
 @ViewScoped
 public class DeviceDetailsAttributesController extends AbstractAttributesController<DevicePropertyValue, DeviceArtifact> {
-
-    // BIP = Built-In Property
-    private static final String BIP_DESCRIPTION = "Description";
-    private static final String BIP_LOCATION = "Location";
-    private static final String BIP_MANUFACTURER = "Manufacturer";
-    private static final String BIP_MANUFACTURER_MODEL = "Manufacturer model";
-    private static final String BIP_MANUFACTURER_SERIAL_NO = "Manufacturer serial #";
-    private static final String BIP_P_O_REFERENCE = "Purchase order reference";
-    private static final String BIP_STATUS = "Status";
 
     @Inject private DeviceEJB deviceEJB;
 
@@ -82,7 +76,8 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
 
             parentProperties = device.getComponentType().getComptypePropertyList();
             parentArtifacts = device.getComponentType().getComptypeArtifactList();
-            parentTags = device.getComponentType().getTags();
+            populateParentTags();
+
             entityName = device.getSerialNumber();
 
             constructDeviceStatusEnum();
@@ -129,45 +124,53 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
         // refresh the device from database. This refreshes all related collections as well.
         device = deviceEJB.findById(device.getId());
 
-        attributes.add(new EntityAttributeView(new BuiltInProperty(BIP_DESCRIPTION, device.getDescription(), strDataType)));
-        attributes.add(new EntityAttributeView(new BuiltInProperty(BIP_LOCATION, device.getLocation(), strDataType)));
-        attributes.add(new EntityAttributeView(new BuiltInProperty(BIP_P_O_REFERENCE, device.getPurchaseOrder(), strDataType)));
-        attributes.add(new EntityAttributeView(new BuiltInProperty(BIP_STATUS, new EnumValue(device.getStatus().name()), enumDataType)));
-        attributes.add(new EntityAttributeView(new BuiltInProperty(BIP_MANUFACTURER, device.getManufacturer(), strDataType)));
-        attributes.add(new EntityAttributeView(new BuiltInProperty(BIP_MANUFACTURER_MODEL, device.getManufacturerModel(), strDataType)));
-        attributes.add(new EntityAttributeView(new BuiltInProperty(BIP_MANUFACTURER_SERIAL_NO, device.getManufacturerSerialNumber(), strDataType)));
+        attributes.add(new EntityAttributeView(new BuiltInProperty(DeviceBuiltInPropertyName.BIP_DESCRIPTION, device.getDescription(), strDataType)));
+        attributes.add(new EntityAttributeView(new BuiltInProperty(DeviceBuiltInPropertyName.BIP_LOCATION, device.getLocation(), strDataType)));
+        attributes.add(new EntityAttributeView(new BuiltInProperty(DeviceBuiltInPropertyName.BIP_P_O_REFERENCE, device.getPurchaseOrder(), strDataType)));
+        attributes.add(new EntityAttributeView(new BuiltInProperty(DeviceBuiltInPropertyName.BIP_STATUS, new EnumValue(device.getStatus().name()), enumDataType)));
+        attributes.add(new EntityAttributeView(new BuiltInProperty(DeviceBuiltInPropertyName.BIP_MANUFACTURER, device.getManufacturer(), strDataType)));
+        attributes.add(new EntityAttributeView(new BuiltInProperty(DeviceBuiltInPropertyName.BIP_MANUFACTURER_MODEL, device.getManufacturerModel(), strDataType)));
+        attributes.add(new EntityAttributeView(new BuiltInProperty(DeviceBuiltInPropertyName.BIP_MANUFACTURER_SERIAL_NO, device.getManufacturerSerialNumber(), strDataType)));
 
         for (ComptypePropertyValue parentProp : parentProperties) {
-            if (parentProp.getPropValue() != null) attributes.add(new EntityAttributeView(parentProp));
+            if (parentProp.getPropValue() != null) attributes.add(new EntityAttributeView(parentProp, EntityAttributeViewKind.DEVICE_TYPE_PROPERTY));
         }
 
         for (ComptypeArtifact parentArtifact : parentArtifacts) {
-            attributes.add(new EntityAttributeView(parentArtifact));
+            attributes.add(new EntityAttributeView(parentArtifact, EntityAttributeViewKind.DEVICE_TYPE_ARTIFACT));
         }
 
         for (Tag parentTag : parentTags) {
-            attributes.add(new EntityAttributeView(parentTag));
+            attributes.add(new EntityAttributeView(parentTag, EntityAttributeViewKind.DEVICE_TYPE_TAG)); 
         }
 
         for (DevicePropertyValue propVal : device.getDevicePropertyList()) {
-            attributes.add(new EntityAttributeView(propVal));
+            attributes.add(new EntityAttributeView(propVal, EntityAttributeViewKind.DEVICE_PROPERTY));
         }
 
-        // TODO [DONE]check whether to show inherited artifacts and prevent their deletion
         for (DeviceArtifact artf : device.getDeviceArtifactList()) {
-            attributes.add(new EntityAttributeView(artf));
+            attributes.add(new EntityAttributeView(artf, EntityAttributeViewKind.DEVICE_ARTIFACT));
         }
 
-        // TODO solve and add inherited tags.
         for (Tag tag : device.getTags()) {
-            attributes.add(new EntityAttributeView(tag));
+            attributes.add(new EntityAttributeView(tag, EntityAttributeViewKind.DEVICE_TAG));
+        }
+    }
+    
+    @Override
+    protected void populateParentTags() {
+        parentTags = new HashSet<Tag>();
+        for (Tag parentTag : device.getComponentType().getTags()) {
+            if (!device.getTags().contains(parentTag)) {
+                parentTags.add(parentTag);
+            }
         }
     }
 
     @Override
     public void modifyBuiltInProperty() {
         final BuiltInProperty builtInProperty = (BuiltInProperty) selectedAttribute.getEntity();
-        final String builtInPropertyName = builtInProperty.getName();
+        final DeviceBuiltInPropertyName builtInPropertyName = (DeviceBuiltInPropertyName)builtInProperty.getName();
 
         final String userValueStr = (propertyValue == null ? null
                 : (propertyValue instanceof StrValue ? ((StrValue)propertyValue).getStrValue() : null));

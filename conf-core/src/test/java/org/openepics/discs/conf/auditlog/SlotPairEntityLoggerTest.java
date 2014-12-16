@@ -40,8 +40,8 @@ public class SlotPairEntityLoggerTest {
     public void setUp() throws Exception {
         parentSlot.setComponentType(new ComponentType());
         childSlot.setComponentType(new ComponentType());
-        parentSlot.getChildrenSlotsPairList().add(slotPair);
-        childSlot.getParentSlotsPairList().add(slotPair);
+        parentSlot.getPairsInWhichThisSlotIsAParentList().add(slotPair);
+        childSlot.getPairsInWhichThisSlotIsAChildList().add(slotPair);
     }
 
     @Test
@@ -53,7 +53,7 @@ public class SlotPairEntityLoggerTest {
     public void testSerializeEntity() {
         final List<AuditRecord> auditRecords = spel.auditEntries(slotPair, EntityTypeOperation.CREATE);
 
-        final String RESULT_1 = "{\"hostingSlot\":false,\"parentSlots\":[{\"parentSlot\":\"CONTAINS\"}]}";
+        final String RESULT_1 = "{\"hostingSlot\":false,\"parentSlots\":[{\"parentSlot\":\"contained in\"}]}";
         final String RESULT_2 = "{\"hostingSlot\":false,\"childrenSlots\":[{\"childSlot\":\"CONTAINS\"}]}";
 
         assertEquals(RESULT_1, auditRecords.get(0).getEntry());

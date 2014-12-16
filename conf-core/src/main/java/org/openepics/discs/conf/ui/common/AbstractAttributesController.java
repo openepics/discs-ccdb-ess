@@ -51,9 +51,11 @@ import org.openepics.discs.conf.ent.Artifact;
 import org.openepics.discs.conf.ent.ComptypeArtifact;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.ConfigurationEntity;
+import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ent.DataType;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyValue;
+import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.ent.Tag;
 import org.openepics.discs.conf.ent.values.Value;
 import org.openepics.discs.conf.util.BlobStore;
@@ -63,6 +65,7 @@ import org.openepics.discs.conf.util.PropertyValueUIElement;
 import org.openepics.discs.conf.util.UnhandledCaseException;
 import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.views.BuiltInProperty;
+import org.openepics.discs.conf.views.BuiltInPropertyName;
 import org.openepics.discs.conf.views.EntityAttributeView;
 import org.openepics.seds.api.datatypes.SedsEnum;
 import org.openepics.seds.api.datatypes.SedsType;
@@ -102,7 +105,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
     protected List<String> enumSelections;
     protected List<Property> filteredProperties;
     private boolean propertyNameChangeDisabled;
-    protected String builtInProperteryName;
+    protected BuiltInPropertyName builtInProperteryName;
     protected String builtInPropertyDataType;
     protected PropertyValueUIElement propertyValueUIElement;
     protected boolean isPropertyDefinition;
@@ -168,7 +171,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
         propertyValueInstance.setProperty(property);
         propertyValueInstance.setPropValue(propertyValue);
         setPropertyValueParent(propertyValueInstance);
-
+        
         if (propertyValueInstance instanceof ComptypePropertyValue) {
             if (isPropertyDefinition) {
                 final ComptypePropertyValue ctPropValueInstance = ((ComptypePropertyValue) propertyValueInstance);
@@ -297,7 +300,9 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
             propertyValue = selectedPropertyValue.getPropValue();
 
             if (selectedAttribute.getEntity() instanceof PropertyValue) {
-                propertyNameChangeDisabled = isPropertyValueInherited((PropertyValue)selectedAttribute.getEntity());
+                propertyNameChangeDisabled = selectedAttribute.getEntity() instanceof DevicePropertyValue
+                        || selectedAttribute.getEntity() instanceof SlotPropertyValue
+                        || isPropertyValueInherited((PropertyValue)selectedAttribute.getEntity()) ;
             }
 
             propertyValueUIElement = Conversion.getUIElementFromProperty(property);
@@ -410,7 +415,6 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
     }
 
     public boolean canDelete(Object attribute) {
-        // TODO [DONE] check whether to show inherited artifacts and prevent their deletion
         return (attribute instanceof Artifact && !(attribute instanceof  ComptypeArtifact)) || (attribute instanceof PropertyValue
                 && !isPropertyValueInherited((PropertyValue)attribute)) || (attribute instanceof Tag && !isTagInherited((Tag)attribute));
     }
@@ -444,9 +448,8 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
     }
 
     public boolean canEdit(Object attribute) {
-        return (attribute instanceof BuiltInProperty) || attribute instanceof PropertyValue
-                || (attribute instanceof Artifact && !(attribute instanceof  ComptypeArtifact))
-                && !(attribute instanceof ComptypePropertyValue) ;
+        return attribute instanceof BuiltInProperty || (attribute instanceof PropertyValue && !(attribute instanceof ComptypePropertyValue))
+                || (attribute instanceof Artifact && !(attribute instanceof  ComptypeArtifact));
     }
 
     protected abstract void setPropertyValueParent(T child);
@@ -463,6 +466,8 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
     protected abstract void filterProperties();
 
     protected abstract void populateAttributesList();
+    
+    protected abstract void populateParentTags();
 
     private void internalPopulateAttributesList() {
         fillTagsAutocomplete();
@@ -817,7 +822,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
         }
     }
 
-    public String getBuiltInProperteryName() {
+    public BuiltInPropertyName getBuiltInProperteryName() {
         return builtInProperteryName;
     }
 
