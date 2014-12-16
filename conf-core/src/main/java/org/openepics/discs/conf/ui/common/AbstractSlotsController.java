@@ -176,7 +176,6 @@ public abstract class AbstractSlotsController implements Serializable{
                 break;
             }
         }
-        // TODO see what is the easiest way to update only the parent of the moved node
     }
 
     /** The action event to be called when the user presses the "move down" action icon. This action moves the current
@@ -211,7 +210,6 @@ public abstract class AbstractSlotsController implements Serializable{
                 break;
             }
         }
-        // TODO see what is the easiest way to update only the parent of the moved node
     }
 
     private void clearSelectedNode() {

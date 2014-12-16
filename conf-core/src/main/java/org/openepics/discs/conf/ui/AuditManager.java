@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 
 import javax.ejb.EJB;
 import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.openepics.discs.conf.ejb.AuditRecordEJB;
@@ -32,10 +33,7 @@ public class AuditManager implements Serializable {
     @SuppressWarnings("unused")
     private static final Logger logger = Logger.getLogger(AuditManager.class.getCanonicalName());
 
-    @EJB private AuditRecordEJB auditRecordEJB;
-
-    private List<AuditRecord> objects;
-    private List<AuditRecord> filteredObjects;
+    @Inject private AuditRecordEJB auditRecordEJB;
 
     private List<AuditRecord> auditRecordsForEntity;
     private AuditRecord displayRecord;
@@ -44,22 +42,6 @@ public class AuditManager implements Serializable {
      * Creates a new instance of AuditManager
      */
     public AuditManager() {
-    }
-
-    // TODO remove after new-webapp becomes the only user.
-    public List<AuditRecord> getObjects() {
-        if (objects == null) objects = auditRecordEJB.findAll();
-        return objects;
-    }
-
-    // TODO remove after new-webapp becomes the only user.
-    public List<AuditRecord> getFilteredObjects() {
-        return filteredObjects;
-    }
-
-    // TODO remove after new-webapp becomes the only user.
-    public void setFilteredObjects(List<AuditRecord> filteredObjects) {
-        this.filteredObjects = filteredObjects;
     }
 
     /**

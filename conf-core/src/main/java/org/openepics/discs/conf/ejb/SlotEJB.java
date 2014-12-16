@@ -132,7 +132,6 @@ public class SlotEJB extends DAO<Slot> {
      * @return {@link List} of slots matching the query
      */
     public List<Slot> relatedChildren(String compName) {
-        // XXX Optimization opportunity - find "component type" and "slot relation" objects first, then scan the table
         return em.createQuery("SELECT cp.childSlot FROM SlotPair cp "
                               + "WHERE cp.parentSlot.name = :compname AND cp.slotRelation.name = :relname", Slot.class)
                .setParameter("compname", compName)

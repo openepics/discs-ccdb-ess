@@ -46,12 +46,12 @@
                     </p:commandLink>
                     <p:commandLink ajax="true" title="Move up" rendered="#{installationSlot.isHostingSlot}"
                             actionListener="#{installationSlotsController.moveUp}" disabled="#{installationSlot.first}"
-                            update=":installationSlotsForm:installationSlotsTree">
+                            update=":installationSlotsForm:installationSlotsTree" oncomplete="resizePanel();">
                         <h:outputText styleClass="ui-icon ui-icon-arrowthick-1-n" style="display: inline-block !important; margin-right: 6px;" />
                     </p:commandLink>
                     <p:commandLink ajax="true" title="Move down" rendered="#{installationSlot.isHostingSlot}"
                             actionListener="#{installationSlotsController.moveDown}" disabled="#{installationSlot.last}"
-                            update=":installationSlotsForm:installationSlotsTree">
+                            update=":installationSlotsForm:installationSlotsTree" oncomplete="resizePanel();">
                         <h:outputText styleClass="ui-icon ui-icon-arrowthick-1-s" style="display: inline-block !important; margin-right: 6px;" />
                     </p:commandLink>
                     <p:commandLink ajax="true" title="Delete" rendered="#{installationSlot.isHostingSlot}" 
