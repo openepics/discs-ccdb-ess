@@ -1,0 +1,2 @@
+#!bin/sh
+/usr/bin/psql -a -f test-init.sql ccdb discs_ccdb
