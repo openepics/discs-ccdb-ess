@@ -31,7 +31,7 @@ public enum EntityAttributeViewKind {
     CONTAINER_SLOT_PROPERTY("Container property"),
     CONTAINER_SLOT_ARTIFACT("Container artifact"),
     CONTAINER_SLOT_TAG("Container tag"),
-    DEVICE_PROPERTY("Device property"),
+    DEVICE_PROPERTY("Device instance property"),
     DEVICE_ARTIFACT("Device artifact"),
     DEVICE_TAG("Device tag"),
     DEVICE_TYPE_PROPERTY("Device type property"),

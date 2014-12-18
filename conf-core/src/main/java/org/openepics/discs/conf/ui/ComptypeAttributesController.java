@@ -42,6 +42,7 @@ import org.openepics.discs.conf.util.UnhandledCaseException;
 import org.openepics.discs.conf.views.BuiltInProperty;
 import org.openepics.discs.conf.views.ComptypeBuiltInPropertyName;
 import org.openepics.discs.conf.views.EntityAttributeView;
+import org.openepics.discs.conf.views.EntityAttributeViewKind;
 import org.primefaces.context.RequestContext;
 
 import com.google.common.base.Predicate;
@@ -313,6 +314,12 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
                 }
             };
         }
+    }
+    
+    public boolean canEdit(String attributeKind) {
+        return !(attributeKind.equals(EntityAttributeViewKind.INSTALL_SLOT_PROPERTY.toString())) && 
+                !(attributeKind.equals(EntityAttributeViewKind.DEVICE_PROPERTY.toString())) && 
+                !(attributeKind.equals(EntityAttributeViewKind.TAG.toString()));
     }
 }
 

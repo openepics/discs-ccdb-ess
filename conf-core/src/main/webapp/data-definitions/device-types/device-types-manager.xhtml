@@ -11,7 +11,7 @@
 	            oncomplete="addDeviceType.show()" />
 	        <p:dataTable widgetVar="deviceTypeTableVar" var="deviceType" value="#{componentTypeManager.objects}" resizableColumns="true" 
                 style="table-layout: fixed; word-wrap: break-word; margin-top: 1em;" filteredValue="#{componentTypeManager.filteredObjects}"
-	            rows="15" paginator="true" paginatorPosition="bottom">
+	            rows="15" paginator="true" paginatorPosition="bottom" sortBy="#{deviceType.name}" sortOrder="ascending">
 	            <p:column headerText="Name" sortBy="#{deviceType.name}" filterBy="#{deviceType.name}" width="20%">
 	                <h:outputText value="#{deviceType.name}" />
 	            </p:column>

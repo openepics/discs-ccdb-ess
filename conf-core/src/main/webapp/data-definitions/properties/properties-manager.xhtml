@@ -11,7 +11,7 @@
             <p:dataTable widgetVar="propertiesTableVar" var="property" id="propertiesTable" value="#{propertyManager.properties}" 
                     resizableColumns="true" style="table-layout: fixed; word-wrap: break-word;" 
                     filteredValue="#{propertyManager.filteredProperties}"
-                    rows="15" paginator="true" paginatorPosition="bottom">
+                    rows="15" paginator="true" paginatorPosition="bottom" sortBy="#{property.name}" sortOrder="ascending">
                 <p:column headerText="Name" sortBy="#{property.name}" filterBy="#{property.name}" width="20%">
                     <h:outputText value="#{property.name}" />
                 </p:column>
