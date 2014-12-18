@@ -22,28 +22,54 @@
                             <f:ajax event="click" listener="#{slotAttributesController.saveNewName()}" />
                         </p:commandButton>
                     </h3>
-
-                    <h:panelGroup layout="block" style="margin-bottom: 1em;" rendered="#{slotAttributesController.installationSlotFull}">
-                        <h:outputText value="Device type: #{slotAttributesController.slot.componentType.name}" />
-                        <h:outputText value="(device installed)" style="color: #aaaaaa; margin-left: 2em;" />
-                    </h:panelGroup>
-                    <h:panelGroup layout="block" style="margin-bottom: 1em;" rendered="#{!slotAttributesController.installationSlotFull}">
-                        <h:outputText value="Device type:" style="margin-right: 1em;" />
-                        <p:selectOneMenu id="compTypeSelect" value="#{slotAttributesController.deviceType}" 
-                                var="dev" converter="#{componentTypeConverter}" required="true" 
-                                requiredMessage="Please select a device type" style="vertical-align: middle;">
-                            <p:ajax event="change" update="saveButton"/>
-                            <f:selectItems value="#{componentTypeManager.objects}" var="deviceType" 
-                                itemLabel="#{deviceType.name}" itemValue="#{deviceType}" />
-                            <p:column>
-                                #{dev.name}
-                            </p:column>
-                        </p:selectOneMenu>
-                        <p:message for="compTypeSelect"/>
-                    </h:panelGroup>
                     
-
-                    <h:outputText value="Parent: #{slotAttributesController.parentSlot}" style="width: 100%;" /><br />
+                    <p:panelGrid styleClass="basicDetails">
+                        <p:row rendered="#{slotAttributesController.installationSlotFull}">
+                            <p:column>
+                                <h:outputText value="Device type:" />
+                            </p:column>
+                            <p:column>
+                                <h:panelGroup>
+                                    <h:outputText value="#{slotAttributesController.slot.componentType.name}" />
+                                    <h:outputText value="(device installed)" style="color: #aaaaaa; margin-left: 2em;" />
+                                </h:panelGroup>
+                            </p:column>
+                        </p:row>
+                        <p:row rendered="#{!slotAttributesController.installationSlotFull}">
+                            <p:column>
+                                <h:outputText value="Device type:" style="margin-right: 1em;" />
+                            </p:column>
+                            <p:column>
+                                <p:selectOneMenu id="compTypeSelect" value="#{slotAttributesController.deviceType}" 
+                                        var="dev" converter="#{componentTypeConverter}" required="true" 
+                                        requiredMessage="Please select a device type" style="vertical-align: middle; width: 8em">
+                                    <p:ajax event="change" update="saveButton"/>
+                                    <f:selectItems value="#{componentTypeManager.objects}" var="deviceType" 
+                                        itemLabel="#{deviceType.name}" itemValue="#{deviceType}" />
+                                    <p:column>
+                                        #{dev.name}
+                                    </p:column>
+                                </p:selectOneMenu>
+                                <p:message for="compTypeSelect"/>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>                        
+                                <h:outputText value="Parent:" /> 
+                            </p:column>
+                            <p:column>
+                                <h:outputText value="#{slotAttributesController.parentSlot}" style="width: 100%;" />
+                            </p:column>
+                        </p:row>
+                        <p:row> 
+                            <p:column>  
+                                <h:outputText value="Path:" />
+                            </p:column>
+                            <p:column>
+                                <h:outputText value="#{slotAttributesController.slotPath}" style="width: 100%;" />
+                            </p:column>
+                        </p:row>
+                    </p:panelGrid>
                 </h:panelGroup>
 
                 <h:panelGroup layout="block">
@@ -100,7 +126,7 @@
                                 <h:outputText styleClass="ui-icon ui-icon-extlink" style="display: inline-block !important; margin-right: 6px;" />
                             </h:outputLink>
                         </p:column>
-                    </p:dataTable>
+                    </p:dataTable>                    
                 </h:panelGroup>
             </h:form>
         </h:panelGroup>

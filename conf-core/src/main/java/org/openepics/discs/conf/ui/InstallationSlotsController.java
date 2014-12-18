@@ -106,10 +106,14 @@ public class InstallationSlotsController extends AbstractSlotsController {
 
     @Override
     public void onSlotAdd() {
-        newSlot = new Slot(name, true);
-        newSlot.setDescription(description);
-        newSlot.setComponentType(deviceType);
-        super.onSlotAdd();
+        if (slotEJB.isInstallationSlotNameUnique(name)) {
+            newSlot = new Slot(name, true);
+            newSlot.setDescription(description);
+            newSlot.setComponentType(deviceType);
+            super.onSlotAdd();
+        } else {
+            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Failure", "Installation slot could not be added since and instance of installation slot with this name already exists");
+        }
     }
 
     private void prepareRelationshipsPopup() {

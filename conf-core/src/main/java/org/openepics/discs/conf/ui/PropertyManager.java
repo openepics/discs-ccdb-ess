@@ -89,6 +89,12 @@ public class PropertyManager implements Serializable {
         try {
             propertyEJB.add(propertyToAdd);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "New property has been created");
+        } catch (Exception e) {
+            if (Utility.causedByPersistenceException(e)) {
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Failure", "Property could not be added because a device instance with same name already exists.");
+            } else {
+                throw e;
+            }
         } finally {
             init();
         }

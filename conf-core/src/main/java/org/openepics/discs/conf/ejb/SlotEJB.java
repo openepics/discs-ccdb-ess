@@ -23,6 +23,7 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 import javax.ejb.Stateless;
+import javax.faces.application.FacesMessage;
 import javax.inject.Inject;
 
 import org.openepics.discs.conf.auditlog.Audit;
@@ -37,6 +38,7 @@ import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.ent.SlotRelationName;
 import org.openepics.discs.conf.security.Authorized;
 import org.openepics.discs.conf.util.CRUDOperation;
+import org.openepics.discs.conf.util.Utility;
 
 /**
  * DAO Service for accessing Installation Slot entities ( {@link Slot} )
@@ -189,6 +191,10 @@ public class SlotEJB extends DAO<Slot> {
                 slotPropertyValue.setSlot(newSlot);
                 addChild(slotPropertyValue);
             }
-        }
+        }        
+    }
+    
+    public boolean isInstallationSlotNameUnique(String newSlotName) {
+        return em.createNamedQuery("Slot.findByNameAndHosting", Slot.class).setParameter("name", newSlotName).setParameter("isHostingSlot", true).getResultList().size() == 0;
     }
 }

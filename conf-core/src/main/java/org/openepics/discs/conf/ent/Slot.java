@@ -39,6 +39,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
     @NamedQuery(name = "Slot.findAll", query = "SELECT s FROM Slot s"),
     @NamedQuery(name = "Slot.findBySlotId", query = "SELECT s FROM Slot s WHERE s.id = :id"),
     @NamedQuery(name = "Slot.findByName", query = "SELECT s FROM Slot s WHERE s.name = :name"),
+    @NamedQuery(name = "Slot.findByNameAndHosting", query = "SELECT s FROM Slot s WHERE s.name = :name AND s.isHostingSlot = :isHostingSlot"),
     @NamedQuery(name = "Slot.findByNameContaining", query = "SELECT s FROM Slot s WHERE s.name LIKE :name"),
     @NamedQuery(name = "Slot.findByIsHostingSlot", query = "SELECT s FROM Slot s "
             + "WHERE s.isHostingSlot = :isHostingSlot"),

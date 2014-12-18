@@ -11,13 +11,14 @@
             <p:panelGrid id="hierarchiesContainer" style="width: 100%;"
                 styleClass="noBorders">
                 <p:row>
-                    <p:column rowspan="4">
+                    <p:column rowspan="4" id="test">
                         <p:treeTable
+                            id="tree"
                             value="#{hierarchiesController.rootNode}"
                             var="installationSlot"
                             selectionMode="single"
                             selection="#{hierarchiesController.selectedNode}"
-                            scrollable="true" scrollHeight="800"
+                            scrollable="true"
                             scrollWidth="auto" style="width: 300px;">
                             <p:ajax event="select"
                                 update=":hierarchies:attributesTable :hierarchies:relationsTable :hierarchies:installationDetails" />

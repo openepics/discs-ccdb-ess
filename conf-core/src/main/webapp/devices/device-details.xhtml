@@ -20,10 +20,11 @@
                         <f:ajax event="click" listener="#{deviceDetailsAttributesController.saveNewName()}" />
                     </p:commandButton>
                 </h3>
-                        
-                <h:outputText value="Device type: #{deviceDetailsAttributesController.device.componentType.name}" />
-                <br />
-                <br />
+                 
+                <p:panelGrid columns="2" styleClass="basicDetails">       
+                    <h:outputText value="Device type:" />
+                    <h:outputText value="#{deviceDetailsAttributesController.device.componentType.name}" />
+                </p:panelGrid>
             </h:panelGroup>
 
             <h:panelGroup style="vertical-align: top; margin-top: 1em;" layout="block">

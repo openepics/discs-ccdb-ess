@@ -16,24 +16,39 @@
         <title>Controls Configuration Database</title>
         <script type="text/javascript">
             function resizePanel() {
-                var menusHeight = $('#top').outerHeight()+50;
-                var headerHeight = $('#containersForm\\:containersTree\\:name').outerHeight();
+                var menusHeight = $('#top').outerHeight(true);
+                var headerHeight = $('#containersForm\\:containersTree\\:name').outerHeight(true);
+                var addSlotHeight = $('#containersForm\\:addSlot').outerHeight(true);
+                var em = $('#top').outerHeight(true) - $('#top').outerHeight();
 
                 if (headerHeight == null) {
-                    headerHeight = $('#installationSlotsForm\\:installationSlotsTree\\:name').outerHeight();
+                    headerHeight = $('#installationSlotsForm\\:installationSlotsTree\\:name').outerHeight(true);
+                    addSlotHeight = $('#installationSlotsForm\\:addSlot').outerHeight(true);
                 }
-                
-                menusHeight = menusHeight+$('#addSlot').outerHeight() + headerHeight + 7;
-                $('.ui-treetable-scrollable-body').css({"height":window.innerHeight-menusHeight});  
+               
+                var totalMenusHeight = menusHeight + headerHeight + addSlotHeight + 2*em;
+                $('.ui-treetable-scrollable-body').css({"height":window.innerHeight-totalMenusHeight});  
+            }
+            
+            function resizeHierarchiesTree() {
+                var menusHeight = $('#top').outerHeight(true);
+                var headerHeight = $('#hierarchies\\:tree\\:name').outerHeight(true);
+                var em = $('#top').outerHeight(true) - $('#top').outerHeight();
+               
+                var totalMenusHeight = menusHeight + headerHeight + 3*em;
+                $('.ui-treetable-scrollable-body').css({"height":window.innerHeight-totalMenusHeight});  
             }
 
             $(window).resize(function() {
                 resizePanel();
+                resizeHierarchiesTree();
                 });
 
             $(window).ready(function() {
                 resizePanel();
+                resizeHierarchiesTree();
             });
+            
         </script>
     </h:head>
 
@@ -49,7 +64,7 @@
             </ui:insert>
         </h:panelGroup>
 
-        <h:panelGroup id="content" layout="block" >
+        <h:panelGroup id="content" layout="block">
             <ui:insert name="content">Content</ui:insert>
         </h:panelGroup>
         

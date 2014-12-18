@@ -88,6 +88,7 @@ public abstract class AbstractSlotsController implements Serializable{
         slotEJB.addSlotToParentWithPropertyDefs(newSlot, parentSlot, false);
 
         updateRootNode();
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Slot created", "Slot has been successfully created");
     }
 
     /**
@@ -99,6 +100,7 @@ public abstract class AbstractSlotsController implements Serializable{
             selectedSlotView = null;
             selectedNode = null;
             updateRootNode();
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Slot deleted", "Slot has been successfully deleted");
         } else {
             Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Deletion failed", "Installation slot could not be deleted because it has a device installed on it.");
         }
