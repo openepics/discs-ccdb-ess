@@ -85,7 +85,7 @@
                     type="button" update=":installDeviceForm:installationDetails" onclick="installDevice.show()" 
                     disabled="#{installationManager.isDeviceInstalled(deviceDetailsAttributesController.device)}" />
                 <p:commandButton title="Uninstall" label="Uninstall" value="Uninstall" 
-                    update=":deviceDetailsForm:installationDetails" 
+                    update=":deviceDetailsForm:installationDetails :installDeviceForm" 
                     action="#{installationManager.uninstallDevice(deviceDetailsAttributesController.device)}" 
                     disabled="#{!installationManager.isDeviceInstalled(deviceDetailsAttributesController.device)}" />
                 <p:dataTable 
