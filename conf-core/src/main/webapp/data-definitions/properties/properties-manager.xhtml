@@ -8,7 +8,7 @@
         <h:form id="propertiesForm">
             <p:commandButton ajax="true" actionListener="#{propertyManager.prepareAddPopup()}" value="Add new"
                     oncomplete="addProperty.show()" style="margin-bottom: 1em;" />
-            <p:dataTable var="property" id="propertiesTable" value="#{propertyManager.properties}" 
+            <p:dataTable widgetVar="propertiesTableVar" var="property" id="propertiesTable" value="#{propertyManager.properties}" 
                     resizableColumns="true" style="table-layout: fixed; word-wrap: break-word;" 
                     filteredValue="#{propertyManager.filteredProperties}"
                     rows="15" paginator="true" paginatorPosition="bottom">
@@ -51,6 +51,7 @@
                 <ui:param name="controller" value="#{propertyManager}" />
                 <ui:param name="submitHandler" value="onDelete" />
                 <ui:param name="formToUpdate" value=":propertiesForm" />
+                <ui:param name="resetFilter" value="propertiesTableVar.filter()" />               
         </ui:include>
         
         <ui:include src="../add-or-modify-dialogs/property.xhtml">

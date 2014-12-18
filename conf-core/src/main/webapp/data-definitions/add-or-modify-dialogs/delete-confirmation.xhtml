@@ -13,7 +13,7 @@
 			<br />
 
 			<p:commandButton value="No" style="float: right; margin-top: 1em; margin-left: 1ex;" onclick="#{widgetName}.hide();" />
-			<p:commandButton value="Yes" style="float: right; margin-top: 1em;" oncomplete="#{widgetName}.hide(); resizePanel()" 
+			<p:commandButton value="Yes" style="float: right; margin-top: 1em;" oncomplete="#{widgetName}.hide(); resizePanel(); #{resetFilter}" 
                     ajax="true" action="#{controller[submitHandler]}" update="#{formToUpdate}" />
 		</p:dialog>
 	</h:form>

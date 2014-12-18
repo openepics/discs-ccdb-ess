@@ -9,7 +9,7 @@
 	        <p:commandButton ajax="true"
 	            actionListener="#{componentTypeManager.prepareAddPopup()}" value="Add new"
 	            oncomplete="addDeviceType.show()" />
-	        <p:dataTable var="deviceType" value="#{componentTypeManager.objects}" resizableColumns="true" 
+	        <p:dataTable widgetVar="deviceTypeTableVar" var="deviceType" value="#{componentTypeManager.objects}" resizableColumns="true" 
                 style="table-layout: fixed; word-wrap: break-word; margin-top: 1em;" filteredValue="#{componentTypeManager.filteredObjects}"
 	            rows="15" paginator="true" paginatorPosition="bottom">
 	            <p:column headerText="Name" sortBy="#{deviceType.name}" filterBy="#{deviceType.name}" width="20%">
@@ -43,6 +43,7 @@
                 <ui:param name="controller" value="#{componentTypeManager}" />
                 <ui:param name="submitHandler" value="onDelete" />
                 <ui:param name="formToUpdate" value=":deviceTypesForm" />
+                <ui:param name="resetFilter" value="deviceTypeTableVar.filter()" />
         </ui:include>
         
 	    <ui:include src="../add-or-modify-dialogs/device-type.xhtml">
