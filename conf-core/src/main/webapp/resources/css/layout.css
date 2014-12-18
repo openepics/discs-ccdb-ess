@@ -39,6 +39,19 @@ body {
     vertical-align: top;
 }
 
+.basicDetails, .basicDetails>tbody>tr {
+    background: none;
+    border: none;
+    vertical-align: top;
+}
+
+.basicDetails>tbody>tr>td {
+    background: none;
+    border: none;
+    vertical-align: top;
+    padding-left: 0 !important;
+}
+
 .ui-growl {
     position:absolute;
     top: 0%;
@@ -86,12 +99,9 @@ body {
 	width: 100%;
 }
 
-/*
-.ui-panelgrid tr,
-.ui-panelgrid td {
-    border: none !important;
+#hierarchies\:test {
+    padding-left: 0 !important;
 }
-*/
 
 .menu {
     background-color: transparent; 
@@ -153,15 +163,14 @@ body {
     color: black;
     /* border: 1px; */
     padding: 2px; 
+    margin-bottom: 1em;
     /* margin: 0px 0px 10px 0px; */
 }
 
 #content {
-    margin: 2px; 
+    margin: 0; 
     /* padding: 10px; */
-    width: 97%;
-    margin-left: auto;
-    margin-right: auto;
+    width: 100%;
     /* border: 0px solid LightGray; */
     /* border-radius: 7px; */
     /* box-shadow: 0 0 7px 2px #888888; */

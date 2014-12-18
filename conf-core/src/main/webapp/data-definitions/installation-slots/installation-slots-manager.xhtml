@@ -8,7 +8,7 @@
         <h:form id="installationSlotsForm">
             <p:commandButton ajax="true" id="addSlot" actionListener="#{installationSlotsController.prepareAddPopup()}" 
                     update=":slotAddForm:addSlotDialog" value="Add new installation slot to parent" 
-                    oncomplete="addSlotDialog.show()" disabled="#{installationSlotsController.selectedNode == null}"/>
+                    oncomplete="addSlotDialog.show()" disabled="#{installationSlotsController.selectedNode == null}" style="margin-bottom: 1em;"/>
             <p:treeTable id="installationSlotsTree" value="#{installationSlotsController.rootNode}" var="installationSlot" 
                     liveResize="true" selection="#{installationSlotsController.selectedNode}" selectionMode="single" 
                     scrollable="true" scrollWidth="auto">

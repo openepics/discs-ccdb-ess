@@ -39,12 +39,15 @@ import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypeArtifact;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
+import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.InstallationRecord;
 import org.openepics.discs.conf.ent.PositionInformation;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotArtifact;
+import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
+import org.openepics.discs.conf.ent.SlotRelationName;
 import org.openepics.discs.conf.ent.Tag;
 import org.openepics.discs.conf.ent.values.DblValue;
 import org.openepics.discs.conf.ent.values.StrValue;
@@ -70,6 +73,7 @@ import com.google.common.collect.ImmutableList;
 public class SlotAttributesController extends AbstractAttributesController<SlotPropertyValue, SlotArtifact> {
 
     private static final Logger logger = Logger.getLogger(SlotAttributesController.class.getCanonicalName());
+    private static final String PATH_SEPARATOR = "\u00A0\u00A0\u00BB\u00A0\u00A0";
 
     @Inject private SlotEJB slotEJB;
     @Inject private PropertyEJB propertyEJB;
@@ -322,5 +326,38 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
 
     public boolean isBasicInfoUnchanged() {
         return (slot.getName().equals(entityName) && slot.getComponentType().equals(deviceType));
+    }
+    
+    /** Used in the device details screen.
+     * @param device the device to create installation information for.
+     * @return A list of strings. Each string is one path from the device installation slot to its root. This is a list
+     * because the same installation slot can be included into multiple places within hierarchies and can appear more
+     * than once and in more than one tree.
+     */
+    public String getSlotPath() {
+       final String slotPath = buildInstalledSlotInformation(slot).toString();
+       return slotPath.substring(1, slotPath.length() - 1);
+    }
+    
+    private List<String> buildInstalledSlotInformation(Slot slot) {
+        if (slot.getComponentType().getName().equals(SlotEJB.ROOT_COMPONENT_TYPE)) {
+            return new ArrayList<>();
+        } else {
+            final List<String> list = new ArrayList<>();
+            for (SlotPair pair : slot.getPairsInWhichThisSlotIsAChildList()) {
+                if (pair.getSlotRelation().getName() == SlotRelationName.CONTAINS) {
+                    List<String> parentList = buildInstalledSlotInformation(pair.getParentSlot());
+                    if (!parentList.isEmpty()) {
+                        for (String parentPath : parentList) {
+                            list.add(parentPath + PATH_SEPARATOR + slot.getName());
+                        }
+                    } else {
+                        // this is the "user" root node
+                        list.add(slot.getName());
+                    }
+                }
+            }
+            return list;
+        }
     }
 }

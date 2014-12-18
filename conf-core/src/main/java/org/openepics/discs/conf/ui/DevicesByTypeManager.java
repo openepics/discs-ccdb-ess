@@ -85,13 +85,20 @@ public class DevicesByTypeManager implements Serializable {
         final Device newDevice = new Device(serialNumber);
         newDevice.setComponentType(selectedComponentType);
         newDevice.setDescription(description);
-
-        deviceEJB.addDeviceAndPropertyDefs(newDevice);
-
-        resetDeviceDialogFields();
-        prepareDevicesForDisplay();
-
-        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Device saved.", null));
+        
+        try {
+            deviceEJB.addDeviceAndPropertyDefs(newDevice);
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Device saved.", null);
+        } catch (Exception e) {
+            if (Utility.causedByPersistenceException(e)) {
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Failure", "Device instance could not be added because a device instance with same inventory ID already exists.");
+            } else {
+                throw e;
+            }
+        } finally {
+            resetDeviceDialogFields();
+            prepareDevicesForDisplay();
+        }        
     }
 
     /**

@@ -100,6 +100,12 @@ public class ComponentTypeManager implements Serializable {
         try {
             comptypeEJB.add(componentTypeToAdd);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "New device type has been created");
+        } catch (Exception e) {
+            if (Utility.causedByPersistenceException(e)) {
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Failure", "Device type could not be added because a device type instance with same name already exists.");
+            } else {
+                throw e;
+            }
         } finally {
             init();
         }

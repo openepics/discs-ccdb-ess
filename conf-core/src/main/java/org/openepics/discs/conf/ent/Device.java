@@ -49,7 +49,7 @@ public class Device extends ConfigurationEntity {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)
-    @Column(name = "serial_number")
+    @Column(name = "serial_number", unique = true)
     private String serialNumber;
 
     @Size(max = 255)
