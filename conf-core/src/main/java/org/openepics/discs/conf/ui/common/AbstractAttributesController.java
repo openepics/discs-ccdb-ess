@@ -51,8 +51,8 @@ import org.openepics.discs.conf.ent.Artifact;
 import org.openepics.discs.conf.ent.ComptypeArtifact;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.ConfigurationEntity;
-import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ent.DataType;
+import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyValue;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
@@ -171,7 +171,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
         propertyValueInstance.setProperty(property);
         propertyValueInstance.setPropValue(propertyValue);
         setPropertyValueParent(propertyValueInstance);
-        
+
         if (propertyValueInstance instanceof ComptypePropertyValue) {
             if (isPropertyDefinition) {
                 final ComptypePropertyValue ctPropValueInstance = ((ComptypePropertyValue) propertyValueInstance);
@@ -466,7 +466,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
     protected abstract void filterProperties();
 
     protected abstract void populateAttributesList();
-    
+
     protected abstract void populateParentTags();
 
     private void internalPopulateAttributesList() {
@@ -555,7 +555,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
     }
 
     public void setPropertyValue(String propertyValue) {
-        final DataType dataType = selectedAttribute.getType();
+        final DataType dataType = selectedAttribute != null ? selectedAttribute.getType() : property.getDataType();
         this.propertyValue = Conversion.stringToValue(propertyValue, dataType);
     }
     public String getPropertyValue() {
