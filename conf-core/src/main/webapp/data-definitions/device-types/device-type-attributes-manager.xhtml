@@ -32,12 +32,12 @@
                         <p:menuitem value="Device Type Property" oncomplete="addPropertyValue.show()" 
                             actionListener="#{comptypeAttributesController.prepareForPropertyValueAdd}" 
                             update=":addPropertyValueForm:addPropertyValue" />
-                        <p:menuitem value="Installation Slot Property" oncomplete="deviceTypePropertyDefinition.show()" 
+                        <p:menuitem value="Installation Slot Property" oncomplete="installationSlotProperty.show()" 
                             actionListener="#{comptypeAttributesController.prepareForSlotPropertyAdd()}" 
-                            update=":deviceTypePropertyDefinitionForm:deviceTypePropertyDefinition" />
-                        <p:menuitem value="Device Instance Property" oncomplete="deviceTypePropertyDefinition.show()" 
+                            update=":installationSlotPropertyForm:installationSlotProperty" />
+                        <p:menuitem value="Device Instance Property" oncomplete="deviceInstanceProperty.show()" 
                             actionListener="#{comptypeAttributesController.prepareForDevicePropertyAdd()}" 
-                            update=":deviceTypePropertyDefinitionForm:deviceTypePropertyDefinition" />
+                            update=":deviceInstancePropertyForm:deviceInstanceProperty" />
                         <p:menuitem value="Tag" oncomplete="deviceTypeTag.show()" update=":deviceTypeTagForm" 
                                    actionListener="#{comptypeAttributesController.prepareForTagAdd}" />
                         <p:menuitem value="Artifact" oncomplete="addArtifact.show()" 
@@ -145,6 +145,24 @@
             <ui:param name="formId" value="deviceTypePropertyDefinitionForm" />
             <ui:param name="dialogTitle" value="Add new device type property definition" />
             <ui:param name="widgetName" value="deviceTypePropertyDefinition" />
+            <ui:param name="controller" value="#{comptypeAttributesController}" />
+            <ui:param name="submitHandler" value="addNewPropertyValue" />
+            <ui:param name="componentToUpdate" value=":deviceTypePropertiesManagerForm:attributesDataTable" />
+        </ui:include>
+        
+        <ui:include src="../add-or-modify-dialogs/property-definition.xhtml" >
+            <ui:param name="formId" value="installationSlotPropertyForm" />
+            <ui:param name="dialogTitle" value="Add new installation slot property" />
+            <ui:param name="widgetName" value="installationSlotProperty" />
+            <ui:param name="controller" value="#{comptypeAttributesController}" />
+            <ui:param name="submitHandler" value="addNewPropertyValue" />
+            <ui:param name="componentToUpdate" value=":deviceTypePropertiesManagerForm:attributesDataTable" />
+        </ui:include>
+        
+        <ui:include src="../add-or-modify-dialogs/property-definition.xhtml" >
+            <ui:param name="formId" value="deviceInstancePropertyForm" />
+            <ui:param name="dialogTitle" value="Add new device instance property" />
+            <ui:param name="widgetName" value="deviceInstanceProperty" />
             <ui:param name="controller" value="#{comptypeAttributesController}" />
             <ui:param name="submitHandler" value="addNewPropertyValue" />
             <ui:param name="componentToUpdate" value=":deviceTypePropertiesManagerForm:attributesDataTable" />
