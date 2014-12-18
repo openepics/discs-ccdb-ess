@@ -75,30 +75,21 @@ vacuum full "tag";
 vacuum full "unit";
 vacuum full "user_role";
 
-alter sequence hibernate_sequence restart;
+SELECT setval('public.hibernate_sequence', 515, true);
 
+--
 -- data insertion
-
-INSERT INTO ccdb_user VALUES ('admin', NULL, NULL, 'admin', 0);
-
-INSERT INTO component_type VALUES (45, '2014-12-17 10:37:59.625', 'system', 0, '_ROOT', '_ROOT', NULL);
-INSERT INTO component_type VALUES (46, '2014-12-17 10:37:59.626', 'system', 0, '_GRP', '_GRP', NULL);
-INSERT INTO component_type VALUES (173, '2014-12-17 13:31:35.88', 'admin', 0, 'Device type 1', 'DEV_TYPE_1', NULL);
-INSERT INTO component_type VALUES (175, '2014-12-17 13:31:50.092', 'admin', 0, 'Device type 2', 'DEV_TYPE_2', NULL);
-INSERT INTO component_type VALUES (177, '2014-12-17 13:32:05.275', 'admin', 0, 'Device type 3', 'DEV_TYPE_3', NULL);
-INSERT INTO component_type VALUES (179, '2014-12-17 13:32:17.669', 'admin', 0, 'Device type 4', 'DEV_TYPE_4', NULL);
+--
 
 INSERT INTO config VALUES (48, 'schema_version', '1', 0);
 
-INSERT INTO data_type VALUES (33, '2014-12-17 10:37:59.609', 'system', 0, NULL, 'Integer number', 'Integer', true);
-INSERT INTO data_type VALUES (34, '2014-12-17 10:37:59.609', 'system', 0, NULL, 'Double precision floating point', 'Double', true);
-INSERT INTO data_type VALUES (35, '2014-12-17 10:37:59.609', 'system', 0, NULL, 'String of characters (text)', 'String', true);
-INSERT INTO data_type VALUES (36, '2014-12-17 10:37:59.61', 'system', 0, NULL, 'Date and time', 'Timestamp', true);
-INSERT INTO data_type VALUES (37, '2014-12-17 10:37:59.61', 'system', 0, NULL, 'Vector of integer numbers (1D array)', 'Integers Vector', false);
-INSERT INTO data_type VALUES (38, '2014-12-17 10:37:59.61', 'system', 0, NULL, 'Vector of double precision numbers (1D array)', 'Doubles Vector', false);
-INSERT INTO data_type VALUES (39, '2014-12-17 10:37:59.611', 'system', 0, NULL, 'List of strings (1D array)', 'Strings List', false);
-INSERT INTO data_type VALUES (40, '2014-12-17 10:37:59.611', 'system', 0, NULL, 'Table of double precision numbers (2D array)', 'Doubles Table', false);
-INSERT INTO data_type VALUES (41, '2014-12-17 10:37:59.622', 'system', 0, '{"meta":{"type":"SedsEnum","protocol":"SEDSv1","version":"1.0.0"},"data":{"selected":"TEST1"},"type":{"elements":["TEST1","TEST2","TEST3","TEST4"]}}', 'Testing of enums', 'Test enums', false);
+-- authorization data
+
+INSERT INTO ccdb_user VALUES ('admin', NULL, NULL, 'admin', 0);
+
+INSERT INTO role VALUES ('admin', 'test role', 0);
+
+INSERT INTO user_role VALUES (1, true, NULL, '2014-12-17 10:37:59.598', true, '2014-12-17 10:37:59.598', 0, 'admin', 'admin');
 
 INSERT INTO privilege VALUES (2, 'CREATE', 'COMPONENT_TYPE', 'admin');
 INSERT INTO privilege VALUES (3, 'UPDATE', 'COMPONENT_TYPE', 'admin');
@@ -132,15 +123,17 @@ INSERT INTO privilege VALUES (30, 'UPDATE', 'INSTALLATION_RECORD', 'admin');
 INSERT INTO privilege VALUES (31, 'RENAME', 'INSTALLATION_RECORD', 'admin');
 INSERT INTO privilege VALUES (32, 'DELETE', 'INSTALLATION_RECORD', 'admin');
 
-INSERT INTO role VALUES ('admin', 'test role', 0);
+-- basic data
 
-INSERT INTO slot VALUES (47, '2014-12-17 10:37:59.626', 'system', 0, NULL, NULL, NULL, NULL, 'Implicit CCDB type.', false, '_ROOT', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 45);
-
-INSERT INTO slot_relation VALUES (42, '2014-12-17 10:37:59.624', 'system', 0, NULL, 'contained in', 'CONTAINS');
-INSERT INTO slot_relation VALUES (43, '2014-12-17 10:37:59.625', 'system', 0, NULL, 'powered by', 'POWERS');
-INSERT INTO slot_relation VALUES (44, '2014-12-17 10:37:59.625', 'system', 0, NULL, 'controlled by', 'CONTROLS');
-
-INSERT INTO user_role VALUES (1, true, NULL, '2014-12-17 10:37:59.598', true, '2014-12-17 10:37:59.598', 0, 'admin', 'admin');
+INSERT INTO data_type VALUES (33, '2014-12-17 10:37:59.609', 'system', 0, NULL, 'Integer number', 'Integer', true);
+INSERT INTO data_type VALUES (34, '2014-12-17 10:37:59.609', 'system', 0, NULL, 'Double precision floating point', 'Double', true);
+INSERT INTO data_type VALUES (35, '2014-12-17 10:37:59.609', 'system', 0, NULL, 'String of characters (text)', 'String', true);
+INSERT INTO data_type VALUES (36, '2014-12-17 10:37:59.61', 'system', 0, NULL, 'Date and time', 'Timestamp', true);
+INSERT INTO data_type VALUES (37, '2014-12-17 10:37:59.61', 'system', 0, NULL, 'Vector of integer numbers (1D array)', 'Integers Vector', false);
+INSERT INTO data_type VALUES (38, '2014-12-17 10:37:59.61', 'system', 0, NULL, 'Vector of double precision numbers (1D array)', 'Doubles Vector', false);
+INSERT INTO data_type VALUES (39, '2014-12-17 10:37:59.611', 'system', 0, NULL, 'List of strings (1D array)', 'Strings List', false);
+INSERT INTO data_type VALUES (40, '2014-12-17 10:37:59.611', 'system', 0, NULL, 'Table of double precision numbers (2D array)', 'Doubles Table', false);
+INSERT INTO data_type VALUES (41, '2014-12-17 10:37:59.622', 'system', 0, '{"meta":{"type":"SedsEnum","protocol":"SEDSv1","version":"1.0.0"},"data":{"selected":"TEST1"},"type":{"elements":["TEST1","TEST2","TEST3","TEST4"]}}', 'Testing of enums', 'Test enums', false);
 
 INSERT INTO unit VALUES (49, '2014-12-17 13:17:02.946', 'admin', 0, 'Length in meters', 'meter', 'length', 'm');
 INSERT INTO unit VALUES (51, '2014-12-17 13:17:03.095', 'admin', 0, 'Length in inches', 'inch', 'length', 'in');
@@ -164,6 +157,22 @@ INSERT INTO unit VALUES (85, '2014-12-17 13:17:03.131', 'admin', 0, 'Price in Eu
 INSERT INTO unit VALUES (87, '2014-12-17 13:17:03.133', 'admin', 0, 'Price in Dollars', 'Dollar', 'price', '$');
 INSERT INTO unit VALUES (89, '2014-12-17 13:17:03.135', 'admin', 0, 'Price in SEK', 'Swedish Krona', 'price', 'SEK');
 
+INSERT INTO component_type VALUES (45, '2014-12-17 10:37:59.625', 'system', 0, '_ROOT', '_ROOT', NULL);
+INSERT INTO component_type VALUES (46, '2014-12-17 10:37:59.626', 'system', 0, '_GRP', '_GRP', NULL);
+INSERT INTO component_type VALUES (173, '2014-12-17 13:31:35.88', 'admin', 0, 'Device type 1', 'DEV_TYPE_1', NULL);
+INSERT INTO component_type VALUES (175, '2014-12-17 13:31:50.092', 'admin', 0, 'Device type 2', 'DEV_TYPE_2', NULL);
+INSERT INTO component_type VALUES (177, '2014-12-17 13:32:05.275', 'admin', 0, 'Device type 3', 'DEV_TYPE_3', NULL);
+INSERT INTO component_type VALUES (179, '2014-12-17 13:32:17.669', 'admin', 0, 'Device type 4', 'DEV_TYPE_4', NULL);
+
+INSERT INTO slot_relation VALUES (42, '2014-12-17 10:37:59.624', 'system', 0, NULL, 'contained in', 'CONTAINS');
+INSERT INTO slot_relation VALUES (43, '2014-12-17 10:37:59.625', 'system', 0, NULL, 'powered by', 'POWERS');
+INSERT INTO slot_relation VALUES (44, '2014-12-17 10:37:59.625', 'system', 0, NULL, 'controlled by', 'CONTROLS');
+
+--- test data; other
+
+INSERT INTO property VALUES (1, '2014-12-18 11:41:42.654', 'admin', 0, 'Test property, integer type, assigned to Device type', false, false, false, true, 'ASSGN_INT_TYPE', 33, NULL);
+INSERT INTO property VALUES (3, '2014-12-18 11:42:36.037', 'admin', 0, 'Test property, integer type, assigned to Installation slot', false, false, true, false, 'ASSGN_INT_SLOT', 33, NULL);
+INSERT INTO property VALUES (5, '2014-12-18 11:43:22.341', 'admin', 0, 'Test property, integer type, assigned to Device instance', false, true, false, false, 'ASSGN_INT_INSTANCE', 33, NULL);
 INSERT INTO property VALUES (91, '2014-12-17 13:21:00.205', 'admin', 0, 'Accumulated Center Position', false, false, true, false, 'ACENPOS', 34, 49);
 INSERT INTO property VALUES (93, '2014-12-17 13:21:00.215', 'admin', 0, 'Accumulated End Position', false, false, true, false, 'AENDPOS', 34, 49);
 INSERT INTO property VALUES (95, '2014-12-17 13:21:00.219', 'admin', 0, 'Another Name', true, true, true, true, 'ALIAS', 35, NULL);
@@ -283,6 +292,10 @@ INSERT INTO slot_pair VALUES (292, 1, 0, 291, 225, 42);
 INSERT INTO slot_pair VALUES (295, 2, 0, 294, 225, 42);
 INSERT INTO slot_pair VALUES (298, 3, 0, 297, 225, 42);
 INSERT INTO slot_pair VALUES (301, 4, 0, 300, 225, 42);
+
+INSERT INTO comptype_property_value VALUES (7, '2014-12-18 12:10:42.406', 'admin', 0, false, '{"meta":{"type":"SedsScalar_Integer","protocol":"SEDSv1","version":"1.0.0"},"data":{"value":123}}', 1, NULL, false, false, false, 173);
+INSERT INTO comptype_property_value VALUES (9, '2014-12-18 12:11:03.477', 'admin', 0, false, NULL, 3, NULL, false, true, true, 173);
+INSERT INTO comptype_property_value VALUES (39, '2014-12-18 12:11:11.418', 'admin', 0, false, NULL, 5, NULL, true, false, true, 173);
 
 -- update internal data
 
