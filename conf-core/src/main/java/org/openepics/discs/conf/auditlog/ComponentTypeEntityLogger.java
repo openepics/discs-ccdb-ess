@@ -19,6 +19,7 @@
  */
 package org.openepics.discs.conf.auditlog;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,7 @@ import org.openepics.discs.conf.ent.ComptypeArtifact;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
+import org.openepics.discs.conf.ent.Tag;
 
 import com.google.common.collect.ImmutableList;
 
@@ -64,11 +66,17 @@ public class ComponentTypeEntityLogger implements EntityLogger<ComponentType> {
                 artifactsMap.put(artifact.getName(), artifact.getUri());
             }
         }
+        
+        final List<String> tags = new ArrayList<String>();
+        for (final Tag tag : compType.getTags()) {
+            tags.add(tag.getName());
+        }
 
         return ImmutableList.of(new AuditLogUtil(compType)
                                 .removeTopProperties(Arrays.asList("id", "modifiedAt", "modifiedBy", "version", "name"))
                                 .addArrayOfMappedProperties("comptypePropertyList", propertiesMap)
                                 .addArrayOfMappedProperties("comptypeArtifactList", artifactsMap)
+                                .addArrayOfProperties("tagsList", tags)
                                 .auditEntry(operation, EntityType.COMPONENT_TYPE, compType.getName(),
                                         compType.getId()));
     }

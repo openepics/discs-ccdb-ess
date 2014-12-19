@@ -19,6 +19,7 @@
  */
 package org.openepics.discs.conf.auditlog;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +34,7 @@ import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.InstallationRecord;
+import org.openepics.discs.conf.ent.Tag;
 
 import com.google.common.collect.ImmutableList;
 
@@ -85,6 +87,11 @@ public class DeviceEntityLogger implements EntityLogger<Device> {
                 installationSlotMap.put("uninstallationDate", lastInstallationRecord.getUninstallDate().toString());
             } 
         }
+        
+        final List<String> tags = new ArrayList<String>();
+        for (final Tag tag : device.getTags()) {
+            tags.add(tag.getName());
+        }
            
         return ImmutableList.of(new AuditLogUtil(device)
                                 .removeTopProperties(Arrays.asList("id", "modifiedAt", "modifiedBy",
@@ -94,6 +101,7 @@ public class DeviceEntityLogger implements EntityLogger<Device> {
                                 .addArrayOfMappedProperties("installation", installationSlotMap)
                                 .addArrayOfMappedProperties("devicePropertyList", propertiesMap)
                                 .addArrayOfMappedProperties("deviceArtifactList", artifactsMap)
+                                .addArrayOfProperties("tagsList", tags)
                                 .auditEntry(operation, EntityType.DEVICE, device.getSerialNumber(), device.getId()));
     }
 }
