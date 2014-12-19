@@ -27,26 +27,48 @@
                 }
                
                 var totalMenusHeight = menusHeight + headerHeight + addSlotHeight + 2*em;
-                $('.ui-treetable-scrollable-body').css({"height":window.innerHeight-totalMenusHeight});  
+                $('.ui-treetable-scrollable-body').css({"height":window.innerHeight-totalMenusHeight});
             }
             
             function resizeHierarchiesTree() {
                 var menusHeight = $('#top').outerHeight(true);
                 var headerHeight = $('#hierarchies\\:tree\\:name').outerHeight(true);
+                if (headerHeight != null) {
+                    var em = $('#top').outerHeight(true) - $('#top').outerHeight();
+                   
+                    var totalMenusHeight = menusHeight + headerHeight + 3*em;
+                    $('.ui-treetable-scrollable-body').css({"height":window.innerHeight-totalMenusHeight});  
+                }
+            }
+            
+            function resizeEmptyColumnInHierarchies() {
+                var menusHeight = $('#top').outerHeight(true);
                 var em = $('#top').outerHeight(true) - $('#top').outerHeight();
+                var slotAttributesTitle = $('#slotAttributesTitle').outerHeight(true);
+                var slotAttributesTable = $('#hierarchies\\:attributesTable').outerHeight(true);
+                var slotRelationshipsTitle = $('#slotRelationshipsTitle').outerHeight(true);
+                var slotRelationshipsTable = $('#hierarchies\\:relationsTable').outerHeight(true);
+                var installationDetails = $('#hierarchies\\:installationDetails').outerHeight(true);
+                
+                if (installationDetails == null) { 
+                    installationDetails = 0;
+                }
+                
+                var totalHeight = menusHeight + 4*em  + slotAttributesTitle + slotAttributesTable + slotRelationshipsTitle + slotRelationshipsTable + installationDetails;
                
-                var totalMenusHeight = menusHeight + headerHeight + 3*em;
-                $('.ui-treetable-scrollable-body').css({"height":window.innerHeight-totalMenusHeight});  
+                var totalMenusHeight = $('#hierarchies\\:hierarchiesEmptyColumn').css({"height":window.innerHeight-totalHeight});
             }
 
             $(window).resize(function() {
                 resizePanel();
                 resizeHierarchiesTree();
-                });
+                resizeEmptyColumnInHierarchies();
+            });
 
             $(window).ready(function() {
                 resizePanel();
                 resizeHierarchiesTree();
+                resizeEmptyColumnInHierarchies();
             });
             
         </script>

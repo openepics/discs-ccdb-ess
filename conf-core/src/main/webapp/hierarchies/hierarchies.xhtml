@@ -21,9 +21,9 @@
                             scrollable="true"
                             scrollWidth="auto" style="width: 300px;">
                             <p:ajax event="select"
-                                update=":hierarchies:attributesTable :hierarchies:relationsTable :hierarchies:installationDetails" />
+                                update=":hierarchies:attributesTable :hierarchies:relationsTable :hierarchies:installationDetails" oncomplete="resizeEmptyColumnInHierarchies();" />
                             <p:ajax event="unselect"
-                                update=":hierarchies:attributesTable :hierarchies:relationsTable :hierarchies:installationDetails" />
+                                update=":hierarchies:attributesTable :hierarchies:relationsTable :hierarchies:installationDetails" oncomplete="resizeEmptyColumnInHierarchies();"/>
 
                             <p:column id="name" headerText="Name">
                                 <h:outputText value=""
@@ -39,8 +39,8 @@
                             </p:column>
                         </p:treeTable>
                     </p:column>
-                    <p:column styleClass="alignTop">
-                        <h3>Slot attributes</h3>
+                    <p:column styleClass="alignTop" >
+                        <h3 id="slotAttributesTitle">Slot attributes</h3>
                         
                         <p:dataTable id="attributesTable"
                             class="hierarchies-attributes-cell"
@@ -77,7 +77,7 @@
                 </p:row>
                 <p:row>
                     <p:column styleClass="alignTop">
-                        <h3>Slot relationships</h3>
+                        <h3 id="slotRelationshipsTitle">Slot relationships</h3>
                         
                         <p:dataTable id="relationsTable"
                             value="#{hierarchiesController.relationships}"
@@ -126,9 +126,10 @@
                                     <p:column headerText="Uninstall" style="text-align: center;">
                                         <p:commandButton title="Uninstall"
                                             label="Uninstall"
-                                            value="Uninstall" ajax="false"
+                                            value="Uninstall" ajax="true"
                                             action="#{hierarchiesController.uninstallDevice(installationRecord.device)}"
-                                            update=":hierarchies:installationDetails"/>
+                                            update=":hierarchies:installationDetails"
+                                            oncomplete="resizeEmptyColumnInHierarchies();"/>
                                     </p:column>
                                 </p:dataTable>
                                 <p:commandButton title="Install device to this slot"
@@ -146,7 +147,7 @@
                     Added row with 100% width to fill in the space below other tables and to push tables
                     close together
                       -->
-                    <p:column style="height: 100%">
+                    <p:column id="hierarchiesEmptyColumn">
                     </p:column>
                 </p:row>
             </p:panelGrid>
