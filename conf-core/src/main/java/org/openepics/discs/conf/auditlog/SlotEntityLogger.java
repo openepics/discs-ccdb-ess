@@ -19,7 +19,6 @@
  */
 package org.openepics.discs.conf.auditlog;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +32,6 @@ import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotArtifact;
 import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
-import org.openepics.discs.conf.ent.Tag;
 
 import com.google.common.collect.ImmutableList;
 
@@ -95,12 +93,7 @@ public class SlotEntityLogger implements EntityLogger<Slot> {
             if (lastInstallationRecord.getUninstallDate() != null) {
                 installationDeviceMap.put("uninstallationDate", lastInstallationRecord.getUninstallDate().toString());
             }   
-        }
-        
-        final List<String> tags = new ArrayList<String>();
-        for (final Tag tag : slot.getTags()) {
-            tags.add(tag.getName());
-        }
+        }        
 
         final AuditLogUtil logUtil = new AuditLogUtil(slot)
                         .removeTopProperties(Arrays.asList("id", "modifiedAt", "modifiedBy", "version",
@@ -111,7 +104,7 @@ public class SlotEntityLogger implements EntityLogger<Slot> {
                         .addArrayOfMappedProperties("childrenSlots", childrenMap)
                         .addArrayOfMappedProperties("parentSlots", parentsMap)
                         .addArrayOfMappedProperties("installation", installationDeviceMap)
-                        .addArrayOfProperties("tagsList", tags);
+                        .addArrayOfProperties("tagsList", EntityLoggerUtil.getTagNamesFromTagsSet(slot.getTags()));
         
         // If positionInformation is empty do not add it
         if (slot.getPositionInformation().isEmpty()) 

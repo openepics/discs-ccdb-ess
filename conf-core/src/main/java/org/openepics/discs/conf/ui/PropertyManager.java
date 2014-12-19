@@ -76,7 +76,7 @@ public class PropertyManager implements Serializable {
     }
 
     private void init() {
-        properties = propertyEJB.findAll();
+        properties = propertyEJB.findAllOrderedByName();
         selectedProperty = null;
         resetFields();
     }
@@ -164,7 +164,7 @@ public class PropertyManager implements Serializable {
     }
 
     public List<Property> getProperties() {
-        if (properties == null) properties = propertyEJB.findAll();
+        if (properties == null) properties = propertyEJB.findAllOrderedByName();
         return properties;
     }
 

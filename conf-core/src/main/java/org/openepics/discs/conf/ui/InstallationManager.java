@@ -25,9 +25,8 @@ import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.InstallationRecord;
 import org.openepics.discs.conf.ent.Slot;
-import org.openepics.discs.conf.ent.SlotPair;
-import org.openepics.discs.conf.ent.SlotRelationName;
 import org.openepics.discs.conf.util.DeviceInstallation;
+import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.views.SlotView;
 import org.primefaces.model.TreeNode;
 
@@ -42,7 +41,6 @@ import com.google.common.base.Preconditions;
 @ViewScoped
 public class InstallationManager implements Serializable {
     private static final Logger logger = Logger.getLogger(InstallationManager.class.getCanonicalName());
-    private static final String PATH_SEPARATOR = "\u00A0\u00A0\u00BB\u00A0\u00A0";
 
     @EJB private InstallationEJB installationEJB;
     @EJB private SlotEJB slotEJB;
@@ -150,31 +148,9 @@ public class InstallationManager implements Serializable {
         List<String> installationInformation = new ArrayList<>();
         final InstallationRecord record = installationEJB.getActiveInstallationRecordForDevice(device);
         if(record != null) {
-            installationInformation = buildInstalledSlotInformation(record.getSlot());
+            installationInformation = Utility.buildSlotPath(record.getSlot());
         }
         return installationInformation;
-    }
-
-    private List<String> buildInstalledSlotInformation(Slot slot) {
-        if (slot.getComponentType().getName().equals(SlotEJB.ROOT_COMPONENT_TYPE)) {
-            return new ArrayList<>();
-        } else {
-            final List<String> list = new ArrayList<>();
-            for (SlotPair pair : slot.getPairsInWhichThisSlotIsAChildList()) {
-                if (pair.getSlotRelation().getName() == SlotRelationName.CONTAINS) {
-                    List<String> parentList = buildInstalledSlotInformation(pair.getParentSlot());
-                    if (!parentList.isEmpty()) {
-                        for (String parentPath : parentList) {
-                            list.add(parentPath + PATH_SEPARATOR + slot.getName());
-                        }
-                    } else {
-                        // this is the "user" root node
-                        list.add(slot.getName());
-                    }
-                }
-            }
-            return list;
-        }
     }
 
     /** Used in the device installation dialog.

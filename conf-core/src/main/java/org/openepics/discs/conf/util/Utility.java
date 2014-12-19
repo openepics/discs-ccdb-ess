@@ -15,9 +15,17 @@
  */
 package org.openepics.discs.conf.util;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.persistence.PersistenceException;
+
+import org.openepics.discs.conf.ejb.SlotEJB;
+import org.openepics.discs.conf.ent.Slot;
+import org.openepics.discs.conf.ent.SlotPair;
+import org.openepics.discs.conf.ent.SlotRelationName;
 
 /**
  *
@@ -25,6 +33,9 @@ import javax.persistence.PersistenceException;
  * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  */
 public class Utility {
+    
+    private static final String PATH_SEPARATOR = "\u00A0\u00A0\u00BB\u00A0\u00A0";
+    
     private Utility() {}
 
 
@@ -56,6 +67,33 @@ public class Utility {
             return false;
         }
     }
-
+    
+    /**
+     * Builds a list that represents a path of slot names from root slot to current slot.
+     * 
+     * @param slot {@link Slot} for which the path should be built
+     * @return {@link List} containing slot names from root slot to current slot
+     */
+    public static List<String> buildSlotPath(Slot slot) {
+        if (slot.getComponentType().getName().equals(SlotEJB.ROOT_COMPONENT_TYPE)) {
+            return new ArrayList<>();
+        } else {
+            final List<String> list = new ArrayList<>();
+            for (SlotPair pair : slot.getPairsInWhichThisSlotIsAChildList()) {
+                if (pair.getSlotRelation().getName() == SlotRelationName.CONTAINS) {
+                    List<String> parentList = buildSlotPath(pair.getParentSlot());
+                    if (!parentList.isEmpty()) {
+                        for (String parentPath : parentList) {
+                            list.add(parentPath + PATH_SEPARATOR + slot.getName());
+                        }
+                    } else {
+                        // this is the "user" root node
+                        list.add(slot.getName());
+                    }
+                }
+            }
+            return list;
+        }
+    }
 
 }

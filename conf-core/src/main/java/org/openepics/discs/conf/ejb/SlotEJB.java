@@ -23,10 +23,10 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 import javax.ejb.Stateless;
-import javax.faces.application.FacesMessage;
 import javax.inject.Inject;
 
 import org.openepics.discs.conf.auditlog.Audit;
+import org.openepics.discs.conf.dl.SlotsAndSlotPairsDataLoader;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
@@ -38,7 +38,6 @@ import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.ent.SlotRelationName;
 import org.openepics.discs.conf.security.Authorized;
 import org.openepics.discs.conf.util.CRUDOperation;
-import org.openepics.discs.conf.util.Utility;
 
 /**
  * DAO Service for accessing Installation Slot entities ( {@link Slot} )

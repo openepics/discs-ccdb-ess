@@ -11,8 +11,9 @@
 	            oncomplete="addDeviceType.show()" />
 	        <p:dataTable widgetVar="deviceTypeTableVar" var="deviceType" value="#{componentTypeManager.objects}" resizableColumns="true" 
                 style="table-layout: fixed; word-wrap: break-word; margin-top: 1em;" filteredValue="#{componentTypeManager.filteredObjects}"
-	            rows="15" paginator="true" paginatorPosition="bottom" sortBy="#{deviceType.name}" sortOrder="ascending">
-	            <p:column headerText="Name" sortBy="#{deviceType.name}" filterBy="#{deviceType.name}" width="20%">
+	            rows="15" paginator="true" paginatorPosition="bottom">
+                
+	            <p:column headerText="Name" sortBy="#{deviceType.name.toUpperCase()}" filterBy="#{deviceType.name}" width="20%">
 	                <h:outputText value="#{deviceType.name}" />
 	            </p:column>
 	
@@ -37,13 +38,13 @@
 	    </h:form>
 	    
 	    <ui:include src="../add-or-modify-dialogs/delete-confirmation.xhtml" >
-                <ui:param name="formId" value="deleteDeviceTypeForm" />
-                <ui:param name="dialogTitle" value="Delete device type" />
-                <ui:param name="widgetName" value="deleteDeviceType" />
-                <ui:param name="controller" value="#{componentTypeManager}" />
-                <ui:param name="submitHandler" value="onDelete" />
-                <ui:param name="formToUpdate" value=":deviceTypesForm" />
-                <ui:param name="resetFilter" value="deviceTypeTableVar.filter()" />
+            <ui:param name="formId" value="deleteDeviceTypeForm" />
+            <ui:param name="dialogTitle" value="Delete device type" />
+            <ui:param name="widgetName" value="deleteDeviceType" />
+            <ui:param name="controller" value="#{componentTypeManager}" />
+            <ui:param name="submitHandler" value="onDelete" />
+            <ui:param name="formToUpdate" value=":deviceTypesForm" />
+            <ui:param name="resetFilter" value="deviceTypeTableVar.filter()" />
         </ui:include>
         
 	    <ui:include src="../add-or-modify-dialogs/device-type.xhtml">
