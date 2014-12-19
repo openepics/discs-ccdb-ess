@@ -11,8 +11,9 @@
             <p:dataTable widgetVar="propertiesTableVar" var="property" id="propertiesTable" value="#{propertyManager.properties}" 
                     resizableColumns="true" style="table-layout: fixed; word-wrap: break-word;" 
                     filteredValue="#{propertyManager.filteredProperties}"
-                    rows="15" paginator="true" paginatorPosition="bottom" sortBy="#{property.name}" sortOrder="ascending">
-                <p:column headerText="Name" sortBy="#{property.name}" filterBy="#{property.name}" width="20%">
+                    rows="15" paginator="true" paginatorPosition="bottom">
+                    
+                <p:column headerText="Name" sortBy="#{property.name.toUpperCase()}" filterBy="#{property.name}" width="20%">
                     <h:outputText value="#{property.name}" />
                 </p:column>
     
@@ -45,13 +46,13 @@
         </h:form>
         
         <ui:include src="../add-or-modify-dialogs/delete-confirmation.xhtml" >
-                <ui:param name="formId" value="deletePropertyForm" />
-                <ui:param name="dialogTitle" value="Delete property" />
-                <ui:param name="widgetName" value="deleteProperty" />
-                <ui:param name="controller" value="#{propertyManager}" />
-                <ui:param name="submitHandler" value="onDelete" />
-                <ui:param name="formToUpdate" value=":propertiesForm" />
-                <ui:param name="resetFilter" value="propertiesTableVar.filter()" />               
+            <ui:param name="formId" value="deletePropertyForm" />
+            <ui:param name="dialogTitle" value="Delete property" />
+            <ui:param name="widgetName" value="deleteProperty" />
+            <ui:param name="controller" value="#{propertyManager}" />
+            <ui:param name="submitHandler" value="onDelete" />
+            <ui:param name="formToUpdate" value=":propertiesForm" />
+            <ui:param name="resetFilter" value="propertiesTableVar.filter()" />               
         </ui:include>
         
         <ui:include src="../add-or-modify-dialogs/property.xhtml">

@@ -16,6 +16,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.openepics.discs.conf.security.SecurityPolicy;
+import org.openepics.discs.conf.util.Utility;
 
 /**
  * @author Vasu V <vuppala@frib.msu.org>
@@ -38,10 +39,10 @@ public class LoginManager implements Serializable {
     public String onLogin() {
         try {
             securityPolicy.login(userId, password);
-            showMessage(FacesMessage.SEVERITY_INFO, "You are logged in. Welcome!", userId);
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, "You are logged in. Welcome!", userId);
             loggedIn = true;
         } catch (Exception e) {
-            showMessage(FacesMessage.SEVERITY_ERROR, "Login Failed! Please try again. ", "Status: ");
+            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Login Failed! Please try again. ", "Status: ");
             logger.log(Level.INFO, "Login failed for " + userId);
             loggedIn = false;
         } finally {
@@ -57,9 +58,9 @@ public class LoginManager implements Serializable {
             userId = null;
             final ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
             ec.redirect(ec.getRequestContextPath());
-            showMessage(FacesMessage.SEVERITY_INFO, "You have been logged out.", "Thank you!");
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, "You have been logged out.", "Thank you!");
         } catch (Exception e) {
-            showMessage(FacesMessage.SEVERITY_ERROR, "Strangely, logout has failed", "That's odd!");
+            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Strangely, logout has failed", "That's odd!");
         }
 
         return "logout"; // ToDo: replace with null
@@ -83,11 +84,5 @@ public class LoginManager implements Serializable {
 
     public boolean isLoggedIn() {
         return loggedIn;
-    }
-
-    private void showMessage(FacesMessage.Severity severity, String summary, String message) {
-        FacesContext context = FacesContext.getCurrentInstance();
-
-        context.addMessage(null, new FacesMessage(severity, summary, message));
     }
 }
