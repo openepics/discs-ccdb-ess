@@ -12,7 +12,7 @@
                     resizableColumns="true" style="table-layout: fixed; word-wrap: break-word;" 
                     filteredValue="#{propertyManager.filteredProperties}"
                     rows="15" paginator="true" paginatorPosition="bottom">
-                    
+                <p:ajax event="filter" ignoreAutoUpdate="true"/>
                 <p:column headerText="Name" sortBy="#{property.name.toUpperCase()}" filterBy="#{property.name}" width="20%">
                     <h:outputText value="#{property.name}" />
                 </p:column>
@@ -51,7 +51,7 @@
             <ui:param name="widgetName" value="deleteProperty" />
             <ui:param name="controller" value="#{propertyManager}" />
             <ui:param name="submitHandler" value="onDelete" />
-            <ui:param name="formToUpdate" value=":propertiesForm" />
+            <ui:param name="formToUpdate" value=":propertiesForm:propertiesTable" />
             <ui:param name="resetFilter" value="propertiesTableVar.filter()" />               
         </ui:include>
         

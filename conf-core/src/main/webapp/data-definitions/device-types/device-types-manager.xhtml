@@ -12,6 +12,7 @@
 	        <p:dataTable widgetVar="deviceTypeTableVar" var="deviceType" value="#{componentTypeManager.objects}" resizableColumns="true" 
                 style="table-layout: fixed; word-wrap: break-word; margin-top: 1em;" filteredValue="#{componentTypeManager.filteredObjects}"
 	            rows="15" paginator="true" paginatorPosition="bottom">
+                <p:ajax event="filter" ignoreAutoUpdate="true"/>
                 
 	            <p:column headerText="Name" sortBy="#{deviceType.name.toUpperCase()}" filterBy="#{deviceType.name}" width="20%">
 	                <h:outputText value="#{deviceType.name}" />
