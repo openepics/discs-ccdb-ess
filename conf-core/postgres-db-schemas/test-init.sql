@@ -1,4 +1,6 @@
-﻿-- delete all data
+-- !
+-- ! delete all data
+-- !
 
 truncate 
 	"alignment_artifact", 
@@ -37,7 +39,9 @@ truncate
 	"unit",
 	"user_role";
 
--- update internal data
+-- !
+-- ! update internal data
+-- !
 
 vacuum full "alignment_artifact";
 vacuum full "alignment_property_value";
@@ -75,15 +79,17 @@ vacuum full "tag";
 vacuum full "unit";
 vacuum full "user_role";
 
-SELECT setval('public.hibernate_sequence', 515, true);
+SELECT setval('public.hibernate_sequence', 610, true);
 
---
--- data insertion
---
+-- !
+-- ! data insertion
+-- !
 
 INSERT INTO config VALUES (48, 'schema_version', '1', 0);
 
--- authorization data
+-- !
+-- ! authorization data
+-- !
 
 INSERT INTO ccdb_user VALUES ('admin', NULL, NULL, 'admin', 0);
 
@@ -123,7 +129,9 @@ INSERT INTO privilege VALUES (30, 'UPDATE', 'INSTALLATION_RECORD', 'admin');
 INSERT INTO privilege VALUES (31, 'RENAME', 'INSTALLATION_RECORD', 'admin');
 INSERT INTO privilege VALUES (32, 'DELETE', 'INSTALLATION_RECORD', 'admin');
 
--- basic data
+-- !
+-- ! basic data
+-- !
 
 INSERT INTO data_type VALUES (33, '2014-12-17 10:37:59.609', 'system', 0, NULL, 'Integer number', 'Integer', true);
 INSERT INTO data_type VALUES (34, '2014-12-17 10:37:59.609', 'system', 0, NULL, 'Double precision floating point', 'Double', true);
@@ -168,7 +176,9 @@ INSERT INTO slot_relation VALUES (42, '2014-12-17 10:37:59.624', 'system', 0, NU
 INSERT INTO slot_relation VALUES (43, '2014-12-17 10:37:59.625', 'system', 0, NULL, 'powered by', 'POWERS');
 INSERT INTO slot_relation VALUES (44, '2014-12-17 10:37:59.625', 'system', 0, NULL, 'controlled by', 'CONTROLS');
 
---- test data; other
+-- !
+-- ! test data; other
+-- !
 
 INSERT INTO property VALUES (1, '2014-12-18 11:41:42.654', 'admin', 0, 'Test property, integer type, assigned to Device type', false, false, false, true, 'ASSGN_INT_TYPE', 33, NULL);
 INSERT INTO property VALUES (3, '2014-12-18 11:42:36.037', 'admin', 0, 'Test property, integer type, assigned to Installation slot', false, false, true, false, 'ASSGN_INT_SLOT', 33, NULL);
@@ -213,6 +223,8 @@ INSERT INTO property VALUES (165, '2014-12-17 13:27:25.783', 'admin', 0, 'Test d
 INSERT INTO property VALUES (167, '2014-12-17 13:28:05.914', 'admin', 0, 'TEST string list property associated with all entities.', true, true, true, true, 'TEST_STRLIST_ALL', 39, NULL);
 INSERT INTO property VALUES (169, '2014-12-17 13:28:43.472', 'admin', 0, 'Test double table property associated wit all entities.', true, true, true, true, 'TEST_TBL_ALL', 40, NULL);
 INSERT INTO property VALUES (171, '2014-12-17 13:29:14.405', 'admin', 0, 'Test enumeration property associated with all entities.', false, true, true, true, 'TEST_ENUM_ALL', 41, NULL);
+INSERT INTO property VALUES (516, '2014-12-19 12:32:36.097', 'admin', 0, 'Installation slot property', false, false, true, false, 'INST_SLOT_PROP', 35, NULL);
+INSERT INTO property VALUES (599, '2014-12-19 13:10:49.449', 'admin', 0, 'Device instance property', false, true, false, false, 'DEV_INST_PROP', 35, NULL);
 
 INSERT INTO slot VALUES (47, '2014-12-17 10:37:59.626', 'system', 0, NULL, NULL, NULL, NULL, 'Implicit CCDB type.', false, '_ROOT', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 45);
 INSERT INTO slot VALUES (193, '2014-12-17 13:36:00.381', 'admin', 0, NULL, NULL, NULL, NULL, 'Test-1-2', false, 'TEST-1-2', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 46);
@@ -293,11 +305,34 @@ INSERT INTO slot_pair VALUES (295, 2, 0, 294, 225, 42);
 INSERT INTO slot_pair VALUES (298, 3, 0, 297, 225, 42);
 INSERT INTO slot_pair VALUES (301, 4, 0, 300, 225, 42);
 
+INSERT INTO device VALUES (604, '2014-12-19 13:13:19.165', 'admin', 1, NULL, NULL, 'Device 002', NULL, NULL, NULL, NULL, NULL, '002', 'DEFINED', NULL, 173);
+INSERT INTO device VALUES (601, '2014-12-19 13:13:40.745', 'admin', 2, NULL, NULL, 'Device 001', NULL, NULL, NULL, NULL, NULL, '001', 'DEFINED', NULL, 173);
+
 INSERT INTO comptype_property_value VALUES (7, '2014-12-18 12:10:42.406', 'admin', 0, false, '{"meta":{"type":"SedsScalar_Integer","protocol":"SEDSv1","version":"1.0.0"},"data":{"value":123}}', 1, NULL, false, false, false, 173);
 INSERT INTO comptype_property_value VALUES (9, '2014-12-18 12:11:03.477', 'admin', 0, false, NULL, 3, NULL, false, true, true, 173);
 INSERT INTO comptype_property_value VALUES (39, '2014-12-18 12:11:11.418', 'admin', 0, false, NULL, 5, NULL, true, false, true, 173);
 
--- update internal data
+INSERT INTO slot_property_value VALUES (567, '2014-12-19 13:08:35.832', 'admin', 0, false, NULL, 3, NULL, 231);
+INSERT INTO slot_property_value VALUES (569, '2014-12-19 13:08:35.865', 'admin', 0, false, NULL, 3, NULL, 240);
+INSERT INTO slot_property_value VALUES (571, '2014-12-19 13:08:35.903', 'admin', 0, false, NULL, 3, NULL, 243);
+INSERT INTO slot_property_value VALUES (573, '2014-12-19 13:08:35.937', 'admin', 0, false, NULL, 3, NULL, 252);
+INSERT INTO slot_property_value VALUES (575, '2014-12-19 13:08:35.975', 'admin', 0, false, NULL, 3, NULL, 255);
+INSERT INTO slot_property_value VALUES (577, '2014-12-19 13:08:36.009', 'admin', 0, false, NULL, 3, NULL, 258);
+INSERT INTO slot_property_value VALUES (579, '2014-12-19 13:08:36.051', 'admin', 0, false, NULL, 3, NULL, 261);
+INSERT INTO slot_property_value VALUES (581, '2014-12-19 13:08:36.085', 'admin', 0, false, NULL, 3, NULL, 264);
+INSERT INTO slot_property_value VALUES (583, '2014-12-19 13:08:36.116', 'admin', 0, false, NULL, 3, NULL, 267);
+INSERT INTO slot_property_value VALUES (585, '2014-12-19 13:08:36.149', 'admin', 0, false, NULL, 3, NULL, 270);
+INSERT INTO slot_property_value VALUES (587, '2014-12-19 13:08:36.179', 'admin', 0, false, NULL, 3, NULL, 282);
+INSERT INTO slot_property_value VALUES (589, '2014-12-19 13:08:36.212', 'admin', 0, false, NULL, 3, NULL, 285);
+INSERT INTO slot_property_value VALUES (591, '2014-12-19 13:08:36.244', 'admin', 0, false, NULL, 3, NULL, 288);
+INSERT INTO slot_property_value VALUES (593, '2014-12-19 13:09:20.661', 'admin', 1, false, '{"meta":{"type":"SedsScalar_Integer","protocol":"SEDSv1","version":"1.0.0"},"data":{"value":456}}', 3, NULL, 228);
+
+INSERT INTO device_property_value VALUES (605, '2014-12-19 13:13:19.165', 'admin', 0, false, NULL, 5, NULL, 604);
+INSERT INTO device_property_value VALUES (602, '2014-12-19 13:13:40.745', 'admin', 1, false, '{"meta":{"type":"SedsScalar_Integer","protocol":"SEDSv1","version":"1.0.0"},"data":{"value":789}}', 5, NULL, 601);
+
+-- !
+-- ! update internal data
+-- !
 
 vacuum full "alignment_artifact";
 vacuum full "alignment_property_value";
