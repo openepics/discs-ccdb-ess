@@ -265,11 +265,11 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
                 final Tag tag = (Tag) selectedAttribute.getEntity();
                 deleteTagFromParent(tag);
                 Utility.showMessage(FacesMessage.SEVERITY_INFO, "Tag removed", tag.getName());
-                return;
             } else {
                 throw new UnhandledCaseException();
             }
         } finally {
+            selectedAttribute = null;
             internalPopulateAttributesList();
         }
     }
@@ -501,6 +501,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
         property = null;
         propertyValue = null;
         enumSelections = null;
+        selectedAttribute = null;
         propertyValueUIElement = PropertyValueUIElement.NONE;
         filterProperties();
     }
