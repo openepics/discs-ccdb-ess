@@ -173,8 +173,7 @@ public abstract class AbstractSlotsController implements Serializable{
                 movedSlotView.setFirst(!listIterator.hasPrevious());
                 listIterator.add(currentNode);
                 slotPairEJB.moveUp(parentSlotView.getSlot(), movedSlotView.getSlot());
-                clearSelectedNode();
-                currentNode.setSelected(false);
+                selectNodeAfterMove(currentNode);
                 break;
             }
         }
@@ -207,18 +206,18 @@ public abstract class AbstractSlotsController implements Serializable{
                 movedSlotView.setLast(!listIterator.hasNext());
                 listIterator.add(currentNode);
                 slotPairEJB.moveDown(parentSlotView.getSlot(), movedSlotView.getSlot());
-                clearSelectedNode();
-                currentNode.setSelected(false);
+                selectNodeAfterMove(currentNode);
                 break;
             }
         }
     }
 
-    private void clearSelectedNode() {
+    private void selectNodeAfterMove(TreeNode movedNode) {
         if (selectedNode != null) {
             selectedNode.setSelected(false);
         }
-        selectedNode = null;
+        movedNode.setSelected(true);
+        selectedNode = movedNode;
     }
 
     protected abstract void updateRootNode();
