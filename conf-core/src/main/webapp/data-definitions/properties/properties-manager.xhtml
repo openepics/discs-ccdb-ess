@@ -37,9 +37,9 @@
                         <h:outputText styleClass="ui-icon ui-icon-trash" style="display: inline-block !important; margin-right: 6px;" />
                         <f:setPropertyActionListener value="#{property}" target="#{propertyManager.selectedProperty}" />
                     </p:commandLink>
-                    <p:commandLink ajax="true" title="Log" update=":propertyLogForm" oncomplete="propertyLog.show()">
+                    <p:commandLink ajax="true" title="Log">
                         <h:outputText styleClass="ui-icon ui-icon-clock" style="display: inline-block !important; margin-right: 6px;" />
-                        <f:ajax event="click" listener="#{auditManager.selectEntityForLog(property, 'PROPERTY')}" />
+                        <p:ajax event="click" listener="#{auditManager.selectEntityForLog(property, 'PROPERTY')}" update=":propertyLogForm" oncomplete="propertyLog.show()"/>
                     </p:commandLink>
                 </p:column>
             </p:dataTable>

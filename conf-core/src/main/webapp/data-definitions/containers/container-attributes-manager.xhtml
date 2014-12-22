@@ -19,7 +19,7 @@
                         </p:inputText>
                         <p:commandButton id="saveButton" value="Save changes" type="button" icon="ui-icon-disk" 
                                 disabled="#{slotAttributesController.entityName == slotAttributesController.slot.name}">
-                            <f:ajax event="click" listener="#{slotAttributesController.saveNewName()}" />
+                            <p:ajax event="click" listener="#{slotAttributesController.saveNewName()}" />
                         </p:commandButton>
                     </h3>
                     
@@ -44,9 +44,8 @@
                                 actionListener="#{slotAttributesController.prepareForArtifactAdd}" 
                                 update=":addArtifactForm:addArtifact"/>
                     </p:menu>
-                    <p:commandButton value="History" icon="ui-icon-clock" style="margin-left: 1ex;" 
-                         update=":containerLogForm" oncomplete="containerLog.show()" >
-                       <f:ajax event="click" listener="#{auditManager.selectEntityForLog(slotAttributesController.slot, 'SLOT')}" />
+                    <p:commandButton value="History" icon="ui-icon-clock" style="margin-left: 1ex;">
+                       <p:ajax event="click" listener="#{auditManager.selectEntityForLog(slotAttributesController.slot, 'SLOT')}" update=":containerLogForm" oncomplete="containerLog.show()" />
                     </p:commandButton>
                     <p:commandButton value="Close" style="margin-left: 1ex;" action="containers-manager.xhtml?faces-redirect=true" />
 

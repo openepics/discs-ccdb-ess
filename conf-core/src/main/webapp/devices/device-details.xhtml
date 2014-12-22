@@ -17,7 +17,7 @@
                     </p:inputText>
                     <p:commandButton id="saveButton" value="Save changes" type="button" icon="ui-icon-disk" 
                             disabled="#{deviceDetailsAttributesController.entityName == deviceDetailsAttributesController.device.serialNumber}">
-                        <f:ajax event="click" listener="#{deviceDetailsAttributesController.saveNewName()}" />
+                        <p:ajax event="click" listener="#{deviceDetailsAttributesController.saveNewName()}" />
                     </p:commandButton>
                 </h3>
                  
@@ -35,9 +35,8 @@
                     <p:menuitem value="Artifact" oncomplete="addArtifact.show()" 
                             actionListener="#{deviceDetailsAttributesController.prepareForArtifactAdd}" update=":addArtifactForm:addArtifact"/>
                 </p:menu>
-                <p:commandButton value="History" icon="ui-icon-clock" style="margin-left: 1ex;" 
-                        update=":deviceLogForm" oncomplete="deviceLog.show()" >
-                    <f:ajax event="click" listener="#{auditManager.selectEntityForLog(deviceDetailsAttributesController.device, 'DEVICE')}" />
+                <p:commandButton value="History" icon="ui-icon-clock" style="margin-left: 1ex;">
+                    <p:ajax event="click" listener="#{auditManager.selectEntityForLog(deviceDetailsAttributesController.device, 'DEVICE')}" update=":deviceLogForm" oncomplete="deviceLog.show()" />
                 </p:commandButton>
                 <p:commandButton value="Close" style="margin-left: 1ex;" action="index.html?faces-redirect=true" />
   

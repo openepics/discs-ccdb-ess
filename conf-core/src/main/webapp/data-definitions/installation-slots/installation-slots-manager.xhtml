@@ -59,10 +59,9 @@
                         <h:outputText styleClass="ui-icon ui-icon-trash" style="display: inline-block !important; margin-right: 6px;" />
                         <f:setPropertyActionListener value="#{installationSlot}" target="#{installationSlotsController.selectedSlotView}" />
                     </p:commandLink>
-                    <p:commandLink ajax="true" title="Log" update=":installationSlotLogForm" 
-                            rendered="#{installationSlot.isHostingSlot}" oncomplete="installationSlotLog.show()">
+                    <p:commandLink ajax="true" title="Log" rendered="#{installationSlot.isHostingSlot}" >
                         <h:outputText styleClass="ui-icon ui-icon-clock" style="display: inline-block !important; margin-right: 6px;" />
-                        <f:ajax event="click" listener="#{auditManager.selectEntityForLog(installationSlot.slot, 'SLOT')}" />
+                        <p:ajax event="click" listener="#{auditManager.selectEntityForLog(installationSlot.slot, 'SLOT')}" update=":installationSlotLogForm" oncomplete="installationSlotLog.show()" />
                     </p:commandLink>
                 </p:column>
             </p:treeTable>

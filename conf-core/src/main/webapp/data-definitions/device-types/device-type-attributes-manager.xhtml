@@ -19,7 +19,7 @@
                         </p:inputText>
                         <p:commandButton id="saveButton" value="Save changes" type="button" icon="ui-icon-disk" 
                                 disabled="#{comptypeAttributesController.entityName == comptypeAttributesController.deviceType.name}">
-                            <f:ajax event="click" listener="#{comptypeAttributesController.saveNewName()}" />
+                            <p:ajax event="click" listener="#{comptypeAttributesController.saveNewName()}" />
                         </p:commandButton>
                     </h3>
                                                                                
@@ -44,9 +44,8 @@
                             actionListener="#{comptypeAttributesController.prepareForArtifactAdd}" 
                             update=":addArtifactForm:addArtifact" />
                     </p:menu>
-                    <p:commandButton value="History" icon="ui-icon-clock" update=":deviceTypeLogForm" 
-                            style="margin-left: 1ex;" oncomplete="deviceTypeLog.show()" >
-                        <f:ajax event="click" listener="#{auditManager.selectEntityForLog(comptypeAttributesController.deviceType, 'COMPONENT_TYPE')}" />
+                    <p:commandButton value="History" icon="ui-icon-clock" style="margin-left: 1ex;"  >
+                        <p:ajax event="click" listener="#{auditManager.selectEntityForLog(comptypeAttributesController.deviceType, 'COMPONENT_TYPE')}" update=":deviceTypeLogForm" oncomplete="deviceTypeLog.show()" />
                     </p:commandButton>
                     <p:commandButton value="Close" style="margin-left: 1ex;" action="device-types-manager.xhtml?faces-redirect=true" />
                     <p:dataTable id="attributesDataTable" var="attribute" value="#{comptypeAttributesController.attributes}" 
