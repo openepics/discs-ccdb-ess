@@ -67,6 +67,7 @@ import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.views.BuiltInProperty;
 import org.openepics.discs.conf.views.BuiltInPropertyName;
 import org.openepics.discs.conf.views.EntityAttributeView;
+import org.openepics.discs.conf.views.EntityAttributeViewKind;
 import org.openepics.seds.api.datatypes.SedsEnum;
 import org.openepics.seds.api.datatypes.SedsType;
 import org.openepics.seds.core.Seds;
@@ -414,9 +415,16 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
         return new DefaultStreamedContent(new FileInputStream(filePath), contentType, selectedArtifact.getName());
     }
 
-    public boolean canDelete(Object attribute) {
+    public boolean canEdit(EntityAttributeView attributeView) {
+        final Object attribute = attributeView.getEntity();
+        return attribute instanceof BuiltInProperty || (attribute instanceof PropertyValue && !(attribute instanceof ComptypePropertyValue))
+                || (attribute instanceof Artifact && !(attribute instanceof  ComptypeArtifact));
+    }
+    
+    public boolean canDelete(EntityAttributeView attributeView) {
+        final Object attribute = attributeView.getEntity();
         return (attribute instanceof Artifact && !(attribute instanceof  ComptypeArtifact)) || (attribute instanceof PropertyValue
-                && !isPropertyValueInherited((PropertyValue)attribute)) || (attribute instanceof Tag && !isTagInherited((Tag)attribute));
+                && !isPropertyValueInherited((PropertyValue)attribute)) || (attribute instanceof Tag && !attributeView.getKind().equals(EntityAttributeViewKind.DEVICE_TYPE_TAG));
     }
 
     private boolean isPropertyValueInherited(PropertyValue propertyValue) {
@@ -431,25 +439,6 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
             }
         }
         return false;
-    }
-
-    private boolean isTagInherited(Tag tag) {
-        if (parentTags == null) {
-            return false;
-        }
-
-        final String tagName = tag.getName();
-        for (Tag inheritedTags : parentTags) {
-            if (tagName.equals(inheritedTags.getName())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public boolean canEdit(Object attribute) {
-        return attribute instanceof BuiltInProperty || (attribute instanceof PropertyValue && !(attribute instanceof ComptypePropertyValue))
-                || (attribute instanceof Artifact && !(attribute instanceof  ComptypeArtifact));
     }
 
     protected abstract void setPropertyValueParent(T child);
@@ -592,7 +581,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
         return artifactURI;
     }
     public void setArtifactURI(String artifactURI) {
-        this.artifactURI = artifactURI;
+        this.artifactURI = artifactURI.trim();
     }
 
     public boolean getIsArtifactBeingModified() {

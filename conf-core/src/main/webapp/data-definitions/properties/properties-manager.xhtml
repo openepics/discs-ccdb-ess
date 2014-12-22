@@ -13,11 +13,11 @@
                     filteredValue="#{propertyManager.filteredProperties}"
                     rows="15" paginator="true" paginatorPosition="bottom">
                 <p:ajax event="filter" ignoreAutoUpdate="true"/>
-                <p:column headerText="Name" sortBy="#{property.name.toUpperCase()}" filterBy="#{property.name}" width="20%">
+                <p:column headerText="Name" sortBy="#{property.name.toUpperCase()}" filterBy="#{property.name}" width="20%" filterMatchMode="contains">
                     <h:outputText value="#{property.name}" />
                 </p:column>
     
-                <p:column headerText="Description" filterBy="#{property.description}" width="50%">
+                <p:column headerText="Description" filterBy="#{property.description}" width="50%" filterMatchMode="contains">
                     <h:outputText value="#{property.description}" />
                 </p:column>
     
@@ -37,9 +37,9 @@
                         <h:outputText styleClass="ui-icon ui-icon-trash" style="display: inline-block !important; margin-right: 6px;" />
                         <f:setPropertyActionListener value="#{property}" target="#{propertyManager.selectedProperty}" />
                     </p:commandLink>
-                    <p:commandLink ajax="true" title="Log" update=":propertyLogForm" oncomplete="propertyLog.show()">
+                    <p:commandLink ajax="true" title="Log">
                         <h:outputText styleClass="ui-icon ui-icon-clock" style="display: inline-block !important; margin-right: 6px;" />
-                        <f:ajax event="click" listener="#{auditManager.selectEntityForLog(property, 'PROPERTY')}" />
+                        <p:ajax event="click" listener="#{auditManager.selectEntityForLog(property, 'PROPERTY')}" update=":propertyLogForm" oncomplete="propertyLog.show()"/>
                     </p:commandLink>
                 </p:column>
             </p:dataTable>

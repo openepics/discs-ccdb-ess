@@ -19,11 +19,11 @@
                         </p:inputText>
                         <p:commandButton id="saveButton" value="Save changes" type="button" icon="ui-icon-disk" 
                                 disabled="#{slotAttributesController.basicInfoUnchanged}">
-                            <f:ajax event="click" listener="#{slotAttributesController.saveNewName()}" />
+                            <p:ajax event="click" listener="#{slotAttributesController.saveNewName()}" />
                         </p:commandButton>
                     </h3>
                     
-                    <p:panelGrid styleClass="basicDetails">
+                    <p:panelGrid styleClass="noBordersNoPaddingLeft">
                         <p:row rendered="#{slotAttributesController.installationSlotFull}">
                             <p:column>
                                 <h:outputText value="Device type:" />
@@ -81,9 +81,8 @@
                                  actionListener="#{slotAttributesController.prepareForArtifactAdd}" 
                                  update=":addArtifactForm:addArtifact"/>
                     </p:menu>
-                    <p:commandButton value="History" icon="ui-icon-clock" style="margin-left: 1ex;" 
-                           update=":installSlotLogForm" oncomplete="installSlotLog.show()" >
-                       <f:ajax event="click" listener="#{auditManager.selectEntityForLog(slotAttributesController.slot, 'SLOT')}" />
+                    <p:commandButton value="History" icon="ui-icon-clock" style="margin-left: 1ex;">
+                       <p:ajax event="click" listener="#{auditManager.selectEntityForLog(slotAttributesController.slot, 'SLOT')}" update=":installSlotLogForm" oncomplete="installSlotLog.show()" />
                     </p:commandButton>
                     <p:commandButton value="Close" style="margin-left: 1ex;" action="installation-slots-manager.xhtml?faces-redirect=true" />
 
@@ -95,7 +94,7 @@
                         </p:column>
              
                         <p:column headerText="Kind">
-                            <h:outputText value="#{attribute.kind}" />
+                            <h:outputText value="#{attribute.kind.toString()}" />
                         </p:column>
              
                         <p:column headerText="Value">
@@ -108,12 +107,12 @@
 
                         <p:column headerText="Actions" width="70">
                             <p:commandLink ajax="true" title="Edit" update=":modifyPropertyValueForm :modifyArtifactForm" 
-                                    rendered="#{slotAttributesController.canEdit(attribute.entity)}">
+                                    rendered="#{slotAttributesController.canEdit(attribute)}">
                                 <h:outputText styleClass="ui-icon ui-icon-pencil" style="display: inline-block !important; margin-right: 6px;" />
                                 <f:setPropertyActionListener value="#{attribute}" target="#{slotAttributesController.selectedAttributeToModify}" />
                             </p:commandLink>
                             <p:commandLink ajax="true" title="Delete" oncomplete="deleteAttribute.show()"
-                                    rendered="#{slotAttributesController.canDelete(attribute.entity)}">
+                                    rendered="#{slotAttributesController.canDelete(attribute)}">
                                 <h:outputText styleClass="ui-icon ui-icon-trash" style="display: inline-block !important; margin-right: 6px;" />
                                 <f:setPropertyActionListener value="#{attribute}" target="#{slotAttributesController.selectedAttribute}" />
                             </p:commandLink>

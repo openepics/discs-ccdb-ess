@@ -95,9 +95,9 @@
                 </p:row>
             </p:panelGrid>
             
-            <p:commandButton value="Cancel" style="float: right; margin-left: 1ex;" onclick="#{widgetName}.hide();" 
+            <p:commandButton value="Cancel" styleClass="rightmostDialogButton" onclick="#{widgetName}.hide();" 
                 update="grp" resetValues="true" />
-            <p:commandButton value="Save" style="float: right" update=":propertiesForm:propertiesTable grp" 
+            <p:commandButton value="Save" styleClass="additionalDialogButton" update=":propertiesForm:propertiesTable grp" 
                 oncomplete="if (args &amp;&amp; !args.validationFailed) #{widgetName}.hide(); propertiesTableVar.filter();" 
                 action="#{propertyManager[submitHandler]}"/>
         </p:dialog>

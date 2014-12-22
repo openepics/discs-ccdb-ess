@@ -39,9 +39,9 @@
                         <h:outputText styleClass="ui-icon ui-icon-trash" style="display: inline-block !important; margin-right: 6px;" />
                         <f:setPropertyActionListener value="#{container}" target="#{containerController.selectedSlotView}" />
                     </p:commandLink>
-                    <p:commandLink ajax="true" title="Log" update=":containerLogForm" oncomplete="containerLog.show()">
+                    <p:commandLink ajax="true" title="Log">
                         <h:outputText styleClass="ui-icon ui-icon-clock" style="display: inline-block !important; margin-right: 6px;" />
-                        <f:ajax event="click" listener="#{auditManager.selectEntityForLog(container.slot, 'SLOT')}" />
+                        <p:ajax event="click" listener="#{auditManager.selectEntityForLog(container.slot, 'SLOT')}" oncomplete="containerLog.show()" update=":containerLogForm"/>
                     </p:commandLink>
                 </p:column>
                 

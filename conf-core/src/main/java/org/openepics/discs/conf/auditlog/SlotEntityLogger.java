@@ -19,6 +19,7 @@
  */
 package org.openepics.discs.conf.auditlog;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +49,22 @@ public class SlotEntityLogger implements EntityLogger<Slot> {
     @Override
     public List<AuditRecord> auditEntries(Object entity, EntityTypeOperation operation) {
         final Slot slot = (Slot) entity;
-
+        
+        /* 
+         * TODO This is a hack to correctly generate logs when creating new slot through GUI or data loaders.
+         * This MUST be removed and DAO layer should be separated to business logic layer and DAO layer where DAO
+         * layer ONLY communicates with the database and business logic layer controls the work flow and other 
+         * business rules related activities. 
+         */
+        final List<AuditRecord> auditRecords = new ArrayList<>();
+        auditRecords.addAll(createAuditRecords(slot, operation));
+        if (operation == EntityTypeOperation.CREATE && slot.getPairsInWhichThisSlotIsAChildList().size() == 1) {
+            auditRecords.addAll(createAuditRecords(slot.getPairsInWhichThisSlotIsAChildList().get(0).getParentSlot(), operation));
+        }
+        return auditRecords;        
+    }
+    
+    private List<AuditRecord> createAuditRecords(Slot slot, EntityTypeOperation operation) {
         final Map<String, String> propertiesMap = new TreeMap<>();
         if (slot.getSlotPropertyList() != null) {
             for (SlotPropertyValue propValue : slot.getSlotPropertyList()) {

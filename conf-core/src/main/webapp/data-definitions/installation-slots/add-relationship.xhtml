@@ -6,16 +6,24 @@
     <h:form id="addSlotRelationshipForm">
         <p:dialog widgetVar="addSlotRelationship" id="addSlotRelationship" modal="true" width="35em" resizable="false" closable="false" dynamic="true">
             <f:facet name="header">
-                <h:outputText value="Add relationship to #{installationSlotsController.selectedSlotView.name}" />
+                <h:outputText value="Add relationship to #{installationSlotsController.selectedSlotViewForRelationships.name}" />
             </f:facet>
             <p:panelGrid id="grid" style="text-align: left" styleClass="dialog-grid-panel noBorders">
                 <p:row>
                     <p:column>
-                        <h:outputText style="vertical-align: top" value="Relationship type:"/>
-                        <p:selectOneMenu id="relationshipTypeSelect" value="#{installationSlotsController.selectedRelationshipType}">
-                            <f:selectItems value="#{installationSlotsController.relationshipTypes}" /> 
-                            <p:ajax />
-	                     </p:selectOneMenu>                        
+                        <p:panelGrid styleClass="noBordersNoPaddingLeft">
+                            <p:row>
+                                <p:column style="vertical-align: middle">
+                                    <h:outputText value="Relationship type: "/>
+                                </p:column>
+                                <p:column>
+                                    <p:selectOneMenu id="relationshipTypeSelect" value="#{installationSlotsController.selectedRelationshipType}">
+                                        <f:selectItems value="#{installationSlotsController.relationshipTypes}" /> 
+                                        <p:ajax />
+            	                     </p:selectOneMenu>
+                                 </p:column>
+                             </p:row>
+                         </p:panelGrid>                        
                     </p:column>
                 </p:row>
                 <p:row>
@@ -41,8 +49,8 @@
             </p:panelGrid>
             <p:separator />
 
-            <p:commandButton value="Cancel" style="float: right" onclick="addSlotRelationship.hide()" resetValues="true"/>
-            <p:commandButton value="Add" style="float: right" disabled="#{installationSlotsController.selectedSlotViewForRelationshipAdd == null}" 
+            <p:commandButton value="Cancel" styleClass="rightmostDialogButton" onclick="addSlotRelationship.hide()" resetValues="true"/>
+            <p:commandButton value="Add" styleClass="additionalDialogButton" disabled="#{installationSlotsController.selectedSlotViewForRelationshipAdd == null}" 
                 id="addButton" action="#{installationSlotsController.onRelationshipAdd}" oncomplete="addSlotRelationship.hide();" update=":slotRelationshipsForm:relationshipTable"/>
         </p:dialog>
     </h:form>

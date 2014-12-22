@@ -16,7 +16,7 @@
                                 filteredValue="#{devicesByTypeManager.filteredComponentTypes}" emptyMessage="No device types defined.">
                             <p:ajax event="rowSelect" listener="#{devicesByTypeManager.prepareDevicesForDisplay()}" 
                                 update=":deviceTypesForm:devicesTable :deviceTypesForm:addDeviceButton :deviceAddForm:addDeviceDialog" />
-        	                <p:column headerText="Type" filterBy="#{devType.name}">
+        	                <p:column headerText="Type" filterBy="#{devType.name}" filterMatchMode="contains">
         	                    <h:outputText value="#{devType.name}" />
         	                </p:column>
         	            </p:dataTable>
@@ -49,9 +49,9 @@
                                     <h:outputText styleClass="ui-icon ui-icon-trash" style="display: inline-block !important; margin-right: 6px;" />
                                     <f:setPropertyActionListener value="#{device}" target="#{devicesByTypeManager.selectedDevice}" />
                                 </p:commandLink>
-                                <p:commandLink ajax="true" title="Log" update=":deviceLogForm" oncomplete="deviceLog.show()">
+                                <p:commandLink ajax="true" title="Log">
                                     <h:outputText styleClass="ui-icon ui-icon-clock" style="display: inline-block !important; margin-right: 6px;" />
-                                    <f:ajax event="click" listener="#{auditManager.selectEntityForLog(device, 'DEVICE')}" />
+                                    <p:ajax event="click" listener="#{auditManager.selectEntityForLog(device, 'DEVICE')}" update=":deviceLogForm" oncomplete="deviceLog.show()"/>
                                 </p:commandLink>
                             </p:column>
                         </p:dataTable>

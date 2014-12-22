@@ -39,13 +39,13 @@ body {
     vertical-align: top;
 }
 
-.basicDetails, .basicDetails>tbody>tr {
+.noBordersNoPaddingLeft, .noBordersNoPaddingLeft>tbody>tr {
     background: none;
     border: none;
     vertical-align: top;
 }
 
-.basicDetails>tbody>tr>td {
+.noBordersNoPaddingLeft>tbody>tr>td {
     background: none;
     border: none;
     vertical-align: top;
@@ -60,6 +60,15 @@ body {
 
 .spartanTable>thead>th {
     text-align: left;
+}
+
+.rightmostDialogButton {
+    float: right;
+}
+
+.additionalDialogButton {
+    float: right;
+    margin-right: 1ex !important;
 }
 
 .panelTopAlign>tbody>tr>td {

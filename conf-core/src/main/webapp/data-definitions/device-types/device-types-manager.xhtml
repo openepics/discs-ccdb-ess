@@ -14,11 +14,11 @@
 	            rows="15" paginator="true" paginatorPosition="bottom">
                 <p:ajax event="filter" ignoreAutoUpdate="true"/>
                 
-	            <p:column headerText="Name" sortBy="#{deviceType.name.toUpperCase()}" filterBy="#{deviceType.name}" width="20%">
+	            <p:column headerText="Name" sortBy="#{deviceType.name.toUpperCase()}" filterBy="#{deviceType.name}" filterMatchMode="contains" width="20%">
 	                <h:outputText value="#{deviceType.name}" />
 	            </p:column>
 	
-	            <p:column headerText="Description" filterBy="#{deviceType.description}" width="65%">
+	            <p:column headerText="Description" filterBy="#{deviceType.description}" filterMatchMode="contains" width="65%">
 	                <h:outputText value="#{deviceType.description}" />
 	            </p:column>
 	
@@ -30,9 +30,9 @@
                         <h:outputText styleClass="ui-icon ui-icon-trash" style="display: inline-block !important; margin-right: 6px;" />
                         <f:setPropertyActionListener value="#{deviceType}" target="#{componentTypeManager.selectedDeviceType}" />
                     </p:commandLink>
-                    <p:commandLink ajax="true" title="Log" update=":deviceTypeLogForm" oncomplete="deviceTypeLog.show()">
+                    <p:commandLink ajax="true" title="Log">
                         <h:outputText styleClass="ui-icon ui-icon-clock" style="display: inline-block !important; margin-right: 6px;" />
-                        <f:ajax event="click" listener="#{auditManager.selectEntityForLog(deviceType, 'COMPONENT_TYPE')}" />
+                        <p:ajax event="click" listener="#{auditManager.selectEntityForLog(deviceType, 'COMPONENT_TYPE')}" update=":deviceTypeLogForm" oncomplete="deviceTypeLog.show()" />
                     </p:commandLink>
 	            </p:column>
 	        </p:dataTable>

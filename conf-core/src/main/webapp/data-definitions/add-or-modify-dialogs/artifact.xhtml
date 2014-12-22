@@ -76,8 +76,8 @@
 					</p:row>
 				</p:panelGrid>
 	
-				<p:commandButton value="Cancel" style="float: right" onclick="#{widgetName}.hide();" update="grp" resetValues="true" />
-				<p:commandButton value="Save" style="float: right" update="#{componentToUpdate} grp" id="saveButton"	oncomplete="if (args &amp;&amp; !args.validationFailed) #{widgetName}.hide()" action="#{controller[submitHandler]}" disabled="#{!controller.isArtifactBeingModified and controller.isArtifactInternal and controller.importFileName == null}"/>
+				<p:commandButton value="Cancel" styleClass="rightmostDialogButton" onclick="#{widgetName}.hide();" update="grp" resetValues="true" />
+				<p:commandButton value="Save" styleClass="additionalDialogButton" update="#{componentToUpdate} grp" id="saveButton"	oncomplete="if (args &amp;&amp; !args.validationFailed) #{widgetName}.hide()" action="#{controller[submitHandler]}" disabled="#{!controller.isArtifactBeingModified and controller.isArtifactInternal and controller.importFileName == null}"/>
 			</h:panelGroup>
 		</p:dialog>
 

@@ -17,11 +17,11 @@
                     </p:inputText>
                     <p:commandButton id="saveButton" value="Save changes" type="button" icon="ui-icon-disk" 
                             disabled="#{deviceDetailsAttributesController.entityName == deviceDetailsAttributesController.device.serialNumber}">
-                        <f:ajax event="click" listener="#{deviceDetailsAttributesController.saveNewName()}" />
+                        <p:ajax event="click" listener="#{deviceDetailsAttributesController.saveNewName()}" />
                     </p:commandButton>
                 </h3>
                  
-                <p:panelGrid columns="2" styleClass="basicDetails">       
+                <p:panelGrid columns="2" styleClass="noBordersNoPaddingLeft">       
                     <h:outputText value="Device type:" />
                     <h:outputText value="#{deviceDetailsAttributesController.device.componentType.name}" />
                 </p:panelGrid>
@@ -35,9 +35,8 @@
                     <p:menuitem value="Artifact" oncomplete="addArtifact.show()" 
                             actionListener="#{deviceDetailsAttributesController.prepareForArtifactAdd}" update=":addArtifactForm:addArtifact"/>
                 </p:menu>
-                <p:commandButton value="History" icon="ui-icon-clock" style="margin-left: 1ex;" 
-                        update=":deviceLogForm" oncomplete="deviceLog.show()" >
-                    <f:ajax event="click" listener="#{auditManager.selectEntityForLog(deviceDetailsAttributesController.device, 'DEVICE')}" />
+                <p:commandButton value="History" icon="ui-icon-clock" style="margin-left: 1ex;">
+                    <p:ajax event="click" listener="#{auditManager.selectEntityForLog(deviceDetailsAttributesController.device, 'DEVICE')}" update=":deviceLogForm" oncomplete="deviceLog.show()" />
                 </p:commandButton>
                 <p:commandButton value="Close" style="margin-left: 1ex;" action="index.html?faces-redirect=true" />
   
@@ -48,7 +47,7 @@
                     </p:column>
 
                     <p:column headerText="Kind">
-                        <h:outputText value="#{attribute.kind}" />
+                        <h:outputText value="#{attribute.kind.toString()}" />
                     </p:column>
 
                     <p:column headerText="Unit" style="text-align: center;">
@@ -60,12 +59,12 @@
                     </p:column>
 
                     <p:column headerText="Actions" width="70">
-                        <p:commandLink ajax="true" rendered="#{deviceDetailsAttributesController.canEdit(attribute.entity)}" title="Edit">
+                        <p:commandLink ajax="true" rendered="#{deviceDetailsAttributesController.canEdit(attribute)}" title="Edit">
                             <h:outputText styleClass="ui-icon ui-icon-pencil" style="display: inline-block !important; margin-right: 6px;" />
                             <f:setPropertyActionListener value="#{attribute}" target="#{deviceDetailsAttributesController.selectedAttributeToModify}" />
                         </p:commandLink>
                         <p:commandLink ajax="true" title="Delete" oncomplete="deleteAttribute.show()" 
-                                rendered="#{deviceDetailsAttributesController.canDelete(attribute.entity)}">
+                                rendered="#{deviceDetailsAttributesController.canDelete(attribute)}">
                             <h:outputText styleClass="ui-icon ui-icon-trash" style="display: inline-block !important; margin-right: 6px;" />
                             <f:setPropertyActionListener value="#{attribute}" target="#{deviceDetailsAttributesController.selectedAttribute}" />
                         </p:commandLink>
@@ -81,7 +80,7 @@
                 </p:dataTable>
             </h:panelGroup>
             <h:panelGroup id="installationDetails" style="margin-top: 30px;" layout="block">
-                <p:commandButton title="Install" label="Install" value="Install" 
+                <p:commandButton title="Install" label="Install" value="Install" style="margin-right: 1ex !important;"
                     type="button" update=":installDeviceForm:installationDetails" onclick="installDevice.show()" 
                     disabled="#{installationManager.isDeviceInstalled(deviceDetailsAttributesController.device)}" />
                 <p:commandButton title="Uninstall" label="Uninstall" value="Uninstall" 
