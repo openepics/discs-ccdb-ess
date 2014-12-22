@@ -81,7 +81,7 @@
                 </p:dataTable>
             </h:panelGroup>
             <h:panelGroup id="installationDetails" style="margin-top: 30px;" layout="block">
-                <p:commandButton title="Install" label="Install" value="Install" 
+                <p:commandButton title="Install" label="Install" value="Install" style="margin-right: 1ex !important;"
                     type="button" update=":installDeviceForm:installationDetails" onclick="installDevice.show()" 
                     disabled="#{installationManager.isDeviceInstalled(deviceDetailsAttributesController.device)}" />
                 <p:commandButton title="Uninstall" label="Uninstall" value="Uninstall" 
