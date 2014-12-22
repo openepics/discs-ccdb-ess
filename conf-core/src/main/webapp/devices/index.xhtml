@@ -16,7 +16,7 @@
                                 filteredValue="#{devicesByTypeManager.filteredComponentTypes}" emptyMessage="No device types defined.">
                             <p:ajax event="rowSelect" listener="#{devicesByTypeManager.prepareDevicesForDisplay()}" 
                                 update=":deviceTypesForm:devicesTable :deviceTypesForm:addDeviceButton :deviceAddForm:addDeviceDialog" />
-        	                <p:column headerText="Type" filterBy="#{devType.name}">
+        	                <p:column headerText="Type" filterBy="#{devType.name}" filterMatchMode="contains">
         	                    <h:outputText value="#{devType.name}" />
         	                </p:column>
         	            </p:dataTable>

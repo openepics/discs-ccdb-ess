@@ -13,11 +13,11 @@
                     filteredValue="#{propertyManager.filteredProperties}"
                     rows="15" paginator="true" paginatorPosition="bottom">
                 <p:ajax event="filter" ignoreAutoUpdate="true"/>
-                <p:column headerText="Name" sortBy="#{property.name.toUpperCase()}" filterBy="#{property.name}" width="20%">
+                <p:column headerText="Name" sortBy="#{property.name.toUpperCase()}" filterBy="#{property.name}" width="20%" filterMatchMode="contains">
                     <h:outputText value="#{property.name}" />
                 </p:column>
     
-                <p:column headerText="Description" filterBy="#{property.description}" width="50%">
+                <p:column headerText="Description" filterBy="#{property.description}" width="50%" filterMatchMode="contains">
                     <h:outputText value="#{property.description}" />
                 </p:column>
     
