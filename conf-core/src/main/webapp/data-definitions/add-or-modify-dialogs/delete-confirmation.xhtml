@@ -9,11 +9,11 @@
 			<f:facet name="header">
 				<h:outputText value="#{dialogTitle}" />
 			</f:facet>
-			<h:outputText value="Are you sure you want to delete this entity?"/>
+			<h:outputText value="Are you sure you want to delete this entity?" style="margin-botton: 1ex;"/>
 			<br />
 
-			<p:commandButton value="No" style="float: right; margin-top: 1em; margin-left: 1ex;" onclick="#{widgetName}.hide();" />
-			<p:commandButton value="Yes" style="float: right; margin-top: 1em;" oncomplete="#{widgetName}.hide(); resizePanel(); #{resetFilter}" 
+			<p:commandButton value="No" styleClass="rightmostDialogButton" onclick="#{widgetName}.hide();" />
+			<p:commandButton value="Yes" styleClass="additionalDialogButton" oncomplete="#{widgetName}.hide(); resizePanel(); #{resetFilter}" 
                     ajax="true" action="#{controller[submitHandler]}" update="#{formToUpdate}" />
 		</p:dialog>
 	</h:form>

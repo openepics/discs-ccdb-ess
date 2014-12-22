@@ -42,8 +42,8 @@
                 </p:row>
 			</p:panelGrid>
 			
-			<p:commandButton value="Close" style="float: right" onclick="#{widgetName}.hide();" 
-                    action="#{installationSlotsController.onRelationshipPopupClose}" update=":installationSlotsForm" />
+			<p:commandButton value="Close" styleClass="rightmostDialogButton" onclick="#{widgetName}.hide();" 
+                    action="#{installationSlotsController.onRelationshipPopupClose}" update=":installationSlotsForm" oncomplete="resizePanel()"/>
 		</p:dialog>
 	</h:form>
 	

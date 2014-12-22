@@ -18,9 +18,9 @@
                     rendered="#{controller.importFileName == null}" />
                 <h:outputText value="#{controller.importFileName}" />
                 <p:separator />
-                <p:commandButton value="Cancel" style="float: right"
+                <p:commandButton value="Cancel" styleClass="rightmostDialogButton"
                     onclick="#{widgetName}.hide();" />
-                <p:commandButton value="Import" style="float: right"
+                <p:commandButton value="Import" styleClass="additionalDialogButton"
                     onclick="statusDialog.show()"
                     update=":menuform :#{formId}" oncomplete="#{widgetName}.hide(); statusDialog.hide();"
                     action="#{controller.doImport()}"
@@ -51,7 +51,7 @@
                 
                 <p:spacer height="16"/>
                 <h:form id="resultDialogForm">                                                        
-                    <p:commandButton value="Close" style="float: right"
+                    <p:commandButton value="Close" styleClass="rightmostDialogButton"
                             onclick="resultDialog.hide()" />                            
                 </h:form>
             </p:dialog>

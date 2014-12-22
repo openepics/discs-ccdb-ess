@@ -31,8 +31,8 @@
 
             </p:panelGrid>
 
-            <p:commandButton value="Cancel" style="float: right" onclick="#{widgetName}.hide();" update="grp" resetValues="true" />
-            <p:commandButton value="Save" style="float: right" 
+            <p:commandButton value="Cancel" styleClass="rightmostDialogButton" onclick="#{widgetName}.hide();" update="grp" resetValues="true" />
+            <p:commandButton value="Save" styleClass="additionalDialogButton" 
                     update="grp :containersForm:containersTree :containersForm:addSlot" 
                     oncomplete="if (args &amp;&amp; !args.validationFailed) #{widgetName}.hide(); resizePanel()" 
                     action="#{containerController[submitHandler]}"/>

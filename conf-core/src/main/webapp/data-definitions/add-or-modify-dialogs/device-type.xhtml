@@ -25,8 +25,8 @@
                 </h:panelGroup>
             </p:panelGrid>
             
-            <p:commandButton value="Cancel" style="float: right" onclick="#{widgetName}.hide();" update="grp" resetValues="true" />
-            <p:commandButton value="Save" style="float: right" update=":dataDefinitionsContainer grp" oncomplete="if (args &amp;&amp; !args.validationFailed) #{widgetName}.hide(); deviceTypeTableVar.filter();" action="#{componentTypeManager[submitHandler]}"/>
+            <p:commandButton value="Cancel" styleClass="rightmostDialogButton" onclick="#{widgetName}.hide();" update="grp" resetValues="true" />
+            <p:commandButton value="Save" styleClass="additionalDialogButton" update=":dataDefinitionsContainer grp" oncomplete="if (args &amp;&amp; !args.validationFailed) #{widgetName}.hide(); deviceTypeTableVar.filter();" action="#{componentTypeManager[submitHandler]}"/>
         </p:dialog>
 
     </h:form>
