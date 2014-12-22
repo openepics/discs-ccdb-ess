@@ -79,7 +79,7 @@ vacuum full "tag";
 vacuum full "unit";
 vacuum full "user_role";
 
-SELECT setval('public.hibernate_sequence', 610, true);
+SELECT setval('public.hibernate_sequence', 650, true);
 
 -- !
 -- ! data insertion
@@ -305,8 +305,8 @@ INSERT INTO slot_pair VALUES (295, 2, 0, 294, 225, 42);
 INSERT INTO slot_pair VALUES (298, 3, 0, 297, 225, 42);
 INSERT INTO slot_pair VALUES (301, 4, 0, 300, 225, 42);
 
+INSERT INTO device VALUES (601, '2014-12-22 11:39:24.896', 'admin', 3, NULL, NULL, 'Device 001', NULL, NULL, NULL, NULL, NULL, '001', 'READY', NULL, 173);
 INSERT INTO device VALUES (604, '2014-12-19 13:13:19.165', 'admin', 1, NULL, NULL, 'Device 002', NULL, NULL, NULL, NULL, NULL, '002', 'DEFINED', NULL, 173);
-INSERT INTO device VALUES (601, '2014-12-19 13:13:40.745', 'admin', 2, NULL, NULL, 'Device 001', NULL, NULL, NULL, NULL, NULL, '001', 'DEFINED', NULL, 173);
 
 INSERT INTO comptype_property_value VALUES (7, '2014-12-18 12:10:42.406', 'admin', 0, false, '{"meta":{"type":"SedsScalar_Integer","protocol":"SEDSv1","version":"1.0.0"},"data":{"value":123}}', 1, NULL, false, false, false, 173);
 INSERT INTO comptype_property_value VALUES (9, '2014-12-18 12:11:03.477', 'admin', 0, false, NULL, 3, NULL, false, true, true, 173);
@@ -329,6 +329,8 @@ INSERT INTO slot_property_value VALUES (593, '2014-12-19 13:09:20.661', 'admin',
 
 INSERT INTO device_property_value VALUES (605, '2014-12-19 13:13:19.165', 'admin', 0, false, NULL, 5, NULL, 604);
 INSERT INTO device_property_value VALUES (602, '2014-12-19 13:13:40.745', 'admin', 1, false, '{"meta":{"type":"SedsScalar_Integer","protocol":"SEDSv1","version":"1.0.0"},"data":{"value":789}}', 5, NULL, 601);
+
+INSERT INTO installation_record VALUES (635, '2014-12-22 10:59:32.093', 'admin', 0, '2014-12-22', NULL, '1419242372085', NULL, 601, 231);
 
 -- !
 -- ! update internal data
