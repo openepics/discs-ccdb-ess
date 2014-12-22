@@ -1,2 +1,4 @@
 #!/bin/sh
-/usr/bin/psql -a -f test-init.sql ccdb discs_ccdb
+errcount=`/usr/bin/psql -a -f test-init.sql ccdb discs_ccdb | grep -i \"ERROR\" | wc -L`
+errcount=`printf '%d' $errcount`
+echo "Number of errors:" $errcount
