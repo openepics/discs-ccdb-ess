@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "AuditRecord.findAll", query = "SELECT a FROM AuditRecord a"),
     @NamedQuery(name = "AuditRecord.findByEntityIdAndType", query = "SELECT a FROM AuditRecord a "
-            + "WHERE a.entityId = :entityId AND a.entityType = :entityType")
+            + "WHERE a.entityId = :entityId AND a.entityType = :entityType ORDER BY a.logTime DESC")
 })
 public class AuditRecord implements Serializable {
     @Id
