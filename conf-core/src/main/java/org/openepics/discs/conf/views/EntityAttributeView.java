@@ -142,8 +142,8 @@ public class EntityAttributeView {
         return Conversion.valueToString(value);
     }
 
-    public String getKind() {
-        return kind.toString();
+    public EntityAttributeViewKind getKind() {
+        return kind;
     }
 
     public Object getEntity() {

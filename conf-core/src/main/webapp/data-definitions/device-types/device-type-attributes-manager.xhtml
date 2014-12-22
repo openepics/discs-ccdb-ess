@@ -61,7 +61,7 @@
                         </p:column>
                         
                         <p:column headerText="Kind">
-                            <h:outputText value="#{attribute.kind}" />
+                            <h:outputText value="#{attribute.kind.toString()}" />
                         </p:column>
                         
                         <p:column headerText="Unit" >
@@ -70,7 +70,7 @@
             
                         <p:column headerText="Actions" width="70">
                             <p:commandLink ajax="true" title="Edit" update=":modifyPropertyValueForm :modifyArtifactForm" 
-                                    rendered="#{comptypeAttributesController.canEdit(attribute.kind)}">
+                                    rendered="#{comptypeAttributesController.canEdit(attribute)}">
                                 <h:outputText styleClass="ui-icon ui-icon-pencil" style="display: inline-block !important; margin-right: 6px;" />
                                 <f:setPropertyActionListener value="#{attribute}" target="#{comptypeAttributesController.selectedAttributeToModify}" />
                             </p:commandLink>

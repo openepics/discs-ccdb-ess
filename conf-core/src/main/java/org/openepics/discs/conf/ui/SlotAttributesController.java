@@ -222,9 +222,7 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
     protected void populateParentTags() {
         parentTags = new HashSet<Tag>();
         for (Tag parentTag : slot.getComponentType().getTags()) {
-            if (!slot.getTags().contains(parentTag)) {
-                parentTags.add(parentTag);
-            }
+            parentTags.add(parentTag);
         }
     }
 

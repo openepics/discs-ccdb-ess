@@ -316,10 +316,12 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
         }
     }
     
-    public boolean canEdit(String attributeKind) {
-        return !(attributeKind.equals(EntityAttributeViewKind.INSTALL_SLOT_PROPERTY.toString())) && 
-                !(attributeKind.equals(EntityAttributeViewKind.DEVICE_PROPERTY.toString())) && 
-                !(attributeKind.equals(EntityAttributeViewKind.TAG.toString()));
+    @Override
+    public boolean canEdit(EntityAttributeView attribute) {
+        final EntityAttributeViewKind attributeKind = attribute.getKind();
+        return !(attributeKind == EntityAttributeViewKind.INSTALL_SLOT_PROPERTY) && 
+                !(attributeKind == EntityAttributeViewKind.DEVICE_PROPERTY) && 
+                !(attributeKind == EntityAttributeViewKind.TAG);
     }
 }
 

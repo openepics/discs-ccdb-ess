@@ -48,7 +48,7 @@
                     </p:column>
 
                     <p:column headerText="Kind">
-                        <h:outputText value="#{attribute.kind}" />
+                        <h:outputText value="#{attribute.kind.toString()}" />
                     </p:column>
 
                     <p:column headerText="Unit" style="text-align: center;">
@@ -60,12 +60,12 @@
                     </p:column>
 
                     <p:column headerText="Actions" width="70">
-                        <p:commandLink ajax="true" rendered="#{deviceDetailsAttributesController.canEdit(attribute.entity)}" title="Edit">
+                        <p:commandLink ajax="true" rendered="#{deviceDetailsAttributesController.canEdit(attribute)}" title="Edit">
                             <h:outputText styleClass="ui-icon ui-icon-pencil" style="display: inline-block !important; margin-right: 6px;" />
                             <f:setPropertyActionListener value="#{attribute}" target="#{deviceDetailsAttributesController.selectedAttributeToModify}" />
                         </p:commandLink>
                         <p:commandLink ajax="true" title="Delete" oncomplete="deleteAttribute.show()" 
-                                rendered="#{deviceDetailsAttributesController.canDelete(attribute.entity)}">
+                                rendered="#{deviceDetailsAttributesController.canDelete(attribute)}">
                             <h:outputText styleClass="ui-icon ui-icon-trash" style="display: inline-block !important; margin-right: 6px;" />
                             <f:setPropertyActionListener value="#{attribute}" target="#{deviceDetailsAttributesController.selectedAttribute}" />
                         </p:commandLink>

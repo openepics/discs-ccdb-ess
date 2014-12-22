@@ -67,12 +67,12 @@
 
                         <p:column headerText="Actions" width="70">
                             <p:commandLink ajax="true" title="Edit" update=":modifyPropertyValueForm :modifyArtifactForm" 
-                                    rendered="#{slotAttributesController.canEdit(attribute.entity)}">
+                                    rendered="#{slotAttributesController.canEdit(attribute)}">
                                 <h:outputText styleClass="ui-icon ui-icon-pencil" style="display: inline-block !important; margin-right: 6px;" />
                                 <f:setPropertyActionListener value="#{attribute}" target="#{slotAttributesController.selectedAttributeToModify}" />
                             </p:commandLink>
                             <p:commandLink ajax="true" title="Delete"  oncomplete="deleteAttribute.show()" 
-                                    rendered="#{slotAttributesController.canDelete(attribute.entity)}">
+                                    rendered="#{slotAttributesController.canDelete(attribute)}">
                                 <h:outputText styleClass="ui-icon ui-icon-trash" style="display: inline-block !important; margin-right: 6px;" />
                                 <f:setPropertyActionListener value="#{attribute}" target="#{slotAttributesController.selectedAttribute}" />
                             </p:commandLink>
