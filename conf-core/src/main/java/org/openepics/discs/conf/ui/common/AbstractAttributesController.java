@@ -592,7 +592,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
         return artifactURI;
     }
     public void setArtifactURI(String artifactURI) {
-        this.artifactURI = artifactURI;
+        this.artifactURI = artifactURI.trim();
     }
 
     public boolean getIsArtifactBeingModified() {
