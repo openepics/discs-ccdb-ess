@@ -17,7 +17,9 @@
                 <h:outputText value="#{auditManager.displayRecord.user}" />
                 
                 <h:outputText value="Timestamp:" />
-                <h:outputText value="#{auditManager.displayRecord.logTime}" />
+                <h:outputText value="#{auditManager.displayRecord.logTime}">
+                    <f:convertDateTime pattern="yyyy-MM-dd HH:mm:ss.sss"/>
+                </h:outputText>
                 
                 <h:outputText value="Entity type:" />
                 <h:outputText value="#{auditManager.displayRecord.entityType}" />
