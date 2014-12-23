@@ -58,6 +58,10 @@
                
                 var totalMenusHeight = $('#hierarchies\\:hierarchiesEmptyColumn').css({"height":window.innerHeight-totalHeight});
             }
+            
+            function removeParametersFromUrl() {
+               window.history.pushState("", "", window.location.href.replace(window.location.search, ''));
+            }
 
             $(window).resize(function() {
                 resizePanel();

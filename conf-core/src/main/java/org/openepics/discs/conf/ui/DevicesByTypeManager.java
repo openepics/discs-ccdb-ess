@@ -21,11 +21,13 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.ListIterator;
 
+import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.servlet.http.HttpServletRequest;
 
 import org.openepics.discs.conf.ejb.ComptypeEJB;
 import org.openepics.discs.conf.ejb.DeviceEJB;
@@ -34,6 +36,7 @@ import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.util.Utility;
+import org.primefaces.context.RequestContext;
 
 import com.google.common.base.Preconditions;
 
@@ -60,6 +63,15 @@ public class DevicesByTypeManager implements Serializable {
     private String description;
 
     public DevicesByTypeManager() {
+    }
+    
+    @PostConstruct
+    public void init() {
+        if (((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest()).getParameter("id") != null) {
+            final Long id = Long.parseLong(((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest()).getParameter("id"));
+            selectedComponentType = componentTypesEJB.findById(id);
+            prepareDevicesForDisplay();
+        }
     }
 
     /**
@@ -134,6 +146,10 @@ public class DevicesByTypeManager implements Serializable {
 
     public String deviceDetailsRedirect(Long id) {
         return "device-details.xhtml?faces-redirect=true&id=" + id;
+    }
+    
+    public String redirectToAllDevices(Long id) {
+        return "index.html?faces-redirect=true&id=" + id;
     }
 
     public List<ComponentType> getDeviceTypes() {

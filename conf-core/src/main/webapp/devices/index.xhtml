@@ -7,7 +7,7 @@
     <ui:define name="content">
         <p:growl showDetail="true" globalOnly="true" autoUpdate="true" />
         <h:form id="deviceTypesForm">
-            <p:panelGrid styleClass="noBorders">
+            <p:panelGrid styleClass="noBordersNoPaddingLeft">
                 <p:row>
                     <p:column style="width: 20%; vertical-align: top;">
         	            <p:dataTable id="typesTable" var="devType" selection="#{devicesByTypeManager.selectedComponentType}"
@@ -15,7 +15,7 @@
                                 value="#{devicesByTypeManager.deviceTypes}" scrollHeight="600" 
                                 filteredValue="#{devicesByTypeManager.filteredComponentTypes}" emptyMessage="No device types defined.">
                             <p:ajax event="rowSelect" listener="#{devicesByTypeManager.prepareDevicesForDisplay()}" 
-                                update=":deviceTypesForm:devicesTable :deviceTypesForm:addDeviceButton :deviceAddForm:addDeviceDialog" />
+                                update=":deviceTypesForm:devicesTable :deviceTypesForm:addDeviceButton :deviceAddForm:addDeviceDialog" oncomplete="removeParametersFromUrl()" />
         	                <p:column headerText="Type" filterBy="#{devType.name}" filterMatchMode="contains">
         	                    <h:outputText value="#{devType.name}" />
         	                </p:column>
