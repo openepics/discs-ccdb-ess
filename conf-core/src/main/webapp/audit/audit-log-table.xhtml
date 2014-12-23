@@ -23,7 +23,7 @@
                 
                 <p:column headerText="Timestamp">
                     <h:outputText value="#{auditRecord.logTime}">
-                        <f:convertDateTime pattern="#{msgs.dateFormat}"/>
+                        <f:convertDateTime pattern="yyyy-MM-dd HH:mm:ss.sss"/>
                     </h:outputText>
                 </p:column>
                 

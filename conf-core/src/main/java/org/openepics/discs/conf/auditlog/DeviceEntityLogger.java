@@ -19,6 +19,7 @@
  */
 package org.openepics.discs.conf.auditlog;
 
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +34,7 @@ import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.InstallationRecord;
+import org.openepics.discs.conf.util.Conversion;
 
 import com.google.common.collect.ImmutableList;
 
@@ -68,24 +70,27 @@ public class DeviceEntityLogger implements EntityLogger<Device> {
                 artifactsMap.put(artifact.getName(), artifact.getUri());
             }
         }
-        
+
         final Map<String, String> installationSlotMap = new TreeMap<>();
-        
+
         InstallationRecord lastInstallationRecord = null;
         for (InstallationRecord installationRecord : device.getInstallationRecordList()) {
             if (lastInstallationRecord == null || installationRecord.getModifiedAt().after(lastInstallationRecord.getModifiedAt())) {
                 lastInstallationRecord = installationRecord;
             }
         }
-           
+
         if (lastInstallationRecord != null) {
+            final SimpleDateFormat timestampFormat = new SimpleDateFormat(Conversion.DATE_ONLY_FORMAT);
             installationSlotMap.put("installationSlot", lastInstallationRecord.getSlot().getName());
-            installationSlotMap.put("installationDate", lastInstallationRecord.getInstallDate().toString());
+            installationSlotMap.put("installationDate",
+                                            timestampFormat.format(lastInstallationRecord.getInstallDate()));
             if (lastInstallationRecord.getUninstallDate() != null) {
-                installationSlotMap.put("uninstallationDate", lastInstallationRecord.getUninstallDate().toString());
-            } 
+                installationSlotMap.put("uninstallationDate",
+                                            timestampFormat.format(lastInstallationRecord.getUninstallDate()));
+            }
         }
-           
+
         return ImmutableList.of(new AuditLogUtil(device)
                                 .removeTopProperties(Arrays.asList("id", "modifiedAt", "modifiedBy",
                                         "version", "serialNumber", "componentType"))

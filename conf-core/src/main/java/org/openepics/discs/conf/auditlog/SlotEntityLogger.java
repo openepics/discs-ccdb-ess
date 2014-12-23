@@ -19,6 +19,7 @@
  */
 package org.openepics.discs.conf.auditlog;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -33,6 +34,7 @@ import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotArtifact;
 import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
+import org.openepics.discs.conf.util.Conversion;
 
 import com.google.common.collect.ImmutableList;
 
@@ -49,21 +51,21 @@ public class SlotEntityLogger implements EntityLogger<Slot> {
     @Override
     public List<AuditRecord> auditEntries(Object entity, EntityTypeOperation operation) {
         final Slot slot = (Slot) entity;
-        
-        /* 
+
+        /*
          * TODO This is a hack to correctly generate logs when creating new slot through GUI or data loaders.
          * This MUST be removed and DAO layer should be separated to business logic layer and DAO layer where DAO
-         * layer ONLY communicates with the database and business logic layer controls the work flow and other 
-         * business rules related activities. 
+         * layer ONLY communicates with the database and business logic layer controls the work flow and other
+         * business rules related activities.
          */
         final List<AuditRecord> auditRecords = new ArrayList<>();
         auditRecords.addAll(createAuditRecords(slot, operation));
         if (operation == EntityTypeOperation.CREATE && slot.getPairsInWhichThisSlotIsAChildList().size() == 1) {
             auditRecords.addAll(createAuditRecords(slot.getPairsInWhichThisSlotIsAChildList().get(0).getParentSlot(), operation));
         }
-        return auditRecords;        
+        return auditRecords;
     }
-    
+
     private List<AuditRecord> createAuditRecords(Slot slot, EntityTypeOperation operation) {
         final Map<String, String> propertiesMap = new TreeMap<>();
         if (slot.getSlotPropertyList() != null) {
@@ -93,7 +95,7 @@ public class SlotEntityLogger implements EntityLogger<Slot> {
                 parentsMap.put(slotPair.getParentSlot().getName(), slotPair.getSlotRelation().getIname());
             }
         }
-        
+
         final Map<String, String> installationDeviceMap = new TreeMap<>();
         InstallationRecord lastInstallationRecord = null;
         for (InstallationRecord installationRecord : slot.getInstallationRecordList()) {
@@ -101,15 +103,18 @@ public class SlotEntityLogger implements EntityLogger<Slot> {
                 lastInstallationRecord = installationRecord;
             }
         }
-        
+
         if (lastInstallationRecord != null) {
+            final SimpleDateFormat timestampFormat = new SimpleDateFormat(Conversion.DATE_ONLY_FORMAT);
             final String installationDeviceSerial = lastInstallationRecord.getDevice().getSerialNumber();
             installationDeviceMap.put("inventoryID", installationDeviceSerial);
-            installationDeviceMap.put("installationDate", lastInstallationRecord.getInstallDate().toString());
+            installationDeviceMap.put("installationDate",
+                        timestampFormat.format(lastInstallationRecord.getInstallDate()));
             if (lastInstallationRecord.getUninstallDate() != null) {
-                installationDeviceMap.put("uninstallationDate", lastInstallationRecord.getUninstallDate().toString());
-            }   
-        }        
+                installationDeviceMap.put("uninstallationDate",
+                        timestampFormat.format(lastInstallationRecord.getUninstallDate()));
+            }
+        }
 
         final AuditLogUtil logUtil = new AuditLogUtil(slot)
                         .removeTopProperties(Arrays.asList("id", "modifiedAt", "modifiedBy", "version",
@@ -121,13 +126,13 @@ public class SlotEntityLogger implements EntityLogger<Slot> {
                         .addArrayOfMappedProperties("parentSlots", parentsMap)
                         .addArrayOfMappedProperties("installation", installationDeviceMap)
                         .addArrayOfProperties("tagsList", EntityLoggerUtil.getTagNamesFromTagsSet(slot.getTags()));
-        
+
         // If positionInformation is empty do not add it
-        if (slot.getPositionInformation().isEmpty()) 
+        if (slot.getPositionInformation().isEmpty())
         {
             logUtil.removeTopProperties(Arrays.asList("positionInformation"));
         }
-        
+
         return ImmutableList.of(logUtil.auditEntry(operation, EntityType.SLOT, slot.getName(), slot.getId()));
     }
 }
