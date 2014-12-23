@@ -52,9 +52,27 @@ public class SlotEntityLoggerTest {
         slot.getSlotPropertyList().add(slotPropVal2);
         slot.getSlotArtifactList().add(artifact1);
         slot.getSlotArtifactList().add(artifact2);
-        slot.getPairsInWhichThisSlotIsAParentList().add(new SlotPair(new Slot("childSlot", false), slot, contains));
-        slot.getPairsInWhichThisSlotIsAChildList().add(new SlotPair(slot, new Slot("parentSlot", false), contains));
-        slot.setComponentType(new ComponentType("slotCompType"));
+
+        final ComponentType slotComponentType = new ComponentType("slotCompType");
+        slot.setComponentType(slotComponentType);
+
+        // set up child
+        final Slot childSlot = new Slot("childSlot", false);
+        childSlot.setComponentType(slotComponentType);
+
+        // set up parent
+        final Slot parentSlot = new Slot("parentSlot", false);
+        parentSlot.setComponentType(slotComponentType);
+
+        // set up pairs
+        final SlotPair slotToChildRelationship = new SlotPair(childSlot, slot, contains);
+        final SlotPair slotToParentRelationship = new SlotPair(slot, parentSlot, contains);
+
+        // set up slot connections
+        childSlot.getPairsInWhichThisSlotIsAChildList().add(slotToChildRelationship);
+        parentSlot.getPairsInWhichThisSlotIsAParentList().add(slotToParentRelationship);
+        slot.getPairsInWhichThisSlotIsAParentList().add(slotToChildRelationship);
+        slot.getPairsInWhichThisSlotIsAChildList().add(slotToParentRelationship);
     }
 
     @Test
