@@ -4,7 +4,7 @@
     xmlns:h="http://java.sun.com/jsf/html">
 
     <h:form id="#{formId}">
-        <p:dialog widgetVar="#{widgetName}" id="#{widgetName}" modal="true" resizable="false" dynamic="true" width="550">
+        <p:dialog widgetVar="#{widgetName}" id="#{widgetName}" modal="true" resizable="false" dynamic="true" width="55em">
 
             <f:facet name="header">
                 <h:outputText value="#{dialogTitle}" />
@@ -13,6 +13,22 @@
             <p:panelGrid styleClass="noBorders">
                 <p:row>
                     <p:column>
+                        <h:outputText value="Device type: " />
+                    </p:column>
+                    <p:column>
+                        <h:outputText value="#{hierarchiesController.selectedNodeSlot.componentType.name}" />
+                    </p:column>
+                </p:row>
+                <p:row>
+                    <p:column>
+                        <h:outputText value="Installation slot path: " />
+                    </p:column>
+                    <p:column>
+                        <h:outputText value="#{hierarchiesController.getInstallationSlotPath()}" />
+                    </p:column>
+                </p:row>
+                <p:row>
+                    <p:column colspan="2">
                         <p:dataTable var="device" value="#{hierarchiesController.uninstalledDevices}" 
                                 selectionMode="single" selection="#{hierarchiesController.deviceToInstall}"
                                 rowKey="#{device.id}" scrollable="true" scrollHeight="180"  
@@ -29,9 +45,9 @@
                     </p:column>
                 </p:row>
                 <p:row>
-                    <p:column>
+                    <p:column colspan="2">
                         <p:commandButton title="Cancel" styleClass="rightmostDialogButton" label="Cancel" value="Cancel" 
-                            onclick="#{widgetName}.hide()" resetValues="true" update=":#{formId}" />
+                            onclick="#{widgetName}.hide()" resetValues="true" update=":#{formId}" ajax="true" action="#{hierarchiesController.setDeviceToInstall(null)}" />
                         <p:commandButton id="installButton" styleClass="additionalDialogButton" title="Install" label="Install"
                             disabled="#{empty hierarchiesController.deviceToInstall}" value="Install" 
                             action="#{hierarchiesController.installDevice()}" oncomplete="#{widgetName}.hide(); resizeEmptyColumnInHierarchies();"

@@ -49,6 +49,7 @@ import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.ent.Tag;
 import org.openepics.discs.conf.ui.common.UIException;
 import org.openepics.discs.conf.util.BuiltInDataType;
+import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.views.BuiltInProperty;
 import org.openepics.discs.conf.views.EntityAttributeView;
 import org.openepics.discs.conf.views.EntityAttributeViewKind;
@@ -278,5 +279,10 @@ public class HierarchiesController implements Serializable {
         installationEJB.save(deviceInstallationRecord);
         // the device is not installed any more. Clear the installation state information.
         this.installationRecord = null;
+    }
+    
+    public String getInstallationSlotPath() {
+        final String slotPath = Utility.buildSlotPath(selectedSlot).toString();
+        return slotPath.substring(1, slotPath.length() - 1);
     }
 }

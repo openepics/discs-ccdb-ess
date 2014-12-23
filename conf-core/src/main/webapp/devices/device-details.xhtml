@@ -38,7 +38,7 @@
                 <p:commandButton value="History" icon="ui-icon-clock" style="margin-left: 1ex;">
                     <p:ajax event="click" listener="#{auditManager.selectEntityForLog(deviceDetailsAttributesController.device, 'DEVICE')}" update=":deviceLogForm" oncomplete="deviceLog.show()" />
                 </p:commandButton>
-                <p:commandButton value="Close" style="margin-left: 1ex;" action="index.html?faces-redirect=true" />
+                <p:commandButton value="Close" style="margin-left: 1ex;" action="#{devicesByTypeManager.redirectToAllDevices(deviceDetailsAttributesController.device.componentType.id)}" />
   
                 <p:dataTable id="devAttribs" var="attribute" value="#{deviceDetailsAttributesController.attributes}" 
                         emptyMessage="No attributes." style="margin-top: 1em;">
