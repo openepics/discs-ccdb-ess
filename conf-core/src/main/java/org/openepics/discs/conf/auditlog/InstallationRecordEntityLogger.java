@@ -21,12 +21,9 @@ package org.openepics.discs.conf.auditlog;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 import org.openepics.discs.conf.ent.AuditRecord;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
-import org.openepics.discs.conf.ent.InstallationArtifact;
 import org.openepics.discs.conf.ent.InstallationRecord;
 
 /**
@@ -46,20 +43,16 @@ public class InstallationRecordEntityLogger implements EntityLogger<Installation
     public List<AuditRecord> auditEntries(Object value, EntityTypeOperation operation) {
         final InstallationRecord installationRecord = (InstallationRecord) value;
 
-        final Map<String, String> artifactsMap = new TreeMap<>();
-        if (installationRecord.getInstallationArtifactList() != null) {
-            for (InstallationArtifact artifact : installationRecord.getInstallationArtifactList()) {
-                artifactsMap.put(artifact.getName(), artifact.getUri());
-            }
-        }
-        
         final DeviceEntityLogger deviceEntityLogger = new DeviceEntityLogger();
         final SlotEntityLogger slotEntityLogger = new SlotEntityLogger();
 
-        List<AuditRecord> installationRecordAuditRecords = new ArrayList<>();        
-        installationRecordAuditRecords.addAll(deviceEntityLogger.auditEntries(installationRecord.getDevice(), operation));
-        installationRecordAuditRecords.addAll(slotEntityLogger.auditEntries(installationRecord.getSlot(), operation));
-        
+        List<AuditRecord> installationRecordAuditRecords = new ArrayList<>();
+        // parent entity audit logs are always updated, never created
+        installationRecordAuditRecords.addAll(
+                        deviceEntityLogger.auditEntries(installationRecord.getDevice(), EntityTypeOperation.UPDATE));
+        installationRecordAuditRecords.addAll(
+                        slotEntityLogger.auditEntries(installationRecord.getSlot(), EntityTypeOperation.UPDATE));
+
         return installationRecordAuditRecords;
     }
 }
