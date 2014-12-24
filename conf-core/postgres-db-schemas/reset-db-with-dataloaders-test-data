@@ -1,0 +1,4 @@
+#!/bin/sh
+errcount=`/usr/bin/psql -a -f dataloaders-test-init.sql ccdb discs_ccdb | grep -i \"ERROR\" | wc -L`
+errcount=`printf '%d' $errcount`
+echo "Number of errors:" $errcount
