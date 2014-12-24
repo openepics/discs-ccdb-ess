@@ -40,9 +40,9 @@ import org.openepics.discs.conf.ent.DataType;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyAssociation;
 import org.openepics.discs.conf.ent.Unit;
-import org.openepics.discs.conf.util.As;
 
 import com.google.common.base.Objects;
+import com.google.common.base.Preconditions;
 
 /**
  * Implementation of data loader for properties
@@ -102,7 +102,7 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
                     break;
                 }
 
-                final String command = As.notNull(row.get(commandIndex).toUpperCase());
+                final String command = Preconditions.checkNotNull(row.get(commandIndex).toUpperCase());
                 final @Nullable String name = row.get(nameIndex);
                 final @Nullable String unit = unitIndex == -1 ? null : row.get(unitIndex);
                 final @Nullable String dataType = row.get(dataTypeIndex);

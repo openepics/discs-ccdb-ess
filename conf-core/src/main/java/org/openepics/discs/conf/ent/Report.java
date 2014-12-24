@@ -22,7 +22,6 @@ package org.openepics.discs.conf.ent;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Nonnull;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -32,7 +31,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import org.openepics.discs.conf.util.As;
+import com.google.common.base.Preconditions;
 
 /**
  * An entity that persist information about reports
@@ -44,7 +43,6 @@ import org.openepics.discs.conf.util.As;
 @Table(name = "report")
 public class Report extends ConfigurationEntity {
     @Basic(optional = false)
-    @Nonnull
     @Column(name = "name", unique = true)
     private String name;
 
@@ -60,14 +58,14 @@ public class Report extends ConfigurationEntity {
     }
 
     public Report(String name) {
-        this.name = As.notNull(name);
+        this.name = Preconditions.checkNotNull(name);
     }
 
     public String getName() {
         return name;
     }
     public void setName(String name) {
-        this.name = As.notNull(name);
+        this.name = Preconditions.checkNotNull(name);
     }
 
     public List<ComponentType> getTypeFilters() {
@@ -84,7 +82,7 @@ public class Report extends ConfigurationEntity {
         return filters;
     }
     public void setFilters(List<ReportAction> filters) {
-        for (ReportAction filter : As.notNull(filters))
+        for (ReportAction filter : Preconditions.checkNotNull(filters))
             if (filter.getParentReport() != this)
                 throw new IllegalArgumentException("Filter does not belong to parent. " + filter.toString());
         this.filters = filters;

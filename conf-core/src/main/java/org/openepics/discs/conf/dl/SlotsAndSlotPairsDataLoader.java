@@ -50,10 +50,10 @@ import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.ent.SlotRelation;
 import org.openepics.discs.conf.ent.SlotRelationName;
-import org.openepics.discs.conf.util.As;
 import org.openepics.discs.conf.util.Conversion;
 
 import com.google.common.base.Objects;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
 
@@ -152,7 +152,7 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                     break;
                 }
 
-                final String command = As.notNull(row.get(commandIndex).toUpperCase());
+                final String command = Preconditions.checkNotNull(row.get(commandIndex).toUpperCase());
                 final @Nullable String name = row.get(nameIndex);
                 final @Nullable String description = descriptionIndex == -1 ? null : row.get(descriptionIndex);
                 final @Nullable String componentType = row.get(compTypeIndex);
@@ -361,7 +361,7 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                     break;
                 }
 
-                final String command = As.notNull(row.get(1).toUpperCase());
+                final String command = Preconditions.checkNotNull(row.get(1).toUpperCase());
                 final @Nullable String parent = row.get(parentIndex);
                 final @Nullable String child = row.get(childIndex);
                 final @Nullable String relation = row.get(relationIndex);

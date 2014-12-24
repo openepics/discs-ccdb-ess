@@ -44,10 +44,10 @@ import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ent.DeviceStatus;
 import org.openepics.discs.conf.ent.Property;
-import org.openepics.discs.conf.util.As;
 import org.openepics.discs.conf.util.Conversion;
 
 import com.google.common.base.Objects;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
 @Stateless
@@ -105,7 +105,7 @@ public class DevicesDataLoader extends AbstractDataLoader implements DataLoader 
                     break;
                 }
 
-                final String command = As.notNull(row.get(commandIndex).toUpperCase());
+                final String command = Preconditions.checkNotNull(row.get(commandIndex).toUpperCase());
                 final @Nullable String serial = row.get(serialIndex);
                 final @Nullable String componentType = row.get(compTypeIndex);
                 final @Nullable String description = descriptionIndex == -1 ? null : row.get(descriptionIndex);

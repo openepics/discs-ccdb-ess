@@ -31,7 +31,6 @@ import javax.persistence.MappedSuperclass;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Version;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 
@@ -49,13 +48,11 @@ public class ConfigurationEntity implements Serializable {
     protected Long id;
 
     @Basic(optional = false)
-    @NotNull
     @Column(name = "modified_at")
     @Temporal(TemporalType.TIMESTAMP)
     protected Date modifiedAt = new Date(0L);
 
     @Basic(optional = false)
-    @NotNull
     @Size(min = 1, max = 64)
     @Column(name = "modified_by")
     protected String modifiedBy;

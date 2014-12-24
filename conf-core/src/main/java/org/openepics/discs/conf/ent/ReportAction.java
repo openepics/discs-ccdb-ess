@@ -21,7 +21,6 @@ package org.openepics.discs.conf.ent;
 
 import java.util.Date;
 
-import javax.annotation.Nonnull;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -32,7 +31,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import org.openepics.discs.conf.util.As;
+import com.google.common.base.Preconditions;
 
 /**
  *
@@ -43,7 +42,6 @@ import org.openepics.discs.conf.util.As;
 @Table(name = "report_action")
 public class ReportAction extends ConfigurationEntity {
     @Basic(optional = false)
-    @Nonnull
     @Enumerated(EnumType.STRING)
     @Column(name = "operation")
     private ReportFilterAction operation;
@@ -64,7 +62,6 @@ public class ReportAction extends ConfigurationEntity {
     @Column(name = "value")
     private String value;
 
-    @Nonnull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "report_id")
     private Report parentReport;
@@ -74,20 +71,20 @@ public class ReportAction extends ConfigurationEntity {
 
     public ReportAction(ReportFilterAction operation, String field, String value,
             Report parentReport, String modifiedBy) {
-        this.operation = As.notNull(operation);
-        this.field = As.notNull(field);
-        this.value = As.notNull(value);
-        this.parentReport = As.notNull(parentReport);
+        this.operation = Preconditions.checkNotNull(operation);
+        this.field = Preconditions.checkNotNull(field);
+        this.value = Preconditions.checkNotNull(value);
+        this.parentReport = Preconditions.checkNotNull(parentReport);
         this.modifiedBy = modifiedBy;
         this.modifiedAt = new Date();
     }
 
     public ReportAction(ReportFilterAction operation, Property property, String value,
             Report parentReport, String modifiedBy) {
-        this.operation = As.notNull(operation);
-        this.property = As.notNull(property);
-        this.value = As.notNull(value);
-        this.parentReport = As.notNull(parentReport);
+        this.operation = Preconditions.checkNotNull(operation);
+        this.property = Preconditions.checkNotNull(property);
+        this.value = Preconditions.checkNotNull(value);
+        this.parentReport = Preconditions.checkNotNull(parentReport);
         this.modifiedBy = modifiedBy;
         this.modifiedAt = new Date();
     }
@@ -96,8 +93,8 @@ public class ReportAction extends ConfigurationEntity {
         if (operation != ReportFilterAction.IS)
             throw new IllegalArgumentException("Tag can only have an \"IS\" operation.");
         this.operation = operation;
-        this.tag = As.notNull(tag);
-        this.parentReport = As.notNull(parentReport);
+        this.tag = Preconditions.checkNotNull(tag);
+        this.parentReport = Preconditions.checkNotNull(parentReport);
         this.modifiedBy = modifiedBy;
         this.modifiedAt = new Date();
     }

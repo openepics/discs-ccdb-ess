@@ -35,7 +35,8 @@ import org.openepics.discs.conf.dl.common.ErrorMessage;
 import org.openepics.discs.conf.dl.common.ValidationMessage;
 import org.openepics.discs.conf.ejb.UnitEJB;
 import org.openepics.discs.conf.ent.Unit;
-import org.openepics.discs.conf.util.As;
+
+import com.google.common.base.Preconditions;
 
 /**
  * Implementation of loader for units.
@@ -92,7 +93,7 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
                     break;
                 }
 
-                final String command = As.notNull(row.get(commandIndex).toUpperCase());
+                final String command = Preconditions.checkNotNull(row.get(commandIndex).toUpperCase());
                 final @Nullable String name = row.get(nameIndex);
                 final @Nullable String quantity = row.get(quantityIndex);
                 final @Nullable String symbol = row.get(symbolIndex);
