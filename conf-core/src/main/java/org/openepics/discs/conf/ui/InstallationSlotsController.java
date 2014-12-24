@@ -205,6 +205,12 @@ public class InstallationSlotsController extends AbstractSlotsController {
             parentSlot = ((SlotView) selectedTreeNodeForRelationshipAdd.getData()).getSlot();
         }
 
+        if (childSlot.equals(parentSlot)) {
+            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Reflexive relationship",
+                    "The installation slot cannot be in relationship with itself.");
+            return;
+        }
+
         if (slotPairEJB.findSlotPairsByParentChildRelation(childSlot.getName(), parentSlot.getName(), slotRelation.getName()).size() == 0) {
             final SlotPair newSlotPair = new SlotPair(childSlot, parentSlot, slotRelation);
             if (!slotPairEJB.slotPairCreatesLoop(newSlotPair, childSlot)) {
