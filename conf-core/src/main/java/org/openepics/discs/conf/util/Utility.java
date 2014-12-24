@@ -1,4 +1,23 @@
 /*
+ * Copyright (c) 2014 European Spallation Source
+ * Copyright (c) 2014 Cosylab d.d.
+ *
+ * This file is part of Controls Configuration Database.
+ *
+ * Controls Configuration Database is free software: you can redistribute it
+ * and/or modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 2 of the License,
+ * or any newer version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
+ */
+/*
  * This software is Copyright by the Board of Trustees of Michigan
  * State University (c) Copyright 2012.
  *
@@ -26,16 +45,15 @@ import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotRelationName;
-
 /**
  *
  * @author vuppala
  * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  */
 public class Utility {
-    
+
     private static final String PATH_SEPARATOR = "\u00A0\u00A0\u00BB\u00A0\u00A0";
-    
+
     private Utility() {}
 
 
@@ -67,10 +85,10 @@ public class Utility {
             return false;
         }
     }
-    
+
     /**
      * Builds a list that represents a path of slot names from root slot to current slot.
-     * 
+     *
      * @param slot {@link Slot} for which the path should be built
      * @return {@link List} containing slot names from root slot to current slot
      */

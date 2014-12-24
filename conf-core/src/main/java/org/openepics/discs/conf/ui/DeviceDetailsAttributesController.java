@@ -1,22 +1,27 @@
-/**
+/*
  * Copyright (c) 2014 European Spallation Source
  * Copyright (c) 2014 Cosylab d.d.
  *
  * This file is part of Controls Configuration Database.
- * Controls Configuration Database is free software: you can redistribute it and/or modify it under the terms of the
- * GNU General Public License as published by the Free Software Foundation, either version 2 of the License, or any
- * newer version.
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License along with this program. If not, see
- * https://www.gnu.org/licenses/gpl-2.0.txt
+ *
+ * Controls Configuration Database is free software: you can redistribute it
+ * and/or modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 2 of the License,
+ * or any newer version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-
 package org.openepics.discs.conf.ui;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -141,7 +146,7 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
         }
 
         for (Tag parentTag : parentTags) {
-            attributes.add(new EntityAttributeView(parentTag, EntityAttributeViewKind.DEVICE_TYPE_TAG)); 
+            attributes.add(new EntityAttributeView(parentTag, EntityAttributeViewKind.DEVICE_TYPE_TAG));
         }
 
         for (DevicePropertyValue propVal : device.getDevicePropertyList()) {
@@ -156,7 +161,7 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
             attributes.add(new EntityAttributeView(tag, EntityAttributeViewKind.DEVICE_TAG));
         }
     }
-    
+
     @Override
     protected void populateParentTags() {
         parentTags = new HashSet<Tag>();
