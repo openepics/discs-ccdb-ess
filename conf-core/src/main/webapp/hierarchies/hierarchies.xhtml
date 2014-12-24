@@ -21,9 +21,11 @@
                             scrollable="true"
                             scrollWidth="auto" style="width: 300px;">
                             <p:ajax event="select"
-                                update=":hierarchies:attributesTable :hierarchies:relationsTable :hierarchies:installationDetails" oncomplete="resizeEmptyColumnInHierarchies();" />
+                                update=":hierarchies:attributesTable :hierarchies:relationsTable :hierarchies:installationDetails :hierarchies:slotAttributesTitle" 
+                                oncomplete="resizeEmptyColumnInHierarchies();" />
                             <p:ajax event="unselect"
-                                update=":hierarchies:attributesTable :hierarchies:relationsTable :hierarchies:installationDetails" oncomplete="resizeEmptyColumnInHierarchies();"/>
+                                update=":hierarchies:attributesTable :hierarchies:relationsTable :hierarchies:installationDetails :hierarchies:slotAttributesTitle" 
+                                oncomplete="resizeEmptyColumnInHierarchies();"/>
 
                             <p:column id="name" headerText="Name">
                                 <h:outputText value=""
@@ -40,7 +42,14 @@
                         </p:treeTable>
                     </p:column>
                     <p:column styleClass="alignTop" >
-                        <h3 id="slotAttributesTitle">Slot attributes</h3>
+                        <h3>
+                            <h:panelGroup id="slotAttributesTitle">
+                                <h:outputText rendered="#{hierarchiesController.selectedNodeSlot.hostingSlot}" 
+                                        value="#{hierarchiesController.selectedNodeSlot.componentType.name} installation slot attributes" />
+                                <h:outputText rendered="#{!hierarchiesController.selectedNodeSlot.hostingSlot}" 
+                                        value="Container attributes" />
+                            </h:panelGroup>
+                        </h3>
                         
                         <p:dataTable id="attributesTable"
                             class="hierarchies-attributes-cell"
