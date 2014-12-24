@@ -105,7 +105,7 @@ public class EntityAttributeView {
 
     private void setArtifactParameters() {
         final Artifact artifact = (Artifact) entity;
-        name = artifact.isInternal() ? artifact.getName() : artifact.getDescription();
+        name = artifact.getName();
         hasFile = artifact.isInternal();
         hasURL = !artifact.isInternal();
         value = hasURL ? new StrValue(artifact.getUri()) : null;

@@ -115,6 +115,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
     protected String tag;
     protected List<String> tagsForAutocomplete;
 
+    protected String artifactName;
     protected String artifactDescription;
     protected boolean isArtifactInternal;
     protected String artifactURI;
@@ -220,7 +221,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
             throw new RuntimeException(e);
         }
 
-        artifactInstance.setName(importData != null ? importFileName : artifactURI);
+        artifactInstance.setName(importData != null ? importFileName : artifactName);
         artifactInstance.setInternal(isArtifactInternal);
         artifactInstance.setDescription(artifactDescription);
         artifactInstance.setUri(artifactURI);
@@ -324,6 +325,10 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
             final S selectedArtifact = (S) selectedAttribute.getEntity();
             if (selectedArtifact.isInternal()) {
                 importFileName = selectedArtifact.getName();
+                artifactName = null;
+            } else {
+                artifactName = selectedArtifact.getName();
+                importFileName = null;
             }
             importData = null;
             artifactDescription = selectedArtifact.getDescription();
@@ -389,7 +394,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
         selectedArtifact.setDescription(artifactDescription);
         selectedArtifact.setUri(artifactURI);
         if (!selectedArtifact.isInternal()) {
-            selectedArtifact.setName(artifactURI);
+            selectedArtifact.setName(artifactName);
         }
 
         try {
@@ -420,7 +425,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
         return attribute instanceof BuiltInProperty || (attribute instanceof PropertyValue && !(attribute instanceof ComptypePropertyValue))
                 || (attribute instanceof Artifact && !(attribute instanceof  ComptypeArtifact));
     }
-    
+
     public boolean canDelete(EntityAttributeView attributeView) {
         final Object attribute = attributeView.getEntity();
         return (attribute instanceof Artifact && !(attribute instanceof  ComptypeArtifact)) || (attribute instanceof PropertyValue
@@ -504,6 +509,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
      * Prepares data for addition of {@link Artifact}
      */
     public void prepareForArtifactAdd() {
+        artifactName = null;
         artifactDescription = null;
         isArtifactInternal = false;
         artifactURI = null;
@@ -561,6 +567,13 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
 
     public List<Property> getFilteredProperties() {
         return filteredProperties;
+    }
+
+    public String getArtifactName() {
+        return artifactName;
+    }
+    public void setArtifactName(String artifactName) {
+        this.artifactName = artifactName;
     }
 
     public String getArtifactDescription() {

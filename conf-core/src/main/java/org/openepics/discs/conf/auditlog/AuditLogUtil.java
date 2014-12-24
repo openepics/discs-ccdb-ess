@@ -106,7 +106,7 @@ public class AuditLogUtil {
 
         for (Entry<String, ?> entry : keyValuePairs.entrySet()) {
             final ObjectNode arrayObjectNode = MAPPER.createObjectNode();
-            arrayObjectNode.put(entry.getKey(), entry.getValue().toString());
+            arrayObjectNode.put(entry.getKey(), entry.getValue() != null ? entry.getValue().toString() : null);
             arrayNode.add(arrayObjectNode);
         }
         node.set(key, arrayNode);
