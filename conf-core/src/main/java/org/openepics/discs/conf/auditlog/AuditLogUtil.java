@@ -96,7 +96,7 @@ public class AuditLogUtil {
      * @param keyValuePairs map of pairs to be added
      * @return a reference to this instance of {@link AuditLogUtil}
      */
-    public AuditLogUtil addArrayOfMappedProperties(String key, Map<String, String> keyValuePairs) {
+    public AuditLogUtil addArrayOfMappedProperties(String key, Map<String, ?> keyValuePairs) {
         // Don't add anything if empty
         if (keyValuePairs.isEmpty()) {
             return this;
@@ -104,9 +104,9 @@ public class AuditLogUtil {
 
         final ArrayNode arrayNode = MAPPER.createArrayNode();
 
-        for (Entry<String, String> entry : keyValuePairs.entrySet()) {
+        for (Entry<String, ?> entry : keyValuePairs.entrySet()) {
             final ObjectNode arrayObjectNode = MAPPER.createObjectNode();
-            arrayObjectNode.put(entry.getKey(), entry.getValue());
+            arrayObjectNode.put(entry.getKey(), entry.getValue().toString());
             arrayNode.add(arrayObjectNode);
         }
         node.set(key, arrayNode);

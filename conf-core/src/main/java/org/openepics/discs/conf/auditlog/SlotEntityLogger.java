@@ -36,7 +36,9 @@ import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.util.Conversion;
 
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Multimap;
 
 /**
  * @author Andraz Pozar <andraz.pozar@cosylab.com>
@@ -82,14 +84,14 @@ public class SlotEntityLogger implements EntityLogger<Slot> {
             }
         }
 
-        final Map<String, String> childrenMap = new TreeMap<>();
+        final Multimap<String, String> childrenMap = ArrayListMultimap.create();
         if (slot.getPairsInWhichThisSlotIsAParentList() != null) {
             for (SlotPair slotPair : slot.getPairsInWhichThisSlotIsAParentList()) {
                 childrenMap.put(slotPair.getChildSlot().getName(), slotPair.getSlotRelation().getName().toString());
             }
         }
 
-        final Map<String, String> parentsMap = new TreeMap<>();
+        final Multimap<String, String> parentsMap = ArrayListMultimap.create();
         if (slot.getPairsInWhichThisSlotIsAChildList() != null) {
             for (SlotPair slotPair : slot.getPairsInWhichThisSlotIsAChildList()) {
                 parentsMap.put(slotPair.getParentSlot().getName(), slotPair.getSlotRelation().getIname());
@@ -122,8 +124,8 @@ public class SlotEntityLogger implements EntityLogger<Slot> {
                         .addStringProperty("componentType", slot.getComponentType().getName())
                         .addArrayOfMappedProperties("slotPropertyList", propertiesMap)
                         .addArrayOfMappedProperties("slotArtifactList", artifactsMap)
-                        .addArrayOfMappedProperties("childrenSlots", childrenMap)
-                        .addArrayOfMappedProperties("parentSlots", parentsMap)
+                        .addArrayOfMappedProperties("childrenSlots", childrenMap.asMap())
+                        .addArrayOfMappedProperties("parentSlots", parentsMap.asMap())
                         .addArrayOfMappedProperties("installation", installationDeviceMap)
                         .addArrayOfProperties("tagsList", EntityLoggerUtil.getTagNamesFromTagsSet(slot.getTags()));
 
