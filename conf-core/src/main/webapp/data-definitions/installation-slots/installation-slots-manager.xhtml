@@ -44,14 +44,16 @@
                         <h:outputText styleClass="ui-icon ui-icon-link" style="display: inline-block !important; margin-right: 6px;" />
                         <f:setPropertyActionListener value="#{installationSlot}" target="#{installationSlotsController.selectedSlotViewForRelationships}" />
                     </p:commandLink>
-                    <p:commandLink ajax="true" title="Move up" rendered="#{installationSlot.isHostingSlot}"
-                            actionListener="#{installationSlotsController.moveUp}" disabled="#{installationSlot.first}"
-                            update=":installationSlotsForm:installationSlotsTree" oncomplete="resizePanel();">
+                    <p:commandLink ajax="true" title="Move up" disabled="#{installationSlot.first}" 
+                            rendered="#{installationSlot.isHostingSlot and securityPolicy.getUIHint('MOVE_SLOT')}"
+                            actionListener="#{installationSlotsController.moveUp}" oncomplete="resizePanel();" 
+                            update=":installationSlotsForm:installationSlotsTree">
                         <h:outputText styleClass="ui-icon ui-icon-arrowthick-1-n" style="display: inline-block !important; margin-right: 6px;" />
                     </p:commandLink>
-                    <p:commandLink ajax="true" title="Move down" rendered="#{installationSlot.isHostingSlot}"
-                            actionListener="#{installationSlotsController.moveDown}" disabled="#{installationSlot.last}"
-                            update=":installationSlotsForm:installationSlotsTree" oncomplete="resizePanel();">
+                    <p:commandLink ajax="true" title="Move down" disabled="#{installationSlot.last}" 
+                            rendered="#{installationSlot.isHostingSlot and securityPolicy.getUIHint('MOVE_SLOT')}" 
+                            actionListener="#{installationSlotsController.moveDown}" oncomplete="resizePanel();" 
+                            update=":installationSlotsForm:installationSlotsTree">
                         <h:outputText styleClass="ui-icon ui-icon-arrowthick-1-s" style="display: inline-block !important; margin-right: 6px;" />
                     </p:commandLink>
                     <p:commandLink ajax="true" title="Delete" rendered="#{installationSlot.isHostingSlot}" 

@@ -28,11 +28,13 @@
                         <h:outputText styleClass="ui-icon ui-icon-pencil" style="display: inline-block !important; margin-right: 6px;" />
                     </p:commandLink>
                     <p:commandLink ajax="true" title="Move up" actionListener="#{containerController.moveUp}" 
-                            disabled="#{container.first}" update=":containersForm:containersTree">
+                            disabled="#{container.first}" rendered="#{securityPolicy.getUIHint('MOVE_SLOT')}" 
+                            update=":containersForm:containersTree">
                         <h:outputText styleClass="ui-icon ui-icon-arrowthick-1-n" style="display: inline-block !important; margin-right: 6px;" />
                     </p:commandLink>
                     <p:commandLink ajax="true" title="Move down" actionListener="#{containerController.moveDown}" 
-                            disabled="#{container.last}" update=":containersForm:containersTree">
+                            disabled="#{container.last}" rendered="#{securityPolicy.getUIHint('MOVE_SLOT')}" 
+                            update=":containersForm:containersTree">
                         <h:outputText styleClass="ui-icon ui-icon-arrowthick-1-s" style="display: inline-block !important; margin-right: 6px;" />
                     </p:commandLink>
                     <p:commandLink ajax="true" title="Delete" oncomplete="deleteContainer.show()" disabled="#{!container.canDelete}">
