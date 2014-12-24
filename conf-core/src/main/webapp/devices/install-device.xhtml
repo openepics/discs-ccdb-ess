@@ -29,9 +29,9 @@
                 </p:row>
                 <p:row>
                     <p:column>
-                        <p:commandButton title="Cancel" styleClass="rightmostDialogButton" label="Cancel" value="Cancel" 
+                        <p:commandButton title="Cancel" styleClass="dialogButton" label="Cancel" value="Cancel" 
                             onclick="#{widgetName}.hide()" resetValues="true" update=":#{formId}"/>
-                        <p:commandButton id="installButton" styleClass="additionalDialogButton" title="Install" label="Install"
+                        <p:commandButton id="installButton" styleClass="dialogButton" title="Install" label="Install"
                             disabled="#{empty installationManager.selectedSlot}" value="Install" 
                             action="#{installationManager.installDevice(device)}" oncomplete="#{widgetName}.hide()"
                             update="#{componentToUpdate}" />

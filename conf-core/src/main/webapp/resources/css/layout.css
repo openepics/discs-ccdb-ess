@@ -14,7 +14,7 @@ body {
     font-family: Verdana, "Verdana CE",  Arial, "Arial CE", "Lucida Grande CE", lucida, "Helvetica CE", sans-serif; 
 }
 
-/* for all of primefaces componenets */
+/* for all of primefaces components */
 .ui-widget, 
 .ui-widget .ui-widget {
     font-size: 12px;
@@ -28,7 +28,7 @@ body {
     font-size: 12px;
 }
 
-/* text wrap around in data table*/
+/* text wrap around in data table */
 .ui-datatable td {
     white-space: normal !important;
 }
@@ -39,16 +39,12 @@ body {
     vertical-align: top;
 }
 
-.noBordersNoPaddingLeft, .noBordersNoPaddingLeft>tbody>tr {
-    background: none;
-    border: none;
-    vertical-align: top;
+.noPaddingRight, .noPaddingRight>tbody>tr>td {
+	padding-right: 0 !important;
 }
 
-.noBordersNoPaddingLeft>tbody>tr>td {
-    background: none;
-    border: none;
-    vertical-align: top;
+
+.noPaddingLeft, .noPaddingLeft>tbody>tr>td {
     padding-left: 0 !important;
 }
 
@@ -62,13 +58,10 @@ body {
     text-align: left;
 }
 
-.rightmostDialogButton {
-    float: right;
-}
-
-.additionalDialogButton {
+.dialogButton {
     float: right;
     margin-right: 1ex !important;
+    margin-bottom: 1ex !important;
 }
 
 .panelTopAlign>tbody>tr>td {
@@ -119,6 +112,11 @@ body {
 .alignTop {
     vertical-align: top;
 }
+
+.alignMiddle {
+    vertical-align: middle !important;
+}
+
 .inputTextField {
 	width: 100%;
 }
@@ -126,6 +124,7 @@ body {
 .export-grid  img {
     border: none;
 }
+
 .hierarchies-attributes-cell .ui-datatable-scrollable-body {
 	margin-right: 0 !important;
 	overflow-y: scroll;
@@ -160,7 +159,6 @@ body {
     color: black;
     width: 98%;
     margin: 0  auto;
-    /* background-color: #FFFFFF; */
 }
 
 .menubar {
@@ -170,31 +168,19 @@ body {
 #top {
     position: relative;
     color: black;
-    /* border: 1px; */
     padding: 2px; 
     margin-bottom: 1em;
-    /* margin: 0px 0px 10px 0px; */
 }
 
 #content {
     margin: 0; 
-    /* padding: 10px; */
     width: 100%;
-    /* border: 0px solid LightGray; */
-    /* border-radius: 7px; */
-    /* box-shadow: 0 0 7px 2px #888888; */
-    /* color: black; */
-
-    /* text-align: left; */
-    /* width: 80%; */
-    /* background-color: #FFFFFF;  */
 }
 
 .bottom {
     position: bottom;
     color:  #009999;
     padding: 5px;
-    /* margin: 10px 0px 0px 0px; */
     text-align:  center;
 }
 
@@ -253,4 +239,8 @@ a {
 
 .dialog-labels-width-1 {
 	width: 18ex;
+}
+
+.dialog-labels-width-2 {
+    width: 12ex;
 }

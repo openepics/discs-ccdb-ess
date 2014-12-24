@@ -4,38 +4,43 @@
     xmlns:h="http://java.sun.com/jsf/html">
 
     <h:form id="#{formId}">
-        <p:dialog widgetVar="#{widgetName}" id="#{widgetName}" modal="true" resizable="false" closable="false" dynamic="true"
-            width="45em">
+        <p:dialog widgetVar="#{widgetName}" id="#{widgetName}" modal="true" resizable="false" closable="false" 
+                dynamic="true">
             <f:facet name="header">
                 <h:outputText value="#{dialogTitle}" />
             </f:facet>
-            <p:panelGrid id="grp" styleClass="dialog-grid-panel noBorders" columns="2">
-            
+            <p:panelGrid id="grp" styleClass="dialog-grid-panel noBorders" columns="2" 
+                    style="margin-bottom: 2ex; margin-right: 1ex;" 
+                    columnClasses="alignMiddle alignRight dialog-labels-width-2, noPaddingRight">
+
                 <p:outputLabel for="propertySelect" value="Property:" />
                 <h:panelGroup>
-                    <p:selectOneMenu id="propertySelect" value="#{controller.property}" var="prop" converter="#{propertyConverter}" rendered="true" required="true" requiredMessage="Please select a property" >
+                    <p:selectOneMenu id="propertySelect" value="#{controller.property}" var="prop" 
+                            converter="#{propertyConverter}" rendered="true" required="true" 
+                            requiredMessage="Please select a property">
                         <p:ajax update=":#{formId}:propertyUnit :#{formId}:propertyDataType"/>
                         <f:selectItem itemLabel="Select One" itemValue="" />
-                        <f:selectItems value="#{controller.filteredProperties}" var="property" itemLabel="#{property.name}" itemValue="#{property}" />
+                        <f:selectItems value="#{controller.filteredProperties}" var="property" 
+                            itemLabel="#{property.name}" itemValue="#{property}" />
                         <p:column>  
                             #{prop.name}
                         </p:column>                    
                     </p:selectOneMenu>
                     <p:message for="propertySelect"/>
                 </h:panelGroup>
-                
+
                 <p:outputLabel value="Data type:" />
                 <p:inputText id="propertyDataType" value="#{controller.property.dataType.name}" disabled="true"/>
-                
+
                 <p:outputLabel value="Unit:" />
                 <p:inputText id="propertyUnit" value="#{controller.property.unit.name}" disabled="true"/>
-               
             </p:panelGrid>
-            
-            <p:commandButton value="Cancel" styleClass="rightmostDialogButton" onclick="#{widgetName}.hide();" update="grp" resetValues="true" />
-            <p:commandButton value="Save" styleClass="additionalDialogButton" update="#{componentToUpdate} grp" 
-                oncomplete="if (args &amp;&amp; !args.validationFailed) #{widgetName}.hide()" 
-                action="#{controller[submitHandler]}"/>
+
+            <p:commandButton value="Cancel" styleClass="dialogButton" onclick="#{widgetName}.hide();" 
+                    update="grp" resetValues="true" />
+            <p:commandButton value="Save" styleClass="dialogButton" update="#{componentToUpdate} grp" 
+                    oncomplete="if (args and !args.validationFailed) #{widgetName}.hide()" 
+                    action="#{controller[submitHandler]}"/>
         </p:dialog>
 
     </h:form>

@@ -11,9 +11,10 @@
 			</f:facet>
 			<h:outputText value="Are you sure you want to delete this entity?" style="margin-botton: 1ex;"/>
 			<br />
+            <br />
 
-			<p:commandButton value="No" styleClass="rightmostDialogButton" onclick="#{widgetName}.hide();" />
-			<p:commandButton value="Yes" styleClass="additionalDialogButton" oncomplete="#{widgetName}.hide(); resizePanel(); #{resetFilter}" 
+			<p:commandButton value="No" styleClass="dialogButton" onclick="#{widgetName}.hide();" />
+			<p:commandButton value="Yes" styleClass="dialogButton" oncomplete="#{widgetName}.hide(); resizePanel(); #{resetFilter}" 
                     ajax="true" action="#{controller[submitHandler]}" update="#{formToUpdate}" />
 		</p:dialog>
 	</h:form>

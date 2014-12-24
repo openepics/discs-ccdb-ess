@@ -11,7 +11,7 @@
             </f:facet>
             <p:panelGrid id="grp" styleClass="dialog-grid-panel noBorders">
                 <p:row>
-                    <p:column styleClass="alignRight">
+                    <p:column styleClass="alignRight alignMiddle dialog-labels-width-2">
                         <p:outputLabel for="propertyName" value="Name:" />
                     </p:column>
                     <p:column>
@@ -22,7 +22,7 @@
                 </p:row>
                 
                 <p:row>
-                    <p:column styleClass="alignRight">
+                    <p:column styleClass="alignRight dialog-labels-width-2" style="padding-top: 0.5em;">
                         <p:outputLabel for="propertyDesc" value="Description:" />
                     </p:column>
                     <p:column>
@@ -42,7 +42,7 @@
                 </p:row>
 
                 <p:row>
-                    <p:column styleClass="alignRight">
+                    <p:column styleClass="alignRight alignMiddle dialog-labels-width-2">
                         <p:outputLabel for="propertyDataType" value="Data Type:" />
                     </p:column>
                     <p:column>
@@ -62,7 +62,7 @@
                 </p:row>
                 
                 <p:row>
-                    <p:column styleClass="alignRight">
+                    <p:column styleClass="alignRight alignMiddle dialog-labels-width-2">
                         <p:outputLabel for="propertyUnit" value="Unit:" />
                     </p:column>
                     <p:column>
@@ -78,7 +78,7 @@
                 </p:row>
 
                 <p:row>
-                    <p:column styleClass="alignRight">
+                    <p:column styleClass="alignRight dialog-labels-width-2" style="padding-top: 1em;">
                         <p:outputLabel for="propertyAssociation" value="Association:" />
                     </p:column>
                     <p:column>
@@ -95,11 +95,11 @@
                 </p:row>
             </p:panelGrid>
             
-            <p:commandButton value="Cancel" styleClass="rightmostDialogButton" onclick="#{widgetName}.hide();" 
-                update="grp" resetValues="true" />
-            <p:commandButton value="Save" styleClass="additionalDialogButton" update=":propertiesForm:propertiesTable grp" 
-                oncomplete="if (args &amp;&amp; !args.validationFailed) #{widgetName}.hide(); propertiesTableVar.filter();" 
-                action="#{propertyManager[submitHandler]}"/>
+            <p:commandButton value="Cancel" styleClass="dialogButton" onclick="#{widgetName}.hide();" 
+                    update="grp" resetValues="true" />
+            <p:commandButton value="Save" styleClass="dialogButton" update=":propertiesForm:propertiesTable grp" 
+                    oncomplete="if (args and !args.validationFailed) #{widgetName}.hide(); propertiesTableVar.filter();" 
+                    action="#{propertyManager[submitHandler]}"/>
         </p:dialog>
 
     </h:form>

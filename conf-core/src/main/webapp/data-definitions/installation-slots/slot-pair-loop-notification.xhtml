@@ -4,13 +4,15 @@
     xmlns:h="http://java.sun.com/jsf/html">
 
     <h:form id="slotPairLoopNotificationForm">
-        <p:dialog widgetVar="slotPairLoopNotification" id="slotPairLoopNotification" modal="true" resizable="false"  closable="false">
+        <p:dialog widgetVar="slotPairLoopNotification" id="slotPairLoopNotification" modal="true" resizable="false" 
+                width="30em" closable="false">
             <f:facet name="header">
                 <h:outputText value="Slot pair loop" />
             </f:facet>           
-            <h:outputText value="Relationship CONTAINS between these two slots cannot be created because this would result in loop" />
-            <br />
-            <p:commandButton value="Ok" styleClass="rightmostDialogButton" onclick="slotPairLoopNotification.hide();" />
+            <h:panelGroup style="margin-top: 1ex; margin-bottom: 1em;" layout="block">
+                <h:outputText value="Relationship 'contains' between these two slots cannot be created because this would result in loop." />
+            </h:panelGroup>
+            <p:commandButton value="Ok" styleClass="dialogButton" onclick="slotPairLoopNotification.hide();" />
         </p:dialog>
     </h:form>
 </ui:composition>

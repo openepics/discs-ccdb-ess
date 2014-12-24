@@ -4,12 +4,13 @@
     xmlns:h="http://java.sun.com/jsf/html">
 
     <h:form id="#{formId}">
-        <p:dialog widgetVar="#{widgetName}" id="#{widgetName}" modal="true" resizable="false" closable="false" dynamic="true"
-            width="45em">
+        <p:dialog widgetVar="#{widgetName}" id="#{widgetName}" modal="true" resizable="false" closable="false" 
+            dynamic="true">
             <f:facet name="header">
                 <h:outputText value="#{dialogTitle}" />
             </f:facet>
-            <p:panelGrid id="grp" styleClass="dialog-grid-panel noBorders" columns="2">               
+            <p:panelGrid id="grp" styleClass="dialog-grid-panel noBorders" columns="2" style="margin-bottom: 1ex;" 
+                    columnClasses="alignMiddle alignRight dialog-labels-width-2">
                 <p:outputLabel for="tag" value="Tag:" />
                 <h:panelGroup>
                     <p:autoComplete id="tag" value="#{controller.tag}" completeMethod="#{controller.tagAutocompleteText}" 
@@ -17,10 +18,12 @@
                     <p:message for="tag" />
                 </h:panelGroup>               
             </p:panelGrid>
-            
-            <p:commandButton value="Cancel" styleClass="rightmostDialogButton" onclick="#{widgetName}.hide();" update="grp" resetValues="true" />
-            <p:commandButton value="Save" styleClass="additionalDialogButton" update="#{componentToUpdate} grp" 
-                    oncomplete="if (args &amp;&amp; !args.validationFailed) #{widgetName}.hide()" action="#{controller[submitHandler]}" />
+
+            <p:commandButton value="Cancel" styleClass="dialogButton" onclick="#{widgetName}.hide();" update="grp" 
+                    resetValues="true" />
+            <p:commandButton value="Save" styleClass="dialogButton" update="#{componentToUpdate} grp" 
+                    oncomplete="if (args and !args.validationFailed) #{widgetName}.hide()" 
+                    action="#{controller[submitHandler]}" />
         </p:dialog>
 
     </h:form>

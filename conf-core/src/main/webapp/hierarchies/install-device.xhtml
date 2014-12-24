@@ -46,12 +46,13 @@
                 </p:row>
                 <p:row>
                     <p:column colspan="2">
-                        <p:commandButton title="Cancel" styleClass="rightmostDialogButton" label="Cancel" value="Cancel" 
-                            onclick="#{widgetName}.hide()" resetValues="true" update=":#{formId}" ajax="true" action="#{hierarchiesController.setDeviceToInstall(null)}" />
-                        <p:commandButton id="installButton" styleClass="additionalDialogButton" title="Install" label="Install"
+                        <p:commandButton title="Cancel" styleClass="dialogButton" label="Cancel" value="Cancel" 
+                            onclick="#{widgetName}.hide()" resetValues="true" update=":#{formId}" ajax="true" 
+                            action="#{hierarchiesController.setDeviceToInstall(null)}" />
+                        <p:commandButton id="installButton" styleClass="dialogButton" title="Install" label="Install" 
                             disabled="#{empty hierarchiesController.deviceToInstall}" value="Install" 
-                            action="#{hierarchiesController.installDevice()}" oncomplete="#{widgetName}.hide(); resizeEmptyColumnInHierarchies();"
-                            update="#{componentToUpdate} :#{formId}" />
+                            action="#{hierarchiesController.installDevice()}" update="#{componentToUpdate} :#{formId}" 
+                            oncomplete="#{widgetName}.hide(); resizeEmptyColumnInHierarchies();" />
                     </p:column>
                 </p:row>
             </p:panelGrid>

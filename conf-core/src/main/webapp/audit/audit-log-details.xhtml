@@ -9,7 +9,8 @@
                 <h:outputText value="#{dialogTitle}" />
             </f:facet>
             
-            <h:panelGrid id="logDetGrp" style="text-align: left" columns="2" width="100%">
+            <h:panelGrid id="logDetGrp" style="text-align: left; margin-bottom: 1ex;" columns="2" width="100%" 
+                    columnClasses="alignTop alignRight">
                 <h:outputText value="Action:" />
                 <h:outputText value="#{auditManager.displayRecord.oper}" />
                 
@@ -31,7 +32,7 @@
                 <p:inputTextarea readonly="true" rows="5" cols="60" style="width: 100% !important; white-space: nowrap; resize: none;" autoResize="false" value="#{auditManager.displayRecordEntry}" />
             </h:panelGrid>
             
-            <p:commandButton value="Close" styleClass="rightmostDialogButton" onclick="#{widgetName}.hide();" />
+            <p:commandButton value="Close" styleClass="dialogButton" onclick="#{widgetName}.hide();" />
         
         </p:dialog>
     </h:form>

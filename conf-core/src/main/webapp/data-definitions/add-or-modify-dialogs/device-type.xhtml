@@ -8,7 +8,8 @@
             <f:facet name="header">
                 <h:outputText value="#{dialogTitle}" />
             </f:facet>
-            <p:panelGrid id="grp" styleClass="dialog-grid-panel noBorders" columns="2">
+            <p:panelGrid id="grp" styleClass="dialog-grid-panel noBorders" columns="2" style="margin-bottom: 1ex;" 
+                    columnClasses="alignRight dialog-labels-width-1">
             
                 <p:outputLabel for="deviceTypeName" value="Name:" />
                 <h:panelGroup>
@@ -25,8 +26,10 @@
                 </h:panelGroup>
             </p:panelGrid>
             
-            <p:commandButton value="Cancel" styleClass="rightmostDialogButton" onclick="#{widgetName}.hide();" update="grp" resetValues="true" />
-            <p:commandButton value="Save" styleClass="additionalDialogButton" update=":dataDefinitionsContainer grp" oncomplete="if (args &amp;&amp; !args.validationFailed) #{widgetName}.hide(); deviceTypeTableVar.filter();" action="#{componentTypeManager[submitHandler]}"/>
+            <p:commandButton value="Cancel" styleClass="dialogButton" onclick="#{widgetName}.hide();" update="grp" resetValues="true" />
+            <p:commandButton value="Save" styleClass="dialogButton" update=":dataDefinitionsContainer grp" 
+                    oncomplete="if (args and !args.validationFailed) #{widgetName}.hide(); deviceTypeTableVar.filter();" 
+                    action="#{componentTypeManager[submitHandler]}"/>
         </p:dialog>
 
     </h:form>

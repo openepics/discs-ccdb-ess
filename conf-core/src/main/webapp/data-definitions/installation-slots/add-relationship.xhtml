@@ -11,7 +11,7 @@
             <p:panelGrid id="grid" style="text-align: left" styleClass="dialog-grid-panel noBorders">
                 <p:row>
                     <p:column>
-                        <p:panelGrid styleClass="noBordersNoPaddingLeft">
+                        <p:panelGrid styleClass="noBorders noPaddingLeft">
                             <p:row>
                                 <p:column style="vertical-align: middle">
                                     <h:outputText value="Relationship type: "/>
@@ -49,9 +49,12 @@
             </p:panelGrid>
             <p:separator />
 
-            <p:commandButton value="Cancel" styleClass="rightmostDialogButton" onclick="addSlotRelationship.hide()" resetValues="true"/>
-            <p:commandButton value="Add" styleClass="additionalDialogButton" disabled="#{installationSlotsController.selectedSlotViewForRelationshipAdd == null}" 
-                id="addButton" action="#{installationSlotsController.onRelationshipAdd}" oncomplete="addSlotRelationship.hide();" update=":slotRelationshipsForm:relationshipTable"/>
+            <p:commandButton value="Cancel" styleClass="dialogButton" onclick="addSlotRelationship.hide()" 
+                    resetValues="true"/>
+            <p:commandButton value="Add" styleClass="dialogButton" id="addButton" 
+                    disabled="#{installationSlotsController.selectedSlotViewForRelationshipAdd == null}" 
+                    action="#{installationSlotsController.onRelationshipAdd}" oncomplete="addSlotRelationship.hide();" 
+                    update=":slotRelationshipsForm:relationshipTable"/>
         </p:dialog>
     </h:form>
 </ui:composition>
