@@ -1,6 +1,25 @@
+/*
+ * Copyright (c) 2014 European Spallation Source
+ * Copyright (c) 2014 Cosylab d.d.
+ *
+ * This file is part of Controls Configuration Database.
+ *
+ * Controls Configuration Database is free software: you can redistribute it
+ * and/or modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 2 of the License,
+ * or any newer version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
+ */
 package org.openepics.discs.conf.dl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
 
 import java.io.InputStream;
 
@@ -62,7 +81,7 @@ public class IntegralDataLoaderIT {
 
         if (secondFileName==null) {
             final DataLoaderResult result = dataLoaderHandler.loadData(stream, (DataLoader) dataLoader);
-            
+
             String errorMessage = "";
             if (result.isError()) {
                 StringBuilder sb = new StringBuilder();
@@ -70,19 +89,19 @@ public class IntegralDataLoaderIT {
                     sb.append(vm.toString() + '\n');
                 errorMessage = sb.toString();
             }
-            
+
             assertFalse(fileName+" loading failed." +
                     dumpDataLoaderMessages(result), result.isError());
         } else {
             final InputStream secondStream = this.getClass().getResourceAsStream("/dataloader/"+secondFileName);
 
             final DataLoaderResult result = dataLoaderHandler.loadDataFromTwoFiles(stream, secondStream, fileName, secondFileName);
-            
-            assertFalse(fileName+" or "+secondFileName+" loading failed:" + 
+
+            assertFalse(fileName+" or "+secondFileName+" loading failed:" +
                     dumpDataLoaderMessages(result), result.isError());
         }
     }
-    
+
     private String dumpDataLoaderMessages(DataLoaderResult result) {
         String errorMessage = "";
         if (result.isError()) {
