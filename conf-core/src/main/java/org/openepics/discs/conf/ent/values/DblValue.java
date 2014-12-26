@@ -29,10 +29,14 @@ public class DblValue implements Value {
         this.dblValue = Preconditions.checkNotNull(dblValue);
     }
 
-    public Double getDblValue() { return dblValue; }
+    public Double getDblValue() {
+        return dblValue;
+    }
 
     @Override
-    public String toString() { return dblValue.toString(); }
+    public String toString() {
+        return dblValue.toString();
+    }
 
     @Override
     public String auditLogString(int... dimensions) {

@@ -81,43 +81,85 @@ public class SlotView {
         }
     }
 
-    public Long getId() { return id; }
+    public Long getId() {
+        return id;
+    }
 
-    public String getName() { return name; }
+    public String getName() {
+        return name;
+    }
 
-    public String getDescription() { return description; }
+    public String getDescription() {
+        return description;
+    }
 
-    public boolean getCanDelete() { return canDelete; }
+    public boolean getCanDelete() {
+        return canDelete;
+    }
 
-    public SlotView getParentNode() { return parentNode; }
+    public SlotView getParentNode() {
+        return parentNode;
+    }
 
-    public Slot getSlot() { return slot; }
+    public Slot getSlot() {
+        return slot;
+    }
 
-    public boolean getIsHostingSlot() { return isHostingSlot; }
+    public boolean getIsHostingSlot() {
+        return isHostingSlot;
+    }
 
-    public ComponentType getDeviceType() { return deviceType; }
+    public ComponentType getDeviceType() {
+        return deviceType;
+    }
 
-    public Double getBeamlinePosition() { return beamlinePosition; }
+    public Double getBeamlinePosition() {
+        return beamlinePosition;
+    }
 
-    public Double getGlobalX() { return globalX; }
+    public Double getGlobalX() {
+        return globalX;
+    }
 
-    public Double getGlobalY() { return globalY; }
+    public Double getGlobalY() {
+        return globalY;
+    }
 
-    public Double getGlobalZ() { return globalZ; }
+    public Double getGlobalZ() {
+        return globalZ;
+    }
 
-    public Double getGlobalPitch() { return globalPitch; }
+    public Double getGlobalPitch() {
+        return globalPitch;
+    }
 
-    public Double getGlobalRoll() { return globalRoll; }
+    public Double getGlobalRoll() {
+        return globalRoll;
+    }
 
-    public Double getGlobalYaw() { return globalYaw; }
+    public Double getGlobalYaw() {
+        return globalYaw;
+    }
 
-    public Device getInstalledDevice() { return installedDevice; }
+    public Device getInstalledDevice() {
+        return installedDevice;
+    }
 
-    public int getOrder() { return order; }
+    public int getOrder() {
+        return order;
+    }
 
-    public boolean isFirst() { return isFirst; }
-    public void setFirst(boolean isFirst) { this.isFirst = isFirst; }
+    public boolean isFirst() {
+        return isFirst;
+    }
+    public void setFirst(boolean isFirst) {
+        this.isFirst = isFirst;
+    }
 
-    public boolean isLast() { return isLast;  }
-    public void setLast(boolean isLast) { this.isLast = isLast; }
+    public boolean isLast() {
+        return isLast;
+    }
+    public void setLast(boolean isLast) {
+        this.isLast = isLast;
+    }
 }

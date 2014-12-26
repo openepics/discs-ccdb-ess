@@ -53,11 +53,19 @@ public class SlotRelationshipView {
         this.slotPair = slotPair;
     }
 
-    public String getRelationshipName() { return relationshipName; }
+    public String getRelationshipName() {
+        return relationshipName;
+    }
 
-    public String getTargetSlotName() { return targetSlotName; }
+    public String getTargetSlotName() {
+        return targetSlotName;
+    }
 
-    public Slot getSlot() { return targetSlot; }
+    public Slot getSlot() {
+        return targetSlot;
+    }
 
-    public SlotPair getSlotPair() { return slotPair; }
+    public SlotPair getSlotPair() {
+        return slotPair;
+    }
 }

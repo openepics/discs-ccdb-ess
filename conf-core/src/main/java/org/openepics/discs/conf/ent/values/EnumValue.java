@@ -32,10 +32,14 @@ public class EnumValue implements Value {
     /**
      * @return the enumValue
      */
-    public String getEnumValue() { return enumValue; }
+    public String getEnumValue() {
+        return enumValue;
+    }
 
     @Override
-    public String toString() { return enumValue; }
+    public String toString() {
+        return enumValue;
+    }
 
     @Override
     public String auditLogString(int... dimensions) {

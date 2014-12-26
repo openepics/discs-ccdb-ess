@@ -160,7 +160,9 @@ public class User implements Serializable {
         return this==object;
     }
 
-    public Long getVersion() { return version; }
+    public Long getVersion() {
+        return version;
+    }
 
     @Override
     public String toString() {

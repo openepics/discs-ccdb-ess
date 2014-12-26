@@ -29,7 +29,9 @@ import org.openepics.seds.api.datatypes.SedsScalar;
 public class DblValueConverter extends ValueConverter<DblValue> {
 
     @Override
-    public Class<DblValue> getType() { return DblValue.class; }
+    public Class<DblValue> getType() {
+        return DblValue.class;
+    }
 
     @Override
     public String convertToDatabaseColumn(DblValue attribute) {

@@ -34,7 +34,9 @@ public class DblVectorValue implements Value {
     /**
      * @return the dblVectorValue
      */
-    public List<Double> getDblVectorValue() { return dblVectorValue; }
+    public List<Double> getDblVectorValue() {
+        return dblVectorValue;
+    }
 
     @Override
     public String toString() {

@@ -114,25 +114,25 @@ public class SedsConverter implements AttributeConverter<Value, String> {
         final IntValue intValue;
 
         switch (sedsScalar.getType()) {
-        case INTEGER:
-            intValue = new IntValue((Integer)sedsScalar.getValue());
-            return intValue;
-        case NUMBER:
-            final Number number = (Number) sedsScalar.getValue();
-            if (number instanceof Double) {
-                final DblValue dblValue = new DblValue((Double)number);
-                return dblValue;
-            } else if (number instanceof Integer) {
-                intValue = new IntValue((Integer)number);
+            case INTEGER:
+                intValue = new IntValue((Integer)sedsScalar.getValue());
                 return intValue;
-            } else {
-                throw new IllegalArgumentException("Unable to convert DB data: " + dbData);
-            }
-        case STRING:
-            final StrValue strValue = new StrValue((String)sedsScalar.getValue());
-            return strValue;
-        default:
-            throw new InvalidDataTypeException("Data type not supported: " + sedsScalar.getType().name());
+            case NUMBER:
+                final Number number = (Number) sedsScalar.getValue();
+                if (number instanceof Double) {
+                    final DblValue dblValue = new DblValue((Double)number);
+                    return dblValue;
+                } else if (number instanceof Integer) {
+                    intValue = new IntValue((Integer)number);
+                    return intValue;
+                } else {
+                    throw new IllegalArgumentException("Unable to convert DB data: " + dbData);
+                }
+            case STRING:
+                final StrValue strValue = new StrValue((String)sedsScalar.getValue());
+                return strValue;
+            default:
+                throw new InvalidDataTypeException("Data type not supported: " + sedsScalar.getType().name());
         }
     }
 
@@ -147,27 +147,27 @@ public class SedsConverter implements AttributeConverter<Value, String> {
         final List<Integer> iValues;
 
         switch (sedsScalarArray.getType()) {
-        case INTEGER:
-            iValues = new ArrayList<Integer>(Arrays.asList((Integer[])sedsScalarArray.getValueArray()));
-            intVectorValue = new IntVectorValue(iValues);
-            return intVectorValue;
-        case NUMBER:
-            final Number[] numbers = (Number[]) sedsScalarArray.getValueArray();
-            final List<Double> dblValues = new ArrayList<>(numbers.length);
-            for (Number element : numbers) {
-                if (element instanceof Double) {
-                    dblValues.add((Double)element);
-                } else {
-                    throw new InvalidDataTypeException("Data type for table not Double.");
+            case INTEGER:
+                iValues = new ArrayList<Integer>(Arrays.asList((Integer[])sedsScalarArray.getValueArray()));
+                intVectorValue = new IntVectorValue(iValues);
+                return intVectorValue;
+            case NUMBER:
+                final Number[] numbers = (Number[]) sedsScalarArray.getValueArray();
+                final List<Double> dblValues = new ArrayList<>(numbers.length);
+                for (Number element : numbers) {
+                    if (element instanceof Double) {
+                        dblValues.add((Double)element);
+                    } else {
+                        throw new InvalidDataTypeException("Data type for table not Double.");
+                    }
                 }
-            }
-            return new DblVectorValue(dblValues);
-        case STRING:
-            final List<String> sValues = new ArrayList<String>(Arrays.asList((String[])sedsScalarArray.getValueArray()));
-            final StrVectorValue strVectorValue = new StrVectorValue(sValues);
-            return strVectorValue;
-        default:
-            throw new InvalidDataTypeException("Data type not supported: " + sedsScalarArray.getType().name());
+                return new DblVectorValue(dblValues);
+            case STRING:
+                final List<String> sValues = new ArrayList<String>(Arrays.asList((String[])sedsScalarArray.getValueArray()));
+                final StrVectorValue strVectorValue = new StrVectorValue(sValues);
+                return strVectorValue;
+            default:
+                throw new InvalidDataTypeException("Data type not supported: " + sedsScalarArray.getType().name());
         }
     }
 

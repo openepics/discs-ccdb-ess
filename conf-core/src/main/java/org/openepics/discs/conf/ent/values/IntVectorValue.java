@@ -34,7 +34,9 @@ public class IntVectorValue implements Value {
     /**
      * @return the intVectorValue
      */
-    public List<Integer> getIntVectorValue() { return intVectorValue; }
+    public List<Integer> getIntVectorValue() {
+        return intVectorValue;
+    }
 
     @Override
     public String toString() {

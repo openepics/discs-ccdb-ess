@@ -99,7 +99,7 @@ public class CustomExceptionHandler extends ExceptionHandlerWrapper {
             if (iterated instanceof InvocationTargetException)
                 return (InvocationTargetException) iterated;
 
-           iterated = iterated.getCause();
+            iterated = iterated.getCause();
         }
 
         return null;

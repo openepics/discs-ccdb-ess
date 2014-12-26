@@ -129,52 +129,52 @@ public class DevicesDataLoader extends AbstractDataLoader implements DataLoader 
 
                 if (!rowResult.isError()) {
                     switch (command) {
-                    case CMD_UPDATE:
-                        if (deviceEJB.findDeviceBySerialNumber(serial) != null) {
-                            final @Nullable ComponentType compType = comptypeEJB.findByName(componentType);
-                            if (compType == null) {
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(compTypeIndex)));
-                                continue;
+                        case CMD_UPDATE:
+                            if (deviceEJB.findDeviceBySerialNumber(serial) != null) {
+                                final @Nullable ComponentType compType = comptypeEJB.findByName(componentType);
+                                if (compType == null) {
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(compTypeIndex)));
+                                    continue;
+                                } else {
+                                    try {
+                                        final Device deviceToUpdate = deviceEJB.findDeviceBySerialNumber(serial);
+                                        addOrUpdateDevice(deviceToUpdate, compType, description, status, manufSerial, location, purchaseOrder, asmPosition, asmDescription, manufacturer, manufModel);
+                                        addOrUpdateProperties(deviceToUpdate, indexByPropertyName, row, rowNumber);
+                                    } catch (Exception e) {
+                                        rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                                    }
+                                }
+                            } else {
+                                final @Nullable ComponentType compType = comptypeEJB.findByName(componentType);
+                                if (compType == null) {
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(compTypeIndex)));
+                                    continue;
+                                } else {
+                                    try {
+                                        final Device newDevice = new Device(serial);
+                                        addOrUpdateDevice(newDevice, compType, description, status, manufSerial, location, purchaseOrder, asmPosition, asmDescription, manufacturer, manufModel);
+                                        deviceEJB.addDeviceAndPropertyDefs(newDevice);
+                                        addOrUpdateProperties(newDevice, indexByPropertyName, row, rowNumber);
+                                    } catch (Exception e) {
+                                        rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                                    }
+                                }
+                            }
+                            break;
+                        case CMD_DELETE:
+                            final @Nullable Device deviceToDelete = deviceEJB.findDeviceBySerialNumber(serial);
+                            if (deviceToDelete == null) {
+                                rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(serialIndex)));
                             } else {
                                 try {
-                                    final Device deviceToUpdate = deviceEJB.findDeviceBySerialNumber(serial);
-                                    addOrUpdateDevice(deviceToUpdate, compType, description, status, manufSerial, location, purchaseOrder, asmPosition, asmDescription, manufacturer, manufModel);
-                                    addOrUpdateProperties(deviceToUpdate, indexByPropertyName, row, rowNumber);
+                                    deviceEJB.delete(deviceToDelete);
                                 } catch (Exception e) {
                                     rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                                 }
                             }
-                        } else {
-                            final @Nullable ComponentType compType = comptypeEJB.findByName(componentType);
-                            if (compType == null) {
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(compTypeIndex)));
-                                continue;
-                            } else {
-                                try {
-                                    final Device newDevice = new Device(serial);
-                                    addOrUpdateDevice(newDevice, compType, description, status, manufSerial, location, purchaseOrder, asmPosition, asmDescription, manufacturer, manufModel);
-                                    deviceEJB.addDeviceAndPropertyDefs(newDevice);
-                                    addOrUpdateProperties(newDevice, indexByPropertyName, row, rowNumber);
-                                } catch (Exception e) {
-                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
-                                }
-                            }
-                        }
-                        break;
-                    case CMD_DELETE:
-                        final @Nullable Device deviceToDelete = deviceEJB.findDeviceBySerialNumber(serial);
-                        if (deviceToDelete == null) {
-                            rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(serialIndex)));
-                        } else {
-                            try {
-                                deviceEJB.delete(deviceToDelete);
-                            } catch (Exception e) {
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
-                            }
-                        }
-                        break;
-                    default:
-                        rowResult.addMessage(new ValidationMessage(ErrorMessage.COMMAND_NOT_VALID, rowNumber, headerRow.get(commandIndex)));
+                            break;
+                        default:
+                            rowResult.addMessage(new ValidationMessage(ErrorMessage.COMMAND_NOT_VALID, rowNumber, headerRow.get(commandIndex)));
                     }
                 }
             }

@@ -29,7 +29,9 @@ import org.openepics.seds.api.datatypes.SedsScalar;
 public class StrValueConverter extends ValueConverter<StrValue> {
 
     @Override
-    public Class<StrValue> getType() { return StrValue.class; }
+    public Class<StrValue> getType() {
+        return StrValue.class;
+    }
 
     @Override
     public String convertToDatabaseColumn(StrValue attribute) {

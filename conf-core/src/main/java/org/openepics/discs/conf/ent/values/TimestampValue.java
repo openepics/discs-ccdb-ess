@@ -37,7 +37,9 @@ public class TimestampValue implements Value {
     /**
      * @return the timestampValue
      */
-    public Timestamp getTimestampValue() { return timestampValue; }
+    public Timestamp getTimestampValue() {
+        return timestampValue;
+    }
 
     @Override
     public String toString() {

@@ -34,7 +34,9 @@ public class StrVectorValue implements Value {
     /**
      * @return the strVectorValues
      */
-    public List<String> getStrVectorValue() { return strVectorValue; }
+    public List<String> getStrVectorValue() {
+        return strVectorValue;
+    }
 
     @Override
     public String toString() {

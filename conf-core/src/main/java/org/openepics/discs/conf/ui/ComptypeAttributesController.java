@@ -270,14 +270,14 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
         final BuiltInProperty builtInProperty = (BuiltInProperty) selectedAttribute.getEntity();
         final String userValue = propertyValue == null ? null : ((StrValue)propertyValue).getStrValue();
         switch ((ComptypeBuiltInPropertyName)builtInProperty.getName()) {
-        case BIP_DESCRIPTION:
-            if ((userValue == null) || !userValue.equals(compType.getDescription())) {
-                compType.setDescription(userValue);
-                comptypeEJB.save(compType);
-            }
-            break;
-        default:
-            throw new UnhandledCaseException();
+            case BIP_DESCRIPTION:
+                if ((userValue == null) || !userValue.equals(compType.getDescription())) {
+                    compType.setDescription(userValue);
+                    comptypeEJB.save(compType);
+                }
+                break;
+            default:
+                throw new UnhandledCaseException();
         }
         populateAttributesList();
     }

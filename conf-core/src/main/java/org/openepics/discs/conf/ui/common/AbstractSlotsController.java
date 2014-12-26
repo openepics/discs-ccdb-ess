@@ -116,10 +116,16 @@ public abstract class AbstractSlotsController implements Serializable{
      *
      * @return root {@link TreeNode} of tree of containers
      */
-    public TreeNode getRootNode() { return rootNode; }
+    public TreeNode getRootNode() {
+        return rootNode;
+    }
 
-    public TreeNode getSelectedNode() { return selectedNode; }
-    public void setSelectedNode(TreeNode selectedNode) { this.selectedNode = selectedNode; }
+    public TreeNode getSelectedNode() {
+        return selectedNode;
+    }
+    public void setSelectedNode(TreeNode selectedNode) {
+        this.selectedNode = selectedNode;
+    }
 
     /**
      * Adds collapsed node to the set of collapsed nodes which is used to preserve the state of tree
@@ -229,15 +235,31 @@ public abstract class AbstractSlotsController implements Serializable{
 
     public abstract String redirectToAttributes(Long id);
 
-    public void setName(String name) { this.name = name; }
-    public String getName() { return name; }
+    public void setName(String name) {
+        this.name = name;
+    }
+    public String getName() {
+        return name;
+    }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
+    public String getDescription() {
+        return description;
+    }
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-    public SlotView getParentSlotView() { return parentSlotView; }
-    public void setParentSlotView(SlotView parentContainer) { this.parentSlotView = parentContainer; }
+    public SlotView getParentSlotView() {
+        return parentSlotView;
+    }
+    public void setParentSlotView(SlotView parentContainer) {
+        this.parentSlotView = parentContainer;
+    }
 
-    public SlotView getSelectedSlotView() { return selectedSlotView; }
-    public void setSelectedSlotView(SlotView selectedSlotView) { this.selectedSlotView = selectedSlotView; }
+    public SlotView getSelectedSlotView() {
+        return selectedSlotView;
+    }
+    public void setSelectedSlotView(SlotView selectedSlotView) {
+        this.selectedSlotView = selectedSlotView;
+    }
 }

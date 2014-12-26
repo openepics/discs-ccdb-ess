@@ -194,107 +194,107 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
 
                 if (!rowResult.isError()) {
                     switch (command) {
-                    case CMD_UPDATE:
-                        if (slotEJB.findByName(name) != null) {
-                            final @Nullable ComponentType compType = comptypeEJB.findByName(componentType);
-                            if (compType == null) {
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(compTypeIndex)));
-                                continue;
-                            } else {
-                                try {
-                                    if (compType.getName().equals(SlotEJB.ROOT_COMPONENT_TYPE)) {
-                                        rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
-                                        continue;
-                                    }
-                                    final Slot slotToUpdate = slotEJB.findByName(name);
-                                    addOrUpdateSlot(slotToUpdate, compType, isHosting, description, blp, globalX, globalY, globalZ, globalRoll, globalPitch, globalYaw, asmComment, asmPosition, comment);
-                                    addOrUpdateProperties(slotToUpdate, indexByPropertyName, row, rowNumber);
-                                    if (rowResult.isError()) {
-                                        continue;
-                                    }
-                                } catch (Exception e) {
-                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
-                                }
-                            }
-                        } else {
-                            final @Nullable ComponentType compType = comptypeEJB.findByName(componentType);
-                            if (compType == null) {
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(compTypeIndex)));
-                                continue;
-                            } else {
-                                try {
-                                    if (compType.getName().equals(SlotEJB.ROOT_COMPONENT_TYPE)) {
-                                        rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
-                                        continue;
-                                    }
-                                    final Slot newSlot = new Slot(name, isHosting);
-                                    addOrUpdateSlot(newSlot, compType, isHosting, description, blp, globalX, globalY, globalZ, globalRoll, globalPitch, globalYaw, asmComment, asmPosition, comment);
-                                    slotEJB.addSlotToParentWithPropertyDefs(newSlot,null, true);
-                                    addOrUpdateProperties(newSlot, indexByPropertyName, row, rowNumber);
-                                    newSlots.add(newSlot);
-                                    if (rowResult.isError()) {
-                                        continue;
-                                    }
-                                } catch (Exception e) {
-                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
-                                }
-                            }
-                        }
-                        break;
-                    case CMD_DELETE:
-                        final @Nullable Slot slotToDelete = slotEJB.findByName(name);
-                        try {
-                            if (slotToDelete == null) {
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
-                                continue;
-                            } else {
-                                final ComponentType compType = slotToDelete.getComponentType();
-                                if (compType.getName().equals(SlotEJB.ROOT_COMPONENT_TYPE)) {
-                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
-                                    continue;
-                                }
-                                slotEJB.delete(slotToDelete);
-                            }
-                        } catch (Exception e) {
-                            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
-                        }
-                        break;
-                    case CMD_RENAME:
-                        try {
-                            final int startOldNameMarkerIndex = name.indexOf("[");
-                            final int endOldNameMarkerIndex = name.indexOf("]");
-                            if (startOldNameMarkerIndex == -1 || endOldNameMarkerIndex == -1) {
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.RENAME_MISFORMAT, rowNumber, headerRow.get(nameIndex)));
-                                continue;
-                            }
-
-                            final String oldName = name.substring(startOldNameMarkerIndex + 1, endOldNameMarkerIndex).trim();
-                            final String newName = name.substring(endOldNameMarkerIndex + 1).trim();
-
-                            final Slot slotToRename = slotEJB.findByName(oldName);
-                            if (slotToRename != null) {
-                                if (slotEJB.findByName(newName) != null) {
-                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NAME_ALREADY_EXISTS, rowNumber, headerRow.get(nameIndex)));
+                        case CMD_UPDATE:
+                            if (slotEJB.findByName(name) != null) {
+                                final @Nullable ComponentType compType = comptypeEJB.findByName(componentType);
+                                if (compType == null) {
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(compTypeIndex)));
                                     continue;
                                 } else {
-                                    final ComponentType compType = slotToRename.getComponentType();
+                                    try {
+                                        if (compType.getName().equals(SlotEJB.ROOT_COMPONENT_TYPE)) {
+                                            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                                            continue;
+                                        }
+                                        final Slot slotToUpdate = slotEJB.findByName(name);
+                                        addOrUpdateSlot(slotToUpdate, compType, isHosting, description, blp, globalX, globalY, globalZ, globalRoll, globalPitch, globalYaw, asmComment, asmPosition, comment);
+                                        addOrUpdateProperties(slotToUpdate, indexByPropertyName, row, rowNumber);
+                                        if (rowResult.isError()) {
+                                            continue;
+                                        }
+                                    } catch (Exception e) {
+                                        rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                                    }
+                                }
+                            } else {
+                                final @Nullable ComponentType compType = comptypeEJB.findByName(componentType);
+                                if (compType == null) {
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(compTypeIndex)));
+                                    continue;
+                                } else {
+                                    try {
+                                        if (compType.getName().equals(SlotEJB.ROOT_COMPONENT_TYPE)) {
+                                            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                                            continue;
+                                        }
+                                        final Slot newSlot = new Slot(name, isHosting);
+                                        addOrUpdateSlot(newSlot, compType, isHosting, description, blp, globalX, globalY, globalZ, globalRoll, globalPitch, globalYaw, asmComment, asmPosition, comment);
+                                        slotEJB.addSlotToParentWithPropertyDefs(newSlot,null, true);
+                                        addOrUpdateProperties(newSlot, indexByPropertyName, row, rowNumber);
+                                        newSlots.add(newSlot);
+                                        if (rowResult.isError()) {
+                                            continue;
+                                        }
+                                    } catch (Exception e) {
+                                        rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                                    }
+                                }
+                            }
+                            break;
+                        case CMD_DELETE:
+                            final @Nullable Slot slotToDelete = slotEJB.findByName(name);
+                            try {
+                                if (slotToDelete == null) {
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
+                                    continue;
+                                } else {
+                                    final ComponentType compType = slotToDelete.getComponentType();
                                     if (compType.getName().equals(SlotEJB.ROOT_COMPONENT_TYPE)) {
                                         rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                                         continue;
                                     }
-                                    slotToRename.setName(newName);
-                                    slotEJB.save(slotToRename);
+                                    slotEJB.delete(slotToDelete);
                                 }
-                            } else {
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
-                                continue;
+                            } catch (Exception e) {
+                                rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                             }
-                        } catch (Exception e) {
-                            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
-                        }
-                        break;
-                    default:
-                        rowResult.addMessage(new ValidationMessage(ErrorMessage.COMMAND_NOT_VALID, rowNumber, headerRow.get(commandIndex)));
+                            break;
+                        case CMD_RENAME:
+                            try {
+                                final int startOldNameMarkerIndex = name.indexOf("[");
+                                final int endOldNameMarkerIndex = name.indexOf("]");
+                                if (startOldNameMarkerIndex == -1 || endOldNameMarkerIndex == -1) {
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.RENAME_MISFORMAT, rowNumber, headerRow.get(nameIndex)));
+                                    continue;
+                                }
+
+                                final String oldName = name.substring(startOldNameMarkerIndex + 1, endOldNameMarkerIndex).trim();
+                                final String newName = name.substring(endOldNameMarkerIndex + 1).trim();
+
+                                final Slot slotToRename = slotEJB.findByName(oldName);
+                                if (slotToRename != null) {
+                                    if (slotEJB.findByName(newName) != null) {
+                                        rowResult.addMessage(new ValidationMessage(ErrorMessage.NAME_ALREADY_EXISTS, rowNumber, headerRow.get(nameIndex)));
+                                        continue;
+                                    } else {
+                                        final ComponentType compType = slotToRename.getComponentType();
+                                        if (compType.getName().equals(SlotEJB.ROOT_COMPONENT_TYPE)) {
+                                            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                                            continue;
+                                        }
+                                        slotToRename.setName(newName);
+                                        slotEJB.save(slotToRename);
+                                    }
+                                } else {
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
+                                    continue;
+                                }
+                            } catch (Exception e) {
+                                rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                            }
+                            break;
+                        default:
+                            rowResult.addMessage(new ValidationMessage(ErrorMessage.COMMAND_NOT_VALID, rowNumber, headerRow.get(commandIndex)));
                     }
                 }
             }
@@ -401,63 +401,63 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                     } else {
                         final SlotRelation slotRelation = slotRelationEJB.findBySlotRelationName(slotRelationName);
                         switch (command) {
-                        case CMD_UPDATE:
-                            for (Slot childSlot : childrenSlots) {
-                                if (newSlots.contains(childSlot)) {
-                                    try {
-                                        if (!childSlot.getName().equals(parentSlot.getName())) {
-                                            if (slotRelation.getName() == SlotRelationName.CONTAINS) {
-                                                if (childSlot.getComponentType().getName().equalsIgnoreCase(SlotEJB.ROOT_COMPONENT_TYPE)) {
-                                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.CANT_ADD_PARENT_TO_ROOT, rowNumber));
-                                                    continue;
-                                                } else if (parentSlot.isHostingSlot() && !childSlot.isHostingSlot()) {
-                                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.INSTALL_CANT_CONTAIN_CONTAINER, rowNumber));
-                                                    continue;
-                                                } else {
-                                                    final SlotPair newSlotPair = new SlotPair(childSlot, parentSlot, slotRelation);
-                                                    slotPairEJB.add(newSlotPair);
-                                                    newSlotPairChildren.add(newSlotPair.getChildSlot());
+                            case CMD_UPDATE:
+                                for (Slot childSlot : childrenSlots) {
+                                    if (newSlots.contains(childSlot)) {
+                                        try {
+                                            if (!childSlot.getName().equals(parentSlot.getName())) {
+                                                if (slotRelation.getName() == SlotRelationName.CONTAINS) {
+                                                    if (childSlot.getComponentType().getName().equalsIgnoreCase(SlotEJB.ROOT_COMPONENT_TYPE)) {
+                                                        rowResult.addMessage(new ValidationMessage(ErrorMessage.CANT_ADD_PARENT_TO_ROOT, rowNumber));
+                                                        continue;
+                                                    } else if (parentSlot.isHostingSlot() && !childSlot.isHostingSlot()) {
+                                                        rowResult.addMessage(new ValidationMessage(ErrorMessage.INSTALL_CANT_CONTAIN_CONTAINER, rowNumber));
+                                                        continue;
+                                                    } else {
+                                                        final SlotPair newSlotPair = new SlotPair(childSlot, parentSlot, slotRelation);
+                                                        slotPairEJB.add(newSlotPair);
+                                                        newSlotPairChildren.add(newSlotPair.getChildSlot());
+                                                    }
+                                                } else if (slotRelation.getName() == SlotRelationName.POWERS) {
+                                                    if (childSlot.isHostingSlot() && parentSlot.isHostingSlot()) {
+                                                        slotPairEJB.add(new SlotPair(childSlot, parentSlot, slotRelation));
+                                                    } else {
+                                                        rowResult.addMessage(new ValidationMessage(ErrorMessage.POWER_RELATIONSHIP_RESTRICTIONS, rowNumber));
+                                                        continue;
+                                                    }
+                                                } else if (slotRelation.getName() == SlotRelationName.CONTROLS) {
+                                                    if (childSlot.isHostingSlot() && parentSlot.isHostingSlot()) {
+                                                        slotPairEJB.add(new SlotPair(childSlot, parentSlot, slotRelation));
+                                                    } else {
+                                                        rowResult.addMessage(new ValidationMessage(ErrorMessage.CONTROL_RELATIONSHIP_RESTRICTIONS, rowNumber));
+                                                        continue;
+                                                    }
                                                 }
-                                            } else if (slotRelation.getName() == SlotRelationName.POWERS) {
-                                                if (childSlot.isHostingSlot() && parentSlot.isHostingSlot()) {
-                                                    slotPairEJB.add(new SlotPair(childSlot, parentSlot, slotRelation));
-                                                } else {
-                                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.POWER_RELATIONSHIP_RESTRICTIONS, rowNumber));
-                                                    continue;
-                                                }
-                                            } else if (slotRelation.getName() == SlotRelationName.CONTROLS) {
-                                                if (childSlot.isHostingSlot() && parentSlot.isHostingSlot()) {
-                                                    slotPairEJB.add(new SlotPair(childSlot, parentSlot, slotRelation));
-                                                } else {
-                                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.CONTROL_RELATIONSHIP_RESTRICTIONS, rowNumber));
-                                                    continue;
-                                                }
+                                            } else {
+                                                rowResult.addMessage(new ValidationMessage(ErrorMessage.SAME_CHILD_AND_PARENT, rowNumber));
                                             }
-                                        } else {
-                                            rowResult.addMessage(new ValidationMessage(ErrorMessage.SAME_CHILD_AND_PARENT, rowNumber));
+                                        } catch (Exception e) {
+                                            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                                        }
+                                    }
+                                }
+                                break;
+                            case CMD_DELETE:
+                                final List<SlotPair> slotPairs = slotPairEJB.findSlotPairsByParentChildRelation(child, parent, slotRelationName);
+                                if (slotPairs.size() != 0) {
+                                    try {
+                                        for (SlotPair slotPair : slotPairs) {
+                                            slotPairEJB.delete(slotPair);
                                         }
                                     } catch (Exception e) {
                                         rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                                     }
+                                } else {
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber));
                                 }
-                            }
-                            break;
-                        case CMD_DELETE:
-                            final List<SlotPair> slotPairs = slotPairEJB.findSlotPairsByParentChildRelation(child, parent, slotRelationName);
-                            if (slotPairs.size() != 0) {
-                                try {
-                                    for (SlotPair slotPair : slotPairs) {
-                                        slotPairEJB.delete(slotPair);
-                                    }
-                                } catch (Exception e) {
-                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
-                                }
-                            } else {
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber));
-                            }
-                            break;
-                        default:
-                            rowResult.addMessage(new ValidationMessage(ErrorMessage.COMMAND_NOT_VALID, rowNumber, headerRow.get(commandIndex)));
+                                break;
+                            default:
+                                rowResult.addMessage(new ValidationMessage(ErrorMessage.COMMAND_NOT_VALID, rowNumber, headerRow.get(commandIndex)));
                         }
                     }
                 }

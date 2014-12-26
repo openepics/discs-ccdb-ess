@@ -28,10 +28,14 @@ public class StrValue implements Value {
         this.strValue = Preconditions.checkNotNull(strValue);
     }
 
-    public String getStrValue() { return strValue; }
+    public String getStrValue() {
+        return strValue;
+    }
 
     @Override
-    public String toString() { return strValue; }
+    public String toString() {
+        return strValue;
+    }
 
     @Override
     public String auditLogString(int... dimensions) {

@@ -118,12 +118,15 @@ public class Config implements Serializable {
         return this==object;
     }
 
-    public Long getVersion() { return version; }
-    public void setVersion(Long version) { this.version = version; }
+    public Long getVersion() {
+        return version;
+    }
+    public void setVersion(Long version) {
+        this.version = version;
+    }
 
     @Override
     public String toString() {
         return "Config[ configId=" + configId + " ]";
     }
-
 }

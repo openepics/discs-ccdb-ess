@@ -71,7 +71,7 @@ import com.google.common.collect.ImmutableList;
 public class SlotAttributesController extends AbstractAttributesController<SlotPropertyValue, SlotArtifact> {
 
     private static final Logger logger = Logger.getLogger(SlotAttributesController.class.getCanonicalName());
-    
+
     @Inject private SlotEJB slotEJB;
     @Inject private PropertyEJB propertyEJB;
     @Inject private InstallationEJB installationEJB;
@@ -139,7 +139,7 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
         }
 
         for (Tag parentTag : parentTags) {
-            attributes.add(new EntityAttributeView(parentTag, EntityAttributeViewKind.DEVICE_TYPE_TAG)); 
+            attributes.add(new EntityAttributeView(parentTag, EntityAttributeViewKind.DEVICE_TYPE_TAG));
         }
 
         for (SlotPropertyValue prop : slot.getSlotPropertyList()) {
@@ -195,7 +195,9 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
         child.setSlot(slot);
     }
 
-    public String getParentSlot() { return parentSlot; }
+    public String getParentSlot() {
+        return parentSlot;
+    }
 
     @Override
     protected void setTagParent(Tag tag) {
@@ -217,7 +219,7 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
         isPropertyDefinition = false;
         super.prepareForPropertyValueAdd();
     }
-    
+
     @Override
     protected void populateParentTags() {
         parentTags = new HashSet<Tag>();
@@ -322,12 +324,12 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
     public boolean isBasicInfoUnchanged() {
         return (slot.getName().equals(entityName) && slot.getComponentType().equals(deviceType));
     }
-    
+
     /**
-     * Returns path from root slot to currently selected slot 
+     * Returns path from root slot to currently selected slot
      */
     public String getSlotPath() {
-       final String slotPath = Utility.buildSlotPath(slot).toString();
-       return slotPath.substring(1, slotPath.length() - 1);
+        final String slotPath = Utility.buildSlotPath(slot).toString();
+        return slotPath.substring(1, slotPath.length() - 1);
     }
 }

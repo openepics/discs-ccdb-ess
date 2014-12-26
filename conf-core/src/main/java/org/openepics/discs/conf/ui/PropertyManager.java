@@ -257,20 +257,20 @@ public class PropertyManager implements Serializable {
 
         for (String assoc : association) {
             switch (assoc) {
-            case PropertyAssociation.ALIGNMENT:
-                property.setAlignmentAssociation(true);
-                break;
-            case PropertyAssociation.DEVICE:
-                property.setDeviceAssociation(true);
-                break;
-            case PropertyAssociation.SLOT:
-                property.setSlotAssociation(true);
-                break;
-            case PropertyAssociation.TYPE:
-                property.setTypeAssociation(true);
-                break;
-            default:
-                throw new RuntimeException("Unknow property associaton target.");
+                case PropertyAssociation.ALIGNMENT:
+                    property.setAlignmentAssociation(true);
+                    break;
+                case PropertyAssociation.DEVICE:
+                    property.setDeviceAssociation(true);
+                    break;
+                case PropertyAssociation.SLOT:
+                    property.setSlotAssociation(true);
+                    break;
+                case PropertyAssociation.TYPE:
+                    property.setTypeAssociation(true);
+                    break;
+                default:
+                    throw new RuntimeException("Unknow property associaton target.");
             }
         }
     }

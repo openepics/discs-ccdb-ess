@@ -35,7 +35,9 @@ public class DblTableValue implements Value {
     /**
      * @return the table
      */
-    public List<List<Double>> getDblTableValue() { return dblTableValue; }
+    public List<List<Double>> getDblTableValue() {
+        return dblTableValue;
+    }
 
     @Override
     public String toString() {

@@ -59,7 +59,11 @@ public enum BuiltInDataType {
 
     private String dbName;
 
-    private BuiltInDataType(String dbName) { this.dbName = dbName; }
+    private BuiltInDataType(String dbName) {
+        this.dbName = dbName;
+    }
 
-    @Override public String toString() { return dbName; }
+    @Override public String toString() {
+        return dbName;
+    }
 }

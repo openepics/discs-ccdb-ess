@@ -39,7 +39,7 @@ public class NamesForDevelopment implements Names {
      */
     @Override
     public Set<String> getAllNames() {
-       return new HashSet<>();
+        return new HashSet<>();
     }
 
 }

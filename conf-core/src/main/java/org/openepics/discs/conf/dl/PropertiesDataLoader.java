@@ -122,89 +122,89 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
 
                 if (!rowResult.isError()) {
                     switch (command) {
-                    case CMD_UPDATE:
-                        if (propertyByName.containsKey(name)) {
+                        case CMD_UPDATE:
+                            if (propertyByName.containsKey(name)) {
+                                try {
+                                    final Property propertyToUpdate = propertyByName.get(name);
+                                    propertyToUpdate.setDescription(description);
+                                    setPropertyAssociation(association, propertyToUpdate);
+                                    propertyToUpdate.setModifiedAt(modifiedAt);
+                                    setPropertyFields(propertyToUpdate, unit, dataType, rowNumber);
+                                    if (rowResult.isError()) {
+                                        continue;
+                                    } else {
+                                        propertyEJB.save(propertyToUpdate);
+                                    }
+                                } catch (Exception e) {
+                                    if (e instanceof SecurityException)
+                                        rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                                }
+                            } else {
+                                try {
+                                    final Property propertyToAdd = new Property(name, description);
+                                    setPropertyAssociation(association, propertyToAdd);
+                                    setPropertyFields(propertyToAdd, unit, dataType, rowNumber);
+                                    if (rowResult.isError()) {
+                                        continue;
+                                    } else {
+                                        propertyEJB.add(propertyToAdd);
+                                        propertyByName.put(propertyToAdd.getName(), propertyToAdd);
+                                    }
+                                } catch (Exception e) {
+                                    if (e instanceof SecurityException)
+                                        rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                                }
+                            }
+                            break;
+                        case CMD_DELETE:
                             try {
-                                final Property propertyToUpdate = propertyByName.get(name);
-                                propertyToUpdate.setDescription(description);
-                                setPropertyAssociation(association, propertyToUpdate);
-                                propertyToUpdate.setModifiedAt(modifiedAt);
-                                setPropertyFields(propertyToUpdate, unit, dataType, rowNumber);
-                                if (rowResult.isError()) {
+                                final Property propertyToDelete = propertyByName.get(name);
+                                if (propertyToDelete == null) {
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
                                     continue;
                                 } else {
-                                    propertyEJB.save(propertyToUpdate);
+                                    propertyEJB.delete(propertyToDelete);
+                                    propertyByName.remove(propertyToDelete.getName());
                                 }
                             } catch (Exception e) {
                                 if (e instanceof SecurityException)
                                     rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                             }
-                        } else {
+                            break;
+                        case CMD_RENAME:
                             try {
-                                final Property propertyToAdd = new Property(name, description);
-                                setPropertyAssociation(association, propertyToAdd);
-                                setPropertyFields(propertyToAdd, unit, dataType, rowNumber);
-                                if (rowResult.isError()) {
+                                final int startOldNameMarkerIndex = name.indexOf("[");
+                                final int endOldNameMarkerIndex = name.indexOf("]");
+                                if (startOldNameMarkerIndex == -1 || endOldNameMarkerIndex == -1) {
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.RENAME_MISFORMAT, rowNumber, headerRow.get(nameIndex)));
                                     continue;
+                                }
+
+                                final String oldName = name.substring(startOldNameMarkerIndex + 1, endOldNameMarkerIndex).trim();
+                                final String newName = name.substring(endOldNameMarkerIndex + 1).trim();
+
+                                if (propertyByName.containsKey(oldName)) {
+                                    if (propertyByName.containsKey(newName)) {
+                                        rowResult.addMessage(new ValidationMessage(ErrorMessage.NAME_ALREADY_EXISTS, rowNumber, headerRow.get(nameIndex)));
+                                        continue;
+                                    } else {
+                                        final Property propertyToRename = propertyByName.get(oldName);
+                                        propertyToRename.setName(newName);
+                                        propertyEJB.save(propertyToRename);
+                                        propertyByName.remove(oldName);
+                                        propertyByName.put(newName, propertyToRename);
+                                    }
                                 } else {
-                                    propertyEJB.add(propertyToAdd);
-                                    propertyByName.put(propertyToAdd.getName(), propertyToAdd);
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
+                                    continue;
                                 }
                             } catch (Exception e) {
                                 if (e instanceof SecurityException)
                                     rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                             }
-                        }
-                        break;
-                    case CMD_DELETE:
-                        try {
-                            final Property propertyToDelete = propertyByName.get(name);
-                            if (propertyToDelete == null) {
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
-                                continue;
-                            } else {
-                                propertyEJB.delete(propertyToDelete);
-                                propertyByName.remove(propertyToDelete.getName());
-                            }
-                        } catch (Exception e) {
-                            if (e instanceof SecurityException)
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
-                        }
-                        break;
-                    case CMD_RENAME:
-                        try {
-                            final int startOldNameMarkerIndex = name.indexOf("[");
-                            final int endOldNameMarkerIndex = name.indexOf("]");
-                            if (startOldNameMarkerIndex == -1 || endOldNameMarkerIndex == -1) {
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.RENAME_MISFORMAT, rowNumber, headerRow.get(nameIndex)));
-                                continue;
-                            }
-
-                            final String oldName = name.substring(startOldNameMarkerIndex + 1, endOldNameMarkerIndex).trim();
-                            final String newName = name.substring(endOldNameMarkerIndex + 1).trim();
-
-                            if (propertyByName.containsKey(oldName)) {
-                                if (propertyByName.containsKey(newName)) {
-                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NAME_ALREADY_EXISTS, rowNumber, headerRow.get(nameIndex)));
-                                    continue;
-                                } else {
-                                    final Property propertyToRename = propertyByName.get(oldName);
-                                    propertyToRename.setName(newName);
-                                    propertyEJB.save(propertyToRename);
-                                    propertyByName.remove(oldName);
-                                    propertyByName.put(newName, propertyToRename);
-                                }
-                            } else {
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
-                                continue;
-                            }
-                        } catch (Exception e) {
-                            if (e instanceof SecurityException)
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
-                        }
-                        break;
-                    default:
-                        rowResult.addMessage(new ValidationMessage(ErrorMessage.COMMAND_NOT_VALID, rowNumber, headerRow.get(commandIndex)));
+                            break;
+                        default:
+                            rowResult.addMessage(new ValidationMessage(ErrorMessage.COMMAND_NOT_VALID, rowNumber, headerRow.get(commandIndex)));
                     }
                 }
             }

@@ -30,10 +30,14 @@ public class IntValue implements Value {
         this.intValue = Preconditions.checkNotNull(intValue);
     }
 
-    public Integer getIntValue() { return intValue; }
+    public Integer getIntValue() {
+        return intValue;
+    }
 
     @Override
-    public String toString() { return intValue.toString(); }
+    public String toString() {
+        return intValue.toString();
+    }
 
     @Override
     public String auditLogString(int... dimensions) {

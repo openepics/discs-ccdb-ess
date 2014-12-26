@@ -113,83 +113,83 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
 
                 if (!rowResult.isError()) {
                     switch (command) {
-                    case CMD_UPDATE:
-                        if (unitByName.containsKey(name)) {
-                            try {
-                                final Unit unitToUpdate = unitByName.get(name);
-                                unitToUpdate.setDescription(description);
-                                unitToUpdate.setQuantity(quantity);
-                                unitToUpdate.setSymbol(symbol);
-                                unitToUpdate.setModifiedAt(modifiedAt);
-                                unitEJB.save(unitToUpdate);
-                            } catch (Exception e) {
-                                if (e instanceof SecurityException)
-                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
-                                continue;
-                            }
-                        } else {
-                            try {
-                                final Unit unitToAdd = new Unit(name, quantity, symbol, description);
-                                unitEJB.add(unitToAdd);
-                                unitByName.put(unitToAdd.getName(), unitToAdd);
-                            } catch (Exception e) {
-                                if (e instanceof SecurityException)
-                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
-                                continue;
-                            }
-                        }
-                        break;
-                    case CMD_DELETE:
-                        try {
-                            final Unit unitToDelete = unitByName.get(name);
-                            if (unitToDelete == null) {
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
-                                continue;
-                            } else {
-                                unitEJB.delete(unitToDelete);
-                                unitByName.remove(unitToDelete.getName());
-                            }
-                        } catch (Exception e) {
-                            if (e instanceof SecurityException)
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
-                            continue;
-                        }
-                        break;
-                    case CMD_RENAME:
-                        try {
-                            final int startOldNameMarkerIndex = name.indexOf("[");
-                            final int endOldNameMarkerIndex = name.indexOf("]");
-                            if (startOldNameMarkerIndex == -1 || endOldNameMarkerIndex == -1) {
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.RENAME_MISFORMAT, rowNumber, headerRow.get(nameIndex)));
-                                continue;
-                            }
-
-                            final String oldName = name.substring(startOldNameMarkerIndex + 1, endOldNameMarkerIndex).trim();
-                            final String newName = name.substring(endOldNameMarkerIndex + 1).trim();
-
-                            if (unitByName.containsKey(oldName)) {
-                                if (unitByName.containsKey(newName)) {
-                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NAME_ALREADY_EXISTS, rowNumber, headerRow.get(nameIndex)));
+                        case CMD_UPDATE:
+                            if (unitByName.containsKey(name)) {
+                                try {
+                                    final Unit unitToUpdate = unitByName.get(name);
+                                    unitToUpdate.setDescription(description);
+                                    unitToUpdate.setQuantity(quantity);
+                                    unitToUpdate.setSymbol(symbol);
+                                    unitToUpdate.setModifiedAt(modifiedAt);
+                                    unitEJB.save(unitToUpdate);
+                                } catch (Exception e) {
+                                    if (e instanceof SecurityException)
+                                        rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                                     continue;
-                                } else {
-                                    final Unit unitToRename = unitByName.get(oldName);
-                                    unitToRename.setName(newName);
-                                    unitEJB.save(unitToRename);
-                                    unitByName.remove(oldName);
-                                    unitByName.put(newName, unitToRename);
                                 }
                             } else {
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
+                                try {
+                                    final Unit unitToAdd = new Unit(name, quantity, symbol, description);
+                                    unitEJB.add(unitToAdd);
+                                    unitByName.put(unitToAdd.getName(), unitToAdd);
+                                } catch (Exception e) {
+                                    if (e instanceof SecurityException)
+                                        rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                                    continue;
+                                }
+                            }
+                            break;
+                        case CMD_DELETE:
+                            try {
+                                final Unit unitToDelete = unitByName.get(name);
+                                if (unitToDelete == null) {
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
+                                    continue;
+                                } else {
+                                    unitEJB.delete(unitToDelete);
+                                    unitByName.remove(unitToDelete.getName());
+                                }
+                            } catch (Exception e) {
+                                if (e instanceof SecurityException)
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                                 continue;
                             }
-                        } catch (Exception e) {
-                            if (e instanceof SecurityException)
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
-                            continue;
-                        }
-                        break;
-                    default:
-                        rowResult.addMessage(new ValidationMessage(ErrorMessage.COMMAND_NOT_VALID, rowNumber, headerRow.get(commandIndex)));
+                            break;
+                        case CMD_RENAME:
+                            try {
+                                final int startOldNameMarkerIndex = name.indexOf("[");
+                                final int endOldNameMarkerIndex = name.indexOf("]");
+                                if (startOldNameMarkerIndex == -1 || endOldNameMarkerIndex == -1) {
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.RENAME_MISFORMAT, rowNumber, headerRow.get(nameIndex)));
+                                    continue;
+                                }
+
+                                final String oldName = name.substring(startOldNameMarkerIndex + 1, endOldNameMarkerIndex).trim();
+                                final String newName = name.substring(endOldNameMarkerIndex + 1).trim();
+
+                                if (unitByName.containsKey(oldName)) {
+                                    if (unitByName.containsKey(newName)) {
+                                        rowResult.addMessage(new ValidationMessage(ErrorMessage.NAME_ALREADY_EXISTS, rowNumber, headerRow.get(nameIndex)));
+                                        continue;
+                                    } else {
+                                        final Unit unitToRename = unitByName.get(oldName);
+                                        unitToRename.setName(newName);
+                                        unitEJB.save(unitToRename);
+                                        unitByName.remove(oldName);
+                                        unitByName.put(newName, unitToRename);
+                                    }
+                                } else {
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
+                                    continue;
+                                }
+                            } catch (Exception e) {
+                                if (e instanceof SecurityException)
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                                continue;
+                            }
+                            break;
+                        default:
+                            rowResult.addMessage(new ValidationMessage(ErrorMessage.COMMAND_NOT_VALID, rowNumber, headerRow.get(commandIndex)));
                     }
                 }
             }

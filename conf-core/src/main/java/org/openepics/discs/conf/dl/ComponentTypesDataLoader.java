@@ -110,88 +110,88 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
                 }
 
                 switch (command) {
-                case CMD_UPDATE:
-                    final ComponentType componentTypeToUpdate = comptypeEJB.findByName(name);
-                    if (componentTypeToUpdate != null) {
-                        if (componentTypeToUpdate.getName().equals(SlotEJB.ROOT_COMPONENT_TYPE)) {
-                            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
-                            continue;
-                        }
-                        try {
-                            componentTypeToUpdate.setDescription(description);
-                            addOrUpdateProperties(componentTypeToUpdate, indexByPropertyName, row, rowNumber);
-                            if (rowResult.isError()) {
+                    case CMD_UPDATE:
+                        final ComponentType componentTypeToUpdate = comptypeEJB.findByName(name);
+                        if (componentTypeToUpdate != null) {
+                            if (componentTypeToUpdate.getName().equals(SlotEJB.ROOT_COMPONENT_TYPE)) {
+                                rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                                 continue;
                             }
-                        } catch (Exception e) {
-                            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
-                        }
-                    } else {
-                        try {
-                            final ComponentType compTypeToAdd = new ComponentType(name);
-                            compTypeToAdd.setDescription(description);
-                            comptypeEJB.add(compTypeToAdd);
-                            addOrUpdateProperties(compTypeToAdd, indexByPropertyName, row, rowNumber);
-                            if (rowResult.isError()) {
-                                continue;
+                            try {
+                                componentTypeToUpdate.setDescription(description);
+                                addOrUpdateProperties(componentTypeToUpdate, indexByPropertyName, row, rowNumber);
+                                if (rowResult.isError()) {
+                                    continue;
+                                }
+                            } catch (Exception e) {
+                                rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                             }
-                        } catch (Exception e) {
-                            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
-                        }
-                    }
-                    break;
-                case CMD_DELETE:
-                    final ComponentType componentTypeToDelete = comptypeEJB.findByName(name);
-                    try {
-                        if (componentTypeToDelete == null) {
-                            rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
-                            continue;
                         } else {
-                            if (componentTypeToDelete.getName().equals(SlotEJB.ROOT_COMPONENT_TYPE)) {
+                            try {
+                                final ComponentType compTypeToAdd = new ComponentType(name);
+                                compTypeToAdd.setDescription(description);
+                                comptypeEJB.add(compTypeToAdd);
+                                addOrUpdateProperties(compTypeToAdd, indexByPropertyName, row, rowNumber);
+                                if (rowResult.isError()) {
+                                    continue;
+                                }
+                            } catch (Exception e) {
                                 rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
-                                continue;
                             }
-                            comptypeEJB.delete(componentTypeToDelete);
                         }
-                    } catch (Exception e) {
-                        rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
-                    }
-                    break;
-                case CMD_RENAME:
-                    try {
-                        final int startOldNameMarkerIndex = name.indexOf("[");
-                        final int endOldNameMarkerIndex = name.indexOf("]");
-                        if (startOldNameMarkerIndex == -1 || endOldNameMarkerIndex == -1) {
-                            rowResult.addMessage(new ValidationMessage(ErrorMessage.RENAME_MISFORMAT, rowNumber, headerRow.get(nameIndex)));
-                            continue;
-                        }
-
-                        final String oldName = name.substring(startOldNameMarkerIndex + 1, endOldNameMarkerIndex).trim();
-                        final String newName = name.substring(endOldNameMarkerIndex + 1).trim();
-
-                        final ComponentType componentTypeToRename = comptypeEJB.findByName(oldName);
-                        if (componentTypeToRename != null) {
-                            if (componentTypeToRename.getName().equals(SlotEJB.ROOT_COMPONENT_TYPE)) {
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
-                                continue;
-                            }
-                            if (comptypeEJB.findByName(newName) != null) {
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.NAME_ALREADY_EXISTS, rowNumber, headerRow.get(nameIndex)));
+                        break;
+                    case CMD_DELETE:
+                        final ComponentType componentTypeToDelete = comptypeEJB.findByName(name);
+                        try {
+                            if (componentTypeToDelete == null) {
+                                rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
                                 continue;
                             } else {
-                                componentTypeToRename.setName(newName);
-                                comptypeEJB.save(componentTypeToRename);
+                                if (componentTypeToDelete.getName().equals(SlotEJB.ROOT_COMPONENT_TYPE)) {
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                                    continue;
+                                }
+                                comptypeEJB.delete(componentTypeToDelete);
                             }
-                        } else {
-                            rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
-                            continue;
+                        } catch (Exception e) {
+                            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                         }
-                    } catch (Exception e) {
-                        rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
-                    }
-                    break;
-                default:
-                    rowResult.addMessage(new ValidationMessage(ErrorMessage.COMMAND_NOT_VALID, rowNumber, headerRow.get(commandIndex)));
+                        break;
+                    case CMD_RENAME:
+                        try {
+                            final int startOldNameMarkerIndex = name.indexOf("[");
+                            final int endOldNameMarkerIndex = name.indexOf("]");
+                            if (startOldNameMarkerIndex == -1 || endOldNameMarkerIndex == -1) {
+                                rowResult.addMessage(new ValidationMessage(ErrorMessage.RENAME_MISFORMAT, rowNumber, headerRow.get(nameIndex)));
+                                continue;
+                            }
+
+                            final String oldName = name.substring(startOldNameMarkerIndex + 1, endOldNameMarkerIndex).trim();
+                            final String newName = name.substring(endOldNameMarkerIndex + 1).trim();
+
+                            final ComponentType componentTypeToRename = comptypeEJB.findByName(oldName);
+                            if (componentTypeToRename != null) {
+                                if (componentTypeToRename.getName().equals(SlotEJB.ROOT_COMPONENT_TYPE)) {
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                                    continue;
+                                }
+                                if (comptypeEJB.findByName(newName) != null) {
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NAME_ALREADY_EXISTS, rowNumber, headerRow.get(nameIndex)));
+                                    continue;
+                                } else {
+                                    componentTypeToRename.setName(newName);
+                                    comptypeEJB.save(componentTypeToRename);
+                                }
+                            } else {
+                                rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
+                                continue;
+                            }
+                        } catch (Exception e) {
+                            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                        }
+                        break;
+                    default:
+                        rowResult.addMessage(new ValidationMessage(ErrorMessage.COMMAND_NOT_VALID, rowNumber, headerRow.get(commandIndex)));
                 }
             }
         }

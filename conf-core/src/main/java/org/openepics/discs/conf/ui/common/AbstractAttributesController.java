@@ -695,20 +695,20 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
 
         String strValue = value.toString();
         switch (Conversion.getBuiltInDataType(dataType)) {
-        case DBL_TABLE:
-            validateTable(strValue);
-            break;
-        case DBL_VECTOR:
-            validateDblVector(strValue);
-            break;
-        case INT_VECTOR:
-            validateIntVector(strValue);
-            break;
-        case STRING_LIST:
-            break;
-        default:
-            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
-                    "Incorrect property data type."));
+            case DBL_TABLE:
+                validateTable(strValue);
+                break;
+            case DBL_VECTOR:
+                validateDblVector(strValue);
+                break;
+            case INT_VECTOR:
+                validateIntVector(strValue);
+                break;
+            case STRING_LIST:
+                break;
+            default:
+                throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
+                        "Incorrect property data type."));
         }
     }
 
@@ -794,34 +794,34 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
 
         String strValue = value.toString();
         switch (Conversion.getBuiltInDataType(dataType)) {
-        case DOUBLE:
-            try {
-                Double.parseDouble(strValue.trim());
-            } catch (NumberFormatException e) {
+            case DOUBLE:
+                try {
+                    Double.parseDouble(strValue.trim());
+                } catch (NumberFormatException e) {
+                    throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
+                            "Not a double value."));
+                }
+                break;
+            case INTEGER:
+                try {
+                    Integer.parseInt(strValue.trim());
+                } catch (NumberFormatException e) {
+                    throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
+                            "Not an integer number."));
+                }
+                break;
+            case STRING:
+                break;
+            case TIMESTAMP:
+                try {
+                    Conversion.toTimestamp(strValue);
+                } catch (RuntimeException e) {
+                    throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", e.getMessage()));
+                }
+                break;
+            default:
                 throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
-                        "Not a double value."));
-            }
-            break;
-        case INTEGER:
-            try {
-                Integer.parseInt(strValue.trim());
-            } catch (NumberFormatException e) {
-                throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
-                        "Not an integer number."));
-            }
-            break;
-        case STRING:
-            break;
-        case TIMESTAMP:
-            try {
-                Conversion.toTimestamp(strValue);
-            } catch (RuntimeException e) {
-                throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", e.getMessage()));
-            }
-            break;
-        default:
-            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
-                    "Incorrect property data type."));
+                        "Incorrect property data type."));
         }
     }
 
