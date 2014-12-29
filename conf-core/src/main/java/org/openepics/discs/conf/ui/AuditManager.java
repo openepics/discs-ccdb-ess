@@ -45,7 +45,7 @@ public class AuditManager implements Serializable {
     @SuppressWarnings("unused")
     private static final Logger logger = Logger.getLogger(AuditManager.class.getCanonicalName());
 
-    @Inject private AuditRecordEJB auditRecordEJB;
+    @Inject transient private AuditRecordEJB auditRecordEJB;
 
     private List<AuditRecord> auditRecordsForEntity;
     private AuditRecord displayRecord;

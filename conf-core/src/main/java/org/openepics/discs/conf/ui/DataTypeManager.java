@@ -23,8 +23,8 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.logging.Logger;
 
-import javax.ejb.EJB;
 import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.openepics.discs.conf.ejb.DataTypeEJB;
@@ -41,7 +41,7 @@ public class DataTypeManager implements Serializable {
     @SuppressWarnings("unused")
     private static final Logger logger = Logger.getLogger(DataTypeManager.class.getCanonicalName());
 
-    @EJB private DataTypeEJB dataTypeEJB;
+    @Inject transient private DataTypeEJB dataTypeEJB;
 
     private List<DataType> dataTypes;
     private List<DataType> fileteredDataTypes;

@@ -51,13 +51,13 @@ import com.google.common.io.ByteStreams;
 @ManagedBean
 @ViewScoped
 public class UnitManager implements Serializable, ExcelSingleFileImportUIHandlers {
-    @Inject private UnitEJB unitEJB;
-    @Inject private DataLoaderHandler dataLoaderHandler;
-    @Inject @UnitLoaderQualifier private DataLoader unitsDataLoader;
+    @Inject transient private UnitEJB unitEJB;
+    @Inject transient private DataLoaderHandler dataLoaderHandler;
+    @Inject @UnitLoaderQualifier transient private DataLoader unitsDataLoader;
 
     private List<Unit> units;
     private List<Unit> filteredUnits;
-    private DataLoaderResult loaderResult;
+    transient private DataLoaderResult loaderResult;
 
     private byte[] importData;
     private String importFileName;

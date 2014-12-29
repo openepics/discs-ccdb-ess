@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.ejb.EJB;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -55,8 +54,8 @@ import com.google.common.base.Preconditions;
 public class InstallationManager implements Serializable {
     private static final Logger logger = Logger.getLogger(InstallationManager.class.getCanonicalName());
 
-    @EJB private InstallationEJB installationEJB;
-    @EJB private SlotEJB slotEJB;
+    @Inject transient private InstallationEJB installationEJB;
+    @Inject transient private SlotEJB slotEJB;
     @Inject @DeviceInstallation private SlotsTreeBuilder slotsTreeBuilder;
 
     private Device installedDevice;

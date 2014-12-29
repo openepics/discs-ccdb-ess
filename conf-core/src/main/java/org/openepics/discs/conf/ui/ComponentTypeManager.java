@@ -27,7 +27,6 @@ import java.io.Serializable;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
-import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -62,14 +61,14 @@ import com.google.common.io.ByteStreams;
 @ViewScoped
 public class ComponentTypeManager implements Serializable, ExcelSingleFileImportUIHandlers {
 
-    @EJB private ComptypeEJB comptypeEJB;
-    @Inject private AuditRecordEJB auditRecordEJB;
-    @Inject private DataLoaderHandler dataLoaderHandler;
-    @Inject @ComponentTypesLoaderQualifier private DataLoader compTypesDataLoader;
+    @Inject transient private ComptypeEJB comptypeEJB;
+    @Inject transient private AuditRecordEJB auditRecordEJB;
+    @Inject transient private DataLoaderHandler dataLoaderHandler;
+    @Inject @ComponentTypesLoaderQualifier transient private DataLoader compTypesDataLoader;
 
     private byte[] importData;
     private String importFileName;
-    private DataLoaderResult loaderResult;
+    transient private DataLoaderResult loaderResult;
 
     private List<ComponentType> deviceTypes;
     private List<ComponentType> filteredDeviceTypes;

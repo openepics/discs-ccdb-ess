@@ -51,9 +51,9 @@ import com.google.common.base.Preconditions;
 @Named
 @ViewScoped
 public class DevicesByTypeManager implements Serializable {
-    @Inject private ComptypeEJB componentTypesEJB;
-    @Inject private DeviceEJB deviceEJB;
-    @Inject private InstallationEJB installationEJB;
+    @Inject transient private ComptypeEJB componentTypesEJB;
+    @Inject transient private DeviceEJB deviceEJB;
+    @Inject transient private InstallationEJB installationEJB;
 
     private List<ComponentType> deviceTypes;
     private List<ComponentType> filteredComponentTypes;

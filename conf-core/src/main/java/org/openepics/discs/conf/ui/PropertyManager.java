@@ -62,17 +62,17 @@ import com.google.common.io.ByteStreams;
 @Named
 @ViewScoped
 public class PropertyManager implements Serializable, ExcelSingleFileImportUIHandlers {
-    @Inject private PropertyEJB propertyEJB;
+    @Inject transient private PropertyEJB propertyEJB;
 
-    @Inject private DataLoaderHandler dataLoaderHandler;
-    @Inject @PropertiesLoaderQualifier private DataLoader propertiesDataLoader;
+    @Inject transient private DataLoaderHandler dataLoaderHandler;
+    @Inject @PropertiesLoaderQualifier transient private DataLoader propertiesDataLoader;
 
     private List<Property> properties;
     private List<Property> filteredProperties;
 
     private byte[] importData;
     private String importFileName;
-    private DataLoaderResult loaderResult;
+    transient private DataLoaderResult loaderResult;
 
     private String name;
     private String description;

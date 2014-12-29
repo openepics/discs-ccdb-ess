@@ -64,7 +64,7 @@ import org.primefaces.context.RequestContext;
 @ViewScoped
 public class DeviceDetailsAttributesController extends AbstractAttributesController<DevicePropertyValue, DeviceArtifact> {
 
-    @Inject private DeviceEJB deviceEJB;
+    @Inject transient private DeviceEJB deviceEJB;
 
     private Device device;
 

@@ -24,15 +24,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 
-import javax.ejb.EJB;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.io.FilenameUtils;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
-import org.openepics.discs.conf.ejb.SlotEJB;
-import org.openepics.discs.conf.ejb.SlotPairEJB;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
 import org.openepics.discs.conf.ui.common.ExcelImportUIHandlers;
 import org.primefaces.event.FileUploadEvent;
@@ -48,14 +45,11 @@ import com.google.common.io.ByteStreams;
 @ViewScoped
 public class SlotManager implements Serializable, ExcelImportUIHandlers {
 
-    @EJB private SlotEJB slotEJB;
-    @EJB private SlotPairEJB slotPairEJB;
-
-    @Inject private DataLoaderHandler dataLoaderHandler;
+    @Inject transient private DataLoaderHandler dataLoaderHandler;
 
     private byte[] importSlotData, importSlotRelationshipsData;
     private String firstFileName, secondFileName;
-    private DataLoaderResult loaderResult;
+    transient private DataLoaderResult loaderResult;
 
     /**
      * Creates a new instance of SlotManager
@@ -72,7 +66,11 @@ public class SlotManager implements Serializable, ExcelImportUIHandlers {
 
     @Override
     public void doImport() {
-        loaderResult = dataLoaderHandler.loadDataFromTwoFiles(importSlotData != null ? new ByteArrayInputStream(importSlotData) : null, importSlotRelationshipsData != null ? new ByteArrayInputStream(importSlotRelationshipsData) : null, firstFileName, secondFileName);
+        loaderResult = dataLoaderHandler.loadDataFromTwoFiles(
+                    importSlotData != null ? new ByteArrayInputStream(importSlotData) : null,
+                    importSlotRelationshipsData != null ? new ByteArrayInputStream(importSlotRelationshipsData) : null,
+                    firstFileName,
+                    secondFileName);
     }
 
     @Override

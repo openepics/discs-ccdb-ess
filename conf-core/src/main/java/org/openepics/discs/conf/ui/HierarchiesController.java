@@ -70,10 +70,10 @@ public class HierarchiesController implements Serializable {
     private static final Logger logger = Logger.getLogger(HierarchiesController.class.getCanonicalName());
 
     @Inject private SlotsTreeBuilder slotsTreeBuilder;
-    @Inject private SlotEJB slotEJB;
-    @Inject private SlotPairEJB slotPairEJB;
-    @Inject private InstallationEJB installationEJB;
-    @Inject private DataTypeEJB dataTypeEJB;
+    @Inject transient private SlotEJB slotEJB;
+    @Inject transient private SlotPairEJB slotPairEJB;
+    @Inject transient private InstallationEJB installationEJB;
+    @Inject transient private DataTypeEJB dataTypeEJB;
 
     private TreeNode rootNode;
     private TreeNode selectedNode;

@@ -47,12 +47,12 @@ import com.google.common.io.ByteStreams;
 @ViewScoped
 public class DeviceManager implements Serializable, ExcelSingleFileImportUIHandlers {
 
-    @Inject private DataLoaderHandler dataLoaderHandler;
-    @Inject @DevicesLoaderQualifier private DataLoader devicesDataLoader;
+    @Inject transient private DataLoaderHandler dataLoaderHandler;
+    @Inject @DevicesLoaderQualifier transient private DataLoader devicesDataLoader;
 
     private byte[] importData;
     private String importFileName;
-    private DataLoaderResult loaderResult;
+    transient private DataLoaderResult loaderResult;
 
     /**
      * Creates a new instance of DeviceManager

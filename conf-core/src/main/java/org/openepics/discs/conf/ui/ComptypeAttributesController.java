@@ -71,10 +71,10 @@ import com.google.common.collect.ImmutableList;
 @ViewScoped
 public class ComptypeAttributesController extends AbstractAttributesController<ComptypePropertyValue, ComptypeArtifact> {
 
-    @Inject private ComptypeEJB comptypeEJB;
-    @Inject private PropertyEJB propertyEJB;
-    @Inject private SlotEJB slotEJB;
-    @Inject private DeviceEJB deviceEJB;
+    @Inject transient private ComptypeEJB comptypeEJB;
+    @Inject transient private PropertyEJB propertyEJB;
+    @Inject transient private SlotEJB slotEJB;
+    @Inject transient private DeviceEJB deviceEJB;
 
     private ComponentType compType;
 

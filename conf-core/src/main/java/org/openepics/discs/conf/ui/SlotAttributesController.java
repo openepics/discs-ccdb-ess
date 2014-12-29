@@ -73,9 +73,9 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
 
     private static final Logger logger = Logger.getLogger(SlotAttributesController.class.getCanonicalName());
 
-    @Inject private SlotEJB slotEJB;
-    @Inject private PropertyEJB propertyEJB;
-    @Inject private InstallationEJB installationEJB;
+    @Inject transient private SlotEJB slotEJB;
+    @Inject transient private PropertyEJB propertyEJB;
+    @Inject transient private InstallationEJB installationEJB;
 
     private Slot slot;
     private String parentSlot;

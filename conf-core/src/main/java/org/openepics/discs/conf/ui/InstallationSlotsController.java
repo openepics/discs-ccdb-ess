@@ -53,18 +53,18 @@ import com.google.common.collect.Lists;
 public class InstallationSlotsController extends AbstractSlotsController {
 
     @Inject private Names names;
-    @Inject private SlotRelationEJB slotRelationEJB;
+    @Inject transient private SlotRelationEJB slotRelationEJB;
 
     private ComponentType deviceType;
 
     private List<String> namesForAutoComplete;
-    private List<SlotRelationshipView> relationships;
-    private SlotRelationshipView selectedRelationship;
+    transient private List<SlotRelationshipView> relationships;
+    transient private SlotRelationshipView selectedRelationship;
     private TreeNode selectedTreeNodeForRelationshipAdd;
     private String selectedRelationshipType;
     private List<String> relationshipTypes;
     private Map<String, SlotRelation> slotRelationBySlotRelationStringName;
-    private SlotView selectedSlotForRelationships;
+    private transient SlotView selectedSlotForRelationships;
 
     /**
      * Java EE post construct life-cycle method.
