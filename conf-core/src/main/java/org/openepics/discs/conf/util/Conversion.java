@@ -81,26 +81,37 @@ public class Conversion {
      */
     public static BuiltInDataType getBuiltInDataType(DataType dataType) {
         Preconditions.checkNotNull(dataType);
+        final BuiltInDataType builtInDataType;
         switch (dataType.getName()) {
             case BuiltInDataType.INT_NAME :
-                return BuiltInDataType.INTEGER;
+                builtInDataType = BuiltInDataType.INTEGER;
+                break;
             case BuiltInDataType.DBL_NAME :
-                return BuiltInDataType.DOUBLE;
+                builtInDataType = BuiltInDataType.DOUBLE;
+                break;
             case BuiltInDataType.STR_NAME :
-                return BuiltInDataType.STRING;
+                builtInDataType = BuiltInDataType.STRING;
+                break;
             case BuiltInDataType.TIMESTAMP_NAME :
-                return BuiltInDataType.TIMESTAMP;
+                builtInDataType = BuiltInDataType.TIMESTAMP;
+                break;
             case BuiltInDataType.INT_VECTOR_NAME :
-                return BuiltInDataType.INT_VECTOR;
+                builtInDataType = BuiltInDataType.INT_VECTOR;
+                break;
             case BuiltInDataType.DBL_VECTOR_NAME :
-                return BuiltInDataType.DBL_VECTOR;
+                builtInDataType = BuiltInDataType.DBL_VECTOR;
+                break;
             case BuiltInDataType.STRING_LIST_NAME :
-                return BuiltInDataType.STRING_LIST;
+                builtInDataType = BuiltInDataType.STRING_LIST;
+                break;
             case BuiltInDataType.DBL_TABLE_NAME :
-                return BuiltInDataType.DBL_TABLE;
+                builtInDataType = BuiltInDataType.DBL_TABLE;
+                break;
             default:
-                return BuiltInDataType.USER_DEFINED_ENUM;
+                builtInDataType = BuiltInDataType.USER_DEFINED_ENUM;
+                break;
         }
+        return builtInDataType;
     }
 
     /**
@@ -158,28 +169,38 @@ public class Conversion {
         if (strValue == null) {
             return null;
         }
+        final Value convertedValue;
         switch (Conversion.getBuiltInDataType(dataType)) {
             case DBL_TABLE:
-                return new DblTableValue(Conversion.toDblTable(strValue));
+                convertedValue = new DblTableValue(Conversion.toDblTable(strValue));
+                break;
             case DBL_VECTOR:
-                return new DblVectorValue(Conversion.toDblVector(strValue));
+                convertedValue = new DblVectorValue(Conversion.toDblVector(strValue));
+                break;
             case DOUBLE:
-                    return new DblValue(Conversion.toDouble(strValue));
+                convertedValue = new DblValue(Conversion.toDouble(strValue));
+                break;
             case USER_DEFINED_ENUM:
-                return new EnumValue(Conversion.toEnum(strValue, dataType));
+                convertedValue = new EnumValue(Conversion.toEnum(strValue, dataType));
+                break;
             case INTEGER:
-                return new IntValue(Conversion.toInteger(strValue));
+                convertedValue = new IntValue(Conversion.toInteger(strValue));
+                break;
             case INT_VECTOR:
                 return new IntVectorValue(Conversion.toIntVector(strValue));
             case STRING:
-                return new StrValue(Conversion.toString(strValue));
+                convertedValue = new StrValue(Conversion.toString(strValue));
+                break;
             case STRING_LIST:
-                return new StrVectorValue(Conversion.toStrVector(strValue));
+                convertedValue = new StrVectorValue(Conversion.toStrVector(strValue));
+                break;
             case TIMESTAMP:
-                return new TimestampValue(Conversion.toTimestamp(strValue));
+                convertedValue = new TimestampValue(Conversion.toTimestamp(strValue));
+                break;
             default:
                 throw new IllegalStateException("Unknown property type.");
         }
+        return convertedValue;
     }
 
     /**
@@ -193,27 +214,28 @@ public class Conversion {
         if (value == null) {
             return null;
         }
-
+        final String stringValue;
         if (value instanceof IntValue) {
-            return Conversion.fromInteger(((IntValue)value).getIntValue());
+            stringValue = Conversion.fromInteger(((IntValue)value).getIntValue());
         } else if (value instanceof DblValue) {
-            return Conversion.fromDouble(((DblValue)value).getDblValue());
+            stringValue = Conversion.fromDouble(((DblValue)value).getDblValue());
         } else if (value instanceof StrValue) {
-            return Conversion.fromString(((StrValue)value).getStrValue());
+            stringValue = Conversion.fromString(((StrValue)value).getStrValue());
         } else if (value instanceof TimestampValue) {
-            return Conversion.fromTimestamp((TimestampValue)value);
+            stringValue = Conversion.fromTimestamp((TimestampValue)value);
         } else if (value instanceof IntVectorValue) {
-            return Conversion.fromIntVector(((IntVectorValue)value).getIntVectorValue());
+            stringValue = Conversion.fromIntVector(((IntVectorValue)value).getIntVectorValue());
         } else if (value instanceof DblVectorValue) {
-            return Conversion.fromDblVector(((DblVectorValue)value).getDblVectorValue());
+            stringValue = Conversion.fromDblVector(((DblVectorValue)value).getDblVectorValue());
         } else if (value instanceof StrVectorValue) {
-            return Conversion.fromStrVector(((StrVectorValue)value).getStrVectorValue());
+            stringValue = Conversion.fromStrVector(((StrVectorValue)value).getStrVectorValue());
         } else if (value instanceof DblTableValue) {
-            return Conversion.fromDblTable(((DblTableValue)value).getDblTableValue());
+            stringValue = Conversion.fromDblTable(((DblTableValue)value).getDblTableValue());
         } else if (value instanceof EnumValue) {
-            return Conversion.fromEnum(((EnumValue)value).getEnumValue());
+            stringValue = Conversion.fromEnum(((EnumValue)value).getEnumValue());
         } else
             throw new IllegalStateException("Unknown property type.");
+        return stringValue;
     }
 
     private static String toString(String str) {

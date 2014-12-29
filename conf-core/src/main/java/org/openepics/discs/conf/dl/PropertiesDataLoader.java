@@ -63,7 +63,6 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
     @Override public DataLoaderResult loadDataToDatabase(List<List<String>> inputRows) {
         init();
 
-
         /*
          * List does not contain any rows that do not have a value (command)
          * in the first column. There should be no commands before "HEADER".
@@ -77,10 +76,7 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
 
         setUpIndexesForFields(headerRow);
 
-        if (rowResult.isError()) {
-            loaderResult.addResult(rowResult);
-            return loaderResult;
-        } else {
+        if (!rowResult.isError()) {
             for (List<String> row : inputRows.subList(1, inputRows.size())) {
                 final String rowNumber = row.get(0);
                 loaderResult.addResult(rowResult);
@@ -90,9 +86,9 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
                     checkForDuplicateHeaderEntries(headerRow);
                     if (rowResult.isError()) {
                         loaderResult.addResult(rowResult);
-                        return loaderResult;
+                    } else {
+                        setUpIndexesForFields(headerRow);
                     }
-                    setUpIndexesForFields(headerRow);
                     if (rowResult.isError()) {
                         return loaderResult;
                     } else {

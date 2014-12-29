@@ -153,18 +153,16 @@ public class ReportAction extends ConfigurationEntity {
 
     @Override
     public String toString() {
+        final String reportActionText;
         if (field != null) {
-            return "[ Field: " + field + " " + operation.toString() + " " + value + " ]";
+            reportActionText = "[ Field: " + field + " " + operation.toString() + " " + value + " ]";
+        } else  if (property != null) {
+            reportActionText = "[ Property: " + property.getName() + " " + operation.toString() + " " + value + " ]";
+        } else if (tag != null) {
+            reportActionText = "[ Tag IS " + tag.getName() + " ]";
+        } else {
+            reportActionText = "Error! Invalid report filter definition.";
         }
-
-        if (property != null) {
-            return "[ Property: " + property.getName() + " " + operation.toString() + " " + value + " ]";
-        }
-
-        if (tag != null) {
-            return "[ Tag IS " + tag.getName() + " ]";
-        }
-
-        return "Error! Invalid report filter definition.";
+        return reportActionText;
     }
 }

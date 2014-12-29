@@ -72,10 +72,7 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
         HashMap<String, Integer> indexByPropertyName = indexByPropertyName(fields, headerRow);
         checkPropertyAssociation(indexByPropertyName, headerRow.get(0));
 
-        if (rowResult.isError()) {
-            loaderResult.addResult(rowResult);
-            return loaderResult;
-        } else {
+        if (!rowResult.isError()) {
             for (List<String> row : inputRows.subList(1, inputRows.size())) {
                 final String rowNumber = row.get(0);
                 loaderResult.addResult(rowResult);
@@ -85,16 +82,15 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
                     checkForDuplicateHeaderEntries(headerRow);
                     if (rowResult.isError()) {
                         loaderResult.addResult(rowResult);
-                        return loaderResult;
+                    } else {
+                        setUpIndexesForFields(headerRow);
+                        indexByPropertyName = indexByPropertyName(fields, headerRow);
+                        checkPropertyAssociation(indexByPropertyName, rowNumber);
                     }
-                    setUpIndexesForFields(headerRow);
-                    indexByPropertyName = indexByPropertyName(fields, headerRow);
-                    checkPropertyAssociation(indexByPropertyName, rowNumber);
                     if (rowResult.isError()) {
                         return loaderResult;
                     } else {
-                        continue; // skip the rest of the processing for HEADER
-                        // row
+                        continue; // skip the rest of the processing for HEADER row
                     }
                 } else if (row.get(commandIndex).equals(CMD_END)) {
                     break;

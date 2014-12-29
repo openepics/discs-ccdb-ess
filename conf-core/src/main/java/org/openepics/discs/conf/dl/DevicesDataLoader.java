@@ -77,10 +77,7 @@ public class DevicesDataLoader extends AbstractDataLoader implements DataLoader 
         HashMap<String, Integer> indexByPropertyName = indexByPropertyName(fields, headerRow);
         checkPropertyAssociation(indexByPropertyName, headerRow.get(0));
 
-        if (rowResult.isError()) {
-            loaderResult.addResult(rowResult);
-            return loaderResult;
-        } else {
+        if (!rowResult.isError()) {
             for (List<String> row : inputRows.subList(1, inputRows.size())) {
                 final String rowNumber = row.get(0);
                 loaderResult.addResult(rowResult);
@@ -90,16 +87,15 @@ public class DevicesDataLoader extends AbstractDataLoader implements DataLoader 
                     checkForDuplicateHeaderEntries(headerRow);
                     if (rowResult.isError()) {
                         loaderResult.addResult(rowResult);
-                        return loaderResult;
+                    } else {
+                        setUpIndexesForFields(headerRow);
+                        indexByPropertyName = indexByPropertyName(fields, headerRow);
+                        checkPropertyAssociation(indexByPropertyName, rowNumber);
                     }
-                    setUpIndexesForFields(headerRow);
-                    indexByPropertyName = indexByPropertyName(fields, headerRow);
-                    checkPropertyAssociation(indexByPropertyName, rowNumber);
                     if (rowResult.isError()) {
                         return loaderResult;
                     } else {
-                        continue; // skip the rest of the processing for
-                        // HEADER row
+                        continue; // skip the rest of the processing for HEADER row
                     }
                 } else if (row.get(1).equals(CMD_END)) {
                     break;
@@ -235,22 +231,24 @@ public class DevicesDataLoader extends AbstractDataLoader implements DataLoader 
     }
 
     private DeviceStatus setDeviceStatus(@Nullable String deviceStatusString, String rowNumber, String columnName) {
+        final DeviceStatus returnValue;
         if (deviceStatusString == null) {
-            return null;
+            returnValue = null;
         } else if (deviceStatusString.equalsIgnoreCase(DeviceStatus.IN_FABRICATION.name())) {
-            return DeviceStatus.IN_FABRICATION;
+            returnValue = DeviceStatus.IN_FABRICATION;
         } else if (deviceStatusString.equalsIgnoreCase(DeviceStatus.READY.name())) {
-            return DeviceStatus.READY;
+            returnValue = DeviceStatus.READY;
         } else if (deviceStatusString.equalsIgnoreCase(DeviceStatus.SPARE.name())) {
-            return DeviceStatus.SPARE;
+            returnValue = DeviceStatus.SPARE;
         } else if (deviceStatusString.equalsIgnoreCase(DeviceStatus.UNDER_REPAIR.name())) {
-            return DeviceStatus.UNDER_REPAIR;
+            returnValue = DeviceStatus.UNDER_REPAIR;
         } else if (deviceStatusString.equalsIgnoreCase(DeviceStatus.UNDER_TESTING.name())) {
-            return DeviceStatus.UNDER_TESTING;
+            returnValue = DeviceStatus.UNDER_TESTING;
         } else {
             rowResult.addMessage(new ValidationMessage(ErrorMessage.DEVICE_STATUS_NOT_FOUND, rowNumber, columnName));
-            return null;
+            returnValue = null;
         }
+        return returnValue;
     }
 
     private void addOrUpdateProperties(Device device, Map<String, Integer> properties, List<String> row, String rowNumber) {

@@ -126,7 +126,6 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
 
         if (rowResult.isError()) {
             slotsLoaderResult.addResult(rowResult);
-            return;
         } else {
             for (List<String> row : inputRows.subList(1, inputRows.size())) {
                 final String rowNumber = row.get(0);
@@ -137,16 +136,15 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                     checkForDuplicateHeaderEntries(headerRow);
                     if (rowResult.isError()) {
                         slotsLoaderResult.addResult(rowResult);
-                        return;
+                    } else {
+                        setUpIndexesForFields(headerRow);
+                        indexByPropertyName = indexByPropertyName(fields, headerRow);
+                        checkPropertyAssociation(indexByPropertyName, rowNumber);
                     }
-                    setUpIndexesForFields(headerRow);
-                    indexByPropertyName = indexByPropertyName(fields, headerRow);
-                    checkPropertyAssociation(indexByPropertyName, rowNumber);
                     if (rowResult.isError()) {
                         return;
                     } else {
-                        continue; // skip the rest of the processing for
-                        // HEADER row
+                        continue; // skip the rest of the processing for HEADER row
                     }
                 } else if (row.get(1).equals(CMD_END)) {
                     break;
@@ -337,7 +335,6 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
         setUpIndexesForSlotPairFields(headerRow);
         if (rowResult.isError()) {
             slotPairsLoaderResult.addResult(rowResult);
-            return;
         } else {
             for (List<String> row : inputRows.subList(1, inputRows.size())) {
                 final String rowNumber = row.get(0);
@@ -348,14 +345,13 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                     checkForDuplicateHeaderEntries(headerRow);
                     if (rowResult.isError()) {
                         slotPairsLoaderResult.addResult(rowResult);
-                        return;
+                    } else {
+                        setUpIndexesForFields(headerRow);
                     }
-                    setUpIndexesForFields(headerRow);
                     if (rowResult.isError()) {
                         return;
                     } else {
-                        continue; // skip the rest of the processing for
-                        // HEADER row
+                        continue; // skip the rest of the processing for HEADER row
                     }
                 } else if (row.get(1).equals(CMD_END)) {
                     break;

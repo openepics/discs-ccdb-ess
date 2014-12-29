@@ -136,20 +136,22 @@ public class SlotPairEJB extends DAO<SlotPair> {
      * @return {@link Boolean} true if by adding this {@link SlotPair} loop will be created, false otherwise
      */
     public boolean slotPairCreatesLoop(SlotPair slotPair, Slot childSlot) {
+        final boolean loopDetected;
         if (slotPair.getSlotRelation().getName() == SlotRelationName.CONTAINS) {
             if (slotPair.getParentSlot().equals(childSlot)) {
-                return true;
+                loopDetected = true;
             } else {
                 for (SlotPair parentSlotPair : slotPair.getParentSlot().getPairsInWhichThisSlotIsAChildList()) {
                     if (slotPairCreatesLoop(parentSlotPair, childSlot)) {
                         return true;
                     }
                 }
-                return false;
+                loopDetected = false;
             }
         } else {
-            return false;
+            loopDetected = false;
         }
+        return loopDetected;
     }
 
 	/**

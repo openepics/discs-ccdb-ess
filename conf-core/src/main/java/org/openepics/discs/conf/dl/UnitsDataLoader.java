@@ -68,10 +68,7 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
         }
         setUpIndexesForFields(headerRow);
 
-        if (rowResult.isError()) {
-            loaderResult.addResult(rowResult);
-            return loaderResult;
-        } else {
+        if (!rowResult.isError()) {
             for (List<String> row : inputRows.subList(1, inputRows.size())) {
                 final String rowNumber = row.get(0);
                 loaderResult.addResult(rowResult);
@@ -81,9 +78,9 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
                     checkForDuplicateHeaderEntries(headerRow);
                     if (rowResult.isError()) {
                         loaderResult.addResult(rowResult);
-                        return loaderResult;
+                    } else {
+                        setUpIndexesForFields(headerRow);
                     }
-                    setUpIndexesForFields(headerRow);
                     if (rowResult.isError()) {
                         return loaderResult;
                     } else {
