@@ -302,7 +302,7 @@ public class PropertyManager implements Serializable, ExcelSingleFileImportUIHan
     }
 
     private String[] constructSetAssociations(Property property) {
-        ArrayList<String> associations = new ArrayList<>();
+        List<String> associations = new ArrayList<>();
         if (property.isTypeAssociation()) {
             associations.add(PropertyAssociation.TYPE);
         }

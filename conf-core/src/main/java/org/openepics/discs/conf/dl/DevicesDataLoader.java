@@ -83,7 +83,7 @@ public class DevicesDataLoader extends AbstractDataLoader implements DataLoader 
         }
 
         setUpIndexesForFields(headerRow);
-        HashMap<String, Integer> indexByPropertyName = indexByPropertyName(fields, headerRow);
+        Map<String, Integer> indexByPropertyName = indexByPropertyName(fields, headerRow);
         checkPropertyAssociation(indexByPropertyName, headerRow.get(0));
 
         if (!rowResult.isError()) {
