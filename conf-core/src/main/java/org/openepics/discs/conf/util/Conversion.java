@@ -160,8 +160,7 @@ public class Conversion {
      * See: {@link Value}
      *
      * @param strValue the string containing a property value
-     * @param property the property for which to return a value (what the user selects in the UI or referenced
-     *                     from {@link org.openepics.discs.conf.ent.PropertyValue})
+     * @param dataType the {@link DataType} of the property for which to return a value
      * @return The {@link Value} of the property.
      */
     public static Value stringToValue(String strValue, DataType dataType) {

@@ -27,6 +27,9 @@ public class DblVectorValue implements Value {
 
     private final List<Double> dblVectorValue;
 
+    /** Constructs a new vector of double precision values
+     * @param dblVectorValue a {@link List} of {@link Double} values
+     */
     public DblVectorValue(List<Double> dblVectorValue) {
         this.dblVectorValue = Preconditions.checkNotNull(dblVectorValue);
     }

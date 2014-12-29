@@ -63,6 +63,10 @@ public class SlotRelation extends ConfigurationEntity {
     protected SlotRelation() {
     }
 
+    /** Constructs a new slot relation. There are only 3 possible relationship types.
+     * @see SlotRelationName
+     * @param name a {@link SlotRelationName}
+     */
     public SlotRelation(SlotRelationName name) {
         setName(name);
     }

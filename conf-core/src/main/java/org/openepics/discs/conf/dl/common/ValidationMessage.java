@@ -40,6 +40,11 @@ public class ValidationMessage {
     private String fileName;
     private String orphanSlotName;
 
+    /**
+     * Constructs the message.
+     *
+     * @param fileName the name of the file the validation was performed for
+     */
     public ValidationMessage(String fileName) {
         this.fileName = fileName;
         error = false;

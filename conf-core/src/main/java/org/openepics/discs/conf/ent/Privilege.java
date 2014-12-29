@@ -74,6 +74,12 @@ public class Privilege implements Serializable {
     protected Privilege() {
     }
 
+    /**
+     * Constructs an new privilege definition.
+     *
+     * @param resource the database entity this privilege is for (see {@link EntityType})
+     * @param oper the operation on this entity (see {@link EntityTypeOperation})
+     */
     public Privilege(EntityType resource, EntityTypeOperation oper) {
         this.resource = resource;
         this.oper = oper;

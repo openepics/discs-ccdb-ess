@@ -89,11 +89,18 @@ public class Property extends ConfigurationEntity {
     protected Property() {
     }
 
+    /** Constructs a property with a name and description.
+     * @param name The name of the property
+     * @param description User specified description
+     */
     public Property(String name, String description) {
         this.name = name;
         this.description = description;
     }
 
+    /**
+     * @return The name of the property
+     */
     public String getName() {
         return name;
     }
@@ -101,6 +108,9 @@ public class Property extends ConfigurationEntity {
         this.name = name;
     }
 
+    /**
+     * @return User specified description
+     */
     public String getDescription() {
         return description;
     }
@@ -108,6 +118,9 @@ public class Property extends ConfigurationEntity {
         this.description = description;
     }
 
+    /**
+     * @return The data type required for the property value
+     */
     public DataType getDataType() {
         return dataType;
     }
@@ -115,6 +128,9 @@ public class Property extends ConfigurationEntity {
         this.dataType = dataType;
     }
 
+    /**
+     * @return The physics unit (optional) for the property value
+     */
     public Unit getUnit() {
         return unit;
     }
@@ -122,46 +138,74 @@ public class Property extends ConfigurationEntity {
         this.unit = unit;
     }
 
+    /**
+     * @return <code>true</code> if the property value of such "property type" can be set on a {@link ComponentType},
+     * <code>false</code> otherwise.
+     */
     public boolean isTypeAssociation() {
         return isTypeAssociation != null ? isTypeAssociation : false;
     }
-
     public void setTypeAssociation(Boolean isTypeAssociation) {
         this.isTypeAssociation = isTypeAssociation;
     }
 
+    /**
+     * @return <code>true</code> if the property value of such "property type" can be set on a {@link Slot},
+     * <code>false</code> otherwise.
+     */
     public boolean isSlotAssociation() {
         return isSlotAssociation != null ? isSlotAssociation : false;
     }
-
     public void setSlotAssociation(Boolean isSlotAssociation) {
         this.isSlotAssociation = isSlotAssociation;
     }
 
+    /**
+     * @return <code>true</code> if the property value of such "property type" can be set on a {@link Device},
+     * <code>false</code> otherwise.
+     */
     public boolean isDeviceAssociation() {
         return isDeviceAssociation != null ? isDeviceAssociation : false;
     }
-
     public void setDeviceAssociation(Boolean isDeviceAssociation) {
         this.isDeviceAssociation = isDeviceAssociation;
     }
 
+    /**
+     * @return <code>true</code> if the property value of such "property type" can be set on an {@link AlignmentRecord},
+     * <code>false</code> otherwise.
+     */
     public boolean isAlignmentAssociation() {
         return isAlignmentAssociation != null ? isAlignmentAssociation : false;
     }
-
     public void setAlignmentAssociation(Boolean isAlignmentAssociation) {
         this.isAlignmentAssociation = isAlignmentAssociation;
     }
 
+    /**
+     * @return <code>true</code> if the property value of such "property type" can be set on any of
+     * {@link ComponentType}, {@link Slot}, {@link Device}, and {@link AlignmentRecord}, <code>false</code> otherwise.
+     */
     public boolean isAssociationAll() {
         return isTypeAssociation() && isSlotAssociation() && isDeviceAssociation() && isAlignmentAssociation();
     }
 
+    /**
+     * @return <code>true</code> if the property value of such "property type" cannot be set on any database entity.
+     */
     public boolean isAssociationNone() {
         return !(isTypeAssociation() || isSlotAssociation() || isDeviceAssociation() || isAlignmentAssociation());
     }
 
+    /**
+     * Helper method to set possible associations to <code>true</code> for all possible database entities:
+     * <ul>
+     * <li>{@link ComponentType}</li>
+     * <li>{@link Slot}</li>
+     * <li>{@link Device}</li>
+     * <li>{@link AlignmentRecord}</li>
+     * </ul>
+     */
     public void setAllAssociation() {
         isTypeAssociation = Boolean.TRUE;
         isSlotAssociation = Boolean.TRUE;
@@ -169,6 +213,16 @@ public class Property extends ConfigurationEntity {
         isAlignmentAssociation = Boolean.TRUE;
     }
 
+    /**
+     * Helper method to clear possible associations to <code>true</code> for all possible database entities:
+     * <ul>
+     * <li>{@link ComponentType}</li>
+     * <li>{@link Slot}</li>
+     * <li>{@link Device}</li>
+     * <li>{@link AlignmentRecord}</li>
+     * </ul>
+     * The property value of such "property type" cannot be set on any database entity.
+     */
     public void setNoneAssociation() {
         isTypeAssociation = Boolean.FALSE;
         isSlotAssociation = Boolean.FALSE;

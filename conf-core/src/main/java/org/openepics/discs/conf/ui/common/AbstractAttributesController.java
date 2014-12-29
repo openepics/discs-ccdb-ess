@@ -66,8 +66,11 @@ import org.openepics.discs.conf.util.UnhandledCaseException;
 import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.views.BuiltInProperty;
 import org.openepics.discs.conf.views.BuiltInPropertyName;
+import org.openepics.discs.conf.views.ComptypeBuiltInPropertyName;
+import org.openepics.discs.conf.views.DeviceBuiltInPropertyName;
 import org.openepics.discs.conf.views.EntityAttributeView;
 import org.openepics.discs.conf.views.EntityAttributeViewKind;
+import org.openepics.discs.conf.views.SlotBuiltInPropertyName;
 import org.openepics.seds.api.datatypes.SedsEnum;
 import org.openepics.seds.api.datatypes.SedsType;
 import org.openepics.seds.core.Seds;
@@ -84,10 +87,13 @@ import com.google.common.io.ByteStreams;
 /**
  * Parent class for all classes that handle entity attributes manipulation
  *
+ * @param <T> There are 4 property value tables in the database, but all have the same columns and interface.
+ * @param <S> There are 4 artifact tables in the database, but all have the same columns and interface.
+ *
  * @author Andraz Pozar <andraz.pozar@cosylab.com>
  * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  */
-public abstract class AbstractAttributesController<T extends PropertyValue,S extends Artifact> implements Serializable {
+public abstract class AbstractAttributesController<T extends PropertyValue, S extends Artifact> implements Serializable {
 
     private static final int MIN_ELEMENT_SIZE = 20;
     private static final int MAX_ELEMENT_SIZE = 40;
@@ -380,9 +386,15 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
         }
     }
 
+    /**
+     * This method is called from UI when the user saves the entity name by pressing the "Save modifications" in
+     * the page header.
+     */
     public abstract void saveNewName();
 
-
+    /**
+     * This method is called by the built-in property dialog "Save" button to save the new built-in property value.
+     */
     public abstract void modifyBuiltInProperty();
 
     /**
@@ -420,12 +432,20 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
         return new DefaultStreamedContent(new FileInputStream(filePath), contentType, selectedArtifact.getName());
     }
 
+    /** This method determines whether the entity attribute should have the "pencil" icon displayed in the UI.
+     * @param attributeView The object containing the UI info for the attribute table row.
+     * @return <code>true</code> if the attribute can be edited, <code>false</code> otherwise.
+     */
     public boolean canEdit(EntityAttributeView attributeView) {
         final Object attribute = attributeView.getEntity();
         return attribute instanceof BuiltInProperty || (attribute instanceof PropertyValue && !(attribute instanceof ComptypePropertyValue))
                 || (attribute instanceof Artifact && !(attribute instanceof  ComptypeArtifact));
     }
 
+    /** This method determines whether the entity attribute should have the "trash can" icon displayed in the UI.
+     * @param attributeView The object containing the UI info for the attribute table row.
+     * @return <code>true</code> if the attribute can be deleted, <code>false</code> otherwise.
+     */
     public boolean canDelete(EntityAttributeView attributeView) {
         final Object attribute = attributeView.getEntity();
         return (attribute instanceof Artifact && !(attribute instanceof  ComptypeArtifact)) || (attribute instanceof PropertyValue
@@ -500,13 +520,16 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
         filterProperties();
     }
 
+    /**
+     * Prepares the UI data for addition of {@link Tag}
+     */
     public void prepareForTagAdd() {
         fillTagsAutocomplete();
         tag = null;
     }
 
     /**
-     * Prepares data for addition of {@link Artifact}
+     * Prepares the UI data for addition of {@link Artifact}
      */
     public void prepareForArtifactAdd() {
         artifactName = null;
@@ -539,81 +562,153 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
         importFileName = null;
     }
 
+    /**
+     * @return The name of the imported file.
+     */
     public String getImportFileName() {
         return importFileName;
     }
 
+    /** Called by the UI input control to set the value.
+     * @param property The property
+     */
     public void setProperty(Property property) {
         this.property = property;
     }
+    /**
+     * @return The property associated with the property value
+     */
     public Property getProperty() {
         return property;
     }
 
+    /** The method called to convert user input into {@link Value} when the user presses "Save" button in the dialog.
+     * Called by the UI input control to set the value.
+     * @param propertyValue String representation of the property value.
+     */
     public void setPropertyValue(String propertyValue) {
         final DataType dataType = selectedAttribute != null ? selectedAttribute.getType() : property.getDataType();
         this.propertyValue = Conversion.stringToValue(propertyValue, dataType);
     }
+    /**
+     * @return String representation of the property value.
+     */
     public String getPropertyValue() {
         return Conversion.valueToString(propertyValue);
     }
 
+    /**
+     * @return The value of the tag
+     */
     public String getTag() {
         return tag;
     }
+    /** Called by the UI input control to set the value.
+     * @param tag The value of the tag
+     */
     public void setTag(String tag) {
         this.tag = tag;
     }
 
+    /**
+     * @return The list of {@link Property} entities the user can select from the drop-down control.
+     */
     public List<Property> getFilteredProperties() {
         return filteredProperties;
     }
 
+    /**
+     * @return The user specified {@link Artifact} name.
+     */
     public String getArtifactName() {
         return artifactName;
     }
+    /** Called by the UI input control to set the value.
+     * @param artifactName The user specified {@link Artifact} name.
+     */
     public void setArtifactName(String artifactName) {
         this.artifactName = artifactName;
     }
 
+    /**
+     * @return The user specified {@link Artifact} description.
+     */
     public String getArtifactDescription() {
         return artifactDescription;
     }
+    /** Called by the UI input control to set the value.
+     * @param artifactDescription The user specified {@link Artifact} description.
+     */
     public void setArtifactDescription(String artifactDescription) {
         this.artifactDescription = artifactDescription;
     }
 
+    /**
+     * @return <code>true</code> if the {@link Artifact} is a file attachment, <code>false</code> if its an URL.
+     */
     public boolean getIsArtifactInternal() {
         return isArtifactInternal;
     }
+    /** Called by the UI input control to set the value.
+     * @param isArtifactInternal <code>true</code> if the {@link Artifact} is a file attachment, <code>false</code> if its an URL.
+     */
     public void setIsArtifactInternal(boolean isArtifactInternal) {
         this.isArtifactInternal = isArtifactInternal;
     }
 
+    /**
+     * @return The URL the user stored in the database.
+     */
     public String getArtifactURI() {
         return artifactURI;
     }
+    /** Called by the UI input control to set the value.
+     * @param artifactURI The URL to store into the database.
+     */
     public void setArtifactURI(String artifactURI) {
         this.artifactURI = artifactURI.trim();
     }
 
+    /**
+     * @return <code>true</code> if a "Modify artifact" dialog is open, <code>false</code> otherwise.
+     */
     public boolean getIsArtifactBeingModified() {
         return isArtifactBeingModified;
     }
+    /**
+     * @param isArtifactBeingModified <code>true</code> if a "Modify artifact" dialog is open, <code>false</code> otherwise.
+     */
     public void setIsArtifactBeingModified(boolean isArtifactBeingModified) {
         this.isArtifactBeingModified = isArtifactBeingModified;
     }
 
+    /** @see AbstractAttributesController#setSelectedAttribute(EntityAttributeView)
+     * @return
+     */
     public EntityAttributeView getSelectedAttribute() {
         return selectedAttribute;
     }
+    /** This method is called to store a reference to the attribute the user selected for the action. When the user
+     * clicks on the "Action" icon in the attribute table, the reference to the entity represented by that line is
+     * stored first, than a generic handler is called which acts on the selected entity.
+     *
+     * @param selectedAttribute A property value, a tag or an artifact.
+     */
     public void setSelectedAttribute(EntityAttributeView selectedAttribute) {
         this.selectedAttribute = selectedAttribute;
     }
 
+    /** @see AbstractAttributesController#setSelectedAttribute(EntityAttributeView)
+     * @return A property value, a tag or an artifact.
+     */
     public EntityAttributeView getSelectedAttributeToModify() {
         return selectedAttribute;
     }
+    /** Equal to {@link AbstractAttributesController#setSelectedAttribute(EntityAttributeView)}, but when modifying
+     * an attribute some additional actions need to be performed.
+     *
+     * @param selectedAttribute
+     */
     public void setSelectedAttributeToModify(EntityAttributeView selectedAttribute) {
         this.selectedAttribute = selectedAttribute;
         prepareModifyPropertyPopUp();
@@ -631,10 +726,19 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
         this.artifactClass = artifactClass;
     }
 
+    /**
+     * @return <code>true</code> if the property can also be changed when modifying the property value,
+     * <code>false</code> otherwise.
+     */
     public boolean isPropertyNameChangeDisabled() {
         return propertyNameChangeDisabled;
     }
 
+    /** Used by the {@link Tag} input value control to display the list of auto-complete suggestions. The list contains
+     * the tags already stored in the database.
+     * @param query The text the user typed so far.
+     * @return The list of auto-complete suggestions.
+     */
     public List<String> tagAutocompleteText(String query) {
         final List<String> resultList = new ArrayList<String>();
         final String queryUpperCase = query.toUpperCase();
@@ -653,6 +757,9 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
         return Arrays.asList(sedsEnum.getElements());
     }
 
+    /** Called when the user selects a new {@link Property} in the dialog drop-dpwn control.
+     * @param event {@link javax.faces.event.ValueChangeEvent}
+     */
     public void propertyChangeListener(ValueChangeEvent event) {
         // get the newly selected property
         if (event.getNewValue() instanceof Property) {
@@ -668,20 +775,40 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
         }
     }
 
+    /**
+     * @return The type of the UI control to use depending on the {@link PropertyValue} {@link DataType}
+     */
     public PropertyValueUIElement getPropertyValueUIElement() {
         return propertyValueUIElement;
     }
+    /**
+     * @param propertyValueUIElement The type of the UI control to use depending on the {@link PropertyValue} {@link DataType}
+     */
     public void setPropertyValueUIElement(PropertyValueUIElement propertyValueUIElement) {
         this.propertyValueUIElement = propertyValueUIElement;
     }
 
+    /**
+     * @return The list of values the user can select a value from if the {@link DataType} is an enumeration.
+     */
     public List<String> getEnumSelections() {
         return enumSelections;
     }
+    /**
+     * @param enumSelections The list of values the user can select a value from if the {@link DataType} is an enumeration.
+     */
     public void setEnumSelections(List<String> enumSelections) {
         this.enumSelections = enumSelections;
     }
 
+    /** The validator for the UI input area when the UI control accepts a matrix of double precision numbers or a list
+     * of values for input.
+     * Called when saving {@link PropertyValue}
+     * @param ctx {@link javax.faces.context.FacesContext}
+     * @param component {@link javax.faces.component.UIComponent}
+     * @param value The value
+     * @throws ValidatorException {@link javax.faces.validator.ValidatorException}
+     */
     public void areaValidator(FacesContext ctx, UIComponent component, Object value) throws ValidatorException {
         if (value == null) {
             throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_FATAL, "Error", "No value to parse."));
@@ -780,6 +907,14 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
         }
     }
 
+    /** The validator for the UI input field when UI control accepts a double precision number, and integer number or a
+     * string for input.
+     * Called when saving {@link PropertyValue}
+     * @param ctx {@link javax.faces.context.FacesContext}
+     * @param component {@link javax.faces.component.UIComponent}
+     * @param value The value
+     * @throws ValidatorException {@link javax.faces.validator.ValidatorException}
+     */
     public void inputValidator(FacesContext ctx, UIComponent component, Object value) throws ValidatorException {
         if (value == null) {
             throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_FATAL, "Error", "No value to parse."));
@@ -825,21 +960,40 @@ public abstract class AbstractAttributesController<T extends PropertyValue,S ext
         }
     }
 
+    /**
+     * @see ComptypeBuiltInPropertyName
+     * @see DeviceBuiltInPropertyName
+     * @see SlotBuiltInPropertyName
+     * @return The name of the built-in property. The list of built-in properties contains 14 possible names.
+     */
     public BuiltInPropertyName getBuiltInProperteryName() {
         return builtInProperteryName;
     }
 
+    /**
+     * @return The string describing the data type of the built-in property.
+     */
     public String getBuiltInPropertyDataType() {
         return builtInPropertyDataType;
     }
 
+    /** @see AbstractAttributesController#saveNewName()
+     * @return The name of the entity displayed in the header
+     */
     public String getEntityName() {
         return entityName;
     }
+    /** @see AbstractAttributesController#saveNewName()
+     * @param entityName The name of the entity displayed in the header
+     */
     public void setEntityName(String entityName) {
         this.entityName = entityName;
     }
 
+    /**
+     * @return The width of the UI input control for setting the entity name. The width of the element is calculated
+     * to be 8 characters more than its current value, but not more than 40 characters and not less than 20 characters.
+     */
     public String getNameElementSize() {
         if ((entityName == null) || (entityName.length() < LO_CONTENT_LEN)) {
             return Integer.toString(MIN_ELEMENT_SIZE);

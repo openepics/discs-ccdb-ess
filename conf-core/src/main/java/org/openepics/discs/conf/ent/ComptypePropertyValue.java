@@ -70,6 +70,11 @@ public class ComptypePropertyValue extends PropertyValue {
 
     public ComptypePropertyValue() { }
 
+    /**
+     * Constructs a new property value
+     *
+     * @param inRepository <code>false</code>
+     */
     public ComptypePropertyValue(boolean inRepository) {
         super(inRepository);
     }

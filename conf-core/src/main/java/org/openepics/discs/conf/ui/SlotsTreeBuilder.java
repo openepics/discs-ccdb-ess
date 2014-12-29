@@ -328,6 +328,10 @@ public class SlotsTreeBuilder implements Serializable {
         return true;
     }
 
+    /**
+     * @return If there was a {@link Slot} preselected when the tree was built, this method returns a {@link SlotView}
+     * containing this {@link Slot}, <code>null</code> otherwise.
+     */
     public SlotView getInitiallySelectedSlotView() {
         if (initiallySelectedTreeNode == null) {
             return null;

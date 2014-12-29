@@ -44,7 +44,7 @@
                                         var="dev" converter="#{componentTypeConverter}" required="true" 
                                         requiredMessage="Please select a device type" style="vertical-align: middle; width: 8em">
                                     <p:ajax event="change" update="saveButton"/>
-                                    <f:selectItems value="#{componentTypeManager.objects}" var="deviceType" 
+                                    <f:selectItems value="#{componentTypeManager.deviceTypes}" var="deviceType" 
                                         itemLabel="#{deviceType.name}" itemValue="#{deviceType}" />
                                     <p:column>
                                         #{dev.name}

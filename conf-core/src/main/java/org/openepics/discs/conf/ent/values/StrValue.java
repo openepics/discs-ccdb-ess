@@ -24,6 +24,9 @@ import com.google.common.base.Preconditions;
 public class StrValue implements Value {
     private final String strValue;
 
+    /** Constructs a new {@link String} value
+     * @param strValue
+     */
     public StrValue(String strValue) {
         this.strValue = Preconditions.checkNotNull(strValue);
     }

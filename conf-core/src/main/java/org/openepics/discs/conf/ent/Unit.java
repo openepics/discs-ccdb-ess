@@ -80,6 +80,14 @@ public class Unit extends ConfigurationEntity {
     protected Unit() {
     }
 
+    /**
+     * Constructs a new unit.
+     *
+     * @param unitName the unique unit name
+     * @param quantity the quantity this unit is used for (e.g.: time, length, weight, angle, etc.)
+     * @param symbol the symbol to be used for this unit
+     * @param description the user specified description
+     */
     public Unit(String unitName, String quantity, String symbol, String description) {
         this.name = unitName;
         this.quantity = quantity;

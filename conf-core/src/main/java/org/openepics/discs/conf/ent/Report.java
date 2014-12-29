@@ -57,6 +57,9 @@ public class Report extends ConfigurationEntity {
     protected Report() {
     }
 
+    /** Constructs a new report.
+     * @param name Then user specified database unique name of the report.
+     */
     public Report(String name) {
         this.name = Preconditions.checkNotNull(name);
     }
@@ -71,6 +74,9 @@ public class Report extends ConfigurationEntity {
     public List<ComponentType> getTypeFilters() {
         return typeFilters;
     }
+    /**
+     * @param typeFilters the list of all device types the report is for.
+     */
     public void setTypeFilters(List<ComponentType> typeFilters) {
         if (typeFilters == null)
             this.typeFilters.clear();
@@ -81,6 +87,10 @@ public class Report extends ConfigurationEntity {
     public List<ReportAction> getFilters() {
         return filters;
     }
+    /**
+     * @param filters the list of all the actions to perform when generating a report.
+     * @throws NullPointerException if the value of the <code>filters</code> parameter is <code>null</code>.
+     */
     public void setFilters(List<ReportAction> filters) {
         for (ReportAction filter : Preconditions.checkNotNull(filters))
             if (filter.getParentReport() != this)

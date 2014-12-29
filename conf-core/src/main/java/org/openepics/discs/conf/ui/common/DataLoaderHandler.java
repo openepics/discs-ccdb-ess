@@ -46,6 +46,9 @@ public class DataLoaderHandler {
     @Inject SlotsAndSlotPairsDataLoader slotLoader;
     private DataLoaderResult loaderResult;
 
+    /**
+     * Java EE post construct life-cycle method.
+     */
     @PostConstruct
     public void init() {
         loaderResult = null;
@@ -72,6 +75,18 @@ public class DataLoaderHandler {
         return loaderResult;
     }
 
+    /**
+     * Loads data from two import files to {@link List} and calls method on certain data loader
+     * to save the data in the database. If the result of save is {@link DataLoaderResult#isError()}
+     * then the transaction is rolled back. In any case, the notification is shown to the user.
+     * The two files in this case are the Slots information Excel worksheet and Slot relationship Excel worksheet.
+     *
+     * @param firstInputStream input file containing the Slots information Excel worksheet
+     * @param secondInputStream input file containing the Slot relationship Excel worksheet
+     * @param firstFileName the name of the Slots information Excel worksheet file
+     * @param secondFileName the name of the Slot relationship Excel worksheet file
+     * @return a {@link DataLoaderResult} containing information about the operation completion status
+     */
     public DataLoaderResult loadDataFromTwoFiles(InputStream firstInputStream, InputStream secondInputStream, String firstFileName, String secondFileName) {
         final List<List<String>> firstFileInputRows;
         final List<List<String>> secondFileInputRows;

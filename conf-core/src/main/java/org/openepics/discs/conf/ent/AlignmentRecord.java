@@ -106,6 +106,10 @@ public class AlignmentRecord extends ConfigurationEntity {
     protected AlignmentRecord() {
     }
 
+    /** Constructs a new alignment record
+     * @param recordNumber a string identifying this alignment record
+     * @param alignmentDate the timestamp of the alignment record
+     */
     public AlignmentRecord(String recordNumber, Date alignmentDate) {
         this.recordNumber = recordNumber;
         this.alignmentDate = new Date(alignmentDate.getTime());
@@ -118,8 +122,11 @@ public class AlignmentRecord extends ConfigurationEntity {
         this.recordNumber = recordNumber;
     }
 
+    /**
+     * @return a new copy of the alignment record timestamp
+     */
     public Date getAlignmentDate() {
-        return alignmentDate!=null ? new Date(alignmentDate.getTime()) : null;
+        return alignmentDate != null ? new Date(alignmentDate.getTime()) : null;
     }
     public void setAlignmentDate(Date alignmentDate) {
         this.alignmentDate = new Date(alignmentDate.getTime());

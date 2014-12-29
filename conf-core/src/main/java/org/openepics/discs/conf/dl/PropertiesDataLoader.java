@@ -48,7 +48,6 @@ import com.google.common.base.Preconditions;
  * Implementation of data loader for properties
  *
  * @author Andraz Pozar <andraz.pozar@cosylab.com>
- *
  */
 @Stateless
 @PropertiesLoaderQualifier

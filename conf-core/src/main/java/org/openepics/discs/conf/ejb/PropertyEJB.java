@@ -26,6 +26,7 @@ import javax.ejb.Stateless;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ent.Property;
+import org.openepics.discs.conf.ent.PropertyValue;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
 
 /**
@@ -42,10 +43,18 @@ public class PropertyEJB extends DAO<Property> {
         defineEntityClass(Property.class);
     }
 
+    /**
+     * @return a list of all properties in the database ordered by name in ascending order
+     */
     public List<Property> findAllOrderedByName() {
         return em.createNamedQuery("Property.findAllOrderedByName", Property.class).getResultList();
     }
 
+    /**
+     * @param property <code>true</code> if the property is used in some {@link PropertyValue} instance,
+     * <code>false</code> otherwise.
+     * @return
+     */
     public boolean isPropertyUsed(Property property) {
         List<SlotPropertyValue> slotPropertyValues = em.createQuery("SELECT pv FROM SlotPropertyValue pv "
                 + "WHERE pv.property = :property", SlotPropertyValue.class).setParameter("property", property)

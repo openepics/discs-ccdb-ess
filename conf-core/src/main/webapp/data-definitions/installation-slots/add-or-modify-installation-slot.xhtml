@@ -21,7 +21,7 @@
                                     var="dev" converter="#{componentTypeConverter}" rendered="true" required="true" 
                                     requiredMessage="Please select a device type">
                                 <f:selectItem itemLabel="Select One" itemValue="" />
-                                <f:selectItems value="#{componentTypeManager.objects}" var="deviceType" 
+                                <f:selectItems value="#{componentTypeManager.deviceTypes}" var="deviceType" 
                                     itemLabel="#{deviceType.name}" itemValue="#{deviceType}" />
                                 <p:column>
                                     #{dev.name}

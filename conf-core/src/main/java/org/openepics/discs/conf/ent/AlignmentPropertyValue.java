@@ -52,6 +52,11 @@ public class AlignmentPropertyValue extends PropertyValue {
 
     public AlignmentPropertyValue() { }
 
+    /**
+     * Constructs a new property value
+     *
+     * @param inRepository <code>false</code>
+     */
     public AlignmentPropertyValue(boolean inRepository) {
         super(inRepository);
     }

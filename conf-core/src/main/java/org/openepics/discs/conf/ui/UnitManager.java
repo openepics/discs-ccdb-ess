@@ -37,6 +37,7 @@ import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.ejb.UnitEJB;
 import org.openepics.discs.conf.ent.Unit;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
+import org.openepics.discs.conf.ui.common.ExcelSingleFileImportUIHandlers;
 import org.primefaces.event.FileUploadEvent;
 
 import com.google.common.io.ByteStreams;
@@ -49,7 +50,7 @@ import com.google.common.io.ByteStreams;
 @Named
 @ManagedBean
 @ViewScoped
-public class UnitManager implements Serializable {
+public class UnitManager implements Serializable, ExcelSingleFileImportUIHandlers {
     @Inject private UnitEJB unitEJB;
     @Inject private DataLoaderHandler dataLoaderHandler;
     @Inject @UnitLoaderQualifier private DataLoader unitsDataLoader;
@@ -67,38 +68,52 @@ public class UnitManager implements Serializable {
     public UnitManager() {
     }
 
+    /**
+     * @return The list of all user defined physics units in the database
+     */
     public List<Unit> getUnits() {
         if (units == null) units = unitEJB.findAll();
         return units;
     }
 
+    /**
+     * @return The list of filtered units used by the PrimeFaces filter field.
+     */
     public List<Unit> getFilteredUnits() {
         return filteredUnits;
     }
 
-    public String getImportFileName() {
-        return importFileName;
-    }
-
+    /**
+     * @param filteredUnits The list of filtered units used by the PrimeFaces filter field.
+     */
     public void setFilteredUnits(List<Unit> filteredUnits) {
         this.filteredUnits = filteredUnits;
     }
 
+    @Override
+    public String getImportFileName() {
+        return importFileName;
+    }
+
+    @Override
     public void doImport() {
         final InputStream inputStream = new ByteArrayInputStream(importData);
         loaderResult = dataLoaderHandler.loadData(inputStream, unitsDataLoader);
         return;
     }
 
+    @Override
     public void prepareImportPopup() {
         importData = null;
         importFileName = null;
     }
 
+    @Override
     public DataLoaderResult getLoaderResult() {
         return loaderResult;
     }
 
+    @Override
     public void handleImportFileUpload(FileUploadEvent event) {
         try (InputStream inputStream = event.getFile().getInputstream()) {
             this.importData = ByteStreams.toByteArray(inputStream);

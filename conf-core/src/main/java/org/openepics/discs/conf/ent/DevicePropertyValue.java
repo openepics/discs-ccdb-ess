@@ -51,6 +51,11 @@ public class DevicePropertyValue extends PropertyValue {
 
     public DevicePropertyValue() { }
 
+    /**
+     * Constructs a new device instance property value
+     *
+     * @param inRepository <code>false</code>
+     */
     public DevicePropertyValue(boolean inRepository) {
         super(inRepository);
     }

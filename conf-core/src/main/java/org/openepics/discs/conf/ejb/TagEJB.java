@@ -50,6 +50,10 @@ public class TagEJB {
         return em.createNamedQuery( "Tag.findAllOrdered", Tag.class).getResultList();
     }
 
+    /**
+     * @param tag the {@link Tag} (as a String) to search for
+     * @return a {@link Tag} entity if it is already defined, <code>null</code> otherwise
+     */
     public Tag findById(String tag) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(tag));
         return em.find(Tag.class, tag);

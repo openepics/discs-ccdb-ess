@@ -39,6 +39,9 @@ import org.openepics.discs.conf.ui.common.UIException;
 @ViewScoped
 public class ContainerController extends AbstractSlotsController {
 
+    /**
+     * Java EE post construct life-cycle method.
+     */
     @PostConstruct
     public void init() {
         try {

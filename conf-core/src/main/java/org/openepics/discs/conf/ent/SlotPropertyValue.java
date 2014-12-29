@@ -50,6 +50,11 @@ public class SlotPropertyValue extends PropertyValue {
 
     public SlotPropertyValue() { }
 
+    /**
+     * Constructs a new property value
+     *
+     * @param inRepository <code>false</code>
+     */
     public SlotPropertyValue(boolean inRepository) {
         super(inRepository);
     }

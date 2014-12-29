@@ -99,6 +99,13 @@ public class AuditRecord implements Serializable {
     protected AuditRecord() {
     }
 
+    /**
+     * Constructs a new audit record.
+     *
+     * @param oper the type of database operation (see {@link EntityTypeOperation})
+     * @param entry the JSON description of the audit record entry
+     * @param entityId the database primary key of the entity the audit log entry is created for
+     */
     public AuditRecord(EntityTypeOperation oper, String entry, Long entityId) {
         this.oper = oper;
         this.entry = entry;

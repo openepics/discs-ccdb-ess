@@ -136,6 +136,11 @@ public class Device extends ConfigurationEntity {
     protected Device() {
     }
 
+    /**
+     * Constructs a new device instance
+     *
+     * @param serialNumber a unique inventory ID
+     */
     public Device(String serialNumber) {
         this.serialNumber = serialNumber;
     }

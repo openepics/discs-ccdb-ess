@@ -54,6 +54,13 @@ public class SlotView {
     private boolean isFirst;
     private boolean isLast;
 
+    /** Constructs a new SlotView object.
+     * @param slot the {@link Slot} to create the UI view object for
+     * @param parentNode a reference to the SlotView object of a parent in the hierarchy tree
+     * @param children a reference to the SlotView objects of all children in the hierarchy tree
+     * @param installedDevice a reference to the {@link Device} if one is installed in the installation slot
+     * @param order the ordinal number of the SlotView object - defines the order in the hierarchy tree
+     */
     public SlotView(Slot slot, SlotView parentNode, List<SlotPair> children, Device installedDevice, int order) {
         this.slot = slot;
         this.name = slot.getName();

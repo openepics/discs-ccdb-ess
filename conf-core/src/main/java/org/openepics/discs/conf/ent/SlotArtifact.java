@@ -49,6 +49,12 @@ public class SlotArtifact extends Artifact {
 
     public SlotArtifact() { }
 
+    /** Constructs a new slot artifact
+     * @param name the name of the artifact
+     * @param isInternal <code>true</code> if the artifact is a file attachment, <code>false</code> if it's an URL.
+     * @param description the user specified description
+     * @param uri the user specified URL
+     */
     public SlotArtifact(String name, boolean isInternal, String description, String uri) {
         super(name, isInternal, description, uri);
     }

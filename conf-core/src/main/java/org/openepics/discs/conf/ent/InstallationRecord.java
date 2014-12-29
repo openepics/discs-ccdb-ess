@@ -97,6 +97,10 @@ public class InstallationRecord extends ConfigurationEntity {
     protected InstallationRecord() {
     }
 
+    /** Constructs a new installation record
+     * @param recordNumber A string identifying the installation record
+     * @param installDate The date of the installation
+     */
     public InstallationRecord(String recordNumber, Date installDate) {
         this.recordNumber = recordNumber;
         this.installDate = new Date(installDate.getTime());
@@ -109,15 +113,21 @@ public class InstallationRecord extends ConfigurationEntity {
         this.recordNumber = recordNumber;
     }
 
+    /**
+     * @return Returns a new copy of the install date.
+     */
     public Date getInstallDate() {
-        return installDate!=null ? new Date(installDate.getTime()) : null;
+        return installDate != null ? new Date(installDate.getTime()) : null;
     }
     public void setInstallDate(Date installDate) {
         this.installDate = new Date(installDate.getTime());
     }
 
+    /**
+     * @return Returns a new copy of the uninstall date.
+     */
     public Date getUninstallDate() {
-        return uninstallDate!=null ? new Date(uninstallDate.getTime()) : null;
+        return uninstallDate != null ? new Date(uninstallDate.getTime()) : null;
     }
     public void setUninstallDate(Date uninstallDate) {
         this.uninstallDate = new Date(uninstallDate.getTime());

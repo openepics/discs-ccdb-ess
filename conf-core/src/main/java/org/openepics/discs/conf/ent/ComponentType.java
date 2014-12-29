@@ -99,6 +99,11 @@ public class ComponentType extends ConfigurationEntity {
 
     public ComponentType() {}
 
+    /**
+     * Constructs a new device type.
+     *
+     * @param name the unique name of the device type
+     */
     public ComponentType(String name) {
         this.name = name;
     }

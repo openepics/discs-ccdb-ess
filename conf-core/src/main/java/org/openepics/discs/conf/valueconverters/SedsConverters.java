@@ -51,9 +51,9 @@ public class SedsConverters {
     public SedsConverters() {}
 
     /**
-     * Constructs the item. Expects injected iterator of all EntityLogger implementations
+     * Constructs the item. Expects injected iterator of all ValueConverter implementations
      *
-     * @param allLoggers CDI will inject all logger types in this constructor parameter
+     * @param allConverters CDI will inject all converter types in this constructor parameter
      */
     @Inject
     public SedsConverters(@Any Instance<ValueConverter<? extends Value>> allConverters) {
@@ -70,6 +70,11 @@ public class SedsConverters {
         }
     }
 
+    /** The method converts a {@link Value} instance into a serialized string representation which can be stored
+     * into the database.
+     * @param attribute a {@link Value} instance
+     * @return a String containing a serialized {@link Value}
+     */
     public static <T extends Value> String convertToDatabaseColumn(T attribute) {
         @SuppressWarnings("unchecked")
         ValueConverter<T> converter = (ValueConverter<T>) converters.get(attribute.getClass());

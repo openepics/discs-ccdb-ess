@@ -50,6 +50,11 @@ import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
+/**
+ * Implementation of data loader for device instances
+ *
+ * @author Andraz Pozar <andraz.pozar@cosylab.com>
+ */
 @Stateless
 @DevicesLoaderQualifier
 public class DevicesDataLoader extends AbstractDataLoader implements DataLoader  {

@@ -60,10 +60,16 @@ public class ConfigurationEntity implements Serializable {
     @Version
     protected Long version;
 
+    /**
+     * @return The database primary key of the configuration entity
+     */
     public Long getId() {
         return id;
     }
 
+    /**
+     * @return The timestamp of the last modification of this database entity
+     */
     public Date getModifiedAt() {
         return new Date(modifiedAt.getTime());
     }
@@ -71,6 +77,9 @@ public class ConfigurationEntity implements Serializable {
         this.modifiedAt = new Date(modifiedAt.getTime());
     }
 
+    /**
+     * @return The user performing the last modification of the database entity
+     */
     public String getModifiedBy() {
         return modifiedBy;
     }
@@ -94,7 +103,7 @@ public class ConfigurationEntity implements Serializable {
             return false;
         }
 
-        // return true for same DB entity
+        // return true for the same DB entity
         if (this.id != null) {
             return this.id.equals(other.id);
         }

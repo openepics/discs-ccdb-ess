@@ -27,6 +27,9 @@ public class IntVectorValue implements Value {
 
     private final List<Integer> intVectorValue;
 
+    /** Constructs a new vector of integer values
+     * @param intVectorValue a {@link List} of {@link Integer} values
+     */
     public IntVectorValue(List<Integer> intVectorValue) {
         this.intVectorValue = Preconditions.checkNotNull(intVectorValue);
     }

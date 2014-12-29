@@ -27,10 +27,18 @@ package org.openepics.discs.conf.ui.common;
  *
  */
 public class UIException extends RuntimeException {
+
+    /** A new UI exception with no reference
+     * @param msg The text message
+     */
     public UIException(String message) {
         super(message);
     }
 
+    /** A new UI exception
+     * @param msg The text message
+     * @param cause The original cause of the exception
+     */
     public UIException(String message, Throwable cause) {
         super(message, cause);
     }

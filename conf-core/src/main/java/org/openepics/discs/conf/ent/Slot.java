@@ -136,6 +136,11 @@ public class Slot extends ConfigurationEntity {
     protected Slot() {
     }
 
+    /** Constructs a new slot.
+     * @param name a new name of the slot
+     * @param isHostingSlot <code>true</code> if the Slot is and "installation slot",
+     * <code>false</code> if the Slot is a container
+     */
     public Slot(String name, boolean isHostingSlot) {
         this.name = name;
         this.isHostingSlot = isHostingSlot;
@@ -169,6 +174,9 @@ public class Slot extends ConfigurationEntity {
         this.beamlinePosition = beamlinePosition;
     }
 
+    /**
+     * @return The {@link PositionInformation} associated with the instalaltion slot.
+     */
     public PositionInformation getPositionInformation()
     {
         // Due to some weirdness Hibernate clears the initialized field when loading data

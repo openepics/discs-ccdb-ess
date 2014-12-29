@@ -51,6 +51,9 @@ public class LoginManager implements Serializable {
     @Inject private SecurityPolicy securityPolicy;
 
 
+    /** Called when the user clicks on the "Login" button in the UI.
+     * @return <code>null</code>
+     */
     public String onLogin() {
         try {
             securityPolicy.login(userId, password);
@@ -66,6 +69,9 @@ public class LoginManager implements Serializable {
         return null;
     }
 
+    /** Called when the user clicks on the "Login" button in the UI.
+     * @return "logout"
+     */
     public String onLogout() {
         try {
             securityPolicy.logout();

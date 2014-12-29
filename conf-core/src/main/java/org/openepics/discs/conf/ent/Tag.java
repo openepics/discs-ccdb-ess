@@ -28,6 +28,10 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
+/**
+ * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
+ *
+ */
 @Entity
 @Table(name = "tag")
 @NamedQueries({
@@ -42,6 +46,9 @@ public class Tag implements Serializable {
 
     protected Tag() {}
 
+    /** Constructs a new tag
+     * @param name the string to be used for tag
+     */
     public Tag(String name) {
         this.name = name;
     }

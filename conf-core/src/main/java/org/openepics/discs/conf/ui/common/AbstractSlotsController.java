@@ -120,9 +120,15 @@ public abstract class AbstractSlotsController implements Serializable{
         return rootNode;
     }
 
+    /**
+     * @return The currently selected {@link TreeNode} in the UI.
+     */
     public TreeNode getSelectedNode() {
         return selectedNode;
     }
+    /**
+     * @param selectedNode The {@link TreeNode} the user selected in the UI.
+     */
     public void setSelectedNode(TreeNode selectedNode) {
         this.selectedNode = selectedNode;
     }
@@ -233,32 +239,60 @@ public abstract class AbstractSlotsController implements Serializable{
 
     protected abstract void updateRootNode();
 
+    /** Redirects the user to the screen displaying the list of attributes.
+     * @param id The database primary key of the container or installation slot.
+     * @return The URL to redirect to when the user selects a container or an installation slot in the UI.
+     */
     public abstract String redirectToAttributes(Long id);
 
+    /**
+     * @param name The name of the installation slot or container.
+     */
     public void setName(String name) {
         this.name = name;
     }
+    /**
+     * @return The name of the installation slot or container.
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * @return The description of the installation slot or container.
+     */
     public String getDescription() {
         return description;
     }
+    /**
+     * @param description The description of the installation slot or container.
+     */
     public void setDescription(String description) {
         this.description = description;
     }
 
+    /**
+     * @return The element containing the information about the parent.
+     */
     public SlotView getParentSlotView() {
         return parentSlotView;
     }
+    /**
+     * @param parentContainer The element containing the information about the parent.
+     */
     public void setParentSlotView(SlotView parentContainer) {
         this.parentSlotView = parentContainer;
     }
 
+    /**
+     * @return The element containing the information about currently selected container or installation slot.
+     */
     public SlotView getSelectedSlotView() {
         return selectedSlotView;
     }
+    /**
+     * @param selectedSlotView The element containing the information about currently selected container or installation slot.
+     */
     public void setSelectedSlotView(SlotView selectedSlotView) {
         this.selectedSlotView = selectedSlotView;
     }

@@ -25,6 +25,9 @@ import com.google.common.base.Preconditions;
 public class DblValue implements Value {
     private final Double dblValue;
 
+    /** Constructs a new double precision value
+     * @param dblValue a double precision number
+     */
     public DblValue(Double dblValue) {
         this.dblValue = Preconditions.checkNotNull(dblValue);
     }

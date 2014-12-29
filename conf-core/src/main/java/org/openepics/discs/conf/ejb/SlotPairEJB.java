@@ -71,6 +71,10 @@ public class SlotPairEJB extends DAO<SlotPair> {
         throw new UnsupportedOperationException("findByName method not aplicable to SlotPairEJB class");
     }
 
+    /**
+     * @param childSlot the {@link Slot} to check for
+     * @return <code>true</code> if a slot is contained in more than one parent slot, <code>false</code> otherwise
+     */
     public boolean slotHasMoreThanOneContainsRelation(Slot childSlot) {
         final List<SlotPair> slotPairs = em.createNamedQuery("SlotPair.findSlotPairsByChildAndRelation", SlotPair.class)
 	            .setParameter("childSlot", childSlot)

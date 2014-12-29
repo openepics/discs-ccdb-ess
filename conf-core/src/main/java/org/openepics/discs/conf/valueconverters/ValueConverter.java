@@ -25,6 +25,8 @@ import org.openepics.seds.core.Seds;
 import org.openepics.seds.core.datatypes.SimpleSedsFactory;
 
 /**
+ * @param <T> the actual Value type this converter is for.
+ *
  * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  *
  */
@@ -33,7 +35,15 @@ abstract public class ValueConverter<T extends Value> {
     protected static final SimpleSedsFactory sedsFactory = new SimpleSedsFactory();
     protected static final DBConverter sedsDbConverter = Seds.newDBConverter();
 
+    /**
+     * @return the class of the {@link Value} used in this converter.
+     */
     abstract public Class<T> getType();
 
+    /** The method converts the actual {@link Value} instance into a string representation (serialization) to store in the
+     * database.
+     * @param attribute The {@link Value} instance to serialize
+     * @return the serialized String to store into the database.
+     */
     abstract public String convertToDatabaseColumn(T attribute);
 }

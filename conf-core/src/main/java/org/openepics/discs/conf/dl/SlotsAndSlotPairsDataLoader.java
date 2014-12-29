@@ -57,6 +57,10 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
 
+/**
+ * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
+ *
+ */
 @Stateless
 public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
     @Inject private SlotEJB slotEJB;
@@ -74,6 +78,15 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
     private DataLoaderResult slotsLoaderResult;
     private DataLoaderResult slotPairsLoaderResult;
 
+    /**
+     * Saves data read from two input files to the database
+     *
+     * @param slotsFileRows {@link List} of all rows containing data from Slots input file
+     * @param slotPairsFileRows {@link List} of all rows containing data from Slot relationships input file
+     * @param slotsFileName the name of the file containing data from Slots input file
+     * @param slotPairsFileName the name of the file containing data from Slot relationships input file
+     * @return {@link DataLoaderResult} describing the outcome of the data loading
+     */
     public DataLoaderResult loadDataToDatabase(List<List<String>> slotsFileRows, List<List<String>> slotPairsFileRows,
             String slotsFileName, String slotPairsFileName) {
 

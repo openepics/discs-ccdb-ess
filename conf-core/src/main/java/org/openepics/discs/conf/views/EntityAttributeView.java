@@ -35,6 +35,10 @@ import org.openepics.discs.conf.util.UnhandledCaseException;
 import com.google.common.base.Preconditions;
 
 /**
+ * The UI view class. This is a helper class containing all the information that is used in the UI and is displayed
+ * to the user. The objects of this class also contain a reference to the actual database entity the data is coming
+ * from.
+ *
  * @author Andraz Pozar <andraz.pozar@cosylab.com>
  * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  *
@@ -50,6 +54,10 @@ public class EntityAttributeView {
     private boolean isBuiltIn;
     private Object entity;
 
+    /** Construct a new UI view object based on the database entity
+     * @param entity the database entity
+     * @param kind database entity kind {@link EntityAttributeViewKind}
+     */
     public EntityAttributeView(Object entity, EntityAttributeViewKind kind) {
         Preconditions.checkNotNull(kind);
         this.entity = entity;
@@ -57,6 +65,10 @@ public class EntityAttributeView {
         this.kind = kind;
     }
 
+    /** Construct a new UI view object based on the database entity. The entity kind {@link EntityAttributeViewKind} is
+     * determined automatically based on the type of the <code>entity</code>.
+     * @param entity the database entity
+     */
     public EntityAttributeView(Object entity) {
         this.entity = entity;
         setParameters();
@@ -138,6 +150,9 @@ public class EntityAttributeView {
         return unit;
     }
 
+    /**
+     * @return A String representation of the associated entity.
+     */
     public String getValue() {
         return Conversion.valueToString(value);
     }

@@ -55,6 +55,11 @@ public abstract class PropertyValue extends ConfigurationEntity {
 
     protected PropertyValue() { }
 
+    /**
+     * Constructs a new property value
+     *
+     * @param inRepository <code>false</code>
+     */
     public PropertyValue(boolean inRepository) {
         this.inRepository = inRepository;
     }

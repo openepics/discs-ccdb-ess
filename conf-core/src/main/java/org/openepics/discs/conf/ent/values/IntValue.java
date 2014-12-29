@@ -26,6 +26,9 @@ import com.google.common.base.Preconditions;
 public class IntValue implements Value {
     private final Integer intValue;
 
+    /** Constructs a new integer value
+     * @param intValue an integer number
+     */
     public IntValue(Integer intValue) {
         this.intValue = Preconditions.checkNotNull(intValue);
     }

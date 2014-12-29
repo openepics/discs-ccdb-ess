@@ -25,6 +25,9 @@ package org.openepics.discs.conf.valueconverters;
  */
 public class InvalidDataTypeException extends RuntimeException {
 
+    /** A new invalid data type exception with no reference
+     * @param message The text message
+     */
     public InvalidDataTypeException(String message) {
         super(message);
     }

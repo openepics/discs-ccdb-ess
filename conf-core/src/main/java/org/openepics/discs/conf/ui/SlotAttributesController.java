@@ -39,6 +39,7 @@ import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypeArtifact;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
+import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.InstallationRecord;
 import org.openepics.discs.conf.ent.PositionInformation;
 import org.openepics.discs.conf.ent.Property;
@@ -306,6 +307,9 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
         RequestContext.getCurrentInstance().update("slotPropertiesManagerForm");
     }
 
+    /**
+     * @return <code>true</code> if a {@link Device} is installed into the current slot, <code>false</code> otherwise.
+     */
     public boolean isInstallationSlotFull() {
         if (!slot.isHostingSlot()) {
             throw new IllegalStateException("Installation information required on non installation slot.");
@@ -321,12 +325,17 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
         this.deviceType = deviceType;
     }
 
+    /** This method is used in the installation slot attributes screen to determine whether the user has changed either
+     * the installation slot name or its device type.
+     * @return <code>true</code> if the installation slot name or device type have not been changed,
+     * <code>false</code> otherwise.
+     */
     public boolean isBasicInfoUnchanged() {
         return (slot.getName().equals(entityName) && slot.getComponentType().equals(deviceType));
     }
 
     /**
-     * Returns path from root slot to currently selected slot
+     * @return path from the root slot to the currently selected slot
      */
     public String getSlotPath() {
         final String slotPath = Utility.buildSlotPath(slot).toString();

@@ -70,6 +70,10 @@ public class Config implements Serializable {
     public Config() {
     }
 
+    /** Constructs a new configuration property
+     * @param name the name of the configuration property
+     * @param propValue the value of the configuration property
+     */
     public Config(String name, String propValue) {
         this.name = name;
         this.propValue = propValue;

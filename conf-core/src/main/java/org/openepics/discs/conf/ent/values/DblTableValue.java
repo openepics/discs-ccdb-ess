@@ -28,6 +28,9 @@ public class DblTableValue implements Value {
 
     private final List<List<Double>> dblTableValue;
 
+    /** Constructs a new table of double precision values
+     * @param dblTableValue a {@link List} of {@link List}s of {@link Double} values
+     */
     public DblTableValue(List<List<Double>> dblTableValue) {
         this.dblTableValue = Preconditions.checkNotNull(dblTableValue);
     }

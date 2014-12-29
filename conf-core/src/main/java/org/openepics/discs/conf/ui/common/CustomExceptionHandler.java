@@ -45,6 +45,9 @@ public class CustomExceptionHandler extends ExceptionHandlerWrapper {
     private final ExceptionHandler wrapped;
     private static final Logger LOG = Logger.getLogger(CustomExceptionHandler.class.getCanonicalName());
 
+    /** A new JSF exception handler
+     * @param wrapped the original JSF exception handler
+     */
     public CustomExceptionHandler(ExceptionHandler wrapped) {
         this.wrapped = wrapped;
     }

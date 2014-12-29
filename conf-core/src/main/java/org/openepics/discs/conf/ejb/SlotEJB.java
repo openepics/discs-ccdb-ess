@@ -61,7 +61,7 @@ public class SlotEJB extends DAO<Slot> {
     @Inject private SlotPairEJB slotPairEJB;
     @Inject private SlotRelationEJB slotRelationEJB;
     @Inject private ComptypeEJB comptypeEJB;
-    
+
     @Override
     protected void defineEntity() {
         defineEntityClass(Slot.class);
@@ -89,7 +89,7 @@ public class SlotEJB extends DAO<Slot> {
                 return child.getSlot();
             }
         });
-        
+
         defineParentChildInterface(InstallationRecord.class, new ParentChildInterface<Slot, InstallationRecord>() {
             @Override
             public List<InstallationRecord> getChildCollection(Slot slot) {
@@ -160,10 +160,10 @@ public class SlotEJB extends DAO<Slot> {
                 .setParameter("isHostingSlot", isHostingSlot).getResultList();
     }
 
-    /** 
+    /**
      * The method takes care of adding a new Slot and all its dependencies in one transaction. Called from Container
      * and iInstallation slot managed beans.
-     * 
+     *
      * @param newSlot the Container or Installation slot to be added
      * @param parentSlot its parent. <code>null</code> if the container is a new root.
      * @param fromDataLoader is data being imported via {@link SlotsAndSlotPairsDataLoader}. If it is slot pair should never be created
@@ -181,7 +181,7 @@ public class SlotEJB extends DAO<Slot> {
                 slotPairEJB.addWithoutInterceptors(new SlotPair(newSlot, getRootNode(), slotRelationEJB.findBySlotRelationName(SlotRelationName.CONTAINS)));
             }
         }
-       
+
         final List<ComptypePropertyValue> propertyDefinitions = comptypeEJB.findPropertyDefinitions(newSlot.getComponentType());
         for (ComptypePropertyValue propertyDefinition : propertyDefinitions) {
             if (propertyDefinition.isDefinitionTargetSlot()) {
@@ -190,9 +190,13 @@ public class SlotEJB extends DAO<Slot> {
                 slotPropertyValue.setSlot(newSlot);
                 addChild(slotPropertyValue);
             }
-        }        
+        }
     }
-    
+
+    /**
+     * @param newSlotName the installation slot name to check
+     * @return <code>true</code> if the installation slot name is unique, <code>false</code> otherwise
+     */
     public boolean isInstallationSlotNameUnique(String newSlotName) {
         return em.createNamedQuery("Slot.findByNameAndHosting", Slot.class).setParameter("name", newSlotName).setParameter("isHostingSlot", true).getResultList().size() == 0;
     }

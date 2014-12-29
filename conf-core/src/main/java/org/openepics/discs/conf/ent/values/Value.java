@@ -22,5 +22,10 @@ package org.openepics.discs.conf.ent.values;
 public interface Value {
     @Override public String toString();
 
+    /**
+     * @param dimensions for vector and table values, the number of parameters to put into the string. If size of the
+     * dimension exceeds the specified value, the rest of the data is discarded.
+     * @return a string representation of the value to put into the audit log string.
+     */
     public String auditLogString(int... dimensions);
 }

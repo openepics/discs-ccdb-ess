@@ -66,6 +66,9 @@ public class InstallationSlotsController extends AbstractSlotsController {
     private Map<String, SlotRelation> slotRelationBySlotRelationStringName;
     private SlotView selectedSlotForRelationships;
 
+    /**
+     * Java EE post construct life-cycle method.
+     */
     @PostConstruct
     public void init() {
         try {

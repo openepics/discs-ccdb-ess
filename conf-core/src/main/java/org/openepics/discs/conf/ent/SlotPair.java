@@ -95,6 +95,13 @@ public class SlotPair implements Serializable {
     public SlotPair() {
     }
 
+    /**
+     * Constructs a new slot relationship (a pair of slots)
+     *
+     * @param childSlot the child {@link Slot} of the relationship
+     * @param parentSlot the parent {@link Slot} of the relationship
+     * @param slotRelation the type of the relationship (see {@link SlotRelation}, {@link SlotRelationName})
+     */
     public SlotPair(Slot childSlot, Slot parentSlot, SlotRelation slotRelation) {
         this.childSlot = childSlot;
         this.parentSlot = parentSlot;

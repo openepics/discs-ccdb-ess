@@ -75,10 +75,17 @@ public class Role implements Serializable {
     protected Role() {
     }
 
+    /** Constructs a new type of role.
+     * @param roleId a unique string identifying the role
+     */
     public Role(String roleId) {
         this.roleId = roleId;
     }
 
+    /** Constructs a new type of role.
+     * @param roleId a unique string identifying the role
+     * @param description a user speicifed descriptin of the role
+     */
     public Role(String roleId, String description) {
         this.roleId = roleId;
         this.description = description;

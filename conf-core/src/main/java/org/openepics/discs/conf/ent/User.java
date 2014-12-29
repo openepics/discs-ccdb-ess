@@ -83,10 +83,17 @@ public class User implements Serializable {
     protected User() {
     }
 
+    /** Constructs a new user
+     * @param userId the ID of the user
+     */
     public User(String userId) {
         this.userId = userId;
     }
 
+    /** Constructs a new user
+     * @param userId the ID of the user
+     * @param name the name of the user
+     */
     public User(String userId, String name) {
         this.userId = userId;
         this.name = name;

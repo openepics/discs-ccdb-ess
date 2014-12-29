@@ -46,6 +46,11 @@ import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
+/**
+ * Implementation of data loader for device types
+ *
+ * @author Andraz Pozar <andraz.pozar@cosylab.com>
+ */
 @Stateless
 @ComponentTypesLoaderQualifier
 public class ComponentTypesDataLoader extends AbstractDataLoader implements DataLoader {

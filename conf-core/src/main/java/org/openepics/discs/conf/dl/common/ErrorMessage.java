@@ -19,6 +19,11 @@
  */
 package org.openepics.discs.conf.dl.common;
 
+/**
+ * This enumeration contains all possible error messages for data loaders.
+ *
+ * @author Andraz Pozar <andraz.pozar@cosylab.com>
+ */
 public enum ErrorMessage {
     NAME_ALREADY_EXISTS("Entity with this name already exists"),
     NOT_AUTHORIZED("You are not authorized to perform this action"),
