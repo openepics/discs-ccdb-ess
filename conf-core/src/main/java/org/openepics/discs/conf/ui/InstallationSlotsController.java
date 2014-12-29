@@ -215,7 +215,7 @@ public class InstallationSlotsController extends AbstractSlotsController {
             return;
         }
 
-        if (slotPairEJB.findSlotPairsByParentChildRelation(childSlot.getName(), parentSlot.getName(), slotRelation.getName()).size() == 0) {
+        if (slotPairEJB.findSlotPairsByParentChildRelation(childSlot.getName(), parentSlot.getName(), slotRelation.getName()).isEmpty()) {
             final SlotPair newSlotPair = new SlotPair(childSlot, parentSlot, slotRelation);
             if (!slotPairEJB.slotPairCreatesLoop(newSlotPair, childSlot)) {
                 slotPairEJB.add(newSlotPair);

@@ -396,7 +396,7 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                     final Slot parentSlot = slotEJB.findByName(parent);
                     final SlotRelationName slotRelationName;
 
-                    if (childrenSlots == null || childrenSlots.size() == 0) {
+                    if (childrenSlots == null || childrenSlots.isEmpty()) {
                         rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(childIndex)));
                     } else if (parentSlot == null) {
                         rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(parentIndex)));
@@ -462,7 +462,7 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                                 break;
                             case CMD_DELETE:
                                 final List<SlotPair> slotPairs = slotPairEJB.findSlotPairsByParentChildRelation(child, parent, slotRelationName);
-                                if (slotPairs.size() != 0) {
+                                if (!slotPairs.isEmpty()) {
                                     try {
                                         for (SlotPair slotPair : slotPairs) {
                                             slotPairEJB.delete(slotPair);

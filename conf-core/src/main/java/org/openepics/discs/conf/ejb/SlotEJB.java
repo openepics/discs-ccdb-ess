@@ -198,6 +198,6 @@ public class SlotEJB extends DAO<Slot> {
      * @return <code>true</code> if the installation slot name is unique, <code>false</code> otherwise
      */
     public boolean isInstallationSlotNameUnique(String newSlotName) {
-        return em.createNamedQuery("Slot.findByNameAndHosting", Slot.class).setParameter("name", newSlotName).setParameter("isHostingSlot", true).getResultList().size() == 0;
+        return em.createNamedQuery("Slot.findByNameAndHosting", Slot.class).setParameter("name", newSlotName).setParameter("isHostingSlot", true).getResultList().isEmpty();
     }
 }

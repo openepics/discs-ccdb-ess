@@ -66,7 +66,7 @@ public class DataLoaderHandler {
     public DataLoaderResult loadData(InputStream inputStream, DataLoader dataLoader) {
         final List<List<String>> inputRows = ExcelImportFileReader.importExcelFile(inputStream);
 
-        if (inputRows != null && inputRows.size() > 0) {
+        if (inputRows != null && !inputRows.isEmpty()) {
             loaderResult = dataLoader.loadDataToDatabase(inputRows);
             if (loaderResult.isError()) {
                 context.setRollbackOnly();
@@ -103,7 +103,7 @@ public class DataLoaderHandler {
             secondFileInputRows = null;
         }
 
-        if ((firstFileInputRows != null && firstFileInputRows.size() > 0) || (secondFileInputRows != null && secondFileInputRows.size() > 0)) {
+        if ((firstFileInputRows != null && !firstFileInputRows.isEmpty()) || (secondFileInputRows != null && !secondFileInputRows.isEmpty())) {
             loaderResult = slotLoader.loadDataToDatabase(firstFileInputRows, secondFileInputRows, firstFileName, secondFileName);
             if (loaderResult.isError()) {
                 context.setRollbackOnly();
