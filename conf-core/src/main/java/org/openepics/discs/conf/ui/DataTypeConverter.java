@@ -47,7 +47,7 @@ public class DataTypeConverter implements Converter {
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
         DataType dtype;
 
-        if (value == null || value.equals("")) {
+        if (value == null || value.isEmpty()) {
             return null;
         } else {
             dtype = dataTypeEJB.findById(Long.valueOf(value));
@@ -57,7 +57,7 @@ public class DataTypeConverter implements Converter {
 
     @Override
     public String getAsString(FacesContext context, UIComponent component, Object value) {
-        if (value == null || value.equals("")) {
+        if (value == null || "".equals(value)) {
             return "";
         } else {
             // logger.log(Level.INFO, "Exp number: " + ((Experiment) value).getId().toString());

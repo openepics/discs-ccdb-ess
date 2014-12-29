@@ -47,7 +47,7 @@ public class ComponentTypeConverter implements Converter {
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
         ComponentType ctype;
 
-        if (value == null || value.equals("")) {
+        if (value == null || value.isEmpty()) {
             return null;
         } else {
             ctype = comptypeEJB.findById(Long.parseLong(value));
@@ -57,7 +57,7 @@ public class ComponentTypeConverter implements Converter {
 
     @Override
     public String getAsString(FacesContext context, UIComponent component, Object value) {
-        if (value == null || value.equals("")) {
+        if (value == null || "".equals(value)) {
             return "";
         } else {
             // logger.log(Level.INFO, "Exp number: " + ((Experiment) value).getId().toString());

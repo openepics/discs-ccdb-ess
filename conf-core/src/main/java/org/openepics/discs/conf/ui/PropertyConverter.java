@@ -47,7 +47,7 @@ public class PropertyConverter implements Converter {
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
         Property prop;
 
-        if (value == null || value.equals("")) {
+        if (value == null || value.isEmpty()) {
             LOGGER.fine("PropertyConverter: empty property id");
             return null;
         } else {
@@ -58,7 +58,7 @@ public class PropertyConverter implements Converter {
 
     @Override
     public String getAsString(FacesContext context, UIComponent component, Object value) {
-        if (value == null || value.equals("")) {
+        if (value == null || "".equals(value)) {
             LOGGER.fine("PropertyConverter: empty property object");
             return "";
         } else {
