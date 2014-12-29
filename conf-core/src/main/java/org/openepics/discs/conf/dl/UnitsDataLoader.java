@@ -119,9 +119,8 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
                                     unitToUpdate.setSymbol(symbol);
                                     unitToUpdate.setModifiedAt(modifiedAt);
                                     unitEJB.save(unitToUpdate);
-                                } catch (Exception e) {
-                                    if (e instanceof SecurityException)
-                                        rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                                } catch (SecurityException e) {
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                                     continue;
                                 }
                             } else {
@@ -129,9 +128,8 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
                                     final Unit unitToAdd = new Unit(name, quantity, symbol, description);
                                     unitEJB.add(unitToAdd);
                                     unitByName.put(unitToAdd.getName(), unitToAdd);
-                                } catch (Exception e) {
-                                    if (e instanceof SecurityException)
-                                        rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                                } catch (SecurityException e) {
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                                     continue;
                                 }
                             }

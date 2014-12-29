@@ -130,9 +130,8 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
                                     } else {
                                         propertyEJB.save(propertyToUpdate);
                                     }
-                                } catch (Exception e) {
-                                    if (e instanceof SecurityException)
-                                        rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                                } catch (SecurityException e) {
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                                 }
                             } else {
                                 try {
@@ -145,9 +144,8 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
                                         propertyEJB.add(propertyToAdd);
                                         propertyByName.put(propertyToAdd.getName(), propertyToAdd);
                                     }
-                                } catch (Exception e) {
-                                    if (e instanceof SecurityException)
-                                        rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                                } catch (SecurityException e) {
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                                 }
                             }
                             break;
@@ -161,9 +159,8 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
                                     propertyEJB.delete(propertyToDelete);
                                     propertyByName.remove(propertyToDelete.getName());
                                 }
-                            } catch (Exception e) {
-                                if (e instanceof SecurityException)
-                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                            } catch (SecurityException e) {
+                                rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                             }
                             break;
                         case CMD_RENAME:
@@ -194,8 +191,7 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
                                     continue;
                                 }
                             } catch (Exception e) {
-                                if (e instanceof SecurityException)
-                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                                rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                             }
                             break;
                         default:
