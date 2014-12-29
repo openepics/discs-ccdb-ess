@@ -132,7 +132,9 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
         }
 
         for (ComptypePropertyValue parentProp : parentProperties) {
-            if (parentProp.getPropValue() != null) attributes.add(new EntityAttributeView(parentProp, EntityAttributeViewKind.DEVICE_TYPE_PROPERTY));
+            if (parentProp.getPropValue() != null) {
+                attributes.add(new EntityAttributeView(parentProp, EntityAttributeViewKind.DEVICE_TYPE_PROPERTY));
+            }
         }
 
         for (ComptypeArtifact parentArtifact : parentArtifacts) {

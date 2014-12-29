@@ -50,7 +50,9 @@ public class DataLoaderResult {
      */
     public void addMessage(ValidationMessage message) {
         messages.add(message);
-        if (message.isError()) error = true;
+        if (message.isError()) {
+            error = true;
+        }
     }
 
     /**

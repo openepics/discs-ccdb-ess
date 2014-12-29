@@ -77,7 +77,9 @@ public class AuditManager implements Serializable {
      * @return A pretty printed representation of the log entry JSON.
      */
     public String getDisplayRecordEntry() {
-        if (displayRecord == null) return "";
+        if (displayRecord == null) {
+            return "";
+        }
 
         try {
             final ObjectMapper mapper = new ObjectMapper();

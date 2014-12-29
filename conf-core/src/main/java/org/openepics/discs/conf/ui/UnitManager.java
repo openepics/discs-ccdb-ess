@@ -72,7 +72,9 @@ public class UnitManager implements Serializable, ExcelSingleFileImportUIHandler
      * @return The list of all user defined physics units in the database
      */
     public List<Unit> getUnits() {
-        if (units == null) units = unitEJB.findAll();
+        if (units == null) {
+            units = unitEJB.findAll();
+        }
         return units;
     }
 

@@ -52,7 +52,9 @@ public class DataTypeManager implements Serializable {
      * @return A list of all {@link DataType} entities in the database.
      */
     public List<DataType> getDataTypes() {
-        if (dataTypes == null) dataTypes = dataTypeEJB.findAll();
+        if (dataTypes == null) {
+            dataTypes = dataTypeEJB.findAll();
+        }
         return dataTypes;
     }
 

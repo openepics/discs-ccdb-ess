@@ -274,7 +274,9 @@ public class ComponentTypeManager implements Serializable, ExcelSingleFileImport
      * @return The list of all device types in the database.
      */
     public List<ComponentType> getDeviceTypes() {
-        if (deviceTypes == null) deviceTypes = comptypeEJB.findAll();
+        if (deviceTypes == null) {
+            deviceTypes = comptypeEJB.findAll();
+        }
         return deviceTypes;
     }
 }

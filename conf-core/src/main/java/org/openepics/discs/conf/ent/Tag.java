@@ -67,12 +67,20 @@ public class Tag implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null) return false;
-        if (getClass() != obj.getClass()) return false;
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
 
         Tag other = (Tag) obj;
-        if (name == null) return other.name == null;
+        if (name == null) {
+            return other.name == null;
+        }
 
         return name.equals(other.name);
     }

@@ -194,7 +194,9 @@ public class PropertyManager implements Serializable, ExcelSingleFileImportUIHan
      * @return The list of all properties in the database ordered by name.
      */
     public List<Property> getProperties() {
-        if (properties == null) properties = propertyEJB.findAllOrderedByName();
+        if (properties == null) {
+            properties = propertyEJB.findAllOrderedByName();
+        }
         return properties;
     }
 

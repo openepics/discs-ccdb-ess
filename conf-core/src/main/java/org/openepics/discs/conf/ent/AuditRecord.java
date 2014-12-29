@@ -181,11 +181,17 @@ public class AuditRecord implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        if (!(object instanceof AuditRecord)) return false;
+        if (!(object instanceof AuditRecord)) {
+            return false;
+        }
 
         AuditRecord other = (AuditRecord) object;
-        if (this.id == null && other.id != null) return false;
-        if (this.id != null) return this.id.equals(other.id);
+        if ((this.id == null) && (other.id != null)) {
+            return false;
+        }
+        if (this.id != null) {
+            return this.id.equals(other.id);
+        }
 
         return this==object;
     }

@@ -91,7 +91,9 @@ public class DevicesByTypeManager implements Serializable {
             if (elementName.equalsIgnoreCase(SlotEJB.ROOT_COMPONENT_TYPE) || elementName.equalsIgnoreCase(SlotEJB.GRP_COMPONENT_TYPE)) {
                 dtIterator.remove();
                 found++;
-                if (found >= 2) break;
+                if (found >= 2) {
+                    break;
+                }
             }
         }
     }

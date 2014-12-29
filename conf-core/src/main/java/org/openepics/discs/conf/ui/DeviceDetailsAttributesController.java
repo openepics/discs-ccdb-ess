@@ -138,7 +138,9 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
         attributes.add(new EntityAttributeView(new BuiltInProperty(DeviceBuiltInPropertyName.BIP_MANUFACTURER_SERIAL_NO, device.getManufacturerSerialNumber(), strDataType)));
 
         for (ComptypePropertyValue parentProp : parentProperties) {
-            if (parentProp.getPropValue() != null) attributes.add(new EntityAttributeView(parentProp, EntityAttributeViewKind.DEVICE_TYPE_PROPERTY));
+            if (parentProp.getPropValue() != null) {
+                attributes.add(new EntityAttributeView(parentProp, EntityAttributeViewKind.DEVICE_TYPE_PROPERTY));
+            }
         }
 
         for (ComptypeArtifact parentArtifact : parentArtifacts) {

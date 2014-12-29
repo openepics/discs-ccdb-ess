@@ -59,12 +59,16 @@ public class PropertyEJB extends DAO<Property> {
         List<SlotPropertyValue> slotPropertyValues = em.createQuery("SELECT pv FROM SlotPropertyValue pv "
                 + "WHERE pv.property = :property", SlotPropertyValue.class).setParameter("property", property)
                 .setMaxResults(1).getResultList();
-        if (!slotPropertyValues.isEmpty()) return true;
+        if (!slotPropertyValues.isEmpty()) {
+            return true;
+        }
 
         List<DevicePropertyValue> devicePropertyValues = em.createQuery("SELECT pv FROM DevicePropertyValue pv "
                 + "WHERE pv.property = :property", DevicePropertyValue.class).setParameter("property", property)
                 .setMaxResults(1).getResultList();
-        if (!devicePropertyValues.isEmpty()) return true;
+        if (!devicePropertyValues.isEmpty()) {
+            return true;
+        }
 
         List<ComptypePropertyValue> typePropertyValues = em.createQuery("SELECT pv FROM ComptypePropertyValue pv "
                 + "WHERE pv.property = :property", ComptypePropertyValue.class).setParameter("property", property)
