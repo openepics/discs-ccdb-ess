@@ -59,7 +59,8 @@ public class SlotRelationEJB extends ReadOnlyDAO<SlotRelation> {
         try {
             return em.createNamedQuery("SlotRelation.findByName", SlotRelation.class)
                     .setParameter("name", name).getSingleResult();
-        } catch (NoResultException e) {
+        } catch (NoResultException e) { // NOSONAR
+            // no result is not an exception
             return null;
         }
     }

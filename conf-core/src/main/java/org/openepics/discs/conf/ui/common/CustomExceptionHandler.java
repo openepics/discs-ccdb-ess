@@ -73,7 +73,7 @@ public class CustomExceptionHandler extends ExceptionHandlerWrapper {
                     ec.redirect(ec.getRequestContextPath() + "/error.xhtml?errorMsg=" +
                             URLEncoder.encode(((UIException)ite.getTargetException()).getMessage(), "UTF-8"));
                 } catch (Exception e) {
-                    LOG.log(Level.SEVERE, "Failed to redirect to error page");
+                    LOG.log(Level.SEVERE, "Failed to redirect to error page.", e);
                 } finally {
                     iterator.remove();
                 }

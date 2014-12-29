@@ -88,7 +88,7 @@ public class DeviceManager implements Serializable, ExcelSingleFileImportUIHandl
             this.importData = ByteStreams.toByteArray(inputStream);
             this.importFileName = FilenameUtils.getName(event.getFile().getFileName());
         } catch (IOException e) {
-            throw new RuntimeException();
+            throw new RuntimeException(e);
         }
     }
 }

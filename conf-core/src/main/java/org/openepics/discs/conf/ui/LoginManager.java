@@ -62,6 +62,7 @@ public class LoginManager implements Serializable {
         } catch (Exception e) {
             Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Login Failed! Please try again. ", "Status: ");
             LOGGER.log(Level.INFO, "Login failed for " + userId);
+            LOGGER.log(Level.FINE, "Login failed for " + userId, e);
             loggedIn = false;
         } finally {
             password = "xxxxxx"; // ToDo implement a better way destroy the password (from JVM)
@@ -82,6 +83,7 @@ public class LoginManager implements Serializable {
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "You have been logged out.", "Thank you!");
         } catch (Exception e) {
             Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Strangely, logout has failed", "That's odd!");
+            LOGGER.log(Level.FINE,  "Strangely, logout has failed", e);
         }
 
         return "logout"; // ToDo: replace with null

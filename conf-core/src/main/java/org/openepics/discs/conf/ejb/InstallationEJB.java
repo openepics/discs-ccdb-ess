@@ -75,7 +75,7 @@ public class InstallationEJB extends DAO<InstallationRecord> {
         try {
             return em.createNamedQuery("InstallationRecord.activeRecordForSlot", InstallationRecord.class)
                 .setParameter("slot", slot).getSingleResult();
-        } catch (NoResultException e) {
+        } catch (NoResultException e) { // NOSONAR
             // no result is not an exception
             return null;
         }
@@ -91,12 +91,12 @@ public class InstallationEJB extends DAO<InstallationRecord> {
         try {
             return em.createNamedQuery("InstallationRecord.activeRecordForDevice", InstallationRecord.class)
                 .setParameter("device", device).getSingleResult();
-        } catch (NoResultException e) {
+        } catch (NoResultException e) { // NOSONAR
             // no result is not an exception
             return null;
         }
     }
-    
+
     /**
      * @param slot the installation slot to find last installation record for.
      * @return The last installation record for slot (an installation record which has uninstall date <code>NULL</code>),
@@ -107,12 +107,12 @@ public class InstallationEJB extends DAO<InstallationRecord> {
         try {
             return em.createNamedQuery("InstallationRecord.lastRecordForSlot", InstallationRecord.class)
                 .setParameter("slot", slot).getSingleResult();
-        } catch (NoResultException e) {
+        } catch (NoResultException e) { // NOSONAR
             // no result is not an exception
             return null;
         }
-    }   
-    
+    }
+
     /**
      * @param device the device to find last installation record for.
      * @return The last installation record for device (an installation record which has uninstall date <code>NULL</code>),
@@ -123,11 +123,11 @@ public class InstallationEJB extends DAO<InstallationRecord> {
         try {
             return em.createNamedQuery("InstallationRecord.lastRecordForDevice", InstallationRecord.class)
                 .setParameter("device", device).getSingleResult();
-        } catch (NoResultException e) {
+        } catch (NoResultException e) { // NOSONAR
             // no result is not an exception
             return null;
         }
-    }   
+    }
 
     /**
      * @param componentType the device type for which we are requesting information.
@@ -163,12 +163,12 @@ public class InstallationEJB extends DAO<InstallationRecord> {
             LOGGER.log(Level.WARNING, "An attempt was made to install a device that is already installed.");
             throw new RuntimeException("Device already installed.");
         }
-        
+
         device.getInstallationRecordList().add(record);
         slot.getInstallationRecordList().add(record);
         super.add(record);
     }
-    
+
     @Override
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit

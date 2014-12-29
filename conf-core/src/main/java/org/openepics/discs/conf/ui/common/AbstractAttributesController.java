@@ -550,7 +550,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
             this.importData = ByteStreams.toByteArray(inputStream);
             this.importFileName = FilenameUtils.getName(event.getFile().getFileName());
         } catch (IOException e) {
-            throw new RuntimeException();
+            throw new RuntimeException(e);
         }
     }
 
@@ -951,7 +951,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
                 try {
                     Conversion.toTimestamp(strValue);
                 } catch (RuntimeException e) {
-                    throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", e.getMessage()));
+                    throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", e.getMessage()), e);
                 }
                 break;
             default:

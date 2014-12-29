@@ -96,7 +96,7 @@ public class SlotManager implements Serializable, ExcelImportUIHandlers {
             this.importSlotData = ByteStreams.toByteArray(inputStream);
             this.firstFileName = FilenameUtils.getName(event.getFile().getFileName());
         } catch (IOException e) {
-            throw new RuntimeException();
+            throw new RuntimeException(e);
         }
     }
 
@@ -110,7 +110,7 @@ public class SlotManager implements Serializable, ExcelImportUIHandlers {
             this.importSlotRelationshipsData= ByteStreams.toByteArray(inputStream);
             this.secondFileName = FilenameUtils.getName(event.getFile().getFileName());
         } catch (IOException e) {
-            throw new RuntimeException();
+            throw new RuntimeException(e);
         }
     }
 }

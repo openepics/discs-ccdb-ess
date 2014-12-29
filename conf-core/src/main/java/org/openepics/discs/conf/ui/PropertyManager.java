@@ -226,7 +226,7 @@ public class PropertyManager implements Serializable, ExcelSingleFileImportUIHan
             this.importData = ByteStreams.toByteArray(inputStream);
             this.importFileName = FilenameUtils.getName(event.getFile().getFileName());
         } catch (IOException e) {
-            throw new RuntimeException();
+            throw new RuntimeException(e);
         }
     }
 

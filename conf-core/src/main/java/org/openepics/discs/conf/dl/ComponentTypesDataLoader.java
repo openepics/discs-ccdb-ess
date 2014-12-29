@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.Nullable;
 import javax.ejb.Stateless;
@@ -54,6 +56,8 @@ import com.google.common.collect.ImmutableList;
 @Stateless
 @ComponentTypesLoaderQualifier
 public class ComponentTypesDataLoader extends AbstractDataLoader implements DataLoader {
+    private static final Logger LOGGER = Logger.getLogger(ComponentTypesDataLoader.class.getCanonicalName());
+
     @Inject private ComptypeEJB comptypeEJB;
     @Inject private PropertyEJB propertyEJB;
     private int nameIndex, descriptionIndex;
@@ -125,6 +129,7 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
                                     continue;
                                 }
                             } catch (Exception e) {
+                                LOGGER.log(Level.FINE, ErrorMessage.NOT_AUTHORIZED.toString(), e);
                                 rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                             }
                         } else {
@@ -137,6 +142,7 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
                                     continue;
                                 }
                             } catch (Exception e) {
+                                LOGGER.log(Level.FINE, ErrorMessage.NOT_AUTHORIZED.toString(), e);
                                 rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                             }
                         }
@@ -155,6 +161,7 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
                                 comptypeEJB.delete(componentTypeToDelete);
                             }
                         } catch (Exception e) {
+                            LOGGER.log(Level.FINE, ErrorMessage.NOT_AUTHORIZED.toString(), e);
                             rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                         }
                         break;
@@ -188,6 +195,7 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
                                 continue;
                             }
                         } catch (Exception e) {
+                            LOGGER.log(Level.FINE, ErrorMessage.NOT_AUTHORIZED.toString(), e);
                             rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                         }
                         break;

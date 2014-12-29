@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.Nullable;
 import javax.ejb.Stateless;
@@ -63,6 +65,8 @@ import com.google.common.collect.ImmutableList;
  */
 @Stateless
 public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
+    private static final Logger LOGGER = Logger.getLogger(SlotsAndSlotPairsDataLoader.class.getCanonicalName());
+
     @Inject private SlotEJB slotEJB;
     @Inject private SlotRelationEJB slotRelationEJB;
     @Inject private SlotPairEJB slotPairEJB;
@@ -224,6 +228,7 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                                             continue;
                                         }
                                     } catch (Exception e) {
+                                        LOGGER.log(Level.FINE, ErrorMessage.NOT_AUTHORIZED.toString(), e);
                                         rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                                     }
                                 }
@@ -247,6 +252,7 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                                             continue;
                                         }
                                     } catch (Exception e) {
+                                        LOGGER.log(Level.FINE, ErrorMessage.NOT_AUTHORIZED.toString(), e);
                                         rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                                     }
                                 }
@@ -267,6 +273,7 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                                     slotEJB.delete(slotToDelete);
                                 }
                             } catch (Exception e) {
+                                LOGGER.log(Level.FINE, ErrorMessage.NOT_AUTHORIZED.toString(), e);
                                 rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                             }
                             break;
@@ -301,6 +308,7 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                                     continue;
                                 }
                             } catch (Exception e) {
+                                LOGGER.log(Level.FINE, ErrorMessage.NOT_AUTHORIZED.toString(), e);
                                 rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                             }
                             break;
@@ -446,6 +454,7 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                                                 rowResult.addMessage(new ValidationMessage(ErrorMessage.SAME_CHILD_AND_PARENT, rowNumber));
                                             }
                                         } catch (Exception e) {
+                                            LOGGER.log(Level.FINE, ErrorMessage.NOT_AUTHORIZED.toString(), e);
                                             rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                                         }
                                     }
@@ -459,6 +468,7 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                                             slotPairEJB.delete(slotPair);
                                         }
                                     } catch (Exception e) {
+                                        LOGGER.log(Level.FINE, ErrorMessage.NOT_AUTHORIZED.toString(), e);
                                         rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                                     }
                                 } else {

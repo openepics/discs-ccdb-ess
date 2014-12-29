@@ -26,6 +26,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.Nullable;
 import javax.ejb.Stateless;
@@ -58,6 +60,8 @@ import com.google.common.collect.ImmutableList;
 @Stateless
 @DevicesLoaderQualifier
 public class DevicesDataLoader extends AbstractDataLoader implements DataLoader  {
+    private static final Logger LOGGER = Logger.getLogger(DevicesDataLoader.class.getCanonicalName());
+
     @Inject private PropertyEJB propertyEJB;
     @Inject private ComptypeEJB comptypeEJB;
     @Inject private DeviceEJB deviceEJB;
@@ -142,6 +146,7 @@ public class DevicesDataLoader extends AbstractDataLoader implements DataLoader 
                                         addOrUpdateDevice(deviceToUpdate, compType, description, status, manufSerial, location, purchaseOrder, asmPosition, asmDescription, manufacturer, manufModel);
                                         addOrUpdateProperties(deviceToUpdate, indexByPropertyName, row, rowNumber);
                                     } catch (Exception e) {
+                                        LOGGER.log(Level.FINE, ErrorMessage.NOT_AUTHORIZED.toString(), e);
                                         rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                                     }
                                 }
@@ -157,6 +162,7 @@ public class DevicesDataLoader extends AbstractDataLoader implements DataLoader 
                                         deviceEJB.addDeviceAndPropertyDefs(newDevice);
                                         addOrUpdateProperties(newDevice, indexByPropertyName, row, rowNumber);
                                     } catch (Exception e) {
+                                        LOGGER.log(Level.FINE, ErrorMessage.NOT_AUTHORIZED.toString(), e);
                                         rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                                     }
                                 }
@@ -170,6 +176,7 @@ public class DevicesDataLoader extends AbstractDataLoader implements DataLoader 
                                 try {
                                     deviceEJB.delete(deviceToDelete);
                                 } catch (Exception e) {
+                                    LOGGER.log(Level.FINE, ErrorMessage.NOT_AUTHORIZED.toString(), e);
                                     rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                                 }
                             }

@@ -119,7 +119,7 @@ public class UnitManager implements Serializable, ExcelSingleFileImportUIHandler
             this.importData = ByteStreams.toByteArray(inputStream);
             this.importFileName = FilenameUtils.getName(event.getFile().getFileName());
         } catch (IOException e) {
-            throw new RuntimeException();
+            throw new RuntimeException(e);
         }
     }
 }
