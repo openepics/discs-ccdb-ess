@@ -21,7 +21,6 @@ package org.openepics.discs.conf.ui;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -38,8 +37,6 @@ import org.openepics.discs.conf.ent.DataType;
 @Named
 @ViewScoped
 public class DataTypeManager implements Serializable {
-    @SuppressWarnings("unused")
-    private static final Logger logger = Logger.getLogger(DataTypeManager.class.getCanonicalName());
 
     @Inject transient private DataTypeEJB dataTypeEJB;
 

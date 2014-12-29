@@ -38,7 +38,7 @@ import org.openepics.discs.conf.ent.Property;
 public class PropertyConverter implements Converter {
     @EJB
     private PropertyEJB propertyEJB;
-    private static final Logger logger = Logger.getLogger(PropertyConverter.class.getCanonicalName());
+    private static final Logger LOGGER = Logger.getLogger(PropertyConverter.class.getCanonicalName());
 
     public PropertyConverter() {
     }
@@ -48,7 +48,7 @@ public class PropertyConverter implements Converter {
         Property prop;
 
         if (value == null || value.equals("")) {
-            logger.fine("PropertyConverter: empty property id");
+            LOGGER.fine("PropertyConverter: empty property id");
             return null;
         } else {
             prop = propertyEJB.findById(Long.parseLong(value));
@@ -59,7 +59,7 @@ public class PropertyConverter implements Converter {
     @Override
     public String getAsString(FacesContext context, UIComponent component, Object value) {
         if (value == null || value.equals("")) {
-            logger.fine("PropertyConverter: empty property object");
+            LOGGER.fine("PropertyConverter: empty property object");
             return "";
         } else {
             return ((Property) value).getId().toString();

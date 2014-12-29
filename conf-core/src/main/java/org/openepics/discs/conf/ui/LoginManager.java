@@ -41,7 +41,7 @@ import org.openepics.discs.conf.util.Utility;
 @Named
 @SessionScoped
 public class LoginManager implements Serializable {
-    private static final Logger logger = Logger.getLogger(LoginManager.class.getCanonicalName());
+    private static final Logger LOGGER = Logger.getLogger(LoginManager.class.getCanonicalName());
 
     private String userId;
     private String password;
@@ -61,7 +61,7 @@ public class LoginManager implements Serializable {
             loggedIn = true;
         } catch (Exception e) {
             Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Login Failed! Please try again. ", "Status: ");
-            logger.log(Level.INFO, "Login failed for " + userId);
+            LOGGER.log(Level.INFO, "Login failed for " + userId);
             loggedIn = false;
         } finally {
             password = "xxxxxx"; // ToDo implement a better way destroy the password (from JVM)

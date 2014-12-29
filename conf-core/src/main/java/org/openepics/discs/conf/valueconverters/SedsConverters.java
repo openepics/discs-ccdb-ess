@@ -44,7 +44,7 @@ import org.openepics.discs.conf.util.BuiltInDataType;
 @Startup
 public class SedsConverters {
 
-    private static final Logger logger = Logger.getLogger(SedsConverter.class.getCanonicalName());
+    private static final Logger LOGGER = Logger.getLogger(SedsConverter.class.getCanonicalName());
 
     private static final Map<Class<? extends Value>, ValueConverter<? extends Value>> converters = new ConcurrentHashMap<>();
 
@@ -63,9 +63,9 @@ public class SedsConverters {
             convertersFound++;
         }
 
-        logger.log(Level.INFO, "Loaded " + convertersFound + " data type converters.");
+        LOGGER.log(Level.INFO, "Loaded " + convertersFound + " data type converters.");
         if (convertersFound != BuiltInDataType.values().length) {
-            logger.log(Level.SEVERE, "Converter data type implementation number mismatch. Expected: " + BuiltInDataType.values().length
+            LOGGER.log(Level.SEVERE, "Converter data type implementation number mismatch. Expected: " + BuiltInDataType.values().length
                     + ", found: " + convertersFound);
         }
     }

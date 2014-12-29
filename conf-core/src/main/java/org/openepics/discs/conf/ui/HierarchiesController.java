@@ -67,7 +67,7 @@ import com.google.common.base.Preconditions;
 @Named
 @ViewScoped
 public class HierarchiesController implements Serializable {
-    private static final Logger logger = Logger.getLogger(HierarchiesController.class.getCanonicalName());
+    private static final Logger LOGGER = Logger.getLogger(HierarchiesController.class.getCanonicalName());
 
     @Inject private SlotsTreeBuilder slotsTreeBuilder;
     @Inject transient private SlotEJB slotEJB;
@@ -278,7 +278,7 @@ public class HierarchiesController implements Serializable {
         Preconditions.checkNotNull(device);
         final InstallationRecord deviceInstallationRecord = installationEJB.getActiveInstallationRecordForDevice(device);
         if (deviceInstallationRecord == null) {
-            logger.log(Level.WARNING, "The device appears installed, but no active installation record for "
+            LOGGER.log(Level.WARNING, "The device appears installed, but no active installation record for "
                     + "it could be retrieved. Device db ID: " + device.getId()
                     + ", serial number: " + device.getSerialNumber());
             throw new RuntimeException("No installation record for the device exists.");

@@ -71,7 +71,7 @@ import com.google.common.collect.ImmutableList;
 @ViewScoped
 public class SlotAttributesController extends AbstractAttributesController<SlotPropertyValue, SlotArtifact> {
 
-    private static final Logger logger = Logger.getLogger(SlotAttributesController.class.getCanonicalName());
+    private static final Logger LOGGER = Logger.getLogger(SlotAttributesController.class.getCanonicalName());
 
     @Inject transient private SlotEJB slotEJB;
     @Inject transient private PropertyEJB propertyEJB;
@@ -235,7 +235,7 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
         final SlotBuiltInPropertyName builtInPropertyName = (SlotBuiltInPropertyName)builtInProperty.getName();
 
         if (!slot.isHostingSlot() && !builtInPropertyName.equals(SlotBuiltInPropertyName.BIP_DESCRIPTION)) {
-            logger.log(Level.WARNING, "Modifying built-in property on container that should not be used.");
+            LOGGER.log(Level.WARNING, "Modifying built-in property on container that should not be used.");
             return;
         }
 
