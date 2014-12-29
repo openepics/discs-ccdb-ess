@@ -41,6 +41,8 @@ import org.openepics.discs.conf.ent.EntityTypeOperation;
 @Named("securityPolicy")
 @Alternative
 public class DummySecurityPolicy implements SecurityPolicy, Serializable {
+    private static final long serialVersionUID = 4280076418469633096L;
+
     private static final Logger LOGGER = Logger.getLogger(DummySecurityPolicy.class.getCanonicalName());
 
     /**

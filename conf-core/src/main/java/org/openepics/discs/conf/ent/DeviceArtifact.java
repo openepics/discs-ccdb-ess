@@ -45,6 +45,8 @@ import javax.xml.bind.annotation.XmlRootElement;
             + "WHERE d.modifiedBy = :modifiedBy")
 })
 public class DeviceArtifact extends Artifact {
+    private static final long serialVersionUID = -6839832536999872940L;
+
     @JoinColumn(name = "device")
     @ManyToOne(optional = false)
     private Device device;

@@ -51,6 +51,7 @@ import com.google.common.collect.Lists;
 @Named
 @ViewScoped
 public class InstallationSlotsController extends AbstractSlotsController {
+    private static final long serialVersionUID = 99690643390820073L;
 
     @Inject private Names names;
     @Inject transient private SlotRelationEJB slotRelationEJB;

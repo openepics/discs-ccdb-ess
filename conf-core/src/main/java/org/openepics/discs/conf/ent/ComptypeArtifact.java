@@ -46,6 +46,8 @@ import javax.xml.bind.annotation.XmlRootElement;
             + "WHERE c.modifiedBy = :modifiedBy")
 })
 public class ComptypeArtifact extends Artifact {
+    private static final long serialVersionUID = -4084236653099315880L;
+
     @JoinColumn(name = "component_type")
     @ManyToOne(optional = false)
     private ComponentType componentType;

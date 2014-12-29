@@ -48,6 +48,7 @@ import org.primefaces.model.TreeNode;
  *
  */
 public abstract class AbstractSlotsController implements Serializable{
+    private static final long serialVersionUID = -980670395122706411L;
 
     @Inject protected SlotsTreeBuilder slotsTreeBuilder;
     @Inject protected SlotEJB slotEJB;

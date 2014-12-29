@@ -51,6 +51,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
     @NamedQuery(name = "Role.findByRoleId", query = "SELECT r FROM Role r WHERE r.roleId = :roleId")
 })
 public class Role implements Serializable {
+    private static final long serialVersionUID = 5373765483494957325L;
+
     @Id
     @NotNull
     @Size(min = 1, max = 64)

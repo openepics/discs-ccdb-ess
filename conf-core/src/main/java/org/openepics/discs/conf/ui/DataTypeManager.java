@@ -37,6 +37,7 @@ import org.openepics.discs.conf.ent.DataType;
 @Named
 @ViewScoped
 public class DataTypeManager implements Serializable {
+    private static final long serialVersionUID = -7538356350403365152L;
 
     @Inject transient private DataTypeEJB dataTypeEJB;
 

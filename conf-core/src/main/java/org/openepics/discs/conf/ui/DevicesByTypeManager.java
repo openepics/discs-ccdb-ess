@@ -51,6 +51,8 @@ import com.google.common.base.Preconditions;
 @Named
 @ViewScoped
 public class DevicesByTypeManager implements Serializable {
+    private static final long serialVersionUID = 3236468538191653638L;
+
     @Inject transient private ComptypeEJB componentTypesEJB;
     @Inject transient private DeviceEJB deviceEJB;
     @Inject transient private InstallationEJB installationEJB;

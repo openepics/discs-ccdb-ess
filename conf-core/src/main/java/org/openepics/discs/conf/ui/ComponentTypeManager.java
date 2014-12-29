@@ -60,6 +60,7 @@ import com.google.common.io.ByteStreams;
 @Named
 @ViewScoped
 public class ComponentTypeManager implements Serializable, ExcelSingleFileImportUIHandlers {
+    private static final long serialVersionUID = -9007187646811006328L;
 
     @Inject transient private ComptypeEJB comptypeEJB;
     @Inject transient private AuditRecordEJB auditRecordEJB;

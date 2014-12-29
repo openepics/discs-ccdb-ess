@@ -68,6 +68,8 @@ import javax.xml.bind.annotation.XmlRootElement;
             + "ORDER BY s.slotOrder ASC")
 })
 public class SlotPair implements Serializable {
+    private static final long serialVersionUID = -1346609227484965749L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")

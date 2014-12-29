@@ -44,6 +44,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "DataType.findByModifiedBy", query = "SELECT d FROM DataType d WHERE d.modifiedBy = :modifiedBy")
 })
 public class DataType extends ConfigurationEntity {
+    private static final long serialVersionUID = 8190792924852505638L;
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)

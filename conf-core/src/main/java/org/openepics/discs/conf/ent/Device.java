@@ -65,6 +65,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
             + "OR NOT EXISTS (SELECT ir FROM InstallationRecord ir WHERE d = ir.device AND ir.uninstallDate IS NULL))")
 })
 public class Device extends ConfigurationEntity {
+    private static final long serialVersionUID = 113778637670841841L;
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)

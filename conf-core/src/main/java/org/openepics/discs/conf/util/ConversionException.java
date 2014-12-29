@@ -26,6 +26,7 @@ package org.openepics.discs.conf.util;
  *
  */
 public class ConversionException extends RuntimeException {
+    private static final long serialVersionUID = 9060559072643456765L;
 
     /**
      * A new conversion exception with no message and no reference

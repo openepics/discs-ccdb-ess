@@ -50,6 +50,8 @@ import javax.xml.bind.annotation.XmlRootElement;
             + "WHERE p.privilegeId = :privilegeId")
 })
 public class Privilege implements Serializable {
+    private static final long serialVersionUID = 303255299175116489L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "privilege_id")

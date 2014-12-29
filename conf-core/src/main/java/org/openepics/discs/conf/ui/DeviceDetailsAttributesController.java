@@ -63,6 +63,7 @@ import org.primefaces.context.RequestContext;
 @Named
 @ViewScoped
 public class DeviceDetailsAttributesController extends AbstractAttributesController<DevicePropertyValue, DeviceArtifact> {
+    private static final long serialVersionUID = -2881746639197321061L;
 
     @Inject transient private DeviceEJB deviceEJB;
 

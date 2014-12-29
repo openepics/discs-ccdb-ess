@@ -60,6 +60,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "UserRole.findByComment", query = "SELECT u FROM UserRole u WHERE u.comment = :comment")
 })
 public class UserRole implements Serializable {
+    private static final long serialVersionUID = 6761639840687006766L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "user_role_id")

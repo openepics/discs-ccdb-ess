@@ -70,6 +70,7 @@ import com.google.common.collect.ImmutableList;
 @Named
 @ViewScoped
 public class SlotAttributesController extends AbstractAttributesController<SlotPropertyValue, SlotArtifact> {
+    private static final long serialVersionUID = 7385154837803672522L;
 
     private static final Logger LOGGER = Logger.getLogger(SlotAttributesController.class.getCanonicalName());
 

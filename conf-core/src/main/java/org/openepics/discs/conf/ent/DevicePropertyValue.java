@@ -45,6 +45,8 @@ import javax.xml.bind.annotation.XmlRootElement;
             + "WHERE d.modifiedBy = :modifiedBy")
 })
 public class DevicePropertyValue extends PropertyValue {
+    private static final long serialVersionUID = -1803230486932708585L;
+
     @JoinColumn(name = "device")
     @ManyToOne(optional = false)
     private Device device;

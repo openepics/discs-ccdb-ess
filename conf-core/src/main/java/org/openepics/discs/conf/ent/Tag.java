@@ -38,6 +38,8 @@ import javax.persistence.Version;
     @NamedQuery(name = "Tag.findAllOrdered", query = "SELECT t FROM Tag t ORDER BY t.name")
 })
 public class Tag implements Serializable {
+    private static final long serialVersionUID = 6824320954767876122L;
+
     @Id
     private String name;
 

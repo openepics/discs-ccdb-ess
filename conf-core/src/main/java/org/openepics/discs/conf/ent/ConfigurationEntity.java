@@ -42,6 +42,8 @@ import javax.validation.constraints.Size;
 */
 @MappedSuperclass
 public class ConfigurationEntity implements Serializable {
+    private static final long serialVersionUID = -3251838692627723803L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")

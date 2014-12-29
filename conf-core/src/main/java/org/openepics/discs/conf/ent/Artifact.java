@@ -38,6 +38,8 @@ import javax.validation.constraints.Size;
 @Table(name = "artifacts")
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Artifact extends ConfigurationEntity {
+    private static final long serialVersionUID = 2926588619140123269L;
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 128)

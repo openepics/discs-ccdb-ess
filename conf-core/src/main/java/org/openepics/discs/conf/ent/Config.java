@@ -49,6 +49,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Config.findByPropValue", query = "SELECT c FROM Config c WHERE c.propValue = :propValue")
 })
 public class Config implements Serializable {
+    private static final long serialVersionUID = 8598633851774499308L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "config_id")

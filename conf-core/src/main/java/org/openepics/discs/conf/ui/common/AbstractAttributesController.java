@@ -94,6 +94,7 @@ import com.google.common.io.ByteStreams;
  * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  */
 public abstract class AbstractAttributesController<T extends PropertyValue, S extends Artifact> implements Serializable {
+    private static final long serialVersionUID = 523935015308933240L;
 
     private static final int MIN_ELEMENT_SIZE = 20;
     private static final int MAX_ELEMENT_SIZE = 40;

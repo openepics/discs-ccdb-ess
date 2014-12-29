@@ -44,6 +44,7 @@ import com.google.common.io.ByteStreams;
 @Named
 @ViewScoped
 public class SlotManager implements Serializable, ExcelImportUIHandlers {
+    private static final long serialVersionUID = 7271953102489952318L;
 
     @Inject transient private DataLoaderHandler dataLoaderHandler;
 

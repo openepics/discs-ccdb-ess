@@ -62,6 +62,8 @@ import com.google.common.io.ByteStreams;
 @Named
 @ViewScoped
 public class PropertyManager implements Serializable, ExcelSingleFileImportUIHandlers {
+    private static final long serialVersionUID = 1056645993595744719L;
+
     @Inject transient private PropertyEJB propertyEJB;
 
     @Inject transient private DataLoaderHandler dataLoaderHandler;

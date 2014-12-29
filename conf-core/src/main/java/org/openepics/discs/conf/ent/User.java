@@ -54,6 +54,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
     @NamedQuery(name = "User.findByComment", query = "SELECT u FROM User u WHERE u.comment = :comment")
 })
 public class User implements Serializable {
+    private static final long serialVersionUID = 3286116842796906287L;
+
     @Id
     @NotNull
     @Size(min = 1, max = 64)

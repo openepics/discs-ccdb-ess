@@ -57,6 +57,7 @@ import com.google.common.collect.ImmutableList.Builder;
 @Named
 @ViewScoped
 public class SlotsTreeBuilder implements Serializable {
+    private static final long serialVersionUID = -2249157032475929350L;
 
     @Inject transient protected InstallationEJB installationEJB;
     private TreeNode initiallySelectedTreeNode;

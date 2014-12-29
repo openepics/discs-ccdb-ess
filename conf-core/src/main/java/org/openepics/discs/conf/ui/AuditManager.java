@@ -43,8 +43,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Named(value = "auditManager")
 @ViewScoped
 public class AuditManager implements Serializable {
-    private static final Logger LOGGER = Logger.getLogger(AuditManager.class.getCanonicalName());
+    private static final long serialVersionUID = 4650841685917081962L;
 
+    private static final Logger LOGGER = Logger.getLogger(AuditManager.class.getCanonicalName());
 
     @Inject transient private AuditRecordEJB auditRecordEJB;
 

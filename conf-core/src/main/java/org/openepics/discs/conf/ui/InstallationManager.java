@@ -52,6 +52,8 @@ import com.google.common.base.Preconditions;
 @Named
 @ViewScoped
 public class InstallationManager implements Serializable {
+    private static final long serialVersionUID = -16035870593037184L;
+
     private static final Logger LOGGER = Logger.getLogger(InstallationManager.class.getCanonicalName());
 
     @Inject transient private InstallationEJB installationEJB;

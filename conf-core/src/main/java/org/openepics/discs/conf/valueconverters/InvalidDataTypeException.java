@@ -24,6 +24,7 @@ package org.openepics.discs.conf.valueconverters;
  *
  */
 public class InvalidDataTypeException extends RuntimeException {
+    private static final long serialVersionUID = 721179307498029865L;
 
     /** A new invalid data type exception with no reference
      * @param message The text message

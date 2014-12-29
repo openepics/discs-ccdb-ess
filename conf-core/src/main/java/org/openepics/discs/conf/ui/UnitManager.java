@@ -51,6 +51,8 @@ import com.google.common.io.ByteStreams;
 @ManagedBean
 @ViewScoped
 public class UnitManager implements Serializable, ExcelSingleFileImportUIHandlers {
+    private static final long serialVersionUID = 5504821804362597703L;
+
     @Inject transient private UnitEJB unitEJB;
     @Inject transient private DataLoaderHandler dataLoaderHandler;
     @Inject @UnitLoaderQualifier transient private DataLoader unitsDataLoader;

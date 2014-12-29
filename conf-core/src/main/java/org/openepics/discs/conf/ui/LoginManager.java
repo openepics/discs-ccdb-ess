@@ -41,6 +41,8 @@ import org.openepics.discs.conf.util.Utility;
 @Named
 @SessionScoped
 public class LoginManager implements Serializable {
+    private static final long serialVersionUID = -3247078884319476134L;
+
     private static final Logger LOGGER = Logger.getLogger(LoginManager.class.getCanonicalName());
 
     private String userId;

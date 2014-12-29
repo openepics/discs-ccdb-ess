@@ -42,6 +42,8 @@ import com.google.common.base.Preconditions;
 @Entity
 @Table(name = "report")
 public class Report extends ConfigurationEntity {
+    private static final long serialVersionUID = 891891512813117709L;
+
     @Basic(optional = false)
     @Column(name = "name", unique = true)
     private String name;

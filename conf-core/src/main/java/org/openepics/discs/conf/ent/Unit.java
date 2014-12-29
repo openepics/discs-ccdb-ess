@@ -50,6 +50,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
     @NamedQuery(name = "Unit.findByModifiedBy", query = "SELECT u FROM Unit u WHERE u.modifiedBy = :modifiedBy")
 })
 public class Unit extends ConfigurationEntity {
+    private static final long serialVersionUID = -1574351545793376961L;
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 32)

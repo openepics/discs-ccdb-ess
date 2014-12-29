@@ -47,6 +47,8 @@ import javax.xml.bind.annotation.XmlRootElement;
             + "WHERE i.modifiedBy = :modifiedBy")
 })
 public class InstallationArtifact extends Artifact {
+    private static final long serialVersionUID = 3029136683508636139L;
+
     @JoinColumn(name = "installation_record")
     @ManyToOne(optional = false)
     private InstallationRecord installationRecord;

@@ -55,6 +55,8 @@ import javax.xml.bind.annotation.XmlRootElement;
             + "WHERE a.entityId = :entityId AND a.entityType = :entityType ORDER BY a.logTime DESC")
 })
 public class AuditRecord implements Serializable {
+    private static final long serialVersionUID = 5144501646584495649L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")

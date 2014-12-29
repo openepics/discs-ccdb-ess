@@ -63,6 +63,8 @@ import com.google.common.collect.ImmutableMap.Builder;
 public class RBACEntityTypeSecurityPolicy extends AbstractEnityTypeSecurityPolicy
     implements SecurityPolicy, Serializable {
 
+    private static final long serialVersionUID = 7573725310824284483L;
+
     private static final Logger LOGGER = Logger.getLogger(RBACEntityTypeSecurityPolicy.class.getCanonicalName());
 
     private static final String RBAC_RESOURCE = "ControlsDatabase";

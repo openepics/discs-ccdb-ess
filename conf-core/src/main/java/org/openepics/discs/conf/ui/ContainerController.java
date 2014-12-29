@@ -38,6 +38,7 @@ import org.openepics.discs.conf.ui.common.UIException;
 @Named
 @ViewScoped
 public class ContainerController extends AbstractSlotsController {
+    private static final long serialVersionUID = 3588313725848034336L;
 
     /**
      * Java EE post construct life-cycle method.

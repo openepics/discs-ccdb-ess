@@ -46,6 +46,7 @@ import com.google.common.io.ByteStreams;
 @Named
 @ViewScoped
 public class DeviceManager implements Serializable, ExcelSingleFileImportUIHandlers {
+    private static final long serialVersionUID = -931725234946680611L;
 
     @Inject transient private DataLoaderHandler dataLoaderHandler;
     @Inject @DevicesLoaderQualifier transient private DataLoader devicesDataLoader;

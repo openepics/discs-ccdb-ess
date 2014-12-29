@@ -35,6 +35,7 @@ import org.openepics.names.jaxb.DeviceNameElement;
 @Alternative
 @Stateless
 public class NamesESS implements Names {
+    private static final long serialVersionUID = -7527895029962617807L;
 
     @Override
     public Set<String> getAllNames() {

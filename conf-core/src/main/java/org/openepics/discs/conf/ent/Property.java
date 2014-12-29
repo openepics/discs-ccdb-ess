@@ -49,6 +49,8 @@ import javax.xml.bind.annotation.XmlRootElement;
             + "WHERE p.modifiedBy = :modifiedBy")
 })
 public class Property extends ConfigurationEntity {
+    private static final long serialVersionUID = 7015867086270956395L;
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)

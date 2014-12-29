@@ -34,6 +34,8 @@ import javax.persistence.Embeddable;
  */
 @Embeddable
 public class PositionInformation implements Serializable {
+    private static final long serialVersionUID = 4639879699747739635L;
+
     @Column(name = "global_x")
     private Double globalX;
 

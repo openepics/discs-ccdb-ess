@@ -32,6 +32,7 @@ import javax.enterprise.inject.Alternative;
 @Alternative
 @Stateless
 public class NamesForDevelopment implements Names {
+    private static final long serialVersionUID = 7974397392868166709L;
 
     /**
      * Returns an empty {@link HashSet} for the purposes of development so that the application doesn't

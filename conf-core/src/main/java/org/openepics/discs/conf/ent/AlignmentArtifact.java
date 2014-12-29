@@ -48,6 +48,8 @@ import javax.xml.bind.annotation.XmlRootElement;
             + "WHERE a.modifiedBy = :modifiedBy")
 })
 public class AlignmentArtifact extends Artifact {
+    private static final long serialVersionUID = 5577832937866324727L;
+
     @JoinColumn(name = "alignment_record")
     @ManyToOne(optional = false)
     private AlignmentRecord alignmentRecord;

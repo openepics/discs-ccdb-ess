@@ -46,6 +46,8 @@ import javax.xml.bind.annotation.XmlRootElement;
             + "WHERE c.modifiedBy = :modifiedBy")
 })
 public class ComptypeAsm extends ConfigurationEntity {
+    private static final long serialVersionUID = 473793777108391666L;
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 16)

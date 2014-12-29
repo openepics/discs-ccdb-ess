@@ -45,6 +45,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "SlotRelation.findByName", query = "SELECT s FROM SlotRelation s WHERE s.name = :name")
 })
 public class SlotRelation extends ConfigurationEntity {
+    private static final long serialVersionUID = 2591452847410218530L;
+
     @Basic(optional = false)
     @NotNull
     @Enumerated(EnumType.STRING)

@@ -68,6 +68,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
             + "WHERE a.modifiedBy = :modifiedBy")
 })
 public class AlignmentRecord extends ConfigurationEntity {
+    private static final long serialVersionUID = -2801428073110847383L;
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)

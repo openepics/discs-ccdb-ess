@@ -43,6 +43,8 @@ import javax.xml.bind.annotation.XmlRootElement;
             + "WHERE s.modifiedBy = :modifiedBy")
 })
 public class SlotArtifact extends Artifact {
+    private static final long serialVersionUID = 8850678212689818458L;
+
     @JoinColumn(name = "slot")
     @ManyToOne(optional = false)
     private Slot slot;

@@ -64,6 +64,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
             + "WHERE ii.device = :device) ")
 })
 public class InstallationRecord extends ConfigurationEntity {
+    private static final long serialVersionUID = -2450506818908726847L;
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)

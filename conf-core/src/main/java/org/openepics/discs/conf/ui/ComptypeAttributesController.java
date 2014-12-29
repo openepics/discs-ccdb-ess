@@ -70,6 +70,7 @@ import com.google.common.collect.ImmutableList;
 @Named
 @ViewScoped
 public class ComptypeAttributesController extends AbstractAttributesController<ComptypePropertyValue, ComptypeArtifact> {
+    private static final long serialVersionUID = 1156974438243970794L;
 
     @Inject transient private ComptypeEJB comptypeEJB;
     @Inject transient private PropertyEJB propertyEJB;

@@ -67,6 +67,8 @@ import com.google.common.base.Preconditions;
 @Named
 @ViewScoped
 public class HierarchiesController implements Serializable {
+    private static final long serialVersionUID = 2743408661782529373L;
+
     private static final Logger LOGGER = Logger.getLogger(HierarchiesController.class.getCanonicalName());
 
     @Inject private SlotsTreeBuilder slotsTreeBuilder;
