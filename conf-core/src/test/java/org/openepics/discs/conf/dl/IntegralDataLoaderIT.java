@@ -1,6 +1,6 @@
 package org.openepics.discs.conf.dl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
 
 import java.io.InputStream;
 
@@ -62,27 +62,25 @@ public class IntegralDataLoaderIT {
 
         if (secondFileName==null) {
             final DataLoaderResult result = dataLoaderHandler.loadData(stream, (DataLoader) dataLoader);
-            
-            String errorMessage = "";
+
             if (result.isError()) {
                 StringBuilder sb = new StringBuilder();
                 for (ValidationMessage vm : result.getMessages())
                     sb.append(vm.toString() + '\n');
-                errorMessage = sb.toString();
             }
-            
+
             assertFalse(fileName+" loading failed." +
                     dumpDataLoaderMessages(result), result.isError());
         } else {
             final InputStream secondStream = this.getClass().getResourceAsStream("/dataloader/"+secondFileName);
 
             final DataLoaderResult result = dataLoaderHandler.loadDataFromTwoFiles(stream, secondStream, fileName, secondFileName);
-            
-            assertFalse(fileName+" or "+secondFileName+" loading failed:" + 
+
+            assertFalse(fileName+" or "+secondFileName+" loading failed:" +
                     dumpDataLoaderMessages(result), result.isError());
         }
     }
-    
+
     private String dumpDataLoaderMessages(DataLoaderResult result) {
         String errorMessage = "";
         if (result.isError()) {
