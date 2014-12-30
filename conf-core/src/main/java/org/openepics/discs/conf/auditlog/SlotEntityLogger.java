@@ -63,7 +63,10 @@ public class SlotEntityLogger implements EntityLogger<Slot> {
         final List<AuditRecord> auditRecords = new ArrayList<>();
         auditRecords.addAll(createAuditRecords(slot, operation));
         if (operation == EntityTypeOperation.CREATE && slot.getPairsInWhichThisSlotIsAChildList().size() == 1) {
-            auditRecords.addAll(createAuditRecords(slot.getPairsInWhichThisSlotIsAChildList().get(0).getParentSlot(), operation));
+            // Create an audit record for the parent slot as well.
+            // For parent slot adding a new child is an UPDATE operation.
+            auditRecords.addAll(createAuditRecords(slot.getPairsInWhichThisSlotIsAChildList().get(0).getParentSlot(),
+                                                        EntityTypeOperation.UPDATE));
         }
         return auditRecords;
     }
@@ -72,7 +75,8 @@ public class SlotEntityLogger implements EntityLogger<Slot> {
         final Map<String, String> propertiesMap = new TreeMap<>();
         if (slot.getSlotPropertyList() != null) {
             for (SlotPropertyValue propValue : slot.getSlotPropertyList()) {
-                final String entryValue = propValue.getPropValue() == null ? null : propValue.getPropValue().auditLogString(100, 50);
+                final String entryValue = propValue.getPropValue() == null ? null
+                                                : propValue.getPropValue().auditLogString(100, 50);
                 propertiesMap.put(propValue.getProperty().getName(), entryValue);
             }
         }
@@ -101,7 +105,8 @@ public class SlotEntityLogger implements EntityLogger<Slot> {
         final Map<String, String> installationDeviceMap = new TreeMap<>();
         InstallationRecord lastInstallationRecord = null;
         for (InstallationRecord installationRecord : slot.getInstallationRecordList()) {
-            if (lastInstallationRecord == null || installationRecord.getModifiedAt().after(lastInstallationRecord.getModifiedAt())) {
+            if (lastInstallationRecord == null
+                    || installationRecord.getModifiedAt().after(lastInstallationRecord.getModifiedAt())) {
                 lastInstallationRecord = installationRecord;
             }
         }
@@ -130,8 +135,7 @@ public class SlotEntityLogger implements EntityLogger<Slot> {
                         .addArrayOfProperties("tagsList", EntityLoggerUtil.getTagNamesFromTagsSet(slot.getTags()));
 
         // If positionInformation is empty do not add it
-        if (slot.getPositionInformation().isEmpty())
-        {
+        if (slot.getPositionInformation().isEmpty()) {
             logUtil.removeTopProperties(Arrays.asList("positionInformation"));
         }
 
