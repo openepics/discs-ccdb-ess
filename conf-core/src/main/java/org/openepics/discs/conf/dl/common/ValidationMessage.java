@@ -51,7 +51,7 @@ public class ValidationMessage {
      * @param message the message enumeration
      */
     public ValidationMessage(ErrorMessage message) {
-        this(message, null);
+        this(message, null, null, null, null);
     }
 
     /**
@@ -61,7 +61,7 @@ public class ValidationMessage {
      * @param row the row location description, or null for no information
      */
     public ValidationMessage(ErrorMessage message, String row) {
-        this(message, row, null);
+        this(message, row, null, null, null);
     }
 
 
@@ -72,8 +72,7 @@ public class ValidationMessage {
      * @param row the row location description, or null for no information
      * @param column the column location description, or null for no information
      */
-    public ValidationMessage(ErrorMessage message, String row,
-                             String column) {
+    public ValidationMessage(ErrorMessage message, String row,  String column) {
         this(message, row, column, null, null);
     }
 

@@ -1,55 +1,58 @@
-<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:p="http://primefaces.org/ui"
-                xmlns:f="http://java.sun.com/jsf/core"
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets" 
+                xmlns:p="http://primefaces.org/ui" 
+                xmlns:f="http://java.sun.com/jsf/core" 
                 xmlns:h="http://java.sun.com/jsf/html">
-               
-	<h:form id="#{formId}" enctype="multipart/form-data">
-        <p:dialog widgetVar="#{widgetName}" modal="true"
-            resizable="false" width="35%">
+
+    <h:form id="#{formId}" enctype="multipart/form-data">
+        <p:dialog widgetVar="#{widgetName}" modal="true" resizable="false" width="35%">
             <f:facet name="header">
                 <h:outputText value="#{dialogTitle}" />
             </f:facet>
             <h:panelGroup id="grp" layout="block">
-                <h:panelGroup rendered="#{controller.importFileName == null}"
-                    layout="block" style="padding: 0 0 7px 0">Please choose an Excel file (*.xlsx) to import data from.</h:panelGroup>
-                <p:fileUpload fileUploadListener="#{controller.handleImportFileUpload}"
-                    update="grp" mode="advanced" auto="true" fileLimit="1"
-                    dragDropSupport="true" allowTypes="/(\.|\/)(xlsx)$/"
+                <h:panelGroup rendered="#{controller.importFileName == null}" layout="block" 
+                    style="padding: 0 0 7px 0">Please choose an Excel file (*.xlsx) to import data from.</h:panelGroup>
+                <p:fileUpload fileUploadListener="#{controller.handleImportFileUpload}" 
+                    update="grp" mode="advanced" auto="true" fileLimit="1" 
+                    dragDropSupport="true" allowTypes="/(\.|\/)(xlsx)$/" 
                     rendered="#{controller.importFileName == null}" />
                 <h:outputText value="#{controller.importFileName}" />
                 <p:separator />
                 <p:commandButton value="Cancel" styleClass="dialogButton" onclick="#{widgetName}.hide();" />
-                <p:commandButton value="Import" styleClass="dialogButton" onclick="statusDialog.show()"
-                    update=":menuform :#{formId}" oncomplete="#{widgetName}.hide(); statusDialog.hide();"
+                <p:commandButton value="Import" styleClass="dialogButton" onclick="statusDialog.show()" 
+                    update=":menuform :#{formId}" oncomplete="#{widgetName}.hide(); statusDialog.hide();" 
                     action="#{controller.doImport()}" disabled="#{controller.importFileName == null}" />
             </h:panelGroup>
         </p:dialog>
-        
-        <p:dialog id="resultDialog" widgetVar="resultDialog" modal="true" visible="#{controller.importFileName != null and controller.loaderResult != null}" style="max-width: 90%; max-height: 600px;" resizable="false" closable="false">  
-                <f:facet name="header">
-                    <h:outputText value="#{!controller.loaderResult.error ? 'Import Successful' : 'Error in Import Spreadsheet'}"
-                            style="#{controller.loaderResult.error ? 'color: red !important;' : ''}"/>
-                </f:facet>
 
-                <p:panel styleClass="para" >
-                    <h:panelGroup rendered="#{controller.loaderResult.error}" layout="block">
-                        Data cannot be imported since there are some errors in the spreadsheet. Please correct the errors and try the import again.
-                    </h:panelGroup>
-                    <h:panelGroup rendered="#{!controller.loaderResult.error}" layout="block">
-                        Data was successfully imported.
-                    </h:panelGroup>
-                </p:panel>
-    
-                <p:panel rendered="#{controller.loaderResult.error}" style="max-width: 100%; max-height: 400px; overflow: auto">
-                    <pre>
-                        <h:outputText value="#{controller.loaderResult.toString()}" />  
-                    </pre>
-                </p:panel>
-                
-                <p:spacer height="16"/>
-                <h:form id="resultDialogForm">                                                        
-                    <p:commandButton value="Close" styleClass="dialogButton" onclick="resultDialog.hide()" />                            
-                </h:form>
-            </p:dialog>
+        <p:dialog id="resultDialog" widgetVar="resultDialog" modal="true" style="max-width: 90%; max-height: 600px;" 
+                visible="#{controller.importFileName != null and controller.loaderResult != null}" resizable="false" 
+                closable="false">  
+            <f:facet name="header">
+                <h:outputText style="#{controller.loaderResult.error ? 'color: red !important;' : ''}" 
+                    value="#{!controller.loaderResult.error ? 'Import Successful' : 'Error in Import Spreadsheet'}" />
+            </f:facet>
+
+            <p:panel styleClass="para" >
+                <h:panelGroup rendered="#{controller.loaderResult.error}" layout="block">
+                    Data cannot be imported since there are some errors in the spreadsheet. 
+                    Please correct the errors and try the import again.
+                </h:panelGroup>
+                <h:panelGroup rendered="#{!controller.loaderResult.error}" layout="block">
+                    Data was successfully imported.
+                </h:panelGroup>
+            </p:panel>
+
+            <p:panel rendered="#{controller.loaderResult.error}" style="max-width: 100%; max-height: 400px; overflow: auto">
+                <pre>
+                    <h:outputText value="#{controller.loaderResult.toString()}" />
+                </pre>
+            </p:panel>
+
+            <p:spacer height="16"/>
+            <h:form id="resultDialogForm">
+                <p:commandButton value="Close" styleClass="dialogButton" onclick="resultDialog.hide()" 
+                    style="margin-top: 1ex;" />
+            </h:form>
+        </p:dialog>
     </h:form>
 </ui:composition>
