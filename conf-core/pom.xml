@@ -284,6 +284,12 @@
                     <groupId>org.openepics</groupId>
                     <artifactId>names-client</artifactId>
                     <version>3.0.1</version>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>asm</groupId>
+                            <artifactId>asm</artifactId>
+                        </exclusion>
+                    </exclusions>
                 </dependency>
                 <dependency>
                     <groupId>org.postgresql</groupId>
