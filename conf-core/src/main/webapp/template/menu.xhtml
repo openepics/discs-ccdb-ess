@@ -67,14 +67,14 @@
 
     <ui:include src="../loaders/single-file-DL.xhtml">
         <ui:param name="formId" value="importCompTypesForm" />
-        <ui:param name="dialogTitle" value="Component Types Import" />
+        <ui:param name="dialogTitle" value="Device Types Import" />
         <ui:param name="widgetName" value="importCompTypes" />
         <ui:param name="controller" value="#{componentTypeManager}" />
     </ui:include>
 
     <ui:include src="../loaders/multiple-files-DL.xhtml">
         <ui:param name="formId" value="importSlotsForm" />
-        <ui:param name="dialogTitle" value="Slots and Slot Relationships Import" />
+        <ui:param name="dialogTitle" value="Slots and Slot Pairs Import" />
         <ui:param name="widgetName" value="importSlots" />
         <ui:param name="controller" value="#{slotManager}" />
         <ui:param name="firstFileContents" value="slots" />

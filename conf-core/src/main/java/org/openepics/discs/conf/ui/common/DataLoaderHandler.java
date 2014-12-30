@@ -31,7 +31,9 @@ import javax.inject.Inject;
 import org.openepics.discs.conf.dl.SlotsAndSlotPairsDataLoader;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
+import org.openepics.discs.conf.dl.common.ErrorMessage;
 import org.openepics.discs.conf.dl.common.ExcelImportFileReader;
+import org.openepics.discs.conf.dl.common.ValidationMessage;
 
 /**
  * Common data loader handler for loading of all data.
@@ -68,6 +70,9 @@ public class DataLoaderHandler {
             if (loaderResult.isError()) {
                 context.setRollbackOnly();
             }
+        } else {
+            loaderResult = new DataLoaderResult();
+            loaderResult.addMessage(new ValidationMessage(ErrorMessage.HEADER_ROW_MISSING));
         }
         return loaderResult;
     }

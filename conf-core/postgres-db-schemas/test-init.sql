@@ -92,10 +92,13 @@ INSERT INTO config VALUES (48, 'schema_version', '1', 0);
 -- !
 
 INSERT INTO ccdb_user VALUES ('admin', NULL, NULL, 'admin', 0);
+INSERT INTO ccdb_user VALUES ('editor', NULL, NULL, 'editor', 0);
 
 INSERT INTO role VALUES ('admin', 'test role', 0);
+INSERT INTO role VALUES ('editor_role', 'test editor role', 0);
 
 INSERT INTO user_role VALUES (1, true, NULL, '2014-12-17 10:37:59.598', true, '2014-12-17 10:37:59.598', 0, 'admin', 'admin');
+INSERT INTO user_role VALUES (2, true, NULL, '2014-12-17 10:37:59.598', false, '2014-12-17 10:37:59.598', 0, 'editor_role', 'editor');
 
 INSERT INTO privilege VALUES (2, 'CREATE', 'COMPONENT_TYPE', 'admin');
 INSERT INTO privilege VALUES (3, 'UPDATE', 'COMPONENT_TYPE', 'admin');
@@ -128,6 +131,20 @@ INSERT INTO privilege VALUES (29, 'CREATE', 'INSTALLATION_RECORD', 'admin');
 INSERT INTO privilege VALUES (30, 'UPDATE', 'INSTALLATION_RECORD', 'admin');
 INSERT INTO privilege VALUES (31, 'RENAME', 'INSTALLATION_RECORD', 'admin');
 INSERT INTO privilege VALUES (32, 'DELETE', 'INSTALLATION_RECORD', 'admin');
+
+INSERT INTO privilege VALUES (40, 'CREATE', 'DEVICE', 'editor_role');
+INSERT INTO privilege VALUES (41, 'UPDATE', 'DEVICE', 'editor_role');
+INSERT INTO privilege VALUES (42, 'DELETE', 'DEVICE', 'editor_role');
+INSERT INTO privilege VALUES (43, 'RENAME', 'DEVICE', 'editor_role');
+INSERT INTO privilege VALUES (44, 'CREATE', 'INSTALLATION_RECORD', 'editor_role');
+INSERT INTO privilege VALUES (45, 'UPDATE', 'INSTALLATION_RECORD', 'editor_role');
+INSERT INTO privilege VALUES (46, 'RENAME', 'INSTALLATION_RECORD', 'editor_role');
+INSERT INTO privilege VALUES (47, 'DELETE', 'INSTALLATION_RECORD', 'editor_role');
+INSERT INTO privilege VALUES (48, 'CREATE', 'SLOT', 'editor_role');
+INSERT INTO privilege VALUES (49, 'UPDATE', 'SLOT', 'editor_role');
+INSERT INTO privilege VALUES (50, 'RENAME', 'SLOT', 'editor_role');
+INSERT INTO privilege VALUES (51, 'DELETE', 'SLOT', 'editor_role');
+INSERT INTO privilege VALUES (52, 'UPDATE', 'PROPERTY', 'editor_role');
 
 -- !
 -- ! basic data
