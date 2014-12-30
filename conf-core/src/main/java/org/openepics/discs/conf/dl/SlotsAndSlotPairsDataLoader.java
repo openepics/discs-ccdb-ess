@@ -183,13 +183,17 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
 
                 final boolean isHosting;
 
-                if (isHostingString.equalsIgnoreCase(Boolean.TRUE.toString())) {
-                    isHosting = true;
-                } else if (isHostingString.equalsIgnoreCase(Boolean.FALSE.toString())) {
-                    isHosting = false;
+                if (!command.equals(CMD_RENAME) && !command.equals(CMD_DELETE)) {
+                    if (isHostingString.equalsIgnoreCase(Boolean.TRUE.toString())) {
+                        isHosting = true;
+                    } else if (isHostingString.equalsIgnoreCase(Boolean.FALSE.toString())) {
+                        isHosting = false;
+                    } else {
+                        isHosting = false;
+                        rowResult.addMessage(new ValidationMessage(ErrorMessage.SHOULD_BE_BOOLEAN_VALUE, rowNumber, headerRow.get(isHostingIndex)));
+                    }
                 } else {
-                    isHosting = false;
-                    rowResult.addMessage(new ValidationMessage(ErrorMessage.SHOULD_BE_BOOLEAN_VALUE, rowNumber, headerRow.get(isHostingIndex)));
+                    isHosting  = true;
                 }
 
                 if (!rowResult.isError()) {
