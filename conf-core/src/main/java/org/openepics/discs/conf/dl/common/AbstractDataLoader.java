@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Skeleton for all data loaders.
@@ -84,6 +86,15 @@ public abstract class AbstractDataLoader {
                 rowResult.addMessage(new ValidationMessage(ErrorMessage.DUPLICATES_IN_HEADER, headerRow.get(0), headerEntry));
                 duplicateHeaderEntries.add(headerEntry);
             }
+        }
+    }
+
+    protected void handleLoadingError(Logger logger, Exception e, String rowNumber, List<String> headerRow) {
+        logger.log(Level.FINE, e.getMessage(), e);
+        if (e.getCause() instanceof org.openepics.discs.conf.security.SecurityException) {
+            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+        } else {
+            rowResult.addMessage(new ValidationMessage(ErrorMessage.UNKNOWN, rowNumber, headerRow.get(commandIndex)));
         }
     }
 }

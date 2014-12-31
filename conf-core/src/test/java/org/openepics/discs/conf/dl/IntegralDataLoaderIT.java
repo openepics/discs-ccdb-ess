@@ -46,7 +46,7 @@ import org.openepics.discs.conf.util.TestUtility;
 @RunWith(Arquillian.class)
 public class IntegralDataLoaderIT {
 
-    @Inject @UnitLoaderQualifier private DataLoader unitsDataLoader;
+    @Inject @UnitsLoaderQualifier private DataLoader unitsDataLoader;
     @Inject @PropertiesLoaderQualifier private DataLoader propertiesDataLoader;
     @Inject @ComponentTypesLoaderQualifier private DataLoader ctypesDataLoader;
     @Inject @DevicesLoaderQualifier private DataLoader devicesDataLoader;

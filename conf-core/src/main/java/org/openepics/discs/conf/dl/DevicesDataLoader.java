@@ -26,7 +26,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.Nullable;
@@ -148,12 +147,7 @@ fileProcessing:
                                         addOrUpdateDevice(deviceToUpdate, compType, description, status, manufSerial, location, purchaseOrder, asmPosition, asmDescription, manufacturer, manufModel);
                                         addOrUpdateProperties(deviceToUpdate, indexByPropertyName, row, rowNumber);
                                     } catch (EJBTransactionRolledbackException e) {
-                                        LOGGER.log(Level.FINE, e.getMessage(), e);
-                                        if (e.getCause() instanceof org.openepics.discs.conf.security.SecurityException) {
-                                            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
-                                        } else {
-                                            rowResult.addMessage(new ValidationMessage(ErrorMessage.UNKNOWN, rowNumber, headerRow.get(commandIndex)));
-                                        }
+                                        handleLoadingError(LOGGER, e, rowNumber, headerRow);
                                         // cannot continue when the transaction is already rolled back
                                         break fileProcessing;
                                     }
@@ -170,12 +164,7 @@ fileProcessing:
                                         deviceEJB.addDeviceAndPropertyDefs(newDevice);
                                         addOrUpdateProperties(newDevice, indexByPropertyName, row, rowNumber);
                                     } catch (EJBTransactionRolledbackException e) {
-                                        LOGGER.log(Level.FINE, e.getMessage(), e);
-                                        if (e.getCause() instanceof org.openepics.discs.conf.security.SecurityException) {
-                                            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
-                                        } else {
-                                            rowResult.addMessage(new ValidationMessage(ErrorMessage.UNKNOWN, rowNumber, headerRow.get(commandIndex)));
-                                        }
+                                        handleLoadingError(LOGGER, e, rowNumber, headerRow);
                                         // cannot continue when the transaction is already rolled back
                                         break fileProcessing;
                                     }
@@ -190,12 +179,7 @@ fileProcessing:
                                 try {
                                     deviceEJB.delete(deviceToDelete);
                                 } catch (EJBTransactionRolledbackException e) {
-                                    LOGGER.log(Level.FINE, e.getMessage(), e);
-                                    if (e.getCause() instanceof org.openepics.discs.conf.security.SecurityException) {
-                                        rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
-                                    } else {
-                                        rowResult.addMessage(new ValidationMessage(ErrorMessage.UNKNOWN, rowNumber, headerRow.get(commandIndex)));
-                                    }
+                                    handleLoadingError(LOGGER, e, rowNumber, headerRow);
                                     // cannot continue when the transaction is already rolled back
                                     break fileProcessing;
                                 }

@@ -48,7 +48,7 @@ import com.google.common.collect.ImmutableList;
 @RunWith(Arquillian.class)
 public class UnitsDataLoaderIT {
 
-    @Inject @UnitLoaderQualifier private DataLoader unitsDataLoader;
+    @Inject @UnitsLoaderQualifier private DataLoader unitsDataLoader;
     @Inject private TestUtility testUtility;
 
     private List<List<String>> inputRows;
