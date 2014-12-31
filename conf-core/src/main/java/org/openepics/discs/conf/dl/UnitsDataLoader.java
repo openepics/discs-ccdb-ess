@@ -23,8 +23,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.Nullable;
+import javax.ejb.EJBTransactionRolledbackException;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
@@ -45,8 +48,10 @@ import com.google.common.base.Preconditions;
  *
  */
 @Stateless
-@UnitLoaderQualifier
+@UnitsLoaderQualifier
 public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
+    private static final Logger LOGGER = Logger.getLogger(UnitsDataLoader.class.getCanonicalName());
+
     @Inject private UnitEJB unitEJB;
 
     private Map<String, Unit> unitByName;
@@ -69,6 +74,7 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
         setUpIndexesForFields(headerRow);
 
         if (!rowResult.isError()) {
+fileProcessing:
             for (List<String> row : inputRows.subList(1, inputRows.size())) {
                 final String rowNumber = row.get(0);
                 loaderResult.addResult(rowResult);
@@ -119,18 +125,30 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
                                     unitToUpdate.setSymbol(symbol);
                                     unitToUpdate.setModifiedAt(modifiedAt);
                                     unitEJB.save(unitToUpdate);
-                                } catch (SecurityException e) {
-                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
-                                    continue;
+                                } catch (EJBTransactionRolledbackException e) {
+                                    LOGGER.log(Level.FINE, e.getMessage(), e);
+                                    if (e.getCause() instanceof org.openepics.discs.conf.security.SecurityException) {
+                                        rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                                    } else {
+                                        rowResult.addMessage(new ValidationMessage(ErrorMessage.UNKNOWN, rowNumber, headerRow.get(commandIndex)));
+                                    }
+                                    // cannot continue when the transaction is already rolled back
+                                    break fileProcessing;
                                 }
                             } else {
                                 try {
                                     final Unit unitToAdd = new Unit(name, quantity, symbol, description);
                                     unitEJB.add(unitToAdd);
                                     unitByName.put(unitToAdd.getName(), unitToAdd);
-                                } catch (SecurityException e) {
-                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
-                                    continue;
+                                } catch (EJBTransactionRolledbackException e) {
+                                    LOGGER.log(Level.FINE, e.getMessage(), e);
+                                    if (e.getCause() instanceof org.openepics.discs.conf.security.SecurityException) {
+                                        rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                                    } else {
+                                        rowResult.addMessage(new ValidationMessage(ErrorMessage.UNKNOWN, rowNumber, headerRow.get(commandIndex)));
+                                    }
+                                    // cannot continue when the transaction is already rolled back
+                                    break fileProcessing;
                                 }
                             }
                             break;
@@ -144,10 +162,15 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
                                     unitEJB.delete(unitToDelete);
                                     unitByName.remove(unitToDelete.getName());
                                 }
-                            } catch (Exception e) {
-                                if (e instanceof SecurityException)
+                            } catch (EJBTransactionRolledbackException e) {
+                                LOGGER.log(Level.FINE, e.getMessage(), e);
+                                if (e.getCause() instanceof org.openepics.discs.conf.security.SecurityException) {
                                     rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
-                                continue;
+                                } else {
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.UNKNOWN, rowNumber, headerRow.get(commandIndex)));
+                                }
+                                // cannot continue when the transaction is already rolled back
+                                break fileProcessing;
                             }
                             break;
                         case CMD_RENAME:
@@ -177,10 +200,15 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
                                     rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
                                     continue;
                                 }
-                            } catch (Exception e) {
-                                if (e instanceof SecurityException)
+                            } catch (EJBTransactionRolledbackException e) {
+                                LOGGER.log(Level.FINE, e.getMessage(), e);
+                                if (e.getCause() instanceof org.openepics.discs.conf.security.SecurityException) {
                                     rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
-                                continue;
+                                } else {
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.UNKNOWN, rowNumber, headerRow.get(commandIndex)));
+                                }
+                                // cannot continue when the transaction is already rolled back
+                                break fileProcessing;
                             }
                             break;
                         default:

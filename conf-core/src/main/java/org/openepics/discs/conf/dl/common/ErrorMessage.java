@@ -44,7 +44,8 @@ public enum ErrorMessage {
     SAME_CHILD_AND_PARENT("Loop relationship. Child and parent can't be the same slot"),
     DUPLICATES_IN_HEADER("Duplicate filed or property definition has been found in header"),
     PROPERTY_NOT_FOUND("Property with this name was not found"),
-    DEVICE_STATUS_NOT_FOUND("This value of device status does not exist");
+    DEVICE_STATUS_NOT_FOUND("This value of device status does not exist"),
+    UNKNOWN("Unexpected error.");
 
     private final String text;
 

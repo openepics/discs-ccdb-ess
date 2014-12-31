@@ -30,6 +30,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.Nullable;
+import javax.ejb.EJBTransactionRolledbackException;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
@@ -87,6 +88,7 @@ public class DevicesDataLoader extends AbstractDataLoader implements DataLoader 
         checkPropertyAssociation(indexByPropertyName, headerRow.get(0));
 
         if (!rowResult.isError()) {
+fileProcessing:
             for (List<String> row : inputRows.subList(1, inputRows.size())) {
                 final String rowNumber = row.get(0);
                 loaderResult.addResult(rowResult);
@@ -145,9 +147,15 @@ public class DevicesDataLoader extends AbstractDataLoader implements DataLoader 
                                         final Device deviceToUpdate = deviceEJB.findDeviceBySerialNumber(serial);
                                         addOrUpdateDevice(deviceToUpdate, compType, description, status, manufSerial, location, purchaseOrder, asmPosition, asmDescription, manufacturer, manufModel);
                                         addOrUpdateProperties(deviceToUpdate, indexByPropertyName, row, rowNumber);
-                                    } catch (Exception e) {
-                                        LOGGER.log(Level.FINE, ErrorMessage.NOT_AUTHORIZED.toString(), e);
-                                        rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                                    } catch (EJBTransactionRolledbackException e) {
+                                        LOGGER.log(Level.FINE, e.getMessage(), e);
+                                        if (e.getCause() instanceof org.openepics.discs.conf.security.SecurityException) {
+                                            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                                        } else {
+                                            rowResult.addMessage(new ValidationMessage(ErrorMessage.UNKNOWN, rowNumber, headerRow.get(commandIndex)));
+                                        }
+                                        // cannot continue when the transaction is already rolled back
+                                        break fileProcessing;
                                     }
                                 }
                             } else {
@@ -161,9 +169,15 @@ public class DevicesDataLoader extends AbstractDataLoader implements DataLoader 
                                         addOrUpdateDevice(newDevice, compType, description, status, manufSerial, location, purchaseOrder, asmPosition, asmDescription, manufacturer, manufModel);
                                         deviceEJB.addDeviceAndPropertyDefs(newDevice);
                                         addOrUpdateProperties(newDevice, indexByPropertyName, row, rowNumber);
-                                    } catch (Exception e) {
-                                        LOGGER.log(Level.FINE, ErrorMessage.NOT_AUTHORIZED.toString(), e);
-                                        rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                                    } catch (EJBTransactionRolledbackException e) {
+                                        LOGGER.log(Level.FINE, e.getMessage(), e);
+                                        if (e.getCause() instanceof org.openepics.discs.conf.security.SecurityException) {
+                                            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                                        } else {
+                                            rowResult.addMessage(new ValidationMessage(ErrorMessage.UNKNOWN, rowNumber, headerRow.get(commandIndex)));
+                                        }
+                                        // cannot continue when the transaction is already rolled back
+                                        break fileProcessing;
                                     }
                                 }
                             }
@@ -175,9 +189,15 @@ public class DevicesDataLoader extends AbstractDataLoader implements DataLoader 
                             } else {
                                 try {
                                     deviceEJB.delete(deviceToDelete);
-                                } catch (Exception e) {
-                                    LOGGER.log(Level.FINE, ErrorMessage.NOT_AUTHORIZED.toString(), e);
-                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                                } catch (EJBTransactionRolledbackException e) {
+                                    LOGGER.log(Level.FINE, e.getMessage(), e);
+                                    if (e.getCause() instanceof org.openepics.discs.conf.security.SecurityException) {
+                                        rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                                    } else {
+                                        rowResult.addMessage(new ValidationMessage(ErrorMessage.UNKNOWN, rowNumber, headerRow.get(commandIndex)));
+                                    }
+                                    // cannot continue when the transaction is already rolled back
+                                    break fileProcessing;
                                 }
                             }
                             break;

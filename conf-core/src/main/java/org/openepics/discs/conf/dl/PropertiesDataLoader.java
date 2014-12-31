@@ -23,8 +23,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.Nullable;
+import javax.ejb.EJBTransactionRolledbackException;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
@@ -52,6 +55,8 @@ import com.google.common.base.Preconditions;
 @Stateless
 @PropertiesLoaderQualifier
 public class PropertiesDataLoader extends AbstractDataLoader implements DataLoader {
+    private static final Logger LOGGER = Logger.getLogger(PropertiesDataLoader.class.getCanonicalName());
+
     @Inject private PropertyEJB propertyEJB;
     @Inject private DataTypeEJB dataTypeEJB;
     @Inject private UnitEJB unitEJB;
@@ -76,6 +81,7 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
         setUpIndexesForFields(headerRow);
 
         if (!rowResult.isError()) {
+fileProcessing:
             for (List<String> row : inputRows.subList(1, inputRows.size())) {
                 final String rowNumber = row.get(0);
                 loaderResult.addResult(rowResult);
@@ -130,8 +136,15 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
                                     } else {
                                         propertyEJB.save(propertyToUpdate);
                                     }
-                                } catch (SecurityException e) {
-                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                                } catch (EJBTransactionRolledbackException e) {
+                                    LOGGER.log(Level.FINE, e.getMessage(), e);
+                                    if (e.getCause() instanceof org.openepics.discs.conf.security.SecurityException) {
+                                        rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                                    } else {
+                                        rowResult.addMessage(new ValidationMessage(ErrorMessage.UNKNOWN, rowNumber, headerRow.get(commandIndex)));
+                                    }
+                                    // cannot continue when the transaction is already rolled back
+                                    break fileProcessing;
                                 }
                             } else {
                                 try {
@@ -144,8 +157,15 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
                                         propertyEJB.add(propertyToAdd);
                                         propertyByName.put(propertyToAdd.getName(), propertyToAdd);
                                     }
-                                } catch (SecurityException e) {
-                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                                } catch (EJBTransactionRolledbackException e) {
+                                    LOGGER.log(Level.FINE, e.getMessage(), e);
+                                    if (e.getCause() instanceof org.openepics.discs.conf.security.SecurityException) {
+                                        rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                                    } else {
+                                        rowResult.addMessage(new ValidationMessage(ErrorMessage.UNKNOWN, rowNumber, headerRow.get(commandIndex)));
+                                    }
+                                    // cannot continue when the transaction is already rolled back
+                                    break fileProcessing;
                                 }
                             }
                             break;
@@ -159,8 +179,15 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
                                     propertyEJB.delete(propertyToDelete);
                                     propertyByName.remove(propertyToDelete.getName());
                                 }
-                            } catch (SecurityException e) {
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                            } catch (EJBTransactionRolledbackException e) {
+                                LOGGER.log(Level.FINE, e.getMessage(), e);
+                                if (e.getCause() instanceof org.openepics.discs.conf.security.SecurityException) {
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                                } else {
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.UNKNOWN, rowNumber, headerRow.get(commandIndex)));
+                                }
+                                // cannot continue when the transaction is already rolled back
+                                break fileProcessing;
                             }
                             break;
                         case CMD_RENAME:
@@ -190,8 +217,15 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
                                     rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
                                     continue;
                                 }
-                            } catch (Exception e) {
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                            } catch (EJBTransactionRolledbackException e) {
+                                LOGGER.log(Level.FINE, e.getMessage(), e);
+                                if (e.getCause() instanceof org.openepics.discs.conf.security.SecurityException) {
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                                } else {
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.UNKNOWN, rowNumber, headerRow.get(commandIndex)));
+                                }
+                                // cannot continue when the transaction is already rolled back
+                                break fileProcessing;
                             }
                             break;
                         default:

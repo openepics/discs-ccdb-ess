@@ -31,7 +31,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.io.FilenameUtils;
-import org.openepics.discs.conf.dl.UnitLoaderQualifier;
+import org.openepics.discs.conf.dl.UnitsLoaderQualifier;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.ejb.UnitEJB;
@@ -55,7 +55,7 @@ public class UnitManager implements Serializable, ExcelSingleFileImportUIHandler
 
     @Inject transient private UnitEJB unitEJB;
     @Inject transient private DataLoaderHandler dataLoaderHandler;
-    @Inject @UnitLoaderQualifier transient private DataLoader unitsDataLoader;
+    @Inject @UnitsLoaderQualifier transient private DataLoader unitsDataLoader;
 
     private List<Unit> units;
     private List<Unit> filteredUnits;

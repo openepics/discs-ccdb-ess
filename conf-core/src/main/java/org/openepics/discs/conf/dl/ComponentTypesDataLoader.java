@@ -28,6 +28,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.Nullable;
+import javax.ejb.EJBTransactionRolledbackException;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
@@ -82,6 +83,7 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
         checkPropertyAssociation(indexByPropertyName, headerRow.get(0));
 
         if (!rowResult.isError()) {
+fileProcessing:
             for (List<String> row : inputRows.subList(1, inputRows.size())) {
                 final String rowNumber = row.get(0);
                 loaderResult.addResult(rowResult);
@@ -128,9 +130,15 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
                                 if (rowResult.isError()) {
                                     continue;
                                 }
-                            } catch (Exception e) {
-                                LOGGER.log(Level.FINE, ErrorMessage.NOT_AUTHORIZED.toString(), e);
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                            } catch (EJBTransactionRolledbackException e) {
+                                LOGGER.log(Level.FINE, e.getMessage(), e);
+                                if (e.getCause() instanceof org.openepics.discs.conf.security.SecurityException) {
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                                } else {
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.UNKNOWN, rowNumber, headerRow.get(commandIndex)));
+                                }
+                                // cannot continue when the transaction is already rolled back
+                                break fileProcessing;
                             }
                         } else {
                             try {
@@ -141,9 +149,15 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
                                 if (rowResult.isError()) {
                                     continue;
                                 }
-                            } catch (Exception e) {
-                                LOGGER.log(Level.FINE, ErrorMessage.NOT_AUTHORIZED.toString(), e);
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                            } catch (EJBTransactionRolledbackException e) {
+                                LOGGER.log(Level.FINE, e.getMessage(), e);
+                                if (e.getCause() instanceof org.openepics.discs.conf.security.SecurityException) {
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                                } else {
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.UNKNOWN, rowNumber, headerRow.get(commandIndex)));
+                                }
+                                // cannot continue when the transaction is already rolled back
+                                break fileProcessing;
                             }
                         }
                         break;
@@ -160,9 +174,15 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
                                 }
                                 comptypeEJB.delete(componentTypeToDelete);
                             }
-                        } catch (Exception e) {
-                            LOGGER.log(Level.FINE, ErrorMessage.NOT_AUTHORIZED.toString(), e);
-                            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                        } catch (EJBTransactionRolledbackException e) {
+                            LOGGER.log(Level.FINE, e.getMessage(), e);
+                            if (e.getCause() instanceof org.openepics.discs.conf.security.SecurityException) {
+                                rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                            } else {
+                                rowResult.addMessage(new ValidationMessage(ErrorMessage.UNKNOWN, rowNumber, headerRow.get(commandIndex)));
+                            }
+                            // cannot continue when the transaction is already rolled back
+                            break fileProcessing;
                         }
                         break;
                     case CMD_RENAME:
@@ -194,9 +214,15 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
                                 rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
                                 continue;
                             }
-                        } catch (Exception e) {
-                            LOGGER.log(Level.FINE, ErrorMessage.NOT_AUTHORIZED.toString(), e);
-                            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                        } catch (EJBTransactionRolledbackException e) {
+                            LOGGER.log(Level.FINE, e.getMessage(), e);
+                            if (e.getCause() instanceof org.openepics.discs.conf.security.SecurityException) {
+                                rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                            } else {
+                                rowResult.addMessage(new ValidationMessage(ErrorMessage.UNKNOWN, rowNumber, headerRow.get(commandIndex)));
+                            }
+                            // cannot continue when the transaction is already rolled back
+                            break fileProcessing;
                         }
                         break;
                     default:

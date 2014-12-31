@@ -41,4 +41,4 @@ import org.openepics.discs.conf.dl.common.DataLoader;
 @Qualifier
 @Retention(RetentionPolicy.RUNTIME)
 @Target({TYPE, METHOD, FIELD, PARAMETER})
-public @interface UnitLoaderQualifier {}
+public @interface UnitsLoaderQualifier {}
