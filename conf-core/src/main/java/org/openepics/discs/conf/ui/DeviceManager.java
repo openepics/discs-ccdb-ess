@@ -31,6 +31,7 @@ import org.openepics.discs.conf.dl.DevicesLoaderQualifier;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
+import org.openepics.discs.conf.ui.common.ExcelSingleFileImportUIHandlers;
 import org.primefaces.event.FileUploadEvent;
 
 import com.google.common.io.ByteStreams;
@@ -44,14 +45,15 @@ import com.google.common.io.ByteStreams;
  */
 @Named
 @ViewScoped
-public class DeviceManager implements Serializable {
+public class DeviceManager implements Serializable, ExcelSingleFileImportUIHandlers {
+    private static final long serialVersionUID = -931725234946680611L;
 
-    @Inject private DataLoaderHandler dataLoaderHandler;
-    @Inject @DevicesLoaderQualifier private DataLoader devicesDataLoader;
+    @Inject transient private DataLoaderHandler dataLoaderHandler;
+    @Inject @DevicesLoaderQualifier transient private DataLoader devicesDataLoader;
 
     private byte[] importData;
     private String importFileName;
-    private DataLoaderResult loaderResult;
+    transient private DataLoaderResult loaderResult;
 
     /**
      * Creates a new instance of DeviceManager
@@ -59,30 +61,35 @@ public class DeviceManager implements Serializable {
     public DeviceManager() {
     }
 
+    @Override
     public String getImportFileName() {
         return importFileName;
     }
 
+    @Override
     public void doImport() {
         final InputStream inputStream = new ByteArrayInputStream(importData);
         loaderResult = dataLoaderHandler.loadData(inputStream, devicesDataLoader);
     }
 
+    @Override
     public DataLoaderResult getLoaderResult() {
         return loaderResult;
     }
 
+    @Override
     public void prepareImportPopup() {
         importData = null;
         importFileName = null;
     }
 
+    @Override
     public void handleImportFileUpload(FileUploadEvent event) {
         try (InputStream inputStream = event.getFile().getInputstream()) {
             this.importData = ByteStreams.toByteArray(inputStream);
             this.importFileName = FilenameUtils.getName(event.getFile().getFileName());
         } catch (IOException e) {
-            throw new RuntimeException();
+            throw new RuntimeException(e);
         }
     }
 }

@@ -29,6 +29,8 @@ import org.openepics.discs.conf.ent.EntityTypeOperation;
  *
  */
 public class SecurityException extends RuntimeException {
+    private static final long serialVersionUID = 7871852787337165333L;
+
     /**
      * @see RuntimeException#RuntimeException(String, Throwable)
      * @param arg0
@@ -61,7 +63,7 @@ public class SecurityException extends RuntimeException {
         sb.append(operationType.toString());
         sb.append(" on entity ");
         sb.append(entityType.toString());
-        
+
 
         return new SecurityException(sb.toString());
     }

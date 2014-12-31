@@ -17,25 +17,26 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.valueconverters;
+package org.openepics.discs.conf.ui.common;
 
-import org.openepics.discs.conf.ent.values.StrValue;
-import org.openepics.seds.api.datatypes.SedsScalar;
+import org.primefaces.event.FileUploadEvent;
 
 /**
+ * The interface contains all the methods that the UI control handling the import of a single Excel file must implement.
+ *
  * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  *
  */
-public class StrValueConverter extends ValueConverter<StrValue> {
+public interface ExcelSingleFileImportUIHandlers extends ExcelImportUIHandlers {
 
-    @Override
-    public Class<StrValue> getType() {
-        return StrValue.class;
-    }
+    /** This method is called when user clicks the "Upload" button in the "excel import" UI. The data is stored on the
+     * server to be parsed if the user actually decides to process the import data (he can still cancel the action instead).
+     * @param event The PrimeFaces upload event.
+     */
+    public void handleImportFileUpload(FileUploadEvent event);
 
-    @Override
-    public String convertToDatabaseColumn(StrValue attribute) {
-        final SedsScalar<String> sedsScalar = sedsFactory.newScalar(attribute.getStrValue());
-        return sedsDbConverter.serialize(sedsScalar).toString();
-    }
+    /**
+     * @return The name of the import file. Used in the "Import excel" procedure.
+     */
+    public String getImportFileName();
 }

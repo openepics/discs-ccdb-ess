@@ -48,6 +48,9 @@ public class DataLoaderHandler {
     @Inject SlotsAndSlotPairsDataLoader slotLoader;
     private DataLoaderResult loaderResult;
 
+    /**
+     * Java EE post construct life-cycle method.
+     */
     @PostConstruct
     public void init() {
         loaderResult = null;
@@ -65,7 +68,7 @@ public class DataLoaderHandler {
     public DataLoaderResult loadData(InputStream inputStream, DataLoader dataLoader) {
         final List<List<String>> inputRows = ExcelImportFileReader.importExcelFile(inputStream);
 
-        if (inputRows != null && inputRows.size() > 0) {
+        if (inputRows != null && !inputRows.isEmpty()) {
             loaderResult = dataLoader.loadDataToDatabase(inputRows);
             if (loaderResult.isError()) {
                 context.setRollbackOnly();
@@ -77,6 +80,18 @@ public class DataLoaderHandler {
         return loaderResult;
     }
 
+    /**
+     * Loads data from two import files to {@link List} and calls method on certain data loader
+     * to save the data in the database. If the result of save is {@link DataLoaderResult#isError()}
+     * then the transaction is rolled back. In any case, the notification is shown to the user.
+     * The two files in this case are the Slots information Excel worksheet and Slot relationship Excel worksheet.
+     *
+     * @param firstInputStream input file containing the Slots information Excel worksheet
+     * @param secondInputStream input file containing the Slot relationship Excel worksheet
+     * @param firstFileName the name of the Slots information Excel worksheet file
+     * @param secondFileName the name of the Slot relationship Excel worksheet file
+     * @return a {@link DataLoaderResult} containing information about the operation completion status
+     */
     public DataLoaderResult loadDataFromTwoFiles(InputStream firstInputStream, InputStream secondInputStream, String firstFileName, String secondFileName) {
         final List<List<String>> firstFileInputRows;
         final List<List<String>> secondFileInputRows;
@@ -93,7 +108,7 @@ public class DataLoaderHandler {
             secondFileInputRows = null;
         }
 
-        if ((firstFileInputRows != null && firstFileInputRows.size() > 0) || (secondFileInputRows != null && secondFileInputRows.size() > 0)) {
+        if ((firstFileInputRows != null && !firstFileInputRows.isEmpty()) || (secondFileInputRows != null && !secondFileInputRows.isEmpty())) {
             loaderResult = slotLoader.loadDataToDatabase(firstFileInputRows, secondFileInputRows, firstFileName, secondFileName);
             if (loaderResult.isError()) {
                 context.setRollbackOnly();

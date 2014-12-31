@@ -51,6 +51,8 @@ import com.google.common.base.Preconditions;
 @Named("securityPolicy")
 public class DBTableEntityTypeSecurityPolicy extends AbstractEnityTypeSecurityPolicy
                 implements SecurityPolicy, Serializable {
+    private static final long serialVersionUID = 108664734022549860L;
+
     private static final Logger LOGGER = Logger.getLogger(DBTableEntityTypeSecurityPolicy.class.getCanonicalName());
 
     @PersistenceContext private transient EntityManager em;

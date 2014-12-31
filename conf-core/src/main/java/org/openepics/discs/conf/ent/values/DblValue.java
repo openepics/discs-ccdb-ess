@@ -25,14 +25,21 @@ import com.google.common.base.Preconditions;
 public class DblValue implements Value {
     private final Double dblValue;
 
+    /** Constructs a new double precision value
+     * @param dblValue a double precision number
+     */
     public DblValue(Double dblValue) {
         this.dblValue = Preconditions.checkNotNull(dblValue);
     }
 
-    public Double getDblValue() { return dblValue; }
+    public Double getDblValue() {
+        return dblValue;
+    }
 
     @Override
-    public String toString() { return dblValue.toString(); }
+    public String toString() {
+        return dblValue.toString();
+    }
 
     @Override
     public String auditLogString(int... dimensions) {

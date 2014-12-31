@@ -9,8 +9,8 @@
 	        <p:commandButton ajax="true"
 	            actionListener="#{componentTypeManager.prepareAddPopup()}" value="Add new"
 	            oncomplete="addDeviceType.show()" />
-	        <p:dataTable widgetVar="deviceTypeTableVar" var="deviceType" value="#{componentTypeManager.objects}" resizableColumns="true" 
-                style="table-layout: fixed; word-wrap: break-word; margin-top: 1em;" filteredValue="#{componentTypeManager.filteredObjects}"
+	        <p:dataTable widgetVar="deviceTypeTableVar" var="deviceType" value="#{componentTypeManager.deviceTypes}" resizableColumns="true" 
+                style="table-layout: fixed; word-wrap: break-word; margin-top: 1em;" filteredValue="#{componentTypeManager.filteredDeviceTypes}" 
 	            rows="15" paginator="true" paginatorPosition="bottom">
                 <p:ajax event="filter" ignoreAutoUpdate="true"/>
                 

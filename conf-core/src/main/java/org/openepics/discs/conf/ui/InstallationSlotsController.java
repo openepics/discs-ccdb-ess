@@ -51,21 +51,25 @@ import com.google.common.collect.Lists;
 @Named
 @ViewScoped
 public class InstallationSlotsController extends AbstractSlotsController {
+    private static final long serialVersionUID = 99690643390820073L;
 
     @Inject private Names names;
-    @Inject private SlotRelationEJB slotRelationEJB;
+    @Inject transient private SlotRelationEJB slotRelationEJB;
 
     private ComponentType deviceType;
 
     private List<String> namesForAutoComplete;
-    private List<SlotRelationshipView> relationships;
-    private SlotRelationshipView selectedRelationship;
+    transient private List<SlotRelationshipView> relationships;
+    transient private SlotRelationshipView selectedRelationship;
     private TreeNode selectedTreeNodeForRelationshipAdd;
     private String selectedRelationshipType;
     private List<String> relationshipTypes;
     private Map<String, SlotRelation> slotRelationBySlotRelationStringName;
-    private SlotView selectedSlotForRelationships;
+    private transient SlotView selectedSlotForRelationships;
 
+    /**
+     * Java EE post construct life-cycle method.
+     */
     @PostConstruct
     public void init() {
         try {
@@ -211,7 +215,7 @@ public class InstallationSlotsController extends AbstractSlotsController {
             return;
         }
 
-        if (slotPairEJB.findSlotPairsByParentChildRelation(childSlot.getName(), parentSlot.getName(), slotRelation.getName()).size() == 0) {
+        if (slotPairEJB.findSlotPairsByParentChildRelation(childSlot.getName(), parentSlot.getName(), slotRelation.getName()).isEmpty()) {
             final SlotPair newSlotPair = new SlotPair(childSlot, parentSlot, slotRelation);
             if (!slotPairEJB.slotPairCreatesLoop(newSlotPair, childSlot)) {
                 slotPairEJB.add(newSlotPair);
@@ -225,16 +229,24 @@ public class InstallationSlotsController extends AbstractSlotsController {
     }
 
     @Override
-    public String redirectToAttributes(Long id) { return "installation-slot-attributes-manager.xhtml?faces-redirect=true&id=" + id; }
+    public String redirectToAttributes(Long id) {
+        return "installation-slot-attributes-manager.xhtml?faces-redirect=true&id=" + id;
+    }
 
     private void fillNamesAutocomplete() {
         namesForAutoComplete = ImmutableList.copyOf(names.getAllNames());
     }
 
-    public List<SlotRelationshipView> getRelationships() { return relationships; }
+    public List<SlotRelationshipView> getRelationships() {
+        return relationships;
+    }
 
-    public ComponentType getDeviceType() { return deviceType; }
-    public void setDeviceType(ComponentType deviceType) { this.deviceType = deviceType; }
+    public ComponentType getDeviceType() {
+        return deviceType;
+    }
+    public void setDeviceType(ComponentType deviceType) {
+        this.deviceType = deviceType;
+    }
 
     /**
      * Helper method for auto complete when entering a name for new installation {@link Slot}.
@@ -262,16 +274,32 @@ public class InstallationSlotsController extends AbstractSlotsController {
         this.selectedSlotForRelationships = selectedSlotView;
         prepareRelationshipsPopup();
     }
-    public SlotView getSelectedSlotViewForRelationships() { return selectedSlotForRelationships; }
+    public SlotView getSelectedSlotViewForRelationships() {
+        return selectedSlotForRelationships;
+    }
 
-    public SlotRelationshipView getSelectedRelationship() { return selectedRelationship; }
-    public void setSelectedRelationship(SlotRelationshipView selectedRelationship) { this.selectedRelationship = selectedRelationship; }
+    public SlotRelationshipView getSelectedRelationship() {
+        return selectedRelationship;
+    }
+    public void setSelectedRelationship(SlotRelationshipView selectedRelationship) {
+        this.selectedRelationship = selectedRelationship;
+    }
 
-    public void setSelectedSlotViewForRelationshipAdd(TreeNode selectedTreeNode) { selectedTreeNodeForRelationshipAdd = selectedTreeNode; }
-    public TreeNode getSelectedSlotViewForRelationshipAdd() { return selectedTreeNodeForRelationshipAdd; }
+    public void setSelectedSlotViewForRelationshipAdd(TreeNode selectedTreeNode) {
+        selectedTreeNodeForRelationshipAdd = selectedTreeNode;
+    }
+    public TreeNode getSelectedSlotViewForRelationshipAdd() {
+        return selectedTreeNodeForRelationshipAdd;
+    }
 
-    public String getSelectedRelationshipType() { return selectedRelationshipType; }
-    public void setSelectedRelationshipType(String relationshipType) { this.selectedRelationshipType = relationshipType; }
+    public String getSelectedRelationshipType() {
+        return selectedRelationshipType;
+    }
+    public void setSelectedRelationshipType(String relationshipType) {
+        this.selectedRelationshipType = relationshipType;
+    }
 
-    public List<String> getRelationshipTypes() { return relationshipTypes; }
+    public List<String> getRelationshipTypes() {
+        return relationshipTypes;
+    }
 }

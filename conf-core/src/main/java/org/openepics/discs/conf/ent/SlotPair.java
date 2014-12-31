@@ -68,6 +68,8 @@ import javax.xml.bind.annotation.XmlRootElement;
             + "ORDER BY s.slotOrder ASC")
 })
 public class SlotPair implements Serializable {
+    private static final long serialVersionUID = -1346609227484965749L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
@@ -95,6 +97,13 @@ public class SlotPair implements Serializable {
     public SlotPair() {
     }
 
+    /**
+     * Constructs a new slot relationship (a pair of slots)
+     *
+     * @param childSlot the child {@link Slot} of the relationship
+     * @param parentSlot the parent {@link Slot} of the relationship
+     * @param slotRelation the type of the relationship (see {@link SlotRelation}, {@link SlotRelationName})
+     */
     public SlotPair(Slot childSlot, Slot parentSlot, SlotRelation slotRelation) {
         this.childSlot = childSlot;
         this.parentSlot = parentSlot;
@@ -150,7 +159,9 @@ public class SlotPair implements Serializable {
         return this==object;
     }
 
-    public Long getVersion() { return version; }
+    public Long getVersion() {
+        return version;
+    }
 
     @Override
     public String toString() {

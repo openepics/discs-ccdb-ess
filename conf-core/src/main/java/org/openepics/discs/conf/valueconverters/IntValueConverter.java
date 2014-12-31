@@ -29,7 +29,9 @@ import org.openepics.seds.api.datatypes.SedsScalar;
 public class IntValueConverter extends ValueConverter<IntValue> {
 
     @Override
-    public Class<IntValue> getType() { return IntValue.class; }
+    public Class<IntValue> getType() {
+        return IntValue.class;
+    }
 
     @Override
     public String convertToDatabaseColumn(IntValue attribute) {

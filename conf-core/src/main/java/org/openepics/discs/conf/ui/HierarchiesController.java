@@ -67,13 +67,15 @@ import com.google.common.base.Preconditions;
 @Named
 @ViewScoped
 public class HierarchiesController implements Serializable {
-    private static final Logger logger = Logger.getLogger(HierarchiesController.class.getCanonicalName());
+    private static final long serialVersionUID = 2743408661782529373L;
+
+    private static final Logger LOGGER = Logger.getLogger(HierarchiesController.class.getCanonicalName());
 
     @Inject private SlotsTreeBuilder slotsTreeBuilder;
-    @Inject private SlotEJB slotEJB;
-    @Inject private SlotPairEJB slotPairEJB;
-    @Inject private InstallationEJB installationEJB;
-    @Inject private DataTypeEJB dataTypeEJB;
+    @Inject transient private SlotEJB slotEJB;
+    @Inject transient private SlotPairEJB slotPairEJB;
+    @Inject transient private InstallationEJB installationEJB;
+    @Inject transient private DataTypeEJB dataTypeEJB;
 
     private TreeNode rootNode;
     private TreeNode selectedNode;
@@ -83,6 +85,9 @@ public class HierarchiesController implements Serializable {
     protected DataType strDataType;
     protected DataType dblDataType;
 
+    /**
+     * Java EE post construct life-cycle method.
+     */
     @PostConstruct
     public void init() {
         try {
@@ -119,8 +124,7 @@ public class HierarchiesController implements Serializable {
                 attributesList.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_GLOBAL_ROLL, slotPosition.getGlobalRoll(), dblDataType)));
                 attributesList.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_GLOBAL_YAW, slotPosition.getGlobalYaw(), dblDataType)));
             }
-            
-            
+
             for (ComptypePropertyValue value : selectedSlot.getComponentType().getComptypePropertyList()) {
                 if (!value.isPropertyDefinition()) {
                     attributesList.add(new EntityAttributeView(value, EntityAttributeViewKind.DEVICE_TYPE_PROPERTY));
@@ -211,11 +215,14 @@ public class HierarchiesController implements Serializable {
     public Device getInstalledDevice() {
         return installationRecord == null ? null : installationRecord.getDevice();
     }
-    
+
+    /**
+     * @return The latest installation record associated with the selected installation slot, <code>null</code> if a
+     * container is selected.
+     */
     public InstallationRecord getInstallationRecord() {
         return installationRecord;
     }
-
 
     /**
      * @return Based on the device type of the currently selected slot, this returns a list of all appropriate device
@@ -265,12 +272,15 @@ public class HierarchiesController implements Serializable {
         deviceToInstall = null;
         installationRecord = installationEJB.getActiveInstallationRecordForSlot(selectedSlot);
     }
-    
+
+    /** This method is called when a user presses the "Uninstall" button in the hierarchies view.
+     * @param device
+     */
     public void uninstallDevice(Device device) {
         Preconditions.checkNotNull(device);
         final InstallationRecord deviceInstallationRecord = installationEJB.getActiveInstallationRecordForDevice(device);
         if (deviceInstallationRecord == null) {
-            logger.log(Level.WARNING, "The device appears installed, but no active installation record for "
+            LOGGER.log(Level.WARNING, "The device appears installed, but no active installation record for "
                     + "it could be retrieved. Device db ID: " + device.getId()
                     + ", serial number: " + device.getSerialNumber());
             throw new RuntimeException("No installation record for the device exists.");
@@ -280,7 +290,11 @@ public class HierarchiesController implements Serializable {
         // the device is not installed any more. Clear the installation state information.
         this.installationRecord = null;
     }
-    
+
+    /**
+     * @return The path to the installation slot the user is currently installing a device into. Used in the
+     * "Install device" dialog.
+     */
     public String getInstallationSlotPath() {
         final String slotPath = Utility.buildSlotPath(selectedSlot).toString();
         return slotPath.substring(1, slotPath.length() - 1);

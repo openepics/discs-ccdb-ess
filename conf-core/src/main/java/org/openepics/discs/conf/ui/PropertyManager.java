@@ -40,8 +40,10 @@ import org.openepics.discs.conf.ejb.PropertyEJB;
 import org.openepics.discs.conf.ent.DataType;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyAssociation;
+import org.openepics.discs.conf.ent.PropertyValue;
 import org.openepics.discs.conf.ent.Unit;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
+import org.openepics.discs.conf.ui.common.ExcelSingleFileImportUIHandlers;
 import org.openepics.discs.conf.util.BuiltInDataType;
 import org.openepics.discs.conf.util.Utility;
 import org.primefaces.context.RequestContext;
@@ -59,19 +61,20 @@ import com.google.common.io.ByteStreams;
  */
 @Named
 @ViewScoped
-public class PropertyManager implements Serializable {
-    @Inject private PropertyEJB propertyEJB;
+public class PropertyManager implements Serializable, ExcelSingleFileImportUIHandlers {
+    private static final long serialVersionUID = 1056645993595744719L;
 
-    @Inject private DataLoaderHandler dataLoaderHandler;
-    @Inject @PropertiesLoaderQualifier private DataLoader propertiesDataLoader;
+    @Inject transient private PropertyEJB propertyEJB;
+
+    @Inject transient private DataLoaderHandler dataLoaderHandler;
+    @Inject @PropertiesLoaderQualifier transient private DataLoader propertiesDataLoader;
 
     private List<Property> properties;
-    private List<Property> sortedProperties;
     private List<Property> filteredProperties;
 
     private byte[] importData;
     private String importFileName;
-    private DataLoaderResult loaderResult;
+    transient private DataLoaderResult loaderResult;
 
     private String name;
     private String description;
@@ -94,6 +97,9 @@ public class PropertyManager implements Serializable {
         resetFields();
     }
 
+    /**
+     * Called when the user presses the "Save" button in the "Add new property" dialog.
+     */
     public void onAdd() {
         final Property propertyToAdd = new Property(name, description);
         setAssociationOnProperty(propertyToAdd);
@@ -113,6 +119,9 @@ public class PropertyManager implements Serializable {
         }
     }
 
+    /**
+     * Called when the user presses the "Save" button in the "Modify a property" dialog.
+     */
     public void onModify() {
         selectedProperty.setName(name);
         selectedProperty.setDescription(description);
@@ -128,12 +137,18 @@ public class PropertyManager implements Serializable {
         }
     }
 
+    /**
+     * Prepares the data to be used in the "Add new property" dialog.
+     */
     public void prepareAddPopup() {
         resetFields();
         isPropertyUsed = false;
         RequestContext.getCurrentInstance().update("addPropertyForm:addProperty");
     }
 
+    /**
+     * Prepares the data to be used in the "Modify a property" dialog.
+     */
     public void prepareModifyPopup() {
         name = selectedProperty.getName();
         description = selectedProperty.getDescription();
@@ -145,6 +160,9 @@ public class PropertyManager implements Serializable {
         RequestContext.getCurrentInstance().update("modifyPropertyForm:modifyProperty");
     }
 
+    /**
+     * Called when the user clicks the "trash can" icon in the UI.
+     */
     public void onDelete() {
         try {
             propertyEJB.delete(selectedProperty);
@@ -160,78 +178,131 @@ public class PropertyManager implements Serializable {
         }
     }
 
-    public List<Property> getSortedProperties() {
-        return sortedProperties;
-    }
-
-    public void setSortedOProperties(List<Property> sortedObjects) {
-        this.sortedProperties = sortedObjects;
-    }
-
+    /**
+     * @return The list of filtered properties used by the PrimeFaces filter field.
+     */
     public List<Property> getFilteredProperties() {
         return filteredProperties;
     }
 
+    /**
+     * @param filteredObjects The list of filtered properties used by the PrimeFaces filter field.
+     */
     public void setFilteredProperties(List<Property> filteredObjects) {
         this.filteredProperties = filteredObjects;
     }
 
+    /**
+     * @return The list of all properties in the database ordered by name.
+     */
     public List<Property> getProperties() {
-        if (properties == null) properties = propertyEJB.findAllOrderedByName();
+        if (properties == null) {
+            properties = propertyEJB.findAllOrderedByName();
+        }
         return properties;
     }
 
+    @Override
     public String getImportFileName() {
         return importFileName;
     }
 
+    @Override
     public void doImport() {
         final InputStream inputStream = new ByteArrayInputStream(importData);
         loaderResult = dataLoaderHandler.loadData(inputStream, propertiesDataLoader);
     }
 
+    @Override
     public void prepareImportPopup() {
         importData = null;
         importFileName = null;
     }
 
+    @Override
+    public DataLoaderResult getLoaderResult() {
+        return loaderResult;
+    }
+
+    @Override
+    public void handleImportFileUpload(FileUploadEvent event) {
+        try (InputStream inputStream = event.getFile().getInputstream()) {
+            this.importData = ByteStreams.toByteArray(inputStream);
+            this.importFileName = FilenameUtils.getName(event.getFile().getFileName());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * @return The name of the property the user is working on. Used by UI.
+     */
     public String getName() {
         return name;
     }
+    /**
+     * @param name The name of the property the user is working on. Used by UI.
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * @return The description of the property the user is working on. Used by UI.
+     */
     public String getDescription() {
         return description;
     }
+    /**
+     * @param description The description of the property the user is working on. Used by UI.
+     */
     public void setDescription(String description) {
         this.description = description;
     }
 
+    /**
+     * @return The {@link DataType} of the property the user is working on. Used by UI.
+     */
     public DataType getDataType() {
         return dataType;
     }
+    /**
+     * @param dataType The {@link DataType} of the property the user is working on. Used by UI.
+     */
     public void setDataType(DataType dataType) {
         this.dataType = dataType;
     }
 
+    /**
+     * @return The {@link Unit} of the property the user is working on. Used by UI.
+     */
     public Unit getUnit() {
         return unit;
     }
+    /**
+     * @param unit The {@link Unit} of the property the user is working on. Used by UI.
+     */
     public void setUnit(Unit unit) {
         this.unit = unit;
     }
 
+    /**
+     * @see PropertyAssociation
+     * @return The list of the possible property associations. Used by the PrimeFaces ManyCheckbox element.
+     */
     public String[] getPropertyAssociation() {
         return association;
     }
+    /**
+     * @see PropertyAssociation
+     * @param association The list of the possible property associations. Used by the PrimeFaces ManyCheckbox element.
+     */
     public void setPropertyAssociation(String[] association) {
         this.association = association;
     }
 
     private String[] constructSetAssociations(Property property) {
-        ArrayList<String> associations = new ArrayList<>();
+        final List<String> associations = new ArrayList<>();
         if (property.isTypeAssociation()) {
             associations.add(PropertyAssociation.TYPE);
         }
@@ -257,24 +328,36 @@ public class PropertyManager implements Serializable {
 
         for (String assoc : association) {
             switch (assoc) {
-            case PropertyAssociation.ALIGNMENT:
-                property.setAlignmentAssociation(true);
-                break;
-            case PropertyAssociation.DEVICE:
-                property.setDeviceAssociation(true);
-                break;
-            case PropertyAssociation.SLOT:
-                property.setSlotAssociation(true);
-                break;
-            case PropertyAssociation.TYPE:
-                property.setTypeAssociation(true);
-                break;
-            default:
-                throw new RuntimeException("Unknow property associaton target.");
+                case PropertyAssociation.ALIGNMENT:
+                    property.setAlignmentAssociation(true);
+                    break;
+                case PropertyAssociation.DEVICE:
+                    property.setDeviceAssociation(true);
+                    break;
+                case PropertyAssociation.SLOT:
+                    property.setSlotAssociation(true);
+                    break;
+                case PropertyAssociation.TYPE:
+                    property.setTypeAssociation(true);
+                    break;
+                default:
+                    throw new RuntimeException("Unknow property associaton target.");
             }
         }
     }
 
+    /**
+     * Determines whether the {@link Unit} combo box in the property dialog should be enabled
+     * (the user can change the {@link Unit}, or not. <br />
+     * The {@link Unit} can be set only for some {@link DataType}s:
+     * <ul>
+     * <li>Integer</li>
+     * <li>Double</li>
+     * <li>Integer vector</li>
+     * <li>Double vector</li>
+     * <li>Double table</li>
+     * </ul>
+     */
     public void setIsUnitComboEnabled() {
         final List<String> possibleTypes = Arrays.asList(new String[] {BuiltInDataType.INT_NAME,
                                                 BuiltInDataType.DBL_NAME, BuiltInDataType.INT_VECTOR_NAME,
@@ -282,36 +365,39 @@ public class PropertyManager implements Serializable {
         unitComboEnabled = possibleTypes.contains(dataType.getName());
     }
 
+    /**
+     * @return <code>true</code> if the combo box selection is enabled, <code>false</code> otherwise.
+     * Used by the UI drop-down element.
+     */
     public boolean isUnitComboEnabled() {
         return unitComboEnabled;
     }
 
+    /**
+     * @return The {@link Property} selected in the dialog.
+     */
     public Property getSelectedProperty() {
         return selectedProperty;
     }
+    /**
+     * @param selectedProperty The {@link Property} selected in the dialog.
+     */
     public void setSelectedProperty(Property selectedProperty) {
         this.selectedProperty = selectedProperty;
     }
 
+    /**
+     * @return The {@link Property} selected in the dialog (modify property dialog).
+     */
     public Property getSelectedPropertyToModify() {
         return selectedProperty;
     }
+    /**
+     * @param selectedProperty The {@link Property} selected in the dialog (modify property dialog).
+     */
     public void setSelectedPropertyToModify(Property selectedProperty) {
         this.selectedProperty = selectedProperty;
         prepareModifyPopup();
-    }
-
-    public DataLoaderResult getLoaderResult() {
-        return loaderResult;
-    }
-
-    public void handleImportFileUpload(FileUploadEvent event) {
-        try (InputStream inputStream = event.getFile().getInputstream()) {
-            this.importData = ByteStreams.toByteArray(inputStream);
-            this.importFileName = FilenameUtils.getName(event.getFile().getFileName());
-        } catch (IOException e) {
-            throw new RuntimeException();
-        }
     }
 
     private void resetFields() {
@@ -323,6 +409,9 @@ public class PropertyManager implements Serializable {
         unitComboEnabled = true;
     }
 
+    /**
+     * @return <code>true</code> if the property is already used in some {@link PropertyValue}, <code>false</code> otherwise.
+     */
     public boolean isPropertyUsed() {
         return isPropertyUsed;
     }

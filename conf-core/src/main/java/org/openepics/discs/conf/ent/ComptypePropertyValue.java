@@ -49,6 +49,8 @@ import javax.xml.bind.annotation.XmlRootElement;
             + "WHERE c.modifiedBy = :modifiedBy")
 })
 public class ComptypePropertyValue extends PropertyValue {
+    private static final long serialVersionUID = -5402331155307049268L;
+
     @JoinColumn(name = "component_type")
     @ManyToOne(optional = false)
     private ComponentType componentType;
@@ -70,6 +72,11 @@ public class ComptypePropertyValue extends PropertyValue {
 
     public ComptypePropertyValue() { }
 
+    /**
+     * Constructs a new property value
+     *
+     * @param inRepository <code>false</code>
+     */
     public ComptypePropertyValue(boolean inRepository) {
         super(inRepository);
     }

@@ -50,6 +50,8 @@ import javax.xml.bind.annotation.XmlRootElement;
             + "WHERE p.privilegeId = :privilegeId")
 })
 public class Privilege implements Serializable {
+    private static final long serialVersionUID = 303255299175116489L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "privilege_id")
@@ -74,6 +76,12 @@ public class Privilege implements Serializable {
     protected Privilege() {
     }
 
+    /**
+     * Constructs an new privilege definition.
+     *
+     * @param resource the database entity this privilege is for (see {@link EntityType})
+     * @param oper the operation on this entity (see {@link EntityTypeOperation})
+     */
     public Privilege(EntityType resource, EntityTypeOperation oper) {
         this.resource = resource;
         this.oper = oper;

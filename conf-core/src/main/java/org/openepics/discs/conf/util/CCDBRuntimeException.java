@@ -25,6 +25,7 @@ package org.openepics.discs.conf.util;
  * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
  */
 public class CCDBRuntimeException extends RuntimeException {
+    private static final long serialVersionUID = 8030438256996686732L;
 
     /**
      * @see RuntimeException#RuntimeException(String, Throwable)

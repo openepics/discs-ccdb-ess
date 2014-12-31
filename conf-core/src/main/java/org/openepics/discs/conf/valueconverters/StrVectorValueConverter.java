@@ -32,7 +32,9 @@ import org.openepics.seds.api.datatypes.SedsScalarArray;
 public class StrVectorValueConverter extends ValueConverter<StrVectorValue> {
 
     @Override
-    public Class<StrVectorValue> getType() { return StrVectorValue.class; }
+    public Class<StrVectorValue> getType() {
+        return StrVectorValue.class;
+    }
 
     @Override
     public String convertToDatabaseColumn(StrVectorValue attribute) {

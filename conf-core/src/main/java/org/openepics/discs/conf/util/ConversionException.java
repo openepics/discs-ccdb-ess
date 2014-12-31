@@ -26,21 +26,34 @@ package org.openepics.discs.conf.util;
  *
  */
 public class ConversionException extends RuntimeException {
+    private static final long serialVersionUID = 9060559072643456765L;
 
+    /**
+     * A new conversion exception with no message and no reference
+     */
     public ConversionException() {
         super();
     }
 
+    /** A new conversion exception with no reference
+     * @param msg The text message
+     */
     public ConversionException(String msg) {
         super(msg);
     }
 
+    /** A new conversion exception
+     * @param msg The text message
+     * @param cause The original cause of the exception
+     */
     public ConversionException(String msg, Throwable cause) {
         super(msg, cause);
     }
 
+    /** A new conversion exception with no message
+     * @param cause The original cause of the exception
+     */
     public ConversionException(Throwable cause) {
         super(cause);
     }
-
 }

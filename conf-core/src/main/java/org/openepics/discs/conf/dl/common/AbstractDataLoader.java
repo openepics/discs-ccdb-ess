@@ -22,6 +22,9 @@ package org.openepics.discs.conf.dl.common;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Skeleton for all data loaders.
@@ -41,7 +44,7 @@ public abstract class AbstractDataLoader {
     protected DataLoaderResult rowResult;
     protected final int commandIndex = 1;
 
-    final ArrayList<String> duplicateFields = new ArrayList<>();
+    final List<String> duplicateFields = new ArrayList<>();
 
 
     /**
@@ -60,8 +63,8 @@ public abstract class AbstractDataLoader {
      *
      * @return Property index by property name map of properties in the header
      */
-    protected HashMap<String, Integer> indexByPropertyName(List<String> fields, List<String> headerRow) {
-        final HashMap<String, Integer> indexByPropertyName = new HashMap<>();
+    protected Map<String, Integer> indexByPropertyName(List<String> fields, List<String> headerRow) {
+        final Map<String, Integer> indexByPropertyName = new HashMap<>();
         for (String headerEntry : headerRow.subList(2, headerRow.size())) {
             if (!fields.contains(headerEntry) && headerEntry != null && headerEntry.length() > 0) {
                 indexByPropertyName.put(headerEntry, headerRow.indexOf(headerEntry));
@@ -76,13 +79,22 @@ public abstract class AbstractDataLoader {
      * @param headerRow {@link List} containing header entries
      */
     protected void checkForDuplicateHeaderEntries(List<String> headerRow) {
-        final ArrayList<String> duplicateHeaderEntries = new ArrayList<>();
+        final List<String> duplicateHeaderEntries = new ArrayList<>();
         rowResult = new DataLoaderResult();
         for (String headerEntry : headerRow.subList(2, headerRow.size())) {
             if (headerEntry != null && headerEntry.length() > 0 && headerRow.indexOf(headerEntry) != headerRow.lastIndexOf(headerEntry) && !duplicateHeaderEntries.contains(headerEntry)) {
                 rowResult.addMessage(new ValidationMessage(ErrorMessage.DUPLICATES_IN_HEADER, headerRow.get(0), headerEntry));
                 duplicateHeaderEntries.add(headerEntry);
             }
+        }
+    }
+
+    protected void handleLoadingError(Logger logger, Exception e, String rowNumber, List<String> headerRow) {
+        logger.log(Level.FINE, e.getMessage(), e);
+        if (e.getCause() instanceof org.openepics.discs.conf.security.SecurityException) {
+            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+        } else {
+            rowResult.addMessage(new ValidationMessage(ErrorMessage.UNKNOWN, rowNumber, headerRow.get(commandIndex)));
         }
     }
 }

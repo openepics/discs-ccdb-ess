@@ -47,6 +47,7 @@ import com.google.common.collect.ImmutableList.Builder;
 @ViewScoped
 @DeviceInstallation
 public class InstallationSlotsTreeBuilder extends SlotsTreeBuilder {
+    private static final long serialVersionUID = 6799045561334241087L;
 
     @Override
     public TreeNode newSlotsTree(List<Slot> slots, Slot selected, Set<Long> collapsedNodes,

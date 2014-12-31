@@ -22,6 +22,7 @@ package org.openepics.discs.conf.ui;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.faces.view.ViewScoped;
@@ -42,10 +43,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Named(value = "auditManager")
 @ViewScoped
 public class AuditManager implements Serializable {
-    @SuppressWarnings("unused")
-    private static final Logger logger = Logger.getLogger(AuditManager.class.getCanonicalName());
+    private static final long serialVersionUID = 4650841685917081962L;
 
-    @Inject private AuditRecordEJB auditRecordEJB;
+    private static final Logger LOGGER = Logger.getLogger(AuditManager.class.getCanonicalName());
+
+    @Inject transient private AuditRecordEJB auditRecordEJB;
 
     private List<AuditRecord> auditRecordsForEntity;
     private AuditRecord displayRecord;
@@ -76,13 +78,16 @@ public class AuditManager implements Serializable {
      * @return A pretty printed representation of the log entry JSON.
      */
     public String getDisplayRecordEntry() {
-        if (displayRecord == null) return "";
+        if (displayRecord == null) {
+            return "";
+        }
 
         try {
             final ObjectMapper mapper = new ObjectMapper();
             final Object json = mapper.readValue(displayRecord.getEntry(), Object.class);
             return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(json);
         } catch (IOException e) {
+            LOGGER.log(Level.FINE, e.getMessage(), e);
             return "";
         }
     }

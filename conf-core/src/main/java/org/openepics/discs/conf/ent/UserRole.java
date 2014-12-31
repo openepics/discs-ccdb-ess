@@ -60,6 +60,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "UserRole.findByComment", query = "SELECT u FROM UserRole u WHERE u.comment = :comment")
 })
 public class UserRole implements Serializable {
+    private static final long serialVersionUID = 6761639840687006766L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "user_role_id")
@@ -105,10 +107,16 @@ public class UserRole implements Serializable {
     protected UserRole() {
     }
 
+    /** Constructs a new user role.
+     * @param canDelegate <code>true</code> if the role can be delegated, <code>false</code> otherwise
+     * @param isRoleManager <code>true</code> is the role type is "manager", <code>false</code> otherwise
+     * @param startTime start time if the role is time based (e.g. a role can be delegated only when some other user is away)
+     * @param endTime end time if the role is time based (e.g. a role can be delegated only when some other user is away)
+     */
     public UserRole(boolean canDelegate, boolean isRoleManager, Date startTime, Date endTime) {
         this.canDelegate = canDelegate;
         this.isRoleManager = isRoleManager;
-        this.startTime = startTime;
+        this.startTime = new Date(startTime.getTime());
         this.endTime = new Date(endTime.getTime());
     }
 
@@ -132,16 +140,22 @@ public class UserRole implements Serializable {
         this.isRoleManager = isRoleManager;
     }
 
+    /**
+     * @return A new copy of the start time.
+     */
     public Date getStartTime() {
-        return startTime!=null ? new Date(startTime.getTime()) : null;
+        return startTime != null ? new Date(startTime.getTime()) : null;
     }
 
     public void setStartTime(Date startTime) {
         this.startTime = new Date(startTime.getTime());
     }
 
+    /**
+     * @return A new copy of the end time.
+     */
     public Date getEndTime() {
-        return endTime!=null ? new Date(endTime.getTime()) : null;
+        return endTime != null ? new Date(endTime.getTime()) : null;
     }
 
     public void setEndTime(Date endTime) {
@@ -197,7 +211,9 @@ public class UserRole implements Serializable {
         return this==object;
     }
 
-    public Long getVersion() { return version; }
+    public Long getVersion() {
+        return version;
+    }
 
     @Override
     public String toString() {

@@ -45,12 +45,20 @@ import javax.xml.bind.annotation.XmlRootElement;
             + "WHERE d.modifiedBy = :modifiedBy")
 })
 public class DeviceArtifact extends Artifact {
+    private static final long serialVersionUID = -6839832536999872940L;
+
     @JoinColumn(name = "device")
     @ManyToOne(optional = false)
     private Device device;
 
     public DeviceArtifact() { }
 
+    /** Constructs a new device instance artifact
+     * @param name the name of the artifact
+     * @param isInternal <code>true</code> if the artifact is a file attachment, <code>false</code> if it's an URL.
+     * @param description the user specified description
+     * @param uri the user specified URL
+     */
     public DeviceArtifact(String name, boolean isInternal, String description, String uri) {
         super(name, isInternal, description, uri);
     }

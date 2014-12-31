@@ -25,6 +25,9 @@ import com.google.common.base.Preconditions;
 public class EnumValue implements Value {
     private final String enumValue;
 
+    /** Constructs a new enumeration value. The object only stores the selected value, not an entire enumeration.
+     * @param enumValue the selected value
+     */
     public EnumValue(String enumValue) {
         this.enumValue = Preconditions.checkNotNull(enumValue);
     }
@@ -32,10 +35,14 @@ public class EnumValue implements Value {
     /**
      * @return the enumValue
      */
-    public String getEnumValue() { return enumValue; }
+    public String getEnumValue() {
+        return enumValue;
+    }
 
     @Override
-    public String toString() { return enumValue; }
+    public String toString() {
+        return enumValue;
+    }
 
     @Override
     public String auditLogString(int... dimensions) {

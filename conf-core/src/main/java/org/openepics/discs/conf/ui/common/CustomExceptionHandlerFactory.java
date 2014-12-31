@@ -29,6 +29,9 @@ public class CustomExceptionHandlerFactory extends ExceptionHandlerFactory {
 
     private final ExceptionHandlerFactory parent;
 
+    /** A new JSF exception handler factory
+     * @param parent the original JSF exception handler factory
+     */
     public CustomExceptionHandlerFactory(ExceptionHandlerFactory parent) {
         this.parent = parent;
     }

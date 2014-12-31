@@ -71,20 +71,24 @@ public class SlotPairEJB extends DAO<SlotPair> {
         throw new UnsupportedOperationException("findByName method not aplicable to SlotPairEJB class");
     }
 
-	public boolean slotHasMoreThanOneContainsRelation(Slot childSlot) {
-	    final List<SlotPair> slotPairs = em.createNamedQuery("SlotPair.findSlotPairsByChildAndRelation", SlotPair.class)
+    /**
+     * @param childSlot the {@link Slot} to check for
+     * @return <code>true</code> if a slot is contained in more than one parent slot, <code>false</code> otherwise
+     */
+    public boolean slotHasMoreThanOneContainsRelation(Slot childSlot) {
+        final List<SlotPair> slotPairs = em.createNamedQuery("SlotPair.findSlotPairsByChildAndRelation", SlotPair.class)
 	            .setParameter("childSlot", childSlot)
 	            .setParameter("relationName", SlotRelationName.CONTAINS)
 	            .setMaxResults(2).getResultList();
 	    return slotPairs != null && slotPairs.size() == 2;
 	}
 
-	@Override
+    @Override
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
     @Authorized
-	public void delete(SlotPair entity) {
-	    Preconditions.checkNotNull(entity);
+    public void delete(SlotPair entity) {
+        Preconditions.checkNotNull(entity);
         entity.getChildSlot().getPairsInWhichThisSlotIsAChildList().remove(entity);
         entity.getParentSlot().getPairsInWhichThisSlotIsAParentList().remove(entity);
         em.merge(entity.getChildSlot());
@@ -116,11 +120,11 @@ public class SlotPairEJB extends DAO<SlotPair> {
         parentSlot.getPairsInWhichThisSlotIsAParentList().add(entity);
         super.add(entity);
 	}
-    
+
     /**
      * Adds new slot pair but bypasses interceptors that create audit log and check
      * if user is authorized.
-     * 
+     *
      * @param entity
      */
     public void addWithoutInterceptors(SlotPair entity) {
@@ -135,45 +139,47 @@ public class SlotPairEJB extends DAO<SlotPair> {
      * @param childSlot child {@link Slot} in this relationship
      * @return {@link Boolean} true if by adding this {@link SlotPair} loop will be created, false otherwise
      */
-	public boolean slotPairCreatesLoop(SlotPair slotPair, Slot childSlot) {
-	    if (slotPair.getSlotRelation().getName() == SlotRelationName.CONTAINS) {
-	        if (slotPair.getParentSlot().equals(childSlot)) {
-	            return true;
-	        } else {
-	            for (SlotPair parentSlotPair : slotPair.getParentSlot().getPairsInWhichThisSlotIsAChildList()) {
-	                if (slotPairCreatesLoop(parentSlotPair, childSlot)) {
-	                    return true;
-	                }
-	            }
-	            return false;
-	        }
-	    } else {
-	        return false;
-	    }
-	}
+    public boolean slotPairCreatesLoop(SlotPair slotPair, Slot childSlot) {
+        final boolean loopDetected;
+        if (slotPair.getSlotRelation().getName() == SlotRelationName.CONTAINS) {
+            if (slotPair.getParentSlot().equals(childSlot)) {
+                loopDetected = true;
+            } else {
+                for (SlotPair parentSlotPair : slotPair.getParentSlot().getPairsInWhichThisSlotIsAChildList()) {
+                    if (slotPairCreatesLoop(parentSlotPair, childSlot)) {
+                        return true;
+                    }
+                }
+                loopDetected = false;
+            }
+        } else {
+            loopDetected = false;
+        }
+        return loopDetected;
+    }
 
 	/**
 	 * @param slot - the slot to use in query.
 	 * @return The list of all {@link SlotPair}s where the slot is either a parent or a child.
 	 */
-	public List<SlotPair> getSlotRleations(Slot slot) {
-	    return em.createNamedQuery("SlotPair.findSlotRelations", SlotPair.class).setParameter("slot", slot)
-	            .getResultList();
-	}
+    public List<SlotPair> getSlotRleations(Slot slot) {
+        return em.createNamedQuery("SlotPair.findSlotRelations", SlotPair.class).setParameter("slot", slot)
+                .getResultList();
+    }
 
-	/** The method performs an order swap between the the current <code>slot</code> and the previous slot in the
-	 * context of the <code>parentSlot</code>. The swap is only possible for the <code>CONTAINS</code> relationship.
-	 * The previous slot is the one that has the largest order number that is still smaller than the current
-	 * <code>slot</code> order number. If there is no previous slot, the method doesn't do anything.
-	 * @param parentSlot the parent slot in context of which to perform the move
-	 * @param slot the slot to move "up"
-	 */
+    /** The method performs an order swap between the the current <code>slot</code> and the previous slot in the
+     * context of the <code>parentSlot</code>. The swap is only possible for the <code>CONTAINS</code> relationship.
+     * The previous slot is the one that has the largest order number that is still smaller than the current
+     * <code>slot</code> order number. If there is no previous slot, the method doesn't do anything.
+     * @param parentSlot the parent slot in context of which to perform the move
+     * @param slot the slot to move "up"
+     */
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
     @Authorized
-	public void moveUp(Slot parentSlot, Slot slot) {
-	    moveUpOrDown(parentSlot, slot, "SlotPair.findPrecedingPairs");
-	}
+    public void moveUp(Slot parentSlot, Slot slot) {
+        moveUpOrDown(parentSlot, slot, "SlotPair.findPrecedingPairs");
+    }
 
     /** The method performs an order swap between the the current <code>slot</code> and the next slot in the
      * context of the <code>parentSlot</code>. The swap is only possible for the <code>CONTAINS</code> relationship.
@@ -185,11 +191,11 @@ public class SlotPairEJB extends DAO<SlotPair> {
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
     @Authorized
-	public void moveDown(Slot parentSlot, Slot slot) {
+    public void moveDown(Slot parentSlot, Slot slot) {
         moveUpOrDown(parentSlot, slot, "SlotPair.findSucceedingPairs");
-	}
+    }
 
-	private void moveUpOrDown(Slot parentSlot, Slot slot, String queryName) {
+    private void moveUpOrDown(Slot parentSlot, Slot slot, String queryName) {
         SlotPair mySlotPair = null;
         for (SlotPair pair : slot.getPairsInWhichThisSlotIsAChildList()) {
             if (pair.getParentSlot().equals(parentSlot) &&

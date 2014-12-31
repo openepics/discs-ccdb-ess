@@ -19,6 +19,11 @@
  */
 package org.openepics.discs.conf.dl.common;
 
+/**
+ * This enumeration contains all possible error messages for data loaders.
+ *
+ * @author Andraz Pozar <andraz.pozar@cosylab.com>
+ */
 public enum ErrorMessage {
     NAME_ALREADY_EXISTS("Entity with this name already exists"),
     NOT_AUTHORIZED("You are not authorized to perform this action"),
@@ -40,7 +45,8 @@ public enum ErrorMessage {
     DUPLICATES_IN_HEADER("Duplicate filed or property definition has been found in header"),
     PROPERTY_NOT_FOUND("Property with this name was not found"),
     DEVICE_STATUS_NOT_FOUND("This value of device status does not exist"),
-    HEADER_ROW_MISSING("The file does not contain a HEADER row.");
+    HEADER_ROW_MISSING("The file does not contain a HEADER row."),
+    UNKNOWN("Unexpected error.");
 
     private final String text;
 

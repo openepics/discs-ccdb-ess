@@ -45,9 +45,9 @@ import org.openepics.discs.conf.util.CRUDOperation;
  */
 @Stateless
 public class DeviceEJB extends DAO<Device> {
-    
+
     @Inject private ComptypeEJB componentTypesEJB;
-    
+
     /**
      * Searches for a device instance in the database, by its serial number
      *
@@ -98,7 +98,7 @@ public class DeviceEJB extends DAO<Device> {
                 return child.getDevice();
             }
         });
-        
+
         defineParentChildInterface(InstallationRecord.class, new ParentChildInterface<Device, InstallationRecord>() {
             @Override
             public List<InstallationRecord> getChildCollection(Device device) {
@@ -112,7 +112,11 @@ public class DeviceEJB extends DAO<Device> {
             }
         });
     }
-    
+
+    /**
+     * Adds a new device and creates all its defined property values in a single transaction
+     * @param device the {@link Device} the add
+     */
     @CRUDOperation(operation=EntityTypeOperation.CREATE)
     @Audit
     @Authorized

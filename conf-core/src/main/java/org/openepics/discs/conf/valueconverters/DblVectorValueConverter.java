@@ -32,7 +32,9 @@ import org.openepics.seds.api.datatypes.SedsScalarArray;
 public class DblVectorValueConverter extends ValueConverter<DblVectorValue> {
 
     @Override
-    public Class<DblVectorValue> getType() { return DblVectorValue.class; }
+    public Class<DblVectorValue> getType() {
+        return DblVectorValue.class;
+    }
 
     @Override
     public String convertToDatabaseColumn(DblVectorValue attribute) {

@@ -62,6 +62,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
             + "WHERE c.modifiedBy = :modifiedBy")
 })
 public class ComponentType extends ConfigurationEntity {
+    private static final long serialVersionUID = 6347994218786782623L;
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 32)
@@ -99,6 +101,11 @@ public class ComponentType extends ConfigurationEntity {
 
     public ComponentType() {}
 
+    /**
+     * Constructs a new device type.
+     *
+     * @param name the unique name of the device type
+     */
     public ComponentType(String name) {
         this.name = name;
     }

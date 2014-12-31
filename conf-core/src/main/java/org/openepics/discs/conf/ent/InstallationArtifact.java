@@ -47,12 +47,20 @@ import javax.xml.bind.annotation.XmlRootElement;
             + "WHERE i.modifiedBy = :modifiedBy")
 })
 public class InstallationArtifact extends Artifact {
+    private static final long serialVersionUID = 3029136683508636139L;
+
     @JoinColumn(name = "installation_record")
     @ManyToOne(optional = false)
     private InstallationRecord installationRecord;
 
     protected InstallationArtifact() { }
 
+    /** Constructs a new installation record artifact
+     * @param name the name of the artifact
+     * @param isInternal <code>true</code> if the artifact is a file attachment, <code>false</code> if it's an URL.
+     * @param description the user specified description
+     * @param uri the user specified URL
+     */
     public InstallationArtifact(String name, boolean isInternal, String description, String uri) {
         super(name, isInternal, description, uri);
     }

@@ -24,8 +24,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Logger;
 
 import javax.annotation.Nullable;
+import javax.ejb.EJBTransactionRolledbackException;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
@@ -46,9 +48,16 @@ import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
+/**
+ * Implementation of data loader for device types
+ *
+ * @author Andraz Pozar <andraz.pozar@cosylab.com>
+ */
 @Stateless
 @ComponentTypesLoaderQualifier
 public class ComponentTypesDataLoader extends AbstractDataLoader implements DataLoader {
+    private static final Logger LOGGER = Logger.getLogger(ComponentTypesDataLoader.class.getCanonicalName());
+
     @Inject private ComptypeEJB comptypeEJB;
     @Inject private PropertyEJB propertyEJB;
     private int nameIndex, descriptionIndex;
@@ -69,13 +78,11 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
         }
 
         setUpIndexesForFields(headerRow);
-        HashMap<String, Integer> indexByPropertyName = indexByPropertyName(fields, headerRow);
+        Map<String, Integer> indexByPropertyName = indexByPropertyName(fields, headerRow);
         checkPropertyAssociation(indexByPropertyName, headerRow.get(0));
 
-        if (rowResult.isError()) {
-            loaderResult.addResult(rowResult);
-            return loaderResult;
-        } else {
+        if (!rowResult.isError()) {
+fileProcessing:
             for (List<String> row : inputRows.subList(1, inputRows.size())) {
                 final String rowNumber = row.get(0);
                 loaderResult.addResult(rowResult);
@@ -85,16 +92,15 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
                     checkForDuplicateHeaderEntries(headerRow);
                     if (rowResult.isError()) {
                         loaderResult.addResult(rowResult);
-                        return loaderResult;
+                    } else {
+                        setUpIndexesForFields(headerRow);
+                        indexByPropertyName = indexByPropertyName(fields, headerRow);
+                        checkPropertyAssociation(indexByPropertyName, rowNumber);
                     }
-                    setUpIndexesForFields(headerRow);
-                    indexByPropertyName = indexByPropertyName(fields, headerRow);
-                    checkPropertyAssociation(indexByPropertyName, rowNumber);
                     if (rowResult.isError()) {
                         return loaderResult;
                     } else {
-                        continue; // skip the rest of the processing for HEADER
-                        // row
+                        continue; // skip the rest of the processing for HEADER row
                     }
                 } else if (row.get(commandIndex).equals(CMD_END)) {
                     break;
@@ -110,88 +116,96 @@ public class ComponentTypesDataLoader extends AbstractDataLoader implements Data
                 }
 
                 switch (command) {
-                case CMD_UPDATE:
-                    final ComponentType componentTypeToUpdate = comptypeEJB.findByName(name);
-                    if (componentTypeToUpdate != null) {
-                        if (componentTypeToUpdate.getName().equals(SlotEJB.ROOT_COMPONENT_TYPE)) {
-                            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
-                            continue;
-                        }
-                        try {
-                            componentTypeToUpdate.setDescription(description);
-                            addOrUpdateProperties(componentTypeToUpdate, indexByPropertyName, row, rowNumber);
-                            if (rowResult.isError()) {
+                    case CMD_UPDATE:
+                        final ComponentType componentTypeToUpdate = comptypeEJB.findByName(name);
+                        if (componentTypeToUpdate != null) {
+                            if (componentTypeToUpdate.getName().equals(SlotEJB.ROOT_COMPONENT_TYPE)) {
+                                rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                                 continue;
                             }
-                        } catch (Exception e) {
-                            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
-                        }
-                    } else {
-                        try {
-                            final ComponentType compTypeToAdd = new ComponentType(name);
-                            compTypeToAdd.setDescription(description);
-                            comptypeEJB.add(compTypeToAdd);
-                            addOrUpdateProperties(compTypeToAdd, indexByPropertyName, row, rowNumber);
-                            if (rowResult.isError()) {
-                                continue;
+                            try {
+                                componentTypeToUpdate.setDescription(description);
+                                addOrUpdateProperties(componentTypeToUpdate, indexByPropertyName, row, rowNumber);
+                                if (rowResult.isError()) {
+                                    continue;
+                                }
+                            } catch (EJBTransactionRolledbackException e) {
+                                handleLoadingError(LOGGER, e, rowNumber, headerRow);
+                                // cannot continue when the transaction is already rolled back
+                                break fileProcessing;
                             }
-                        } catch (Exception e) {
-                            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
-                        }
-                    }
-                    break;
-                case CMD_DELETE:
-                    final ComponentType componentTypeToDelete = comptypeEJB.findByName(name);
-                    try {
-                        if (componentTypeToDelete == null) {
-                            rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
-                            continue;
                         } else {
-                            if (componentTypeToDelete.getName().equals(SlotEJB.ROOT_COMPONENT_TYPE)) {
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
-                                continue;
+                            try {
+                                final ComponentType compTypeToAdd = new ComponentType(name);
+                                compTypeToAdd.setDescription(description);
+                                comptypeEJB.add(compTypeToAdd);
+                                addOrUpdateProperties(compTypeToAdd, indexByPropertyName, row, rowNumber);
+                                if (rowResult.isError()) {
+                                    continue;
+                                }
+                            } catch (EJBTransactionRolledbackException e) {
+                                handleLoadingError(LOGGER, e, rowNumber, headerRow);
+                                // cannot continue when the transaction is already rolled back
+                                break fileProcessing;
                             }
-                            comptypeEJB.delete(componentTypeToDelete);
                         }
-                    } catch (Exception e) {
-                        rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
-                    }
-                    break;
-                case CMD_RENAME:
-                    try {
-                        final int startOldNameMarkerIndex = name.indexOf("[");
-                        final int endOldNameMarkerIndex = name.indexOf("]");
-                        if (startOldNameMarkerIndex == -1 || endOldNameMarkerIndex == -1) {
-                            rowResult.addMessage(new ValidationMessage(ErrorMessage.RENAME_MISFORMAT, rowNumber, headerRow.get(nameIndex)));
-                            continue;
-                        }
-
-                        final String oldName = name.substring(startOldNameMarkerIndex + 1, endOldNameMarkerIndex).trim();
-                        final String newName = name.substring(endOldNameMarkerIndex + 1).trim();
-
-                        final ComponentType componentTypeToRename = comptypeEJB.findByName(oldName);
-                        if (componentTypeToRename != null) {
-                            if (componentTypeToRename.getName().equals(SlotEJB.ROOT_COMPONENT_TYPE)) {
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
-                                continue;
-                            }
-                            if (comptypeEJB.findByName(newName) != null) {
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.NAME_ALREADY_EXISTS, rowNumber, headerRow.get(nameIndex)));
+                        break;
+                    case CMD_DELETE:
+                        final ComponentType componentTypeToDelete = comptypeEJB.findByName(name);
+                        try {
+                            if (componentTypeToDelete == null) {
+                                rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
                                 continue;
                             } else {
-                                componentTypeToRename.setName(newName);
-                                comptypeEJB.save(componentTypeToRename);
+                                if (componentTypeToDelete.getName().equals(SlotEJB.ROOT_COMPONENT_TYPE)) {
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                                    continue;
+                                }
+                                comptypeEJB.delete(componentTypeToDelete);
                             }
-                        } else {
-                            rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
-                            continue;
+                        } catch (EJBTransactionRolledbackException e) {
+                            handleLoadingError(LOGGER, e, rowNumber, headerRow);
+                            // cannot continue when the transaction is already rolled back
+                            break fileProcessing;
                         }
-                    } catch (Exception e) {
-                        rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
-                    }
-                    break;
-                default:
-                    rowResult.addMessage(new ValidationMessage(ErrorMessage.COMMAND_NOT_VALID, rowNumber, headerRow.get(commandIndex)));
+                        break;
+                    case CMD_RENAME:
+                        try {
+                            final int startOldNameMarkerIndex = name.indexOf("[");
+                            final int endOldNameMarkerIndex = name.indexOf("]");
+                            if (startOldNameMarkerIndex == -1 || endOldNameMarkerIndex == -1) {
+                                rowResult.addMessage(new ValidationMessage(ErrorMessage.RENAME_MISFORMAT, rowNumber, headerRow.get(nameIndex)));
+                                continue;
+                            }
+
+                            final String oldName = name.substring(startOldNameMarkerIndex + 1, endOldNameMarkerIndex).trim();
+                            final String newName = name.substring(endOldNameMarkerIndex + 1).trim();
+
+                            final ComponentType componentTypeToRename = comptypeEJB.findByName(oldName);
+                            if (componentTypeToRename != null) {
+                                if (componentTypeToRename.getName().equals(SlotEJB.ROOT_COMPONENT_TYPE)) {
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                                    continue;
+                                }
+                                if (comptypeEJB.findByName(newName) != null) {
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NAME_ALREADY_EXISTS, rowNumber, headerRow.get(nameIndex)));
+                                    continue;
+                                } else {
+                                    componentTypeToRename.setName(newName);
+                                    comptypeEJB.save(componentTypeToRename);
+                                }
+                            } else {
+                                rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
+                                continue;
+                            }
+                        } catch (EJBTransactionRolledbackException e) {
+                            handleLoadingError(LOGGER, e, rowNumber, headerRow);
+                            // cannot continue when the transaction is already rolled back
+                            break fileProcessing;
+                        }
+                        break;
+                    default:
+                        rowResult.addMessage(new ValidationMessage(ErrorMessage.COMMAND_NOT_VALID, rowNumber, headerRow.get(commandIndex)));
                 }
             }
         }

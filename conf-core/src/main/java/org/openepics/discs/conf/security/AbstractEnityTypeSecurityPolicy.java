@@ -52,6 +52,8 @@ import org.openepics.discs.conf.ent.EntityTypeOperation;
  */
 
 public abstract class AbstractEnityTypeSecurityPolicy implements SecurityPolicy, Serializable {
+    private static final long serialVersionUID = 1L;
+
     private static final Logger LOGGER = Logger.getLogger(AbstractEnityTypeSecurityPolicy.class.getCanonicalName());
 
     @Inject protected HttpServletRequest servletRequest;
@@ -107,11 +109,11 @@ public abstract class AbstractEnityTypeSecurityPolicy implements SecurityPolicy,
     @Override
     public boolean getUIHint(String param) {
         switch(param) {
-        case "MOVE_SLOT" :
-            return hasPermission(EntityType.SLOT, EntityTypeOperation.CREATE)
+            case "MOVE_SLOT" :
+                return hasPermission(EntityType.SLOT, EntityTypeOperation.CREATE)
                         || hasPermission(EntityType.SLOT, EntityTypeOperation.UPDATE);
-        default:
-            return hasAnyModifyPermission( EntityType.valueOf(param) );
+            default:
+                return hasAnyModifyPermission( EntityType.valueOf(param) );
         }
     }
 

@@ -44,22 +44,24 @@ public class ParentEntityResolver {
      * @return Owner of the relationship for this entity
      */
     public static Object resolveParentEntity(Object entity) {
+        final Object parentEntity;
         if (entity instanceof ComptypePropertyValue) {
-            return ((ComptypePropertyValue) entity).getComponentType();
+            parentEntity = ((ComptypePropertyValue) entity).getComponentType();
         } else if (entity instanceof ComptypeArtifact) {
-            return ((ComptypeArtifact) entity).getComponentType();
+            parentEntity = ((ComptypeArtifact) entity).getComponentType();
         } else if (entity instanceof SlotPropertyValue) {
-            return ((SlotPropertyValue) entity).getSlot();
+            parentEntity = ((SlotPropertyValue) entity).getSlot();
         } else if (entity instanceof SlotArtifact) {
-            return ((SlotArtifact) entity).getSlot();
+            parentEntity = ((SlotArtifact) entity).getSlot();
         } else if (entity instanceof DevicePropertyValue) {
-            return ((DevicePropertyValue) entity).getDevice();
+            parentEntity = ((DevicePropertyValue) entity).getDevice();
         } else if (entity instanceof DeviceArtifact) {
-            return ((DeviceArtifact) entity).getDevice();
+            parentEntity = ((DeviceArtifact) entity).getDevice();
         } else if (entity instanceof InstallationArtifact) {
-            return ((InstallationArtifact) entity).getInstallationRecord();
+            parentEntity = ((InstallationArtifact) entity).getInstallationRecord();
         } else {
-            return entity;
+            parentEntity = entity;
         }
+        return parentEntity;
     }
 }

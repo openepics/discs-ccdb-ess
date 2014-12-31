@@ -23,8 +23,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import javax.annotation.Nullable;
+import javax.ejb.EJBTransactionRolledbackException;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
@@ -48,11 +50,12 @@ import com.google.common.base.Preconditions;
  * Implementation of data loader for properties
  *
  * @author Andraz Pozar <andraz.pozar@cosylab.com>
- *
  */
 @Stateless
 @PropertiesLoaderQualifier
 public class PropertiesDataLoader extends AbstractDataLoader implements DataLoader {
+    private static final Logger LOGGER = Logger.getLogger(PropertiesDataLoader.class.getCanonicalName());
+
     @Inject private PropertyEJB propertyEJB;
     @Inject private DataTypeEJB dataTypeEJB;
     @Inject private UnitEJB unitEJB;
@@ -62,7 +65,6 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
 
     @Override public DataLoaderResult loadDataToDatabase(List<List<String>> inputRows) {
         init();
-
 
         /*
          * List does not contain any rows that do not have a value (command)
@@ -77,10 +79,8 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
 
         setUpIndexesForFields(headerRow);
 
-        if (rowResult.isError()) {
-            loaderResult.addResult(rowResult);
-            return loaderResult;
-        } else {
+        if (!rowResult.isError()) {
+fileProcessing:
             for (List<String> row : inputRows.subList(1, inputRows.size())) {
                 final String rowNumber = row.get(0);
                 loaderResult.addResult(rowResult);
@@ -90,9 +90,9 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
                     checkForDuplicateHeaderEntries(headerRow);
                     if (rowResult.isError()) {
                         loaderResult.addResult(rowResult);
-                        return loaderResult;
+                    } else {
+                        setUpIndexesForFields(headerRow);
                     }
-                    setUpIndexesForFields(headerRow);
                     if (rowResult.isError()) {
                         return loaderResult;
                     } else {
@@ -122,89 +122,93 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
 
                 if (!rowResult.isError()) {
                     switch (command) {
-                    case CMD_UPDATE:
-                        if (propertyByName.containsKey(name)) {
-                            try {
-                                final Property propertyToUpdate = propertyByName.get(name);
-                                propertyToUpdate.setDescription(description);
-                                setPropertyAssociation(association, propertyToUpdate);
-                                propertyToUpdate.setModifiedAt(modifiedAt);
-                                setPropertyFields(propertyToUpdate, unit, dataType, rowNumber);
-                                if (rowResult.isError()) {
-                                    continue;
-                                } else {
-                                    propertyEJB.save(propertyToUpdate);
-                                }
-                            } catch (Exception e) {
-                                if (e instanceof SecurityException)
-                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
-                            }
-                        } else {
-                            try {
-                                final Property propertyToAdd = new Property(name, description);
-                                setPropertyAssociation(association, propertyToAdd);
-                                setPropertyFields(propertyToAdd, unit, dataType, rowNumber);
-                                if (rowResult.isError()) {
-                                    continue;
-                                } else {
-                                    propertyEJB.add(propertyToAdd);
-                                    propertyByName.put(propertyToAdd.getName(), propertyToAdd);
-                                }
-                            } catch (Exception e) {
-                                if (e instanceof SecurityException)
-                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
-                            }
-                        }
-                        break;
-                    case CMD_DELETE:
-                        try {
-                            final Property propertyToDelete = propertyByName.get(name);
-                            if (propertyToDelete == null) {
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
-                                continue;
-                            } else {
-                                propertyEJB.delete(propertyToDelete);
-                                propertyByName.remove(propertyToDelete.getName());
-                            }
-                        } catch (Exception e) {
-                            if (e instanceof SecurityException)
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
-                        }
-                        break;
-                    case CMD_RENAME:
-                        try {
-                            final int startOldNameMarkerIndex = name.indexOf("[");
-                            final int endOldNameMarkerIndex = name.indexOf("]");
-                            if (startOldNameMarkerIndex == -1 || endOldNameMarkerIndex == -1) {
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.RENAME_MISFORMAT, rowNumber, headerRow.get(nameIndex)));
-                                continue;
-                            }
-
-                            final String oldName = name.substring(startOldNameMarkerIndex + 1, endOldNameMarkerIndex).trim();
-                            final String newName = name.substring(endOldNameMarkerIndex + 1).trim();
-
-                            if (propertyByName.containsKey(oldName)) {
-                                if (propertyByName.containsKey(newName)) {
-                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NAME_ALREADY_EXISTS, rowNumber, headerRow.get(nameIndex)));
-                                    continue;
-                                } else {
-                                    final Property propertyToRename = propertyByName.get(oldName);
-                                    propertyToRename.setName(newName);
-                                    propertyEJB.save(propertyToRename);
-                                    propertyByName.remove(oldName);
-                                    propertyByName.put(newName, propertyToRename);
+                        case CMD_UPDATE:
+                            if (propertyByName.containsKey(name)) {
+                                try {
+                                    final Property propertyToUpdate = propertyByName.get(name);
+                                    propertyToUpdate.setDescription(description);
+                                    setPropertyAssociation(association, propertyToUpdate);
+                                    propertyToUpdate.setModifiedAt(modifiedAt);
+                                    setPropertyFields(propertyToUpdate, unit, dataType, rowNumber);
+                                    if (rowResult.isError()) {
+                                        continue;
+                                    } else {
+                                        propertyEJB.save(propertyToUpdate);
+                                    }
+                                } catch (EJBTransactionRolledbackException e) {
+                                    handleLoadingError(LOGGER, e, rowNumber, headerRow);
+                                    // cannot continue when the transaction is already rolled back
+                                    break fileProcessing;
                                 }
                             } else {
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
-                                continue;
+                                try {
+                                    final Property propertyToAdd = new Property(name, description);
+                                    setPropertyAssociation(association, propertyToAdd);
+                                    setPropertyFields(propertyToAdd, unit, dataType, rowNumber);
+                                    if (rowResult.isError()) {
+                                        continue;
+                                    } else {
+                                        propertyEJB.add(propertyToAdd);
+                                        propertyByName.put(propertyToAdd.getName(), propertyToAdd);
+                                    }
+                                } catch (EJBTransactionRolledbackException e) {
+                                    handleLoadingError(LOGGER, e, rowNumber, headerRow);
+                                    // cannot continue when the transaction is already rolled back
+                                    break fileProcessing;
+                                }
                             }
-                        } catch (Exception e) {
-                            if (e instanceof SecurityException)
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
-                        }
-                        break;
-                    default:
-                        rowResult.addMessage(new ValidationMessage(ErrorMessage.COMMAND_NOT_VALID, rowNumber, headerRow.get(commandIndex)));
+                            break;
+                        case CMD_DELETE:
+                            try {
+                                final Property propertyToDelete = propertyByName.get(name);
+                                if (propertyToDelete == null) {
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
+                                    continue;
+                                } else {
+                                    propertyEJB.delete(propertyToDelete);
+                                    propertyByName.remove(propertyToDelete.getName());
+                                }
+                            } catch (EJBTransactionRolledbackException e) {
+                                handleLoadingError(LOGGER, e, rowNumber, headerRow);
+                                // cannot continue when the transaction is already rolled back
+                                break fileProcessing;
+                            }
+                            break;
+                        case CMD_RENAME:
+                            try {
+                                final int startOldNameMarkerIndex = name.indexOf("[");
+                                final int endOldNameMarkerIndex = name.indexOf("]");
+                                if (startOldNameMarkerIndex == -1 || endOldNameMarkerIndex == -1) {
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.RENAME_MISFORMAT, rowNumber, headerRow.get(nameIndex)));
+                                    continue;
+                                }
+
+                                final String oldName = name.substring(startOldNameMarkerIndex + 1, endOldNameMarkerIndex).trim();
+                                final String newName = name.substring(endOldNameMarkerIndex + 1).trim();
+
+                                if (propertyByName.containsKey(oldName)) {
+                                    if (propertyByName.containsKey(newName)) {
+                                        rowResult.addMessage(new ValidationMessage(ErrorMessage.NAME_ALREADY_EXISTS, rowNumber, headerRow.get(nameIndex)));
+                                        continue;
+                                    } else {
+                                        final Property propertyToRename = propertyByName.get(oldName);
+                                        propertyToRename.setName(newName);
+                                        propertyEJB.save(propertyToRename);
+                                        propertyByName.remove(oldName);
+                                        propertyByName.put(newName, propertyToRename);
+                                    }
+                                } else {
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
+                                    continue;
+                                }
+                            } catch (EJBTransactionRolledbackException e) {
+                                handleLoadingError(LOGGER, e, rowNumber, headerRow);
+                                // cannot continue when the transaction is already rolled back
+                                break fileProcessing;
+                            }
+                            break;
+                        default:
+                            rowResult.addMessage(new ValidationMessage(ErrorMessage.COMMAND_NOT_VALID, rowNumber, headerRow.get(commandIndex)));
                     }
                 }
             }

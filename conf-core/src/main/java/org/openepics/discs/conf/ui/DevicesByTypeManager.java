@@ -36,7 +36,6 @@ import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.util.Utility;
-import org.primefaces.context.RequestContext;
 
 import com.google.common.base.Preconditions;
 
@@ -45,12 +44,18 @@ import com.google.common.base.Preconditions;
  * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  *
  */
+/**
+ * @author ess-dev
+ *
+ */
 @Named
 @ViewScoped
 public class DevicesByTypeManager implements Serializable {
-    @Inject private ComptypeEJB componentTypesEJB;
-    @Inject private DeviceEJB deviceEJB;
-    @Inject private InstallationEJB installationEJB;
+    private static final long serialVersionUID = 3236468538191653638L;
+
+    @Inject transient private ComptypeEJB componentTypesEJB;
+    @Inject transient private DeviceEJB deviceEJB;
+    @Inject transient private InstallationEJB installationEJB;
 
     private List<ComponentType> deviceTypes;
     private List<ComponentType> filteredComponentTypes;
@@ -64,7 +69,10 @@ public class DevicesByTypeManager implements Serializable {
 
     public DevicesByTypeManager() {
     }
-    
+
+    /**
+     * Java EE post construct life-cycle method.
+     */
     @PostConstruct
     public void init() {
         if (((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest()).getParameter("id") != null) {
@@ -85,7 +93,9 @@ public class DevicesByTypeManager implements Serializable {
             if (elementName.equalsIgnoreCase(SlotEJB.ROOT_COMPONENT_TYPE) || elementName.equalsIgnoreCase(SlotEJB.GRP_COMPONENT_TYPE)) {
                 dtIterator.remove();
                 found++;
-                if (found >= 2) break;
+                if (found >= 2) {
+                    break;
+                }
             }
         }
     }
@@ -97,7 +107,7 @@ public class DevicesByTypeManager implements Serializable {
         final Device newDevice = new Device(serialNumber);
         newDevice.setComponentType(selectedComponentType);
         newDevice.setDescription(description);
-        
+
         try {
             deviceEJB.addDeviceAndPropertyDefs(newDevice);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Device saved.", null);
@@ -110,7 +120,7 @@ public class DevicesByTypeManager implements Serializable {
         } finally {
             resetDeviceDialogFields();
             prepareDevicesForDisplay();
-        }        
+        }
     }
 
     /**
@@ -118,14 +128,14 @@ public class DevicesByTypeManager implements Serializable {
      */
     public void onDeviceDelete() {
         Preconditions.checkNotNull(selectedDevice);
-        
+
         if (installationEJB.getActiveInstallationRecordForDevice(selectedDevice) == null) {
-            try {                
+            try {
                 deviceEJB.delete(selectedDevice);
-    
+
                 selectedDevice = null;
                 prepareDevicesForDisplay();
-    
+
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Device deleted.", null));
             } catch (Exception e) {
                 if (Utility.causedByPersistenceException(e)) {
@@ -144,14 +154,28 @@ public class DevicesByTypeManager implements Serializable {
         description = null;
     }
 
+    /** Called when the user clicks the "pencil" icon in the table listing the devices. The user is redirected
+     * to the attribute manager screen.
+     * @param id The primary key of the {@link Device} entity
+     * @return The URL to redirect to
+     */
     public String deviceDetailsRedirect(Long id) {
         return "device-details.xhtml?faces-redirect=true&id=" + id;
     }
-    
+
+    /** Called when the user clicks the "Close" button on the device details screen. The user is redirected
+     * to the list of all device instances of the current device type.
+     * @param id The primary key of the {@link ComponentType} entity
+     * @return The URL to redirect to
+     */
     public String redirectToAllDevices(Long id) {
         return "index.html?faces-redirect=true&id=" + id;
     }
 
+    /**
+     * @return The list of all user defined device types to be used in the UI (the left hand side table listing all
+     * available device type)
+     */
     public List<ComponentType> getDeviceTypes() {
         if (deviceTypes == null) {
             deviceTypes = componentTypesEJB.findComponentTypeOrderedByName();
@@ -159,52 +183,97 @@ public class DevicesByTypeManager implements Serializable {
         }
         return deviceTypes;
     }
+    /**
+     * @param deviceTypes The list of all user defined device types to be used in the UI (the left hand side table
+     * listing all available device type)
+     */
     public void setDeviceTypes(List<ComponentType> deviceTypes) {
         this.deviceTypes = deviceTypes;
     }
 
+    /**
+     * @return The device type the user selected in the left hand side table listing all available device type
+     */
     public ComponentType getSelectedComponentType() {
         return selectedComponentType;
     }
+    /**
+     * @param selectedComponentType The device type the user selected in the left hand side table listing all available
+     * device type
+     */
     public void setSelectedComponentType(ComponentType selectedComponentType) {
         this.selectedComponentType = selectedComponentType;
     }
 
+    /**
+     * The method prepares the list of {@link Device} instances to show to the user when he selects a device type in the left
+     * hand side table listing all available device type.
+     */
     public void prepareDevicesForDisplay() {
         this.devices = deviceEJB.findDevicesByComponentType(selectedComponentType);
     }
 
+    /**
+     * @return The list of all {@link Device} instances to display to the the user
+     */
     public List<Device> getDevices() {
         return devices;
     }
+    /**
+     * @param devices The list of all {@link Device} instances to display to the the user
+     */
     public void setDevices(List<Device> devices) {
         this.devices = devices;
     }
 
+    /**
+     * @return The reference to the device instance displayed in the row the user clicked the action for.
+     */
     public Device getSelectedDevice() {
         return selectedDevice;
     }
+    /**
+     * @param selectedDevice The reference to the device instance displayed in the row the user clicked the action for.
+     */
     public void setSelectedDevice(Device selectedDevice) {
         this.selectedDevice = selectedDevice;
     }
 
+    /**
+     * @return The inventory ID (see {@link Device#getSerialNumber()}) of the {@link Device}
+     */
     public String getSerialNumber() {
         return serialNumber;
     }
+    /**
+     * @param serialNumber The inventory ID (see {@link Device#getSerialNumber()}) of the {@link Device}
+     */
     public void setSerialNumber(String serialNumber) {
         this.serialNumber = serialNumber;
     }
 
+    /**
+     * @return The description (see {@link Device#getDescription()}) of the {@link Device}
+     */
     public String getDescription() {
         return description;
     }
+    /**
+     * @param description The description (see {@link Device#getDescription()}) of the {@link Device}
+     */
     public void setDescription(String description) {
         this.description = description;
     }
 
+    /**
+     * @return The list of filtered devices used by the PrimeFaces filter field.
+     */
     public List<ComponentType> getFilteredComponentTypes() {
         return filteredComponentTypes;
     }
+    /**
+     * @param filteredComponentTypes The list of filtered devices used by the PrimeFaces filter field.
+     */
     public void setFilteredComponentTypes(List<ComponentType> filteredComponentTypes) {
         this.filteredComponentTypes = filteredComponentTypes;
     }

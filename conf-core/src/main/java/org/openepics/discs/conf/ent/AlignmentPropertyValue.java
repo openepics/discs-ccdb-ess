@@ -46,12 +46,19 @@ import javax.xml.bind.annotation.XmlRootElement;
             + "WHERE a.modifiedBy = :modifiedBy")
 })
 public class AlignmentPropertyValue extends PropertyValue {
+    private static final long serialVersionUID = 4150617386716349440L;
+
     @JoinColumn(name = "alignment_record")
     @ManyToOne(optional = false)
     private AlignmentRecord alignmentRecord;
 
     public AlignmentPropertyValue() { }
 
+    /**
+     * Constructs a new property value
+     *
+     * @param inRepository <code>false</code>
+     */
     public AlignmentPropertyValue(boolean inRepository) {
         super(inRepository);
     }

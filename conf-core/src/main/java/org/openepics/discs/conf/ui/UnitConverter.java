@@ -47,7 +47,7 @@ public class UnitConverter implements Converter {
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
         Unit unit;
 
-        if (value == null || value.equals("")) {
+        if (value == null || value.isEmpty()) {
             return null;
         } else {
             unit = unitEJB.findById(Long.valueOf(value));
@@ -57,7 +57,7 @@ public class UnitConverter implements Converter {
 
     @Override
     public String getAsString(FacesContext context, UIComponent component, Object value) {
-        if (value == null || value.equals("")) {
+        if (value == null || "".equals(value)) {
             return "";
         } else {
             return String.valueOf(((Unit) value).getId());

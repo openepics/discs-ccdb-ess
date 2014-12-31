@@ -41,7 +41,9 @@ import org.openepics.discs.conf.util.Utility;
 @Named
 @SessionScoped
 public class LoginManager implements Serializable {
-    private static final Logger logger = Logger.getLogger(LoginManager.class.getCanonicalName());
+    private static final long serialVersionUID = -3247078884319476134L;
+
+    private static final Logger LOGGER = Logger.getLogger(LoginManager.class.getCanonicalName());
 
     private String userId;
     private String password;
@@ -51,6 +53,9 @@ public class LoginManager implements Serializable {
     @Inject private SecurityPolicy securityPolicy;
 
 
+    /** Called when the user clicks on the "Login" button in the UI.
+     * @return <code>null</code>
+     */
     public String onLogin() {
         try {
             securityPolicy.login(userId, password);
@@ -58,7 +63,8 @@ public class LoginManager implements Serializable {
             loggedIn = true;
         } catch (Exception e) {
             Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Login Failed! Please try again. ", "Status: ");
-            logger.log(Level.INFO, "Login failed for " + userId);
+            LOGGER.log(Level.INFO, "Login failed for " + userId);
+            LOGGER.log(Level.FINE, "Login failed for " + userId, e);
             loggedIn = false;
         } finally {
             password = "xxxxxx"; // ToDo implement a better way destroy the password (from JVM)
@@ -66,6 +72,9 @@ public class LoginManager implements Serializable {
         return null;
     }
 
+    /** Called when the user clicks on the "Login" button in the UI.
+     * @return "logout"
+     */
     public String onLogout() {
         try {
             securityPolicy.logout();
@@ -76,6 +85,7 @@ public class LoginManager implements Serializable {
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "You have been logged out.", "Thank you!");
         } catch (Exception e) {
             Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Strangely, logout has failed", "That's odd!");
+            LOGGER.log(Level.FINE,  "Strangely, logout has failed", e);
         }
 
         return "logout"; // ToDo: replace with null

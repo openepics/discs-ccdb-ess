@@ -26,8 +26,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Logger;
 
 import javax.annotation.Nullable;
+import javax.ejb.EJBTransactionRolledbackException;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
@@ -50,9 +52,16 @@ import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
+/**
+ * Implementation of data loader for device instances
+ *
+ * @author Andraz Pozar <andraz.pozar@cosylab.com>
+ */
 @Stateless
 @DevicesLoaderQualifier
 public class DevicesDataLoader extends AbstractDataLoader implements DataLoader  {
+    private static final Logger LOGGER = Logger.getLogger(DevicesDataLoader.class.getCanonicalName());
+
     @Inject private PropertyEJB propertyEJB;
     @Inject private ComptypeEJB comptypeEJB;
     @Inject private DeviceEJB deviceEJB;
@@ -74,13 +83,11 @@ public class DevicesDataLoader extends AbstractDataLoader implements DataLoader 
         }
 
         setUpIndexesForFields(headerRow);
-        HashMap<String, Integer> indexByPropertyName = indexByPropertyName(fields, headerRow);
+        Map<String, Integer> indexByPropertyName = indexByPropertyName(fields, headerRow);
         checkPropertyAssociation(indexByPropertyName, headerRow.get(0));
 
-        if (rowResult.isError()) {
-            loaderResult.addResult(rowResult);
-            return loaderResult;
-        } else {
+        if (!rowResult.isError()) {
+fileProcessing:
             for (List<String> row : inputRows.subList(1, inputRows.size())) {
                 final String rowNumber = row.get(0);
                 loaderResult.addResult(rowResult);
@@ -90,16 +97,15 @@ public class DevicesDataLoader extends AbstractDataLoader implements DataLoader 
                     checkForDuplicateHeaderEntries(headerRow);
                     if (rowResult.isError()) {
                         loaderResult.addResult(rowResult);
-                        return loaderResult;
+                    } else {
+                        setUpIndexesForFields(headerRow);
+                        indexByPropertyName = indexByPropertyName(fields, headerRow);
+                        checkPropertyAssociation(indexByPropertyName, rowNumber);
                     }
-                    setUpIndexesForFields(headerRow);
-                    indexByPropertyName = indexByPropertyName(fields, headerRow);
-                    checkPropertyAssociation(indexByPropertyName, rowNumber);
                     if (rowResult.isError()) {
                         return loaderResult;
                     } else {
-                        continue; // skip the rest of the processing for
-                        // HEADER row
+                        continue; // skip the rest of the processing for HEADER row
                     }
                 } else if (row.get(1).equals(CMD_END)) {
                     break;
@@ -129,52 +135,58 @@ public class DevicesDataLoader extends AbstractDataLoader implements DataLoader 
 
                 if (!rowResult.isError()) {
                     switch (command) {
-                    case CMD_UPDATE:
-                        if (deviceEJB.findDeviceBySerialNumber(serial) != null) {
-                            final @Nullable ComponentType compType = comptypeEJB.findByName(componentType);
-                            if (compType == null) {
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(compTypeIndex)));
-                                continue;
+                        case CMD_UPDATE:
+                            if (deviceEJB.findDeviceBySerialNumber(serial) != null) {
+                                final @Nullable ComponentType compType = comptypeEJB.findByName(componentType);
+                                if (compType == null) {
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(compTypeIndex)));
+                                    continue;
+                                } else {
+                                    try {
+                                        final Device deviceToUpdate = deviceEJB.findDeviceBySerialNumber(serial);
+                                        addOrUpdateDevice(deviceToUpdate, compType, description, status, manufSerial, location, purchaseOrder, asmPosition, asmDescription, manufacturer, manufModel);
+                                        addOrUpdateProperties(deviceToUpdate, indexByPropertyName, row, rowNumber);
+                                    } catch (EJBTransactionRolledbackException e) {
+                                        handleLoadingError(LOGGER, e, rowNumber, headerRow);
+                                        // cannot continue when the transaction is already rolled back
+                                        break fileProcessing;
+                                    }
+                                }
                             } else {
-                                try {
-                                    final Device deviceToUpdate = deviceEJB.findDeviceBySerialNumber(serial);
-                                    addOrUpdateDevice(deviceToUpdate, compType, description, status, manufSerial, location, purchaseOrder, asmPosition, asmDescription, manufacturer, manufModel);
-                                    addOrUpdateProperties(deviceToUpdate, indexByPropertyName, row, rowNumber);
-                                } catch (Exception e) {
-                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                                final @Nullable ComponentType compType = comptypeEJB.findByName(componentType);
+                                if (compType == null) {
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(compTypeIndex)));
+                                    continue;
+                                } else {
+                                    try {
+                                        final Device newDevice = new Device(serial);
+                                        addOrUpdateDevice(newDevice, compType, description, status, manufSerial, location, purchaseOrder, asmPosition, asmDescription, manufacturer, manufModel);
+                                        deviceEJB.addDeviceAndPropertyDefs(newDevice);
+                                        addOrUpdateProperties(newDevice, indexByPropertyName, row, rowNumber);
+                                    } catch (EJBTransactionRolledbackException e) {
+                                        handleLoadingError(LOGGER, e, rowNumber, headerRow);
+                                        // cannot continue when the transaction is already rolled back
+                                        break fileProcessing;
+                                    }
                                 }
                             }
-                        } else {
-                            final @Nullable ComponentType compType = comptypeEJB.findByName(componentType);
-                            if (compType == null) {
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(compTypeIndex)));
-                                continue;
+                            break;
+                        case CMD_DELETE:
+                            final @Nullable Device deviceToDelete = deviceEJB.findDeviceBySerialNumber(serial);
+                            if (deviceToDelete == null) {
+                                rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(serialIndex)));
                             } else {
                                 try {
-                                    final Device newDevice = new Device(serial);
-                                    addOrUpdateDevice(newDevice, compType, description, status, manufSerial, location, purchaseOrder, asmPosition, asmDescription, manufacturer, manufModel);
-                                    deviceEJB.addDeviceAndPropertyDefs(newDevice);
-                                    addOrUpdateProperties(newDevice, indexByPropertyName, row, rowNumber);
-                                } catch (Exception e) {
-                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                                    deviceEJB.delete(deviceToDelete);
+                                } catch (EJBTransactionRolledbackException e) {
+                                    handleLoadingError(LOGGER, e, rowNumber, headerRow);
+                                    // cannot continue when the transaction is already rolled back
+                                    break fileProcessing;
                                 }
                             }
-                        }
-                        break;
-                    case CMD_DELETE:
-                        final @Nullable Device deviceToDelete = deviceEJB.findDeviceBySerialNumber(serial);
-                        if (deviceToDelete == null) {
-                            rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(serialIndex)));
-                        } else {
-                            try {
-                                deviceEJB.delete(deviceToDelete);
-                            } catch (Exception e) {
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
-                            }
-                        }
-                        break;
-                    default:
-                        rowResult.addMessage(new ValidationMessage(ErrorMessage.COMMAND_NOT_VALID, rowNumber, headerRow.get(commandIndex)));
+                            break;
+                        default:
+                            rowResult.addMessage(new ValidationMessage(ErrorMessage.COMMAND_NOT_VALID, rowNumber, headerRow.get(commandIndex)));
                     }
                 }
             }
@@ -235,22 +247,24 @@ public class DevicesDataLoader extends AbstractDataLoader implements DataLoader 
     }
 
     private DeviceStatus setDeviceStatus(@Nullable String deviceStatusString, String rowNumber, String columnName) {
+        final DeviceStatus deviceStatus;
         if (deviceStatusString == null) {
-            return null;
+            deviceStatus = null;
         } else if (deviceStatusString.equalsIgnoreCase(DeviceStatus.IN_FABRICATION.name())) {
-            return DeviceStatus.IN_FABRICATION;
+            deviceStatus = DeviceStatus.IN_FABRICATION;
         } else if (deviceStatusString.equalsIgnoreCase(DeviceStatus.READY.name())) {
-            return DeviceStatus.READY;
+            deviceStatus = DeviceStatus.READY;
         } else if (deviceStatusString.equalsIgnoreCase(DeviceStatus.SPARE.name())) {
-            return DeviceStatus.SPARE;
+            deviceStatus = DeviceStatus.SPARE;
         } else if (deviceStatusString.equalsIgnoreCase(DeviceStatus.UNDER_REPAIR.name())) {
-            return DeviceStatus.UNDER_REPAIR;
+            deviceStatus = DeviceStatus.UNDER_REPAIR;
         } else if (deviceStatusString.equalsIgnoreCase(DeviceStatus.UNDER_TESTING.name())) {
-            return DeviceStatus.UNDER_TESTING;
+            deviceStatus = DeviceStatus.UNDER_TESTING;
         } else {
             rowResult.addMessage(new ValidationMessage(ErrorMessage.DEVICE_STATUS_NOT_FOUND, rowNumber, columnName));
-            return null;
+            deviceStatus = null;
         }
+        return deviceStatus;
     }
 
     private void addOrUpdateProperties(Device device, Map<String, Integer> properties, List<String> row, String rowNumber) {

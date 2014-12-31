@@ -27,7 +27,6 @@ import java.io.Serializable;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
-import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -43,6 +42,7 @@ import org.openepics.discs.conf.ent.AuditRecord;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
+import org.openepics.discs.conf.ui.common.ExcelSingleFileImportUIHandlers;
 import org.openepics.discs.conf.ui.common.UIException;
 import org.openepics.discs.conf.util.Utility;
 import org.primefaces.context.RequestContext;
@@ -59,21 +59,20 @@ import com.google.common.io.ByteStreams;
  */
 @Named
 @ViewScoped
-public class ComponentTypeManager implements Serializable {
+public class ComponentTypeManager implements Serializable, ExcelSingleFileImportUIHandlers {
+    private static final long serialVersionUID = -9007187646811006328L;
 
-    @EJB private ComptypeEJB comptypeEJB;
-    @Inject private AuditRecordEJB auditRecordEJB;
-    @Inject private DataLoaderHandler dataLoaderHandler;
-    @Inject @ComponentTypesLoaderQualifier private DataLoader compTypesDataLoader;
+    @Inject transient private ComptypeEJB comptypeEJB;
+    @Inject transient private AuditRecordEJB auditRecordEJB;
+    @Inject transient private DataLoaderHandler dataLoaderHandler;
+    @Inject @ComponentTypesLoaderQualifier transient private DataLoader compTypesDataLoader;
 
     private byte[] importData;
     private String importFileName;
-    private DataLoaderResult loaderResult;
+    transient private DataLoaderResult loaderResult;
 
-    private List<ComponentType> objects;
-    private List<ComponentType> sortedObjects;
-    private List<ComponentType> filteredObjects;
-    private ComponentType selectedObject;
+    private List<ComponentType> deviceTypes;
+    private List<ComponentType> filteredDeviceTypes;
     private String name;
     private String description;
     private ComponentType selectedDeviceType;
@@ -85,20 +84,31 @@ public class ComponentTypeManager implements Serializable {
     public ComponentTypeManager() {
     }
 
+    /**
+     * Java EE post construct life-cycle method.
+     */
     @PostConstruct
     public void init() {
         try {
-            objects = comptypeEJB.findAll();
+            deviceTypes = comptypeEJB.findAll();
             resetFields();
         } catch(Exception e) {
             throw new UIException("Device type display initialization fialed: " + e.getMessage(), e);
         }
     }
 
+    /** Called when the user clicks the "pencil" icon in the table listing the device types. The user is redirected
+     * to the attribute manager screen.
+     * @param id The primary key of the {@link ComponentType} entity
+     * @return The URL to redirect to
+     */
     public String deviceTypePropertyRedirect(Long id) {
         return "device-type-attributes-manager.xhtml?faces-redirect=true&id=" + id;
     }
 
+    /**
+     * Prepares the UI data for the "Add a new device type" dialog.
+     */
     public void prepareAddPopup() {
         resetFields();
         RequestContext.getCurrentInstance().update("addDeviceTypeForm:addDeviceType");
@@ -109,6 +119,9 @@ public class ComponentTypeManager implements Serializable {
         description = null;
     }
 
+    /**
+     * Called when the user presses the "Save" button in the "Add a new device type" dialog.
+     */
     public void onAdd() {
         final ComponentType componentTypeToAdd = new ComponentType(name);
         componentTypeToAdd.setDescription(description);
@@ -126,6 +139,9 @@ public class ComponentTypeManager implements Serializable {
         }
     }
 
+    /**
+     * Called when the user clicks the "trash can" icon in the table listing the devices types.
+     */
     public void onDelete() {
         try {
             comptypeEJB.delete(selectedDeviceType);
@@ -141,92 +157,127 @@ public class ComponentTypeManager implements Serializable {
         }
     }
 
+    @Override
     public String getImportFileName() {
         return importFileName;
     }
 
+    @Override
     public void doImport() {
         final InputStream inputStream = new ByteArrayInputStream(importData);
         loaderResult = dataLoaderHandler.loadData(inputStream, compTypesDataLoader);
     }
 
+    @Override
     public DataLoaderResult getLoaderResult() {
         return loaderResult;
     }
 
+    @Override
     public void prepareImportPopup() {
         importData = null;
         importFileName = null;
     }
 
+    @Override
     public void handleImportFileUpload(FileUploadEvent event) {
         try (InputStream inputStream = event.getFile().getInputstream()) {
             this.importData = ByteStreams.toByteArray(inputStream);
             this.importFileName = FilenameUtils.getName(event.getFile().getFileName());
         } catch (IOException e) {
-            throw new RuntimeException();
+            throw new RuntimeException(e);
         }
     }
 
     // -------------------- Getters and Setters ---------------------------------------
 
+    /**
+     * @return The reference to the device type displayed in the row the user clicked the action for.
+     * @see ComponentTypeManager#setSelectedDeviceType(ComponentType)
+     */
     public ComponentType getSelectedDeviceType() {
         return selectedDeviceType;
     }
+    /**
+     * @param selectedDeviceType When the user clicks on the action in the "Action" column of the table listing all the
+     * device type, this method stores the reference to the device type displayed in that table row.
+     */
     public void setSelectedDeviceType(ComponentType selectedDeviceType) {
         this.selectedDeviceType = selectedDeviceType;
     }
 
+    /**
+     * @return Returns the reference to the device type displayed in the row the user clicked the action for.
+     * @see ComponentTypeManager#getSelectedDeviceTypeForLog()
+     */
     public ComponentType getSelectedDeviceTypeForLog() {
         return selectedDeviceType;
     }
+    /** Sets the same reference as {@link #setSelectedDeviceType(ComponentType)} plus addition data required for audit
+     * log display.
+     * @param selectedDeviceType When the user clicks on the "pencil" action in the "Action" column of the table
+     * listing all the device type, this method stores the reference to the device type displayed in that table row.
+     */
     public void setSelectedDeviceTypeForLog(ComponentType selectedDeviceType) {
         this.selectedDeviceType = selectedDeviceType;
         auditRecordsForEntity = auditRecordEJB.findByEntityIdAndType(selectedDeviceType.getId(), EntityType.COMPONENT_TYPE);
         RequestContext.getCurrentInstance().update("deviceTypeLogForm:deviceTypeLog");
     }
 
+    /**
+     * @return The list of {@link AuditRecord} entries for selected entity.
+     * @see ComponentTypeManager#setSelectedDeviceTypeForLog(ComponentType)
+     */
     public List<AuditRecord> getAuditRecordsForEntity() {
         return auditRecordsForEntity;
     }
 
+    /**
+     * @return The name of the device type the user is adding or modifying. Used in the UI dialog.
+     */
     public String getName() {
         return name;
     }
+    /**
+     * @param name The name of the device type the user is adding or modifying. Used in the UI dialog.
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * @return The description of the device type the user is adding or modifying. Used in the UI dialog.
+     */
     public String getDescription() {
         return description;
     }
+    /**
+     * @param description The description of the device type the user is adding or modifying. Used in the UI dialog.
+     */
     public void setDescription(String description) {
         this.description = description;
     }
 
-    public List<ComponentType> getSortedObjects() {
-        return sortedObjects;
+    /**
+     * @return The list of filtered device types used by the PrimeFaces filter field.
+     */
+    public List<ComponentType> getFilteredDeviceTypes() {
+        return filteredDeviceTypes;
     }
-    public void setSortedObjects(List<ComponentType> sortedObjects) {
-        this.sortedObjects = sortedObjects;
-    }
-
-    public List<ComponentType> getFilteredObjects() {
-        return filteredObjects;
-    }
-    public void setFilteredObjects(List<ComponentType> filteredObjects) {
-        this.filteredObjects = filteredObjects;
-    }
-
-    public ComponentType getSelectedObject() {
-        return selectedObject;
-    }
-    public void setSelectedObject(ComponentType selectedObject) {
-        this.selectedObject = selectedObject;
+    /**
+     * @param filteredDeviceTypes The list of filtered device types used by the PrimeFaces filter field.
+     */
+    public void setFilteredDeviceTypes(List<ComponentType> filteredDeviceTypes) {
+        this.filteredDeviceTypes = filteredDeviceTypes;
     }
 
-    public List<ComponentType> getObjects() {
-        if (objects == null) objects = comptypeEJB.findAll();
-        return objects;
+    /**
+     * @return The list of all device types in the database.
+     */
+    public List<ComponentType> getDeviceTypes() {
+        if (deviceTypes == null) {
+            deviceTypes = comptypeEJB.findAll();
+        }
+        return deviceTypes;
     }
 }

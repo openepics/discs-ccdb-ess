@@ -44,6 +44,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "DataType.findByModifiedBy", query = "SELECT d FROM DataType d WHERE d.modifiedBy = :modifiedBy")
 })
 public class DataType extends ConfigurationEntity {
+    private static final long serialVersionUID = 8190792924852505638L;
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)
@@ -66,6 +68,14 @@ public class DataType extends ConfigurationEntity {
     protected DataType() {
     }
 
+    /**
+     * Constructs a new data type.
+     *
+     * @param name a unique name of the data type
+     * @param description user defined description
+     * @param scalar <code>true</code> if the values of this type are scalars, <code>false</code> otherwise
+     * @param definition the data type definition. Used unly for user defined enumerations so far.
+     */
     public DataType(String name, String description, boolean scalar, String definition) {
         this.name = name;
         this.description = description;

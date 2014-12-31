@@ -57,8 +57,9 @@ import com.google.common.collect.ImmutableList.Builder;
 @Named
 @ViewScoped
 public class SlotsTreeBuilder implements Serializable {
+    private static final long serialVersionUID = -2249157032475929350L;
 
-    @Inject protected InstallationEJB installationEJB;
+    @Inject transient protected InstallationEJB installationEJB;
     private TreeNode initiallySelectedTreeNode;
 
     /**
@@ -328,6 +329,10 @@ public class SlotsTreeBuilder implements Serializable {
         return true;
     }
 
+    /**
+     * @return If there was a {@link Slot} preselected when the tree was built, this method returns a {@link SlotView}
+     * containing this {@link Slot}, <code>null</code> otherwise.
+     */
     public SlotView getInitiallySelectedSlotView() {
         if (initiallySelectedTreeNode == null) {
             return null;

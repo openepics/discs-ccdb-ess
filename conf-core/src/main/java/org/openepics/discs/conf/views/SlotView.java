@@ -54,6 +54,13 @@ public class SlotView {
     private boolean isFirst;
     private boolean isLast;
 
+    /** Constructs a new SlotView object.
+     * @param slot the {@link Slot} to create the UI view object for
+     * @param parentNode a reference to the SlotView object of a parent in the hierarchy tree
+     * @param children a reference to the SlotView objects of all children in the hierarchy tree
+     * @param installedDevice a reference to the {@link Device} if one is installed in the installation slot
+     * @param order the ordinal number of the SlotView object - defines the order in the hierarchy tree
+     */
     public SlotView(Slot slot, SlotView parentNode, List<SlotPair> children, Device installedDevice, int order) {
         this.slot = slot;
         this.name = slot.getName();
@@ -81,43 +88,85 @@ public class SlotView {
         }
     }
 
-    public Long getId() { return id; }
+    public Long getId() {
+        return id;
+    }
 
-    public String getName() { return name; }
+    public String getName() {
+        return name;
+    }
 
-    public String getDescription() { return description; }
+    public String getDescription() {
+        return description;
+    }
 
-    public boolean getCanDelete() { return canDelete; }
+    public boolean getCanDelete() {
+        return canDelete;
+    }
 
-    public SlotView getParentNode() { return parentNode; }
+    public SlotView getParentNode() {
+        return parentNode;
+    }
 
-    public Slot getSlot() { return slot; }
+    public Slot getSlot() {
+        return slot;
+    }
 
-    public boolean getIsHostingSlot() { return isHostingSlot; }
+    public boolean getIsHostingSlot() {
+        return isHostingSlot;
+    }
 
-    public ComponentType getDeviceType() { return deviceType; }
+    public ComponentType getDeviceType() {
+        return deviceType;
+    }
 
-    public Double getBeamlinePosition() { return beamlinePosition; }
+    public Double getBeamlinePosition() {
+        return beamlinePosition;
+    }
 
-    public Double getGlobalX() { return globalX; }
+    public Double getGlobalX() {
+        return globalX;
+    }
 
-    public Double getGlobalY() { return globalY; }
+    public Double getGlobalY() {
+        return globalY;
+    }
 
-    public Double getGlobalZ() { return globalZ; }
+    public Double getGlobalZ() {
+        return globalZ;
+    }
 
-    public Double getGlobalPitch() { return globalPitch; }
+    public Double getGlobalPitch() {
+        return globalPitch;
+    }
 
-    public Double getGlobalRoll() { return globalRoll; }
+    public Double getGlobalRoll() {
+        return globalRoll;
+    }
 
-    public Double getGlobalYaw() { return globalYaw; }
+    public Double getGlobalYaw() {
+        return globalYaw;
+    }
 
-    public Device getInstalledDevice() { return installedDevice; }
+    public Device getInstalledDevice() {
+        return installedDevice;
+    }
 
-    public int getOrder() { return order; }
+    public int getOrder() {
+        return order;
+    }
 
-    public boolean isFirst() { return isFirst; }
-    public void setFirst(boolean isFirst) { this.isFirst = isFirst; }
+    public boolean isFirst() {
+        return isFirst;
+    }
+    public void setFirst(boolean isFirst) {
+        this.isFirst = isFirst;
+    }
 
-    public boolean isLast() { return isLast;  }
-    public void setLast(boolean isLast) { this.isLast = isLast; }
+    public boolean isLast() {
+        return isLast;
+    }
+    public void setLast(boolean isLast) {
+        this.isLast = isLast;
+    }
 }

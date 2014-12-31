@@ -34,6 +34,8 @@ import javax.persistence.Embeddable;
  */
 @Embeddable
 public class PositionInformation implements Serializable {
+    private static final long serialVersionUID = 4639879699747739635L;
+
     @Column(name = "global_x")
     private Double globalX;
 
@@ -94,7 +96,11 @@ public class PositionInformation implements Serializable {
         this.globalRoll = globalRoll;
     }
 
+    /**
+     * @return <code>true</code> if all position information is undefined, <code>false</code> otherwise.
+     */
     public boolean isEmpty() {
-        return globalX == null && globalY == null && globalZ == null && globalPitch == null && globalRoll == null;
+        return globalX == null && globalY == null && globalZ == null && globalPitch == null
+                && globalRoll == null && globalRoll == null;
     }
 }

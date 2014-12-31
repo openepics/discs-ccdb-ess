@@ -36,6 +36,13 @@ public class SlotRelationshipView {
     private Slot targetSlot;
     private SlotPair slotPair;
 
+    /** Constructs a new slot pair UI view object for the selected {@link Slot} object. The method checks that the
+     * <code>selectedSlot</code> is either a parent or a child in the <code>slotPair</code> relationship object.
+     * @param slotPair a {@link SlotPair} object defining a relationship
+     * @param selectedSlot the selected {@link Slot}
+     * @throws UnhandledCaseException if the <code>selectedSlot</code> is neither a parent nor a child of the
+     * <code>slotPair</code> object.
+     */
     public SlotRelationshipView(SlotPair slotPair, Slot selectedSlot) {
 
         if (Objects.equal(slotPair.getChildSlot(), selectedSlot)) {
@@ -53,11 +60,19 @@ public class SlotRelationshipView {
         this.slotPair = slotPair;
     }
 
-    public String getRelationshipName() { return relationshipName; }
+    public String getRelationshipName() {
+        return relationshipName;
+    }
 
-    public String getTargetSlotName() { return targetSlotName; }
+    public String getTargetSlotName() {
+        return targetSlotName;
+    }
 
-    public Slot getSlot() { return targetSlot; }
+    public Slot getSlot() {
+        return targetSlot;
+    }
 
-    public SlotPair getSlotPair() { return slotPair; }
+    public SlotPair getSlotPair() {
+        return slotPair;
+    }
 }

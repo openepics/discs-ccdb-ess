@@ -23,8 +23,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import javax.annotation.Nullable;
+import javax.ejb.EJBTransactionRolledbackException;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
@@ -45,8 +47,10 @@ import com.google.common.base.Preconditions;
  *
  */
 @Stateless
-@UnitLoaderQualifier
+@UnitsLoaderQualifier
 public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
+    private static final Logger LOGGER = Logger.getLogger(UnitsDataLoader.class.getCanonicalName());
+
     @Inject private UnitEJB unitEJB;
 
     private Map<String, Unit> unitByName;
@@ -68,10 +72,8 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
         }
         setUpIndexesForFields(headerRow);
 
-        if (rowResult.isError()) {
-            loaderResult.addResult(rowResult);
-            return loaderResult;
-        } else {
+        if (!rowResult.isError()) {
+fileProcessing:
             for (List<String> row : inputRows.subList(1, inputRows.size())) {
                 final String rowNumber = row.get(0);
                 loaderResult.addResult(rowResult);
@@ -81,9 +83,9 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
                     checkForDuplicateHeaderEntries(headerRow);
                     if (rowResult.isError()) {
                         loaderResult.addResult(rowResult);
-                        return loaderResult;
+                    } else {
+                        setUpIndexesForFields(headerRow);
                     }
-                    setUpIndexesForFields(headerRow);
                     if (rowResult.isError()) {
                         return loaderResult;
                     } else {
@@ -113,83 +115,83 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
 
                 if (!rowResult.isError()) {
                     switch (command) {
-                    case CMD_UPDATE:
-                        if (unitByName.containsKey(name)) {
-                            try {
-                                final Unit unitToUpdate = unitByName.get(name);
-                                unitToUpdate.setDescription(description);
-                                unitToUpdate.setQuantity(quantity);
-                                unitToUpdate.setSymbol(symbol);
-                                unitToUpdate.setModifiedAt(modifiedAt);
-                                unitEJB.save(unitToUpdate);
-                            } catch (Exception e) {
-                                if (e instanceof SecurityException)
-                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
-                                continue;
-                            }
-                        } else {
-                            try {
-                                final Unit unitToAdd = new Unit(name, quantity, symbol, description);
-                                unitEJB.add(unitToAdd);
-                                unitByName.put(unitToAdd.getName(), unitToAdd);
-                            } catch (Exception e) {
-                                if (e instanceof SecurityException)
-                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
-                                continue;
-                            }
-                        }
-                        break;
-                    case CMD_DELETE:
-                        try {
-                            final Unit unitToDelete = unitByName.get(name);
-                            if (unitToDelete == null) {
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
-                                continue;
-                            } else {
-                                unitEJB.delete(unitToDelete);
-                                unitByName.remove(unitToDelete.getName());
-                            }
-                        } catch (Exception e) {
-                            if (e instanceof SecurityException)
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
-                            continue;
-                        }
-                        break;
-                    case CMD_RENAME:
-                        try {
-                            final int startOldNameMarkerIndex = name.indexOf("[");
-                            final int endOldNameMarkerIndex = name.indexOf("]");
-                            if (startOldNameMarkerIndex == -1 || endOldNameMarkerIndex == -1) {
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.RENAME_MISFORMAT, rowNumber, headerRow.get(nameIndex)));
-                                continue;
-                            }
-
-                            final String oldName = name.substring(startOldNameMarkerIndex + 1, endOldNameMarkerIndex).trim();
-                            final String newName = name.substring(endOldNameMarkerIndex + 1).trim();
-
-                            if (unitByName.containsKey(oldName)) {
-                                if (unitByName.containsKey(newName)) {
-                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NAME_ALREADY_EXISTS, rowNumber, headerRow.get(nameIndex)));
-                                    continue;
-                                } else {
-                                    final Unit unitToRename = unitByName.get(oldName);
-                                    unitToRename.setName(newName);
-                                    unitEJB.save(unitToRename);
-                                    unitByName.remove(oldName);
-                                    unitByName.put(newName, unitToRename);
+                        case CMD_UPDATE:
+                            if (unitByName.containsKey(name)) {
+                                try {
+                                    final Unit unitToUpdate = unitByName.get(name);
+                                    unitToUpdate.setDescription(description);
+                                    unitToUpdate.setQuantity(quantity);
+                                    unitToUpdate.setSymbol(symbol);
+                                    unitToUpdate.setModifiedAt(modifiedAt);
+                                    unitEJB.save(unitToUpdate);
+                                } catch (EJBTransactionRolledbackException e) {
+                                    handleLoadingError(LOGGER, e, rowNumber, headerRow);
+                                    // cannot continue when the transaction is already rolled back
+                                    break fileProcessing;
                                 }
                             } else {
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
-                                continue;
+                                try {
+                                    final Unit unitToAdd = new Unit(name, quantity, symbol, description);
+                                    unitEJB.add(unitToAdd);
+                                    unitByName.put(unitToAdd.getName(), unitToAdd);
+                                } catch (EJBTransactionRolledbackException e) {
+                                    handleLoadingError(LOGGER, e, rowNumber, headerRow);
+                                    // cannot continue when the transaction is already rolled back
+                                    break fileProcessing;
+                                }
                             }
-                        } catch (Exception e) {
-                            if (e instanceof SecurityException)
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
-                            continue;
-                        }
-                        break;
-                    default:
-                        rowResult.addMessage(new ValidationMessage(ErrorMessage.COMMAND_NOT_VALID, rowNumber, headerRow.get(commandIndex)));
+                            break;
+                        case CMD_DELETE:
+                            try {
+                                final Unit unitToDelete = unitByName.get(name);
+                                if (unitToDelete == null) {
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
+                                    continue;
+                                } else {
+                                    unitEJB.delete(unitToDelete);
+                                    unitByName.remove(unitToDelete.getName());
+                                }
+                            } catch (EJBTransactionRolledbackException e) {
+                                handleLoadingError(LOGGER, e, rowNumber, headerRow);
+                                // cannot continue when the transaction is already rolled back
+                                break fileProcessing;
+                            }
+                            break;
+                        case CMD_RENAME:
+                            try {
+                                final int startOldNameMarkerIndex = name.indexOf("[");
+                                final int endOldNameMarkerIndex = name.indexOf("]");
+                                if (startOldNameMarkerIndex == -1 || endOldNameMarkerIndex == -1) {
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.RENAME_MISFORMAT, rowNumber, headerRow.get(nameIndex)));
+                                    continue;
+                                }
+
+                                final String oldName = name.substring(startOldNameMarkerIndex + 1, endOldNameMarkerIndex).trim();
+                                final String newName = name.substring(endOldNameMarkerIndex + 1).trim();
+
+                                if (unitByName.containsKey(oldName)) {
+                                    if (unitByName.containsKey(newName)) {
+                                        rowResult.addMessage(new ValidationMessage(ErrorMessage.NAME_ALREADY_EXISTS, rowNumber, headerRow.get(nameIndex)));
+                                        continue;
+                                    } else {
+                                        final Unit unitToRename = unitByName.get(oldName);
+                                        unitToRename.setName(newName);
+                                        unitEJB.save(unitToRename);
+                                        unitByName.remove(oldName);
+                                        unitByName.put(newName, unitToRename);
+                                    }
+                                } else {
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
+                                    continue;
+                                }
+                            } catch (EJBTransactionRolledbackException e) {
+                                handleLoadingError(LOGGER, e, rowNumber, headerRow);
+                                // cannot continue when the transaction is already rolled back
+                                break fileProcessing;
+                            }
+                            break;
+                        default:
+                            rowResult.addMessage(new ValidationMessage(ErrorMessage.COMMAND_NOT_VALID, rowNumber, headerRow.get(commandIndex)));
                     }
                 }
             }

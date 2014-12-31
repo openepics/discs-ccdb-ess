@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.ejb.EJB;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -53,10 +52,12 @@ import com.google.common.base.Preconditions;
 @Named
 @ViewScoped
 public class InstallationManager implements Serializable {
-    private static final Logger logger = Logger.getLogger(InstallationManager.class.getCanonicalName());
+    private static final long serialVersionUID = -16035870593037184L;
 
-    @EJB private InstallationEJB installationEJB;
-    @EJB private SlotEJB slotEJB;
+    private static final Logger LOGGER = Logger.getLogger(InstallationManager.class.getCanonicalName());
+
+    @Inject transient private InstallationEJB installationEJB;
+    @Inject transient private SlotEJB slotEJB;
     @Inject @DeviceInstallation private SlotsTreeBuilder slotsTreeBuilder;
 
     private Device installedDevice;
@@ -184,7 +185,7 @@ public class InstallationManager implements Serializable {
         Preconditions.checkNotNull(device);
         final InstallationRecord deviceInstallationRecord = installationEJB.getActiveInstallationRecordForDevice(device);
         if (deviceInstallationRecord == null) {
-            logger.log(Level.WARNING, "The device appears installed, but no active installation record for "
+            LOGGER.log(Level.WARNING, "The device appears installed, but no active installation record for "
                     + "it could be retrieved. Device db ID: " + device.getId()
                     + ", serial number: " + device.getSerialNumber());
             throw new RuntimeException("No installation record for the device exists.");

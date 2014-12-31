@@ -23,18 +23,15 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.logging.Logger;
 
-import javax.ejb.EJB;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.io.FilenameUtils;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
-import org.openepics.discs.conf.ejb.SlotEJB;
-import org.openepics.discs.conf.ejb.SlotPairEJB;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
+import org.openepics.discs.conf.ui.common.ExcelImportUIHandlers;
 import org.primefaces.event.FileUploadEvent;
 
 import com.google.common.io.ByteStreams;
@@ -46,17 +43,14 @@ import com.google.common.io.ByteStreams;
  */
 @Named
 @ViewScoped
-public class SlotManager implements Serializable {
-    private static final Logger logger = Logger.getLogger(SlotManager.class.getCanonicalName());
+public class SlotManager implements Serializable, ExcelImportUIHandlers {
+    private static final long serialVersionUID = 7271953102489952318L;
 
-    @EJB private SlotEJB slotEJB;
-    @EJB private SlotPairEJB slotPairEJB;
-
-    @Inject private DataLoaderHandler dataLoaderHandler;
+    @Inject transient private DataLoaderHandler dataLoaderHandler;
 
     private byte[] importSlotData, importSlotRelationshipsData;
     private String firstFileName, secondFileName;
-    private DataLoaderResult loaderResult;
+    transient private DataLoaderResult loaderResult;
 
     /**
      * Creates a new instance of SlotManager
@@ -71,14 +65,21 @@ public class SlotManager implements Serializable {
         return secondFileName;
     }
 
+    @Override
     public void doImport() {
-        loaderResult = dataLoaderHandler.loadDataFromTwoFiles(importSlotData != null ? new ByteArrayInputStream(importSlotData) : null, importSlotRelationshipsData != null ? new ByteArrayInputStream(importSlotRelationshipsData) : null, firstFileName, secondFileName);
+        loaderResult = dataLoaderHandler.loadDataFromTwoFiles(
+                    importSlotData != null ? new ByteArrayInputStream(importSlotData) : null,
+                    importSlotRelationshipsData != null ? new ByteArrayInputStream(importSlotRelationshipsData) : null,
+                    firstFileName,
+                    secondFileName);
     }
 
+    @Override
     public DataLoaderResult getLoaderResult() {
         return loaderResult;
     }
 
+    @Override
     public void prepareImportPopup() {
         importSlotData = null;
         firstFileName = null;
@@ -86,21 +87,31 @@ public class SlotManager implements Serializable {
         secondFileName = null;
     }
 
+    /** This method is called when user clicks the "Upload" button in the "excel import" UI. This action is called when
+     * importing the Slot information excel worksheet. The data is stored on the server to be parsed if the user actually
+     * decides to process the import data (he can still cancel the action instead).
+     * @param event The PrimeFaces upload event.
+     */
     public void handleFirstImportFileUpload(FileUploadEvent event) {
         try (InputStream inputStream = event.getFile().getInputstream()) {
             this.importSlotData = ByteStreams.toByteArray(inputStream);
             this.firstFileName = FilenameUtils.getName(event.getFile().getFileName());
         } catch (IOException e) {
-            throw new RuntimeException();
+            throw new RuntimeException(e);
         }
     }
 
+    /** This method is called when user clicks the "Upload" button in the "excel import" UI. This action is called when
+     * importing the Slot relationships information excel worksheet. The data is stored on the server to be parsed if
+     * the user actually decides to process the import data (he can still cancel the action instead).
+     * @param event The PrimeFaces upload event.
+     */
     public void handleSecondImportFileUpload(FileUploadEvent event) {
         try (InputStream inputStream = event.getFile().getInputstream()) {
             this.importSlotRelationshipsData= ByteStreams.toByteArray(inputStream);
             this.secondFileName = FilenameUtils.getName(event.getFile().getFileName());
         } catch (IOException e) {
-            throw new RuntimeException();
+            throw new RuntimeException(e);
         }
     }
 }

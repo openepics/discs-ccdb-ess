@@ -46,6 +46,8 @@ import javax.xml.bind.annotation.XmlRootElement;
             + "WHERE c.modifiedBy = :modifiedBy")
 })
 public class ComptypeAsm extends ConfigurationEntity {
+    private static final long serialVersionUID = 473793777108391666L;
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 16)
@@ -67,6 +69,11 @@ public class ComptypeAsm extends ConfigurationEntity {
     protected ComptypeAsm() {
     }
 
+    /**
+     * A new device type assembly
+     *
+     * @param childPosition
+     */
     public ComptypeAsm(String childPosition) {
         this.childPosition = childPosition;
     }

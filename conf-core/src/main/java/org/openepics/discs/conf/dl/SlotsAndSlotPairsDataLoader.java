@@ -28,8 +28,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import javax.annotation.Nullable;
+import javax.ejb.EJBTransactionRolledbackException;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
@@ -57,8 +59,14 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
 
+/**
+ * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
+ *
+ */
 @Stateless
 public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
+    private static final Logger LOGGER = Logger.getLogger(SlotsAndSlotPairsDataLoader.class.getCanonicalName());
+
     @Inject private SlotEJB slotEJB;
     @Inject private SlotRelationEJB slotRelationEJB;
     @Inject private SlotPairEJB slotPairEJB;
@@ -74,6 +82,15 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
     private DataLoaderResult slotsLoaderResult;
     private DataLoaderResult slotPairsLoaderResult;
 
+    /**
+     * Saves data read from two input files to the database
+     *
+     * @param slotsFileRows {@link List} of all rows containing data from Slots input file
+     * @param slotPairsFileRows {@link List} of all rows containing data from Slot relationships input file
+     * @param slotsFileName the name of the file containing data from Slots input file
+     * @param slotPairsFileName the name of the file containing data from Slot relationships input file
+     * @return {@link DataLoaderResult} describing the outcome of the data loading
+     */
     public DataLoaderResult loadDataToDatabase(List<List<String>> slotsFileRows, List<List<String>> slotPairsFileRows,
             String slotsFileName, String slotPairsFileName) {
 
@@ -121,13 +138,13 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
             return;
         }
         setUpIndexesForFields(headerRow);
-        HashMap<String, Integer> indexByPropertyName = indexByPropertyName(fields, headerRow);
+        Map<String, Integer> indexByPropertyName = indexByPropertyName(fields, headerRow);
         checkPropertyAssociation(indexByPropertyName, headerRow.get(0));
 
         if (rowResult.isError()) {
             slotsLoaderResult.addResult(rowResult);
-            return;
         } else {
+fileProcessing:
             for (List<String> row : inputRows.subList(1, inputRows.size())) {
                 final String rowNumber = row.get(0);
                 slotsLoaderResult.addResult(rowResult);
@@ -137,16 +154,15 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                     checkForDuplicateHeaderEntries(headerRow);
                     if (rowResult.isError()) {
                         slotsLoaderResult.addResult(rowResult);
-                        return;
+                    } else {
+                        setUpIndexesForFields(headerRow);
+                        indexByPropertyName = indexByPropertyName(fields, headerRow);
+                        checkPropertyAssociation(indexByPropertyName, rowNumber);
                     }
-                    setUpIndexesForFields(headerRow);
-                    indexByPropertyName = indexByPropertyName(fields, headerRow);
-                    checkPropertyAssociation(indexByPropertyName, rowNumber);
                     if (rowResult.isError()) {
                         return;
                     } else {
-                        continue; // skip the rest of the processing for
-                        // HEADER row
+                        continue; // skip the rest of the processing for HEADER row
                     }
                 } else if (row.get(1).equals(CMD_END)) {
                     break;
@@ -198,107 +214,115 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
 
                 if (!rowResult.isError()) {
                     switch (command) {
-                    case CMD_UPDATE:
-                        if (slotEJB.findByName(name) != null) {
-                            final @Nullable ComponentType compType = comptypeEJB.findByName(componentType);
-                            if (compType == null) {
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(compTypeIndex)));
-                                continue;
-                            } else {
-                                try {
-                                    if (compType.getName().equals(SlotEJB.ROOT_COMPONENT_TYPE)) {
-                                        rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
-                                        continue;
-                                    }
-                                    final Slot slotToUpdate = slotEJB.findByName(name);
-                                    addOrUpdateSlot(slotToUpdate, compType, isHosting, description, blp, globalX, globalY, globalZ, globalRoll, globalPitch, globalYaw, asmComment, asmPosition, comment);
-                                    addOrUpdateProperties(slotToUpdate, indexByPropertyName, row, rowNumber);
-                                    if (rowResult.isError()) {
-                                        continue;
-                                    }
-                                } catch (Exception e) {
-                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
-                                }
-                            }
-                        } else {
-                            final @Nullable ComponentType compType = comptypeEJB.findByName(componentType);
-                            if (compType == null) {
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(compTypeIndex)));
-                                continue;
-                            } else {
-                                try {
-                                    if (compType.getName().equals(SlotEJB.ROOT_COMPONENT_TYPE)) {
-                                        rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
-                                        continue;
-                                    }
-                                    final Slot newSlot = new Slot(name, isHosting);
-                                    addOrUpdateSlot(newSlot, compType, isHosting, description, blp, globalX, globalY, globalZ, globalRoll, globalPitch, globalYaw, asmComment, asmPosition, comment);
-                                    slotEJB.addSlotToParentWithPropertyDefs(newSlot,null, true);
-                                    addOrUpdateProperties(newSlot, indexByPropertyName, row, rowNumber);
-                                    newSlots.add(newSlot);
-                                    if (rowResult.isError()) {
-                                        continue;
-                                    }
-                                } catch (Exception e) {
-                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
-                                }
-                            }
-                        }
-                        break;
-                    case CMD_DELETE:
-                        final @Nullable Slot slotToDelete = slotEJB.findByName(name);
-                        try {
-                            if (slotToDelete == null) {
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
-                                continue;
-                            } else {
-                                final ComponentType compType = slotToDelete.getComponentType();
-                                if (compType.getName().equals(SlotEJB.ROOT_COMPONENT_TYPE)) {
-                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
-                                    continue;
-                                }
-                                slotEJB.delete(slotToDelete);
-                            }
-                        } catch (Exception e) {
-                            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
-                        }
-                        break;
-                    case CMD_RENAME:
-                        try {
-                            final int startOldNameMarkerIndex = name.indexOf("[");
-                            final int endOldNameMarkerIndex = name.indexOf("]");
-                            if (startOldNameMarkerIndex == -1 || endOldNameMarkerIndex == -1) {
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.RENAME_MISFORMAT, rowNumber, headerRow.get(nameIndex)));
-                                continue;
-                            }
-
-                            final String oldName = name.substring(startOldNameMarkerIndex + 1, endOldNameMarkerIndex).trim();
-                            final String newName = name.substring(endOldNameMarkerIndex + 1).trim();
-
-                            final Slot slotToRename = slotEJB.findByName(oldName);
-                            if (slotToRename != null) {
-                                if (slotEJB.findByName(newName) != null) {
-                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NAME_ALREADY_EXISTS, rowNumber, headerRow.get(nameIndex)));
+                        case CMD_UPDATE:
+                            if (slotEJB.findByName(name) != null) {
+                                final @Nullable ComponentType compType = comptypeEJB.findByName(componentType);
+                                if (compType == null) {
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(compTypeIndex)));
                                     continue;
                                 } else {
-                                    final ComponentType compType = slotToRename.getComponentType();
+                                    try {
+                                        if (compType.getName().equals(SlotEJB.ROOT_COMPONENT_TYPE)) {
+                                            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                                            continue;
+                                        }
+                                        final Slot slotToUpdate = slotEJB.findByName(name);
+                                        addOrUpdateSlot(slotToUpdate, compType, isHosting, description, blp, globalX, globalY, globalZ, globalRoll, globalPitch, globalYaw, asmComment, asmPosition, comment);
+                                        addOrUpdateProperties(slotToUpdate, indexByPropertyName, row, rowNumber);
+                                        if (rowResult.isError()) {
+                                            continue;
+                                        }
+                                    } catch (EJBTransactionRolledbackException e) {
+                                        handleLoadingError(LOGGER, e, rowNumber, headerRow);
+                                        // cannot continue when the transaction is already rolled back
+                                        break fileProcessing;
+                                    }
+                                }
+                            } else {
+                                final @Nullable ComponentType compType = comptypeEJB.findByName(componentType);
+                                if (compType == null) {
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(compTypeIndex)));
+                                    continue;
+                                } else {
+                                    try {
+                                        if (compType.getName().equals(SlotEJB.ROOT_COMPONENT_TYPE)) {
+                                            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                                            continue;
+                                        }
+                                        final Slot newSlot = new Slot(name, isHosting);
+                                        addOrUpdateSlot(newSlot, compType, isHosting, description, blp, globalX, globalY, globalZ, globalRoll, globalPitch, globalYaw, asmComment, asmPosition, comment);
+                                        slotEJB.addSlotToParentWithPropertyDefs(newSlot,null, true);
+                                        addOrUpdateProperties(newSlot, indexByPropertyName, row, rowNumber);
+                                        newSlots.add(newSlot);
+                                        if (rowResult.isError()) {
+                                            continue;
+                                        }
+                                    } catch (EJBTransactionRolledbackException e) {
+                                        handleLoadingError(LOGGER, e, rowNumber, headerRow);
+                                        // cannot continue when the transaction is already rolled back
+                                        break fileProcessing;
+                                    }
+                                }
+                            }
+                            break;
+                        case CMD_DELETE:
+                            final @Nullable Slot slotToDelete = slotEJB.findByName(name);
+                            try {
+                                if (slotToDelete == null) {
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
+                                    continue;
+                                } else {
+                                    final ComponentType compType = slotToDelete.getComponentType();
                                     if (compType.getName().equals(SlotEJB.ROOT_COMPONENT_TYPE)) {
                                         rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                                         continue;
                                     }
-                                    slotToRename.setName(newName);
-                                    slotEJB.save(slotToRename);
+                                    slotEJB.delete(slotToDelete);
                                 }
-                            } else {
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
-                                continue;
+                            } catch (EJBTransactionRolledbackException e) {
+                                handleLoadingError(LOGGER, e, rowNumber, headerRow);
+                                // cannot continue when the transaction is already rolled back
+                                break fileProcessing;
                             }
-                        } catch (Exception e) {
-                            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
-                        }
-                        break;
-                    default:
-                        rowResult.addMessage(new ValidationMessage(ErrorMessage.COMMAND_NOT_VALID, rowNumber, headerRow.get(commandIndex)));
+                            break;
+                        case CMD_RENAME:
+                            try {
+                                final int startOldNameMarkerIndex = name.indexOf("[");
+                                final int endOldNameMarkerIndex = name.indexOf("]");
+                                if (startOldNameMarkerIndex == -1 || endOldNameMarkerIndex == -1) {
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.RENAME_MISFORMAT, rowNumber, headerRow.get(nameIndex)));
+                                    continue;
+                                }
+
+                                final String oldName = name.substring(startOldNameMarkerIndex + 1, endOldNameMarkerIndex).trim();
+                                final String newName = name.substring(endOldNameMarkerIndex + 1).trim();
+
+                                final Slot slotToRename = slotEJB.findByName(oldName);
+                                if (slotToRename != null) {
+                                    if (slotEJB.findByName(newName) != null) {
+                                        rowResult.addMessage(new ValidationMessage(ErrorMessage.NAME_ALREADY_EXISTS, rowNumber, headerRow.get(nameIndex)));
+                                        continue;
+                                    } else {
+                                        final ComponentType compType = slotToRename.getComponentType();
+                                        if (compType.getName().equals(SlotEJB.ROOT_COMPONENT_TYPE)) {
+                                            rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                                            continue;
+                                        }
+                                        slotToRename.setName(newName);
+                                        slotEJB.save(slotToRename);
+                                    }
+                                } else {
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
+                                    continue;
+                                }
+                            } catch (EJBTransactionRolledbackException e) {
+                                handleLoadingError(LOGGER, e, rowNumber, headerRow);
+                                // cannot continue when the transaction is already rolled back
+                                break fileProcessing;
+                            }
+                            break;
+                        default:
+                            rowResult.addMessage(new ValidationMessage(ErrorMessage.COMMAND_NOT_VALID, rowNumber, headerRow.get(commandIndex)));
                     }
                 }
             }
@@ -341,8 +365,8 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
         setUpIndexesForSlotPairFields(headerRow);
         if (rowResult.isError()) {
             slotPairsLoaderResult.addResult(rowResult);
-            return;
         } else {
+pairsProcessing:
             for (List<String> row : inputRows.subList(1, inputRows.size())) {
                 final String rowNumber = row.get(0);
                 slotPairsLoaderResult.addResult(rowResult);
@@ -352,14 +376,13 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                     checkForDuplicateHeaderEntries(headerRow);
                     if (rowResult.isError()) {
                         slotPairsLoaderResult.addResult(rowResult);
-                        return;
+                    } else {
+                        setUpIndexesForFields(headerRow);
                     }
-                    setUpIndexesForFields(headerRow);
                     if (rowResult.isError()) {
                         return;
                     } else {
-                        continue; // skip the rest of the processing for
-                        // HEADER row
+                        continue; // skip the rest of the processing for HEADER row
                     }
                 } else if (row.get(1).equals(CMD_END)) {
                     break;
@@ -383,7 +406,7 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                     final Slot parentSlot = slotEJB.findByName(parent);
                     final SlotRelationName slotRelationName;
 
-                    if (childrenSlots == null || childrenSlots.size() == 0) {
+                    if (childrenSlots == null || childrenSlots.isEmpty()) {
                         rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(childIndex)));
                     } else if (parentSlot == null) {
                         rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(parentIndex)));
@@ -405,63 +428,65 @@ public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader {
                     } else {
                         final SlotRelation slotRelation = slotRelationEJB.findBySlotRelationName(slotRelationName);
                         switch (command) {
-                        case CMD_UPDATE:
-                            for (Slot childSlot : childrenSlots) {
-                                if (newSlots.contains(childSlot)) {
-                                    try {
-                                        if (!childSlot.getName().equals(parentSlot.getName())) {
-                                            if (slotRelation.getName() == SlotRelationName.CONTAINS) {
-                                                if (childSlot.getComponentType().getName().equalsIgnoreCase(SlotEJB.ROOT_COMPONENT_TYPE)) {
-                                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.CANT_ADD_PARENT_TO_ROOT, rowNumber));
-                                                    continue;
-                                                } else if (parentSlot.isHostingSlot() && !childSlot.isHostingSlot()) {
-                                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.INSTALL_CANT_CONTAIN_CONTAINER, rowNumber));
-                                                    continue;
-                                                } else {
-                                                    final SlotPair newSlotPair = new SlotPair(childSlot, parentSlot, slotRelation);
-                                                    slotPairEJB.add(newSlotPair);
-                                                    newSlotPairChildren.add(newSlotPair.getChildSlot());
+                            case CMD_UPDATE:
+                                for (Slot childSlot : childrenSlots) {
+                                    if (newSlots.contains(childSlot)) {
+                                        try {
+                                            if (!childSlot.getName().equals(parentSlot.getName())) {
+                                                if (slotRelation.getName() == SlotRelationName.CONTAINS) {
+                                                    if (childSlot.getComponentType().getName().equalsIgnoreCase(SlotEJB.ROOT_COMPONENT_TYPE)) {
+                                                        rowResult.addMessage(new ValidationMessage(ErrorMessage.CANT_ADD_PARENT_TO_ROOT, rowNumber));
+                                                        continue;
+                                                    } else if (parentSlot.isHostingSlot() && !childSlot.isHostingSlot()) {
+                                                        rowResult.addMessage(new ValidationMessage(ErrorMessage.INSTALL_CANT_CONTAIN_CONTAINER, rowNumber));
+                                                        continue;
+                                                    } else {
+                                                        final SlotPair newSlotPair = new SlotPair(childSlot, parentSlot, slotRelation);
+                                                        slotPairEJB.add(newSlotPair);
+                                                        newSlotPairChildren.add(newSlotPair.getChildSlot());
+                                                    }
+                                                } else if (slotRelation.getName() == SlotRelationName.POWERS) {
+                                                    if (childSlot.isHostingSlot() && parentSlot.isHostingSlot()) {
+                                                        slotPairEJB.add(new SlotPair(childSlot, parentSlot, slotRelation));
+                                                    } else {
+                                                        rowResult.addMessage(new ValidationMessage(ErrorMessage.POWER_RELATIONSHIP_RESTRICTIONS, rowNumber));
+                                                        continue;
+                                                    }
+                                                } else if (slotRelation.getName() == SlotRelationName.CONTROLS) {
+                                                    if (childSlot.isHostingSlot() && parentSlot.isHostingSlot()) {
+                                                        slotPairEJB.add(new SlotPair(childSlot, parentSlot, slotRelation));
+                                                    } else {
+                                                        rowResult.addMessage(new ValidationMessage(ErrorMessage.CONTROL_RELATIONSHIP_RESTRICTIONS, rowNumber));
+                                                        continue;
+                                                    }
                                                 }
-                                            } else if (slotRelation.getName() == SlotRelationName.POWERS) {
-                                                if (childSlot.isHostingSlot() && parentSlot.isHostingSlot()) {
-                                                    slotPairEJB.add(new SlotPair(childSlot, parentSlot, slotRelation));
-                                                } else {
-                                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.POWER_RELATIONSHIP_RESTRICTIONS, rowNumber));
-                                                    continue;
-                                                }
-                                            } else if (slotRelation.getName() == SlotRelationName.CONTROLS) {
-                                                if (childSlot.isHostingSlot() && parentSlot.isHostingSlot()) {
-                                                    slotPairEJB.add(new SlotPair(childSlot, parentSlot, slotRelation));
-                                                } else {
-                                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.CONTROL_RELATIONSHIP_RESTRICTIONS, rowNumber));
-                                                    continue;
-                                                }
+                                            } else {
+                                                rowResult.addMessage(new ValidationMessage(ErrorMessage.SAME_CHILD_AND_PARENT, rowNumber));
                                             }
-                                        } else {
-                                            rowResult.addMessage(new ValidationMessage(ErrorMessage.SAME_CHILD_AND_PARENT, rowNumber));
+                                        } catch (EJBTransactionRolledbackException e) {
+                                            handleLoadingError(LOGGER, e, rowNumber, headerRow);
+                                            break pairsProcessing;
                                         }
-                                    } catch (Exception e) {
-                                        rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
                                     }
                                 }
-                            }
-                            break;
-                        case CMD_DELETE:
-                            final List<SlotPair> slotPairs = slotPairEJB.findSlotPairsByParentChildRelation(child, parent, slotRelationName);
-                            if (slotPairs.size() != 0) {
-                                try {
-                                    for (SlotPair slotPair : slotPairs) {
-                                        slotPairEJB.delete(slotPair);
+                                break;
+                            case CMD_DELETE:
+                                final List<SlotPair> slotPairs = slotPairEJB.findSlotPairsByParentChildRelation(child, parent, slotRelationName);
+                                if (!slotPairs.isEmpty()) {
+                                    try {
+                                        for (SlotPair slotPair : slotPairs) {
+                                            slotPairEJB.delete(slotPair);
+                                        }
+                                    } catch (EJBTransactionRolledbackException e) {
+                                        handleLoadingError(LOGGER, e, rowNumber, headerRow);
+                                        break pairsProcessing;
                                     }
-                                } catch (Exception e) {
-                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, rowNumber, headerRow.get(commandIndex)));
+                                } else {
+                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber));
                                 }
-                            } else {
-                                rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber));
-                            }
-                            break;
-                        default:
-                            rowResult.addMessage(new ValidationMessage(ErrorMessage.COMMAND_NOT_VALID, rowNumber, headerRow.get(commandIndex)));
+                                break;
+                            default:
+                                rowResult.addMessage(new ValidationMessage(ErrorMessage.COMMAND_NOT_VALID, rowNumber, headerRow.get(commandIndex)));
                         }
                     }
                 }

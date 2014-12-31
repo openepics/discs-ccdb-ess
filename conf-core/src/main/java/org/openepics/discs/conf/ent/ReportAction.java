@@ -41,6 +41,8 @@ import com.google.common.base.Preconditions;
 @Entity
 @Table(name = "report_action")
 public class ReportAction extends ConfigurationEntity {
+    private static final long serialVersionUID = -7839739114053750431L;
+
     @Basic(optional = false)
     @Enumerated(EnumType.STRING)
     @Column(name = "operation")
@@ -69,6 +71,13 @@ public class ReportAction extends ConfigurationEntity {
     protected ReportAction() {
     }
 
+    /** Constructs a new report action
+     * @param operation The operation to be used (see {@link ReportFilterAction})
+     * @param field The name of the built-in property (database field)
+     * @param value The value to use when performing the action
+     * @param parentReport The {@link Report} this action is used in
+     * @param modifiedBy The user adding this action
+     */
     public ReportAction(ReportFilterAction operation, String field, String value,
             Report parentReport, String modifiedBy) {
         this.operation = Preconditions.checkNotNull(operation);
@@ -79,6 +88,13 @@ public class ReportAction extends ConfigurationEntity {
         this.modifiedAt = new Date();
     }
 
+    /** Constructs a new report action
+     * @param operation The operation to be used (see {@link ReportFilterAction})
+     * @param property The {@link Property} to use
+     * @param value The value to use when performing the action
+     * @param parentReport The {@link Report} this action is used in
+     * @param modifiedBy The user adding this action
+     */
     public ReportAction(ReportFilterAction operation, Property property, String value,
             Report parentReport, String modifiedBy) {
         this.operation = Preconditions.checkNotNull(operation);
@@ -89,6 +105,12 @@ public class ReportAction extends ConfigurationEntity {
         this.modifiedAt = new Date();
     }
 
+    /** Constructs a new report action
+     * @param operation The operation to be used (see {@link ReportFilterAction})
+     * @param tag The {@link Tag} to use
+     * @param parentReport The {@link Report} this action is used in
+     * @param modifiedBy The user adding this action
+     */
     public ReportAction(ReportFilterAction operation, Tag tag, Report parentReport, String modifiedBy) {
         if (operation != ReportFilterAction.IS)
             throw new IllegalArgumentException("Tag can only have an \"IS\" operation.");
@@ -99,72 +121,107 @@ public class ReportAction extends ConfigurationEntity {
         this.modifiedAt = new Date();
     }
 
+    /**
+     * @return The {@link ReportFilterAction} used in this action
+     */
     public ReportFilterAction getOperation() {
         return operation;
     }
+    /**
+     * @param operation The {@link ReportFilterAction} to use in this action. The makes sure that only "IS" operation
+     * is used on a {@link Tag}
+     */
     public void setOperation(ReportFilterAction operation) {
         if (tag != null && operation != ReportFilterAction.IS)
             throw new IllegalArgumentException("Tag can only have an \"IS\" operation.");
         this.operation = operation;
     }
 
+    /**
+     * @return The name of the built-in property (database field) to use in this action
+     */
     public String getField() {
         return field;
     }
+    /**
+     * @param field The name of the built-in property (database field) to use in this action
+     */
     public void setField(String field) {
         this.field = field;
         this.property = null;
         this.tag = null;
     }
 
+    /**
+     * @return The {@link Property} to use in the action
+     */
     public Property getProperty() {
         return property;
     }
+    /**
+     * @param property The {@link Property} to use in the action
+     */
     public void setProperty(Property property) {
         this.property = property;
         this.field = null;
         this.tag = null;
     }
 
+    /**
+     * @return The {@link Tag} to use in the action
+     */
     public Tag getTag() {
         return tag;
     }
+    /**
+     * @param tag The {@link Tag} to use in the action
+     */
     public void setTag(Tag tag) {
         this.tag = tag;
         this.field = null;
         this.property = null;
     }
 
+    /**
+     * @return The value to use when performing the action
+     */
     public String getValue() {
         return value;
     }
+    /**
+     * @param value The value to use when performing the action
+     */
     public void setValue(String value) {
         if (tag != null)
             throw new IllegalStateException("Cannot set a value on a filter by tag.");
         this.value = value;
     }
 
+    /**
+     * @return The {@link Report} this action is used in
+     */
     public Report getParentReport() {
         return parentReport;
     }
+    /**
+     * @param parentReport The {@link Report} this action is used in
+     */
     public void setParentReport(Report parentReport) {
         this.parentReport = parentReport;
     }
 
     @Override
     public String toString() {
+        final String reportActionText;
         if (field != null) {
-            return "[ Field: " + field + " " + operation.toString() + " " + value + " ]";
+            reportActionText = "[ Field: " + field + " " + operation.toString() + " " + value + " ]";
+        } else  if (property != null) {
+            reportActionText = "[ Property: " + property.getName() + " " + operation.toString() + " " + value + " ]";
+        } else if (tag != null) {
+            reportActionText = "[ Tag IS " + tag.getName() + " ]";
+        } else {
+            reportActionText = "Error! Invalid report filter definition.";
         }
-
-        if (property != null) {
-            return "[ Property: " + property.getName() + " " + operation.toString() + " " + value + " ]";
-        }
-
-        if (tag != null) {
-            return "[ Tag IS " + tag.getName() + " ]";
-        }
-
-        return "Error! Invalid report filter definition.";
+        return reportActionText;
     }
 }

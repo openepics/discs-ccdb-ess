@@ -39,6 +39,7 @@ import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypeArtifact;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
+import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.InstallationRecord;
 import org.openepics.discs.conf.ent.PositionInformation;
 import org.openepics.discs.conf.ent.Property;
@@ -69,12 +70,13 @@ import com.google.common.collect.ImmutableList;
 @Named
 @ViewScoped
 public class SlotAttributesController extends AbstractAttributesController<SlotPropertyValue, SlotArtifact> {
+    private static final long serialVersionUID = 7385154837803672522L;
 
-    private static final Logger logger = Logger.getLogger(SlotAttributesController.class.getCanonicalName());
-    
-    @Inject private SlotEJB slotEJB;
-    @Inject private PropertyEJB propertyEJB;
-    @Inject private InstallationEJB installationEJB;
+    private static final Logger LOGGER = Logger.getLogger(SlotAttributesController.class.getCanonicalName());
+
+    @Inject transient private SlotEJB slotEJB;
+    @Inject transient private PropertyEJB propertyEJB;
+    @Inject transient private InstallationEJB installationEJB;
 
     private Slot slot;
     private String parentSlot;
@@ -101,7 +103,7 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
 
             populateAttributesList();
             filterProperties();
-            parentSlot = slot.getPairsInWhichThisSlotIsAChildList().size() > 0
+            parentSlot = !slot.getPairsInWhichThisSlotIsAChildList().isEmpty()
                     ? slot.getPairsInWhichThisSlotIsAChildList().get(0).getParentSlot().getName()
                             : null;
             if ("_ROOT".equals(parentSlot)) {
@@ -131,7 +133,9 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
         }
 
         for (ComptypePropertyValue parentProp : parentProperties) {
-            if (parentProp.getPropValue() != null) attributes.add(new EntityAttributeView(parentProp, EntityAttributeViewKind.DEVICE_TYPE_PROPERTY));
+            if (parentProp.getPropValue() != null) {
+                attributes.add(new EntityAttributeView(parentProp, EntityAttributeViewKind.DEVICE_TYPE_PROPERTY));
+            }
         }
 
         for (ComptypeArtifact parentArtifact : parentArtifacts) {
@@ -139,7 +143,7 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
         }
 
         for (Tag parentTag : parentTags) {
-            attributes.add(new EntityAttributeView(parentTag, EntityAttributeViewKind.DEVICE_TYPE_TAG)); 
+            attributes.add(new EntityAttributeView(parentTag, EntityAttributeViewKind.DEVICE_TYPE_TAG));
         }
 
         for (SlotPropertyValue prop : slot.getSlotPropertyList()) {
@@ -195,7 +199,9 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
         child.setSlot(slot);
     }
 
-    public String getParentSlot() { return parentSlot; }
+    public String getParentSlot() {
+        return parentSlot;
+    }
 
     @Override
     protected void setTagParent(Tag tag) {
@@ -217,7 +223,7 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
         isPropertyDefinition = false;
         super.prepareForPropertyValueAdd();
     }
-    
+
     @Override
     protected void populateParentTags() {
         parentTags = new HashSet<Tag>();
@@ -232,7 +238,7 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
         final SlotBuiltInPropertyName builtInPropertyName = (SlotBuiltInPropertyName)builtInProperty.getName();
 
         if (!slot.isHostingSlot() && !builtInPropertyName.equals(SlotBuiltInPropertyName.BIP_DESCRIPTION)) {
-            logger.log(Level.WARNING, "Modifying built-in property on container that should not be used.");
+            LOGGER.log(Level.WARNING, "Modifying built-in property on container that should not be used.");
             return;
         }
 
@@ -304,6 +310,9 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
         RequestContext.getCurrentInstance().update("slotPropertiesManagerForm");
     }
 
+    /**
+     * @return <code>true</code> if a {@link Device} is installed into the current slot, <code>false</code> otherwise.
+     */
     public boolean isInstallationSlotFull() {
         if (!slot.isHostingSlot()) {
             throw new IllegalStateException("Installation information required on non installation slot.");
@@ -319,15 +328,20 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
         this.deviceType = deviceType;
     }
 
+    /** This method is used in the installation slot attributes screen to determine whether the user has changed either
+     * the installation slot name or its device type.
+     * @return <code>true</code> if the installation slot name or device type have not been changed,
+     * <code>false</code> otherwise.
+     */
     public boolean isBasicInfoUnchanged() {
         return (slot.getName().equals(entityName) && slot.getComponentType().equals(deviceType));
     }
-    
+
     /**
-     * Returns path from root slot to currently selected slot 
+     * @return path from the root slot to the currently selected slot
      */
     public String getSlotPath() {
-       final String slotPath = Utility.buildSlotPath(slot).toString();
-       return slotPath.substring(1, slotPath.length() - 1);
+        final String slotPath = Utility.buildSlotPath(slot).toString();
+        return slotPath.substring(1, slotPath.length() - 1);
     }
 }

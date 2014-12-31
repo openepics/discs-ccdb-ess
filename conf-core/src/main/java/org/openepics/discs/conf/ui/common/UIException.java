@@ -27,10 +27,19 @@ package org.openepics.discs.conf.ui.common;
  *
  */
 public class UIException extends RuntimeException {
+    private static final long serialVersionUID = -7498669540239916884L;
+
+    /** A new UI exception with no reference
+     * @param message The text message
+     */
     public UIException(String message) {
         super(message);
     }
 
+    /** A new UI exception
+     * @param message The text message
+     * @param cause The original cause of the exception
+     */
     public UIException(String message, Throwable cause) {
         super(message, cause);
     }

@@ -75,7 +75,8 @@ public abstract class ReadOnlyDAO<T> {
         } catch (IllegalArgumentException e) {
             throw new UnsupportedOperationException("findByName query has not been defined for the entity " +
                     entityClass.getSimpleName(), e);
-        } catch (NoResultException e) {
+        } catch (NoResultException e) { // NOSONAR
+            // no result is not an exception
             return null;
         }
     }

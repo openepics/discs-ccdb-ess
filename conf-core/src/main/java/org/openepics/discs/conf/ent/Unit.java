@@ -50,6 +50,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
     @NamedQuery(name = "Unit.findByModifiedBy", query = "SELECT u FROM Unit u WHERE u.modifiedBy = :modifiedBy")
 })
 public class Unit extends ConfigurationEntity {
+    private static final long serialVersionUID = -1574351545793376961L;
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 32)
@@ -80,6 +82,14 @@ public class Unit extends ConfigurationEntity {
     protected Unit() {
     }
 
+    /**
+     * Constructs a new unit.
+     *
+     * @param unitName the unique unit name
+     * @param quantity the quantity this unit is used for (e.g.: time, length, weight, angle, etc.)
+     * @param symbol the symbol to be used for this unit
+     * @param description the user specified description
+     */
     public Unit(String unitName, String quantity, String symbol, String description) {
         this.name = unitName;
         this.quantity = quantity;

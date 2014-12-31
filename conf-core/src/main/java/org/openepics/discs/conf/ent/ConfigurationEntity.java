@@ -42,6 +42,8 @@ import javax.validation.constraints.Size;
 */
 @MappedSuperclass
 public class ConfigurationEntity implements Serializable {
+    private static final long serialVersionUID = -3251838692627723803L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
@@ -60,20 +62,37 @@ public class ConfigurationEntity implements Serializable {
     @Version
     protected Long version;
 
+    /**
+     * @return The database primary key of the configuration entity
+     */
     public Long getId() {
         return id;
     }
 
+    /**
+     * @return The timestamp of the last modification of this database entity
+     */
     public Date getModifiedAt() {
         return new Date(modifiedAt.getTime());
     }
+    /**
+     * The setter stores a new copy of the param.
+     *
+     * @param modifiedAt The timestamp of the last modification of this database entity
+     */
     public void setModifiedAt(Date modifiedAt) {
         this.modifiedAt = new Date(modifiedAt.getTime());
     }
 
+    /**
+     * @return The user performing the last modification of the database entity
+     */
     public String getModifiedBy() {
         return modifiedBy;
     }
+    /**
+     * @param modifiedBy The user performing the last modification of the database entity
+     */
     public void setModifiedBy(String modifiedBy) {
         this.modifiedBy = modifiedBy;
     }
@@ -94,7 +113,7 @@ public class ConfigurationEntity implements Serializable {
             return false;
         }
 
-        // return true for same DB entity
+        // return true for the same DB entity
         if (this.id != null) {
             return this.id.equals(other.id);
         }

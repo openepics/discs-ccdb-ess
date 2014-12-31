@@ -17,28 +17,30 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.dl;
+package org.openepics.discs.conf.ui.common;
 
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.ElementType.PARAMETER;
-import static java.lang.annotation.ElementType.TYPE;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-import javax.inject.Qualifier;
-
-import org.openepics.discs.conf.dl.common.DataLoader;
+import org.openepics.discs.conf.dl.common.DataLoaderResult;
 
 /**
- * Annotation to specify which implementation of {@link DataLoader} should be injected
+ * The interface contains all the methods that the UI control handling the import of any number of excel files must implement.
  *
- * @author Andraz Pozar <andraz.pozar@cosylab.com>
+ * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  *
  */
-@Qualifier
-@Retention(RetentionPolicy.RUNTIME)
-@Target({TYPE, METHOD, FIELD, PARAMETER})
-public @interface UnitLoaderQualifier {}
+public interface ExcelImportUIHandlers {
+
+    /**
+     * The action called to actually import excel file containing properties.
+     */
+    public void doImport();
+
+    /**
+     * Called to prepare the data to display in the UI "import excel" dialog.
+     */
+    public void prepareImportPopup();
+
+    /**
+     * @return The results of the "excel import" operation to display to the user.
+     */
+    public DataLoaderResult getLoaderResult();
+}

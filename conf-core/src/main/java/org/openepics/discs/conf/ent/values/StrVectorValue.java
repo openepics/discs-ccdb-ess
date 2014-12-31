@@ -27,6 +27,9 @@ public class StrVectorValue implements Value {
 
     private final List<String> strVectorValue;
 
+    /** Constructs a new list of {@link String} values
+     * @param strVectorValue a {@link List} of {@link String} values
+     */
     public StrVectorValue(List<String> strVectorValue) {
         this.strVectorValue = Preconditions.checkNotNull(strVectorValue);
     }
@@ -34,7 +37,9 @@ public class StrVectorValue implements Value {
     /**
      * @return the strVectorValues
      */
-    public List<String> getStrVectorValue() { return strVectorValue; }
+    public List<String> getStrVectorValue() {
+        return strVectorValue;
+    }
 
     @Override
     public String toString() {

@@ -54,6 +54,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
     @NamedQuery(name = "User.findByComment", query = "SELECT u FROM User u WHERE u.comment = :comment")
 })
 public class User implements Serializable {
+    private static final long serialVersionUID = 3286116842796906287L;
+
     @Id
     @NotNull
     @Size(min = 1, max = 64)
@@ -83,10 +85,17 @@ public class User implements Serializable {
     protected User() {
     }
 
+    /** Constructs a new user
+     * @param userId the ID of the user
+     */
     public User(String userId) {
         this.userId = userId;
     }
 
+    /** Constructs a new user
+     * @param userId the ID of the user
+     * @param name the name of the user
+     */
     public User(String userId, String name) {
         this.userId = userId;
         this.name = name;
@@ -160,7 +169,9 @@ public class User implements Serializable {
         return this==object;
     }
 
-    public Long getVersion() { return version; }
+    public Long getVersion() {
+        return version;
+    }
 
     @Override
     public String toString() {

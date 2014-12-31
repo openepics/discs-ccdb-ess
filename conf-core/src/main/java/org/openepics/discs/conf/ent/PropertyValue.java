@@ -37,6 +37,8 @@ import org.openepics.discs.conf.ent.values.Value;
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class PropertyValue extends ConfigurationEntity {
+    private static final long serialVersionUID = -7646118591971159935L;
+
     @Column(name = "prop_value", columnDefinition = "TEXT")
     private Value propValue;
 
@@ -55,6 +57,11 @@ public abstract class PropertyValue extends ConfigurationEntity {
 
     protected PropertyValue() { }
 
+    /**
+     * Constructs a new property value
+     *
+     * @param inRepository <code>false</code>
+     */
     public PropertyValue(boolean inRepository) {
         this.inRepository = inRepository;
     }

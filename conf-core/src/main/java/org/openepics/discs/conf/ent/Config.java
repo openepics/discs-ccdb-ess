@@ -49,6 +49,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Config.findByPropValue", query = "SELECT c FROM Config c WHERE c.propValue = :propValue")
 })
 public class Config implements Serializable {
+    private static final long serialVersionUID = 8598633851774499308L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "config_id")
@@ -70,6 +72,10 @@ public class Config implements Serializable {
     public Config() {
     }
 
+    /** Constructs a new configuration property
+     * @param name the name of the configuration property
+     * @param propValue the value of the configuration property
+     */
     public Config(String name, String propValue) {
         this.name = name;
         this.propValue = propValue;
@@ -118,12 +124,15 @@ public class Config implements Serializable {
         return this==object;
     }
 
-    public Long getVersion() { return version; }
-    public void setVersion(Long version) { this.version = version; }
+    public Long getVersion() {
+        return version;
+    }
+    public void setVersion(Long version) {
+        this.version = version;
+    }
 
     @Override
     public String toString() {
         return "Config[ configId=" + configId + " ]";
     }
-
 }

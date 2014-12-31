@@ -30,11 +30,14 @@ import org.openepics.seds.api.datatypes.SedsEnum;
 public class EnumValueConverter extends ValueConverter<EnumValue> {
 
     @Override
-    public Class<EnumValue> getType() { return EnumValue.class; }
+    public Class<EnumValue> getType() {
+        return EnumValue.class;
+    }
 
     @Override
     public String convertToDatabaseColumn(EnumValue attribute) {
-        final SedsEnum sedsEnum = sedsFactory.getFactory().newEnum(attribute.getEnumValue(), new String[] { attribute.getEnumValue() });
+        final SedsEnum sedsEnum = sedsFactory.getFactory().newEnum(attribute.getEnumValue(),
+                new String[] { attribute.getEnumValue() });
         return sedsDbConverter.serialize(sedsEnum).toString();
     }
 }

@@ -17,25 +17,28 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.valueconverters;
+package org.openepics.discs.conf.dl;
 
-import org.openepics.discs.conf.ent.values.StrValue;
-import org.openepics.seds.api.datatypes.SedsScalar;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.PARAMETER;
+import static java.lang.annotation.ElementType.TYPE;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import javax.inject.Qualifier;
+
+import org.openepics.discs.conf.dl.common.DataLoader;
 
 /**
- * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
+ * Annotation to specify which implementation of {@link DataLoader} should be injected
+ *
+ * @author Andraz Pozar <andraz.pozar@cosylab.com>
  *
  */
-public class StrValueConverter extends ValueConverter<StrValue> {
-
-    @Override
-    public Class<StrValue> getType() {
-        return StrValue.class;
-    }
-
-    @Override
-    public String convertToDatabaseColumn(StrValue attribute) {
-        final SedsScalar<String> sedsScalar = sedsFactory.newScalar(attribute.getStrValue());
-        return sedsDbConverter.serialize(sedsScalar).toString();
-    }
-}
+@Qualifier
+@Retention(RetentionPolicy.RUNTIME)
+@Target({TYPE, METHOD, FIELD, PARAMETER})
+public @interface UnitsLoaderQualifier {}

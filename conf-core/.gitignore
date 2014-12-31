@@ -1,4 +1,5 @@
 /target
+/.sonar
 
 # Eclipse specific files
 .project

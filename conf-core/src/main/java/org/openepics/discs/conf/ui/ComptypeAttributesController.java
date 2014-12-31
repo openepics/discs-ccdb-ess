@@ -70,11 +70,12 @@ import com.google.common.collect.ImmutableList;
 @Named
 @ViewScoped
 public class ComptypeAttributesController extends AbstractAttributesController<ComptypePropertyValue, ComptypeArtifact> {
+    private static final long serialVersionUID = 1156974438243970794L;
 
-    @Inject private ComptypeEJB comptypeEJB;
-    @Inject private PropertyEJB propertyEJB;
-    @Inject private SlotEJB slotEJB;
-    @Inject private DeviceEJB deviceEJB;
+    @Inject transient private ComptypeEJB comptypeEJB;
+    @Inject transient private PropertyEJB propertyEJB;
+    @Inject transient private SlotEJB slotEJB;
+    @Inject transient private DeviceEJB deviceEJB;
 
     private ComponentType compType;
 
@@ -270,14 +271,14 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
         final BuiltInProperty builtInProperty = (BuiltInProperty) selectedAttribute.getEntity();
         final String userValue = propertyValue == null ? null : ((StrValue)propertyValue).getStrValue();
         switch ((ComptypeBuiltInPropertyName)builtInProperty.getName()) {
-        case BIP_DESCRIPTION:
-            if ((userValue == null) || !userValue.equals(compType.getDescription())) {
-                compType.setDescription(userValue);
-                comptypeEJB.save(compType);
-            }
-            break;
-        default:
-            throw new UnhandledCaseException();
+            case BIP_DESCRIPTION:
+                if ((userValue == null) || !userValue.equals(compType.getDescription())) {
+                    compType.setDescription(userValue);
+                    comptypeEJB.save(compType);
+                }
+                break;
+            default:
+                throw new UnhandledCaseException();
         }
         populateAttributesList();
     }

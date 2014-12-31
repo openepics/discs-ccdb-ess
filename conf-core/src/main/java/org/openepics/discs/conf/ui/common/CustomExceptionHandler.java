@@ -45,6 +45,9 @@ public class CustomExceptionHandler extends ExceptionHandlerWrapper {
     private final ExceptionHandler wrapped;
     private static final Logger LOG = Logger.getLogger(CustomExceptionHandler.class.getCanonicalName());
 
+    /** A new JSF exception handler
+     * @param wrapped the original JSF exception handler
+     */
     public CustomExceptionHandler(ExceptionHandler wrapped) {
         this.wrapped = wrapped;
     }
@@ -70,7 +73,7 @@ public class CustomExceptionHandler extends ExceptionHandlerWrapper {
                     ec.redirect(ec.getRequestContextPath() + "/error.xhtml?errorMsg=" +
                             URLEncoder.encode(((UIException)ite.getTargetException()).getMessage(), "UTF-8"));
                 } catch (Exception e) {
-                    LOG.log(Level.SEVERE, "Failed to redirect to error page");
+                    LOG.log(Level.SEVERE, "Failed to redirect to error page.", e);
                 } finally {
                     iterator.remove();
                 }
@@ -99,7 +102,7 @@ public class CustomExceptionHandler extends ExceptionHandlerWrapper {
             if (iterated instanceof InvocationTargetException)
                 return (InvocationTargetException) iterated;
 
-           iterated = iterated.getCause();
+            iterated = iterated.getCause();
         }
 
         return null;

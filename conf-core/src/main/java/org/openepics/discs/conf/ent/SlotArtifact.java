@@ -43,12 +43,20 @@ import javax.xml.bind.annotation.XmlRootElement;
             + "WHERE s.modifiedBy = :modifiedBy")
 })
 public class SlotArtifact extends Artifact {
+    private static final long serialVersionUID = 8850678212689818458L;
+
     @JoinColumn(name = "slot")
     @ManyToOne(optional = false)
     private Slot slot;
 
     public SlotArtifact() { }
 
+    /** Constructs a new slot artifact
+     * @param name the name of the artifact
+     * @param isInternal <code>true</code> if the artifact is a file attachment, <code>false</code> if it's an URL.
+     * @param description the user specified description
+     * @param uri the user specified URL
+     */
     public SlotArtifact(String name, boolean isInternal, String description, String uri) {
         super(name, isInternal, description, uri);
     }

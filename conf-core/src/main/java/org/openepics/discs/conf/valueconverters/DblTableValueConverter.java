@@ -32,7 +32,9 @@ import org.openepics.seds.api.datatypes.SedsTable;
 public class DblTableValueConverter extends ValueConverter<DblTableValue> {
 
     @Override
-    public Class<DblTableValue> getType() { return DblTableValue.class; }
+    public Class<DblTableValue> getType() {
+        return DblTableValue.class;
+    }
 
     @Override
     public String convertToDatabaseColumn(DblTableValue attribute) {

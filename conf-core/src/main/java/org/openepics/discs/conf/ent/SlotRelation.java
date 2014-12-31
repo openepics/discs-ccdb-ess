@@ -45,6 +45,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "SlotRelation.findByName", query = "SELECT s FROM SlotRelation s WHERE s.name = :name")
 })
 public class SlotRelation extends ConfigurationEntity {
+    private static final long serialVersionUID = 2591452847410218530L;
+
     @Basic(optional = false)
     @NotNull
     @Enumerated(EnumType.STRING)
@@ -63,6 +65,10 @@ public class SlotRelation extends ConfigurationEntity {
     protected SlotRelation() {
     }
 
+    /** Constructs a new slot relation. There are only 3 possible relationship types.
+     * @see SlotRelationName
+     * @param name a {@link SlotRelationName}
+     */
     public SlotRelation(SlotRelationName name) {
         setName(name);
     }
@@ -70,10 +76,24 @@ public class SlotRelation extends ConfigurationEntity {
     public SlotRelationName getName() {
         return name;
     }
+
+    /**
+     * @return a String representation of the relationship:
+     * <ul>
+     * <li>CONTAINS</li>
+     * <li>POWERS</li>
+     * <li>CONTROLS</li>
+     * </ul>
+     */
     public String getNameAsString() {
         return name.toString().toLowerCase();
     }
 
+    /**
+     * The method also sets the string for "reverse relationship" at the same time.
+     *
+     * @param name the relationship to set
+     */
     public void setName(SlotRelationName name) {
         this.name = name;
         if (name == SlotRelationName.CONTAINS) {

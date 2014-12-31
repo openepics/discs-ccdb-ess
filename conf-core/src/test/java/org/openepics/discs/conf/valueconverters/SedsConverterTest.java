@@ -68,7 +68,6 @@ public class SedsConverterTest {
             + "\"protocol\":\"SEDSv1\",\"version\":\"1.0.0\"},\"data\":{\"valueArray\":[\"TEST1\",\"TEST2\",\"TEST3\"]}}";
     private static final String SEDS_TIMESTAMP = "{\"meta\":{\"type\":\"SedsTime\",\"protocol\":\"SEDSv1\","
             + "\"version\":\"1.0.0\"},\"data\":{\"unixSec\":109432210,\"nanoSec\":123000000}}";
-    private static final String SEDS_URL = "http://www.cosylab.com";
 
     private static final DblTableValue VAL_DBL_TABLE = new DblTableValue(Arrays.asList(Arrays.asList(0.1, 0.2, 0.3),
                     Arrays.asList(1.1, 1.2, 1.3),Arrays.asList(2.1, 2.2, 2.3)));

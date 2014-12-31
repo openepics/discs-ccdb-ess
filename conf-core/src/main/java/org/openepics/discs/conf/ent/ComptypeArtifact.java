@@ -46,12 +46,20 @@ import javax.xml.bind.annotation.XmlRootElement;
             + "WHERE c.modifiedBy = :modifiedBy")
 })
 public class ComptypeArtifact extends Artifact {
+    private static final long serialVersionUID = -4084236653099315880L;
+
     @JoinColumn(name = "component_type")
     @ManyToOne(optional = false)
     private ComponentType componentType;
 
     public ComptypeArtifact() { }
 
+    /** Constructs a new device type artifact
+     * @param name the name of the artifact
+     * @param isInternal <code>true</code> if the artifact is a file attachment, <code>false</code> if it's an URL.
+     * @param description the user specified description
+     * @param uri the user specified URL
+     */
     public ComptypeArtifact(String name, boolean isInternal, String description, String uri) {
         super(name, isInternal, description, uri);
     }

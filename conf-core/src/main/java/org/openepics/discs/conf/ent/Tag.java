@@ -28,12 +28,18 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
+/**
+ * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
+ *
+ */
 @Entity
 @Table(name = "tag")
 @NamedQueries({
     @NamedQuery(name = "Tag.findAllOrdered", query = "SELECT t FROM Tag t ORDER BY t.name")
 })
 public class Tag implements Serializable {
+    private static final long serialVersionUID = 6824320954767876122L;
+
     @Id
     private String name;
 
@@ -42,6 +48,9 @@ public class Tag implements Serializable {
 
     protected Tag() {}
 
+    /** Constructs a new tag
+     * @param name the string to be used for tag
+     */
     public Tag(String name) {
         this.name = name;
     }
@@ -60,12 +69,20 @@ public class Tag implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null) return false;
-        if (getClass() != obj.getClass()) return false;
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
 
         Tag other = (Tag) obj;
-        if (name == null) return other.name == null;
+        if (name == null) {
+            return other.name == null;
+        }
 
         return name.equals(other.name);
     }

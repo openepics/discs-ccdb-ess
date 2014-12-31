@@ -55,6 +55,8 @@ import javax.xml.bind.annotation.XmlRootElement;
             + "WHERE a.entityId = :entityId AND a.entityType = :entityType ORDER BY a.logTime DESC")
 })
 public class AuditRecord implements Serializable {
+    private static final long serialVersionUID = 5144501646584495649L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
@@ -99,6 +101,13 @@ public class AuditRecord implements Serializable {
     protected AuditRecord() {
     }
 
+    /**
+     * Constructs a new audit record.
+     *
+     * @param oper the type of database operation (see {@link EntityTypeOperation})
+     * @param entry the JSON description of the audit record entry
+     * @param entityId the database primary key of the entity the audit log entry is created for
+     */
     public AuditRecord(EntityTypeOperation oper, String entry, Long entityId) {
         this.oper = oper;
         this.entry = entry;
@@ -174,11 +183,17 @@ public class AuditRecord implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        if (!(object instanceof AuditRecord)) return false;
+        if (!(object instanceof AuditRecord)) {
+            return false;
+        }
 
         AuditRecord other = (AuditRecord) object;
-        if (this.id == null && other.id != null) return false;
-        if (this.id != null) return this.id.equals(other.id);
+        if ((this.id == null) && (other.id != null)) {
+            return false;
+        }
+        if (this.id != null) {
+            return this.id.equals(other.id);
+        }
 
         return this==object;
     }

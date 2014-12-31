@@ -63,8 +63,9 @@ import org.primefaces.context.RequestContext;
 @Named
 @ViewScoped
 public class DeviceDetailsAttributesController extends AbstractAttributesController<DevicePropertyValue, DeviceArtifact> {
+    private static final long serialVersionUID = -2881746639197321061L;
 
-    @Inject private DeviceEJB deviceEJB;
+    @Inject transient private DeviceEJB deviceEJB;
 
     private Device device;
 
@@ -138,7 +139,9 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
         attributes.add(new EntityAttributeView(new BuiltInProperty(DeviceBuiltInPropertyName.BIP_MANUFACTURER_SERIAL_NO, device.getManufacturerSerialNumber(), strDataType)));
 
         for (ComptypePropertyValue parentProp : parentProperties) {
-            if (parentProp.getPropValue() != null) attributes.add(new EntityAttributeView(parentProp, EntityAttributeViewKind.DEVICE_TYPE_PROPERTY));
+            if (parentProp.getPropValue() != null) {
+                attributes.add(new EntityAttributeView(parentProp, EntityAttributeViewKind.DEVICE_TYPE_PROPERTY));
+            }
         }
 
         for (ComptypeArtifact parentArtifact : parentArtifacts) {

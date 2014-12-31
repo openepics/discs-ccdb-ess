@@ -82,58 +82,49 @@ public class SedsConverter implements AttributeConverter<Value, String> {
         JsonReader reader = Json.createReader(new StringReader(dbData));
         final SedsType seds = Seds.newDBConverter().deserialize(reader.readObject());
 
-        // simple scalars
+        final Value convertedValue;
+
         if (seds instanceof SedsScalar<?>) {
-            return convertFromSedsScalar((SedsScalar<?>) seds, dbData);
+            convertedValue = convertFromSedsScalar((SedsScalar<?>) seds, dbData);          // simple scalars
+        } else if (seds instanceof SedsTime) {
+            convertedValue = convertFromSedsTime((SedsTime)seds);                          // timestamp
+        } else if (seds instanceof SedsScalarArray<?>) {
+            convertedValue = convertFromSedsScalarArray((SedsScalarArray<?>)seds, dbData); // Vectors (1-D)
+        } else if (seds instanceof SedsTable) {
+            convertedValue = convertFromSedsTable((SedsTable) seds);                       // table
+        } else if (seds instanceof SedsEnum) {
+            convertedValue = convertFromSedsEnum((SedsEnum) seds);                         // enum
+        } else {
+            throw new IllegalArgumentException("Unable to convert DB data: " + dbData);
         }
-
-        // timestamp
-        if (seds instanceof SedsTime) {
-            return convertFromSedsTime((SedsTime)seds);
-        }
-
-        // Vectors (1-D)
-        if (seds instanceof SedsScalarArray<?>) {
-            return convertFromSedsScalarArray((SedsScalarArray<?>)seds, dbData);
-        }
-
-        // table
-        if (seds instanceof SedsTable) {
-            return convertFromSedsTable((SedsTable) seds);
-        }
-
-        // enum
-        if (seds instanceof SedsEnum) {
-            return convertFromSedsEnum((SedsEnum) seds);
-        }
-
-        throw new IllegalArgumentException("Unable to convert DB data: " + dbData);
+        return convertedValue;
     }
 
     private Value convertFromSedsScalar(SedsScalar<?> sedsScalar, String dbData) {
-        final IntValue intValue;
+        final Value returnValue;
 
         switch (sedsScalar.getType()) {
-        case INTEGER:
-            intValue = new IntValue((Integer)sedsScalar.getValue());
-            return intValue;
-        case NUMBER:
-            final Number number = (Number) sedsScalar.getValue();
-            if (number instanceof Double) {
-                final DblValue dblValue = new DblValue((Double)number);
-                return dblValue;
-            } else if (number instanceof Integer) {
-                intValue = new IntValue((Integer)number);
-                return intValue;
-            } else {
-                throw new IllegalArgumentException("Unable to convert DB data: " + dbData);
-            }
-        case STRING:
-            final StrValue strValue = new StrValue((String)sedsScalar.getValue());
-            return strValue;
-        default:
-            throw new InvalidDataTypeException("Data type not supported: " + sedsScalar.getType().name());
+            case INTEGER:
+                returnValue = new IntValue((Integer)sedsScalar.getValue());
+                break;
+            case NUMBER:
+                final Number number = (Number) sedsScalar.getValue();
+                if (number instanceof Double) {
+                    returnValue = new DblValue((Double)number);
+                    break;
+                } else if (number instanceof Integer) {
+                    returnValue = new IntValue((Integer)number);
+                    break;
+                } else {
+                    throw new IllegalArgumentException("Unable to convert DB data: " + dbData);
+                }
+            case STRING:
+                returnValue = new StrValue((String)sedsScalar.getValue());
+                break;
+            default:
+                throw new InvalidDataTypeException("Data type not supported: " + sedsScalar.getType().name());
         }
+        return returnValue;
     }
 
     private Value convertFromSedsTime(SedsTime sedsTime) {
@@ -147,27 +138,27 @@ public class SedsConverter implements AttributeConverter<Value, String> {
         final List<Integer> iValues;
 
         switch (sedsScalarArray.getType()) {
-        case INTEGER:
-            iValues = new ArrayList<Integer>(Arrays.asList((Integer[])sedsScalarArray.getValueArray()));
-            intVectorValue = new IntVectorValue(iValues);
-            return intVectorValue;
-        case NUMBER:
-            final Number[] numbers = (Number[]) sedsScalarArray.getValueArray();
-            final List<Double> dblValues = new ArrayList<>(numbers.length);
-            for (Number element : numbers) {
-                if (element instanceof Double) {
-                    dblValues.add((Double)element);
-                } else {
-                    throw new InvalidDataTypeException("Data type for table not Double.");
+            case INTEGER:
+                iValues = new ArrayList<Integer>(Arrays.asList((Integer[])sedsScalarArray.getValueArray()));
+                intVectorValue = new IntVectorValue(iValues);
+                return intVectorValue;
+            case NUMBER:
+                final Number[] numbers = (Number[]) sedsScalarArray.getValueArray();
+                final List<Double> dblValues = new ArrayList<>(numbers.length);
+                for (Number element : numbers) {
+                    if (element instanceof Double) {
+                        dblValues.add((Double)element);
+                    } else {
+                        throw new InvalidDataTypeException("Data type for table not Double.");
+                    }
                 }
-            }
-            return new DblVectorValue(dblValues);
-        case STRING:
-            final List<String> sValues = new ArrayList<String>(Arrays.asList((String[])sedsScalarArray.getValueArray()));
-            final StrVectorValue strVectorValue = new StrVectorValue(sValues);
-            return strVectorValue;
-        default:
-            throw new InvalidDataTypeException("Data type not supported: " + sedsScalarArray.getType().name());
+                return new DblVectorValue(dblValues);
+            case STRING:
+                final List<String> sValues = new ArrayList<String>(Arrays.asList((String[])sedsScalarArray.getValueArray()));
+                final StrVectorValue strVectorValue = new StrVectorValue(sValues);
+                return strVectorValue;
+            default:
+                throw new InvalidDataTypeException("Data type not supported: " + sedsScalarArray.getType().name());
         }
     }
 
@@ -198,5 +189,4 @@ public class SedsConverter implements AttributeConverter<Value, String> {
         final EnumValue enumValue = new EnumValue(sedsEnum.getSelected());
         return enumValue;
     }
-
 }

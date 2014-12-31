@@ -38,6 +38,8 @@ import javax.validation.constraints.Size;
 @Table(name = "artifacts")
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Artifact extends ConfigurationEntity {
+    private static final long serialVersionUID = 2926588619140123269L;
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 128)
@@ -62,6 +64,12 @@ public class Artifact extends ConfigurationEntity {
 
     protected Artifact() { }
 
+    /** Constructs a new artifact
+     * @param name the name of the artifact
+     * @param isInternal <code>true</code> if the artifact is a file attachment, <code>false</code> if it's an URL.
+     * @param description the user specified description
+     * @param uri the user specified URL
+     */
     public Artifact(String name, boolean isInternal, String description, String uri) {
         this.name = name;
         this.isInternal = isInternal;

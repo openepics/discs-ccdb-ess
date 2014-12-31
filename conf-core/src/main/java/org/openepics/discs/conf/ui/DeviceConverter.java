@@ -47,7 +47,7 @@ public class DeviceConverter implements Converter {
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
         Device dev;
 
-        if (value == null || value.equals("")) {
+        if (value == null || value.isEmpty()) {
             return null;
         } else {
             dev = deviceEJB.findById(Long.parseLong(value));
@@ -57,7 +57,7 @@ public class DeviceConverter implements Converter {
 
     @Override
     public String getAsString(FacesContext context, UIComponent component, Object value) {
-        if (value == null || value.equals("")) {
+        if (value == null ||"".equals(value)) {
             return "";
         } else {
             return ((Device) value).getId().toString();

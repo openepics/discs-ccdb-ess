@@ -29,7 +29,9 @@ import org.openepics.seds.api.datatypes.SedsTime;
 public class TimestampValueConverter extends ValueConverter<TimestampValue> {
 
     @Override
-    public Class<TimestampValue> getType() { return TimestampValue.class; }
+    public Class<TimestampValue> getType() {
+        return TimestampValue.class;
+    }
 
     @Override
     public String convertToDatabaseColumn(TimestampValue attribute) {

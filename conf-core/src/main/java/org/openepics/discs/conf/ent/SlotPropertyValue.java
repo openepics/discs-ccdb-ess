@@ -44,12 +44,19 @@ import javax.xml.bind.annotation.XmlRootElement;
             + "WHERE s.modifiedBy = :modifiedBy")
 })
 public class SlotPropertyValue extends PropertyValue {
+    private static final long serialVersionUID = -6418859111076538082L;
+
     @JoinColumn(name = "slot")
     @ManyToOne(optional = false)
     private Slot slot;
 
     public SlotPropertyValue() { }
 
+    /**
+     * Constructs a new property value
+     *
+     * @param inRepository <code>false</code>
+     */
     public SlotPropertyValue(boolean inRepository) {
         super(inRepository);
     }

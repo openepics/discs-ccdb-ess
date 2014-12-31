@@ -30,6 +30,9 @@ import com.google.common.base.Preconditions;
 public class TimestampValue implements Value {
     private final Timestamp timestampValue;
 
+    /** Constructs a new timestamp value
+     * @param timestampValue timestamp (see {@link org.epics.util.time.Timestamp})
+     */
     public TimestampValue(Timestamp timestampValue) {
         this.timestampValue = Preconditions.checkNotNull(timestampValue);
     }
@@ -37,7 +40,9 @@ public class TimestampValue implements Value {
     /**
      * @return the timestampValue
      */
-    public Timestamp getTimestampValue() { return timestampValue; }
+    public Timestamp getTimestampValue() {
+        return timestampValue;
+    }
 
     @Override
     public String toString() {

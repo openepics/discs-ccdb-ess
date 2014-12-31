@@ -44,16 +44,16 @@ import org.openepics.discs.conf.util.BuiltInDataType;
 @Startup
 public class SedsConverters {
 
-    private static final Logger logger = Logger.getLogger(SedsConverter.class.getCanonicalName());
+    private static final Logger LOGGER = Logger.getLogger(SedsConverter.class.getCanonicalName());
 
     private static final Map<Class<? extends Value>, ValueConverter<? extends Value>> converters = new ConcurrentHashMap<>();
 
     public SedsConverters() {}
 
     /**
-     * Constructs the item. Expects injected iterator of all EntityLogger implementations
+     * Constructs the item. Expects injected iterator of all ValueConverter implementations
      *
-     * @param allLoggers CDI will inject all logger types in this constructor parameter
+     * @param allConverters CDI will inject all converter types in this constructor parameter
      */
     @Inject
     public SedsConverters(@Any Instance<ValueConverter<? extends Value>> allConverters) {
@@ -63,13 +63,18 @@ public class SedsConverters {
             convertersFound++;
         }
 
-        logger.log(Level.INFO, "Loaded " + convertersFound + " data type converters.");
+        LOGGER.log(Level.INFO, "Loaded " + convertersFound + " data type converters.");
         if (convertersFound != BuiltInDataType.values().length) {
-            logger.log(Level.SEVERE, "Converter data type implementation number mismatch. Expected: " + BuiltInDataType.values().length
+            LOGGER.log(Level.SEVERE, "Converter data type implementation number mismatch. Expected: " + BuiltInDataType.values().length
                     + ", found: " + convertersFound);
         }
     }
 
+    /** The method converts a {@link Value} instance into a serialized string representation which can be stored
+     * into the database.
+     * @param attribute a {@link Value} instance
+     * @return a String containing a serialized {@link Value}
+     */
     public static <T extends Value> String convertToDatabaseColumn(T attribute) {
         @SuppressWarnings("unchecked")
         ValueConverter<T> converter = (ValueConverter<T>) converters.get(attribute.getClass());

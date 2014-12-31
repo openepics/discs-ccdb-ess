@@ -51,6 +51,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
     @NamedQuery(name = "Role.findByRoleId", query = "SELECT r FROM Role r WHERE r.roleId = :roleId")
 })
 public class Role implements Serializable {
+    private static final long serialVersionUID = 5373765483494957325L;
+
     @Id
     @NotNull
     @Size(min = 1, max = 64)
@@ -75,10 +77,17 @@ public class Role implements Serializable {
     protected Role() {
     }
 
+    /** Constructs a new type of role.
+     * @param roleId a unique string identifying the role
+     */
     public Role(String roleId) {
         this.roleId = roleId;
     }
 
+    /** Constructs a new type of role.
+     * @param roleId a unique string identifying the role
+     * @param description a user speicifed descriptin of the role
+     */
     public Role(String roleId, String description) {
         this.roleId = roleId;
         this.description = description;

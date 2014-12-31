@@ -20,7 +20,9 @@
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-
+        <sonar.exclusions>
+            **org/openepics/discs/conf/ui/common/AlphanumComparator.java
+        </sonar.exclusions>
         <version.arquillian_core>1.1.3.Final</version.arquillian_core>
         <version.jacoco>0.7.2.201409121644</version.jacoco>
     </properties>

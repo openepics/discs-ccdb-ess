@@ -44,34 +44,36 @@ public class ExcelCell {
      * @return the {@link String} result
      */
     public static String asStringOrNull(@Nullable Cell cell, Workbook workbook) {
+        final String stringValue;
         if (cell != null) {
             if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
-                return String.valueOf(cell.getNumericCellValue());
+                stringValue = String.valueOf(cell.getNumericCellValue());
             } else if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
-                return cell.getStringCellValue() != null ? cell.getStringCellValue() : null;
+                stringValue = cell.getStringCellValue() != null ? cell.getStringCellValue() : null;
             } else if (cell.getCellType() == Cell.CELL_TYPE_BLANK) {
-                return null;
+                stringValue = null;
             } else if (cell.getCellType() == Cell.CELL_TYPE_BOOLEAN) {
-                return String.valueOf(cell.getBooleanCellValue());
+                stringValue = String.valueOf(cell.getBooleanCellValue());
             } else if (cell.getCellType() == Cell.CELL_TYPE_FORMULA) {
                 final FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
                 final CellValue cellValue = evaluator.evaluate(cell);
                 if (cellValue != null) {
                     final String columnValue = cellValue.getStringValue();
                     if (columnValue == null) {
-                        return Double.toString(cellValue.getNumberValue());
+                        stringValue = Double.toString(cellValue.getNumberValue());
                     } else {
-                        return columnValue;
+                        stringValue = columnValue;
                     }
                 } else {
-                    return null;
+                    stringValue = null;
                 }
             } else {
                 throw new UnhandledCaseException();
             }
         } else {
-            return null;
+            stringValue = null;
         }
+        return stringValue;
     }
 
 
