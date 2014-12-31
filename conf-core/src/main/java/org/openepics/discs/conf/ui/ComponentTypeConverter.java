@@ -60,7 +60,6 @@ public class ComponentTypeConverter implements Converter {
         if (value == null || "".equals(value)) {
             return "";
         } else {
-            // logger.log(Level.INFO, "Exp number: " + ((Experiment) value).getId().toString());
             return ((ComponentType) value).getId().toString();
         }
     }

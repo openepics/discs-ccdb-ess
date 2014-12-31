@@ -243,24 +243,24 @@ public class DevicesDataLoader extends AbstractDataLoader implements DataLoader 
     }
 
     private DeviceStatus setDeviceStatus(@Nullable String deviceStatusString, String rowNumber, String columnName) {
-        final DeviceStatus returnValue;
+        final DeviceStatus deviceStatus;
         if (deviceStatusString == null) {
-            returnValue = null;
+            deviceStatus = null;
         } else if (deviceStatusString.equalsIgnoreCase(DeviceStatus.IN_FABRICATION.name())) {
-            returnValue = DeviceStatus.IN_FABRICATION;
+            deviceStatus = DeviceStatus.IN_FABRICATION;
         } else if (deviceStatusString.equalsIgnoreCase(DeviceStatus.READY.name())) {
-            returnValue = DeviceStatus.READY;
+            deviceStatus = DeviceStatus.READY;
         } else if (deviceStatusString.equalsIgnoreCase(DeviceStatus.SPARE.name())) {
-            returnValue = DeviceStatus.SPARE;
+            deviceStatus = DeviceStatus.SPARE;
         } else if (deviceStatusString.equalsIgnoreCase(DeviceStatus.UNDER_REPAIR.name())) {
-            returnValue = DeviceStatus.UNDER_REPAIR;
+            deviceStatus = DeviceStatus.UNDER_REPAIR;
         } else if (deviceStatusString.equalsIgnoreCase(DeviceStatus.UNDER_TESTING.name())) {
-            returnValue = DeviceStatus.UNDER_TESTING;
+            deviceStatus = DeviceStatus.UNDER_TESTING;
         } else {
             rowResult.addMessage(new ValidationMessage(ErrorMessage.DEVICE_STATUS_NOT_FOUND, rowNumber, columnName));
-            returnValue = null;
+            deviceStatus = null;
         }
-        return returnValue;
+        return deviceStatus;
     }
 
     private void addOrUpdateProperties(Device device, Map<String, Integer> properties, List<String> row, String rowNumber) {
