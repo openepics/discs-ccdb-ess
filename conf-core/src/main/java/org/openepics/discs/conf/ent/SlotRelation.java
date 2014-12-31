@@ -76,10 +76,24 @@ public class SlotRelation extends ConfigurationEntity {
     public SlotRelationName getName() {
         return name;
     }
+
+    /**
+     * @return a String representation of the relationship:
+     * <ul>
+     * <li>CONTAINS</li>
+     * <li>POWERS</li>
+     * <li>CONTROLS</li>
+     * </ul>
+     */
     public String getNameAsString() {
         return name.toString().toLowerCase();
     }
 
+    /**
+     * The method also sets the string for "reverse relationship" at the same time.
+     *
+     * @param name the relationship to set
+     */
     public void setName(SlotRelationName name) {
         this.name = name;
         if (name == SlotRelationName.CONTAINS) {

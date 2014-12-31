@@ -75,6 +75,11 @@ public class ConfigurationEntity implements Serializable {
     public Date getModifiedAt() {
         return new Date(modifiedAt.getTime());
     }
+    /**
+     * The setter stores a new copy of the param.
+     *
+     * @param modifiedAt The timestamp of the last modification of this database entity
+     */
     public void setModifiedAt(Date modifiedAt) {
         this.modifiedAt = new Date(modifiedAt.getTime());
     }
@@ -85,6 +90,9 @@ public class ConfigurationEntity implements Serializable {
     public String getModifiedBy() {
         return modifiedBy;
     }
+    /**
+     * @param modifiedBy The user performing the last modification of the database entity
+     */
     public void setModifiedBy(String modifiedBy) {
         this.modifiedBy = modifiedBy;
     }
