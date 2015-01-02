@@ -68,7 +68,7 @@
                             <h:outputText styleClass="ui-icon ui-icon-trash" style="display: inline-block !important; margin-right: 6px;" />
                             <f:setPropertyActionListener value="#{attribute}" target="#{deviceDetailsAttributesController.selectedAttribute}" />
                         </p:commandLink>
-                        <p:commandLink ajax="true" rendered="#{attribute.hasFile}" title="Download">
+                        <p:commandLink ajax="false" rendered="#{attribute.hasFile}" title="Download">
                             <h:outputText styleClass="ui-icon ui-icon-arrowthick-1-s" style="display: inline-block !important; margin-right: 6px;" />
                             <f:setPropertyActionListener value="#{attribute}" target="#{deviceDetailsAttributesController.selectedAttribute}" />
                             <p:fileDownload value="#{deviceDetailsAttributesController.downloadFile}" />
@@ -100,13 +100,13 @@
 
         <ui:include src="../audit/audit-log-table.xhtml">
             <ui:param name="formId" value="deviceLogForm" />
-            <ui:param name="dialogTitle" value="Device Log" />
+            <ui:param name="dialogTitle" value="Device log" />
             <ui:param name="widgetName" value="deviceLog" />
         </ui:include>
 
         <ui:include src="../audit/audit-log-details.xhtml">
             <ui:param name="formId" value="logDetailsForm" />
-            <ui:param name="dialogTitle" value="Long Entry Details" />
+            <ui:param name="dialogTitle" value="Long entry details" />
             <ui:param name="widgetName" value="logDetails" />
         </ui:include>
 
@@ -121,7 +121,7 @@
 
         <ui:include src="../data-definitions/add-or-modify-dialogs/property-value.xhtml" >
             <ui:param name="formId" value="modifyPropertyValueForm" />
-            <ui:param name="dialogTitle" value="Modify device property" />
+            <ui:param name="dialogTitle" value="Modify device instance property" />
             <ui:param name="widgetName" value="modifyPropertyValue" />
             <ui:param name="controller" value="#{deviceDetailsAttributesController}" />
             <ui:param name="submitHandler" value="modifyPropertyValue" />
@@ -139,7 +139,7 @@
 
         <ui:include src="../data-definitions/add-or-modify-dialogs/tag.xhtml" >
             <ui:param name="formId" value="addDeviceTagForm" />
-            <ui:param name="dialogTitle" value="Add new device tag" />
+            <ui:param name="dialogTitle" value="Add new device instance tag" />
             <ui:param name="widgetName" value="addDeviceTag" />
             <ui:param name="controller" value="#{deviceDetailsAttributesController}" />
             <ui:param name="submitHandler" value="addNewTag" />
@@ -148,7 +148,7 @@
 
         <ui:include src="../data-definitions/add-or-modify-dialogs/artifact.xhtml" >
             <ui:param name="formId" value="addArtifactForm" />
-            <ui:param name="dialogTitle" value="Add new device artifact" />
+            <ui:param name="dialogTitle" value="Add new device instance artifact" />
             <ui:param name="widgetName" value="addArtifact" />
             <ui:param name="controller" value="#{deviceDetailsAttributesController}" />
             <ui:param name="submitHandler" value="addNewArtifact" />
@@ -157,7 +157,7 @@
 
         <ui:include src="../data-definitions/add-or-modify-dialogs/artifact.xhtml" >
             <ui:param name="formId" value="modifyArtifactForm" />
-            <ui:param name="dialogTitle" value="Modify device artifact" />
+            <ui:param name="dialogTitle" value="Modify device instance artifact" />
             <ui:param name="widgetName" value="modifyArtifact" />
             <ui:param name="controller" value="#{deviceDetailsAttributesController}" />
             <ui:param name="submitHandler" value="modifyArtifact" />
