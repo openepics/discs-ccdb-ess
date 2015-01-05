@@ -24,7 +24,7 @@
                     actionListener="#{propertyManager.prepareImportPopup()}" 
                     disabled="#{!securityPolicy.getUIHint('PROPERTY')}" />
 
-                <p:menuitem value="Import Component Types" update=":importCompTypesForm" 
+                <p:menuitem value="Import Device Types" update=":importCompTypesForm" 
                     oncomplete="importCompTypes.show()" title="Import Component Types" 
                     actionListener="#{componentTypeManager.prepareImportPopup()}" 
                     disabled="#{! securityPolicy.getUIHint('COMPONENT_TYPE')}" />
