@@ -29,7 +29,7 @@
                     actionListener="#{componentTypeManager.prepareImportPopup()}" 
                     disabled="#{! securityPolicy.getUIHint('COMPONENT_TYPE')}" />
 
-                <p:menuitem value="Import Slots and Slot Relationships" update=":importSlotsForm" 
+                <p:menuitem value="Import Slots and Slot Pairs" update=":importSlotsForm" 
                     oncomplete="importSlots.show()" title="Import Slots" 
                     actionListener="#{slotManager.prepareImportPopup()}" 
                     disabled="#{!securityPolicy.getUIHint('SLOT')}"/>
