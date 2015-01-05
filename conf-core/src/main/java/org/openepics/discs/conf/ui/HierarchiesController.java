@@ -77,6 +77,7 @@ public class HierarchiesController implements Serializable {
     @Inject transient private InstallationEJB installationEJB;
     @Inject transient private DataTypeEJB dataTypeEJB;
 
+    private List<EntityAttributeView> attributes;
     private TreeNode rootNode;
     private TreeNode selectedNode;
     private InstallationRecord installationRecord;
@@ -100,14 +101,9 @@ public class HierarchiesController implements Serializable {
     }
 
     /**
-     * @return The list of attributes (property values, artifacts and tags) for at all levels:
-     * <ul>
-     * <li>device type properties</li>
-     * <li>container or installation slot properties</li>
-     * <li>device instance properties (for installation slots and if device is installed)</li>
-     * </ul>
+     * Prepares the attribute list for display when user selects the slot in the hierarchy.
      */
-    public List<EntityAttributeView> getAttributes() {
+    public void initAttributeList() {
         final List<EntityAttributeView> attributesList = new ArrayList<>();
 
         if (selectedNode != null) {
@@ -151,7 +147,29 @@ public class HierarchiesController implements Serializable {
                 attributesList.add(new EntityAttributeView(tag, isHostingSlot ? EntityAttributeViewKind.INSTALL_SLOT_TAG : EntityAttributeViewKind.CONTAINER_SLOT_TAG));
             }
         }
-        return attributesList;
+        this.attributes = attributesList;
+    }
+
+    /**
+     * Clears the attribute list for display when user unselects the slot in the hierarchy.
+     */
+    public void clearAttributeList() {
+        this.attributes = null;
+    }
+
+    /**
+     * @return The list of attributes (property values, artifacts and tags) for at all levels:
+     * <ul>
+     * <li>device type properties</li>
+     * <li>container or installation slot properties</li>
+     * </ul>
+     */
+    public List<EntityAttributeView> getAttributes() {
+        return attributes;
+    }
+
+    public void setAttrbutes(List<EntityAttributeView> attributes) {
+        this.attributes = attributes;
     }
 
     /**
