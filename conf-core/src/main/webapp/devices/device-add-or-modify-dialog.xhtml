@@ -17,7 +17,8 @@
                 <h:outputLabel for="devInventoryId" value="Inventory ID:" />
                 <h:panelGroup>
                     <p:inputText id="devInventoryId" value="#{devicesByTypeManager.serialNumber}" 
-                        required="true" requiredMessage="Please enter an inventory ID" />
+                        required="true" requiredMessage="Please enter an inventory ID" 
+                        validator="#{devicesByTypeManager.serialNoValidator}" />
                     <p:message for="devInventoryId" />
                 </h:panelGroup>
     

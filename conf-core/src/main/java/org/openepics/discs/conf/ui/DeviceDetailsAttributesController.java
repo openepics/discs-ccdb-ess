@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
+import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -46,6 +47,7 @@ import org.openepics.discs.conf.ent.values.StrValue;
 import org.openepics.discs.conf.ui.common.AbstractAttributesController;
 import org.openepics.discs.conf.ui.common.UIException;
 import org.openepics.discs.conf.util.UnhandledCaseException;
+import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.views.BuiltInProperty;
 import org.openepics.discs.conf.views.DeviceBuiltInPropertyName;
 import org.openepics.discs.conf.views.EntityAttributeView;
@@ -259,9 +261,17 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
 
     @Override
     public void saveNewName() {
-        device.setSerialNumber(entityName);
-        deviceEJB.save(device);
-        populateAttributesList();
-        RequestContext.getCurrentInstance().update("deviceDetailsForm");
+        final Device deviceById = deviceEJB.findDeviceBySerialNumber(entityName);
+        if (entityName.isEmpty()) {
+            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error", "Device instance inventory ID must not be empty.");
+        } else if ((deviceById != null) && (deviceById != device)) {
+            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error",
+                    "Device instance with this inventory ID already exists.");
+        } else {
+            device.setSerialNumber(entityName);
+            deviceEJB.save(device);
+            populateAttributesList();
+            RequestContext.getCurrentInstance().update("deviceDetailsForm");
+        }
     }
 }

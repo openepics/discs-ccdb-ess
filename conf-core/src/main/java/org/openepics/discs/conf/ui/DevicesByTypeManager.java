@@ -23,7 +23,9 @@ import java.util.ListIterator;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
+import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
+import javax.faces.validator.ValidatorException;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -111,12 +113,6 @@ public class DevicesByTypeManager implements Serializable {
         try {
             deviceEJB.addDeviceAndPropertyDefs(newDevice);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Device saved.", null);
-        } catch (Exception e) {
-            if (Utility.causedByPersistenceException(e)) {
-                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Failure", "Device instance could not be added because a device instance with same inventory ID already exists.");
-            } else {
-                throw e;
-            }
         } finally {
             resetDeviceDialogFields();
             prepareDevicesForDisplay();
@@ -276,5 +272,27 @@ public class DevicesByTypeManager implements Serializable {
      */
     public void setFilteredComponentTypes(List<ComponentType> filteredComponentTypes) {
         this.filteredComponentTypes = filteredComponentTypes;
+    }
+
+    /** The validator for the inventory ID input field. Called when creating a new device {@link Device}
+     * @param ctx {@link javax.faces.context.FacesContext}
+     * @param component {@link javax.faces.component.UIComponent}
+     * @param value The value
+     * @throws ValidatorException {@link javax.faces.validator.ValidatorException}
+     */
+    public void serialNoValidator(FacesContext ctx, UIComponent component, Object value) throws ValidatorException {
+        if (value == null) {
+            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_FATAL, "Error", "No value to parse."));
+        }
+        final String strValue = value.toString();
+
+        // empty input value is handled by PrimeFaces and configured from xhtml
+        if (!strValue.isEmpty()) {
+            final Device existingDevice = deviceEJB.findDeviceBySerialNumber(strValue);
+            if (existingDevice != null) {
+                throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
+                        "Device instance with this inventory ID already exists."));
+            }
+        }
     }
 }

@@ -51,7 +51,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @author vuppala
  */
 @Entity
-@Table(name = "device", indexes = { @Index(columnList = "serial_number"), @Index(columnList = "component_type") })
+@Table(name = "device", indexes = { @Index(columnList = "serial_number", unique = true), @Index(columnList = "component_type") })
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Device.findAll", query = "SELECT d FROM Device d"),
@@ -70,7 +70,7 @@ public class Device extends ConfigurationEntity {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)
-    @Column(name = "serial_number", unique = true)
+    @Column(name = "serial_number")
     private String serialNumber;
 
     @Size(max = 255)
