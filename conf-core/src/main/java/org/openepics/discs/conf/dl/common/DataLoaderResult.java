@@ -20,18 +20,38 @@
 package org.openepics.discs.conf.dl.common;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import org.openepics.discs.conf.ent.EntityType;
+import org.openepics.discs.conf.ent.EntityTypeOperation;
 
 /**
  * This represents a result of load operation, consisting of the error status,
  * load {@link ValidationMessage}s, and the list of objects affected by the load.
  *
  * @author Sunil Sah <sunil.sah@cosylab.com>
+ * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
  */
 public class DataLoaderResult {
-
     private List<ValidationMessage> messages = new ArrayList<ValidationMessage>();
-    private boolean error;
+    private Map<String, Object> contextualData = new HashMap<>();
+
+    /** Per row-processing error status, to be reset for each new row */
+    private boolean rowError = false;
+
+    /** Global error status */
+    private boolean error = false;
+
+    /** Current row tracking */
+    private int currentRowNumber;
+
+    /** clears the state of the data result */
+    public void clear() {
+        rowError = error = false;
+        messages = new ArrayList<ValidationMessage>();
+    }
 
     /** @return the messages of this report */
     public List<ValidationMessage> getMessages() {
@@ -43,29 +63,81 @@ public class DataLoaderResult {
         return error;
     }
 
-    /**
-     * Adds the message to the report
-     *
-     * @param message the message to add
-     */
-    public void addMessage(ValidationMessage message) {
-        messages.add(message);
-        if (message.isError()) {
-            error = true;
-        }
+    /** @return the report error state for current row*/
+    public boolean isRowError() {
+        return rowError;
     }
 
     /**
-     * Appends the content of the given result to this one.
+     * Adds new message to the messages list
      *
-     * @param result the result to append
+     * @param message
+     * @param row
+     * @param column
+     * @param operation
+     * @param entity
      */
-    public void addResult(DataLoaderResult result) {
-        for (ValidationMessage message : result.getMessages()) {
-            addMessage(message);
-        }
+    private void addMessageInternal(ErrorMessage message, Integer row, String column,
+            EntityTypeOperation operation, EntityType entity) {
+        messages.add(new ValidationMessage(message, row, column, operation, entity));
     }
 
+    /**
+     * Adds new message to the messages list
+     *
+     * @param fileName
+     */
+    private void addMessageInternal(String fileName) {
+        messages.add(new ValidationMessage(fileName));
+    }
+
+    public void addGlobalMessage(ErrorMessage message, String column,
+            EntityTypeOperation operation, EntityType entity) {
+        error = true;
+        addMessageInternal(message, currentRowNumber, column, operation, entity);
+    }
+
+    public void addGlobalMessage(ErrorMessage message) {
+        error = true;
+        addMessageInternal(message, currentRowNumber, null, null, null);
+    }
+
+    public void addGlobalMessage(ErrorMessage message, String column) {
+        error = true;
+        addMessageInternal(message, currentRowNumber, column, null, null);
+    }
+
+    public void addRowMessage(ErrorMessage message, String column,
+            EntityTypeOperation operation, EntityType entity) {
+        rowError = true;
+        addMessageInternal(message, currentRowNumber, column, operation, entity);
+    }
+
+    public void addRowMessage(ErrorMessage message, String column) {
+        rowError = true;
+        addMessageInternal(message, currentRowNumber, column, null, null);
+    }
+
+    public void addRowMessage(ErrorMessage message) {
+        rowError = true;
+        addMessageInternal(message, currentRowNumber, null, null, null);
+    }
+
+    public void resetRowError() {
+        rowError = false;
+    }
+
+    public int getCurrentRowNumber() {
+        return currentRowNumber;
+    }
+
+    public void setCurrentRowNumber(int currentRowNumber) {
+        this.currentRowNumber = currentRowNumber;
+    }
+
+    public Map<String, Object> getContextualData() {
+        return contextualData;
+    }
 
     @Override
     public String toString() {
@@ -81,4 +153,6 @@ public class DataLoaderResult {
         }
         return builder.toString();
     }
+
+
 }

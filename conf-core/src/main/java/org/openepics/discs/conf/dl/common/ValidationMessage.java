@@ -28,12 +28,9 @@ import org.openepics.discs.conf.ent.EntityTypeOperation;
  * @author Sunil Sah <sunil.sah@cosylab.com>
  */
 public class ValidationMessage {
-
     private ErrorMessage message;
 
-    private boolean error;
-
-    private String row;
+    private Integer row;
     private String column;
     private EntityTypeOperation operation;
     private EntityType entity;
@@ -47,38 +44,6 @@ public class ValidationMessage {
      */
     public ValidationMessage(String fileName) {
         this.fileName = fileName;
-        error = false;
-    }
-
-    /**
-     * Constructs the message.
-     *
-     * @param message the message enumeration
-     */
-    public ValidationMessage(ErrorMessage message) {
-        this(message, null, null, null, null);
-    }
-
-    /**
-     * Constructs the message.
-     *
-     * @param message the message enumeration
-     * @param row the row location description, or null for no information
-     */
-    public ValidationMessage(ErrorMessage message, String row) {
-        this(message, row, null, null, null);
-    }
-
-
-    /**
-     * Constructs the message with location information.
-     *
-     * @param message the message enumeration
-     * @param row the row location description, or null for no information
-     * @param column the column location description, or null for no information
-     */
-    public ValidationMessage(ErrorMessage message, String row,  String column) {
-        this(message, row, column, null, null);
     }
 
     /**
@@ -90,11 +55,10 @@ public class ValidationMessage {
      * @param operation
      * @param entity
      */
-    public ValidationMessage(ErrorMessage message, String row,
+    public ValidationMessage(ErrorMessage message, Integer row,
                              String column, EntityTypeOperation operation, EntityType entity) {
         super();
         this.message = message;
-        this.error = true;
         this.row = row;
         this.column = column;
         this.operation = operation;
@@ -110,13 +74,8 @@ public class ValidationMessage {
         return message;
     }
 
-    /** @return true if this message represents an error */
-    public boolean isError() {
-        return error;
-    }
-
     /** @return the row label, or null if not specified */
-    public String getRow() {
+    public Integer getRow() {
         return row;
     }
 
@@ -173,9 +132,6 @@ public class ValidationMessage {
             }
             if (getRow() != null || getColumn() != null || getEntity() != null || getOperation() != null) {
                 builder.append(": ");
-            }
-            if (isError()) {
-                builder.append("ERROR: ");
             }
             builder.append(getMessage().toString());
         }

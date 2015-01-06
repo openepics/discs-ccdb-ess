@@ -67,11 +67,11 @@ public class SlotManager implements Serializable, ExcelImportUIHandlers {
 
     @Override
     public void doImport() {
-        loaderResult = dataLoaderHandler.loadDataFromTwoFiles(
+        /*loaderResult = dataLoaderHandler.loadDataFromTwoFiles(
                     importSlotData != null ? new ByteArrayInputStream(importSlotData) : null,
                     importSlotRelationshipsData != null ? new ByteArrayInputStream(importSlotRelationshipsData) : null,
                     firstFileName,
-                    secondFileName);
+                    secondFileName);*/
     }
 
     @Override

@@ -33,7 +33,7 @@ import org.openepics.discs.conf.ent.DataType;
 @Stateless
 public class DataTypeEJB extends ReadOnlyDAO<DataType> {
     @Override
-    protected void defineEntity() {
-        defineEntityClass(DataType.class);
+    protected Class<DataType> getEntityClass() {
+        return DataType.class;
     }
 }

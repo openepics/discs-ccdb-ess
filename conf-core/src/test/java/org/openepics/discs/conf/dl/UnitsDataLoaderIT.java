@@ -22,10 +22,13 @@ package org.openepics.discs.conf.dl;
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -36,8 +39,6 @@ import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.dl.common.ErrorMessage;
 import org.openepics.discs.conf.util.TestUtility;
-
-import com.google.common.collect.ImmutableList;
 
 /**
  * Integration tests for {@link UnitsDataLoader}
@@ -51,7 +52,7 @@ public class UnitsDataLoaderIT {
     @Inject @UnitsLoaderQualifier private DataLoader unitsDataLoader;
     @Inject private TestUtility testUtility;
 
-    private List<List<String>> inputRows;
+    private List<Pair<Integer, List<String>>> inputRows;
 
     @Deployment
     public static WebArchive createDeployment() {
@@ -67,24 +68,25 @@ public class UnitsDataLoaderIT {
 
     @Test
     public void generalTest() {
-        inputRows.add(ImmutableList.of("1", "HEADER", "NAME", "SYMBOL", "QUANTITY", "DESCRIPTION"));
-        inputRows.add(ImmutableList.of("2", "UPDATE", "Ampere", "A", "Current", "Electric current"));
-        unitsDataLoader.loadDataToDatabase(inputRows);
+        inputRows.add(ImmutablePair.of(1, Arrays.asList("HEADER", "NAME", "SYMBOL", "QUANTITY", "DESCRIPTION")));
+        inputRows.add(ImmutablePair.of(2, Arrays.asList("UPDATE", "Ampere", "A", "Current", "Electric current")));
+        unitsDataLoader.loadDataToDatabase(inputRows, null);
     }
 
     @Test
     public void entityNotFoundTest() {
-        inputRows.add(ImmutableList.of("1", "HEADER", "NAME", "SYMBOL", "QUANTITY", "DESCRIPTION"));
-        inputRows.add(ImmutableList.of("1", "DELETE", "AmpereNonExistant", "A", "Current", "Electric current"));
-        final DataLoaderResult dataLoaderResult = unitsDataLoader.loadDataToDatabase(inputRows);
+        inputRows.add(ImmutablePair.of(1, Arrays.asList("HEADER", "NAME", "SYMBOL", "QUANTITY", "DESCRIPTION")));
+        inputRows.add(ImmutablePair.of(2, Arrays.asList("DELETE", "AmpereNonExistant", "A", "Current",
+                "Electric current")));
+        final DataLoaderResult dataLoaderResult = unitsDataLoader.loadDataToDatabase(inputRows, null);
         assertEquals(ErrorMessage.ENTITY_NOT_FOUND, dataLoaderResult.getMessages().get(0).getMessage());
     }
 
     @Test
     public void renameMisformatTest() {
-        inputRows.add(ImmutableList.of("1", "HEADER", "NAME", "SYMBOL", "QUANTITY", "DESCRIPTION"));
-        inputRows.add(ImmutableList.of("1", "RENAME", "Ampere", "A", "Current", "Electric current"));
-        final DataLoaderResult dataLoaderResult = unitsDataLoader.loadDataToDatabase(inputRows);
+        inputRows.add(ImmutablePair.of(1, Arrays.asList( "HEADER", "NAME", "SYMBOL", "QUANTITY", "DESCRIPTION")));
+        inputRows.add(ImmutablePair.of(3, Arrays.asList("RENAME", "Ampere", "A", "Current", "Electric current")));
+        final DataLoaderResult dataLoaderResult = unitsDataLoader.loadDataToDatabase(inputRows, null);
         assertEquals(ErrorMessage.RENAME_MISFORMAT, dataLoaderResult.getMessages().get(0).getMessage());
     }
 
@@ -93,16 +95,16 @@ public class UnitsDataLoaderIT {
      */
     @Test
     public void headerMissingFieldsTest() {
-        inputRows.add(ImmutableList.of("1", "HEADER"));
+        inputRows.add(ImmutablePair.of(1, Arrays.asList("HEADER")));
 
-        DataLoaderResult dataLoaderResult = unitsDataLoader.loadDataToDatabase(inputRows);
+        DataLoaderResult dataLoaderResult = unitsDataLoader.loadDataToDatabase(inputRows, null);
         assertEquals(ErrorMessage.HEADER_FIELD_MISSING, dataLoaderResult.getMessages().get(0).getMessage());
         assertEquals("1", dataLoaderResult.getMessages().get(0).getRow());
 
         inputRows.clear();
 
-        inputRows.add(ImmutableList.of("1", "HEADER", "NAME", "SYMBOL", "QUANTITIES", "DESCRIPTION"));
-        dataLoaderResult = unitsDataLoader.loadDataToDatabase(inputRows);
+        inputRows.add(ImmutablePair.of(1, Arrays.asList("HEADER", "NAME", "SYMBOL", "QUANTITIES", "DESCRIPTION")));
+        dataLoaderResult = unitsDataLoader.loadDataToDatabase(inputRows, null);
         assertEquals(ErrorMessage.HEADER_FIELD_MISSING, dataLoaderResult.getMessages().get(0).getMessage());
         assertEquals("1", dataLoaderResult.getMessages().get(0).getRow());
     }

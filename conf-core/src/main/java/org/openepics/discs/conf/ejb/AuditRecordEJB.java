@@ -35,11 +35,6 @@ import org.openepics.discs.conf.ent.EntityType;
  */
 @Stateless
 public class AuditRecordEJB extends ReadOnlyDAO<AuditRecord> {
-    @Override
-    protected void defineEntity() {
-        defineEntityClass(AuditRecord.class);
-    }
-
     /**
      * Queries for list of {@link AuditRecord}s by Entity Id and Entity Type
      *
@@ -59,5 +54,10 @@ public class AuditRecordEJB extends ReadOnlyDAO<AuditRecord> {
     @Override
     public AuditRecord findByName(String name) {
         throw new UnsupportedOperationException("findByName method not aplicable to AuditRecord class");
+    }
+
+    @Override
+    protected Class<AuditRecord> getEntityClass() {
+        return AuditRecord.class;
     }
 }

@@ -26,14 +26,11 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.EJBContext;
 import javax.ejb.Stateless;
-import javax.inject.Inject;
 
-import org.openepics.discs.conf.dl.SlotsAndSlotPairsDataLoader;
+import org.apache.commons.lang3.tuple.Pair;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
-import org.openepics.discs.conf.dl.common.ErrorMessage;
 import org.openepics.discs.conf.dl.common.ExcelImportFileReader;
-import org.openepics.discs.conf.dl.common.ValidationMessage;
 
 /**
  * Common data loader handler for loading of all data.
@@ -45,7 +42,7 @@ import org.openepics.discs.conf.dl.common.ValidationMessage;
 public class DataLoaderHandler {
 
     @Resource private EJBContext context;
-    @Inject SlotsAndSlotPairsDataLoader slotLoader;
+    //@Inject SlotsAndSlotPairsDataLoader slotLoader;
     private DataLoaderResult loaderResult;
 
     /**
@@ -66,16 +63,13 @@ public class DataLoaderHandler {
      * @return a {@link DataLoaderResult} containing information about the operation completion status
      */
     public DataLoaderResult loadData(InputStream inputStream, DataLoader dataLoader) {
-        final List<List<String>> inputRows = ExcelImportFileReader.importExcelFile(inputStream);
+        final List<Pair<Integer, List<String>>> inputRows = ExcelImportFileReader.importExcelFile(inputStream);
 
-        if (inputRows != null && !inputRows.isEmpty()) {
-            loaderResult = dataLoader.loadDataToDatabase(inputRows);
+        if (inputRows != null && inputRows.size() > 0) {
+            loaderResult = dataLoader.loadDataToDatabase(inputRows, null);
             if (loaderResult.isError()) {
                 context.setRollbackOnly();
             }
-        } else {
-            loaderResult = new DataLoaderResult();
-            loaderResult.addMessage(new ValidationMessage(ErrorMessage.HEADER_ROW_MISSING));
         }
         return loaderResult;
     }
@@ -92,9 +86,10 @@ public class DataLoaderHandler {
      * @param secondFileName the name of the Slot relationship Excel worksheet file
      * @return a {@link DataLoaderResult} containing information about the operation completion status
      */
-    public DataLoaderResult loadDataFromTwoFiles(InputStream firstInputStream, InputStream secondInputStream, String firstFileName, String secondFileName) {
-        final List<List<String>> firstFileInputRows;
-        final List<List<String>> secondFileInputRows;
+    // ToDo: Move this inside SlotManager
+    /*public DataLoaderResult loadDataFromTwoFiles(InputStream firstInputStream, InputStream secondInputStream, String firstFileName, String secondFileName) {
+        List<Pair<Integer, List<String>>> firstFileInputRows = null;
+        List<Pair<Integer, List<String>>> secondFileInputRows = null;
 
         if (firstInputStream != null) {
             firstFileInputRows = ExcelImportFileReader.importExcelFile(firstInputStream);
@@ -115,7 +110,7 @@ public class DataLoaderHandler {
             }
         }
         return loaderResult;
-    }
+    }*/
 
 
 }

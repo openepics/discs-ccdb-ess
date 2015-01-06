@@ -30,7 +30,6 @@ import org.openepics.discs.conf.auditlog.Audit;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
-import org.openepics.discs.conf.ent.InstallationArtifact;
 import org.openepics.discs.conf.ent.InstallationRecord;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.security.Authorized;
@@ -46,24 +45,6 @@ import com.google.common.base.Preconditions;
 @Stateless
 public class InstallationEJB extends DAO<InstallationRecord> {
     private static final Logger LOGGER = Logger.getLogger(InstallationEJB.class.getCanonicalName());
-
-    @Override
-    protected void defineEntity() {
-        defineEntityClass(InstallationRecord.class);
-
-        defineParentChildInterface(InstallationArtifact.class,
-                new ParentChildInterface<InstallationRecord, InstallationArtifact>() {
-            @Override
-            public List<InstallationArtifact> getChildCollection(InstallationRecord iRecord) {
-                return iRecord.getInstallationArtifactList();
-            }
-
-            @Override
-            public InstallationRecord getParentFromChild(InstallationArtifact child) {
-                return child.getInstallationRecord();
-            }
-        });
-    }
 
     /**
      * @param slot the installation slot to find active installation record for.
@@ -177,5 +158,10 @@ public class InstallationEJB extends DAO<InstallationRecord> {
         super.save(record);
         getLastInstallationRecordForDevice(record.getDevice()).setUninstallDate(record.getUninstallDate());
         getLastInstallationRecordForSlot(record.getSlot()).setUninstallDate(record.getUninstallDate());
+    }
+
+    @Override
+    protected Class<InstallationRecord> getEntityClass() {
+        return InstallationRecord.class;
     }
 }

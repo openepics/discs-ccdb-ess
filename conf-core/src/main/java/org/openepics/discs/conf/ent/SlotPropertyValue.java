@@ -27,6 +27,8 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.openepics.discs.conf.ejb.EntityWithProperties;
+
 /**
  *
  * @author vuppala
@@ -66,6 +68,16 @@ public class SlotPropertyValue extends PropertyValue {
     }
     public void setSlot(Slot slot) {
         this.slot = slot;
+    }
+
+    @Override
+    public void setPropertiesParent(EntityWithProperties owner) {
+        setSlot((Slot) owner);
+    }
+
+    @Override
+    public EntityWithProperties getPropertiesParent() {
+        return getSlot();
     }
 
     @Override

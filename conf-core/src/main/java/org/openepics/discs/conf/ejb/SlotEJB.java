@@ -32,7 +32,6 @@ import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.InstallationRecord;
 import org.openepics.discs.conf.ent.Slot;
-import org.openepics.discs.conf.ent.SlotArtifact;
 import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.ent.SlotRelationName;
@@ -61,47 +60,6 @@ public class SlotEJB extends DAO<Slot> {
     @Inject private SlotPairEJB slotPairEJB;
     @Inject private SlotRelationEJB slotRelationEJB;
     @Inject private ComptypeEJB comptypeEJB;
-
-    @Override
-    protected void defineEntity() {
-        defineEntityClass(Slot.class);
-
-        defineParentChildInterface(SlotPropertyValue.class, new ParentChildInterface<Slot, SlotPropertyValue>() {
-            @Override
-            public List<SlotPropertyValue> getChildCollection(Slot slot) {
-                return slot.getSlotPropertyList();
-            }
-
-            @Override
-            public Slot getParentFromChild(SlotPropertyValue child) {
-                return child.getSlot();
-            }
-        });
-
-        defineParentChildInterface(SlotArtifact.class, new ParentChildInterface<Slot, SlotArtifact>() {
-            @Override
-            public List<SlotArtifact> getChildCollection(Slot slot) {
-                return slot.getSlotArtifactList();
-            }
-
-            @Override
-            public Slot getParentFromChild(SlotArtifact child) {
-                return child.getSlot();
-            }
-        });
-
-        defineParentChildInterface(InstallationRecord.class, new ParentChildInterface<Slot, InstallationRecord>() {
-            @Override
-            public List<InstallationRecord> getChildCollection(Slot slot) {
-                return slot.getInstallationRecordList();
-            }
-
-            @Override
-            public Slot getParentFromChild(InstallationRecord child) {
-                return child.getSlot();
-            }
-        });
-    }
 
     /**
      * Queries database for slots by partial name
@@ -199,5 +157,10 @@ public class SlotEJB extends DAO<Slot> {
      */
     public boolean isInstallationSlotNameUnique(String newSlotName) {
         return em.createNamedQuery("Slot.findByNameAndHosting", Slot.class).setParameter("name", newSlotName).setParameter("isHostingSlot", true).getResultList().isEmpty();
+    }
+
+    @Override
+    protected Class<Slot> getEntityClass() {
+        return Slot.class;
     }
 }

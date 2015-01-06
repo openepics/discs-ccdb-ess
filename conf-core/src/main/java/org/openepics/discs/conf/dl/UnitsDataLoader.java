@@ -19,214 +19,150 @@
  */
 package org.openepics.discs.conf.dl;
 
-import java.util.Date;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
+import java.util.Set;
 
-import javax.annotation.Nullable;
-import javax.ejb.EJBTransactionRolledbackException;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
 import org.openepics.discs.conf.dl.common.AbstractDataLoader;
 import org.openepics.discs.conf.dl.common.DataLoader;
-import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.dl.common.ErrorMessage;
-import org.openepics.discs.conf.dl.common.ValidationMessage;
 import org.openepics.discs.conf.ejb.UnitEJB;
 import org.openepics.discs.conf.ent.Unit;
-
-import com.google.common.base.Preconditions;
 
 /**
  * Implementation of loader for units.
  *
  * @author Andraz Pozar <andraz.pozar@cosylab.com>
+ * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
  *
  */
 @Stateless
 @UnitsLoaderQualifier
 public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
-    private static final Logger LOGGER = Logger.getLogger(UnitsDataLoader.class.getCanonicalName());
+    // Header column name constants
+    private static final String HDR_NAME = "NAME";
+    private static final String HDR_QUANTITY = "QUANTITY";
+    private static final String HDR_SYMBOL = "SYMBOL";
+    private static final String HDR_DESC = "DESCRIPTION";
+
+    private static final List<String> KNOWN_COLUMNS = Arrays.asList(HDR_NAME, HDR_QUANTITY, HDR_SYMBOL, HDR_DESC);
+    private static final Set<String> REQUIRED_COLUMNS = new HashSet<>(Arrays.asList(HDR_QUANTITY,
+            HDR_SYMBOL, HDR_DESC));
 
     @Inject private UnitEJB unitEJB;
 
+    /**
+     * Cache of {@link Unit}s, indexed by name
+     */
     private Map<String, Unit> unitByName;
-    private int nameIndex, quantityIndex, symbolIndex, descriptionIndex;
 
-    @Override public DataLoaderResult loadDataToDatabase(List<List<String>> inputRows) {
-        init();
+    // Row data for individual cells within a row
+    private String nameFld, quantityFld, symbolFld, descriptionFld;
 
-        /*
-         * List does not contain any rows that do not have a value (command)
-         * in the first column. There should be no commands before "HEADER".
-         */
-        List<String> headerRow = inputRows.get(0);
+    @Override
+    protected void init() {
+        super.init();
 
-        checkForDuplicateHeaderEntries(headerRow);
-        if (rowResult.isError()) {
-            loaderResult.addResult(rowResult);
-            return loaderResult;
-        }
-        setUpIndexesForFields(headerRow);
+        // Reload unit-cache
+        unitByName = new HashMap<>();
+        for (Unit unit : unitEJB.findAll())
+            unitByName.put(unit.getName(), unit);
+    }
 
-        if (!rowResult.isError()) {
-fileProcessing:
-            for (List<String> row : inputRows.subList(1, inputRows.size())) {
-                final String rowNumber = row.get(0);
-                loaderResult.addResult(rowResult);
-                rowResult = new DataLoaderResult();
-                if (row.get(commandIndex).equals(CMD_HEADER)) {
-                    headerRow = row;
-                    checkForDuplicateHeaderEntries(headerRow);
-                    if (rowResult.isError()) {
-                        loaderResult.addResult(rowResult);
-                    } else {
-                        setUpIndexesForFields(headerRow);
-                    }
-                    if (rowResult.isError()) {
-                        return loaderResult;
-                    } else {
-                        continue; // skip the rest of the processing for HEADER row
-                    }
-                } else if (row.get(1).equals(CMD_END)) {
-                    break;
-                }
+    @Override
+    protected List<String> getKnownColumnNames() { return KNOWN_COLUMNS; }
 
-                final String command = Preconditions.checkNotNull(row.get(commandIndex).toUpperCase());
-                final @Nullable String name = row.get(nameIndex);
-                final @Nullable String quantity = row.get(quantityIndex);
-                final @Nullable String symbol = row.get(symbolIndex);
-                final @Nullable String description = row.get(descriptionIndex);
+    @Override
+    protected Set<String> getRequiredColumnNames() { return REQUIRED_COLUMNS; }
 
-                final Date modifiedAt = new Date();
+    @Override
+    protected String getUniqueColumnName() { return HDR_NAME; }
 
-                if (name == null) {
-                    rowResult.addMessage(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, rowNumber, headerRow.get(nameIndex)));
-                } else if (quantity == null && !command.equals(CMD_RENAME) && !command.equals(CMD_DELETE)) {
-                    rowResult.addMessage(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, rowNumber, headerRow.get(quantityIndex)));
-                } else if (symbol == null && !command.equals(CMD_RENAME) && !command.equals(CMD_DELETE)) {
-                    rowResult.addMessage(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, rowNumber, headerRow.get(symbolIndex)));
-                } else if (description == null && !command.equals(CMD_RENAME) && !command.equals(CMD_DELETE)) {
-                    rowResult.addMessage(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, rowNumber, headerRow.get(descriptionIndex)));
-                }
+    @Override
+    protected void assignMembersForCurrentRow() {
+        nameFld = readCurrentRowCellForHeader(HDR_NAME);
+        quantityFld = readCurrentRowCellForHeader(HDR_QUANTITY);
+        symbolFld = readCurrentRowCellForHeader(HDR_SYMBOL);
+        descriptionFld = readCurrentRowCellForHeader(HDR_DESC);
+    }
 
-                if (!rowResult.isError()) {
-                    switch (command) {
-                        case CMD_UPDATE:
-                            if (unitByName.containsKey(name)) {
-                                try {
-                                    final Unit unitToUpdate = unitByName.get(name);
-                                    unitToUpdate.setDescription(description);
-                                    unitToUpdate.setQuantity(quantity);
-                                    unitToUpdate.setSymbol(symbol);
-                                    unitToUpdate.setModifiedAt(modifiedAt);
-                                    unitEJB.save(unitToUpdate);
-                                } catch (EJBTransactionRolledbackException e) {
-                                    handleLoadingError(LOGGER, e, rowNumber, headerRow);
-                                    // cannot continue when the transaction is already rolled back
-                                    break fileProcessing;
-                                }
-                            } else {
-                                try {
-                                    final Unit unitToAdd = new Unit(name, quantity, symbol, description);
-                                    unitEJB.add(unitToAdd);
-                                    unitByName.put(unitToAdd.getName(), unitToAdd);
-                                } catch (EJBTransactionRolledbackException e) {
-                                    handleLoadingError(LOGGER, e, rowNumber, headerRow);
-                                    // cannot continue when the transaction is already rolled back
-                                    break fileProcessing;
-                                }
-                            }
-                            break;
-                        case CMD_DELETE:
-                            try {
-                                final Unit unitToDelete = unitByName.get(name);
-                                if (unitToDelete == null) {
-                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
-                                    continue;
-                                } else {
-                                    unitEJB.delete(unitToDelete);
-                                    unitByName.remove(unitToDelete.getName());
-                                }
-                            } catch (EJBTransactionRolledbackException e) {
-                                handleLoadingError(LOGGER, e, rowNumber, headerRow);
-                                // cannot continue when the transaction is already rolled back
-                                break fileProcessing;
-                            }
-                            break;
-                        case CMD_RENAME:
-                            try {
-                                final int startOldNameMarkerIndex = name.indexOf("[");
-                                final int endOldNameMarkerIndex = name.indexOf("]");
-                                if (startOldNameMarkerIndex == -1 || endOldNameMarkerIndex == -1) {
-                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.RENAME_MISFORMAT, rowNumber, headerRow.get(nameIndex)));
-                                    continue;
-                                }
-
-                                final String oldName = name.substring(startOldNameMarkerIndex + 1, endOldNameMarkerIndex).trim();
-                                final String newName = name.substring(endOldNameMarkerIndex + 1).trim();
-
-                                if (unitByName.containsKey(oldName)) {
-                                    if (unitByName.containsKey(newName)) {
-                                        rowResult.addMessage(new ValidationMessage(ErrorMessage.NAME_ALREADY_EXISTS, rowNumber, headerRow.get(nameIndex)));
-                                        continue;
-                                    } else {
-                                        final Unit unitToRename = unitByName.get(oldName);
-                                        unitToRename.setName(newName);
-                                        unitEJB.save(unitToRename);
-                                        unitByName.remove(oldName);
-                                        unitByName.put(newName, unitToRename);
-                                    }
-                                } else {
-                                    rowResult.addMessage(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, rowNumber, headerRow.get(nameIndex)));
-                                    continue;
-                                }
-                            } catch (EJBTransactionRolledbackException e) {
-                                handleLoadingError(LOGGER, e, rowNumber, headerRow);
-                                // cannot continue when the transaction is already rolled back
-                                break fileProcessing;
-                            }
-                            break;
-                        default:
-                            rowResult.addMessage(new ValidationMessage(ErrorMessage.COMMAND_NOT_VALID, rowNumber, headerRow.get(commandIndex)));
-                    }
-                }
+    @Override
+    protected void handleUpdate() {
+        if (unitByName.containsKey(nameFld)) {
+            try {
+                final Unit unitToUpdate = unitByName.get(nameFld);
+                unitToUpdate.setDescription(descriptionFld);
+                unitToUpdate.setQuantity(quantityFld);
+                unitToUpdate.setSymbol(symbolFld);
+                unitEJB.save(unitToUpdate);
+            } catch (Exception e) {
+                if (e instanceof SecurityException)
+                    result.addRowMessage(ErrorMessage.NOT_AUTHORIZED, CMD_HEADER);
+            }
+        } else {
+            try {
+                final Unit unitToAdd = new Unit(nameFld, quantityFld, symbolFld, descriptionFld);
+                unitEJB.add(unitToAdd);
+                unitByName.put(unitToAdd.getName(), unitToAdd);
+            } catch (Exception e) {
+                if (e instanceof SecurityException)
+                    result.addRowMessage(ErrorMessage.NOT_AUTHORIZED, CMD_HEADER);
             }
         }
-        loaderResult.addResult(rowResult);
-        return loaderResult;
     }
 
-    /**
-     * Local cache of all units by their names to speed up operations.
-     */
-    private void init() {
-        loaderResult = new DataLoaderResult();
-        unitByName = new HashMap<>();
-        for (Unit unit : unitEJB.findAll()) {
-            unitByName.put(unit.getName(), unit);
+    @Override
+    protected void handleDelete() {
+        try {
+            final Unit unitToDelete = unitByName.get(nameFld);
+            if (unitToDelete == null) {
+                result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_NAME);
+            } else {
+                unitEJB.delete(unitToDelete);
+                unitByName.remove(unitToDelete.getName());
+            }
+        } catch (Exception e) {
+            if (e instanceof SecurityException)
+                result.addRowMessage(ErrorMessage.NOT_AUTHORIZED);
         }
     }
 
-    @Override protected void setUpIndexesForFields(List<String> header) {
-        final String rowNumber = header.get(0);
-        rowResult = new DataLoaderResult();
-        nameIndex = header.indexOf("NAME");
-        quantityIndex = header.indexOf("QUANTITY");
-        symbolIndex = header.indexOf("SYMBOL");
-        descriptionIndex = header.indexOf("DESCRIPTION");
+    @Override
+    protected void handleRename() {
+        try {
+            final int startOldNameMarkerIndex = nameFld.indexOf("[");
+            final int endOldNameMarkerIndex = nameFld.indexOf("]");
+            if (startOldNameMarkerIndex == -1 || endOldNameMarkerIndex == -1) {
+                result.addRowMessage(ErrorMessage.RENAME_MISFORMAT, HDR_NAME);
+                return;
+            }
 
-        if (nameIndex == -1) {
-            rowResult.addMessage(new ValidationMessage(ErrorMessage.HEADER_FIELD_MISSING, rowNumber, "NAME"));
-        } else if (quantityIndex == -1) {
-            rowResult.addMessage(new ValidationMessage(ErrorMessage.HEADER_FIELD_MISSING, rowNumber, "QUANTITY"));
-        } else if (symbolIndex == -1) {
-            rowResult.addMessage(new ValidationMessage(ErrorMessage.HEADER_FIELD_MISSING, rowNumber, "SYMBOL"));
-        } else if (descriptionIndex == -1) {
-            rowResult.addMessage(new ValidationMessage(ErrorMessage.HEADER_FIELD_MISSING, rowNumber, "DESCRIPTION"));
+            final String oldName = nameFld.substring(startOldNameMarkerIndex + 1, endOldNameMarkerIndex).trim();
+            final String newName = nameFld.substring(endOldNameMarkerIndex + 1).trim();
+
+            if (unitByName.containsKey(oldName)) {
+                if (unitByName.containsKey(newName)) {
+                    result.addRowMessage(ErrorMessage.NAME_ALREADY_EXISTS, HDR_NAME);
+                } else {
+                    final Unit unitToRename = unitByName.get(oldName);
+                    unitToRename.setName(newName);
+                    unitEJB.save(unitToRename);
+                    unitByName.remove(oldName);
+                    unitByName.put(newName, unitToRename);
+                }
+            } else {
+                result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_NAME);
+            }
+        } catch (Exception e) {
+            if (e instanceof SecurityException)
+                result.addRowMessage(ErrorMessage.NOT_AUTHORIZED, CMD_HEADER);
         }
     }
 }
+

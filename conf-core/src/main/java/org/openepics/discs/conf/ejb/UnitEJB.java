@@ -32,7 +32,7 @@ import org.openepics.discs.conf.ent.Unit;
 @Stateless
 public class UnitEJB extends DAO<Unit> {
     @Override
-    protected void defineEntity() {
-        defineEntityClass(Unit.class);
+    protected Class<Unit> getEntityClass() {
+        return Unit.class;
     }
 }

@@ -29,10 +29,8 @@ import org.openepics.discs.conf.auditlog.Audit;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.Device;
-import org.openepics.discs.conf.ent.DeviceArtifact;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
-import org.openepics.discs.conf.ent.InstallationRecord;
 import org.openepics.discs.conf.security.Authorized;
 import org.openepics.discs.conf.util.CRUDOperation;
 
@@ -71,48 +69,6 @@ public class DeviceEJB extends DAO<Device> {
                 .setParameter("componentType", componentType).getResultList();
     }
 
-    @Override
-    protected void defineEntity() {
-        defineEntityClass(Device.class);
-
-        defineParentChildInterface(DevicePropertyValue.class, new ParentChildInterface<Device, DevicePropertyValue>() {
-            @Override
-            public List<DevicePropertyValue> getChildCollection(Device device) {
-                return device.getDevicePropertyList();
-            }
-            @Override
-            public Device getParentFromChild(DevicePropertyValue child) {
-                return child.getDevice();
-            }
-        });
-
-        defineParentChildInterface(DeviceArtifact.class, new ParentChildInterface<Device, DeviceArtifact>() {
-            @Override
-            public List<DeviceArtifact> getChildCollection(Device device) {
-                return device.getDeviceArtifactList();
-
-            }
-
-            @Override
-            public Device getParentFromChild(DeviceArtifact child) {
-                return child.getDevice();
-            }
-        });
-
-        defineParentChildInterface(InstallationRecord.class, new ParentChildInterface<Device, InstallationRecord>() {
-            @Override
-            public List<InstallationRecord> getChildCollection(Device device) {
-                return device.getInstallationRecordList();
-
-            }
-
-            @Override
-            public Device getParentFromChild(InstallationRecord child) {
-                return child.getDevice();
-            }
-        });
-    }
-
     /**
      * Adds a new device and creates all its defined property values in a single transaction
      * @param device the {@link Device} the add
@@ -131,5 +87,10 @@ public class DeviceEJB extends DAO<Device> {
                 addChild(devicePropertyValue);
             }
         }
+    }
+
+    @Override
+    protected Class<Device> getEntityClass() {
+        return Device.class;
     }
 }

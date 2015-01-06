@@ -27,9 +27,11 @@ package org.openepics.discs.conf.dl.common;
 public enum ErrorMessage {
     NAME_ALREADY_EXISTS("Entity with this name already exists"),
     NOT_AUTHORIZED("You are not authorized to perform this action"),
+    COMMAND_IS_MISSING("Command is missing"),
     COMMAND_NOT_VALID("Command is not valid"),
     RENAME_MISFORMAT("Rename syntax is not correct"),
     ENTITY_NOT_FOUND("Entity to be affected was not found"),
+    UNKNOWN_SLOT_RELATION_TYPE("Slot Relation specified is of unknown type"),
     REQUIRED_FIELD_MISSING("Required field is missing"),
     HEADER_FIELD_MISSING("Header field is missing"),
     PROPERTY_ASSOCIATION_FAILURE("This entity can not be associated with this property"),
@@ -45,8 +47,8 @@ public enum ErrorMessage {
     DUPLICATES_IN_HEADER("Duplicate filed or property definition has been found in header"),
     PROPERTY_NOT_FOUND("Property with this name was not found"),
     DEVICE_STATUS_NOT_FOUND("This value of device status does not exist"),
-    HEADER_ROW_MISSING("The file does not contain a HEADER row."),
-    UNKNOWN("Unexpected error.");
+    HEADER_ROW_EXPECTED("Expected a header row. Please note that the first row must always be a header row."),
+    SYSTEM_EXCEPTION("Internal error occured");
 
     private final String text;
 

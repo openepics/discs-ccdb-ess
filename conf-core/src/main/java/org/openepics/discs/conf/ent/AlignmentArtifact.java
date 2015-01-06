@@ -72,6 +72,16 @@ public class AlignmentArtifact extends Artifact {
     public void setAlignmentRecord(AlignmentRecord alignmentRecord) {
         this.alignmentRecord = alignmentRecord;
     }
+    
+    @Override
+    public EntityWithArtifacts getArtifactsParent() {        
+        return getAlignmentRecord();
+    }
+
+    @Override
+    public void setArtifactsParent(EntityWithArtifacts parent) {
+        setAlignmentRecord((AlignmentRecord) parent);
+    }
 
     @Override
     public String toString() {

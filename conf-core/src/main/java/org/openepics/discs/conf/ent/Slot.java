@@ -43,6 +43,8 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.openepics.discs.conf.ejb.EntityWithProperties;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
@@ -68,9 +70,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
     @NamedQuery(name = "Slot.findByComponentType", query = "SELECT s FROM Slot s "
             + "WHERE s.componentType = :componentType")
 })
-public class Slot extends ConfigurationEntity {
+public class Slot extends ConfigurationEntity implements EntityWithProperties, EntityWithArtifacts {
     private static final long serialVersionUID = -1267956206090538337L;
-
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 128)
@@ -267,6 +268,22 @@ public class Slot extends ConfigurationEntity {
     }
     public void setTags(Set<Tag> tags) {
         this.tags = tags;
+    }
+
+    @XmlTransient
+    @JsonIgnore
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T extends PropertyValue> List<T> getEntityPropertyList() {
+        return (List<T>) getSlotPropertyList();
+    }
+
+    @XmlTransient
+    @JsonIgnore
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T extends Artifact> List<T> getEntityArtifactList() {
+        return (List<T>) getSlotArtifactList();
     }
 
     @Override

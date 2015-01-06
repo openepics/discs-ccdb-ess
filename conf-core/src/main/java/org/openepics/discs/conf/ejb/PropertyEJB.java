@@ -38,14 +38,6 @@ import org.openepics.discs.conf.ent.SlotPropertyValue;
  */
 @Stateless
 public class PropertyEJB extends DAO<Property> {
-    @Override
-    protected void defineEntity() {
-        defineEntityClass(Property.class);
-    }
-
-    /**
-     * @return a list of all properties in the database ordered by name in ascending order
-     */
     public List<Property> findAllOrderedByName() {
         return em.createNamedQuery("Property.findAllOrderedByName", Property.class).getResultList();
     }
@@ -75,5 +67,10 @@ public class PropertyEJB extends DAO<Property> {
                 .setMaxResults(1).getResultList();
 
         return !typePropertyValues.isEmpty();
+    }
+    
+    @Override
+    protected Class<Property> getEntityClass() {
+        return Property.class;
     }
 }

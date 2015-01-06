@@ -71,6 +71,16 @@ public class DeviceArtifact extends Artifact {
     }
 
     @Override
+    public EntityWithArtifacts getArtifactsParent() {
+        return getDevice();
+    }
+
+    @Override
+    public void setArtifactsParent(EntityWithArtifacts parent) {
+        setDevice((Device) parent);   
+    }
+
+    @Override
     public String toString() {
         return "DeviceArtifact[ artifactId=" + id + " ]";
     }

@@ -72,6 +72,16 @@ public class ComptypeArtifact extends Artifact {
     }
 
     @Override
+    public EntityWithArtifacts getArtifactsParent() {
+        return getComponentType();
+    }
+
+    @Override
+    public void setArtifactsParent(EntityWithArtifacts parent) {
+        setComponentType((ComponentType) parent);
+    }
+
+    @Override
     public String toString() {
         return "ComptypeArtifact[ artifactId=" + id + " ]";
     }
