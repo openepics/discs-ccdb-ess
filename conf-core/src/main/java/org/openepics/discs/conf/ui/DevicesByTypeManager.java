@@ -46,10 +46,6 @@ import com.google.common.base.Preconditions;
  * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  *
  */
-/**
- * @author ess-dev
- *
- */
 @Named
 @ViewScoped
 public class DevicesByTypeManager implements Serializable {
@@ -206,7 +202,7 @@ public class DevicesByTypeManager implements Serializable {
      * hand side table listing all available device type.
      */
     public void prepareDevicesForDisplay() {
-        this.devices = deviceEJB.findDevicesByComponentType(selectedComponentType);
+        devices = deviceEJB.findDevicesByComponentType(selectedComponentType);
     }
 
     /**
@@ -280,7 +276,7 @@ public class DevicesByTypeManager implements Serializable {
      * @param value The value
      * @throws ValidatorException {@link javax.faces.validator.ValidatorException}
      */
-    public void serialNoValidator(FacesContext ctx, UIComponent component, Object value) throws ValidatorException {
+    public void newDeviceSerialNoValidator(FacesContext ctx, UIComponent component, Object value) throws ValidatorException {
         if (value == null) {
             throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_FATAL, "Error", "No value to parse."));
         }

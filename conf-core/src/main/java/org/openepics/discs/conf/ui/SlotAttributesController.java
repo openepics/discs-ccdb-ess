@@ -59,6 +59,7 @@ import org.openepics.discs.conf.views.EntityAttributeViewKind;
 import org.openepics.discs.conf.views.SlotBuiltInPropertyName;
 import org.primefaces.context.RequestContext;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableList;
@@ -91,9 +92,9 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
             final Long id = Long.parseLong(((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext()
                     .getRequest()).getParameter("id"));
             slot = slotEJB.findById(id);
-            super.setArtifactClass(SlotArtifact.class);
-            super.setPropertyValueClass(SlotPropertyValue.class);
-            super.setDao(slotEJB);
+            setArtifactClass(SlotArtifact.class);
+            setPropertyValueClass(SlotPropertyValue.class);
+            setDao(slotEJB);
 
             parentProperties = slot.getComponentType().getComptypePropertyList();
             parentArtifacts = slot.getComponentType().getComptypeArtifactList();
@@ -154,13 +155,14 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
             attributes.add(new EntityAttributeView(art, EntityAttributeViewKind.INSTALL_SLOT_ARTIFACT));
         }
 
-        for (Tag tag : slot.getTags()) {
-            attributes.add(new EntityAttributeView(tag, EntityAttributeViewKind.INSTALL_SLOT_TAG));
+        for (Tag tagAttr : slot.getTags()) {
+            attributes.add(new EntityAttributeView(tagAttr, EntityAttributeViewKind.INSTALL_SLOT_TAG));
         }
     }
 
     @Override
     protected void filterProperties() {
+        Preconditions.checkState(slot != null);
         List<Property> propertyCandidates = propertyEJB.findAllOrderedByName();
 
         // remove all properties that are already defined in device type either as value or as property.
@@ -226,6 +228,7 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
 
     @Override
     protected void populateParentTags() {
+        Preconditions.checkState(slot != null);
         parentTags = new HashSet<Tag>();
         for (Tag parentTag : slot.getComponentType().getTags()) {
             parentTags.add(parentTag);
@@ -234,6 +237,8 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
 
     @Override
     public void modifyBuiltInProperty() {
+        Preconditions.checkState(selectedAttribute != null);
+
         final BuiltInProperty builtInProperty = (BuiltInProperty) selectedAttribute.getEntity();
         final SlotBuiltInPropertyName builtInPropertyName = (SlotBuiltInPropertyName)builtInProperty.getName();
 

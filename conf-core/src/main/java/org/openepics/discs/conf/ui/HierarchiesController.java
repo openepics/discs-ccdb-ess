@@ -151,7 +151,7 @@ public class HierarchiesController implements Serializable {
     }
 
     /**
-     * Clears the attribute list for display when user unselects the slot in the hierarchy.
+     * Clears the attribute list for display when user deselects the slot in the hierarchy.
      */
     public void clearAttributeList() {
         this.attributes = null;
@@ -185,8 +185,8 @@ public class HierarchiesController implements Serializable {
     public List<SlotRelationshipView> getRelationships() {
         final List<SlotRelationshipView> relationships = new ArrayList<>();
 
-        final Slot rootSlot = slotEJB.getRootNode();
         if (selectedNode != null) {
+            final Slot rootSlot = slotEJB.getRootNode();
             final List<SlotPair> slotPairs = slotPairEJB.getSlotRleations(selectedSlot);
 
             for (SlotPair slotPair : slotPairs) {
@@ -301,7 +301,7 @@ public class HierarchiesController implements Serializable {
             LOGGER.log(Level.WARNING, "The device appears installed, but no active installation record for "
                     + "it could be retrieved. Device db ID: " + device.getId()
                     + ", serial number: " + device.getSerialNumber());
-            throw new RuntimeException("No installation record for the device exists.");
+            throw new RuntimeException("No active installation record for the device exists.");
         }
         deviceInstallationRecord.setUninstallDate(new Date());
         installationEJB.save(deviceInstallationRecord);

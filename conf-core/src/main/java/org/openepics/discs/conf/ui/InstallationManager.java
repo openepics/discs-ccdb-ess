@@ -193,7 +193,7 @@ public class InstallationManager implements Serializable {
         deviceInstallationRecord.setUninstallDate(new Date());
         installationEJB.save(deviceInstallationRecord);
         // the device is not installed any more. Clear the installation state information.
-        this.installedDevice = null;
+        installedDevice = null;
         installableSlots =  null;
     }
 }

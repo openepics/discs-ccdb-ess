@@ -319,12 +319,12 @@ public class PropertyManager implements Serializable, ExcelSingleFileImportUIHan
     }
 
     private void setAssociationOnProperty(Property property) {
-        // reset all data
-        property.setNoneAssociation();
-
         if (association == null || association.length == 0) {
             throw new RuntimeException("Property association target not selected.");
         }
+
+        // reset all data
+        property.setNoneAssociation();
 
         for (String assoc : association) {
             switch (assoc) {

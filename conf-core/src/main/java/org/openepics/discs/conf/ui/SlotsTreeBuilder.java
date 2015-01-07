@@ -108,6 +108,9 @@ public class SlotsTreeBuilder implements Serializable {
 
         final String requestedComponentTypeName = installationSlotType == null ? "" : installationSlotType.getName();
 
+        // the filteredList can only contain the slots that _MUST_ be in the final tree. The 'addSlotNode' method
+        // will add the parents directly from the database, which means that the final tree will also contain all
+        // the required slots, even if they are not part of the original filteredList
         final List<Slot> filteredList = filterSlots(slots, requestedComponentTypeName, withInstallationSlots);
 
         final SlotTree slotsTree = new SlotTree(getRootNode(filteredList), selected, collapsedNodes);
@@ -289,6 +292,7 @@ public class SlotsTreeBuilder implements Serializable {
      */
     protected List<Slot> filterSlots(final List<Slot> allSlotList, final String requestedComponentTypeName,
             boolean withInstallationSlots) {
+        // this is the default implementation for containers only. The 'requestedComponentTypeName' is not needed.
         Builder<Slot> listBuilder = ImmutableList.builder();
 
         for (Slot slot : allSlotList) {

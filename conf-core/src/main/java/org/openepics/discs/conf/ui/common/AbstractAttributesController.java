@@ -80,6 +80,7 @@ import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 
 import com.google.common.base.Function;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.io.ByteStreams;
@@ -265,15 +266,19 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
      */
 
     public void deleteAttribute() throws IOException {
+        Preconditions.checkState(selectedAttribute != null);
+        Preconditions.checkState(propertyValueClass != null);
+        Preconditions.checkState(artifactClass != null);
+        Preconditions.checkState(dao != null);
         try {
             if (selectedAttribute.getEntity().getClass().equals(propertyValueClass)) {
                 deletePropertyValue();
             } else if (selectedAttribute.getEntity().getClass().equals(artifactClass)) {
                 deleteArtifact();
             } else if (selectedAttribute.getEntity().getClass().equals(Tag.class)) {
-                final Tag tag = (Tag) selectedAttribute.getEntity();
-                deleteTagFromParent(tag);
-                Utility.showMessage(FacesMessage.SEVERITY_INFO, "Tag removed", tag.getName());
+                final Tag tagAttr = (Tag) selectedAttribute.getEntity();
+                deleteTagFromParent(tagAttr);
+                Utility.showMessage(FacesMessage.SEVERITY_INFO, "Tag removed", tagAttr.getName());
             } else {
                 throw new UnhandledCaseException();
             }
@@ -300,74 +305,90 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Device type artifact has been deleted");
     }
 
-    @SuppressWarnings("unchecked")
     protected void prepareModifyPropertyPopUp() {
+        Preconditions.checkState(selectedAttribute != null);
+        Preconditions.checkState(propertyValueClass != null);
+        Preconditions.checkState(artifactClass != null);
         if (selectedAttribute.getEntity().getClass().equals(propertyValueClass)) {
-            builtInProperteryName = null;
-            final T selectedPropertyValue = (T) selectedAttribute.getEntity();
-            property = selectedPropertyValue.getProperty();
-            propertyValue = selectedPropertyValue.getPropValue();
-
-            if (selectedAttribute.getEntity() instanceof PropertyValue) {
-                propertyNameChangeDisabled = selectedAttribute.getEntity() instanceof DevicePropertyValue
-                        || selectedAttribute.getEntity() instanceof SlotPropertyValue
-                        || isPropertyValueInherited((PropertyValue)selectedAttribute.getEntity()) ;
-            }
-
-            propertyValueUIElement = Conversion.getUIElementFromProperty(property);
-            if (Conversion.getBuiltInDataType(property.getDataType()) == BuiltInDataType.USER_DEFINED_ENUM) {
-                // if it is an enumeration, get the list of its options from the data type definition field
-                enumSelections = prepareEnumSelections(property.getDataType());
-            } else {
-                enumSelections = null;
-            }
-
-            // prepare the property selection list
-            filterProperties();
-
-            RequestContext.getCurrentInstance().update("modifyPropertyValueForm:modifyPropertyValue");
-            RequestContext.getCurrentInstance().execute("PF('modifyPropertyValue').show()");
+            prepareModifyPropertyValuePopUp();
         } else if (selectedAttribute.getEntity().getClass().equals(artifactClass)) {
-            builtInProperteryName = null;
-            final S selectedArtifact = (S) selectedAttribute.getEntity();
-            if (selectedArtifact.isInternal()) {
-                importFileName = selectedArtifact.getName();
-                artifactName = null;
-            } else {
-                artifactName = selectedArtifact.getName();
-                importFileName = null;
-            }
-            importData = null;
-            artifactDescription = selectedArtifact.getDescription();
-            isArtifactInternal = selectedArtifact.isInternal();
-            artifactURI = selectedArtifact.getUri();
-            isArtifactBeingModified = true;
-
-            RequestContext.getCurrentInstance().update("modifyArtifactForm:modifyArtifact");
-            RequestContext.getCurrentInstance().execute("PF('modifyArtifact').show()");
+            prepareModifyArtifactPopUp();
         } else if (selectedAttribute.getEntity().getClass().equals(BuiltInProperty.class)) {
-            property = null;
-            final BuiltInProperty builtInProperty = (BuiltInProperty) selectedAttribute.getEntity();
-            builtInProperteryName = builtInProperty.getName();
-            builtInPropertyDataType = builtInProperty.getDataType().getName();
-
-            final BuiltInDataType propertyDataType = Conversion.getBuiltInDataType(builtInProperty.getDataType());
-            propertyValueUIElement = Conversion.getUIElementFromBuiltInDataType(propertyDataType);
-
-            propertyValue = builtInProperty.getValue();
-            propertyNameChangeDisabled = true;
-
-            if ((enumDataType != null) && (propertyDataType == BuiltInDataType.USER_DEFINED_ENUM)) {
-                enumSelections = prepareEnumSelections(enumDataType);
-            } else {
-                enumSelections = null;
-            }
-
-            RequestContext.getCurrentInstance().update("modifyBuiltInPropertyForm:modifyBuiltInProperty");
-            RequestContext.getCurrentInstance().execute("PF('modifyBuiltInProperty').show()");
+            prepareModifyBuiltInPropertyPopUp();
         } else {
             throw new UnhandledCaseException();
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void prepareModifyPropertyValuePopUp() {
+        builtInProperteryName = null;
+        final T selectedPropertyValue = (T) selectedAttribute.getEntity();
+        property = selectedPropertyValue.getProperty();
+        propertyValue = selectedPropertyValue.getPropValue();
+
+        if (selectedAttribute.getEntity() instanceof PropertyValue) {
+            propertyNameChangeDisabled = selectedAttribute.getEntity() instanceof DevicePropertyValue
+                    || selectedAttribute.getEntity() instanceof SlotPropertyValue
+                    || isPropertyValueInherited((PropertyValue)selectedAttribute.getEntity()) ;
+        }
+
+        propertyValueUIElement = Conversion.getUIElementFromProperty(property);
+        if (Conversion.getBuiltInDataType(property.getDataType()) == BuiltInDataType.USER_DEFINED_ENUM) {
+            // if it is an enumeration, get the list of its options from the data type definition field
+            enumSelections = prepareEnumSelections(property.getDataType());
+        } else {
+            enumSelections = null;
+        }
+
+        // prepare the property selection list
+        filterProperties();
+
+        RequestContext.getCurrentInstance().update("modifyPropertyValueForm:modifyPropertyValue");
+        RequestContext.getCurrentInstance().execute("PF('modifyPropertyValue').show()");
+    }
+
+    @SuppressWarnings("unchecked")
+    private void prepareModifyArtifactPopUp() {
+        builtInProperteryName = null;
+        final S selectedArtifact = (S) selectedAttribute.getEntity();
+        if (selectedArtifact.isInternal()) {
+            importFileName = selectedArtifact.getName();
+            artifactName = null;
+        } else {
+            artifactName = selectedArtifact.getName();
+            importFileName = null;
+        }
+        importData = null;
+        artifactDescription = selectedArtifact.getDescription();
+        isArtifactInternal = selectedArtifact.isInternal();
+        artifactURI = selectedArtifact.getUri();
+        isArtifactBeingModified = true;
+
+        RequestContext.getCurrentInstance().update("modifyArtifactForm:modifyArtifact");
+        RequestContext.getCurrentInstance().execute("PF('modifyArtifact').show()");
+    }
+
+    private void prepareModifyBuiltInPropertyPopUp() {
+        property = null;
+        final BuiltInProperty builtInProperty = (BuiltInProperty) selectedAttribute.getEntity();
+        builtInProperteryName = builtInProperty.getName();
+        builtInPropertyDataType = builtInProperty.getDataType().getName();
+
+        final BuiltInDataType propertyDataType = Conversion.getBuiltInDataType(builtInProperty.getDataType());
+        propertyValueUIElement = Conversion.getUIElementFromBuiltInDataType(propertyDataType);
+
+        propertyValue = builtInProperty.getValue();
+        propertyNameChangeDisabled = true;
+
+        if ((enumDataType != null) && (propertyDataType == BuiltInDataType.USER_DEFINED_ENUM)) {
+            enumSelections = prepareEnumSelections(enumDataType);
+        } else {
+            enumSelections = null;
+        }
+
+        RequestContext.getCurrentInstance().update("modifyBuiltInPropertyForm:modifyBuiltInProperty");
+        RequestContext.getCurrentInstance().execute("PF('modifyBuiltInProperty').show()");
     }
 
     /**
@@ -758,7 +779,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
         return Arrays.asList(sedsEnum.getElements());
     }
 
-    /** Called when the user selects a new {@link Property} in the dialog drop-dpwn control.
+    /** Called when the user selects a new {@link Property} in the dialog drop-down control.
      * @param event {@link javax.faces.event.ValueChangeEvent}
      */
     public void propertyChangeListener(ValueChangeEvent event) {
@@ -846,6 +867,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
 
             int lineLength = -1;
             while (lineScanner.hasNext()) {
+                // replace unicode no-break spaces with normal ones
                 final String line = lineScanner.next().replaceAll("\u00A0", " ");
 
                 try (Scanner valueScanner = new Scanner(line)) {
@@ -876,10 +898,10 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
         try (Scanner scanner = new Scanner(value)) {
             scanner.useDelimiter(Pattern.compile("(\\r\\n)|\\r|\\n"));
 
-            // replace unicode no-break spaces with normal ones
             while (scanner.hasNext()) {
                 String intValue = "<error>";
                 try {
+                    // replace unicode no-break spaces with normal ones
                     intValue = scanner.next().replaceAll("\\u00A0", " ").trim();
                     Integer.parseInt(intValue);
                 } catch (NumberFormatException e) {
@@ -894,10 +916,10 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
         try (Scanner scanner = new Scanner(value)) {
             scanner.useDelimiter(Pattern.compile("(\\r\\n)|\\r|\\n"));
 
-            // replace unicode no-break spaces with normal ones
             while (scanner.hasNext()) {
                 String dblValue = "<error>";
                 try {
+                    // replace unicode no-break spaces with normal ones
                     dblValue = scanner.next().replaceAll("\\u00A0", " ").trim();
                     Double.parseDouble(dblValue);
                 } catch (NumberFormatException e) {

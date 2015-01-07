@@ -76,11 +76,12 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
     public void init() {
         try {
             super.init();
-            final Long id = Long.parseLong(((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest()).getParameter("id"));
+            final Long id = Long.parseLong(((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext()
+                    .getRequest()).getParameter("id"));
             device = deviceEJB.findById(id);
-            super.setArtifactClass(DeviceArtifact.class);
-            super.setPropertyValueClass(DevicePropertyValue.class);
-            super.setDao(deviceEJB);
+            setArtifactClass(DeviceArtifact.class);
+            setPropertyValueClass(DevicePropertyValue.class);
+            setDao(deviceEJB);
 
             parentProperties = device.getComponentType().getComptypePropertyList();
             parentArtifacts = device.getComponentType().getComptypeArtifactList();
@@ -162,8 +163,8 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
             attributes.add(new EntityAttributeView(artf, EntityAttributeViewKind.DEVICE_ARTIFACT));
         }
 
-        for (Tag tag : device.getTags()) {
-            attributes.add(new EntityAttributeView(tag, EntityAttributeViewKind.DEVICE_TAG));
+        for (Tag tagAttr : device.getTags()) {
+            attributes.add(new EntityAttributeView(tagAttr, EntityAttributeViewKind.DEVICE_TAG));
         }
     }
 

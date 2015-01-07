@@ -84,11 +84,13 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
     public void init() {
         try {
             super.init();
-            final Long id = Long.parseLong(((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest()).getParameter("id"));
+            final Long id = Long.parseLong(((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext()
+                    .getRequest()).getParameter("id"));
             compType = comptypeEJB.findById(id);
-            super.setArtifactClass(ComptypeArtifact.class);
-            super.setPropertyValueClass(ComptypePropertyValue.class);
-            super.setDao(comptypeEJB);
+            setArtifactClass(ComptypeArtifact.class);
+            setPropertyValueClass(ComptypePropertyValue.class);
+            setDao(comptypeEJB);
+
             entityName = compType.getName();
             populateAttributesList();
             filterProperties();
@@ -194,8 +196,8 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
             attributes.add(new EntityAttributeView(art));
         }
 
-        for (Tag tag : compType.getTags()) {
-            attributes.add(new EntityAttributeView(tag));
+        for (Tag tagAttr : compType.getTags()) {
+            attributes.add(new EntityAttributeView(tagAttr));
         }
     }
 
