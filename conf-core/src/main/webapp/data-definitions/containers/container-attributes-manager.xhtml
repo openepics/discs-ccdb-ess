@@ -56,12 +56,20 @@
                             <h:outputText value="#{attribute.name}" />
                         </p:column>
 
-                        <p:column headerText="Value">
-                            <h:outputText value="#{attribute.value}" />
+                        <p:column headerText="Value" style="width: 30%;">
+                            <h:outputText value="#{!empty attribute.value ? attribute.value : '-'}" />
                         </p:column>
 
                         <p:column headerText="Unit" >
                             <h:outputText value="#{!empty attribute.unit ? attribute.unit.name : '-'}" />
+                        </p:column>
+
+                        <p:column headerText="Kind">
+                            <h:outputText value="#{attribute.kind.toString()}" />
+                        </p:column>
+
+                        <p:column headerText="Data type">
+                            <h:outputText value="#{!empty attribute.type ? attribute.type.name : '-'}" />
                         </p:column>
 
                         <p:column headerText="Actions" width="70">

@@ -42,7 +42,7 @@
                             <p:column>
                                 <p:selectOneMenu id="compTypeSelect" value="#{slotAttributesController.deviceType}" 
                                         var="dev" converter="#{componentTypeConverter}" required="true" 
-                                        requiredMessage="Please select a device type" style="vertical-align: middle; width: 8em">
+                                        requiredMessage="Please select a device type" style="vertical-align: middle; width: 8em;">
                                     <p:ajax event="change" update="saveButton"/>
                                     <f:selectItems value="#{componentTypeManager.deviceTypes}" var="deviceType" 
                                         itemLabel="#{deviceType.name}" itemValue="#{deviceType}" />
@@ -73,36 +73,41 @@
                 </h:panelGroup>
 
                 <h:panelGroup layout="block">
-                   <p:commandButton id="addButton" value="Add" type="button" icon="ui-icon-plus"/>
+                   <p:commandButton id="addButton" value="Add" type="button" icon="ui-icon-plus" />
                    <p:menu overlay="true" trigger="addButton" my="left top" at="left bottom">
                          <p:menuitem value="Tag" oncomplete="containerTag.show()" update=":containerTagForm" 
-                                 actionListener="#{slotAttributesController.prepareForTagAdd}"/>
+                                 actionListener="#{slotAttributesController.prepareForTagAdd}" />
                          <p:menuitem value="Artifact" oncomplete="addArtifact.show()" 
                                  actionListener="#{slotAttributesController.prepareForArtifactAdd}" 
-                                 update=":addArtifactForm:addArtifact"/>
+                                 update=":addArtifactForm:addArtifact" />
                     </p:menu>
                     <p:commandButton value="History" icon="ui-icon-clock" style="margin-left: 1ex;">
-                       <p:ajax event="click" listener="#{auditManager.selectEntityForLog(slotAttributesController.slot, 'SLOT')}" update=":installSlotLogForm" oncomplete="installSlotLog.show()" />
+                        <p:ajax event="click"  update=":installSlotLogForm" oncomplete="installSlotLog.show()" 
+                                listener="#{auditManager.selectEntityForLog(slotAttributesController.slot, 'SLOT')}" />
                     </p:commandButton>
                     <p:commandButton value="Close" style="margin-left: 1ex;" action="installation-slots-manager.xhtml?faces-redirect=true" />
 
                     <p:dataTable id="attributesDataTable" var="attribute" value="#{slotAttributesController.attributes}" 
-                            style="table-layout: fixed; word-wrap: break-word; margin-top: 1em;" rows="15" paginator="true" 
-                            paginatorPosition="bottom">
+                            style="table-layout: fixed; word-wrap: break-word; margin-top: 1em;" rows="15" 
+                            paginator="true" paginatorPosition="bottom">
                         <p:column headerText="Name" sortBy="#{attribute.name}">
                             <h:outputText value="#{attribute.name}" />
                         </p:column>
-             
-                        <p:column headerText="Kind">
-                            <h:outputText value="#{attribute.kind.toString()}" />
-                        </p:column>
-             
-                        <p:column headerText="Value">
-                            <h:outputText value="#{attribute.value}" />
+
+                        <p:column headerText="Value" style="width: 30%">
+                            <h:outputText value="#{!empty attribute.value ? attribute.value : '-'}" />
                         </p:column>
 
                         <p:column headerText="Unit">
                             <h:outputText value="#{!empty attribute.unit ? attribute.unit.name : '-'}" />
+                        </p:column>
+
+                        <p:column headerText="Kind">
+                            <h:outputText value="#{attribute.kind.toString()}" />
+                        </p:column>
+
+                        <p:column headerText="Data type">
+                            <h:outputText value="#{!empty attribute.type ? attribute.type.name : '-'}" />
                         </p:column>
 
                         <p:column headerText="Actions" width="70">
