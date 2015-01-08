@@ -19,19 +19,19 @@
                 <h:outputText value="#{attribute.name}" />
             </p:column>
     
-            <p:column headerText="Value" style="width: 30%">
+            <p:column headerText="Value" style="width: 30%" sortBy="#{attribute.value}">
                 <h:outputText value="#{!empty attribute.value ? attribute.value : '-'}" />
             </p:column>
     
-            <p:column headerText="Unit">
+            <p:column headerText="Unit" sortBy="#{attribute.unit}">
                 <h:outputText value="#{!empty attribute.unit ? attribute.unit.name : '-'}" />
             </p:column>
     
-            <p:column headerText="Kind">
+            <p:column headerText="Kind" sortBy="#{attribute.kind.toString()}">
                 <h:outputText value="#{attribute.kind.toString()}" />
             </p:column>
     
-            <p:column headerText="Data type">
+            <p:column headerText="Data type" sortBy="#{attribute.type.name}">
                 <h:outputText value="#{!empty attribute.type ? attribute.type.name : '-'}" />
             </p:column>
     
