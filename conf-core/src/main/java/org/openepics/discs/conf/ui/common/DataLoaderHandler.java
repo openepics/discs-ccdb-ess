@@ -26,8 +26,10 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.EJBContext;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.openepics.discs.conf.dl.SlotsAndSlotPairsDataLoader;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.dl.common.ExcelImportFileReader;
@@ -42,7 +44,6 @@ import org.openepics.discs.conf.dl.common.ExcelImportFileReader;
 public class DataLoaderHandler {
 
     @Resource private EJBContext context;
-    //@Inject SlotsAndSlotPairsDataLoader slotLoader;
     private DataLoaderResult loaderResult;
 
     /**
@@ -73,44 +74,4 @@ public class DataLoaderHandler {
         }
         return loaderResult;
     }
-
-    /**
-     * Loads data from two import files to {@link List} and calls method on certain data loader
-     * to save the data in the database. If the result of save is {@link DataLoaderResult#isError()}
-     * then the transaction is rolled back. In any case, the notification is shown to the user.
-     * The two files in this case are the Slots information Excel worksheet and Slot relationship Excel worksheet.
-     *
-     * @param firstInputStream input file containing the Slots information Excel worksheet
-     * @param secondInputStream input file containing the Slot relationship Excel worksheet
-     * @param firstFileName the name of the Slots information Excel worksheet file
-     * @param secondFileName the name of the Slot relationship Excel worksheet file
-     * @return a {@link DataLoaderResult} containing information about the operation completion status
-     */
-    // ToDo: Move this inside SlotManager
-    /*public DataLoaderResult loadDataFromTwoFiles(InputStream firstInputStream, InputStream secondInputStream, String firstFileName, String secondFileName) {
-        List<Pair<Integer, List<String>>> firstFileInputRows = null;
-        List<Pair<Integer, List<String>>> secondFileInputRows = null;
-
-        if (firstInputStream != null) {
-            firstFileInputRows = ExcelImportFileReader.importExcelFile(firstInputStream);
-        } else {
-            firstFileInputRows = null;
-        }
-
-        if (secondInputStream != null) {
-            secondFileInputRows = ExcelImportFileReader.importExcelFile(secondInputStream);
-        } else {
-            secondFileInputRows = null;
-        }
-
-        if ((firstFileInputRows != null && !firstFileInputRows.isEmpty()) || (secondFileInputRows != null && !secondFileInputRows.isEmpty())) {
-            loaderResult = slotLoader.loadDataToDatabase(firstFileInputRows, secondFileInputRows, firstFileName, secondFileName);
-            if (loaderResult.isError()) {
-                context.setRollbackOnly();
-            }
-        }
-        return loaderResult;
-    }*/
-
-
 }

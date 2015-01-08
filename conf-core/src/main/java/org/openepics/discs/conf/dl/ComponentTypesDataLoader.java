@@ -51,7 +51,7 @@ public class ComponentTypesDataLoader extends AbstractEntityWithPropertiesDataLo
     private static final String HDR_DESC = "DESCRIPTION";
 
     private static final List<String> KNOWN_COLUMNS = Arrays.asList(HDR_NAME, HDR_DESC);
-    private static final Set<String> REQUIRED_COLUMNS = new HashSet<>(Arrays.asList(HDR_DESC));
+    private static final Set<String> REQUIRED_COLUMNS = new HashSet<>();
 
     // Fields for row cells
     private String nameFld, descriptionFld;

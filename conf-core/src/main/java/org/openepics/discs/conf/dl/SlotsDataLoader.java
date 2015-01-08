@@ -1,5 +1,6 @@
 package org.openepics.discs.conf.dl;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -23,6 +24,7 @@ import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
 
 @Stateless
+@SlotsDataLoaderQualifier
 public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<SlotPropertyValue> implements DataLoader {
     /**
      * A key for {@link DataLoaderResult#getContextualData()} that will hold a {@link Set} of {@link Slot}s
@@ -54,7 +56,7 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
     private Double blp, globalX, globalY, globalZ, globalRoll, globalPitch, globalYaw;
     private Boolean isHosting;
 
-    private Set<Slot> newSlots;
+    private List<Slot> newSlots;
 
     @Inject private SlotEJB slotEJB;
     @Inject private ComptypeEJB comptypeEJB;
@@ -62,7 +64,7 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
     @Override
     protected void init() {
         super.init();
-        newSlots = new HashSet<>();
+        newSlots = new ArrayList<>();
 
         result.getContextualData().put(CTX_NEW_SLOTS, newSlots);
     }
@@ -87,6 +89,10 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
 
         @Nullable String isHostingString = readCurrentRowCellForHeader(HDR_IS_HOSTING_SLOT);
         isHosting = null;
+        if (isHostingString != null && !isHostingString.equalsIgnoreCase(Boolean.FALSE.toString()) && !isHostingString.equalsIgnoreCase(Boolean.TRUE.toString())) {
+            result.addRowMessage(ErrorMessage.SHOULD_BE_BOOLEAN_VALUE, HDR_IS_HOSTING_SLOT);
+        }
+
         try {
             isHosting = Boolean.parseBoolean(isHostingString);
         } catch (Exception e) {
@@ -124,9 +130,7 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
                 addOrUpdateSlot(slot, compType);
                 newSlots.add(slot);
 
-                // ToDo Fix Invocation slotEJB.addSlotToParentWithPropertyDefs(slot, null, true);
-                throw new UnsupportedOperationException("slotEJB.addSlotToParentWithPropertyDefs invocation "
-                        + "not yet implemented in this branch");
+                slotEJB.addSlotToParentWithPropertyDefs(slot, null, true);
             } else {
                 addOrUpdateSlot(slot, compType);
             }

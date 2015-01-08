@@ -19,15 +19,23 @@
  */
 package org.openepics.discs.conf.dl;
 
+import java.io.Serializable;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.Resource;
+import javax.ejb.EJBContext;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.openepics.discs.conf.dl.common.AbstractDataLoader;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
+import org.openepics.discs.conf.dl.common.ErrorMessage;
+import org.openepics.discs.conf.ejb.SlotEJB;
+import org.openepics.discs.conf.ent.Slot;
+import org.openepics.discs.conf.ent.SlotPair;
 
 
 /**
@@ -35,52 +43,80 @@ import org.openepics.discs.conf.dl.common.DataLoaderResult;
  *
  */
 @Stateless
-public class SlotsAndSlotPairsDataLoader extends AbstractDataLoader implements DataLoader {
-    @Override
-    protected List<String> getKnownColumnNames() {
-        // TODO Auto-generated method stub
-        return null;
+public class SlotsAndSlotPairsDataLoader implements Serializable {
+
+    @Resource private EJBContext context;
+    @Inject @SlotPairDataLoaderQualifier transient private DataLoader slotPairDataLoader;
+    @Inject @SlotsDataLoaderQualifier transient private DataLoader slotsDataLoader;
+
+    public static final String CTX_NEW_SLOTS = "CTX_NEW_SLOTS";
+    public static final String CTX_NEW_SLOT_PAIR_CHILDREN = "CTX_NEW_SLOT_PAIR_CHILDREN";
+
+    /**
+     * Saves data read from two input files to the database
+     *
+     * @param slotsFileInputRows {@link List} of all rows containing data from Slots input file
+     * @param slotPairsFileInputRows {@link List} of all rows containing data from Slot relationships input file
+     * @param slotsFileName the name of the file containing data from Slots input file
+     * @param slotPairsFileName the name of the file containing data from Slot relationships input file
+     *
+     * @return {@link DataLoaderResult} describing the outcome of the data loading
+     */
+    @SuppressWarnings("unchecked")
+    public DataLoaderResult loadDataToDatabase(final List<Pair<Integer, List<String>>> slotsFileInputRows,
+            final List<Pair<Integer, List<String>>> slotPairsFileInputRows, final String slotsFileName, final String slotPairsFileName) {
+
+        final DataLoaderResult slotsLoaderResult;
+
+        if (slotsFileInputRows != null) {
+            slotsLoaderResult = slotsDataLoader.loadDataToDatabase(slotsFileInputRows, null);
+        } else {
+            slotsLoaderResult = new DataLoaderResult();
+        }
+
+        final DataLoaderResult slotPairsLoaderResult;
+        final Set<SlotPair> newSlotPairChildren;
+
+        if (!slotsLoaderResult.isError() && slotPairsFileInputRows != null) {
+            slotPairsLoaderResult = slotPairDataLoader.loadDataToDatabase(slotPairsFileInputRows, slotsLoaderResult.getContextualData());
+            newSlotPairChildren = (Set<SlotPair>) slotPairsLoaderResult.getContextualData().get(CTX_NEW_SLOT_PAIR_CHILDREN);
+        } else {
+            slotPairsLoaderResult = new DataLoaderResult();
+            newSlotPairChildren = new HashSet<>();
+        }
+
+        final DataLoaderResult loaderResult = mergeDataLoaderResults(slotsLoaderResult, slotPairsLoaderResult, slotsFileName, slotPairsFileName);
+
+        if (!loaderResult.isError()) {
+            checkForRelationConsistency((List<Slot>) slotsLoaderResult.getContextualData().get(CTX_NEW_SLOTS), newSlotPairChildren, loaderResult);
+        }
+
+        if (loaderResult.isError()) {
+            context.setRollbackOnly();
+        }
+        return loaderResult;
     }
 
-    @Override
-    protected Set<String> getRequiredColumnNames() {
-        // TODO Auto-generated method stub
-        return null;
+    private void checkForRelationConsistency(final List<Slot> newSlots, final Set<SlotPair> newSlotPairChildren, DataLoaderResult loaderResult) {
+        for (Slot newSlot : newSlots) {
+            if (!newSlotPairChildren.contains(newSlot) && !newSlot.getComponentType().getName().equals(SlotEJB.ROOT_COMPONENT_TYPE)) {
+                loaderResult.addOrphanSlotMessage(newSlot.getName());
+            }
+        }
     }
 
-    @Override
-    protected String getUniqueColumnName() {
-        // TODO Auto-generated method stub
-        return null;
+    private DataLoaderResult mergeDataLoaderResults(final DataLoaderResult slotsLoaderResult, final DataLoaderResult slotPairsLoaderResult, final String slotsFileName, final String slotPairsFileName) {
+        final DataLoaderResult mergedLoaderResult = new DataLoaderResult();
+        if (slotsLoaderResult.isError()) {
+            mergedLoaderResult.setFileName(slotsFileName);
+            mergedLoaderResult.copyDataLoaderResult(slotsLoaderResult);
+        }
+
+        if (slotPairsLoaderResult.isError()) {
+            mergedLoaderResult.setFileName(slotPairsFileName);
+            mergedLoaderResult.copyDataLoaderResult(slotPairsLoaderResult);
+        }
+        return mergedLoaderResult;
     }
 
-    @Override
-    protected void assignMembersForCurrentRow() {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    protected void handleUpdate() {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    protected void handleDelete() {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    protected void handleRename() {
-        // TODO Auto-generated method stub
-
-    }
-
-    public DataLoaderResult loadDataToDatabase(List<Pair<Integer, List<String>>> firstFileInputRows,
-            List<Pair<Integer, List<String>>> secondFileInputRows, String firstFileName, String secondFileName) {
-        // TODO Auto-generated method stub
-        return null;
-    }
 }

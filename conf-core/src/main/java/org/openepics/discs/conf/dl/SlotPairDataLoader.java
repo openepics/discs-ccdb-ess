@@ -21,38 +21,41 @@ import org.openepics.discs.conf.ent.SlotRelation;
 import org.openepics.discs.conf.ent.SlotRelationName;
 
 @Stateless
+@SlotPairDataLoaderQualifier
 public class SlotPairDataLoader extends AbstractDataLoader implements DataLoader {
     /**
      * A key for {@link DataLoaderResult#getContextualData()} that will hold a {@link Set} of {@link Slot}s
      */
     public static final String CTX_NEW_SLOTS = "CTX_NEW_SLOTS";
-    
+    public static final String CTX_NEW_SLOT_PAIR_CHILDREN = "CTX_NEW_SLOT_PAIR_CHILDREN";
+
     private static final String HDR_RELATION = "RELATION";
     private static final String HDR_PARENT = "PARENT";
     private static final String HDR_CHILD= "CHILD";
 
     private static final List<String> KNOWN_COLUMNS = Arrays.asList(HDR_RELATION, HDR_PARENT, HDR_CHILD);
     private static final Set<String> REQUIRED_COLUMNS = new HashSet<>(KNOWN_COLUMNS);
-    
+
     private String relationString, parentString, childString;
     private List<Slot> childrenSlots;
     private Slot parentSlot;
-    private Set<Slot> newSlots;
+    private List<Slot> newSlots;
     private Set<Slot> newSlotPairChildren;
     private SlotRelationName slotRelationName;
     private SlotRelation slotRelation;
-    
+
     @Inject private SlotEJB slotEJB;
     @Inject private SlotPairEJB slotPairEJB;
     @Inject private SlotRelationEJB slotRelationEJB;
-    
+
     @SuppressWarnings("unchecked")
     @Override
     protected void init() {
         super.init();
-        
-        newSlots = (Set<Slot>) getFromContext(CTX_NEW_SLOTS);
+
+        newSlots = (List<Slot>) getFromContext(CTX_NEW_SLOTS);
         newSlotPairChildren = new HashSet<>();
+        result.getContextualData().put(CTX_NEW_SLOT_PAIR_CHILDREN, newSlotPairChildren);
     }
 
     @Override
@@ -60,26 +63,26 @@ public class SlotPairDataLoader extends AbstractDataLoader implements DataLoader
 
     @Override
     protected Set<String> getRequiredColumnNames() { return REQUIRED_COLUMNS; }
-    
+
     @Override
     protected String getUniqueColumnName() {
-        // No unique column name 
+        // No unique column name
         return null;
     }
-    
+
     @Override
     protected void assignMembersForCurrentRow() {
         relationString = readCurrentRowCellForHeader(HDR_RELATION);
         parentString = readCurrentRowCellForHeader(HDR_PARENT);
         childString = readCurrentRowCellForHeader(HDR_CHILD);
-        
+
         childrenSlots = slotEJB.findSlotByNameContainingString(childString);
         parentSlot = slotEJB.findByName(parentString);
-        
+
         if (childrenSlots == null || childrenSlots.size() == 0) {
             result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_CHILD);
-        } 
-        
+        }
+
         if (parentSlot == null) {
             result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_PARENT);
         }
@@ -91,19 +94,22 @@ public class SlotPairDataLoader extends AbstractDataLoader implements DataLoader
         } else if (SlotRelationName.CONTROLS.name().equalsIgnoreCase(relationString)) {
             slotRelationName = SlotRelationName.CONTROLS;
         } else {
-            slotRelationName = null;            
+            slotRelationName = null;
             result.addRowMessage(ErrorMessage.UNKNOWN_SLOT_RELATION_TYPE, HDR_RELATION);
         }
 
         if (result.isRowError()) {
             return;
         }
-        
-        slotRelation = slotRelationEJB.findBySlotRelationName(slotRelationName);        
+
+        slotRelation = slotRelationEJB.findBySlotRelationName(slotRelationName);
     }
 
     @Override
     protected void handleUpdate() {
+        if (result.isError()) {
+            return;
+        }
         for (Slot childSlot : childrenSlots) {
             if (newSlots.contains(childSlot)) {
                 try {
@@ -148,7 +154,7 @@ public class SlotPairDataLoader extends AbstractDataLoader implements DataLoader
 
     @Override
     protected void handleDelete() {
-        final List<SlotPair> slotPairs = slotPairEJB.findSlotPairsByParentChildRelation(childString, parentString, 
+        final List<SlotPair> slotPairs = slotPairEJB.findSlotPairsByParentChildRelation(childString, parentString,
                 slotRelationName);
         if (slotPairs.size() != 0) {
             try {
@@ -161,11 +167,11 @@ public class SlotPairDataLoader extends AbstractDataLoader implements DataLoader
             }
         } else {
             result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND);
-        }        
+        }
     }
 
     @Override
     protected void handleRename() {
-        result.addRowMessage(ErrorMessage.COMMAND_NOT_VALID, CMD_HEADER);        
+        result.addRowMessage(ErrorMessage.COMMAND_NOT_VALID, CMD_HEADER);
     }
 }

@@ -27,6 +27,8 @@ import java.util.Map;
 import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
 
+import com.google.common.base.Preconditions;
+
 /**
  * This represents a result of load operation, consisting of the error status,
  * load {@link ValidationMessage}s, and the list of objects affected by the load.
@@ -71,6 +73,15 @@ public class DataLoaderResult {
     /**
      * Adds new message to the messages list
      *
+     * @param fileName
+     */
+    public void setFileName(String fileName) {
+        messages.add(new ValidationMessage(fileName));
+    }
+
+    /**
+     * Adds new message to the messages list
+     *
      * @param message
      * @param row
      * @param column
@@ -79,31 +90,20 @@ public class DataLoaderResult {
      */
     private void addMessageInternal(ErrorMessage message, Integer row, String column,
             EntityTypeOperation operation, EntityType entity) {
+        error = true;
         messages.add(new ValidationMessage(message, row, column, operation, entity));
-    }
-
-    /**
-     * Adds new message to the messages list
-     *
-     * @param fileName
-     */
-    private void addMessageInternal(String fileName) {
-        messages.add(new ValidationMessage(fileName));
     }
 
     public void addGlobalMessage(ErrorMessage message, String column,
             EntityTypeOperation operation, EntityType entity) {
-        error = true;
         addMessageInternal(message, currentRowNumber, column, operation, entity);
     }
 
     public void addGlobalMessage(ErrorMessage message) {
-        error = true;
         addMessageInternal(message, currentRowNumber, null, null, null);
     }
 
     public void addGlobalMessage(ErrorMessage message, String column) {
-        error = true;
         addMessageInternal(message, currentRowNumber, column, null, null);
     }
 
@@ -123,6 +123,13 @@ public class DataLoaderResult {
         addMessageInternal(message, currentRowNumber, null, null, null);
     }
 
+    public void addOrphanSlotMessage(final String slotName) {
+        final ValidationMessage orphanSlotMessage = new ValidationMessage(ErrorMessage.ORPHAN_SLOT, null, null, null, null);
+        orphanSlotMessage.setOrphanSlotName(slotName);
+        messages.add(orphanSlotMessage);
+        error = true;
+    }
+
     public void resetRowError() {
         rowError = false;
     }
@@ -137,6 +144,12 @@ public class DataLoaderResult {
 
     public Map<String, Object> getContextualData() {
         return contextualData;
+    }
+
+    public void copyDataLoaderResult(DataLoaderResult loaderResult) {
+        Preconditions.checkNotNull(loaderResult);
+        this.messages.addAll(loaderResult.getMessages());
+        this.error = this.error || loaderResult.isError();
     }
 
     @Override

@@ -102,7 +102,7 @@ public abstract class AbstractDataLoader implements DataLoader {
         init();
 
         // First row must be a header, updateHeaderRowAndIndexes checks this...
-        result.setCurrentRowNumber(0);
+        result.setCurrentRowNumber(inputRows.get(0).getLeft());
         if (!updateHeaderRowAndIndexes(inputRows.get(0))) return result;
 
         currentRowData = null;
@@ -117,7 +117,7 @@ public abstract class AbstractDataLoader implements DataLoader {
             } else if ( CMD_END.equals(currentRowData.get(COMMAND_INDEX)) ) {
                 break;
             } else {
-                final String command = checkCommandAndRequredFields();
+                final String command = checkCommandAndRequiredFields();
                 if (command==null) continue;
 
                 assignMembersForCurrentRow();
@@ -290,7 +290,7 @@ public abstract class AbstractDataLoader implements DataLoader {
      *
      * @return the {@link String} command or <code>null</code> if checks failed
      */
-    private String checkCommandAndRequredFields() {
+    private String checkCommandAndRequiredFields() {
         Preconditions.checkNotNull(indicies);
 
         final String command = currentRowData.get(COMMAND_INDEX);
@@ -312,16 +312,14 @@ public abstract class AbstractDataLoader implements DataLoader {
             final Integer index = indexEntry.getValue();
             Preconditions.checkNotNull(index);
 
-            final String cell = currentRowData.get(index);
-
             // Check if data is missing for given conditions
-            if (uniqueColumnName!=null && index == uniqueIndex) {
-                if (StringUtils.isEmpty(cell)) {
+            if (uniqueColumnName != null && index == uniqueIndex) {
+                if (currentRowData.get(index) == null) {
                     result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, columnName);
                 }
             } else {
-                if (StringUtils.isEmpty(cell) && !CMD_RENAME.equals(command)
-                        && !CMD_DELETE.equals(command) && requiredColumns.contains(columnName)) {
+                if (requiredColumns.contains(columnName) && currentRowData.get(index) == null && !CMD_RENAME.equals(command)
+                        && !CMD_DELETE.equals(command)) {
                     result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, columnName);
                 }
             }
@@ -344,7 +342,7 @@ public abstract class AbstractDataLoader implements DataLoader {
 
         for (String column : getKnownColumnNames()) {
             int index = headerRow.indexOf(column);
-            if (index == -1) {
+            if (index == -1 && getRequiredColumnNames().contains(column)) {
                 result.addGlobalMessage(ErrorMessage.HEADER_FIELD_MISSING, column);
             } else {
                 mapBuilder.put(column, index);
@@ -395,7 +393,7 @@ public abstract class AbstractDataLoader implements DataLoader {
         Preconditions.checkNotNull(indicies);
         Integer index = indicies.get(columnName);
 
-        return index!=null ? currentRowData.get(index) : null;
+        return (index != null && index != -1) ? currentRowData.get(index) : null;
     }
 
     /**
@@ -408,7 +406,7 @@ public abstract class AbstractDataLoader implements DataLoader {
         Preconditions.checkNotNull(propertyIndicies);
         Integer index = propertyIndicies.get(propertyColumnName);
 
-        return index!=null ? currentRowData.get(index) : null;
+        return (index != null && index != -1) ? currentRowData.get(index) : null;
     }
 
     /**
