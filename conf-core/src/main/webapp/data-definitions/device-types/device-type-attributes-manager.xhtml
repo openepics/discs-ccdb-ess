@@ -3,6 +3,7 @@
     xmlns:f="http://java.sun.com/jsf/core"
     xmlns:h="http://java.sun.com/jsf/html"
     xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:rc="http://java.sun.com/jsf/composite/comps"
     xmlns:p="http://primefaces.org/ui">
     <ui:define name="content">
         <h:panelGroup id="deviceTypePropertiesManagerContainer" layout="block" class="container">
@@ -49,50 +50,9 @@
                                 listener="#{auditManager.selectEntityForLog(comptypeAttributesController.deviceType, 'COMPONENT_TYPE')}" />
                     </p:commandButton>
                     <p:commandButton value="Close" style="margin-left: 1ex;" action="device-types-manager.xhtml?faces-redirect=true" />
-                    <p:dataTable id="attributesDataTable" var="attribute" value="#{comptypeAttributesController.attributes}" 
-                            style="table-layout: fixed; word-wrap: break-word; margin-top: 1em;" rows="15" paginator="true" 
-                            paginatorPosition="bottom">
-                        <p:column headerText="Name" sortBy="#{attribute.name}">
-                            <h:outputText value="#{attribute.name}" />
-                        </p:column>
-
-                        <p:column headerText="Value" style="width: 30%;" sortBy="#{attribute.value}">
-                            <h:outputText value="#{!empty attribute.value ? attribute.value : '-'}" />
-                        </p:column>
-
-                        <p:column headerText="Unit">
-                            <h:outputText value="#{!empty attribute.unit ? attribute.unit.name : '-'}" />
-                        </p:column>
-
-                        <p:column headerText="Kind">
-                            <h:outputText value="#{attribute.kind.toString()}" />
-                        </p:column>
-
-                        <p:column headerText="Data type">
-                            <h:outputText value="#{!empty attribute.type ? attribute.type.name : '-'}" />
-                        </p:column>
-
-                        <p:column headerText="Actions" width="70">
-                            <p:commandLink ajax="true" title="Edit" update=":modifyPropertyValueForm :modifyArtifactForm" 
-                                    rendered="#{comptypeAttributesController.canEdit(attribute)}">
-                                <h:outputText styleClass="ui-icon ui-icon-pencil" style="display: inline-block !important; margin-right: 6px;" />
-                                <f:setPropertyActionListener value="#{attribute}" target="#{comptypeAttributesController.selectedAttributeToModify}" />
-                            </p:commandLink>
-                            <p:commandLink ajax="true" title="Delete" oncomplete="deleteAttribute.show()" 
-                                    rendered="#{!attribute.builtIn}">
-                                <h:outputText styleClass="ui-icon ui-icon-trash" style="display: inline-block !important; margin-right: 6px;" />
-                                <f:setPropertyActionListener value="#{attribute}" target="#{comptypeAttributesController.selectedAttribute}" />
-                            </p:commandLink>
-                            <p:commandLink ajax="false" title="Download" rendered="#{attribute.hasFile}">
-                                <h:outputText styleClass="ui-icon ui-icon-arrowthick-1-s" style="display: inline-block !important; margin-right: 6px;" />
-                                <f:setPropertyActionListener value="#{attribute}" target="#{comptypeAttributesController.selectedAttribute}" />
-                                <p:fileDownload value="#{comptypeAttributesController.downloadFile}" />
-                            </p:commandLink>
-                            <h:outputLink rendered="#{attribute.hasURL}" title="Go to URL" target="_blank" value="#{attribute.value}">
-                                <h:outputText styleClass="ui-icon ui-icon-extlink" style="display: inline-block !important; margin-right: 6px;" />
-                            </h:outputLink>
-                        </p:column>
-                    </p:dataTable>
+                    
+                    <rc:attribute-table id="attributesDataTable" controllerBean="#{comptypeAttributesController}" 
+                        updateTargets=":modifyPropertyValueForm :modifyArtifactForm" />
                 </h:panelGroup>
             </h:form>
         </h:panelGroup>
@@ -124,7 +84,7 @@
             <ui:param name="widgetName" value="addPropertyValue" />
             <ui:param name="controller" value="#{comptypeAttributesController}" />
             <ui:param name="submitHandler" value="addNewPropertyValue" />
-            <ui:param name="componentToUpdate" value=":deviceTypePropertiesManagerForm:attributesDataTable" />
+            <ui:param name="componentToUpdate" value=":deviceTypePropertiesManagerForm:attributesDataTable:attributesDataTable" />
         </ui:include>
 
         <ui:include src="../add-or-modify-dialogs/property-value.xhtml" >
@@ -133,7 +93,7 @@
             <ui:param name="widgetName" value="modifyPropertyValue" />
             <ui:param name="controller" value="#{comptypeAttributesController}" />
             <ui:param name="submitHandler" value="modifyPropertyValue" />
-            <ui:param name="componentToUpdate" value=":deviceTypePropertiesManagerForm:attributesDataTable" />
+            <ui:param name="componentToUpdate" value=":deviceTypePropertiesManagerForm:attributesDataTable:attributesDataTable" />
         </ui:include>
 
         <ui:include src="../add-or-modify-dialogs/builtin-property-value.xhtml" >
@@ -142,7 +102,7 @@
             <ui:param name="widgetName" value="modifyBuiltInProperty" />
             <ui:param name="controller" value="#{comptypeAttributesController}" />
             <ui:param name="submitHandler" value="modifyBuiltInProperty" />
-            <ui:param name="componentToUpdate" value=":deviceTypePropertiesManagerForm:attributesDataTable :deviceTypePropertiesManagerForm:basic-info" />
+            <ui:param name="componentToUpdate" value=":deviceTypePropertiesManagerForm:attributesDataTable:attributesDataTable :deviceTypePropertiesManagerForm:basic-info" />
         </ui:include>
 
         <ui:include src="../add-or-modify-dialogs/property-definition.xhtml" >
@@ -151,7 +111,7 @@
             <ui:param name="widgetName" value="deviceTypePropertyDefinition" />
             <ui:param name="controller" value="#{comptypeAttributesController}" />
             <ui:param name="submitHandler" value="addNewPropertyValue" />
-            <ui:param name="componentToUpdate" value=":deviceTypePropertiesManagerForm:attributesDataTable" />
+            <ui:param name="componentToUpdate" value=":deviceTypePropertiesManagerForm:attributesDataTable:attributesDataTable" />
         </ui:include>
 
         <ui:include src="../add-or-modify-dialogs/property-definition.xhtml" >
@@ -160,7 +120,7 @@
             <ui:param name="widgetName" value="installationSlotProperty" />
             <ui:param name="controller" value="#{comptypeAttributesController}" />
             <ui:param name="submitHandler" value="addNewPropertyValue" />
-            <ui:param name="componentToUpdate" value=":deviceTypePropertiesManagerForm:attributesDataTable" />
+            <ui:param name="componentToUpdate" value=":deviceTypePropertiesManagerForm:attributesDataTable:attributesDataTable" />
         </ui:include>
 
         <ui:include src="../add-or-modify-dialogs/property-definition.xhtml" >
@@ -169,7 +129,7 @@
             <ui:param name="widgetName" value="deviceInstanceProperty" />
             <ui:param name="controller" value="#{comptypeAttributesController}" />
             <ui:param name="submitHandler" value="addNewPropertyValue" />
-            <ui:param name="componentToUpdate" value=":deviceTypePropertiesManagerForm:attributesDataTable" />
+            <ui:param name="componentToUpdate" value=":deviceTypePropertiesManagerForm:attributesDataTable:attributesDataTable" />
         </ui:include>
 
         <ui:include src="../add-or-modify-dialogs/tag.xhtml" >
@@ -178,7 +138,7 @@
             <ui:param name="widgetName" value="deviceTypeTag" />
             <ui:param name="controller" value="#{comptypeAttributesController}" />
             <ui:param name="submitHandler" value="addNewTag" />
-            <ui:param name="componentToUpdate" value=":deviceTypePropertiesManagerForm:attributesDataTable" />
+            <ui:param name="componentToUpdate" value=":deviceTypePropertiesManagerForm:attributesDataTable:attributesDataTable" />
         </ui:include>
 
         <ui:include src="../add-or-modify-dialogs/artifact.xhtml" >
@@ -187,7 +147,7 @@
             <ui:param name="widgetName" value="addArtifact" />
             <ui:param name="controller" value="#{comptypeAttributesController}" />
             <ui:param name="submitHandler" value="addNewArtifact" />
-            <ui:param name="componentToUpdate" value=":deviceTypePropertiesManagerForm:attributesDataTable" />
+            <ui:param name="componentToUpdate" value=":deviceTypePropertiesManagerForm:attributesDataTable:attributesDataTable" />
         </ui:include>
 
         <ui:include src="../add-or-modify-dialogs/artifact.xhtml" >
@@ -196,7 +156,7 @@
             <ui:param name="widgetName" value="modifyArtifact" />
             <ui:param name="controller" value="#{comptypeAttributesController}" />
             <ui:param name="submitHandler" value="modifyArtifact" />
-            <ui:param name="componentToUpdate" value=":deviceTypePropertiesManagerForm:attributesDataTable" />
+            <ui:param name="componentToUpdate" value=":deviceTypePropertiesManagerForm:attributesDataTable:attributesDataTable" />
         </ui:include>
     </ui:define>
 </ui:composition>

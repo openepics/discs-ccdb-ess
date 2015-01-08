@@ -2,6 +2,7 @@
     xmlns:p="http://primefaces.org/ui"
     template="/template/template.xhtml"
     xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:rc="http://java.sun.com/jsf/composite/comps"
     xmlns:h="http://java.sun.com/jsf/html">
 
     <ui:define name="content">
@@ -40,48 +41,7 @@
                 </p:commandButton>
                 <p:commandButton value="Close" style="margin-left: 1ex;" action="#{devicesByTypeManager.redirectToAllDevices(deviceDetailsAttributesController.device.componentType.id)}" />
   
-                <p:dataTable id="devAttribs" var="attribute" value="#{deviceDetailsAttributesController.attributes}" 
-                        emptyMessage="No attributes." style="margin-top: 1em;">
-                    <p:column headerText="Name" sortBy="#{attribute.name}">
-                        <h:outputText value="#{attribute.name}" />
-                    </p:column>
-
-                    <p:column headerText="Value" style="width: 30%;">
-                        <h:outputText value="#{!empty attribute.value ? attribute.value : '-'}" />
-                    </p:column>
-
-                    <p:column headerText="Unit" style="text-align: center;">
-                        <h:outputText value="#{empty attribute.unit.name ? '-' : attribute.unit.name}" />
-                    </p:column>
-
-                    <p:column headerText="Kind">
-                        <h:outputText value="#{attribute.kind.toString()}" />
-                    </p:column>
-
-                    <p:column headerText="Data type">
-                        <h:outputText value="#{!empty attribute.type ? attribute.type.name : '-'}" />
-                    </p:column>
-
-                    <p:column headerText="Actions" width="70">
-                        <p:commandLink ajax="true" rendered="#{deviceDetailsAttributesController.canEdit(attribute)}" title="Edit">
-                            <h:outputText styleClass="ui-icon ui-icon-pencil" style="display: inline-block !important; margin-right: 6px;" />
-                            <f:setPropertyActionListener value="#{attribute}" target="#{deviceDetailsAttributesController.selectedAttributeToModify}" />
-                        </p:commandLink>
-                        <p:commandLink ajax="true" title="Delete" oncomplete="deleteAttribute.show()" 
-                                rendered="#{deviceDetailsAttributesController.canDelete(attribute)}">
-                            <h:outputText styleClass="ui-icon ui-icon-trash" style="display: inline-block !important; margin-right: 6px;" />
-                            <f:setPropertyActionListener value="#{attribute}" target="#{deviceDetailsAttributesController.selectedAttribute}" />
-                        </p:commandLink>
-                        <p:commandLink ajax="false" rendered="#{attribute.hasFile}" title="Download">
-                            <h:outputText styleClass="ui-icon ui-icon-arrowthick-1-s" style="display: inline-block !important; margin-right: 6px;" />
-                            <f:setPropertyActionListener value="#{attribute}" target="#{deviceDetailsAttributesController.selectedAttribute}" />
-                            <p:fileDownload value="#{deviceDetailsAttributesController.downloadFile}" />
-                        </p:commandLink>
-                        <h:outputLink rendered="#{attribute.hasURL}" title="Go to URL" target="_blank" value="#{attribute.value}">
-                            <h:outputText styleClass="ui-icon ui-icon-extlink" style="display: inline-block !important; margin-right: 6px;" />
-                        </h:outputLink>
-                    </p:column>
-                </p:dataTable>
+                <rc:attribute-table id="devAttribs" controllerBean="#{deviceDetailsAttributesController}" />
             </h:panelGroup>
             <h:panelGroup id="installationDetails" style="margin-top: 30px;" layout="block">
                 <p:commandButton title="Install" label="Install" value="Install" style="margin-right: 1ex !important;"
@@ -120,7 +80,7 @@
             <ui:param name="widgetName" value="deleteAttribute" />
             <ui:param name="controller" value="#{deviceDetailsAttributesController}" />
             <ui:param name="submitHandler" value="deleteAttribute" />
-            <ui:param name="formToUpdate" value=":deviceDetailsForm:devAttribs" />
+            <ui:param name="formToUpdate" value=":deviceDetailsForm:devAttribs:devAttribs" />
         </ui:include>
 
         <ui:include src="../data-definitions/add-or-modify-dialogs/property-value.xhtml" >
@@ -129,7 +89,7 @@
             <ui:param name="widgetName" value="modifyPropertyValue" />
             <ui:param name="controller" value="#{deviceDetailsAttributesController}" />
             <ui:param name="submitHandler" value="modifyPropertyValue" />
-            <ui:param name="componentToUpdate" value=":deviceDetailsForm:devAttribs" />
+            <ui:param name="componentToUpdate" value=":deviceDetailsForm:devAttribs:devAttribs" />
         </ui:include>
 
         <ui:include src="../data-definitions/add-or-modify-dialogs/builtin-property-value.xhtml" >
@@ -138,7 +98,7 @@
             <ui:param name="widgetName" value="modifyBuiltInProperty" />
             <ui:param name="controller" value="#{deviceDetailsAttributesController}" />
             <ui:param name="submitHandler" value="modifyBuiltInProperty" />
-            <ui:param name="componentToUpdate" value=":deviceDetailsForm:devAttribs :deviceDetailsForm:basic-info" />
+            <ui:param name="componentToUpdate" value=":deviceDetailsForm:devAttribs:devAttribs :deviceDetailsForm:basic-info" />
         </ui:include>
 
         <ui:include src="../data-definitions/add-or-modify-dialogs/tag.xhtml" >
@@ -147,7 +107,7 @@
             <ui:param name="widgetName" value="addDeviceTag" />
             <ui:param name="controller" value="#{deviceDetailsAttributesController}" />
             <ui:param name="submitHandler" value="addNewTag" />
-            <ui:param name="componentToUpdate" value=":deviceDetailsForm:devAttribs" />
+            <ui:param name="componentToUpdate" value=":deviceDetailsForm:devAttribs:devAttribs" />
         </ui:include>
 
         <ui:include src="../data-definitions/add-or-modify-dialogs/artifact.xhtml" >
@@ -156,7 +116,7 @@
             <ui:param name="widgetName" value="addArtifact" />
             <ui:param name="controller" value="#{deviceDetailsAttributesController}" />
             <ui:param name="submitHandler" value="addNewArtifact" />
-            <ui:param name="componentToUpdate" value=":deviceDetailsForm:devAttribs" />
+            <ui:param name="componentToUpdate" value=":deviceDetailsForm:devAttribs:devAttribs" />
         </ui:include>
 
         <ui:include src="../data-definitions/add-or-modify-dialogs/artifact.xhtml" >
@@ -165,7 +125,7 @@
             <ui:param name="widgetName" value="modifyArtifact" />
             <ui:param name="controller" value="#{deviceDetailsAttributesController}" />
             <ui:param name="submitHandler" value="modifyArtifact" />
-            <ui:param name="componentToUpdate" value=":deviceDetailsForm:devAttribs" />
+            <ui:param name="componentToUpdate" value=":deviceDetailsForm:devAttribs:devAttribs" />
         </ui:include>
 
         <ui:include src="install-device.xhtml">

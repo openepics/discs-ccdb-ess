@@ -3,6 +3,7 @@
     xmlns:f="http://java.sun.com/jsf/core"
     xmlns:h="http://java.sun.com/jsf/html"
     xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:rc="http://java.sun.com/jsf/composite/comps"
     xmlns:p="http://primefaces.org/ui">
     <ui:define name="content">
         <h:panelGroup id="containerPropertiesManager" layout="block" class="container">
@@ -49,50 +50,8 @@
                     </p:commandButton>
                     <p:commandButton value="Close" style="margin-left: 1ex;" action="containers-manager.xhtml?faces-redirect=true" />
 
-                    <p:dataTable id="attributesDataTable" var="attribute" value="#{slotAttributesController.attributes}" 
-                            style="table-layout: fixed; word-wrap: break-word; margin-top: 1em;" rows="15" paginator="true" 
-                            paginatorPosition="bottom">
-                        <p:column headerText="Name" sortBy="#{attribute.name}">
-                            <h:outputText value="#{attribute.name}" />
-                        </p:column>
-
-                        <p:column headerText="Value" style="width: 30%;">
-                            <h:outputText value="#{!empty attribute.value ? attribute.value : '-'}" />
-                        </p:column>
-
-                        <p:column headerText="Unit" >
-                            <h:outputText value="#{!empty attribute.unit ? attribute.unit.name : '-'}" />
-                        </p:column>
-
-                        <p:column headerText="Kind">
-                            <h:outputText value="#{attribute.kind.toString()}" />
-                        </p:column>
-
-                        <p:column headerText="Data type">
-                            <h:outputText value="#{!empty attribute.type ? attribute.type.name : '-'}" />
-                        </p:column>
-
-                        <p:column headerText="Actions" width="70">
-                            <p:commandLink ajax="true" title="Edit" update=":modifyPropertyValueForm :modifyArtifactForm" 
-                                    rendered="#{slotAttributesController.canEdit(attribute)}">
-                                <h:outputText styleClass="ui-icon ui-icon-pencil" style="display: inline-block !important; margin-right: 6px;" />
-                                <f:setPropertyActionListener value="#{attribute}" target="#{slotAttributesController.selectedAttributeToModify}" />
-                            </p:commandLink>
-                            <p:commandLink ajax="true" title="Delete"  oncomplete="deleteAttribute.show()" 
-                                    rendered="#{slotAttributesController.canDelete(attribute)}">
-                                <h:outputText styleClass="ui-icon ui-icon-trash" style="display: inline-block !important; margin-right: 6px;" />
-                                <f:setPropertyActionListener value="#{attribute}" target="#{slotAttributesController.selectedAttribute}" />
-                            </p:commandLink>
-                            <p:commandLink ajax="false" title="Download" rendered="#{attribute.hasFile}">
-                                <h:outputText styleClass="ui-icon ui-icon-arrowthick-1-s" style="display: inline-block !important; margin-right: 6px;" />
-                                <f:setPropertyActionListener value="#{attribute}" target="#{slotAttributesController.selectedAttribute}" />
-                                <p:fileDownload value="#{slotAttributesController.downloadFile}" />
-                            </p:commandLink>
-                            <h:outputLink rendered="#{attribute.hasURL}" title="Go to URL" target="_blank" value="#{attribute.value}">
-                                <h:outputText styleClass="ui-icon ui-icon-extlink" style="display: inline-block !important; margin-right: 6px;" />
-                            </h:outputLink>
-                        </p:column>
-                    </p:dataTable>
+                    <rc:attribute-table id="attributesDataTable" controllerBean="#{slotAttributesController}" 
+                            updateTargets=":modifyPropertyValueForm :modifyArtifactForm" />
                 </h:panelGroup>
             </h:form>
         </h:panelGroup>
@@ -115,7 +74,7 @@
             <ui:param name="widgetName" value="deleteAttribute" />
             <ui:param name="controller" value="#{slotAttributesController}" />
             <ui:param name="submitHandler" value="deleteAttribute" />
-            <ui:param name="formToUpdate" value=":slotPropertiesManagerForm:attributesDataTable" />
+            <ui:param name="formToUpdate" value=":slotPropertiesManagerForm:attributesDataTable:attributesDataTable" />
         </ui:include>
 
         <ui:include src="../add-or-modify-dialogs/property-value.xhtml" >
@@ -124,7 +83,7 @@
             <ui:param name="widgetName" value="addPropertyValue" />
             <ui:param name="controller" value="#{slotAttributesController}" />
             <ui:param name="submitHandler" value="addNewPropertyValue" />
-            <ui:param name="componentToUpdate" value=":slotPropertiesManagerForm:attributesDataTable" />
+            <ui:param name="componentToUpdate" value=":slotPropertiesManagerForm:attributesDataTable:attributesDataTable" />
         </ui:include>
 
         <ui:include src="../add-or-modify-dialogs/property-value.xhtml" >
@@ -133,7 +92,7 @@
             <ui:param name="widgetName" value="modifyPropertyValue" />
             <ui:param name="controller" value="#{slotAttributesController}" />
             <ui:param name="submitHandler" value="modifyPropertyValue" />
-            <ui:param name="componentToUpdate" value=":slotPropertiesManagerForm:attributesDataTable" />
+            <ui:param name="componentToUpdate" value=":slotPropertiesManagerForm:attributesDataTable:attributesDataTable" />
         </ui:include>
 
         <ui:include src="../add-or-modify-dialogs/builtin-property-value.xhtml" >
@@ -142,7 +101,7 @@
             <ui:param name="widgetName" value="modifyBuiltInProperty" />
             <ui:param name="controller" value="#{slotAttributesController}" />
             <ui:param name="submitHandler" value="modifyBuiltInProperty" />
-            <ui:param name="componentToUpdate" value=":slotPropertiesManagerForm:attributesDataTable :slotPropertiesManagerForm:basic-info" />
+            <ui:param name="componentToUpdate" value=":slotPropertiesManagerForm:attributesDataTable:attributesDataTable :slotPropertiesManagerForm:basic-info" />
         </ui:include>
 
         <ui:include src="../add-or-modify-dialogs/tag.xhtml" >
@@ -151,7 +110,7 @@
             <ui:param name="widgetName" value="containerTag" />
             <ui:param name="controller" value="#{slotAttributesController}" />
             <ui:param name="submitHandler" value="addNewTag" />
-            <ui:param name="componentToUpdate" value=":slotPropertiesManagerForm:attributesDataTable" />
+            <ui:param name="componentToUpdate" value=":slotPropertiesManagerForm:attributesDataTable:attributesDataTable" />
         </ui:include>
 
         <ui:include src="../add-or-modify-dialogs/artifact.xhtml" >
@@ -160,7 +119,7 @@
             <ui:param name="widgetName" value="addArtifact" />
             <ui:param name="controller" value="#{slotAttributesController}" />
             <ui:param name="submitHandler" value="addNewArtifact" />
-            <ui:param name="componentToUpdate" value=":slotPropertiesManagerForm:attributesDataTable" />
+            <ui:param name="componentToUpdate" value=":slotPropertiesManagerForm:attributesDataTable:attributesDataTable" />
         </ui:include>
 
         <ui:include src="../add-or-modify-dialogs/artifact.xhtml" >
@@ -169,7 +128,7 @@
             <ui:param name="widgetName" value="modifyArtifact" />
             <ui:param name="controller" value="#{slotAttributesController}" />
             <ui:param name="submitHandler" value="modifyArtifact" />
-            <ui:param name="componentToUpdate" value=":slotPropertiesManagerForm:attributesDataTable" />
+            <ui:param name="componentToUpdate" value=":slotPropertiesManagerForm:attributesDataTable:attributesDataTable" />
         </ui:include>
     </ui:define>
 </ui:composition>
