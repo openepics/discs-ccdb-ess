@@ -11,8 +11,10 @@
                 styleClass="#{fn:endsWith(request.requestURL,'containers-manager.xhtml') ? 'menu-selected' : ''}" />
 			<p:menuitem value="Device Types" url="/data-definitions/device-types/device-types-manager.xhtml" ajax="true" 
                 styleClass="#{fn:endsWith(request.requestURL,'device-types-manager.xhtml') ? 'menu-selected' : ''}" />
-			<p:menuitem value="Properties" url="/data-definitions/properties/properties-manager.xhtml " ajax="true" 
+			<p:menuitem value="Properties" url="/data-definitions/properties/properties-manager.xhtml" ajax="true" 
                 styleClass="#{fn:endsWith(request.requestURL,'properties-manager.xhtml') ? 'menu-selected' : ''}" />
+            <p:menuitem value="Enumerations" url="/data-definitions/enums/enums-manager.xhtml" ajax="true" 
+                styleClass="#{fn:endsWith(request.requestURL,'enums-manager.xhtml') ? 'menu-selected' : ''}" />
 	    </p:menu>
 	</h:form>
     

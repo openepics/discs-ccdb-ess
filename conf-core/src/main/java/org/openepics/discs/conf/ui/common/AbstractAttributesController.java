@@ -26,9 +26,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
@@ -40,8 +38,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.validator.ValidatorException;
 import javax.inject.Inject;
-import javax.json.Json;
-import javax.json.JsonReader;
 
 import org.apache.commons.io.FilenameUtils;
 import org.openepics.discs.conf.ejb.DAO;
@@ -71,9 +67,6 @@ import org.openepics.discs.conf.views.DeviceBuiltInPropertyName;
 import org.openepics.discs.conf.views.EntityAttributeView;
 import org.openepics.discs.conf.views.EntityAttributeViewKind;
 import org.openepics.discs.conf.views.SlotBuiltInPropertyName;
-import org.openepics.seds.api.datatypes.SedsEnum;
-import org.openepics.seds.api.datatypes.SedsType;
-import org.openepics.seds.core.Seds;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.DefaultStreamedContent;
@@ -336,7 +329,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
         propertyValueUIElement = Conversion.getUIElementFromProperty(property);
         if (Conversion.getBuiltInDataType(property.getDataType()) == BuiltInDataType.USER_DEFINED_ENUM) {
             // if it is an enumeration, get the list of its options from the data type definition field
-            enumSelections = prepareEnumSelections(property.getDataType());
+            enumSelections = Conversion.prepareEnumSelections(property.getDataType());
         } else {
             enumSelections = null;
         }
@@ -382,7 +375,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
         propertyNameChangeDisabled = true;
 
         if ((enumDataType != null) && (propertyDataType == BuiltInDataType.USER_DEFINED_ENUM)) {
-            enumSelections = prepareEnumSelections(enumDataType);
+            enumSelections = Conversion.prepareEnumSelections(enumDataType);
         } else {
             enumSelections = null;
         }
@@ -772,13 +765,6 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
         return resultList;
     }
 
-    protected List<String> prepareEnumSelections(DataType dataType) {
-        JsonReader reader = Json.createReader(new StringReader(dataType.getDefinition()));
-        final SedsType seds = Seds.newDBConverter().deserialize(reader.readObject());
-        final SedsEnum sedsEnum = (SedsEnum) seds;
-        return Arrays.asList(sedsEnum.getElements());
-    }
-
     /** Called when the user selects a new {@link Property} in the dialog drop-down control.
      * @param event {@link javax.faces.event.ValueChangeEvent}
      */
@@ -790,7 +776,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
             propertyValue = null;
             if (Conversion.getBuiltInDataType(newProperty.getDataType()) == BuiltInDataType.USER_DEFINED_ENUM) {
                 // if it is an enumeration, get the list of its options from the data type definition field
-                enumSelections = prepareEnumSelections(newProperty.getDataType());
+                enumSelections = Conversion.prepareEnumSelections(newProperty.getDataType());
             } else {
                 enumSelections = null;
             }

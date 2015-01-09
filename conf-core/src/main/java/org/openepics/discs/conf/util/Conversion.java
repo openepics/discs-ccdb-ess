@@ -24,6 +24,7 @@ import java.text.ParseException;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
@@ -47,9 +48,11 @@ import org.openepics.discs.conf.ent.values.StrVectorValue;
 import org.openepics.discs.conf.ent.values.TimestampValue;
 import org.openepics.discs.conf.ent.values.Value;
 import org.openepics.seds.api.datatypes.SedsEnum;
+import org.openepics.seds.api.datatypes.SedsType;
 import org.openepics.seds.core.Seds;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 
 /**
  * A class holding utility methods for UI value conversion. All utility conversion methods are static.
@@ -505,5 +508,19 @@ public class Conversion {
             retStr.append('\n');
         }
         return retStr.toString();
+    }
+
+    /** This method returns the list of strings that defined the user defined enumeration.
+     * @param dataType the data type holding the enumeration definition
+     * @return a list of strings defining the enumeration
+     */
+    public static List<String> prepareEnumSelections(DataType dataType) {
+        // dataType must not be null and dataType.definition must not be empty or null
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(Preconditions.checkNotNull(dataType).getDefinition()));
+
+        JsonReader reader = Json.createReader(new StringReader(dataType.getDefinition()));
+        final SedsType seds = Seds.newDBConverter().deserialize(reader.readObject());
+        final SedsEnum sedsEnum = (SedsEnum) seds;
+        return Arrays.asList(sedsEnum.getElements());
     }
 }

@@ -41,7 +41,9 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "SlotPropertyValue.findByInRepository", query = "SELECT s FROM SlotPropertyValue s "
             + "WHERE s.inRepository = :inRepository"),
     @NamedQuery(name = "SlotPropertyValue.findByModifiedBy", query = "SELECT s FROM SlotPropertyValue s "
-            + "WHERE s.modifiedBy = :modifiedBy")
+            + "WHERE s.modifiedBy = :modifiedBy"),
+    @NamedQuery(name = "SlotPropertyValue.findByDataType", query = "SELECT s FROM SlotPropertyValue s "
+            + "WHERE s.property.dataType = :dataType")
 })
 public class SlotPropertyValue extends PropertyValue {
     private static final long serialVersionUID = -6418859111076538082L;

@@ -43,7 +43,9 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "AlignmentPropertyValue.findByInRepository", query = "SELECT a FROM AlignmentPropertyValue a "
             + "WHERE a.inRepository = :inRepository"),
     @NamedQuery(name = "AlignmentPropertyValue.findByModifiedBy", query = "SELECT a FROM AlignmentPropertyValue a "
-            + "WHERE a.modifiedBy = :modifiedBy")
+            + "WHERE a.modifiedBy = :modifiedBy"),
+    @NamedQuery(name = "AlignmentPropertyValue.findByDataType", query = "SELECT a FROM AlignmentPropertyValue a "
+            + "WHERE a.property.dataType = :dataType")
 })
 public class AlignmentPropertyValue extends PropertyValue {
     private static final long serialVersionUID = 4150617386716349440L;

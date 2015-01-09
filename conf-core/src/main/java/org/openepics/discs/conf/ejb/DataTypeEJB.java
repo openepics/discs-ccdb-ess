@@ -19,9 +19,16 @@
  */
 package org.openepics.discs.conf.ejb;
 
+import java.util.List;
+
 import javax.ejb.Stateless;
 
+import org.openepics.discs.conf.ent.AlignmentPropertyValue;
+import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.DataType;
+import org.openepics.discs.conf.ent.DevicePropertyValue;
+import org.openepics.discs.conf.ent.PropertyValue;
+import org.openepics.discs.conf.ent.SlotPropertyValue;
 
 /**
  * DAO service for accesing {@link DataType} entities
@@ -31,9 +38,29 @@ import org.openepics.discs.conf.ent.DataType;
  *
  */
 @Stateless
-public class DataTypeEJB extends ReadOnlyDAO<DataType> {
+public class DataTypeEJB extends DAO<DataType> {
     @Override
     protected void defineEntity() {
         defineEntityClass(DataType.class);
+    }
+
+    public boolean isDataTypeUsed(DataType dataType) {
+        List<? extends PropertyValue> valuesWithDataType;
+
+        valuesWithDataType = em.createNamedQuery("ComptypePropertyValue.findByDataType", ComptypePropertyValue.class)
+                .setParameter("dataType", dataType).getResultList();
+        if (valuesWithDataType.isEmpty()) {
+            valuesWithDataType = em.createNamedQuery("SlotPropertyValue.findByDataType", SlotPropertyValue.class)
+                    .setParameter("dataType", dataType).getResultList();
+            if (valuesWithDataType.isEmpty()) {
+                valuesWithDataType = em.createNamedQuery("DevicePropertyValue.findByDataType", DevicePropertyValue.class)
+                        .setParameter("dataType", dataType).getResultList();
+                if (valuesWithDataType.isEmpty()) {
+                    return !em.createNamedQuery("AlignmentPropertyValue.findByDataType", AlignmentPropertyValue.class)
+                            .setParameter("dataType", dataType).getResultList().isEmpty();
+                }
+            }
+        }
+        return true;
     }
 }

@@ -1,0 +1,79 @@
+<ui:composition template="../template.xhtml" 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui">
+    <ui:define name="dataDefContent">
+        <h:form id="enumsForm">
+            <p:commandButton ajax="true" actionListener="#{dataTypeManager.prepareAddPopup()}" value="Add new"
+                    oncomplete="addEnum.show()" style="margin-bottom: 1em;" />
+            <p:dataTable widgetVar="enumsTableVar" var="enum" id="enumsTable" value="#{dataTypeManager.dataTypes}" 
+                    resizableColumns="true" style="table-layout: fixed; word-wrap: break-word;" 
+                    filteredValue="#{dataTypeManager.fileteredDataTypes}" rows="15" paginator="true" 
+                    paginatorPosition="bottom">
+                <p:ajax event="filter" ignoreAutoUpdate="true"/>
+                <p:column headerText="Name" sortBy="#{enum.name}" filterBy="#{enum.name}" width="10%" filterMatchMode="contains">
+                    <h:outputText value="#{enum.name}" />
+                </p:column>
+    
+                <p:column headerText="Description" filterBy="#{enum.description}" width="30%" filterMatchMode="contains">
+                    <h:outputText value="#{enum.description}" />
+                </p:column>
+    
+                <p:column headerText="Definition">
+                    <h:outputText value="#{enum.definitionAsString}" width="50%"/>
+                </p:column>
+    
+                <p:column headerText="Action" style="text-align: center;" width="70">
+                    <p:commandLink ajax="true" title="Edit" update=":modifyEnumForm" oncomplete="modifyEnum.show()">
+                        <h:outputText styleClass="ui-icon ui-icon-pencil" style="display: inline-block !important; margin-right: 6px;" />
+                        <f:setPropertyActionListener value="#{enum}" target="#{dataTypeManager.selectedEnumToModify}" />
+                    </p:commandLink>
+                    <p:commandLink ajax="true" title="Delete" oncomplete="deleteEnum.show()">
+                        <h:outputText styleClass="ui-icon ui-icon-trash" style="display: inline-block !important; margin-right: 6px;" />
+                        <f:setPropertyActionListener value="#{enum}" target="#{dataTypeManager.selectedEnum}" />
+                    </p:commandLink>
+                    <p:commandLink ajax="true" title="Log">
+                        <h:outputText styleClass="ui-icon ui-icon-clock" style="display: inline-block !important; margin-right: 6px;" />
+                        <p:ajax event="click" listener="#{auditManager.selectEntityForLog(enum.enumeration, 'DATA_TYPE')}" 
+                                update=":enumLogForm" oncomplete="enumLog.show()"/>
+                    </p:commandLink>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+        
+        <ui:include src="../add-or-modify-dialogs/delete-confirmation.xhtml" >
+            <ui:param name="formId" value="deleteEnumForm" />
+            <ui:param name="dialogTitle" value="Delete enumeration" />
+            <ui:param name="widgetName" value="deleteEnum" />
+            <ui:param name="controller" value="#{dataTypeManager}" />
+            <ui:param name="submitHandler" value="onDelete" />
+            <ui:param name="formToUpdate" value=":enumsForm:enumsTable" />
+            <ui:param name="resetFilter" value="enumsTableVar.filter()" />               
+        </ui:include>
+        
+        <ui:include src="add-or-modify-enum.xhtml">
+            <ui:param name="formId" value="modifyEnumForm" />
+            <ui:param name="dialogTitle" value="Modify enumeration" />
+            <ui:param name="widgetName" value="modifyEnum" />
+            <ui:param name="submitHandler" value="onModify" />
+            <ui:param name="componentToUpdate" value=":enumsForm:enumsTable" />
+        </ui:include>
+    
+        <ui:include src="add-or-modify-enum.xhtml">
+            <ui:param name="formId" value="addEnumForm" />
+            <ui:param name="dialogTitle" value="Add Enumeration" />
+            <ui:param name="widgetName" value="addEnum" />
+            <ui:param name="submitHandler" value="onAdd" />
+            <ui:param name="componentToUpdate" value=":enumsForm:enumsTable" />
+        </ui:include>
+        
+        <ui:include src="../../audit/audit-log-table.xhtml">
+            <ui:param name="formId" value="enumLogForm" />
+            <ui:param name="dialogTitle" value="Enumeration Log" />
+            <ui:param name="widgetName" value="enumLog" />
+    </ui:include>
+        
+    </ui:define>
+</ui:composition>
