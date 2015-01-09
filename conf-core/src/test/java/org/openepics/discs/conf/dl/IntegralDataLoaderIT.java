@@ -34,6 +34,7 @@ import org.junit.runner.RunWith;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.dl.common.ValidationMessage;
+import org.openepics.discs.conf.ui.SlotManager;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
 import org.openepics.discs.conf.util.TestUtility;
 
@@ -50,6 +51,7 @@ public class IntegralDataLoaderIT {
     @Inject @PropertiesLoaderQualifier private DataLoader propertiesDataLoader;
     @Inject @ComponentTypesLoaderQualifier private DataLoader ctypesDataLoader;
     @Inject @DevicesLoaderQualifier private DataLoader devicesDataLoader;
+    @Inject private SlotManager slotManager;
 
     @Inject private DataLoaderHandler dataLoaderHandler;
 
@@ -93,7 +95,7 @@ public class IntegralDataLoaderIT {
         } else {
             final InputStream secondStream = this.getClass().getResourceAsStream("/dataloader/"+secondFileName);
 
-            final DataLoaderResult result = dataLoaderHandler.loadDataFromTwoFiles(stream, secondStream, fileName, secondFileName);
+            final DataLoaderResult result = slotManager.loadDataFromTwoFiles(stream, secondStream, fileName, secondFileName);
 
             assertFalse(fileName+" or "+secondFileName+" loading failed:" +
                     dumpDataLoaderMessages(result), result.isError());

@@ -26,6 +26,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.Nullable;
 
@@ -342,7 +344,7 @@ public abstract class AbstractDataLoader implements DataLoader {
 
         for (String column : getKnownColumnNames()) {
             int index = headerRow.indexOf(column);
-            if (index == -1 && getRequiredColumnNames().contains(column)) {
+            if (index == -1 && (getRequiredColumnNames().contains(column) || getUniqueColumnName().contains(column))) {
                 result.addGlobalMessage(ErrorMessage.HEADER_FIELD_MISSING, column);
             } else {
                 mapBuilder.put(column, index);
@@ -391,7 +393,7 @@ public abstract class AbstractDataLoader implements DataLoader {
      */
     protected String readCurrentRowCellForHeader(String columnName) {
         Preconditions.checkNotNull(indicies);
-        Integer index = indicies.get(columnName);
+        final Integer index = indicies.get(columnName);
 
         return (index != null && index != -1) ? currentRowData.get(index) : null;
     }
@@ -404,7 +406,7 @@ public abstract class AbstractDataLoader implements DataLoader {
      */
     protected String readCurrentRowCellForProperty(String propertyColumnName) {
         Preconditions.checkNotNull(propertyIndicies);
-        Integer index = propertyIndicies.get(propertyColumnName);
+        final Integer index = propertyIndicies.get(propertyColumnName);
 
         return (index != null && index != -1) ? currentRowData.get(index) : null;
     }
@@ -416,5 +418,20 @@ public abstract class AbstractDataLoader implements DataLoader {
     protected Set<String> getProperties() {
         Preconditions.checkNotNull(propertyIndicies);
         return propertyIndicies.keySet();
+    }
+
+    /**
+     * Handles all errors that happen if the user is not authorized to perform the operation
+     *
+     * @param logger    Instance of logger to log the exception to server log
+     * @param e         Exception that was caught in data loader implementation
+     */
+    protected void handleLoadingError(Logger logger, Exception e) {
+        logger.log(Level.FINE, e.getMessage(), e);
+        if (e.getCause() instanceof org.openepics.discs.conf.security.SecurityException) {
+            result.addRowMessage(ErrorMessage.NOT_AUTHORIZED, CMD_HEADER);
+        } else {
+            result.addRowMessage(ErrorMessage.SYSTEM_EXCEPTION);
+        }
     }
 }

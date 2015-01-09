@@ -5,8 +5,10 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import javax.annotation.Nullable;
+import javax.ejb.EJBTransactionRolledbackException;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
@@ -26,6 +28,9 @@ import org.openepics.discs.conf.ent.SlotPropertyValue;
 @Stateless
 @SlotsDataLoaderQualifier
 public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<SlotPropertyValue> implements DataLoader {
+
+    private static final Logger LOGGER = Logger.getLogger(SlotsDataLoader.class.getCanonicalName());
+
     /**
      * A key for {@link DataLoaderResult#getContextualData()} that will hold a {@link Set} of {@link Slot}s
      */
@@ -119,7 +124,7 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
         }
 
         if (SlotEJB.ROOT_COMPONENT_TYPE.equals(compType.getName())) {
-            result.addRowMessage(ErrorMessage.NOT_AUTHORIZED, HDR_CTYPE);
+            result.addRowMessage(ErrorMessage.NOT_AUTHORIZED, CMD_HEADER);
             return;
         }
 
@@ -136,9 +141,8 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
             }
             addOrUpdateProperties(slot);
 
-        } catch (Exception e) {
-            // ToDo add proper handling of security exception and other exceptions (already in commit 1a78b93)
-            result.addRowMessage(ErrorMessage.NOT_AUTHORIZED, CMD_HEADER);
+        } catch (EJBTransactionRolledbackException e) {
+            handleLoadingError(LOGGER, e);
         }
     }
 
@@ -157,9 +161,8 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
                 return;
             }
             slotEJB.delete(slotToDelete);
-        } catch (Exception e) {
-            // ToDo add proper handling of security exception and other exceptions (already in commit 1a78b93)
-            result.addRowMessage(ErrorMessage.NOT_AUTHORIZED, CMD_HEADER);
+        } catch (EJBTransactionRolledbackException e) {
+            handleLoadingError(LOGGER, e);
         }
     }
 
@@ -193,9 +196,8 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
             }
             slotToRename.setName(newName);
             slotEJB.save(slotToRename);
-        } catch (Exception e) {
-            // ToDo add proper handling of security exception and other exceptions (already in commit 1a78b93)
-            result.addRowMessage(ErrorMessage.NOT_AUTHORIZED, CMD_HEADER);
+        } catch (EJBTransactionRolledbackException e) {
+            handleLoadingError(LOGGER, e);
         }
     }
 

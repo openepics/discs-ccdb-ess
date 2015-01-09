@@ -23,8 +23,10 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import javax.annotation.Nullable;
+import javax.ejb.EJBTransactionRolledbackException;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
@@ -50,6 +52,9 @@ import org.openepics.discs.conf.ent.Property;
 @Stateless
 @DevicesLoaderQualifier
 public class DevicesDataLoader extends AbstractEntityWithPropertiesDataLoader<DevicePropertyValue> implements DataLoader {
+
+    private static final Logger LOGGER = Logger.getLogger(DevicesDataLoader.class.getCanonicalName());
+
     // Header column name constants
     private static final String HDR_SERIAL = "SERIAL";
     private static final String HDR_CTYPE = "CTYPE";
@@ -113,8 +118,8 @@ public class DevicesDataLoader extends AbstractEntityWithPropertiesDataLoader<De
                     final Device deviceToUpdate = deviceEJB.findDeviceBySerialNumber(serial);
                     addOrUpdateDevice(deviceToUpdate, compType, description, status, manufSerial, location, purchaseOrder, asmPosition, asmDescription, manufacturer, manufModel);
                     addOrUpdateProperties(deviceToUpdate);
-                } catch (Exception e) {
-                    result.addRowMessage(ErrorMessage.NOT_AUTHORIZED, CMD_HEADER);
+                } catch (EJBTransactionRolledbackException e) {
+                    handleLoadingError(LOGGER, e);
                 }
             }
         } else {
@@ -127,8 +132,8 @@ public class DevicesDataLoader extends AbstractEntityWithPropertiesDataLoader<De
                     addOrUpdateDevice(newDevice, compType, description, status, manufSerial, location, purchaseOrder, asmPosition, asmDescription, manufacturer, manufModel);
                     deviceEJB.add(newDevice);
                     addOrUpdateProperties(newDevice);
-                } catch (Exception e) {
-                    result.addRowMessage(ErrorMessage.NOT_AUTHORIZED, CMD_HEADER);
+                } catch (EJBTransactionRolledbackException e) {
+                    handleLoadingError(LOGGER, e);
                 }
             }
         }
@@ -142,8 +147,8 @@ public class DevicesDataLoader extends AbstractEntityWithPropertiesDataLoader<De
         } else {
             try {
                 deviceEJB.delete(deviceToDelete);
-            } catch (Exception e) {
-                result.addRowMessage(ErrorMessage.NOT_AUTHORIZED, CMD_HEADER);
+            } catch (EJBTransactionRolledbackException e) {
+                handleLoadingError(LOGGER, e);
             }
         }
     }

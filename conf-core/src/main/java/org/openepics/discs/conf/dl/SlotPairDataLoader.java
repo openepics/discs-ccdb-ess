@@ -4,7 +4,9 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
 
+import javax.ejb.EJBTransactionRolledbackException;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
@@ -23,6 +25,9 @@ import org.openepics.discs.conf.ent.SlotRelationName;
 @Stateless
 @SlotPairDataLoaderQualifier
 public class SlotPairDataLoader extends AbstractDataLoader implements DataLoader {
+
+    private static final Logger LOGGER = Logger.getLogger(SlotPairDataLoader.class.getCanonicalName());
+
     /**
      * A key for {@link DataLoaderResult#getContextualData()} that will hold a {@link Set} of {@link Slot}s
      */
@@ -107,7 +112,7 @@ public class SlotPairDataLoader extends AbstractDataLoader implements DataLoader
 
     @Override
     protected void handleUpdate() {
-        if (result.isError()) {
+        if (newSlots == null) {
             return;
         }
         for (Slot childSlot : childrenSlots) {
@@ -144,9 +149,8 @@ public class SlotPairDataLoader extends AbstractDataLoader implements DataLoader
                     } else {
                         result.addRowMessage(ErrorMessage.SAME_CHILD_AND_PARENT);
                     }
-                } catch (Exception e) {
-                    // ToDo add proper handling of security exception and other exceptions (already in commit 1a78b93)
-                    result.addRowMessage(ErrorMessage.NOT_AUTHORIZED, CMD_HEADER);
+                } catch (EJBTransactionRolledbackException e) {
+                    handleLoadingError(LOGGER, e);
                 }
             }
         }
@@ -161,9 +165,8 @@ public class SlotPairDataLoader extends AbstractDataLoader implements DataLoader
                 for (SlotPair slotPair : slotPairs) {
                     slotPairEJB.delete(slotPair);
                 }
-            } catch (Exception e) {
-                // ToDo add proper handling of security exception and other exceptions (already in commit 1a78b93)
-                result.addRowMessage(ErrorMessage.NOT_AUTHORIZED, CMD_HEADER);
+            } catch (EJBTransactionRolledbackException e) {
+                handleLoadingError(LOGGER, e);
             }
         } else {
             result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND);

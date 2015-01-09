@@ -25,7 +25,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
+import javax.ejb.EJBTransactionRolledbackException;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
@@ -45,6 +47,9 @@ import org.openepics.discs.conf.ent.Unit;
 @Stateless
 @UnitsLoaderQualifier
 public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
+
+    private static final Logger LOGGER = Logger.getLogger(UnitsDataLoader.class.getCanonicalName());
+
     // Header column name constants
     private static final String HDR_NAME = "NAME";
     private static final String HDR_QUANTITY = "QUANTITY";
@@ -101,18 +106,16 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
                 unitToUpdate.setQuantity(quantityFld);
                 unitToUpdate.setSymbol(symbolFld);
                 unitEJB.save(unitToUpdate);
-            } catch (Exception e) {
-                if (e instanceof SecurityException)
-                    result.addRowMessage(ErrorMessage.NOT_AUTHORIZED, CMD_HEADER);
+            } catch (EJBTransactionRolledbackException e) {
+                handleLoadingError(LOGGER, e);
             }
         } else {
             try {
                 final Unit unitToAdd = new Unit(nameFld, quantityFld, symbolFld, descriptionFld);
                 unitEJB.add(unitToAdd);
                 unitByName.put(unitToAdd.getName(), unitToAdd);
-            } catch (Exception e) {
-                if (e instanceof SecurityException)
-                    result.addRowMessage(ErrorMessage.NOT_AUTHORIZED, CMD_HEADER);
+            } catch (EJBTransactionRolledbackException e) {
+                handleLoadingError(LOGGER, e);
             }
         }
     }
@@ -127,9 +130,8 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
                 unitEJB.delete(unitToDelete);
                 unitByName.remove(unitToDelete.getName());
             }
-        } catch (Exception e) {
-            if (e instanceof SecurityException)
-                result.addRowMessage(ErrorMessage.NOT_AUTHORIZED);
+        } catch (EJBTransactionRolledbackException e) {
+            handleLoadingError(LOGGER, e);
         }
     }
 
@@ -159,9 +161,8 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
             } else {
                 result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_NAME);
             }
-        } catch (Exception e) {
-            if (e instanceof SecurityException)
-                result.addRowMessage(ErrorMessage.NOT_AUTHORIZED, CMD_HEADER);
+        } catch (EJBTransactionRolledbackException e) {
+            handleLoadingError(LOGGER, e);
         }
     }
 }

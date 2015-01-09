@@ -23,7 +23,9 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
 
+import javax.ejb.EJBTransactionRolledbackException;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
@@ -46,6 +48,9 @@ import org.openepics.discs.conf.ent.Property;
 @ComponentTypesLoaderQualifier
 public class ComponentTypesDataLoader extends AbstractEntityWithPropertiesDataLoader<ComptypePropertyValue>
     implements DataLoader {
+
+    private static final Logger LOGGER = Logger.getLogger(ComponentTypesDataLoader.class.getCanonicalName());
+
     // Header column name constants
     private static final String HDR_NAME = "NAME";
     private static final String HDR_DESC = "DESCRIPTION";
@@ -93,8 +98,8 @@ public class ComponentTypesDataLoader extends AbstractEntityWithPropertiesDataLo
             try {
                 componentTypeToUpdate.setDescription(descriptionFld);
                 addOrUpdateProperties(componentTypeToUpdate);
-            } catch (Exception e) {
-                result.addRowMessage(ErrorMessage.NOT_AUTHORIZED, CMD_HEADER);
+            } catch (EJBTransactionRolledbackException e) {
+                handleLoadingError(LOGGER, e);
             }
         } else {
             try {
@@ -102,8 +107,8 @@ public class ComponentTypesDataLoader extends AbstractEntityWithPropertiesDataLo
                 compTypeToAdd.setDescription(descriptionFld);
                 comptypeEJB.add(compTypeToAdd);
                 addOrUpdateProperties(compTypeToAdd);
-            } catch (Exception e) {
-                result.addRowMessage(ErrorMessage.NOT_AUTHORIZED, CMD_HEADER);
+            } catch (EJBTransactionRolledbackException e) {
+                handleLoadingError(LOGGER, e);
             }
         }
     }
@@ -120,8 +125,8 @@ public class ComponentTypesDataLoader extends AbstractEntityWithPropertiesDataLo
                 }
                 comptypeEJB.delete(componentTypeToDelete);
             }
-        } catch (Exception e) {
-            result.addRowMessage(ErrorMessage.NOT_AUTHORIZED, CMD_HEADER);
+        } catch (EJBTransactionRolledbackException e) {
+            handleLoadingError(LOGGER, e);
         }
     }
 
@@ -153,12 +158,8 @@ public class ComponentTypesDataLoader extends AbstractEntityWithPropertiesDataLo
             } else {
                 result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_NAME);
             }
-        } catch (Exception e) {
-            if (e instanceof SecurityException) {
-                result.addRowMessage(ErrorMessage.NOT_AUTHORIZED, CMD_HEADER);
-            } else {
-                result.addRowMessage(ErrorMessage.SYSTEM_EXCEPTION, CMD_HEADER);
-            }
+        } catch (EJBTransactionRolledbackException e) {
+            handleLoadingError(LOGGER, e);
         }
     }
 }

@@ -131,7 +131,7 @@ public class SlotManager implements Serializable, ExcelImportUIHandlers {
      * @param secondFileName the name of the Slot relationship Excel worksheet file
      * @return a {@link DataLoaderResult} containing information about the operation completion status
      */
-    private DataLoaderResult loadDataFromTwoFiles(InputStream firstInputStream, InputStream secondInputStream, String firstFileName, String secondFileName) {
+    public DataLoaderResult loadDataFromTwoFiles(InputStream firstInputStream, InputStream secondInputStream, String firstFileName, String secondFileName) {
         List<Pair<Integer, List<String>>> firstFileInputRows = null;
         List<Pair<Integer, List<String>>> secondFileInputRows = null;
 

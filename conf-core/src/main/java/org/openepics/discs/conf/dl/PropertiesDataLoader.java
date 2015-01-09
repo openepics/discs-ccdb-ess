@@ -28,6 +28,7 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.annotation.Nullable;
+import javax.ejb.EJBTransactionRolledbackException;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
@@ -125,9 +126,8 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
                 if (!result.isRowError()) {
                     propertyEJB.save(propertyToUpdate);
                 }
-            } catch (Exception e) {
-                if (e instanceof SecurityException)
-                    result.addRowMessage(ErrorMessage.NOT_AUTHORIZED, CMD_HEADER);
+            } catch (EJBTransactionRolledbackException e) {
+                handleLoadingError(LOGGER, e);
             }
         } else {
             try {
@@ -138,9 +138,8 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
                     propertyEJB.add(propertyToAdd);
                     propertyByName.put(propertyToAdd.getName(), propertyToAdd);
                 }
-            } catch (Exception e) {
-                if (e instanceof SecurityException)
-                    result.addRowMessage(ErrorMessage.NOT_AUTHORIZED, CMD_HEADER);
+            } catch (EJBTransactionRolledbackException e) {
+                handleLoadingError(LOGGER, e);
             }
         }
     }
@@ -155,9 +154,8 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
                 propertyEJB.delete(propertyToDelete);
                 propertyByName.remove(propertyToDelete.getName());
             }
-        } catch (Exception e) {
-            if (e instanceof SecurityException)
-                result.addRowMessage(ErrorMessage.NOT_AUTHORIZED, CMD_HEADER);
+        } catch (EJBTransactionRolledbackException e) {
+            handleLoadingError(LOGGER, e);
         }
     }
 
@@ -187,9 +185,8 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
             } else {
                 result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_NAME);
             }
-        } catch (Exception e) {
-            if (e instanceof SecurityException)
-                result.addRowMessage(ErrorMessage.NOT_AUTHORIZED, CMD_HEADER);
+        } catch (EJBTransactionRolledbackException e) {
+            handleLoadingError(LOGGER, e);
         }
     }
 
