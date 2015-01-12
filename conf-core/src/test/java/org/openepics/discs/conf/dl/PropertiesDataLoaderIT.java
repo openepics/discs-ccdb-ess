@@ -26,6 +26,9 @@ import javax.inject.Inject;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.persistence.ApplyScriptAfter;
+import org.jboss.arquillian.persistence.ApplyScriptBefore;
+import org.jboss.arquillian.persistence.UsingDataSet;
 import org.jboss.arquillian.transaction.api.annotation.TransactionMode;
 import org.jboss.arquillian.transaction.api.annotation.Transactional;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -37,31 +40,34 @@ import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.dl.common.ErrorMessage;
 import org.openepics.discs.conf.dl.common.ValidationMessage;
-import org.openepics.discs.conf.ejb.UnitEJB;
+import org.openepics.discs.conf.ejb.PropertyEJB;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
 import org.openepics.discs.conf.util.TestUtility;
 
 /**
- * Integration tests for {@link UnitsDataLoader}
+ * Integration tests for {@link PropertiesDataLoader}
  *
  * @author Andraz Pozar <andraz.pozar@cosylab.com>
  *
  */
 @RunWith(Arquillian.class)
-public class UnitsDataLoaderIT {
+@UsingDataSet(value= "unit.xml")
+@ApplyScriptBefore(value= "update_sequences.sql")
+public class PropertiesDataLoaderIT {
 
-    @Inject @UnitsLoaderQualifier private DataLoader unitsDataLoader;
+    @Inject @PropertiesLoaderQualifier private DataLoader propertiesDataLoader;
     @Inject private DataLoaderHandler dataLoaderHandler;
     @Inject private TestUtility testUtility;
-    @Inject private UnitEJB unitEJB;
+    @Inject private PropertyEJB propertyEJB;
 
     final static private String HDR_NAME = "NAME";
-    final static private String HDR_QUANTITY = "QUANTITY";
-    final static private String HDR_SYMBOL = "SYMBOL";
     final static private String HDR_DESC = "DESCRIPTION";
+    final static private String HDR_ASSOCIATION = "ASSOCIATION";
+    final static private String HDR_DATATYPE = "DATA-TYPE";
+    final static private String HDR_UNIT = "UNIT";
 
-    final static private int NUM_OF_UNITS_IF_FAILURE = 0;
-    final static private int NUM_OF_UNITS_IF_SUCCESS = 18;
+    final static private int NUM_OF_PROPS_IF_FAILURE = 0;
+    final static private int NUM_OF_PROPS_IF_SUCCESS = 31;
 
     final static private String DATALOADERS_PATH = "/dataloader/";
 
@@ -77,26 +83,40 @@ public class UnitsDataLoaderIT {
 
     @Test
     @Transactional(TransactionMode.DISABLED)
-    public void unitsImportRequiredFieldsFailure() {
+    public void propertiesImportRequiredFieldsFailureTest() {
         final List<ValidationMessage> expectedValidationMessages = new ArrayList<>();
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 4, HDR_NAME));
-        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 5, HDR_QUANTITY));
-        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 6, HDR_SYMBOL));
-        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 7, HDR_DESC));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 5, HDR_DESC));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 6, HDR_ASSOCIATION));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 8, HDR_DATATYPE));
 
-        final DataLoaderResult loaderResult = dataLoaderHandler.loadData(this.getClass().getResourceAsStream(DATALOADERS_PATH + "units-required-fields-filure-test.xlsx"), unitsDataLoader);
+        final DataLoaderResult loaderResult = dataLoaderHandler.loadData(this.getClass().getResourceAsStream(DATALOADERS_PATH + "properties-required-fields-filure-test.xlsx"), propertiesDataLoader);
 
         Assert.assertEquals(expectedValidationMessages, loaderResult.getMessages());
-        Assert.assertEquals(NUM_OF_UNITS_IF_FAILURE, unitEJB.findAll().size());
+        Assert.assertEquals(NUM_OF_PROPS_IF_FAILURE, propertyEJB.findAll().size());
     }
 
     @Test
     @Transactional(TransactionMode.DISABLED)
-    public void unitsImportTest() {
-        final DataLoaderResult loaderResult = dataLoaderHandler.loadData(this.getClass().getResourceAsStream(DATALOADERS_PATH + "units-test.xlsx"), unitsDataLoader);
+    public void propertiesImportEntityNotFoundFailureTest() {
+        final List<ValidationMessage> expectedValidationMessages = new ArrayList<>();
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, 3, HDR_UNIT));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, 4, HDR_DATATYPE));
+
+        final DataLoaderResult loaderResult = dataLoaderHandler.loadData(this.getClass().getResourceAsStream(DATALOADERS_PATH + "properties-entity-not-found-filure-test.xlsx"), propertiesDataLoader);
+
+        Assert.assertEquals(expectedValidationMessages, loaderResult.getMessages());
+        Assert.assertEquals(NUM_OF_PROPS_IF_FAILURE, propertyEJB.findAll().size());
+    }
+
+    @Test
+    @ApplyScriptAfter(value = "truncate_database.sql")
+    @Transactional(TransactionMode.DISABLED)
+    public void propertiesImportTest() {
+        final DataLoaderResult loaderResult = dataLoaderHandler.loadData(this.getClass().getResourceAsStream(DATALOADERS_PATH + "properties-test.xlsx"), propertiesDataLoader);
 
         Assert.assertFalse(loaderResult.isError());
-        Assert.assertEquals(NUM_OF_UNITS_IF_SUCCESS, unitEJB.findAll().size());
+        Assert.assertEquals(NUM_OF_PROPS_IF_SUCCESS, propertyEJB.findAll().size());
     }
 
 }

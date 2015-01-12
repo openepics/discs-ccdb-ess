@@ -34,7 +34,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.openepics.discs.conf.dl.SlotsAndSlotPairsDataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.dl.common.ExcelImportFileReader;
-import org.openepics.discs.conf.ui.common.DataLoaderHandler;
 import org.openepics.discs.conf.ui.common.ExcelImportUIHandlers;
 import org.primefaces.event.FileUploadEvent;
 
@@ -125,27 +124,27 @@ public class SlotManager implements Serializable, ExcelImportUIHandlers {
      * then the transaction is rolled back. In any case, the notification is shown to the user.
      * The two files in this case are the Slots information Excel worksheet and Slot relationship Excel worksheet.
      *
-     * @param firstInputStream input file containing the Slots information Excel worksheet
-     * @param secondInputStream input file containing the Slot relationship Excel worksheet
-     * @param firstFileName the name of the Slots information Excel worksheet file
-     * @param secondFileName the name of the Slot relationship Excel worksheet file
+     * @param slotsInputStream input file containing the Slots information Excel worksheet
+     * @param slotPairsInputStream input file containing the Slot relationship Excel worksheet
+     * @param slotsFileName the name of the Slots information Excel worksheet file
+     * @param slotPairsFileName the name of the Slot relationship Excel worksheet file
      * @return a {@link DataLoaderResult} containing information about the operation completion status
      */
-    public DataLoaderResult loadDataFromTwoFiles(InputStream firstInputStream, InputStream secondInputStream, String firstFileName, String secondFileName) {
-        List<Pair<Integer, List<String>>> firstFileInputRows = null;
-        List<Pair<Integer, List<String>>> secondFileInputRows = null;
+    private DataLoaderResult loadDataFromTwoFiles(InputStream slotsInputStream, InputStream slotPairsInputStream, String slotsFileName, String slotPairsFileName) {
+        List<Pair<Integer, List<String>>> slotsFileInputRows = null;
+        List<Pair<Integer, List<String>>> slotPairsFileInputRows = null;
 
-        if (firstInputStream != null) {
-            firstFileInputRows = ExcelImportFileReader.importExcelFile(firstInputStream);
+        if (slotsInputStream != null) {
+            slotsFileInputRows = ExcelImportFileReader.importExcelFile(slotsInputStream);
         } else {
-            firstFileInputRows = null;
+            slotsFileInputRows = null;
         }
 
-        if (secondInputStream != null) {
-            secondFileInputRows = ExcelImportFileReader.importExcelFile(secondInputStream);
+        if (slotPairsInputStream != null) {
+            slotPairsFileInputRows = ExcelImportFileReader.importExcelFile(slotPairsInputStream);
         } else {
-            secondFileInputRows = null;
+            slotPairsFileInputRows = null;
         }
-        return slotsAndSlotPairsLoader.loadDataToDatabase(firstFileInputRows, secondFileInputRows, firstFileName, secondFileName);
+        return slotsAndSlotPairsLoader.loadDataToDatabase(slotsFileInputRows, slotPairsFileInputRows, slotsFileName, slotPairsFileName);
     }
 }

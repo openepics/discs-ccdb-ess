@@ -19,6 +19,8 @@
  */
 package org.openepics.discs.conf.dl.common;
 
+import java.util.Objects;
+
 import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
 
@@ -32,8 +34,6 @@ public class ValidationMessage {
 
     private Integer row;
     private String column;
-    private EntityTypeOperation operation;
-    private EntityType entity;
     private String fileName;
     private String orphanSlotName;
 
@@ -52,17 +52,13 @@ public class ValidationMessage {
      * @param message the message enumeration
      * @param row
      * @param column
-     * @param operation
-     * @param entity
      */
     public ValidationMessage(ErrorMessage message, Integer row,
-                             String column, EntityTypeOperation operation, EntityType entity) {
+                             String column) {
         super();
         this.message = message;
         this.row = row;
         this.column = column;
-        this.operation = operation;
-        this.entity = entity;
     }
 
     public void setOrphanSlotName(String orphanSlotName) {
@@ -82,16 +78,6 @@ public class ValidationMessage {
     /** @return the column label, or null if not specified */
     public String getColumn() {
         return column;
-    }
-
-    /** @return operation on entity */
-    public EntityTypeOperation getOperation() {
-        return operation;
-    }
-
-    /** @return entity */
-    public EntityType getEntity() {
-        return entity;
     }
 
     @Override
@@ -116,25 +102,25 @@ public class ValidationMessage {
                 builder.append("Column ");
                 builder.append(getColumn());
             }
-            if ((getRow() != null || getColumn() != null) && (getEntity() != null || getOperation() != null)) {
-                builder.append(", ");
-            }
-            if (getEntity() != null) {
-                builder.append("Entity ");
-                builder.append(getEntity().name());
-            }
-            if ((getRow() != null || getColumn() != null || getEntity() != null) && getOperation() != null) {
-                builder.append(", ");
-            }
-            if (getOperation() != null) {
-                builder.append("Operation ");
-                builder.append(getOperation().name());
-            }
-            if (getRow() != null || getColumn() != null || getEntity() != null || getOperation() != null) {
-                builder.append(": ");
-            }
+            builder.append(": ");
             builder.append(getMessage().toString());
         }
         return builder.toString();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        final ValidationMessage valMesToCompare;
+        try {
+            valMesToCompare = (ValidationMessage) obj;
+        } catch (ClassCastException e) {
+            return false;
+        }
+
+        return Objects.equals(this.fileName, valMesToCompare.fileName) &&
+                Objects.equals(this.column, valMesToCompare.column) &&
+                Objects.equals(this.message, valMesToCompare.message) &&
+                Objects.equals(this.orphanSlotName, valMesToCompare.orphanSlotName) &&
+                Objects.equals(this.row, valMesToCompare.row);
     }
 }

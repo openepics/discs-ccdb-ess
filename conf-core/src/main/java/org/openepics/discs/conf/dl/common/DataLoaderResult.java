@@ -24,9 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.openepics.discs.conf.ent.EntityType;
-import org.openepics.discs.conf.ent.EntityTypeOperation;
-
 import com.google.common.base.Preconditions;
 
 /**
@@ -88,43 +85,31 @@ public class DataLoaderResult {
      * @param operation
      * @param entity
      */
-    private void addMessageInternal(ErrorMessage message, Integer row, String column,
-            EntityTypeOperation operation, EntityType entity) {
+    private void addMessageInternal(ErrorMessage message, Integer row, String column) {
         error = true;
-        messages.add(new ValidationMessage(message, row, column, operation, entity));
-    }
-
-    public void addGlobalMessage(ErrorMessage message, String column,
-            EntityTypeOperation operation, EntityType entity) {
-        addMessageInternal(message, currentRowNumber, column, operation, entity);
+        messages.add(new ValidationMessage(message, row, column));
     }
 
     public void addGlobalMessage(ErrorMessage message) {
-        addMessageInternal(message, currentRowNumber, null, null, null);
+        addMessageInternal(message, currentRowNumber, null);
     }
 
     public void addGlobalMessage(ErrorMessage message, String column) {
-        addMessageInternal(message, currentRowNumber, column, null, null);
-    }
-
-    public void addRowMessage(ErrorMessage message, String column,
-            EntityTypeOperation operation, EntityType entity) {
-        rowError = true;
-        addMessageInternal(message, currentRowNumber, column, operation, entity);
+        addMessageInternal(message, currentRowNumber, column);
     }
 
     public void addRowMessage(ErrorMessage message, String column) {
         rowError = true;
-        addMessageInternal(message, currentRowNumber, column, null, null);
+        addMessageInternal(message, currentRowNumber, column);
     }
 
     public void addRowMessage(ErrorMessage message) {
         rowError = true;
-        addMessageInternal(message, currentRowNumber, null, null, null);
+        addMessageInternal(message, currentRowNumber, null);
     }
 
     public void addOrphanSlotMessage(final String slotName) {
-        final ValidationMessage orphanSlotMessage = new ValidationMessage(ErrorMessage.ORPHAN_SLOT, null, null, null, null);
+        final ValidationMessage orphanSlotMessage = new ValidationMessage(ErrorMessage.ORPHAN_SLOT, null, null);
         orphanSlotMessage.setOrphanSlotName(slotName);
         messages.add(orphanSlotMessage);
         error = true;

@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+  <data_type id="33" modified_at="2014-12-17 10:37:59.607" modified_by="system" version="0" description="Integer number" name="Integer" scalar="true" />
+  <data_type id="34" modified_at="2014-12-17 10:37:59.608" modified_by="system" version="0" description="Double precision floating point" name="Double" scalar="true" />
+  <data_type id="35" modified_at="2014-12-17 10:37:59.609" modified_by="system" version="0" description="String of characters (text)" name="String" scalar="true" />
+  <data_type id="36" modified_at="2014-12-17 10:37:59.610" modified_by="system" version="0" description="Date and time" name="Timestamp" scalar="true" />
+  <data_type id="37" modified_at="2014-12-17 10:37:59.611" modified_by="system" version="0" description="Vector of integer numbers (1D array)" name="Integers Vector" scalar="false" />
+  <data_type id="38" modified_at="2014-12-17 10:37:59.612" modified_by="system" version="0" description="Vector of double precision numbers (1D array)" name="Doubles Vector" scalar="false" />
+  <data_type id="39" modified_at="2014-12-17 10:37:59.613" modified_by="system" version="0" description="List of strings (1D array)" name="Strings List" scalar="false" />
+  <data_type id="40" modified_at="2014-12-17 10:37:59.614" modified_by="system" version="0" description="Table of double precision numbers (2D array)" name="Doubles Table" scalar="false" />
+  <data_type id="41" modified_at="2014-12-17 10:37:59.622" modified_by="system" version="0" description="Testing of enums" name="Test enums" scalar="false" definition="{'meta':{'type':'SedsEnum','protocol':'SEDSv1','version':'1.0.0'},'data':{'selected':'TEST1'},'type':{'elements':['TEST1','TEST2','TEST3','TEST4']}}" />
+</dataset>
+
