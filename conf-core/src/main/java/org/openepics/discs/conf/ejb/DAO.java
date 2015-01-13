@@ -19,12 +19,13 @@
  */
 package org.openepics.discs.conf.ejb;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.openepics.discs.conf.auditlog.Audit;
+import org.openepics.discs.conf.ent.Artifact;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
+import org.openepics.discs.conf.ent.EntityWithArtifacts;
+import org.openepics.discs.conf.ent.PropertyValue;
 import org.openepics.discs.conf.security.Authorized;
 import org.openepics.discs.conf.util.CRUDOperation;
 
@@ -41,9 +42,6 @@ import com.google.common.base.Preconditions;
  * @param <T> The entity type for which this DAO is defined.
  */
 public abstract class DAO<T> extends ReadOnlyDAO<T> {
-    @SuppressWarnings("rawtypes")
-    private Map<Class, ParentChildInterface> interfaces;
-
     /**
      * Adds a new entity to the database
      *
@@ -133,58 +131,29 @@ public abstract class DAO<T> extends ReadOnlyDAO<T> {
         em.remove(mergedChild);
     }
 
-    /**
-     * Lazy initialization getter for the interfaces member, solves the problem with constructor order
-     *
-     * @return
-     */
-    @SuppressWarnings("rawtypes")
-    protected  Map<Class, ParentChildInterface> getResolverInterfaces() {
-        if (interfaces == null)
-        {
-            interfaces = new HashMap<Class, ParentChildInterface>(3);
-        }
-        return interfaces;
-    }
-
-    /**
-     * Defines a calling interface between the parent and a child collection
-     *
-     * @param childClass the child collection
-     * @param iface the interface
-     */
-    protected <S> void defineParentChildInterface(Class<S> childClass, ParentChildInterface<T, S> iface) {
-        Preconditions.checkNotNull(childClass);
-
-        getResolverInterfaces().put(childClass, iface);
-    }
-
-    /**
-     * Retrieves a {@link ParentChildInterface} for a child entity
-     *
-     * @param child the child entity
-     * @return the {@link ParentChildInterface}
-     */
-    private <S> ParentChildInterface<T, S> getResolverInterface(S child) {
-        @SuppressWarnings("unchecked")
-        final ParentChildInterface<T,S> resolver = getResolverInterfaces().get(child.getClass());
-        if (resolver == null) {
-            throw new UnsupportedOperationException("No child interface defined for the class "+
-                                                    child.getClass().getCanonicalName() + " in " +
-                                                        this.getClass().getSimpleName()+" DAO.");
-        }
-        return resolver;
-    }
-
+    @SuppressWarnings("unchecked")
     private <S> T getParent(S child) {
         Preconditions.checkNotNull(child);
-        final T parent = getResolverInterface(child).getParentFromChild(child);
-        Preconditions.checkNotNull(parent);
-        return parent;
+        if (child instanceof PropertyValue) {
+            return (T) ((PropertyValue)child).getPropertiesParent();
+        } else if (child instanceof Artifact) {
+            return (T) ((Artifact)child).getArtifactsParent();
+        } else {
+            throw new IllegalStateException("getParent called on entity that has neither properties nor artifacts.");
+        }
     }
 
+    @SuppressWarnings("unchecked")
     private <S> List<S> getChildrenFromParent(S child) {
         Preconditions.checkNotNull(child);
-        return getResolverInterface(child).getChildCollection(getParent(child));
+        if (child instanceof PropertyValue) {
+            final EntityWithProperties parent = ((PropertyValue)child).getPropertiesParent();
+            return (List<S>) parent.getEntityPropertyList();
+        } else if (child instanceof Artifact) {
+            final EntityWithArtifacts parent = ((Artifact)child).getArtifactsParent();
+            return (List<S>) parent.getEntityArtifactList(); 
+        } else {
+            throw new IllegalStateException("getParent called on entity that has neither properties nor artifacts.");
+        }
     }
 }

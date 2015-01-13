@@ -31,6 +31,8 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.openepics.discs.conf.ejb.EntityWithProperties;
+
 /**
  * {@link PropertyValue} attached to a {@link ComponentType} entity
  *
@@ -112,6 +114,16 @@ public class ComptypePropertyValue extends PropertyValue {
 
     public void setDefinitionTargetDevice(boolean isDefinitionTargetDevice) {
         this.isDefinitionTargetDevice = isDefinitionTargetDevice;
+    }
+
+    @Override
+    public void setPropertiesParent(EntityWithProperties owner) {
+        setComponentType((ComponentType) owner);
+    }
+
+    @Override
+    public EntityWithProperties getPropertiesParent() {
+        return getComponentType();
     }
 
     @Override

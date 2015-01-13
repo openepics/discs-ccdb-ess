@@ -35,9 +35,9 @@ import javax.validation.constraints.Size;
  *
  */
 @Entity
-@Table(name = "artifacts")
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public class Artifact extends ConfigurationEntity {
+abstract public class Artifact extends ConfigurationEntity {
+
     private static final long serialVersionUID = 2926588619140123269L;
 
     @Basic(optional = false)
@@ -104,4 +104,19 @@ public class Artifact extends ConfigurationEntity {
     public void setUri(String uri) {
         this.uri = uri;
     }
+
+    /** Implementing classes should implement this method to provide unified interface
+     * for accessing the artifact parent
+     *
+     * @return An entity that is hosting this artifact
+     */
+    public abstract EntityWithArtifacts getArtifactsParent();
+
+    /**
+     * Implementing classes should implement this method to provide unified interface for accessing the
+     * artifact parent
+     *
+     * @param parent the parent entity
+     */
+    public abstract void setArtifactsParent(EntityWithArtifacts parent);
 }

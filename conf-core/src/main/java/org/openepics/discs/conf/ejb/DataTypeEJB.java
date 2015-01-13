@@ -40,8 +40,8 @@ import org.openepics.discs.conf.ent.SlotPropertyValue;
 @Stateless
 public class DataTypeEJB extends DAO<DataType> {
     @Override
-    protected void defineEntity() {
-        defineEntityClass(DataType.class);
+    protected Class<DataType> getEntityClass() {
+        return DataType.class;
     }
 
     public boolean isDataTypeUsed(DataType dataType) {

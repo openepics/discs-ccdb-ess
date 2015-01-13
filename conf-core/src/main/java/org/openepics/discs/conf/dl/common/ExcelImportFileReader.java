@@ -24,6 +24,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -50,34 +52,33 @@ public class ExcelImportFileReader {
      *            supported (.xslx).
      * @return Only the lines from the first worksheet that contain a string
      *         value. Lines with the empty first cell are not part of the return
-     *         set. The first element of each row is a string representation of
-     *         its index (starting with 1).
+     *         set. Each row is represented as a pair of the row number and a list of columns.
      */
-    public static List<List<String>> importExcelFile(InputStream inputStream) {
+    public static List<Pair<Integer, List<String>>> importExcelFile(InputStream inputStream) {
         boolean headerRowFound = false;
-        final List<List<String>> allRows = new ArrayList<>();
-
+        final List<Pair<Integer, List<String>>> result= new ArrayList<>();
+        
         try {
             final XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
             final XSSFSheet sheet = workbook.getSheetAt(0);
 
             int headerRowLength = 0;
 
-            for (Row row : sheet) {
-                if (Objects.equal(ExcelCell.asStringOrNull(row.getCell(0), workbook), AbstractDataLoader.CMD_HEADER)) {
+            for (Row excelRow : sheet) {
+                if (Objects.equal(ExcelCell.asStringOrNull(excelRow.getCell(0), workbook), AbstractDataLoader.CMD_HEADER)) {
                     headerRowFound = true;
-                    headerRowLength = row.getLastCellNum();
+                    headerRowLength = excelRow.getLastCellNum();
                 }
 
-                final String firstColumnValue = Strings.emptyToNull(ExcelCell.asStringOrNull(row.getCell(0), workbook));
+                final String firstColumnValue = Strings.emptyToNull(ExcelCell.asStringOrNull(excelRow.getCell(0), workbook));
                 if (headerRowFound && firstColumnValue != null && !firstColumnValue.trim().isEmpty()) {
-                    final List<String> oneRow = new ArrayList<>();
-                    oneRow.add(String.valueOf(row.getRowNum() + 1));
-                    final int lastCellIndex = headerRowLength > row.getLastCellNum() ? headerRowLength : row.getLastCellNum();
+                    final List<String> row = new ArrayList<>();                    
+                    final int rowNumber = excelRow.getRowNum() + 1;                    
+                    final int lastCellIndex = headerRowLength > excelRow.getLastCellNum() ? headerRowLength : excelRow.getLastCellNum();
                     for (int i = 0; i < lastCellIndex; i++) {
-                        oneRow.add(ExcelCell.asStringOrNull(row.getCell(i), workbook));
+                        row.add(ExcelCell.asStringOrNull(excelRow.getCell(i), workbook));
                     }
-                    allRows.add(oneRow);
+                    result.add(new ImmutablePair<Integer, List<String>>(rowNumber, row));
                 }
             }
 
@@ -87,6 +88,6 @@ public class ExcelImportFileReader {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return allRows;
+        return result;
     }
 }

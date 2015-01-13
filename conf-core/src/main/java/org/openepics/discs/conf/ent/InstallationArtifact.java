@@ -71,6 +71,16 @@ public class InstallationArtifact extends Artifact {
     public void setInstallationRecord(InstallationRecord installationRecord) {
         this.installationRecord = installationRecord;
     }
+    
+    @Override
+    public EntityWithArtifacts getArtifactsParent() {
+        return getInstallationRecord();
+    }
+
+    @Override
+    public void setArtifactsParent(EntityWithArtifacts parent) {
+        setInstallationRecord((InstallationRecord) parent);
+    }
 
     @Override
     public String toString() {

@@ -63,7 +63,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
     @NamedQuery(name = "InstallationRecord.lastRecordForDevice", query = "SELECT i FROM InstallationRecord i WHERE i.id = (SELECT MAX (ii.id) FROM InstallationRecord ii "
             + "WHERE ii.device = :device) ")
 })
-public class InstallationRecord extends ConfigurationEntity {
+public class InstallationRecord extends ConfigurationEntity
+    implements EntityWithArtifacts {
+
     private static final long serialVersionUID = -2450506818908726847L;
 
     @Basic(optional = false)
@@ -160,6 +162,14 @@ public class InstallationRecord extends ConfigurationEntity {
     @JsonIgnore
     public List<InstallationArtifact> getInstallationArtifactList() {
         return installationArtifactList;
+    }
+
+    @XmlTransient
+    @JsonIgnore
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T extends Artifact> List<T> getEntityArtifactList() {
+        return (List<T>) getInstallationArtifactList();
     }
 
     @Override

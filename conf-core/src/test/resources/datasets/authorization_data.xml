@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+  <config config_id="48" name="schema_version" prop_value="1" version="0" />
+  <ccdb_user user_id="admin" name="admin" version="0" />
+  <role role_id="admin" description="test role" version="0" />
+  <user_role user_role_id="1" candelegate="true" endtime="2014-12-17 10:37:59.598" isrolemanager="true" starttime="2014-12-17 10:37:59.598" version="0" role="admin" ccdb_user="admin" />
+  <privilege privilege_id="2" oper="CREATE" resource="COMPONENT_TYPE" role="admin" />
+  <privilege privilege_id="3" oper="UPDATE" resource="COMPONENT_TYPE" role="admin" />
+  <privilege privilege_id="4" oper="RENAME" resource="COMPONENT_TYPE" role="admin" />
+  <privilege privilege_id="5" oper="DELETE" resource="COMPONENT_TYPE" role="admin" />
+  <privilege privilege_id="6" oper="CREATE" resource="UNIT" role="admin" />
+  <privilege privilege_id="7" oper="UPDATE" resource="UNIT" role="admin" />
+  <privilege privilege_id="8" oper="RENAME" resource="UNIT" role="admin" />
+  <privilege privilege_id="9" oper="DELETE" resource="UNIT" role="admin" />
+  <privilege privilege_id="10" oper="CREATE" resource="PROPERTY" role="admin" />
+  <privilege privilege_id="11" oper="UPDATE" resource="PROPERTY" role="admin" />
+  <privilege privilege_id="12" oper="RENAME" resource="PROPERTY" role="admin" />
+  <privilege privilege_id="13" oper="DELETE" resource="PROPERTY" role="admin" />
+  <privilege privilege_id="14" oper="CREATE" resource="SLOT" role="admin" />
+  <privilege privilege_id="15" oper="UPDATE" resource="SLOT" role="admin" />
+  <privilege privilege_id="16" oper="RENAME" resource="SLOT" role="admin" />
+  <privilege privilege_id="17" oper="DELETE" resource="SLOT" role="admin" />
+  <privilege privilege_id="18" oper="CREATE" resource="DEVICE" role="admin" />
+  <privilege privilege_id="19" oper="UPDATE" resource="DEVICE" role="admin" />
+  <privilege privilege_id="20" oper="DELETE" resource="DEVICE" role="admin" />
+  <privilege privilege_id="21" oper="CREATE" resource="ALIGNMENT_RECORD" role="admin" />
+  <privilege privilege_id="22" oper="UPDATE" resource="ALIGNMENT_RECORD" role="admin" />
+  <privilege privilege_id="23" oper="RENAME" resource="ALIGNMENT_RECORD" role="admin" />
+  <privilege privilege_id="24" oper="DELETE" resource="ALIGNMENT_RECORD" role="admin" />
+  <privilege privilege_id="25" oper="CREATE" resource="DATA_TYPE" role="admin" />
+  <privilege privilege_id="26" oper="UPDATE" resource="DATA_TYPE" role="admin" />
+  <privilege privilege_id="27" oper="RENAME" resource="DATA_TYPE" role="admin" />
+  <privilege privilege_id="28" oper="DELETE" resource="DATA_TYPE" role="admin" />
+  <privilege privilege_id="29" oper="CREATE" resource="INSTALLATION_RECORD" role="admin" />
+  <privilege privilege_id="30" oper="UPDATE" resource="INSTALLATION_RECORD" role="admin" />
+  <privilege privilege_id="31" oper="RENAME" resource="INSTALLATION_RECORD" role="admin" />
+  <privilege privilege_id="32" oper="DELETE" resource="INSTALLATION_RECORD" role="admin" />
+</dataset>
+

@@ -20,6 +20,9 @@
 package org.openepics.discs.conf.dl.common;
 
 import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * Interface for all data loaders
@@ -28,12 +31,14 @@ import java.util.List;
  *
  */
 public interface DataLoader {
-
     /**
      * Saves data read from input file to the database
      *
      * @param inputRows {@link List} of all rows containing data from input file
+     * @param contextualData optional map of objects passed with string keys 
+     * 
      * @return {@link DataLoaderResult} describing the outcome of the data loading
      */
-    public DataLoaderResult loadDataToDatabase(List<List<String>> inputRows);
+    public DataLoaderResult loadDataToDatabase(List<Pair<Integer, List<String>>> inputRows,  
+            Map<String, Object> contextualData);
 }

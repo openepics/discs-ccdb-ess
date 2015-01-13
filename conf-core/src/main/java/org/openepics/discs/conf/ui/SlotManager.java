@@ -23,14 +23,17 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.List;
 
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.openepics.discs.conf.dl.SlotsAndSlotPairsDataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
-import org.openepics.discs.conf.ui.common.DataLoaderHandler;
+import org.openepics.discs.conf.dl.common.ExcelImportFileReader;
 import org.openepics.discs.conf.ui.common.ExcelImportUIHandlers;
 import org.primefaces.event.FileUploadEvent;
 
@@ -46,7 +49,7 @@ import com.google.common.io.ByteStreams;
 public class SlotManager implements Serializable, ExcelImportUIHandlers {
     private static final long serialVersionUID = 7271953102489952318L;
 
-    @Inject transient private DataLoaderHandler dataLoaderHandler;
+    @Inject transient private SlotsAndSlotPairsDataLoader slotsAndSlotPairsLoader;
 
     private byte[] importSlotData, importSlotRelationshipsData;
     private String firstFileName, secondFileName;
@@ -67,7 +70,7 @@ public class SlotManager implements Serializable, ExcelImportUIHandlers {
 
     @Override
     public void doImport() {
-        loaderResult = dataLoaderHandler.loadDataFromTwoFiles(
+        loaderResult = loadDataFromTwoFiles(
                     importSlotData != null ? new ByteArrayInputStream(importSlotData) : null,
                     importSlotRelationshipsData != null ? new ByteArrayInputStream(importSlotRelationshipsData) : null,
                     firstFileName,
@@ -113,5 +116,35 @@ public class SlotManager implements Serializable, ExcelImportUIHandlers {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Loads data from two import files to {@link List} and calls method on certain data loader
+     * to save the data in the database. If the result of save is {@link DataLoaderResult#isError()}
+     * then the transaction is rolled back. In any case, the notification is shown to the user.
+     * The two files in this case are the Slots information Excel worksheet and Slot relationship Excel worksheet.
+     *
+     * @param slotsInputStream input file containing the Slots information Excel worksheet
+     * @param slotPairsInputStream input file containing the Slot relationship Excel worksheet
+     * @param slotsFileName the name of the Slots information Excel worksheet file
+     * @param slotPairsFileName the name of the Slot relationship Excel worksheet file
+     * @return a {@link DataLoaderResult} containing information about the operation completion status
+     */
+    private DataLoaderResult loadDataFromTwoFiles(InputStream slotsInputStream, InputStream slotPairsInputStream, String slotsFileName, String slotPairsFileName) {
+        List<Pair<Integer, List<String>>> slotsFileInputRows = null;
+        List<Pair<Integer, List<String>>> slotPairsFileInputRows = null;
+
+        if (slotsInputStream != null) {
+            slotsFileInputRows = ExcelImportFileReader.importExcelFile(slotsInputStream);
+        } else {
+            slotsFileInputRows = null;
+        }
+
+        if (slotPairsInputStream != null) {
+            slotPairsFileInputRows = ExcelImportFileReader.importExcelFile(slotPairsInputStream);
+        } else {
+            slotPairsFileInputRows = null;
+        }
+        return slotsAndSlotPairsLoader.loadDataToDatabase(slotsFileInputRows, slotPairsFileInputRows, slotsFileName, slotPairsFileName);
     }
 }

@@ -19,12 +19,8 @@
  */
 package org.openepics.discs.conf.ejb;
 
-import java.util.List;
-
 import javax.ejb.Stateless;
 
-import org.openepics.discs.conf.ent.AlignmentArtifact;
-import org.openepics.discs.conf.ent.AlignmentPropertyValue;
 import org.openepics.discs.conf.ent.AlignmentRecord;
 
 /**
@@ -36,31 +32,7 @@ import org.openepics.discs.conf.ent.AlignmentRecord;
 @Stateless
 public class AlignmentEJB extends DAO<AlignmentRecord> {
     @Override
-    protected void defineEntity() {
-        defineEntityClass(AlignmentRecord.class);
-
-        defineParentChildInterface(AlignmentPropertyValue.class,
-                new ParentChildInterface<AlignmentRecord, AlignmentPropertyValue>() {
-            @Override
-            public List<AlignmentPropertyValue> getChildCollection(AlignmentRecord record) {
-                return record.getAlignmentPropertyList();
-            }
-            @Override
-            public AlignmentRecord getParentFromChild(AlignmentPropertyValue child) {
-                return child.getAlignmentRecord();
-            }
-        });
-
-        defineParentChildInterface(AlignmentArtifact.class,
-                new ParentChildInterface<AlignmentRecord, AlignmentArtifact>() {
-            @Override
-            public List<AlignmentArtifact> getChildCollection(AlignmentRecord record) {
-                return record.getAlignmentArtifactList();
-            }
-            @Override
-            public AlignmentRecord getParentFromChild(AlignmentArtifact child) {
-                return child.getAlignmentRecord();
-            }
-        });
+    protected Class<AlignmentRecord> getEntityClass() {
+        return AlignmentRecord.class;
     }
 }

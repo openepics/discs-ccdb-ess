@@ -67,6 +67,16 @@ public class SlotArtifact extends Artifact {
     public void setSlot(Slot slot) {
         this.slot = slot;
     }
+    
+    @Override
+    public EntityWithArtifacts getArtifactsParent() {
+        return getSlot();
+    }
+
+    @Override
+    public void setArtifactsParent(EntityWithArtifacts parent) {
+        setSlot((Slot) parent);
+    }
 
     @Override
     public String toString() {

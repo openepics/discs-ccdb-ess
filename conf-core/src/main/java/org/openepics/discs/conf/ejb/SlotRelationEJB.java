@@ -34,11 +34,6 @@ import org.openepics.discs.conf.ent.SlotRelationName;
  */
 @Stateless
 public class SlotRelationEJB extends ReadOnlyDAO<SlotRelation> {
-    @Override
-    protected void defineEntity() {
-        defineEntityClass(SlotRelation.class);
-    }
-
     /**
      * {@link ReadOnlyDAO#findByName(String)} not applicable for {@link SlotRelation} entities.
      *
@@ -63,5 +58,10 @@ public class SlotRelationEJB extends ReadOnlyDAO<SlotRelation> {
             // no result is not an exception
             return null;
         }
+    }
+
+    @Override
+    protected Class<SlotRelation> getEntityClass() {
+        return SlotRelation.class;
     }
 }

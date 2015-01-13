@@ -28,6 +28,8 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.openepics.discs.conf.ejb.EntityWithProperties;
+
 /**
  * A {@link PropertyValue} used for {@link AlignmentRecord}s
  *
@@ -70,6 +72,16 @@ public class AlignmentPropertyValue extends PropertyValue {
     }
     public void setAlignmentRecord(AlignmentRecord alignmentRecord) {
         this.alignmentRecord = alignmentRecord;
+    }
+
+    @Override
+    public void setPropertiesParent(EntityWithProperties owner) {
+        setAlignmentRecord((AlignmentRecord) owner);
+    }
+
+    @Override
+    public EntityWithProperties getPropertiesParent() {
+        return getAlignmentRecord();
     }
 
     @Override

@@ -28,6 +28,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
 
+import org.openepics.discs.conf.ejb.EntityWithProperties;
 import org.openepics.discs.conf.ent.values.Value;
 
 /**
@@ -93,4 +94,20 @@ public abstract class PropertyValue extends ConfigurationEntity {
     public void setUnit(Unit unit) {
         this.unit = unit;
     }
+
+    /**
+     * Sub-classes should override this setter, to set the owner entity of the property value
+     * Gives consistent interface for working with all {@link PropertyValue} types
+     * 
+     * @param owner the owner entity of this {@link PropertyValue}
+     */
+    public abstract void setPropertiesParent(EntityWithProperties owner);
+    
+    /**
+     * Sub-classes should override this getter, to get the owner entity of the property value
+     * Gives consistent interface for working with all {@link PropertyValue} types
+     * 
+     * @return the owner entity of this {@link PropertyValue}
+     */
+    public abstract EntityWithProperties getPropertiesParent();
 }

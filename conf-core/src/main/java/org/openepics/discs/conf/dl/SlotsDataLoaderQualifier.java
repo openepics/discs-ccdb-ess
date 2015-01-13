@@ -17,22 +17,28 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.ejb;
+package org.openepics.discs.conf.dl;
 
-import javax.ejb.Stateless;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.PARAMETER;
+import static java.lang.annotation.ElementType.TYPE;
 
-import org.openepics.discs.conf.ent.Unit;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import javax.inject.Qualifier;
+
+import org.openepics.discs.conf.dl.common.DataLoader;
 
 /**
+ * Annotation to specify which implementation of {@link DataLoader} should be injected
  *
- * @author vuppala
- * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
+ * @author Andraz Pozar <andraz.pozar@cosylab.com>
  *
  */
-@Stateless
-public class UnitEJB extends DAO<Unit> {
-    @Override
-    protected Class<Unit> getEntityClass() {
-        return Unit.class;
-    }
-}
+@Qualifier
+@Retention(RetentionPolicy.RUNTIME)
+@Target({TYPE, METHOD, FIELD, PARAMETER})
+public @interface SlotsDataLoaderQualifier {}

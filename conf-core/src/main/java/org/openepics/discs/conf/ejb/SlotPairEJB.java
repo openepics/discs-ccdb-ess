@@ -41,12 +41,6 @@ import com.google.common.base.Preconditions;
  */
 @Stateless
 public class SlotPairEJB extends DAO<SlotPair> {
-
-    @Override
-    protected void defineEntity() {
-        defineEntityClass(SlotPair.class);
-    }
-
     /**
      * Queries for a {@link SlotPair} given parent, child slot names and a relation type
      * @param childName child slot name (optional with wild card character)
@@ -195,7 +189,12 @@ public class SlotPairEJB extends DAO<SlotPair> {
         moveUpOrDown(parentSlot, slot, "SlotPair.findSucceedingPairs");
     }
 
-    private void moveUpOrDown(Slot parentSlot, Slot slot, String queryName) {
+    @Override
+    protected Class<SlotPair> getEntityClass() {
+        return SlotPair.class;
+    }
+    
+	private void moveUpOrDown(Slot parentSlot, Slot slot, String queryName) {
         SlotPair mySlotPair = null;
         for (SlotPair pair : slot.getPairsInWhichThisSlotIsAChildList()) {
             if (pair.getParentSlot().equals(parentSlot) &&

@@ -27,6 +27,8 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.openepics.discs.conf.ejb.EntityWithProperties;
+
 /**
  * {@link PropertyValue} used with Device Instances
  *
@@ -69,6 +71,16 @@ public class DevicePropertyValue extends PropertyValue {
     }
     public void setDevice(Device device) {
         this.device = device;
+    }
+
+    @Override
+    public void setPropertiesParent(EntityWithProperties owner) {
+        setDevice((Device) owner);
+    }
+
+    @Override
+    public EntityWithProperties getPropertiesParent() {
+        return getDevice();
     }
 
     @Override
