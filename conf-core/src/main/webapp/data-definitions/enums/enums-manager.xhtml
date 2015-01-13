@@ -8,9 +8,9 @@
         <h:form id="enumsForm">
             <p:commandButton ajax="true" actionListener="#{dataTypeManager.prepareAddPopup()}" value="Add new"
                     oncomplete="addEnum.show()" style="margin-bottom: 1em;" />
-            <p:dataTable widgetVar="enumsTableVar" var="enum" id="enumsTable" value="#{dataTypeManager.dataTypes}" 
+            <p:dataTable widgetVar="enumsTableVar" var="enum" id="enumsTable" value="#{dataTypeManager.dataTypeViews}" 
                     resizableColumns="true" style="table-layout: fixed; word-wrap: break-word;" 
-                    filteredValue="#{dataTypeManager.fileteredDataTypes}" rows="15" paginator="true" 
+                    filteredValue="#{dataTypeManager.filteredDataTypeViews}" rows="15" paginator="true" 
                     paginatorPosition="bottom">
                 <p:ajax event="filter" ignoreAutoUpdate="true"/>
                 <p:column headerText="Name" sortBy="#{enum.name}" filterBy="#{enum.name}" width="10%" filterMatchMode="contains">

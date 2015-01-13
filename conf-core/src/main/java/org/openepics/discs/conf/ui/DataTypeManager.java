@@ -61,9 +61,10 @@ public class DataTypeManager implements Serializable {
 
     @Inject private transient  DataTypeEJB dataTypeEJB;
 
-    private List<UserEnumerationView> dataTypes;
-    private List<UserEnumerationView> fileteredDataTypes;
+    private List<UserEnumerationView> dataTypeViews;
+    private List<UserEnumerationView> filteredDataTypesViews;
     private UserEnumerationView selectedEnum;
+    private List<DataType> dataTypes;
 
     // * * * * * * * Add/modify dialog fields * * * * * * *
     private String name;
@@ -82,28 +83,36 @@ public class DataTypeManager implements Serializable {
     }
 
     /**
+     * @return A list of all {@link DataType} entities in the database that are user defined enumerations.
+     * The list members are wrapped into the {@link UserEnumerationView}.
+     */
+    public List<UserEnumerationView> getDataTypeViews() {
+        return dataTypeViews;
+    }
+
+    /**
      * @return A list of all {@link DataType} entities in the database.
      */
-    public List<UserEnumerationView> getDataTypes() {
+    public List<DataType> getDataTypes() {
         return dataTypes;
     }
 
     /** Getter for PrimeFaces filtering functionality.
      * @return A list of data types as filtered by the UI
      */
-    public List<UserEnumerationView> getFileteredDataTypes() {
-        return fileteredDataTypes;
+    public List<UserEnumerationView> getFilteredDataTypeViews() {
+        return filteredDataTypesViews;
     }
 
     /** Setter for PrimeFaces filtering functionality.
-     * @param fileteredDataTypes A list of filtered properties, set b PrimeFaces based on user filters.
+     * @param filteredDataTypeViews A list of filtered properties, set b PrimeFaces based on user filters.
      */
-    public void setFileteredDataTypes(List<UserEnumerationView> fileteredDataTypes) {
-        this.fileteredDataTypes = fileteredDataTypes;
+    public void setFilteredDataTypeViews(List<UserEnumerationView> filteredDataTypeViews) {
+        this.filteredDataTypesViews = filteredDataTypeViews;
     }
 
     private void refreshUserDataTypes() {
-        List<DataType> allDataTypes = dataTypeEJB.findAll();
+        dataTypes = dataTypeEJB.findAll();
 
         final List<String> builtInDataTypeNames = new ArrayList<>();
         for (BuiltInDataType type : BuiltInDataType.values()) {
@@ -111,11 +120,11 @@ public class DataTypeManager implements Serializable {
         }
 
         // transform the list of DataType into a list of UserEnumerationView
-        dataTypes = Lists.transform(
+        dataTypeViews = Lists.transform(
                         // filter returns a collection, transform works only on Lists
                         Lists.newArrayList(
                                 // Omit all the built-in data types.
-                                Collections2.filter(allDataTypes,
+                                Collections2.filter(dataTypes,
                                         new Predicate<DataType>() {
                                             @Override
                                             public boolean apply(DataType input) {
@@ -180,7 +189,7 @@ public class DataTypeManager implements Serializable {
         final DataType enumerationDataType = selectedEnum.getEnumeration();
         if (dataTypeEJB.isDataTypeUsed(enumerationDataType)) {
             Utility.showMessage(FacesMessage.SEVERITY_WARN, "In use",
-                        "The enumeration data type cannot be deleted, because it is in use.");
+                        "The enumeration data type cannot be deleted because it is in use.");
         } else {
             dataTypeEJB.delete(enumerationDataType);
             refreshUserDataTypes();
@@ -201,7 +210,7 @@ public class DataTypeManager implements Serializable {
             throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_FATAL, "Error", "No value to parse."));
         }
 
-        List<String> enumDefs = multilineToDefinitions(value.toString());
+        final List<String> enumDefs = multilineToDefinitions(value.toString());
         // check whether redefinition is possible and correct
         if ((selectedEnum != null) && !isEnumModificationSafe(enumDefs)) {
             throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_FATAL, "Error",
@@ -218,7 +227,7 @@ public class DataTypeManager implements Serializable {
     }
 
     private List<String> multilineToDefinitions(String multiline) {
-        List<String> definitions = new ArrayList<>();
+        final List<String> definitions = new ArrayList<>();
         try (Scanner scanner = new Scanner(multiline)) {
 
             int lines = 0;
@@ -261,7 +270,7 @@ public class DataTypeManager implements Serializable {
 
     private String jsonDefinitionFromList(List<String> definitionValues) {
         final SedsEnum testEnum = Seds.newFactory().newEnum(definitionValues.get(0), definitionValues.toArray(new String[] {}));
-        JsonObject jsonEnum = Seds.newDBConverter().serialize(testEnum);
+        final JsonObject jsonEnum = Seds.newDBConverter().serialize(testEnum);
         return  jsonEnum.toString();
     }
 
