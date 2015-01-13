@@ -38,17 +38,19 @@ import org.openepics.discs.conf.ejb.DataTypeEJB;
 import org.openepics.discs.conf.ent.DataType;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.util.BuiltInDataType;
+import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.views.UserEnumerationView;
 import org.openepics.seds.api.datatypes.SedsEnum;
 import org.openepics.seds.core.Seds;
 
 import com.google.common.base.Function;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 
 /**
- *
+ * The Java EE managed bean for supporting UI actions for data types an user defined enumeration manipulation.
  * @author vuppala
  * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  */
@@ -86,15 +88,21 @@ public class DataTypeManager implements Serializable {
         return dataTypes;
     }
 
+    /** Getter for PrimeFaces filtering functionality.
+     * @return A list of data types as filtered by the UI
+     */
     public List<UserEnumerationView> getFileteredDataTypes() {
         return fileteredDataTypes;
     }
 
+    /** Setter for PrimeFaces filtering functionality.
+     * @param fileteredDataTypes A list of filtered properties, set b PrimeFaces based on user filters.
+     */
     public void setFileteredDataTypes(List<UserEnumerationView> fileteredDataTypes) {
         this.fileteredDataTypes = fileteredDataTypes;
     }
 
-    public void refreshUserDataTypes() {
+    private void refreshUserDataTypes() {
         List<DataType> allDataTypes = dataTypeEJB.findAll();
 
         final List<String> builtInDataTypeNames = new ArrayList<>();
@@ -123,6 +131,9 @@ public class DataTypeManager implements Serializable {
                     );
     }
 
+    /**
+     * This method clears all input fields used in the "Add enumeration" dialog.
+     */
     public void prepareAddPopup() {
         selectedEnum = null;
         name = null;
@@ -136,6 +147,9 @@ public class DataTypeManager implements Serializable {
         definition = definitionsToMultiline(selectedEnum.getDefinition());
     }
 
+    /**
+     * Method that saves a new enumeration definition, when user presses the "Save" button in the "Add new" dialog.
+     */
     public void onAdd() {
         final List<String> enumValues = multilineToDefinitions(definition);
         final DataType newEnum = new DataType(name, description, false, jsonDefinitionFromList(enumValues));
@@ -143,6 +157,10 @@ public class DataTypeManager implements Serializable {
         refreshUserDataTypes();
     }
 
+    /**
+     * Method that saves the modified enumeration definition, when user presses the "Save" button in the
+     * "Modify enumeration" dialog.
+     */
     public void onModify() {
         final DataType modifiedEnum = selectedEnum.getEnumeration();
         final List<String> enumValues = multilineToDefinitions(definition);
@@ -153,8 +171,20 @@ public class DataTypeManager implements Serializable {
         dataTypeEJB.save(modifiedEnum);
     }
 
+    /**
+     * Method that deletes the user enumeration if that is allowed. Enumeration deletion is prevented if the enumeration
+     * is used in some property value.
+     */
     public void onDelete() {
-        // TODO implement
+        Preconditions.checkNotNull(selectedEnum);
+        final DataType enumerationDataType = selectedEnum.getEnumeration();
+        if (dataTypeEJB.isDataTypeUsed(enumerationDataType)) {
+            Utility.showMessage(FacesMessage.SEVERITY_WARN, "In use",
+                        "The enumeration data type cannot be deleted, because it is in use.");
+        } else {
+            dataTypeEJB.delete(enumerationDataType);
+            refreshUserDataTypes();
+        }
     }
 
     /** Validates the enumeration inputs. For new enumeration it verifies that all values contain only alphanumeric
@@ -265,10 +295,16 @@ public class DataTypeManager implements Serializable {
         prepareModifyPopup();
     }
 
+    /**
+     * @return The name of the user defined enumeration.
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * @param name The name of the user defined enumeration as set by the user through the UI.
+     */
     public void setName(String name) {
         this.name = name;
     }
