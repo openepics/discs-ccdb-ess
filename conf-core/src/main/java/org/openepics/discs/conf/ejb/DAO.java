@@ -25,6 +25,7 @@ import org.openepics.discs.conf.auditlog.Audit;
 import org.openepics.discs.conf.ent.Artifact;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.EntityWithArtifacts;
+import org.openepics.discs.conf.ent.EntityWithProperties;
 import org.openepics.discs.conf.ent.PropertyValue;
 import org.openepics.discs.conf.security.Authorized;
 import org.openepics.discs.conf.util.CRUDOperation;

@@ -28,8 +28,6 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.openepics.discs.conf.ejb.EntityWithProperties;
-
 /**
  * A {@link PropertyValue} used for {@link AlignmentRecord}s
  *

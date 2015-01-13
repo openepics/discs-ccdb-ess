@@ -43,8 +43,6 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.openepics.discs.conf.ejb.EntityWithProperties;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**

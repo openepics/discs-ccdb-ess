@@ -27,8 +27,6 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.openepics.discs.conf.ejb.EntityWithProperties;
-
 /**
  *
  * @author vuppala

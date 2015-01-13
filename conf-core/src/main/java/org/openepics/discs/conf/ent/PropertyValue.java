@@ -28,7 +28,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
 
-import org.openepics.discs.conf.ejb.EntityWithProperties;
 import org.openepics.discs.conf.ent.values.Value;
 
 /**
