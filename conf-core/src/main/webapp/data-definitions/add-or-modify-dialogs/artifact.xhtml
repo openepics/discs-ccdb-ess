@@ -61,7 +61,7 @@
                     <p:row>
                         <p:column class="alignRight dialog-labels-width-2" style="padding-top: 0.5em;">
                             <h:panelGroup id="urlLabel">
-                                <h:outputLabel value="URL :" rendered="#{!controller.isArtifactInternal}"/>
+                                <p:outputLabel value="URL :" rendered="#{!controller.isArtifactInternal}"/>
                             </h:panelGroup>
                         </p:column>
                         <p:column>
@@ -88,7 +88,7 @@
                                     <div class="ui-message ui-message-warn ui-widget ui-corner-all">
                                         <span class="ui-message-info-icon"></span>
                                         <span class="ui-message-info-detail">
-                                            <h:outputLabel value="#{controller.importFileName} uploaded" />
+                                            <p:outputLabel value="#{controller.importFileName} uploaded" />
                                         </span>
                                     </div>
                                 </h:panelGroup>

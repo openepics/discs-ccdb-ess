@@ -47,6 +47,8 @@ import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableList.Builder;
 import com.google.common.collect.Lists;
 
 /**
@@ -65,6 +67,8 @@ public class DataTypeManager implements Serializable {
     private List<UserEnumerationView> filteredDataTypesViews;
     private UserEnumerationView selectedEnum;
     private List<DataType> dataTypes;
+    private List<String> builtInDataTypeNames;
+
 
     // * * * * * * * Add/modify dialog fields * * * * * * *
     private String name;
@@ -79,6 +83,12 @@ public class DataTypeManager implements Serializable {
 
     @PostConstruct
     public void init() {
+        Builder<String> builtInDataTypeBuilder = ImmutableList.builder();
+        for (BuiltInDataType type : BuiltInDataType.values()) {
+            builtInDataTypeBuilder.add(type.toString());
+        }
+        builtInDataTypeNames = builtInDataTypeBuilder.build();
+
         refreshUserDataTypes();
     }
 
@@ -111,17 +121,34 @@ public class DataTypeManager implements Serializable {
         this.filteredDataTypesViews = filteredDataTypeViews;
     }
 
-    private void refreshUserDataTypes() {
-        dataTypes = dataTypeEJB.findAll();
-
-        final List<String> builtInDataTypeNames = new ArrayList<>();
-        for (BuiltInDataType type : BuiltInDataType.values()) {
-            builtInDataTypeNames.add(type.toString());
+    /** The validator for the UI input field for user defined enumeration name.
+     * Called when saving enumeration.
+     * @param ctx {@link javax.faces.context.FacesContext}
+     * @param component {@link javax.faces.component.UIComponent}
+     * @param value The value
+     * @throws ValidatorException {@link javax.faces.validator.ValidatorException}
+     */
+    public void nameValidator(FacesContext ctx, UIComponent component, Object value) {
+        if (value == null) {
+            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_FATAL, "Error", "Enumeration name required."));
         }
 
-        // transform the list of DataType into a list of UserEnumerationView
-        dataTypeViews = Lists.transform(
-                        // filter returns a collection, transform works only on Lists
+        final String enumName = value.toString();
+        final DataType existingDataType = dataTypeEJB.findByName(enumName);
+        if ((selectedEnum == null && existingDataType != null)
+                || (selectedEnum != null && !selectedEnum.getEnumeration().equals(existingDataType))) {
+            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_FATAL, "Error",
+                    "Enumeration with the same name already exists."));
+        }
+    }
+
+    private void refreshUserDataTypes() {
+        dataTypes = ImmutableList.copyOf(dataTypeEJB.findAll());
+
+        dataTypeViews = ImmutableList.copyOf(
+                    // transform the List<DataType> into a List<UserEnumerationView>
+                    Lists.transform(
+                        // filter returns a Collection, transform works only on Lists
                         Lists.newArrayList(
                                 // Omit all the built-in data types.
                                 Collections2.filter(dataTypes,
@@ -137,7 +164,7 @@ public class DataTypeManager implements Serializable {
                                     return new UserEnumerationView(input);
                                 }
                             }
-                    );
+                    ));
     }
 
     /**
@@ -188,7 +215,7 @@ public class DataTypeManager implements Serializable {
         Preconditions.checkNotNull(selectedEnum);
         final DataType enumerationDataType = selectedEnum.getEnumeration();
         if (dataTypeEJB.isDataTypeUsed(enumerationDataType)) {
-            Utility.showMessage(FacesMessage.SEVERITY_WARN, "In use",
+            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "In use",
                         "The enumeration data type cannot be deleted because it is in use.");
         } else {
             dataTypeEJB.delete(enumerationDataType);

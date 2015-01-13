@@ -16,7 +16,7 @@
                     </p:column>
                     <p:column>
                         <p:inputText id="enumName" value="#{dataTypeManager.name}" required="true" 
-                            requiredMessage="Please enter a name"/>
+                            requiredMessage="Please enter a name" validator="#{dataTypeManager.nameValidator}"/>
                         <p:message for="enumName"/>
                     </p:column>
                 </p:row>
