@@ -81,13 +81,19 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
     }
 
     @Override
-    protected List<String> getKnownColumnNames() { return KNOWN_COLUMNS; }
+    protected List<String> getKnownColumnNames() {
+        return KNOWN_COLUMNS;
+    }
 
     @Override
-    protected Set<String> getRequiredColumnNames() { return REQUIRED_COLUMNS; }
+    protected Set<String> getRequiredColumnNames() {
+        return REQUIRED_COLUMNS;
+    }
 
     @Override
-    protected String getUniqueColumnName() { return HDR_NAME; }
+    protected String getUniqueColumnName() {
+        return HDR_NAME;
+    }
 
     @Override
     protected void assignMembersForCurrentRow() {

@@ -44,16 +44,18 @@ import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
 
+/**
+ * Implementation of data loader for slots.
+ *
+ * @author Andraz Pozar <andraz.pozar@cosylab.com>
+ * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
+ * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
+ */
 @Stateless
 @SlotsDataLoaderQualifier
 public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<SlotPropertyValue> implements DataLoader {
 
     private static final Logger LOGGER = Logger.getLogger(SlotsDataLoader.class.getCanonicalName());
-
-    /**
-     * A key for {@link DataLoaderResult#getContextualData()} that will hold a {@link Set} of {@link Slot}s
-     */
-    public static final String CTX_NEW_SLOTS = "CTX_NEW_SLOTS";
 
     private static final String HDR_NAME = "NAME";
     private static final String HDR_CTYPE = "CTYPE";
@@ -90,17 +92,23 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
         super.init();
         newSlots = new ArrayList<>();
 
-        result.getContextualData().put(CTX_NEW_SLOTS, newSlots);
+        result.getContextualData().put(DataLoaderResult.CTX_NEW_SLOTS, newSlots);
     }
 
     @Override
-    protected List<String> getKnownColumnNames() { return KNOWN_COLUMNS; }
+    protected List<String> getKnownColumnNames() {
+        return KNOWN_COLUMNS;
+    }
 
     @Override
-    protected Set<String> getRequiredColumnNames() { return REQUIRED_COLUMNS; }
+    protected Set<String> getRequiredColumnNames() {
+        return REQUIRED_COLUMNS;
+    }
 
     @Override
-    protected String getUniqueColumnName() { return HDR_NAME; }
+    protected String getUniqueColumnName() {
+        return HDR_NAME;
+    }
 
     @Override
     protected void assignMembersForCurrentRow() {
@@ -113,14 +121,11 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
 
         @Nullable String isHostingString = readCurrentRowCellForHeader(HDR_IS_HOSTING_SLOT);
         isHosting = null;
-        if (isHostingString != null && !isHostingString.equalsIgnoreCase(Boolean.FALSE.toString()) && !isHostingString.equalsIgnoreCase(Boolean.TRUE.toString())) {
+        if (isHostingString != null && !isHostingString.equalsIgnoreCase(Boolean.FALSE.toString())
+                && !isHostingString.equalsIgnoreCase(Boolean.TRUE.toString())) {
             result.addRowMessage(ErrorMessage.SHOULD_BE_BOOLEAN_VALUE, HDR_IS_HOSTING_SLOT);
-        }
-
-        try {
-            isHosting = Boolean.parseBoolean(isHostingString);
-        } catch (Exception e) {
-            isHosting = null;
+        } else {
+            isHosting = isHostingString != null ? Boolean.parseBoolean(isHostingString) : null;
         }
 
         blp                = readCurrentRowCellForHeaderAsDouble(HDR_BLP);
@@ -221,7 +226,9 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
     }
 
     @Override
-    protected boolean checkPropertyAssociation(Property property) { return property.isSlotAssociation(); }
+    protected boolean checkPropertyAssociation(Property property) {
+        return property.isSlotAssociation();
+    }
 
     @SuppressWarnings("unchecked")
     @Override
@@ -237,7 +244,7 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
 
         try {
             double doubleValue = Double.parseDouble(stringValue);
-                return doubleValue;
+            return doubleValue;
         } catch (NumberFormatException e) {
             result.addRowMessage(ErrorMessage.SHOULD_BE_NUMERIC_VALUE, columnName);
             return null;

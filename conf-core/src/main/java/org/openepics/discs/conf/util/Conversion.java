@@ -62,6 +62,10 @@ import com.google.common.base.Strings;
  */
 public class Conversion {
 
+    private Conversion() {
+        // utility class
+    }
+
     /**
      * Format string for acceptable date format (ISO 8601: yyyy-MM-dd).
      */

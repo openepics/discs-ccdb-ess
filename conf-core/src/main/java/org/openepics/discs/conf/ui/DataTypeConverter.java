@@ -60,7 +60,6 @@ public class DataTypeConverter implements Converter {
         if (value == null || "".equals(value)) {
             return "";
         } else {
-            // logger.log(Level.INFO, "Exp number: " + ((Experiment) value).getId().toString());
             return String.valueOf(((DataType) value).getId());
         }
     }

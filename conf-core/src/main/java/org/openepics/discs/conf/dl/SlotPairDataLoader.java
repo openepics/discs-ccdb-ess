@@ -41,17 +41,18 @@ import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotRelation;
 import org.openepics.discs.conf.ent.SlotRelationName;
 
+/**
+ * Implementation of data loader for slot pairs.
+ *
+ * @author Andraz Pozar <andraz.pozar@cosylab.com>
+ * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
+ * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
+ */
 @Stateless
 @SlotPairDataLoaderQualifier
 public class SlotPairDataLoader extends AbstractDataLoader implements DataLoader {
 
     private static final Logger LOGGER = Logger.getLogger(SlotPairDataLoader.class.getCanonicalName());
-
-    /**
-     * A key for {@link DataLoaderResult#getContextualData()} that will hold a {@link Set} of {@link Slot}s
-     */
-    public static final String CTX_NEW_SLOTS = "CTX_NEW_SLOTS";
-    public static final String CTX_NEW_SLOT_PAIR_CHILDREN = "CTX_NEW_SLOT_PAIR_CHILDREN";
 
     private static final String HDR_RELATION = "RELATION";
     private static final String HDR_PARENT = "PARENT";
@@ -77,16 +78,20 @@ public class SlotPairDataLoader extends AbstractDataLoader implements DataLoader
     protected void init() {
         super.init();
 
-        newSlots = (List<Slot>) getFromContext(CTX_NEW_SLOTS);
+        newSlots = (List<Slot>) getFromContext(DataLoaderResult.CTX_NEW_SLOTS);
         newSlotPairChildren = new HashSet<>();
-        result.getContextualData().put(CTX_NEW_SLOT_PAIR_CHILDREN, newSlotPairChildren);
+        result.getContextualData().put(DataLoaderResult.CTX_NEW_SLOT_PAIR_CHILDREN, newSlotPairChildren);
     }
 
     @Override
-    protected List<String> getKnownColumnNames() { return KNOWN_COLUMNS; }
+    protected List<String> getKnownColumnNames() {
+        return KNOWN_COLUMNS;
+    }
 
     @Override
-    protected Set<String> getRequiredColumnNames() { return REQUIRED_COLUMNS; }
+    protected Set<String> getRequiredColumnNames() {
+        return REQUIRED_COLUMNS;
+    }
 
     @Override
     protected String getUniqueColumnName() {
@@ -103,7 +108,7 @@ public class SlotPairDataLoader extends AbstractDataLoader implements DataLoader
         childrenSlots = slotEJB.findSlotByNameContainingString(childString);
         parentSlot = slotEJB.findByName(parentString);
 
-        if (childrenSlots == null || childrenSlots.size() == 0) {
+        if (childrenSlots == null || childrenSlots.isEmpty()) {
             result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_CHILD);
         }
 
@@ -179,7 +184,7 @@ public class SlotPairDataLoader extends AbstractDataLoader implements DataLoader
     protected void handleDelete() {
         final List<SlotPair> slotPairs = slotPairEJB.findSlotPairsByParentChildRelation(childString, parentString,
                 slotRelationName);
-        if (slotPairs.size() != 0) {
+        if (!slotPairs.isEmpty()) {
             try {
                 for (SlotPair slotPair : slotPairs) {
                     slotPairEJB.delete(slotPair);

@@ -51,7 +51,8 @@ import org.openepics.discs.conf.ent.Property;
  */
 @Stateless
 @DevicesLoaderQualifier
-public class DevicesDataLoader extends AbstractEntityWithPropertiesDataLoader<DevicePropertyValue> implements DataLoader {
+public class DevicesDataLoader extends AbstractEntityWithPropertiesDataLoader<DevicePropertyValue>
+                                                                                        implements DataLoader {
 
     private static final Logger LOGGER = Logger.getLogger(DevicesDataLoader.class.getCanonicalName());
 
@@ -73,23 +74,32 @@ public class DevicesDataLoader extends AbstractEntityWithPropertiesDataLoader<De
             HDR_MANUFACTURER, HDR_MANUF_MODEL);
     private static final Set<String> REQUIRED_COLUMNS = new HashSet<>(Arrays.asList(HDR_CTYPE));
 
-    private String serial, componentType, description, manufSerial, location, purchaseOrder, asmPosition, asmDescription, manufacturer, manufModel;
+    private String serial, componentType, description, manufSerial, location, purchaseOrder, asmPosition;
+    private String asmDescription, manufacturer, manufModel;
     private DeviceStatus status;
 
     @Inject private ComptypeEJB comptypeEJB;
     @Inject private DeviceEJB deviceEJB;
 
     @Override
-    protected List<String> getKnownColumnNames() { return KNOWN_COLUMNS; }
+    protected List<String> getKnownColumnNames() {
+        return KNOWN_COLUMNS;
+    }
 
     @Override
-    protected Set<String> getRequiredColumnNames() { return REQUIRED_COLUMNS; }
+    protected Set<String> getRequiredColumnNames() {
+        return REQUIRED_COLUMNS;
+    }
 
     @Override
-    protected String getUniqueColumnName() { return HDR_SERIAL; }
+    protected String getUniqueColumnName() {
+        return HDR_SERIAL;
+    }
 
     @Override
-    protected boolean checkPropertyAssociation(Property property) { return property.isDeviceAssociation(); }
+    protected boolean checkPropertyAssociation(Property property) {
+        return property.isDeviceAssociation();
+    }
 
     @Override
     protected void assignMembersForCurrentRow() {
@@ -116,7 +126,8 @@ public class DevicesDataLoader extends AbstractEntityWithPropertiesDataLoader<De
             } else {
                 try {
                     final Device deviceToUpdate = deviceEJB.findDeviceBySerialNumber(serial);
-                    addOrUpdateDevice(deviceToUpdate, compType, description, status, manufSerial, location, purchaseOrder, asmPosition, asmDescription, manufacturer, manufModel);
+                    addOrUpdateDevice(deviceToUpdate, compType, description, status, manufSerial, location,
+                            purchaseOrder, asmPosition, asmDescription, manufacturer, manufModel);
                     addOrUpdateProperties(deviceToUpdate);
                 } catch (EJBTransactionRolledbackException e) {
                     handleLoadingError(LOGGER, e);
@@ -129,7 +140,8 @@ public class DevicesDataLoader extends AbstractEntityWithPropertiesDataLoader<De
             } else {
                 try {
                     final Device newDevice = new Device(serial);
-                    addOrUpdateDevice(newDevice, compType, description, status, manufSerial, location, purchaseOrder, asmPosition, asmDescription, manufacturer, manufModel);
+                    addOrUpdateDevice(newDevice, compType, description, status, manufSerial, location, purchaseOrder,
+                            asmPosition, asmDescription, manufacturer, manufModel);
                     deviceEJB.add(newDevice);
                     addOrUpdateProperties(newDevice);
                 } catch (EJBTransactionRolledbackException e) {
@@ -154,13 +166,19 @@ public class DevicesDataLoader extends AbstractEntityWithPropertiesDataLoader<De
     }
 
     @Override
-    protected void handleRename() { result.addRowMessage(ErrorMessage.COMMAND_NOT_VALID, CMD_HEADER); }
+    protected void handleRename() {
+        result.addRowMessage(ErrorMessage.COMMAND_NOT_VALID, CMD_HEADER);
+    }
 
     @SuppressWarnings("unchecked")
     @Override
-    protected DAO<Device> getDAO() { return deviceEJB; }
+    protected DAO<Device> getDAO() {
+        return deviceEJB;
+    }
 
-    private void addOrUpdateDevice(Device device, ComponentType compType, String description, DeviceStatus status, String manufSerial, String location, String purchaseOrder, String asmPosition, String asmDescription, String manufacturer, String manufModel) {
+    private void addOrUpdateDevice(Device device, ComponentType compType, String description, DeviceStatus status,
+            String manufSerial, String location, String purchaseOrder, String asmPosition, String asmDescription,
+            String manufacturer, String manufModel) {
         device.setComponentType(compType);
         device.setDescription(description);
         device.setAssemblyPosition(asmPosition);

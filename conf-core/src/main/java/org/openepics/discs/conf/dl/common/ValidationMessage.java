@@ -110,12 +110,11 @@ public class ValidationMessage {
 
     @Override
     public boolean equals(Object obj) {
-        final ValidationMessage valMesToCompare;
-        try {
-            valMesToCompare = (ValidationMessage) obj;
-        } catch (ClassCastException e) {
+        if ((obj == null) || !(obj instanceof ValidationMessage)) {
             return false;
         }
+
+        final ValidationMessage  valMesToCompare = (ValidationMessage) obj;
 
         return Objects.equals(this.fileName, valMesToCompare.fileName) &&
                 Objects.equals(this.column, valMesToCompare.column) &&
@@ -123,4 +122,17 @@ public class ValidationMessage {
                 Objects.equals(this.orphanSlotName, valMesToCompare.orphanSlotName) &&
                 Objects.equals(this.row, valMesToCompare.row);
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((column == null) ? 0 : column.hashCode());
+        result = prime * result + ((fileName == null) ? 0 : fileName.hashCode());
+        result = prime * result + ((message == null) ? 0 : message.hashCode());
+        result = prime * result + ((orphanSlotName == null) ? 0 : orphanSlotName.hashCode());
+        result = prime * result + ((row == null) ? 0 : row.hashCode());
+        return result;
+    }
+
 }

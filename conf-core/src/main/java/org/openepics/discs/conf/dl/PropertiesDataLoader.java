@@ -44,7 +44,7 @@ import org.openepics.discs.conf.ent.PropertyAssociation;
 import org.openepics.discs.conf.ent.Unit;
 
 /**
- * Implementation of data loader for properties
+ * Implementation of data loader for properties.
  *
  * @author Andraz Pozar <andraz.pozar@cosylab.com>
  * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
@@ -62,8 +62,8 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
     private static final String HDR_DATATYPE = "DATA-TYPE";
     private static final String HDR_DESC= "DESCRIPTION";
 
-    private static final List<String> KNOWN_COLUMNS = Arrays.asList(HDR_NAME, HDR_ASSOCIATION, HDR_UNIT, HDR_DATATYPE,
-            HDR_DESC);
+    private static final List<String> KNOWN_COLUMNS = Arrays.asList(HDR_NAME, HDR_ASSOCIATION, HDR_UNIT,
+            HDR_DATATYPE, HDR_DESC);
     private static final Set<String> REQUIRED_COLUMNS = new HashSet<>(Arrays.asList(HDR_ASSOCIATION,
             HDR_DATATYPE, HDR_DESC));
 
@@ -92,15 +92,20 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
         }
     }
 
+    @Override
+    protected List<String> getKnownColumnNames() {
+        return KNOWN_COLUMNS;
+    }
 
     @Override
-    protected List<String> getKnownColumnNames() { return KNOWN_COLUMNS; }
+    protected Set<String> getRequiredColumnNames() {
+        return REQUIRED_COLUMNS;
+    }
 
     @Override
-    protected Set<String> getRequiredColumnNames() { return REQUIRED_COLUMNS; }
-
-    @Override
-    protected String getUniqueColumnName() { return HDR_NAME; }
+    protected String getUniqueColumnName() {
+        return HDR_NAME;
+    }
 
     @Override
     protected void assignMembersForCurrentRow() {

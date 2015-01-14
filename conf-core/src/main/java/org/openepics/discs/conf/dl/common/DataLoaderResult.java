@@ -23,6 +23,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import org.openepics.discs.conf.ent.Slot;
 
 import com.google.common.base.Preconditions;
 
@@ -34,6 +37,17 @@ import com.google.common.base.Preconditions;
  * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
  */
 public class DataLoaderResult {
+
+    /**
+     * A key for {@link DataLoaderResult#getContextualData()} that will hold a {@link Set} of {@link Slot}s
+     */
+    public static final String CTX_NEW_SLOTS = "CTX_NEW_SLOTS";
+    /**
+     * A key for {@link DataLoaderResult#getContextualData()} that will hold a {@link Set} of {@link Slot}s that have
+     * become children in a relationship during the new data loading.
+     */
+    public static final String CTX_NEW_SLOT_PAIR_CHILDREN = "CTX_NEW_SLOT_PAIR_CHILDREN";
+
     private List<ValidationMessage> messages = new ArrayList<ValidationMessage>();
     private Map<String, Object> contextualData = new HashMap<>();
 

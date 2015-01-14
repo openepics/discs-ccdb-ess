@@ -38,16 +38,21 @@ import org.openepics.discs.conf.util.Conversion;
 /**
  * Abstract data loader for entities that have properties.
  *
+ * @param <S> The abstract data loader is used for all possible {@link PropertyValue} implementations.
+ *
  * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
  *
  */
-public abstract class AbstractEntityWithPropertiesDataLoader<S extends PropertyValue> extends AbstractDataLoader implements DataLoader {
+public abstract class AbstractEntityWithPropertiesDataLoader<S extends PropertyValue> extends AbstractDataLoader
+                                                                                            implements DataLoader {
     @Inject protected PropertyEJB propertyEJB;
 
     private Class<S> propertyValueClass;
 
     @Override
-    protected boolean indexPropertyColumns() { return true; }
+    protected boolean indexPropertyColumns() {
+        return true;
+    }
 
     @Override
     protected boolean checkPropertyHeader(String propertyName) {
@@ -122,7 +127,8 @@ public abstract class AbstractEntityWithPropertiesDataLoader<S extends PropertyV
      * covered by this data loader.
      *
      * @param propAssociation the {@link PropertyAssociation} to be checked against
-     * @return <code>false</code> if the property association type is not valid for the entities covered by this data loadaer
+     * @return <code>false</code> if the property association type is not valid for the entities covered by this
+     * data loader
      */
     protected abstract boolean checkPropertyAssociation(final Property propAssociation);
 

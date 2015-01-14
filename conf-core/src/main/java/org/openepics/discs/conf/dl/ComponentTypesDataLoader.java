@@ -40,9 +40,10 @@ import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.Property;
 
 /**
- * Implementation of data loader for device types
+ * Implementation of data loader for device types.
  *
  * @author Andraz Pozar <andraz.pozar@cosylab.com>
+ * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
  */
 @Stateless
 @ComponentTypesLoaderQualifier
@@ -64,17 +65,25 @@ public class ComponentTypesDataLoader extends AbstractEntityWithPropertiesDataLo
     @Inject private ComptypeEJB comptypeEJB;
 
     @Override
-    protected List<String> getKnownColumnNames() { return KNOWN_COLUMNS; }
+    protected List<String> getKnownColumnNames() {
+        return KNOWN_COLUMNS;
+    }
 
     @Override
-    protected Set<String> getRequiredColumnNames() { return REQUIRED_COLUMNS; }
+    protected Set<String> getRequiredColumnNames() {
+        return REQUIRED_COLUMNS;
+    }
 
     @Override
-    protected String getUniqueColumnName() { return HDR_NAME; }
+    protected String getUniqueColumnName() {
+        return HDR_NAME;
+    }
 
     @SuppressWarnings("unchecked")
     @Override
-    protected DAO<ComponentType> getDAO() { return comptypeEJB; }
+    protected DAO<ComponentType> getDAO() {
+        return comptypeEJB;
+    }
 
     @Override
     protected void assignMembersForCurrentRow() {

@@ -57,7 +57,7 @@ public abstract class AbstractDataLoader implements DataLoader {
     protected DataLoaderResult result = new DataLoaderResult();
 
     /** Constant representing the index in the row data of the command field */
-    private final int COMMAND_INDEX = 0;
+    private static final int COMMAND_INDEX = 0;
 
     /** Contextual data map */
     private Map<String, Object> contextualData;
@@ -105,7 +105,9 @@ public abstract class AbstractDataLoader implements DataLoader {
 
         // First row must be a header, updateHeaderRowAndIndexes checks this...
         result.setCurrentRowNumber(inputRows.get(0).getLeft());
-        if (!updateHeaderRowAndIndexes(inputRows.get(0))) return result;
+        if (!updateHeaderRowAndIndexes(inputRows.get(0))) {
+            return result;
+        }
 
         currentRowData = null;
         for (Pair<Integer, List<String>> row : inputRows.subList(1, inputRows.size())) {
@@ -115,28 +117,34 @@ public abstract class AbstractDataLoader implements DataLoader {
             currentRowData = row.getRight();
 
             if ( CMD_HEADER.equals(currentRowData.get(COMMAND_INDEX)) ) {
-                if (!updateHeaderRowAndIndexes(row)) return result;
+                if (!updateHeaderRowAndIndexes(row)) {
+                    return result;
+                }
             } else if ( CMD_END.equals(currentRowData.get(COMMAND_INDEX)) ) {
                 break;
             } else {
                 final String command = checkCommandAndRequiredFields();
-                if (command==null) continue;
+                if (command==null) {
+                    continue;
+                }
 
                 assignMembersForCurrentRow();
-                if (result.isRowError()) continue;
+                if (result.isRowError()) {
+                    continue;
+                }
 
                 switch (command) {
-                case CMD_UPDATE:
-                    handleUpdate();
-                    break;
-                case CMD_DELETE:
-                    handleDelete();
-                    break;
-                case CMD_RENAME:
-                    handleRename();
-                    break;
-                default:
-                    result.addRowMessage(ErrorMessage.COMMAND_NOT_VALID, CMD_HEADER);
+                    case CMD_UPDATE:
+                        handleUpdate();
+                        break;
+                    case CMD_DELETE:
+                        handleDelete();
+                        break;
+                    case CMD_RENAME:
+                        handleRename();
+                        break;
+                    default:
+                        result.addRowMessage(ErrorMessage.COMMAND_NOT_VALID, CMD_HEADER);
                 }
             }
         }
@@ -173,12 +181,12 @@ public abstract class AbstractDataLoader implements DataLoader {
     protected abstract Set<String> getRequiredColumnNames();
 
     /**
-     * Sub-clases should implement this abstract method to define the name of the unique column (a column used do
+     * Sub-classes should implement this abstract method to define the name of the unique column (a column used do
      * uniquely identify a data row, for example a column containing entity names or serial numbers)
      *
      * If the method returns null, there is no unique column in the spreadsheet.
      *
-     * A unique column has special constriants around it (i.e. it must have a value)..
+     * A unique column has special constraints around it (i.e. it must have a value)..
      *
      * @return the header column name of the unique column
      */
@@ -191,7 +199,9 @@ public abstract class AbstractDataLoader implements DataLoader {
      *
      * @return whether the data-loader should build a Map containing indexes of unknown (probably property) columns
      */
-    protected boolean indexPropertyColumns() { return false; }
+    protected boolean indexPropertyColumns() {
+        return false;
+    }
 
     /**
      * Invoked by {@link AbstractDataLoader}{@link #loadDataToDatabase(List)} for sub-classes to initialize row-bound
@@ -248,7 +258,9 @@ public abstract class AbstractDataLoader implements DataLoader {
         final Set<String> headerEntriesSet = new HashSet<>();
 
         for (String headerEntry : headerRow.subList(1, headerRow.size())) {
-            if (StringUtils.isEmpty(headerEntry)) continue;
+            if (StringUtils.isEmpty(headerEntry)) {
+                continue;
+            }
 
             if (headerEntriesSet.contains(headerEntry)) {
                 result.addGlobalMessage(ErrorMessage.DUPLICATES_IN_HEADER, headerEntry);
@@ -274,8 +286,9 @@ public abstract class AbstractDataLoader implements DataLoader {
             return false;
         }
 
-        if (!checkForDuplicateHeaderEntries(headerRow))
+        if (!checkForDuplicateHeaderEntries(headerRow)) {
             return false;
+        }
 
         indicies=setUpIndexesForFields(headerRow);
         propertyIndicies = null;
@@ -315,18 +328,20 @@ public abstract class AbstractDataLoader implements DataLoader {
             Preconditions.checkNotNull(index);
 
             // Check if data is missing for given conditions
-            if (uniqueColumnName != null && index == uniqueIndex) {
+            if (uniqueColumnName != null && uniqueIndex.equals(index)) {
                 if (currentRowData.get(index) == null) {
                     result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, columnName);
                 }
             } else {
-                if (requiredColumns.contains(columnName) && currentRowData.get(index) == null && !CMD_RENAME.equals(command)
-                        && !CMD_DELETE.equals(command)) {
+                if (requiredColumns.contains(columnName) && currentRowData.get(index) == null
+                        && !CMD_RENAME.equals(command) && !CMD_DELETE.equals(command)) {
                     result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, columnName);
                 }
             }
         }
-        if (result.isRowError()) return null;
+        if (result.isRowError()) {
+            return null;
+        }
 
         return command;
     }
@@ -362,7 +377,8 @@ public abstract class AbstractDataLoader implements DataLoader {
 
         for (int i = 0; i < headerRow.size(); i++) {
             final String columnName = headerRow.get(i);
-            if (!Objects.equals(null, columnName) && !Objects.equals(CMD_HEADER, columnName) && !knownColumns.containsKey(columnName)) {
+            if (!Objects.equals(null, columnName) && !Objects.equals(CMD_HEADER, columnName)
+                    && !knownColumns.containsKey(columnName)) {
                 // This method could affet the global error result
                 if (checkPropertyHeader(columnName)) {
                     mapBuilder.put(columnName, i);
@@ -383,7 +399,9 @@ public abstract class AbstractDataLoader implements DataLoader {
      * property name
      * @return <code>false</code> if there was an error during the check
      */
-    protected boolean checkPropertyHeader(String propertyColumnName) { return true; }
+    protected boolean checkPropertyHeader(String propertyColumnName) {
+        return true;
+    }
 
     /**
      * During row processing, returns a {@link String} cell within the row that belongs to given column
@@ -426,7 +444,7 @@ public abstract class AbstractDataLoader implements DataLoader {
      * @param logger    Instance of logger to log the exception to server log
      * @param e         Exception that was caught in data loader implementation
      */
-    protected void handleLoadingError(Logger logger, Exception e) {
+    protected void handleLoadingError(Logger logger, Exception e) { // NOSONAR
         logger.log(Level.FINE, e.getMessage(), e);
         if (e.getCause() instanceof org.openepics.discs.conf.security.SecurityException) {
             result.addRowMessage(ErrorMessage.NOT_AUTHORIZED, CMD_HEADER);

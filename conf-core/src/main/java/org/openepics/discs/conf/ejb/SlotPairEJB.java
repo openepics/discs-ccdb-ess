@@ -74,7 +74,7 @@ public class SlotPairEJB extends DAO<SlotPair> {
 	            .setParameter("childSlot", childSlot)
 	            .setParameter("relationName", SlotRelationName.CONTAINS)
 	            .setMaxResults(2).getResultList();
-	    return slotPairs != null && slotPairs.size() == 2;
+        return slotPairs != null && slotPairs.size() == 2;
 	}
 
     @Override
@@ -193,8 +193,8 @@ public class SlotPairEJB extends DAO<SlotPair> {
     protected Class<SlotPair> getEntityClass() {
         return SlotPair.class;
     }
-    
-	private void moveUpOrDown(Slot parentSlot, Slot slot, String queryName) {
+
+    private void moveUpOrDown(Slot parentSlot, Slot slot, String queryName) {
         SlotPair mySlotPair = null;
         for (SlotPair pair : slot.getPairsInWhichThisSlotIsAChildList()) {
             if (pair.getParentSlot().equals(parentSlot) &&

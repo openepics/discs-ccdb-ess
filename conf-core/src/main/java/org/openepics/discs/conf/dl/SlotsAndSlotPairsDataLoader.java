@@ -34,22 +34,22 @@ import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.Slot;
-import org.openepics.discs.conf.ent.SlotPair;
 
 
 /**
- * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
+ * Implementation of data loader for slots and slot pairs.
  *
+ * @author Andraz Pozar <andraz.pozar@cosylab.com>
+ * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
+ * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  */
 @Stateless
 public class SlotsAndSlotPairsDataLoader implements Serializable {
+    private static final long serialVersionUID = 6772985623823412436L;
 
     @Resource private EJBContext context;
     @Inject @SlotPairDataLoaderQualifier transient private DataLoader slotPairDataLoader;
     @Inject @SlotsDataLoaderQualifier transient private DataLoader slotsDataLoader;
-
-    public static final String CTX_NEW_SLOTS = "CTX_NEW_SLOTS";
-    public static final String CTX_NEW_SLOT_PAIR_CHILDREN = "CTX_NEW_SLOT_PAIR_CHILDREN";
 
     /**
      * Saves data read from two input files to the database
@@ -63,8 +63,8 @@ public class SlotsAndSlotPairsDataLoader implements Serializable {
      */
     @SuppressWarnings("unchecked")
     public DataLoaderResult loadDataToDatabase(final List<Pair<Integer, List<String>>> slotsFileInputRows,
-            final List<Pair<Integer, List<String>>> slotPairsFileInputRows, final String slotsFileName, final String slotPairsFileName) {
-
+            final List<Pair<Integer, List<String>>> slotPairsFileInputRows, final String slotsFileName,
+            final String slotPairsFileName) {
         final DataLoaderResult slotsLoaderResult;
 
         if (slotsFileInputRows != null) {
@@ -74,11 +74,11 @@ public class SlotsAndSlotPairsDataLoader implements Serializable {
         }
 
         final DataLoaderResult slotPairsLoaderResult;
-        final Set<SlotPair> newSlotPairChildren;
+        final Set<Slot> newSlotPairChildren;
 
         if (!slotsLoaderResult.isError() && slotPairsFileInputRows != null) {
             slotPairsLoaderResult = slotPairDataLoader.loadDataToDatabase(slotPairsFileInputRows, slotsLoaderResult.getContextualData());
-            newSlotPairChildren = (Set<SlotPair>) slotPairsLoaderResult.getContextualData().get(CTX_NEW_SLOT_PAIR_CHILDREN);
+            newSlotPairChildren = (Set<Slot>) slotPairsLoaderResult.getContextualData().get(DataLoaderResult.CTX_NEW_SLOT_PAIR_CHILDREN);
         } else {
             slotPairsLoaderResult = new DataLoaderResult();
             newSlotPairChildren = new HashSet<>();
@@ -87,7 +87,7 @@ public class SlotsAndSlotPairsDataLoader implements Serializable {
         final DataLoaderResult loaderResult = mergeDataLoaderResults(slotsLoaderResult, slotPairsLoaderResult, slotsFileName, slotPairsFileName);
 
         if (!loaderResult.isError()) {
-            checkForRelationConsistency((List<Slot>) slotsLoaderResult.getContextualData().get(CTX_NEW_SLOTS), newSlotPairChildren, loaderResult);
+            checkForRelationConsistency((List<Slot>) slotsLoaderResult.getContextualData().get(DataLoaderResult.CTX_NEW_SLOTS), newSlotPairChildren, loaderResult);
         }
 
         if (loaderResult.isError()) {
@@ -96,7 +96,8 @@ public class SlotsAndSlotPairsDataLoader implements Serializable {
         return loaderResult;
     }
 
-    private void checkForRelationConsistency(final List<Slot> newSlots, final Set<SlotPair> newSlotPairChildren, DataLoaderResult loaderResult) {
+    private void checkForRelationConsistency(final List<Slot> newSlots, final Set<Slot> newSlotPairChildren,
+            DataLoaderResult loaderResult) {
         for (Slot newSlot : newSlots) {
             if (!newSlotPairChildren.contains(newSlot) && !newSlot.getComponentType().getName().equals(SlotEJB.ROOT_COMPONENT_TYPE)) {
                 loaderResult.addOrphanSlotMessage(newSlot.getName());

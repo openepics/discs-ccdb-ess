@@ -43,6 +43,10 @@ import com.google.common.base.Strings;
  */
 public class ExcelImportFileReader {
 
+    private ExcelImportFileReader() {
+        // utility class
+    }
+
     /**
      * This method returns the contents of the first worksheet found in the
      * Excel workbook file.
@@ -57,7 +61,7 @@ public class ExcelImportFileReader {
     public static List<Pair<Integer, List<String>>> importExcelFile(InputStream inputStream) {
         boolean headerRowFound = false;
         final List<Pair<Integer, List<String>>> result= new ArrayList<>();
-        
+
         try {
             final XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
             final XSSFSheet sheet = workbook.getSheetAt(0);
@@ -72,8 +76,8 @@ public class ExcelImportFileReader {
 
                 final String firstColumnValue = Strings.emptyToNull(ExcelCell.asStringOrNull(excelRow.getCell(0), workbook));
                 if (headerRowFound && firstColumnValue != null && !firstColumnValue.trim().isEmpty()) {
-                    final List<String> row = new ArrayList<>();                    
-                    final int rowNumber = excelRow.getRowNum() + 1;                    
+                    final List<String> row = new ArrayList<>();
+                    final int rowNumber = excelRow.getRowNum() + 1;
                     final int lastCellIndex = headerRowLength > excelRow.getLastCellNum() ? headerRowLength : excelRow.getLastCellNum();
                     for (int i = 0; i < lastCellIndex; i++) {
                         row.add(ExcelCell.asStringOrNull(excelRow.getCell(i), workbook));
