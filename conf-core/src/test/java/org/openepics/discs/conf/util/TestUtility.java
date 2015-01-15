@@ -35,6 +35,9 @@ import org.openepics.discs.conf.security.SecurityPolicy;
  * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
  */
 public class TestUtility {
+
+    public static final String DATALOADERS_PATH = "/dataloader/";
+
     @Inject private SecurityPolicy securityPoloicy;
 
     /** @return An archive packaging the whole cable application. */

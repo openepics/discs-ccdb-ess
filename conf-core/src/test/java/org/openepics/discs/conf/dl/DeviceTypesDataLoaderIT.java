@@ -19,6 +19,8 @@
  */
 package org.openepics.discs.conf.dl;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,8 +68,6 @@ public class DeviceTypesDataLoaderIT {
     final static private int NUM_OF_DEV_TYPES_IF_FAILURE = 0;
     final static private int NUM_OF_DEV_TYPES_IF_SUCCESS = 483;
 
-    final static private String DATALOADERS_PATH = "/dataloader/";
-
     @Deployment
     public static WebArchive createDeployment() {
         return TestUtility.createWebArchive();
@@ -80,11 +80,13 @@ public class DeviceTypesDataLoaderIT {
 
     @Test
     @Transactional(TransactionMode.DISABLED)
-    public void deviceTypesImportRequiredFieldsFailureTest() {
+    public void deviceTypesImportRequiredFieldsFailureTest() throws IOException {
         final List<ValidationMessage> expectedValidationMessages = new ArrayList<>();
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 10, HDR_NAME));
 
-        final DataLoaderResult loaderResult = dataLoaderHandler.loadData(this.getClass().getResourceAsStream(DATALOADERS_PATH + "device-types-required-fields-filure-test.xlsx"), compTypesDataLoader);
+        final InputStream testDataStream = this.getClass().getResourceAsStream(TestUtility.DATALOADERS_PATH + "device-types-required-fields-filure-test.xlsx");
+        final DataLoaderResult loaderResult = dataLoaderHandler.loadData(testDataStream, compTypesDataLoader);
+        testDataStream.close();
 
         Assert.assertEquals(expectedValidationMessages, loaderResult.getMessages());
         Assert.assertEquals(NUM_OF_DEV_TYPES_IF_FAILURE, compTypeEJB.findAll().size());
@@ -92,10 +94,13 @@ public class DeviceTypesDataLoaderIT {
 
     @Test
     @Transactional(TransactionMode.DISABLED)
-    public void deviceTypesImportPropertyAssociationFailureTest() {
+    public void deviceTypesImportPropertyAssociationFailureTest() throws IOException {
         final List<ValidationMessage> expectedValidationMessages = new ArrayList<>();
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.PROPERTY_ASSOCIATION_FAILURE, 5, HDR_ACENPOS));
-        final DataLoaderResult loaderResult = dataLoaderHandler.loadData(this.getClass().getResourceAsStream(DATALOADERS_PATH + "device-types-association-failure-test.xlsx"), compTypesDataLoader);
+
+        final InputStream testDataStream = this.getClass().getResourceAsStream(TestUtility.DATALOADERS_PATH + "device-types-association-failure-test.xlsx");
+        final DataLoaderResult loaderResult = dataLoaderHandler.loadData(testDataStream, compTypesDataLoader);
+        testDataStream.close();
 
         Assert.assertEquals(expectedValidationMessages, loaderResult.getMessages());
         Assert.assertEquals(NUM_OF_DEV_TYPES_IF_FAILURE, compTypeEJB.findAll().size());
@@ -104,8 +109,10 @@ public class DeviceTypesDataLoaderIT {
     @Test
     @ApplyScriptAfter(value = "truncate_database.sql")
     @Transactional(TransactionMode.DISABLED)
-    public void deviceTypesImportTest() {
-        final DataLoaderResult loaderResult = dataLoaderHandler.loadData(this.getClass().getResourceAsStream(DATALOADERS_PATH + "device-types-test.xlsx"), compTypesDataLoader);
+    public void deviceTypesImportTest() throws IOException {
+        final InputStream testDataStream = this.getClass().getResourceAsStream(TestUtility.DATALOADERS_PATH + "device-types-test.xlsx");
+        final DataLoaderResult loaderResult = dataLoaderHandler.loadData(testDataStream, compTypesDataLoader);
+        testDataStream.close();
 
         Assert.assertFalse(loaderResult.isError());
         Assert.assertEquals(NUM_OF_DEV_TYPES_IF_SUCCESS, compTypeEJB.findAll().size());

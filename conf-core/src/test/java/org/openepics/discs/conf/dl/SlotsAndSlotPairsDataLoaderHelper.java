@@ -19,14 +19,16 @@
  */
 package org.openepics.discs.conf.dl;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
-import javax.ejb.Stateless;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.dl.common.ExcelImportFileReader;
+import org.openepics.discs.conf.util.TestUtility;
 
 /**
  * Helper class for {@link SlotsDataLoaderIT} and {@link SlotsAndSlotPairsDataLoaderIT}
@@ -34,29 +36,31 @@ import org.openepics.discs.conf.dl.common.ExcelImportFileReader;
  * @author Andraz Pozar <andraz.pozar@cosylab.com>
  *
  */
-@Stateless
 public class SlotsAndSlotPairsDataLoaderHelper {
 
     @Inject private SlotsAndSlotPairsDataLoader slotsAndSlotPairDataLoader;
 
-    final static private String DATALOADERS_PATH = "/dataloader/";
     final static int NUM_OF_SLOTS_IF_FAILURE = 1;
     final static int NUM_OF_SLOTS_IF_SUCCESS = 156;
     final static int NUM_OF_SLOT_PAIRS_IF_FAILURE = 0;
     final static int NUM_OF_SLOT_PAIRS_IF_SUCCESS = 155;
 
-    public DataLoaderResult importSlotsAndSlotPairs(final String slotsImportFileName, final String slotPairsImportFileName) {
+    public DataLoaderResult importSlotsAndSlotPairs(final String slotsImportFileName, final String slotPairsImportFileName) throws IOException {
         List<Pair<Integer, List<String>>> slotsFileInputRows = null;
         List<Pair<Integer, List<String>>> slotPairsFileInputRows = null;
 
         if (slotsImportFileName != null) {
-            slotsFileInputRows = ExcelImportFileReader.importExcelFile(this.getClass().getResourceAsStream(DATALOADERS_PATH + slotsImportFileName));
+            final InputStream slotDataStream = this.getClass().getResourceAsStream(TestUtility.DATALOADERS_PATH + slotsImportFileName);
+            slotsFileInputRows = ExcelImportFileReader.importExcelFile(slotDataStream);
+            slotDataStream.close();
         } else {
             slotsFileInputRows = null;
         }
 
         if (slotPairsImportFileName != null) {
-            slotPairsFileInputRows = ExcelImportFileReader.importExcelFile(this.getClass().getResourceAsStream(DATALOADERS_PATH + slotPairsImportFileName));
+            final InputStream slotPairDataStream = this.getClass().getResourceAsStream(TestUtility.DATALOADERS_PATH + slotPairsImportFileName);
+            slotPairsFileInputRows = ExcelImportFileReader.importExcelFile(slotPairDataStream);
+            slotPairDataStream.close();
         } else {
             slotPairsFileInputRows = null;
         }

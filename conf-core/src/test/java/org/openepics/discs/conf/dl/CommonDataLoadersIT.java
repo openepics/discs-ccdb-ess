@@ -19,6 +19,8 @@
  */
 package org.openepics.discs.conf.dl;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,8 +65,6 @@ public class CommonDataLoadersIT {
     final static private String HDR_IS_HOSTING_SLOT = "IS-HOSTING-SLOT";
     final static private String HDR_BLP = "BLP";
 
-    final static private String DATALOADERS_PATH = "/dataloader/";
-
     @Deployment
     public static WebArchive createDeployment() {
         return TestUtility.createWebArchive();
@@ -77,32 +77,36 @@ public class CommonDataLoadersIT {
 
     @Test
     @UsingDataSet(value= {"unit.xml", "property.xml"})
-    public void commandRelatedFailureTest() {
+    public void commandRelatedFailureTest() throws IOException {
         final List<ValidationMessage> expectedValidationMessages = new ArrayList<>();
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.RENAME_MISFORMAT, 2, HDR_NAME));
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.NAME_ALREADY_EXISTS, 3, HDR_NAME));
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, 4, HDR_NAME));
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.COMMAND_NOT_VALID, 5, HDR));
 
-        final DataLoaderResult loaderResult = dataLoaderHandler.loadData(this.getClass().getResourceAsStream(DATALOADERS_PATH + "commands-failure-test.xlsx"), propertiesDataLoader);
+        final InputStream testDataStream = this.getClass().getResourceAsStream(TestUtility.DATALOADERS_PATH + "commands-failure-test.xlsx");
+        final DataLoaderResult loaderResult = dataLoaderHandler.loadData(testDataStream, propertiesDataLoader);
+        testDataStream.close();
 
         Assert.assertEquals(expectedValidationMessages, loaderResult.getMessages());
     }
 
     @Test
     @UsingDataSet(value= {"unit.xml", "property.xml"})
-    public void duplicateFieldDefinitionFailureTest() {
+    public void duplicateFieldDefinitionFailureTest() throws IOException {
         final List<ValidationMessage> expectedValidationMessages = new ArrayList<>();
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.DUPLICATES_IN_HEADER, 1, HDR_NAME));
 
-        final DataLoaderResult loaderResult = dataLoaderHandler.loadData(this.getClass().getResourceAsStream(DATALOADERS_PATH + "duplicate-field-failure-test.xlsx"), propertiesDataLoader);
+        final InputStream testDataStream = this.getClass().getResourceAsStream(TestUtility.DATALOADERS_PATH + "duplicate-field-failure-test.xlsx");
+        final DataLoaderResult loaderResult = dataLoaderHandler.loadData(testDataStream, propertiesDataLoader);
+        testDataStream.close();
 
         Assert.assertEquals(expectedValidationMessages, loaderResult.getMessages());
     }
 
     @Test
     @UsingDataSet(value= {"unit.xml", "property.xml", "basic_component_types.xml", "component_type.xml", "basic_slot.xml", "slot.xml", "slot_property_value.xml"})
-    public void duplicatePropertyDefinitionFailureTest() {
+    public void duplicatePropertyDefinitionFailureTest() throws IOException {
         final String slotsImportFileName = "duplicate-property-failure-test.xlsx";
         final List<ValidationMessage> expectedValidationMessages = new ArrayList<>();
         expectedValidationMessages.add(new ValidationMessage(slotsImportFileName));
@@ -114,19 +118,21 @@ public class CommonDataLoadersIT {
     }
 
     @Test
-    public void requiredHeaderFieldsFailure() {
+    public void requiredHeaderFieldsFailure() throws IOException {
         final List<ValidationMessage> expectedValidationMessages = new ArrayList<>();
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.HEADER_FIELD_MISSING, 1, HDR_NAME));
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.HEADER_FIELD_MISSING, 1, HDR_QUANTITY));
 
-        final DataLoaderResult loaderResult = dataLoaderHandler.loadData(this.getClass().getResourceAsStream(DATALOADERS_PATH + "required-header-fields-filure-test.xlsx"), unitsDataLoader);
+        final InputStream testDataStream = this.getClass().getResourceAsStream(TestUtility.DATALOADERS_PATH + "required-header-fields-filure-test.xlsx");
+        final DataLoaderResult loaderResult = dataLoaderHandler.loadData(testDataStream, unitsDataLoader);
+        testDataStream.close();
 
         Assert.assertEquals(expectedValidationMessages, loaderResult.getMessages());
     }
 
     @Test
     @UsingDataSet(value= {"unit.xml", "property.xml", "basic_component_types.xml", "component_type.xml", "basic_slot.xml", "slot.xml", "slot_property_value.xml"})
-    public void dataTypeFormatFailureTest() {
+    public void dataTypeFormatFailureTest() throws IOException {
         final String slotsImportFileName = "data-type-format-failure-test.xlsx";
         final List<ValidationMessage> expectedValidationMessages = new ArrayList<>();
         expectedValidationMessages.add(new ValidationMessage(slotsImportFileName));
@@ -137,5 +143,4 @@ public class CommonDataLoadersIT {
 
         Assert.assertEquals(expectedValidationMessages, loaderResult.getMessages());
     }
-
 }

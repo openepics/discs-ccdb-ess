@@ -19,6 +19,8 @@
  */
 package org.openepics.discs.conf.dl;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,8 +65,6 @@ public class UnitsDataLoaderIT {
     final static private int NUM_OF_UNITS_IF_FAILURE = 0;
     final static private int NUM_OF_UNITS_IF_SUCCESS = 18;
 
-    final static private String DATALOADERS_PATH = "/dataloader/";
-
     @Deployment
     public static WebArchive createDeployment() {
         return TestUtility.createWebArchive();
@@ -77,14 +77,16 @@ public class UnitsDataLoaderIT {
 
     @Test
     @Transactional(TransactionMode.DISABLED)
-    public void unitsImportRequiredFieldsFailure() {
+    public void unitsImportRequiredFieldsFailure() throws IOException {
         final List<ValidationMessage> expectedValidationMessages = new ArrayList<>();
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 4, HDR_NAME));
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 5, HDR_QUANTITY));
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 6, HDR_SYMBOL));
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 7, HDR_DESC));
 
-        final DataLoaderResult loaderResult = dataLoaderHandler.loadData(this.getClass().getResourceAsStream(DATALOADERS_PATH + "units-required-fields-filure-test.xlsx"), unitsDataLoader);
+        final InputStream testDataStream = this.getClass().getResourceAsStream(TestUtility.DATALOADERS_PATH + "units-required-fields-filure-test.xlsx");
+        final DataLoaderResult loaderResult = dataLoaderHandler.loadData(testDataStream, unitsDataLoader);
+        testDataStream.close();
 
         Assert.assertEquals(expectedValidationMessages, loaderResult.getMessages());
         Assert.assertEquals(NUM_OF_UNITS_IF_FAILURE, unitEJB.findAll().size());
@@ -92,8 +94,10 @@ public class UnitsDataLoaderIT {
 
     @Test
     @Transactional(TransactionMode.DISABLED)
-    public void unitsImportTest() {
-        final DataLoaderResult loaderResult = dataLoaderHandler.loadData(this.getClass().getResourceAsStream(DATALOADERS_PATH + "units-test.xlsx"), unitsDataLoader);
+    public void unitsImportTest() throws IOException {
+        final InputStream testDataStream = this.getClass().getResourceAsStream(TestUtility.DATALOADERS_PATH + "units-test.xlsx");
+        final DataLoaderResult loaderResult = dataLoaderHandler.loadData(testDataStream, unitsDataLoader);
+        testDataStream.close();
 
         Assert.assertFalse(loaderResult.isError());
         Assert.assertEquals(NUM_OF_UNITS_IF_SUCCESS, unitEJB.findAll().size());

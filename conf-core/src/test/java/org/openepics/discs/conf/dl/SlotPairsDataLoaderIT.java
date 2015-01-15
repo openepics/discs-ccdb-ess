@@ -19,6 +19,7 @@
  */
 package org.openepics.discs.conf.dl;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -72,7 +73,7 @@ public class SlotPairsDataLoaderIT {
 
     @Test
     @Transactional(TransactionMode.DISABLED)
-    public void slotsImportRequiredFieldsFailureTest() {
+    public void slotsImportRequiredFieldsFailureTest() throws IOException {
         final String slotPairsImportFileName = "slot-pairs-required-fields-failure-test.xlsx";
         final List<ValidationMessage> expectedValidationMessages = new ArrayList<>();
         expectedValidationMessages.add(new ValidationMessage(slotPairsImportFileName));

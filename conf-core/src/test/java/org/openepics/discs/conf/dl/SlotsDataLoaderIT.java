@@ -19,6 +19,7 @@
  */
 package org.openepics.discs.conf.dl;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -74,7 +75,7 @@ public class SlotsDataLoaderIT {
 
     @Test
     @Transactional(TransactionMode.DISABLED)
-    public void slotsImportRequiredFieldsFailureTest() {
+    public void slotsImportRequiredFieldsFailureTest() throws IOException {
         final String slotsImportFileName = "slots-required-fields-filure-test.xlsx";
         final List<ValidationMessage> expectedValidationMessages = new ArrayList<>();
         expectedValidationMessages.add(new ValidationMessage(slotsImportFileName));
@@ -90,7 +91,7 @@ public class SlotsDataLoaderIT {
 
     @Test
     @Transactional(TransactionMode.DISABLED)
-    public void slotsImportPropertyAssociationFailureTest() {
+    public void slotsImportPropertyAssociationFailureTest() throws IOException {
         final String slotsImportFileName = "slots-association-failure-test.xlsx";
         final List<ValidationMessage> expectedValidationMessages = new ArrayList<>();
         expectedValidationMessages.add(new ValidationMessage(slotsImportFileName));
@@ -103,7 +104,7 @@ public class SlotsDataLoaderIT {
 
     @Test
     @Transactional(TransactionMode.DISABLED)
-    public void slotsImportDeviceType_ROOTFailureTest() {
+    public void slotsImportDeviceType_ROOTFailureTest() throws IOException {
         final String slotsImportFileName = "slots-root-device-type-failure-test.xlsx";
         final List<ValidationMessage> expectedValidationMessages = new ArrayList<>();
         expectedValidationMessages.add(new ValidationMessage(slotsImportFileName));
@@ -117,7 +118,7 @@ public class SlotsDataLoaderIT {
 
     @Test
     @Transactional(TransactionMode.DISABLED)
-    public void slotsImportOrphanFailureTest() {
+    public void slotsImportOrphanFailureTest() throws IOException {
         final String slotsImportFileName = "slots-orphan-failure-test.xlsx";
         final List<ValidationMessage> expectedValidationMessages = new ArrayList<>();
 

@@ -19,6 +19,7 @@
  */
 package org.openepics.discs.conf.dl;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -72,7 +73,7 @@ public class SlotsAndSlotPairsDataLoaderIT {
 
     @Test
     @Transactional(TransactionMode.DISABLED)
-    public void slotPairsImportMiscellaneousErrorFailureTest() {
+    public void slotPairsImportMiscellaneousErrorFailureTest() throws IOException {
         final String slotsImportFileName = "slots-test.xlsx";
         final String slotPairsImportFileName = "slot-pairs-misc-failure-test.xlsx";
         final List<ValidationMessage> expectedValidationMessages = new ArrayList<>();
@@ -96,7 +97,7 @@ public class SlotsAndSlotPairsDataLoaderIT {
 
     @Test
     @Transactional(TransactionMode.DISABLED)
-    public void slotsAndSlotPairsImportTest() {
+    public void slotsAndSlotPairsImportTest() throws IOException {
         final String slotsImportFileName = "slots-test.xlsx";
         final String slotPairsImportFileName = "slot-pairs-test.xlsx";
         final DataLoaderResult loaderResult = dataLoaderHelper.importSlotsAndSlotPairs(slotsImportFileName, slotPairsImportFileName);

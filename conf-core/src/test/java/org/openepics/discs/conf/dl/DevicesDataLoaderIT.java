@@ -19,6 +19,8 @@
  */
 package org.openepics.discs.conf.dl;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,8 +69,6 @@ public class DevicesDataLoaderIT {
     final static private int NUM_OF_DEVICES_IF_FAILURE = 0;
     final static private int NUM_OF_DEVICES_IF_SUCCESS = 61;
 
-    final static private String DATALOADERS_PATH = "/dataloader/";
-
     @Deployment
     public static WebArchive createDeployment() {
         return TestUtility.createWebArchive();
@@ -81,12 +81,14 @@ public class DevicesDataLoaderIT {
 
     @Test
     @Transactional(TransactionMode.DISABLED)
-    public void devicesImportRequiredFieldsFailureTest() {
+    public void devicesImportRequiredFieldsFailureTest() throws IOException {
         final List<ValidationMessage> expectedValidationMessages = new ArrayList<>();
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 4, HDR_SERIAL));
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 5, HDR_CTYPE));
 
-        final DataLoaderResult loaderResult = dataLoaderHandler.loadData(this.getClass().getResourceAsStream(DATALOADERS_PATH + "devices-required-fields-filure-test.xlsx"), devicesDataLoader);
+        final InputStream testDataStream = this.getClass().getResourceAsStream(TestUtility.DATALOADERS_PATH + "devices-required-fields-filure-test.xlsx");
+        final DataLoaderResult loaderResult = dataLoaderHandler.loadData(testDataStream, devicesDataLoader);
+        testDataStream.close();
 
         Assert.assertEquals(expectedValidationMessages, loaderResult.getMessages());
         Assert.assertEquals(NUM_OF_DEVICES_IF_FAILURE, deviceEJB.findAll().size());
@@ -94,10 +96,13 @@ public class DevicesDataLoaderIT {
 
     @Test
     @Transactional(TransactionMode.DISABLED)
-    public void devicesImportPropertyAssociationFailureTest() {
+    public void devicesImportPropertyAssociationFailureTest() throws IOException {
         final List<ValidationMessage> expectedValidationMessages = new ArrayList<>();
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.PROPERTY_ASSOCIATION_FAILURE, 1, HDR_ACENPOS));
-        final DataLoaderResult loaderResult = dataLoaderHandler.loadData(this.getClass().getResourceAsStream(DATALOADERS_PATH + "devices-association-failure-test.xlsx"), devicesDataLoader);
+
+        final InputStream testDataStream = this.getClass().getResourceAsStream(TestUtility.DATALOADERS_PATH + "devices-association-failure-test.xlsx");
+        final DataLoaderResult loaderResult = dataLoaderHandler.loadData(testDataStream, devicesDataLoader);
+        testDataStream.close();
 
         Assert.assertEquals(expectedValidationMessages, loaderResult.getMessages());
         Assert.assertEquals(NUM_OF_DEVICES_IF_FAILURE, deviceEJB.findAll().size());
@@ -105,10 +110,13 @@ public class DevicesDataLoaderIT {
 
     @Test
     @Transactional(TransactionMode.DISABLED)
-    public void devicesDeviceStatusNotFoundFailureTest() {
+    public void devicesDeviceStatusNotFoundFailureTest() throws IOException {
         final List<ValidationMessage> expectedValidationMessages = new ArrayList<>();
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.DEVICE_STATUS_NOT_FOUND, 4, HDR_STATUS));
-        final DataLoaderResult loaderResult = dataLoaderHandler.loadData(this.getClass().getResourceAsStream(DATALOADERS_PATH + "devices-status-not-found-failure-test.xlsx"), devicesDataLoader);
+
+        final InputStream testDataStream = this.getClass().getResourceAsStream(TestUtility.DATALOADERS_PATH + "devices-status-not-found-failure-test.xlsx");
+        final DataLoaderResult loaderResult = dataLoaderHandler.loadData(testDataStream, devicesDataLoader);
+        testDataStream.close();
 
         Assert.assertEquals(expectedValidationMessages, loaderResult.getMessages());
         Assert.assertEquals(NUM_OF_DEVICES_IF_FAILURE, deviceEJB.findAll().size());
@@ -117,8 +125,10 @@ public class DevicesDataLoaderIT {
     @Test
     @ApplyScriptAfter(value = "truncate_database.sql")
     @Transactional(TransactionMode.DISABLED)
-    public void deviceTypesImportTest() {
-        final DataLoaderResult loaderResult = dataLoaderHandler.loadData(this.getClass().getResourceAsStream(DATALOADERS_PATH + "devices-test.xlsx"), devicesDataLoader);
+    public void deviceTypesImportTest() throws IOException {
+        final InputStream testDataStream = this.getClass().getResourceAsStream(TestUtility.DATALOADERS_PATH + "devices-test.xlsx");
+        final DataLoaderResult loaderResult = dataLoaderHandler.loadData(testDataStream, devicesDataLoader);
+        testDataStream.close();
 
         Assert.assertFalse(loaderResult.isError());
         Assert.assertEquals(NUM_OF_DEVICES_IF_SUCCESS, deviceEJB.findAll().size());

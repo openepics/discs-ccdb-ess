@@ -19,6 +19,8 @@
  */
 package org.openepics.discs.conf.dl;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -69,8 +71,6 @@ public class PropertiesDataLoaderIT {
     final static private int NUM_OF_PROPS_IF_FAILURE = 0;
     final static private int NUM_OF_PROPS_IF_SUCCESS = 31;
 
-    final static private String DATALOADERS_PATH = "/dataloader/";
-
     @Deployment
     public static WebArchive createDeployment() {
         return TestUtility.createWebArchive();
@@ -83,14 +83,16 @@ public class PropertiesDataLoaderIT {
 
     @Test
     @Transactional(TransactionMode.DISABLED)
-    public void propertiesImportRequiredFieldsFailureTest() {
+    public void propertiesImportRequiredFieldsFailureTest() throws IOException {
         final List<ValidationMessage> expectedValidationMessages = new ArrayList<>();
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 4, HDR_NAME));
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 5, HDR_DESC));
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 6, HDR_ASSOCIATION));
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 8, HDR_DATATYPE));
 
-        final DataLoaderResult loaderResult = dataLoaderHandler.loadData(this.getClass().getResourceAsStream(DATALOADERS_PATH + "properties-required-fields-filure-test.xlsx"), propertiesDataLoader);
+        final InputStream testDataStream = this.getClass().getResourceAsStream(TestUtility.DATALOADERS_PATH + "properties-required-fields-filure-test.xlsx");
+        final DataLoaderResult loaderResult = dataLoaderHandler.loadData(testDataStream, propertiesDataLoader);
+        testDataStream.close();
 
         Assert.assertEquals(expectedValidationMessages, loaderResult.getMessages());
         Assert.assertEquals(NUM_OF_PROPS_IF_FAILURE, propertyEJB.findAll().size());
@@ -98,12 +100,14 @@ public class PropertiesDataLoaderIT {
 
     @Test
     @Transactional(TransactionMode.DISABLED)
-    public void propertiesImportEntityNotFoundFailureTest() {
+    public void propertiesImportEntityNotFoundFailureTest() throws IOException {
         final List<ValidationMessage> expectedValidationMessages = new ArrayList<>();
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, 3, HDR_UNIT));
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, 4, HDR_DATATYPE));
 
-        final DataLoaderResult loaderResult = dataLoaderHandler.loadData(this.getClass().getResourceAsStream(DATALOADERS_PATH + "properties-entity-not-found-filure-test.xlsx"), propertiesDataLoader);
+        final InputStream testDataStream = this.getClass().getResourceAsStream(TestUtility.DATALOADERS_PATH + "properties-entity-not-found-filure-test.xlsx");
+        final DataLoaderResult loaderResult = dataLoaderHandler.loadData(testDataStream, propertiesDataLoader);
+        testDataStream.close();
 
         Assert.assertEquals(expectedValidationMessages, loaderResult.getMessages());
         Assert.assertEquals(NUM_OF_PROPS_IF_FAILURE, propertyEJB.findAll().size());
@@ -112,8 +116,10 @@ public class PropertiesDataLoaderIT {
     @Test
     @ApplyScriptAfter(value = "truncate_database.sql")
     @Transactional(TransactionMode.DISABLED)
-    public void propertiesImportTest() {
-        final DataLoaderResult loaderResult = dataLoaderHandler.loadData(this.getClass().getResourceAsStream(DATALOADERS_PATH + "properties-test.xlsx"), propertiesDataLoader);
+    public void propertiesImportTest() throws IOException {
+        final InputStream testDataStream = this.getClass().getResourceAsStream(TestUtility.DATALOADERS_PATH + "properties-test.xlsx");
+        final DataLoaderResult loaderResult = dataLoaderHandler.loadData(testDataStream, propertiesDataLoader);
+        testDataStream.close();
 
         Assert.assertFalse(loaderResult.isError());
         Assert.assertEquals(NUM_OF_PROPS_IF_SUCCESS, propertyEJB.findAll().size());
