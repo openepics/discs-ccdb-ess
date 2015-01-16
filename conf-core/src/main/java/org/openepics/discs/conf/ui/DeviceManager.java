@@ -48,12 +48,12 @@ import com.google.common.io.ByteStreams;
 public class DeviceManager implements Serializable, ExcelSingleFileImportUIHandlers {
     private static final long serialVersionUID = -931725234946680611L;
 
-    @Inject transient private DataLoaderHandler dataLoaderHandler;
-    @Inject @DevicesLoaderQualifier transient private DataLoader devicesDataLoader;
+    @Inject private transient DataLoaderHandler dataLoaderHandler;
+    @Inject @DevicesLoaderQualifier private transient DataLoader devicesDataLoader;
 
     private byte[] importData;
     private String importFileName;
-    transient private DataLoaderResult loaderResult;
+    private transient DataLoaderResult loaderResult;
 
     /**
      * Creates a new instance of DeviceManager
@@ -68,8 +68,11 @@ public class DeviceManager implements Serializable, ExcelSingleFileImportUIHandl
 
     @Override
     public void doImport() {
-        final InputStream inputStream = new ByteArrayInputStream(importData);
-        loaderResult = dataLoaderHandler.loadData(inputStream, devicesDataLoader);
+        try (InputStream inputStream = new ByteArrayInputStream(importData)) {
+            loaderResult = dataLoaderHandler.loadData(inputStream, devicesDataLoader);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -79,6 +82,7 @@ public class DeviceManager implements Serializable, ExcelSingleFileImportUIHandl
 
     @Override
     public void prepareImportPopup() {
+        loaderResult = null;
         importData = null;
         importFileName = null;
     }

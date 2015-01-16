@@ -53,13 +53,13 @@ import com.google.common.io.ByteStreams;
 public class UnitManager implements Serializable, ExcelSingleFileImportUIHandlers {
     private static final long serialVersionUID = 5504821804362597703L;
 
-    @Inject transient private UnitEJB unitEJB;
-    @Inject transient private DataLoaderHandler dataLoaderHandler;
-    @Inject @UnitsLoaderQualifier transient private DataLoader unitsDataLoader;
+    @Inject private transient  UnitEJB unitEJB;
+    @Inject private transient DataLoaderHandler dataLoaderHandler;
+    @Inject @UnitsLoaderQualifier private transient DataLoader unitsDataLoader;
 
     private List<Unit> units;
     private List<Unit> filteredUnits;
-    transient private DataLoaderResult loaderResult;
+    private transient DataLoaderResult loaderResult;
 
     private byte[] importData;
     private String importFileName;
@@ -101,13 +101,16 @@ public class UnitManager implements Serializable, ExcelSingleFileImportUIHandler
 
     @Override
     public void doImport() {
-        final InputStream inputStream = new ByteArrayInputStream(importData);
-        loaderResult = dataLoaderHandler.loadData(inputStream, unitsDataLoader);
-        return;
+        try (InputStream inputStream = new ByteArrayInputStream(importData)) {
+            loaderResult = dataLoaderHandler.loadData(inputStream, unitsDataLoader);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public void prepareImportPopup() {
+        loaderResult = null;
         importData = null;
         importFileName = null;
     }

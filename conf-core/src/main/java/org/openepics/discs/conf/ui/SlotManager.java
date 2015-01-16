@@ -49,11 +49,11 @@ import com.google.common.io.ByteStreams;
 public class SlotManager implements Serializable, ExcelImportUIHandlers {
     private static final long serialVersionUID = 7271953102489952318L;
 
-    @Inject transient private SlotsAndSlotPairsDataLoader slotsAndSlotPairsLoader;
+    @Inject private transient SlotsAndSlotPairsDataLoader slotsAndSlotPairsLoader;
 
     private byte[] importSlotData, importSlotRelationshipsData;
     private String firstFileName, secondFileName;
-    transient private DataLoaderResult loaderResult;
+    private transient DataLoaderResult loaderResult;
 
     /**
      * Creates a new instance of SlotManager
@@ -70,11 +70,17 @@ public class SlotManager implements Serializable, ExcelImportUIHandlers {
 
     @Override
     public void doImport() {
-        loaderResult = loadDataFromTwoFiles(
-                    importSlotData != null ? new ByteArrayInputStream(importSlotData) : null,
-                    importSlotRelationshipsData != null ? new ByteArrayInputStream(importSlotRelationshipsData) : null,
-                    firstFileName,
-                    secondFileName);
+        try (
+            // try-with-resources works also with "null" streams by design.
+            // reference: https://blogs.oracle.com/darcy/entry/project_coin_null_try_with
+            InputStream slotInputStream = importSlotData != null ? new ByteArrayInputStream(importSlotData) : null;
+            InputStream slotPairsInputStream = importSlotRelationshipsData != null
+                                                    ? new ByteArrayInputStream(importSlotRelationshipsData) : null;
+        ) {
+            loaderResult = loadDataFromTwoFiles(slotInputStream, slotPairsInputStream, firstFileName, secondFileName);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -84,6 +90,7 @@ public class SlotManager implements Serializable, ExcelImportUIHandlers {
 
     @Override
     public void prepareImportPopup() {
+        loaderResult = null;
         importSlotData = null;
         firstFileName = null;
         importSlotRelationshipsData = null;
@@ -97,8 +104,8 @@ public class SlotManager implements Serializable, ExcelImportUIHandlers {
      */
     public void handleFirstImportFileUpload(FileUploadEvent event) {
         try (InputStream inputStream = event.getFile().getInputstream()) {
-            this.importSlotData = ByteStreams.toByteArray(inputStream);
-            this.firstFileName = FilenameUtils.getName(event.getFile().getFileName());
+            importSlotData = ByteStreams.toByteArray(inputStream);
+            firstFileName = FilenameUtils.getName(event.getFile().getFileName());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -111,8 +118,8 @@ public class SlotManager implements Serializable, ExcelImportUIHandlers {
      */
     public void handleSecondImportFileUpload(FileUploadEvent event) {
         try (InputStream inputStream = event.getFile().getInputstream()) {
-            this.importSlotRelationshipsData= ByteStreams.toByteArray(inputStream);
-            this.secondFileName = FilenameUtils.getName(event.getFile().getFileName());
+            importSlotRelationshipsData = ByteStreams.toByteArray(inputStream);
+            secondFileName = FilenameUtils.getName(event.getFile().getFileName());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -130,7 +137,8 @@ public class SlotManager implements Serializable, ExcelImportUIHandlers {
      * @param slotPairsFileName the name of the Slot relationship Excel worksheet file
      * @return a {@link DataLoaderResult} containing information about the operation completion status
      */
-    private DataLoaderResult loadDataFromTwoFiles(InputStream slotsInputStream, InputStream slotPairsInputStream, String slotsFileName, String slotPairsFileName) {
+    private DataLoaderResult loadDataFromTwoFiles(InputStream slotsInputStream, InputStream slotPairsInputStream,
+            String slotsFileName, String slotPairsFileName) {
         List<Pair<Integer, List<String>>> slotsFileInputRows = null;
         List<Pair<Integer, List<String>>> slotPairsFileInputRows = null;
 
@@ -145,6 +153,7 @@ public class SlotManager implements Serializable, ExcelImportUIHandlers {
         } else {
             slotPairsFileInputRows = null;
         }
-        return slotsAndSlotPairsLoader.loadDataToDatabase(slotsFileInputRows, slotPairsFileInputRows, slotsFileName, slotPairsFileName);
+        return slotsAndSlotPairsLoader.loadDataToDatabase(slotsFileInputRows, slotPairsFileInputRows, slotsFileName,
+                    slotPairsFileName);
     }
 }

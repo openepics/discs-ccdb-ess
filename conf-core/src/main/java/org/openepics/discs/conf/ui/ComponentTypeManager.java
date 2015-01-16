@@ -62,14 +62,14 @@ import com.google.common.io.ByteStreams;
 public class ComponentTypeManager implements Serializable, ExcelSingleFileImportUIHandlers {
     private static final long serialVersionUID = -9007187646811006328L;
 
-    @Inject transient private ComptypeEJB comptypeEJB;
-    @Inject transient private AuditRecordEJB auditRecordEJB;
-    @Inject transient private DataLoaderHandler dataLoaderHandler;
-    @Inject @ComponentTypesLoaderQualifier transient private DataLoader compTypesDataLoader;
+    @Inject private transient ComptypeEJB comptypeEJB;
+    @Inject private transient AuditRecordEJB auditRecordEJB;
+    @Inject private transient DataLoaderHandler dataLoaderHandler;
+    @Inject @ComponentTypesLoaderQualifier private transient DataLoader compTypesDataLoader;
 
     private byte[] importData;
     private String importFileName;
-    transient private DataLoaderResult loaderResult;
+    private transient DataLoaderResult loaderResult;
 
     private List<ComponentType> deviceTypes;
     private List<ComponentType> filteredDeviceTypes;
@@ -164,8 +164,11 @@ public class ComponentTypeManager implements Serializable, ExcelSingleFileImport
 
     @Override
     public void doImport() {
-        final InputStream inputStream = new ByteArrayInputStream(importData);
-        loaderResult = dataLoaderHandler.loadData(inputStream, compTypesDataLoader);
+        try (InputStream inputStream = new ByteArrayInputStream(importData)) {
+            loaderResult = dataLoaderHandler.loadData(inputStream, compTypesDataLoader);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -175,6 +178,7 @@ public class ComponentTypeManager implements Serializable, ExcelSingleFileImport
 
     @Override
     public void prepareImportPopup() {
+        loaderResult = null;
         importData = null;
         importFileName = null;
     }

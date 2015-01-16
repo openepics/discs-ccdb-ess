@@ -64,17 +64,17 @@ import com.google.common.io.ByteStreams;
 public class PropertyManager implements Serializable, ExcelSingleFileImportUIHandlers {
     private static final long serialVersionUID = 1056645993595744719L;
 
-    @Inject transient private PropertyEJB propertyEJB;
+    @Inject private transient PropertyEJB propertyEJB;
 
-    @Inject transient private DataLoaderHandler dataLoaderHandler;
-    @Inject @PropertiesLoaderQualifier transient private DataLoader propertiesDataLoader;
+    @Inject private transient DataLoaderHandler dataLoaderHandler;
+    @Inject @PropertiesLoaderQualifier private transient DataLoader propertiesDataLoader;
 
     private List<Property> properties;
     private List<Property> filteredProperties;
 
     private byte[] importData;
     private String importFileName;
-    transient private DataLoaderResult loaderResult;
+    private transient DataLoaderResult loaderResult;
 
     private String name;
     private String description;
@@ -209,12 +209,16 @@ public class PropertyManager implements Serializable, ExcelSingleFileImportUIHan
 
     @Override
     public void doImport() {
-        final InputStream inputStream = new ByteArrayInputStream(importData);
-        loaderResult = dataLoaderHandler.loadData(inputStream, propertiesDataLoader);
+        try (InputStream inputStream = new ByteArrayInputStream(importData)) {
+            loaderResult = dataLoaderHandler.loadData(inputStream, propertiesDataLoader);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public void prepareImportPopup() {
+        loaderResult = null;
         importData = null;
         importFileName = null;
     }
