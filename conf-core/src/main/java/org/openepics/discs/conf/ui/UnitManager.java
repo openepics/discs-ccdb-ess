@@ -103,6 +103,7 @@ public class UnitManager implements Serializable, ExcelSingleFileImportUIHandler
     public void doImport() {
         try (InputStream inputStream = new ByteArrayInputStream(importData)) {
             loaderResult = dataLoaderHandler.loadData(inputStream, unitsDataLoader);
+            units = unitEJB.findAll();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
