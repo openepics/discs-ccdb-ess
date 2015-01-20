@@ -130,12 +130,13 @@ public class ComponentTypeManager implements Serializable, ExcelSingleFileImport
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "New device type has been created");
         } catch (Exception e) {
             if (Utility.causedByPersistenceException(e)) {
-                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Failure", "Device type could not be added because a device type instance with same name already exists.");
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Failure",
+                        "Device type could not be added because a device type instance with same name already exists.");
             } else {
                 throw e;
             }
         } finally {
-            init();
+            deviceTypes = comptypeEJB.findAll();
         }
     }
 
@@ -148,12 +149,13 @@ public class ComponentTypeManager implements Serializable, ExcelSingleFileImport
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Device type was deleted");
         } catch (Exception e) {
             if (Utility.causedByPersistenceException(e)) {
-                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Deletion failed", "The device type could not be deleted because it is used.");
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Deletion failed",
+                        "The device type could not be deleted because it is used.");
             } else {
                 throw e;
             }
         } finally {
-            init();
+            deviceTypes = comptypeEJB.findAll();
         }
     }
 
@@ -166,6 +168,8 @@ public class ComponentTypeManager implements Serializable, ExcelSingleFileImport
     public void doImport() {
         try (InputStream inputStream = new ByteArrayInputStream(importData)) {
             loaderResult = dataLoaderHandler.loadData(inputStream, compTypesDataLoader);
+            deviceTypes = comptypeEJB.findAll();
+            RequestContext.getCurrentInstance().update("deviceTypesForm");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -224,7 +228,8 @@ public class ComponentTypeManager implements Serializable, ExcelSingleFileImport
      */
     public void setSelectedDeviceTypeForLog(ComponentType selectedDeviceType) {
         this.selectedDeviceType = selectedDeviceType;
-        auditRecordsForEntity = auditRecordEJB.findByEntityIdAndType(selectedDeviceType.getId(), EntityType.COMPONENT_TYPE);
+        auditRecordsForEntity = auditRecordEJB.findByEntityIdAndType(selectedDeviceType.getId(),
+                                                                                EntityType.COMPONENT_TYPE);
         RequestContext.getCurrentInstance().update("deviceTypeLogForm:deviceTypeLog");
     }
 
@@ -279,9 +284,6 @@ public class ComponentTypeManager implements Serializable, ExcelSingleFileImport
      * @return The list of all device types in the database.
      */
     public List<ComponentType> getDeviceTypes() {
-        if (deviceTypes == null) {
-            deviceTypes = comptypeEJB.findAll();
-        }
         return deviceTypes;
     }
 }

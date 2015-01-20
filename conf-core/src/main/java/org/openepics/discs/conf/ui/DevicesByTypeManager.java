@@ -19,7 +19,6 @@ package org.openepics.discs.conf.ui;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.ListIterator;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
@@ -34,7 +33,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.openepics.discs.conf.ejb.ComptypeEJB;
 import org.openepics.discs.conf.ejb.DeviceEJB;
 import org.openepics.discs.conf.ejb.InstallationEJB;
-import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.util.Utility;
@@ -51,12 +49,10 @@ import com.google.common.base.Preconditions;
 public class DevicesByTypeManager implements Serializable {
     private static final long serialVersionUID = 3236468538191653638L;
 
-    @Inject transient private ComptypeEJB componentTypesEJB;
-    @Inject transient private DeviceEJB deviceEJB;
-    @Inject transient private InstallationEJB installationEJB;
+    @Inject private transient ComptypeEJB componentTypesEJB;
+    @Inject private transient DeviceEJB deviceEJB;
+    @Inject private transient InstallationEJB installationEJB;
 
-    private List<ComponentType> deviceTypes;
-    private List<ComponentType> filteredComponentTypes;
     private ComponentType selectedComponentType;
 
     private List<Device> devices;
@@ -73,28 +69,13 @@ public class DevicesByTypeManager implements Serializable {
      */
     @PostConstruct
     public void init() {
-        if (((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest()).getParameter("id") != null) {
-            final Long id = Long.parseLong(((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest()).getParameter("id"));
+        if (((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest()).getParameter("id")
+                != null) {
+            final Long id = Long.parseLong(
+                    ((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest()).
+                    getParameter("id"));
             selectedComponentType = componentTypesEJB.findById(id);
             prepareDevicesForDisplay();
-        }
-    }
-
-    /**
-     * Removes the component types from the devices based on name. Used to remove "_ROOT" and "_GRP"
-     */
-    private void removeInternalTypes() {
-        int found = 0;
-        final ListIterator<ComponentType> dtIterator = deviceTypes.listIterator();
-        while (dtIterator.hasNext()) {
-            final String elementName = dtIterator.next().getName();
-            if (elementName.equalsIgnoreCase(SlotEJB.ROOT_COMPONENT_TYPE) || elementName.equalsIgnoreCase(SlotEJB.GRP_COMPONENT_TYPE)) {
-                dtIterator.remove();
-                found++;
-                if (found >= 2) {
-                    break;
-                }
-            }
         }
     }
 
@@ -128,16 +109,19 @@ public class DevicesByTypeManager implements Serializable {
                 selectedDevice = null;
                 prepareDevicesForDisplay();
 
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Device deleted.", null));
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_INFO, "Device deleted.", null));
             } catch (Exception e) {
                 if (Utility.causedByPersistenceException(e)) {
-                    Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Deletion failed", "The property could not be deleted because it is used.");
+                    Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Deletion failed",
+                            "The property could not be deleted because it is used.");
                 } else {
                     throw e;
                 }
             }
         } else {
-            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Deletion failed", "Device instance could not be deleted because it is installed.");
+            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Deletion failed",
+                    "Device instance could not be deleted because it is installed.");
         }
     }
 
@@ -165,25 +149,6 @@ public class DevicesByTypeManager implements Serializable {
     }
 
     /**
-     * @return The list of all user defined device types to be used in the UI (the left hand side table listing all
-     * available device type)
-     */
-    public List<ComponentType> getDeviceTypes() {
-        if (deviceTypes == null) {
-            deviceTypes = componentTypesEJB.findComponentTypeOrderedByName();
-            removeInternalTypes();
-        }
-        return deviceTypes;
-    }
-    /**
-     * @param deviceTypes The list of all user defined device types to be used in the UI (the left hand side table
-     * listing all available device type)
-     */
-    public void setDeviceTypes(List<ComponentType> deviceTypes) {
-        this.deviceTypes = deviceTypes;
-    }
-
-    /**
      * @return The device type the user selected in the left hand side table listing all available device type
      */
     public ComponentType getSelectedComponentType() {
@@ -198,8 +163,8 @@ public class DevicesByTypeManager implements Serializable {
     }
 
     /**
-     * The method prepares the list of {@link Device} instances to show to the user when he selects a device type in the left
-     * hand side table listing all available device type.
+     * The method prepares the list of {@link Device} instances to show to the user when he selects a device type in
+     * the left hand side table listing all available device type.
      */
     public void prepareDevicesForDisplay() {
         devices = deviceEJB.findDevicesByComponentType(selectedComponentType);
@@ -257,26 +222,14 @@ public class DevicesByTypeManager implements Serializable {
         this.description = description;
     }
 
-    /**
-     * @return The list of filtered devices used by the PrimeFaces filter field.
-     */
-    public List<ComponentType> getFilteredComponentTypes() {
-        return filteredComponentTypes;
-    }
-    /**
-     * @param filteredComponentTypes The list of filtered devices used by the PrimeFaces filter field.
-     */
-    public void setFilteredComponentTypes(List<ComponentType> filteredComponentTypes) {
-        this.filteredComponentTypes = filteredComponentTypes;
-    }
-
     /** The validator for the inventory ID input field. Called when creating a new device {@link Device}
      * @param ctx {@link javax.faces.context.FacesContext}
      * @param component {@link javax.faces.component.UIComponent}
      * @param value The value
      * @throws ValidatorException {@link javax.faces.validator.ValidatorException}
      */
-    public void newDeviceSerialNoValidator(FacesContext ctx, UIComponent component, Object value) throws ValidatorException {
+    public void newDeviceSerialNoValidator(FacesContext ctx, UIComponent component, Object value)
+            throws ValidatorException {
         if (value == null) {
             throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_FATAL, "Error", "No value to parse."));
         }
