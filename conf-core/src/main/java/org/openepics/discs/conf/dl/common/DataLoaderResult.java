@@ -104,24 +104,51 @@ public class DataLoaderResult {
         messages.add(new ValidationMessage(message, row, column));
     }
 
+    /**
+     * Adds an error message to the message list that is not related to any Excel spreadsheet row.
+     *
+     * @param message the error message
+     */
     public void addGlobalMessage(ErrorMessage message) {
         addMessageInternal(message, currentRowNumber, null);
     }
 
+    /**
+     * Adds an error message to the message list that is not related to any Excel spreadsheet row.
+     *
+     * @param message the error message
+     * @param column the column containing the error
+     */
     public void addGlobalMessage(ErrorMessage message, String column) {
         addMessageInternal(message, currentRowNumber, column);
     }
 
+    /**
+     * Adds an error message to the message list that is related to the current Excel spreadsheet row.
+     *
+     * @param message the error message
+     * @param column the column containing the error
+     */
     public void addRowMessage(ErrorMessage message, String column) {
         rowError = true;
         addMessageInternal(message, currentRowNumber, column);
     }
 
+    /**
+     * Adds an error message to the message list that is related to the current Excel spreadsheet row.
+     *
+     * @param message the error message
+     */
     public void addRowMessage(ErrorMessage message) {
         rowError = true;
         addMessageInternal(message, currentRowNumber, null);
     }
 
+    /**
+     * An error message indicating that the {@link Slot} does not have a parent defined (Contains relationship)
+     *
+     * @param slotName the name of the slot
+     */
     public void addOrphanSlotMessage(final String slotName) {
         final ValidationMessage orphanSlotMessage = new ValidationMessage(ErrorMessage.ORPHAN_SLOT, null, null);
         orphanSlotMessage.setOrphanSlotName(slotName);
@@ -129,6 +156,7 @@ public class DataLoaderResult {
         error = true;
     }
 
+    /** Reset the status of the row error. Called before processing a new row. */
     public void resetRowError() {
         rowError = false;
     }
@@ -145,6 +173,11 @@ public class DataLoaderResult {
         return contextualData;
     }
 
+    /**
+     * Adds message of another data loader result list to this object.
+     *
+     * @param loaderResult the loader result that contains additional messages
+     */
     public void copyDataLoaderResult(DataLoaderResult loaderResult) {
         Preconditions.checkNotNull(loaderResult);
         this.messages.addAll(loaderResult.getMessages());
@@ -165,6 +198,4 @@ public class DataLoaderResult {
         }
         return builder.toString();
     }
-
-
 }

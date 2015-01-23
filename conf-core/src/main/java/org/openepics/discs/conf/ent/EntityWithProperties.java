@@ -21,6 +21,14 @@ package org.openepics.discs.conf.ent;
 
 import java.util.List;
 
+/**
+ * An interface for accessing a list of property values associated with a given entity.
+ *
+ * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
+ *
+ */
 public interface EntityWithProperties {
+
+    /** @return a list of property values associated with a given entity */
     <T extends PropertyValue> List<T> getEntityPropertyList();
 }

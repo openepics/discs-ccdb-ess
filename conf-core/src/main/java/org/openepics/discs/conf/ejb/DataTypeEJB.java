@@ -44,6 +44,12 @@ public class DataTypeEJB extends DAO<DataType> {
         return DataType.class;
     }
 
+    /**
+     * The method checks whether a data type is used in any property value in the database.
+     *
+     * @param dataType the data type to check for
+     * @return <code>true</code> if the data type is used in any property value, <code>false</code> otherwise.
+     */
     public boolean isDataTypeUsed(DataType dataType) {
         List<? extends PropertyValue> valuesWithDataType;
 
@@ -53,8 +59,8 @@ public class DataTypeEJB extends DAO<DataType> {
             valuesWithDataType = em.createNamedQuery("SlotPropertyValue.findByDataType", SlotPropertyValue.class)
                     .setParameter("dataType", dataType).getResultList();
             if (valuesWithDataType.isEmpty()) {
-                valuesWithDataType = em.createNamedQuery("DevicePropertyValue.findByDataType", DevicePropertyValue.class)
-                        .setParameter("dataType", dataType).getResultList();
+                valuesWithDataType = em.createNamedQuery("DevicePropertyValue.findByDataType",
+                                        DevicePropertyValue.class).setParameter("dataType", dataType).getResultList();
                 if (valuesWithDataType.isEmpty()) {
                     return !em.createNamedQuery("AlignmentPropertyValue.findByDataType", AlignmentPropertyValue.class)
                             .setParameter("dataType", dataType).getResultList().isEmpty();

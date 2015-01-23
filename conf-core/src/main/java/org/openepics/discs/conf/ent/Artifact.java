@@ -24,7 +24,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -36,7 +35,7 @@ import javax.validation.constraints.Size;
  */
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-abstract public class Artifact extends ConfigurationEntity {
+public abstract class Artifact extends ConfigurationEntity {
 
     private static final long serialVersionUID = 2926588619140123269L;
 

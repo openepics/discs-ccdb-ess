@@ -85,15 +85,15 @@ public class SedsConverter implements AttributeConverter<Value, String> {
         final Value convertedValue;
 
         if (seds instanceof SedsScalar<?>) {
-            convertedValue = convertFromSedsScalar((SedsScalar<?>) seds, dbData);          // simple scalars
+            convertedValue = convertFromSedsScalar((SedsScalar<?>) seds, dbData);
         } else if (seds instanceof SedsTime) {
-            convertedValue = convertFromSedsTime((SedsTime)seds);                          // timestamp
+            convertedValue = convertFromSedsTime((SedsTime)seds);
         } else if (seds instanceof SedsScalarArray<?>) {
-            convertedValue = convertFromSedsScalarArray((SedsScalarArray<?>)seds, dbData); // Vectors (1-D)
+            convertedValue = convertFromSedsScalarArray((SedsScalarArray<?>)seds, dbData);
         } else if (seds instanceof SedsTable) {
-            convertedValue = convertFromSedsTable((SedsTable) seds);                       // table
+            convertedValue = convertFromSedsTable((SedsTable) seds);
         } else if (seds instanceof SedsEnum) {
-            convertedValue = convertFromSedsEnum((SedsEnum) seds);                         // enum
+            convertedValue = convertFromSedsEnum((SedsEnum) seds);
         } else {
             throw new IllegalArgumentException("Unable to convert DB data: " + dbData);
         }
@@ -129,8 +129,7 @@ public class SedsConverter implements AttributeConverter<Value, String> {
 
     private Value convertFromSedsTime(SedsTime sedsTime) {
         final Timestamp epicsTimestamp = Timestamp.of(sedsTime.getUnixSec(), sedsTime.getNanoSec());
-        final TimestampValue timestampValue = new TimestampValue(epicsTimestamp);
-        return timestampValue;
+        return new TimestampValue(epicsTimestamp);
     }
 
     private Value convertFromSedsScalarArray(SedsScalarArray<?> sedsScalarArray, String dbData) {
@@ -154,7 +153,8 @@ public class SedsConverter implements AttributeConverter<Value, String> {
                 }
                 return new DblVectorValue(dblValues);
             case STRING:
-                final List<String> sValues = new ArrayList<String>(Arrays.asList((String[])sedsScalarArray.getValueArray()));
+                final List<String> sValues = new ArrayList<String>(
+                                                            Arrays.asList((String[])sedsScalarArray.getValueArray()));
                 final StrVectorValue strVectorValue = new StrVectorValue(sValues);
                 return strVectorValue;
             default:
@@ -181,12 +181,10 @@ public class SedsConverter implements AttributeConverter<Value, String> {
                 tableValues.add(dblColValues);
             }
         }
-        final DblTableValue dblTableValue = new DblTableValue(tableValues);
-        return dblTableValue;
+        return new DblTableValue(tableValues);
     }
 
     private Value convertFromSedsEnum(SedsEnum sedsEnum) {
-        final EnumValue enumValue = new EnumValue(sedsEnum.getSelected());
-        return enumValue;
+        return new EnumValue(sedsEnum.getSelected());
     }
 }

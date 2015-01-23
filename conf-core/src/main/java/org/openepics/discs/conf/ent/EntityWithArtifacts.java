@@ -21,6 +21,14 @@ package org.openepics.discs.conf.ent;
 
 import java.util.List;
 
+/**
+ * An interface for accessing a list of artifacts associated with a given entity.
+ *
+ * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
+ *
+ */
 public interface EntityWithArtifacts {
+
+    /** @return a list of artifacts associated with a given entity */
     <T extends Artifact> List<T> getEntityArtifactList();
 }

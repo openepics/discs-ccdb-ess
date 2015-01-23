@@ -30,7 +30,6 @@ import org.openepics.discs.conf.dl.SlotsAndSlotPairsDataLoader;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
-import org.openepics.discs.conf.ent.InstallationRecord;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
@@ -124,8 +123,8 @@ public class SlotEJB extends DAO<Slot> {
      *
      * @param newSlot the Container or Installation slot to be added
      * @param parentSlot its parent. <code>null</code> if the container is a new root.
-     * @param fromDataLoader is data being imported via {@link SlotsAndSlotPairsDataLoader}. If it is slot pair should never be created
-     *        since it is separately created from data loader.
+     * @param fromDataLoader is data being imported via {@link SlotsAndSlotPairsDataLoader}. If it is slot pair should
+     *          never be created since it is separately created from data loader.
      */
     @CRUDOperation(operation=EntityTypeOperation.CREATE)
     @Audit
@@ -134,13 +133,16 @@ public class SlotEJB extends DAO<Slot> {
         super.add(newSlot);
         if (!fromDataLoader) {
             if (parentSlot != null) {
-                slotPairEJB.addWithoutInterceptors(new SlotPair(newSlot, parentSlot, slotRelationEJB.findBySlotRelationName(SlotRelationName.CONTAINS)));
+                slotPairEJB.addWithoutInterceptors(new SlotPair(newSlot, parentSlot,
+                            slotRelationEJB.findBySlotRelationName(SlotRelationName.CONTAINS)));
             } else {
-                slotPairEJB.addWithoutInterceptors(new SlotPair(newSlot, getRootNode(), slotRelationEJB.findBySlotRelationName(SlotRelationName.CONTAINS)));
+                slotPairEJB.addWithoutInterceptors(new SlotPair(newSlot, getRootNode(),
+                            slotRelationEJB.findBySlotRelationName(SlotRelationName.CONTAINS)));
             }
         }
 
-        final List<ComptypePropertyValue> propertyDefinitions = comptypeEJB.findPropertyDefinitions(newSlot.getComponentType());
+        final List<ComptypePropertyValue> propertyDefinitions =
+                                                comptypeEJB.findPropertyDefinitions(newSlot.getComponentType());
         for (ComptypePropertyValue propertyDefinition : propertyDefinitions) {
             if (propertyDefinition.isDefinitionTargetSlot()) {
                 final SlotPropertyValue slotPropertyValue = new SlotPropertyValue(false);
@@ -156,7 +158,8 @@ public class SlotEJB extends DAO<Slot> {
      * @return <code>true</code> if the installation slot name is unique, <code>false</code> otherwise
      */
     public boolean isInstallationSlotNameUnique(String newSlotName) {
-        return em.createNamedQuery("Slot.findByNameAndHosting", Slot.class).setParameter("name", newSlotName).setParameter("isHostingSlot", true).getResultList().isEmpty();
+        return em.createNamedQuery("Slot.findByNameAndHosting", Slot.class).setParameter("name", newSlotName).
+                setParameter("isHostingSlot", true).getResultList().isEmpty();
     }
 
     @Override

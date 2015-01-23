@@ -71,11 +71,11 @@ public class SlotPairEJB extends DAO<SlotPair> {
      */
     public boolean slotHasMoreThanOneContainsRelation(Slot childSlot) {
         final List<SlotPair> slotPairs = em.createNamedQuery("SlotPair.findSlotPairsByChildAndRelation", SlotPair.class)
-	            .setParameter("childSlot", childSlot)
-	            .setParameter("relationName", SlotRelationName.CONTAINS)
-	            .setMaxResults(2).getResultList();
+                .setParameter("childSlot", childSlot)
+                .setParameter("relationName", SlotRelationName.CONTAINS)
+                .setMaxResults(2).getResultList();
         return slotPairs != null && slotPairs.size() == 2;
-	}
+    }
 
     @Override
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
@@ -88,7 +88,7 @@ public class SlotPairEJB extends DAO<SlotPair> {
         em.merge(entity.getChildSlot());
         em.merge(entity.getParentSlot());
         super.delete(entity);
-	}
+    }
 
 
     @Override
@@ -113,7 +113,7 @@ public class SlotPairEJB extends DAO<SlotPair> {
         childSlot.getPairsInWhichThisSlotIsAChildList().add(entity);
         parentSlot.getPairsInWhichThisSlotIsAParentList().add(entity);
         super.add(entity);
-	}
+    }
 
     /**
      * Adds new slot pair but bypasses interceptors that create audit log and check
@@ -152,10 +152,10 @@ public class SlotPairEJB extends DAO<SlotPair> {
         return loopDetected;
     }
 
-	/**
-	 * @param slot - the slot to use in query.
-	 * @return The list of all {@link SlotPair}s where the slot is either a parent or a child.
-	 */
+    /**
+     * @param slot - the slot to use in query.
+     * @return The list of all {@link SlotPair}s where the slot is either a parent or a child.
+     */
     public List<SlotPair> getSlotRleations(Slot slot) {
         return em.createNamedQuery("SlotPair.findSlotRelations", SlotPair.class).setParameter("slot", slot)
                 .getResultList();
@@ -227,5 +227,5 @@ public class SlotPairEJB extends DAO<SlotPair> {
         swapPair.setSlotOrder(myPairOrder);
         em.flush();
         mySlotPair.setSlotOrder(swapPairOrder);
-	}
+    }
 }
