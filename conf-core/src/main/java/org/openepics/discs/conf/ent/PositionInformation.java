@@ -101,6 +101,6 @@ public class PositionInformation implements Serializable {
      */
     public boolean isEmpty() {
         return globalX == null && globalY == null && globalZ == null && globalPitch == null
-                && globalRoll == null && globalRoll == null;
+                && globalRoll == null && globalYaw == null;
     }
 }

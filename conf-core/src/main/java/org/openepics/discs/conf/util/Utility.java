@@ -52,6 +52,9 @@ import org.openepics.discs.conf.ent.SlotRelationName;
  */
 public class Utility {
 
+    public static final String MESSAGE_SUMMARY_SUCCESS = "Success";
+    public static final String MESSAGE_SUMMARY_ERROR = "Error";
+
     private static final String PATH_SEPARATOR = "\u00A0\u00A0\u00BB\u00A0\u00A0";
 
     private Utility() {}

@@ -18,8 +18,8 @@ import java.util.List;
 import com.google.common.base.Preconditions;
 
 /**
- * A table is a collection columns containing double precision values. All columns must contain the same number of elements.
- * This restriction is enforced implicitly by the SEDS serialization and is checked in the UI layer.
+ * A table is a collection columns containing double precision values. All columns must contain the same number of
+ * elements. This restriction is enforced implicitly by the SEDS serialization and is checked in the UI layer.
  *
  * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  *
@@ -53,23 +53,25 @@ public class DblTableValue implements Value {
             throw new IllegalArgumentException("Method expects two paramters for dimensions.");
         }
 
-        final int COLS = dimensions[1];
-        final int ROWS = dimensions[0];
+        final int cols = dimensions[1];
+        final int rows = dimensions[0];
 
         final StringBuilder retStr = new StringBuilder();
-        final int columnsSize = dblTableValue.size(); // number of columns in the table
+        // number of columns in the table
+        final int columnsSize = dblTableValue.size();
         int colIndex = 0;
         retStr.append('[');
 
         for (List<Double> column : dblTableValue) {
-            appendSingleColumn(column, retStr, ROWS);
+            appendSingleColumn(column, retStr, rows);
             colIndex++;
             if (colIndex < columnsSize) {
                 retStr.append(", ");
             }
-            if ((columnsSize > COLS) && (colIndex >= COLS - 1)) {
+            if ((columnsSize > cols) && (colIndex >= cols - 1)) {
                 retStr.append("..., ");
-                appendSingleColumn(dblTableValue.get(columnsSize - 1), retStr, ROWS); // append last column
+                // append last column
+                appendSingleColumn(dblTableValue.get(columnsSize - 1), retStr, rows);
                 break;
             }
         }
@@ -78,8 +80,9 @@ public class DblTableValue implements Value {
         return retStr.toString();
     }
 
-    private void appendSingleColumn(List<Double> column, StringBuilder retStr, final int ROWS) {
-        final int rowsSize = column.size(); // number of rows in a column
+    private void appendSingleColumn(List<Double> column, StringBuilder retStr, final int rows) {
+        // number of rows in a column
+        final int rowsSize = column.size();
         int rowIndex = 0;
         retStr.append('[');
 
@@ -89,8 +92,9 @@ public class DblTableValue implements Value {
             if (rowIndex < rowsSize) {
                 retStr.append(", ");
             }
-            if ((rowsSize > ROWS) && (rowIndex >= ROWS - 1)) {
-                retStr.append("..., ").append(column.get(rowsSize - 1)); // append last row
+            if ((rowsSize > rows) && (rowIndex >= rows - 1)) {
+                // append last row
+                retStr.append("..., ").append(column.get(rowsSize - 1));
                 break;
             }
         }

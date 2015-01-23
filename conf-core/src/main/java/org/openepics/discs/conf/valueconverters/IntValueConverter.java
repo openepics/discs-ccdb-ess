@@ -35,7 +35,7 @@ public class IntValueConverter extends ValueConverter<IntValue> {
 
     @Override
     public String convertToDatabaseColumn(IntValue attribute) {
-        final SedsScalar<Integer> sedsScalar = sedsFactory.newScalar(attribute.getIntValue());
-        return sedsDbConverter.serialize(sedsScalar).toString();
+        final SedsScalar<Integer> sedsScalar = SEDS_FACTORY.newScalar(attribute.getIntValue());
+        return SEDS_DB_CONVERTER.serialize(sedsScalar).toString();
     }
 }

@@ -40,7 +40,7 @@ public class StrVectorValueConverter extends ValueConverter<StrVectorValue> {
     public String convertToDatabaseColumn(StrVectorValue attribute) {
         final List<String> strVector = attribute.getStrVectorValue();
         final String[] strVectorArray = strVector.toArray(new String[strVector.size()]);
-        final SedsScalarArray<String> sedsScalarArray = sedsFactory.newScalarArray(strVectorArray);
-        return sedsDbConverter.serialize(sedsScalarArray).toString();
+        final SedsScalarArray<String> sedsScalarArray = SEDS_FACTORY.newScalarArray(strVectorArray);
+        return SEDS_DB_CONVERTER.serialize(sedsScalarArray).toString();
     }
 }

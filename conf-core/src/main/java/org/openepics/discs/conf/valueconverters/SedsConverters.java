@@ -46,7 +46,8 @@ public class SedsConverters {
 
     private static final Logger LOGGER = Logger.getLogger(SedsConverter.class.getCanonicalName());
 
-    private static final Map<Class<? extends Value>, ValueConverter<? extends Value>> converters = new ConcurrentHashMap<>();
+    private static final Map<Class<? extends Value>, ValueConverter<? extends Value>> CONVERTERS =
+                                                                                            new ConcurrentHashMap<>();
 
     public SedsConverters() {}
 
@@ -59,14 +60,14 @@ public class SedsConverters {
     public SedsConverters(@Any Instance<ValueConverter<? extends Value>> allConverters) {
         int convertersFound = 0;
         for (ValueConverter<? extends Value> converter : allConverters) {
-            converters.put(converter.getType(), converter);
+            CONVERTERS.put(converter.getType(), converter);
             convertersFound++;
         }
 
         LOGGER.log(Level.INFO, "Loaded " + convertersFound + " data type converters.");
         if (convertersFound != BuiltInDataType.values().length) {
-            LOGGER.log(Level.SEVERE, "Converter data type implementation number mismatch. Expected: " + BuiltInDataType.values().length
-                    + ", found: " + convertersFound);
+            LOGGER.log(Level.SEVERE, "Converter data type implementation number mismatch. Expected: "
+                    + BuiltInDataType.values().length + ", found: " + convertersFound);
         }
     }
 
@@ -77,7 +78,7 @@ public class SedsConverters {
      */
     public static <T extends Value> String convertToDatabaseColumn(T attribute) {
         @SuppressWarnings("unchecked")
-        ValueConverter<T> converter = (ValueConverter<T>) converters.get(attribute.getClass());
+        ValueConverter<T> converter = (ValueConverter<T>) CONVERTERS.get(attribute.getClass());
         if (converter == null) {
             throw new IllegalStateException("Could not find converter for " + attribute.getClass().getName());
         }
@@ -90,6 +91,6 @@ public class SedsConverters {
      * @param converters
      */
     protected static void setConverters(Map<Class<? extends Value>, ValueConverter<? extends Value>> converters) {
-        SedsConverters.converters.putAll(converters);
+        SedsConverters.CONVERTERS.putAll(converters);
     }
 }

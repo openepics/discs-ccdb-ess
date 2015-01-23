@@ -175,15 +175,13 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
         propertyValueInstance.setPropValue(propertyValue);
         setPropertyValueParent(propertyValueInstance);
 
-        if (propertyValueInstance instanceof ComptypePropertyValue) {
-            if (isPropertyDefinition) {
-                final ComptypePropertyValue ctPropValueInstance = ((ComptypePropertyValue) propertyValueInstance);
-                ctPropValueInstance.setPropertyDefinition(true);
-                if (definitionTarget == DefinitionTarget.SLOT) {
-                    ctPropValueInstance.setDefinitionTargetSlot(true);
-                } else {
-                    ctPropValueInstance.setDefinitionTargetDevice(true);
-                }
+        if ((propertyValueInstance instanceof ComptypePropertyValue) && isPropertyDefinition) {
+            final ComptypePropertyValue ctPropValueInstance = (ComptypePropertyValue) propertyValueInstance;
+            ctPropValueInstance.setPropertyDefinition(true);
+            if (definitionTarget == DefinitionTarget.SLOT) {
+                ctPropValueInstance.setDefinitionTargetSlot(true);
+            } else {
+                ctPropValueInstance.setDefinitionTargetDevice(true);
             }
         }
 
@@ -192,12 +190,15 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
 
             if (isPropertyDefinition) {
                 if (definitionTarget == DefinitionTarget.SLOT) {
-                    Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "New installation slot property has been created");
+                    Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+                            "New installation slot property has been created");
                 } else {
-                    Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "New device instance property has been created");
+                    Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+                            "New device instance property has been created");
                 }
             } else {
-                Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "New property has been created");
+                Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+                        "New property has been created");
             }
         } finally {
             internalPopulateAttributesList();
@@ -231,7 +232,8 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
 
         try {
             dao.addChild(artifactInstance);
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "New artifact has been created");
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+                                                                        "New artifact has been created");
         } finally {
             internalPopulateAttributesList();
         }
@@ -285,7 +287,8 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
     protected void deletePropertyValue() {
         final T propValue = (T) selectedAttribute.getEntity();
         dao.deleteChild(propValue);
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Property value has been deleted");
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+                                                                        "Property value has been deleted");
     }
 
     @SuppressWarnings("unchecked")
@@ -295,7 +298,8 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
             blobStore.deleteFile(artifact.getUri());
         }
         dao.deleteChild(artifact);
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Device type artifact has been deleted");
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+                                                                        "Device type artifact has been deleted");
     }
 
     protected void prepareModifyPropertyPopUp() {
@@ -395,7 +399,8 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
 
         try {
             dao.saveChild(selectedPropertyValue);
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Property value has been modified");
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+                                                                        "Property value has been modified");
         } finally {
             internalPopulateAttributesList();
         }
@@ -426,7 +431,8 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
 
         try {
             dao.saveChild(selectedArtifact);
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Artifact has been modified");
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+                                                                        "Artifact has been modified");
         } finally {
             internalPopulateAttributesList();
         }
@@ -453,8 +459,9 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
      */
     public boolean canEdit(EntityAttributeView attributeView) {
         final Object attribute = attributeView.getEntity();
-        return attribute instanceof BuiltInProperty || (attribute instanceof PropertyValue && !(attribute instanceof ComptypePropertyValue))
-                || (attribute instanceof Artifact && !(attribute instanceof  ComptypeArtifact));
+        return attribute instanceof BuiltInProperty
+                    || (attribute instanceof PropertyValue && !(attribute instanceof ComptypePropertyValue))
+                    || (attribute instanceof Artifact && !(attribute instanceof  ComptypeArtifact));
     }
 
     /** This method determines whether the entity attribute should have the "trash can" icon displayed in the UI.
@@ -463,8 +470,9 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
      */
     public boolean canDelete(EntityAttributeView attributeView) {
         final Object attribute = attributeView.getEntity();
-        return (attribute instanceof Artifact && !(attribute instanceof  ComptypeArtifact)) || (attribute instanceof PropertyValue
-                && !isPropertyValueInherited((PropertyValue)attribute)) || (attribute instanceof Tag && !attributeView.getKind().equals(EntityAttributeViewKind.DEVICE_TYPE_TAG));
+        return (attribute instanceof Artifact && !(attribute instanceof ComptypeArtifact))
+                || (attribute instanceof PropertyValue && !isPropertyValueInherited((PropertyValue)attribute))
+                || (attribute instanceof Tag && attributeView.getKind() != EntityAttributeViewKind.DEVICE_TYPE_TAG);
     }
 
     private boolean isPropertyValueInherited(PropertyValue propertyValue) {
@@ -819,11 +827,12 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
      */
     public void areaValidator(FacesContext ctx, UIComponent component, Object value) throws ValidatorException {
         if (value == null) {
-            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_FATAL, "Error", "No value to parse."));
+            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_FATAL,
+                    Utility.MESSAGE_SUMMARY_ERROR, "No value to parse."));
         }
         if (property == null && builtInProperteryName == null) {
-            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
-                    "You must select a property first."));
+            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                    Utility.MESSAGE_SUMMARY_ERROR, "You must select a property first."));
         }
 
         DataType dataType = property != null ? property.getDataType() : selectedAttribute.getType();
@@ -842,8 +851,8 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
             case STRING_LIST:
                 break;
             default:
-                throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
-                        "Incorrect property data type."));
+                throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                        Utility.MESSAGE_SUMMARY_ERROR, "Incorrect property data type."));
         }
     }
 
@@ -865,15 +874,15 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
                         try {
                             Double.valueOf(dblValue);
                         } catch (NumberFormatException e) {
-                            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
-                                    "Incorrect value: " + dblValue));
+                            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                    Utility.MESSAGE_SUMMARY_ERROR, "Incorrect value: " + dblValue));
                         }
                     }
                     if (lineLength < 0) {
                         lineLength = currentLineLength;
                     } else if (currentLineLength != lineLength) {
-                        throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
-                                "All rows must contain the same number of elements."));
+                        throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                Utility.MESSAGE_SUMMARY_ERROR, "All rows must contain the same number of elements."));
                     }
                 }
             }
@@ -891,8 +900,8 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
                     intValue = scanner.next().replaceAll("\\u00A0", " ").trim();
                     Integer.parseInt(intValue);
                 } catch (NumberFormatException e) {
-                    throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
-                            "Incorrect value: " + intValue));
+                    throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                            Utility.MESSAGE_SUMMARY_ERROR, "Incorrect value: " + intValue));
                 }
             }
         }
@@ -909,8 +918,8 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
                     dblValue = scanner.next().replaceAll("\\u00A0", " ").trim();
                     Double.parseDouble(dblValue);
                 } catch (NumberFormatException e) {
-                    throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
-                            "Incorrect value: " + dblValue));
+                    throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                            Utility.MESSAGE_SUMMARY_ERROR, "Incorrect value: " + dblValue));
                 }
             }
         }
@@ -926,12 +935,13 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
      */
     public void inputValidator(FacesContext ctx, UIComponent component, Object value) throws ValidatorException {
         if (value == null) {
-            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_FATAL, "Error", "No value to parse."));
+            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_FATAL,
+                    Utility.MESSAGE_SUMMARY_ERROR, "No value to parse."));
         }
 
         if (property == null && builtInProperteryName == null) {
-            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
-                    "You must select a property first."));
+            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                    Utility.MESSAGE_SUMMARY_ERROR, "You must select a property first."));
         }
 
         DataType dataType = property != null ? property.getDataType() : selectedAttribute.getType();
@@ -942,16 +952,16 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
                 try {
                     Double.parseDouble(strValue.trim());
                 } catch (NumberFormatException e) {
-                    throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
-                            "Not a double value."));
+                    throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                            Utility.MESSAGE_SUMMARY_ERROR, "Not a double value."));
                 }
                 break;
             case INTEGER:
                 try {
                     Integer.parseInt(strValue.trim());
                 } catch (NumberFormatException e) {
-                    throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
-                            "Not an integer number."));
+                    throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                            Utility.MESSAGE_SUMMARY_ERROR, "Not an integer number."));
                 }
                 break;
             case STRING:
@@ -960,12 +970,13 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
                 try {
                     Conversion.toTimestamp(strValue);
                 } catch (RuntimeException e) {
-                    throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", e.getMessage()), e);
+                    throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                            Utility.MESSAGE_SUMMARY_ERROR, e.getMessage()), e);
                 }
                 break;
             default:
-                throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
-                        "Incorrect property data type."));
+                throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                        Utility.MESSAGE_SUMMARY_ERROR, "Incorrect property data type."));
         }
     }
 

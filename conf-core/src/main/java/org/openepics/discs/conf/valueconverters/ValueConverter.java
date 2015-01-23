@@ -30,20 +30,20 @@ import org.openepics.seds.core.datatypes.SimpleSedsFactory;
  * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
  *
  */
-abstract public class ValueConverter<T extends Value> {
+public abstract class ValueConverter<T extends Value> {
     // we only want the factories to be instantiated once and for all descendants.
-    protected static final SimpleSedsFactory sedsFactory = new SimpleSedsFactory();
-    protected static final DBConverter sedsDbConverter = Seds.newDBConverter();
+    protected static final SimpleSedsFactory SEDS_FACTORY = new SimpleSedsFactory();
+    protected static final DBConverter SEDS_DB_CONVERTER = Seds.newDBConverter();
 
     /**
      * @return the class of the {@link Value} used in this converter.
      */
-    abstract public Class<T> getType();
+    public abstract Class<T> getType();
 
-    /** The method converts the actual {@link Value} instance into a string representation (serialization) to store in the
-     * database.
+    /** The method converts the actual {@link Value} instance into a string representation (serialization) to store in
+     * the database.
      * @param attribute The {@link Value} instance to serialize
      * @return the serialized String to store into the database.
      */
-    abstract public String convertToDatabaseColumn(T attribute);
+    public abstract String convertToDatabaseColumn(T attribute);
 }

@@ -72,12 +72,12 @@ public class HierarchiesController implements Serializable {
     private static final Logger LOGGER = Logger.getLogger(HierarchiesController.class.getCanonicalName());
 
     @Inject private SlotsTreeBuilder slotsTreeBuilder;
-    @Inject transient private SlotEJB slotEJB;
-    @Inject transient private SlotPairEJB slotPairEJB;
-    @Inject transient private InstallationEJB installationEJB;
-    @Inject transient private DataTypeEJB dataTypeEJB;
+    @Inject private transient SlotEJB slotEJB;
+    @Inject private transient SlotPairEJB slotPairEJB;
+    @Inject private transient InstallationEJB installationEJB;
+    @Inject private transient DataTypeEJB dataTypeEJB;
 
-    private List<EntityAttributeView> attributes;
+    private transient List<EntityAttributeView> attributes;
     private TreeNode rootNode;
     private TreeNode selectedNode;
     private InstallationRecord installationRecord;
@@ -109,16 +109,27 @@ public class HierarchiesController implements Serializable {
         if (selectedNode != null) {
             final boolean isHostingSlot = selectedSlot.isHostingSlot();
 
-            attributesList.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_DESCRIPTION, selectedSlot.getDescription(), strDataType)));
+            attributesList.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_DESCRIPTION,
+                                            selectedSlot.getDescription(), strDataType)));
             if (selectedSlot.isHostingSlot()) {
-                attributesList.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_BEAMLINE_POS, selectedSlot.getBeamlinePosition(), dblDataType)));
+                attributesList.add(new EntityAttributeView(
+                                            new BuiltInProperty(SlotBuiltInPropertyName.BIP_BEAMLINE_POS,
+                                                    selectedSlot.getBeamlinePosition(), dblDataType)));
                 final PositionInformation slotPosition = selectedSlot.getPositionInformation();
-                attributesList.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_GLOBAL_X, slotPosition.getGlobalX(), dblDataType)));
-                attributesList.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_GLOBAL_Y, slotPosition.getGlobalY(), dblDataType)));
-                attributesList.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_GLOBAL_Z, slotPosition.getGlobalZ(), dblDataType)));
-                attributesList.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_GLOBAL_PITCH, slotPosition.getGlobalPitch(), dblDataType)));
-                attributesList.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_GLOBAL_ROLL, slotPosition.getGlobalRoll(), dblDataType)));
-                attributesList.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_GLOBAL_YAW, slotPosition.getGlobalYaw(), dblDataType)));
+                attributesList.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_GLOBAL_X,
+                                                                    slotPosition.getGlobalX(), dblDataType)));
+                attributesList.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_GLOBAL_Y,
+                                                                    slotPosition.getGlobalY(), dblDataType)));
+                attributesList.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_GLOBAL_Z,
+                                                                    slotPosition.getGlobalZ(), dblDataType)));
+                attributesList.add(new EntityAttributeView(
+                                            new BuiltInProperty(SlotBuiltInPropertyName.BIP_GLOBAL_PITCH,
+                                                    slotPosition.getGlobalPitch(), dblDataType)));
+                attributesList.add(new EntityAttributeView(
+                                            new BuiltInProperty(SlotBuiltInPropertyName.BIP_GLOBAL_ROLL,
+                                                    slotPosition.getGlobalRoll(), dblDataType)));
+                attributesList.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_GLOBAL_YAW,
+                                                                    slotPosition.getGlobalYaw(), dblDataType)));
             }
 
             for (ComptypePropertyValue value : selectedSlot.getComponentType().getComptypePropertyList()) {
@@ -128,7 +139,9 @@ public class HierarchiesController implements Serializable {
             }
 
             for (SlotPropertyValue value : selectedSlot.getSlotPropertyList()) {
-                attributesList.add(new EntityAttributeView(value, isHostingSlot ? EntityAttributeViewKind.INSTALL_SLOT_PROPERTY : EntityAttributeViewKind.CONTAINER_SLOT_PROPERTY));
+                attributesList.add(new EntityAttributeView(value, isHostingSlot
+                                                                ? EntityAttributeViewKind.INSTALL_SLOT_PROPERTY
+                                                                : EntityAttributeViewKind.CONTAINER_SLOT_PROPERTY));
             }
 
             for (ComptypeArtifact artifact : selectedSlot.getComponentType().getComptypeArtifactList()) {
@@ -136,7 +149,9 @@ public class HierarchiesController implements Serializable {
             }
 
             for (SlotArtifact artifact : selectedSlot.getSlotArtifactList()) {
-                attributesList.add(new EntityAttributeView(artifact, isHostingSlot ? EntityAttributeViewKind.INSTALL_SLOT_ARTIFACT : EntityAttributeViewKind.CONTAINER_SLOT_ARTIFACT));
+                attributesList.add(new EntityAttributeView(artifact, isHostingSlot
+                                                                ? EntityAttributeViewKind.INSTALL_SLOT_ARTIFACT
+                                                                : EntityAttributeViewKind.CONTAINER_SLOT_ARTIFACT));
             }
 
             for (Tag tag : selectedSlot.getComponentType().getTags()) {
@@ -144,7 +159,9 @@ public class HierarchiesController implements Serializable {
             }
 
             for (Tag tag : selectedSlot.getTags()) {
-                attributesList.add(new EntityAttributeView(tag, isHostingSlot ? EntityAttributeViewKind.INSTALL_SLOT_TAG : EntityAttributeViewKind.CONTAINER_SLOT_TAG));
+                attributesList.add(new EntityAttributeView(tag, isHostingSlot
+                                                                ? EntityAttributeViewKind.INSTALL_SLOT_TAG
+                                                                : EntityAttributeViewKind.CONTAINER_SLOT_TAG));
             }
         }
         this.attributes = attributesList;
@@ -296,7 +313,8 @@ public class HierarchiesController implements Serializable {
      */
     public void uninstallDevice(Device device) {
         Preconditions.checkNotNull(device);
-        final InstallationRecord deviceInstallationRecord = installationEJB.getActiveInstallationRecordForDevice(device);
+        final InstallationRecord deviceInstallationRecord =
+                                                    installationEJB.getActiveInstallationRecordForDevice(device);
         if (deviceInstallationRecord == null) {
             LOGGER.log(Level.WARNING, "The device appears installed, but no active installation record for "
                     + "it could be retrieved. Device db ID: " + device.getId()

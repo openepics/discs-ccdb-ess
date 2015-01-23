@@ -67,7 +67,7 @@ import org.primefaces.context.RequestContext;
 public class DeviceDetailsAttributesController extends AbstractAttributesController<DevicePropertyValue, DeviceArtifact> {
     private static final long serialVersionUID = -2881746639197321061L;
 
-    @Inject transient private DeviceEJB deviceEJB;
+    @Inject private transient DeviceEJB deviceEJB;
 
     private Device device;
 
@@ -133,13 +133,21 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
         // refresh the device from database. This refreshes all related collections as well.
         device = deviceEJB.findById(device.getId());
 
-        attributes.add(new EntityAttributeView(new BuiltInProperty(DeviceBuiltInPropertyName.BIP_DESCRIPTION, device.getDescription(), strDataType)));
-        attributes.add(new EntityAttributeView(new BuiltInProperty(DeviceBuiltInPropertyName.BIP_LOCATION, device.getLocation(), strDataType)));
-        attributes.add(new EntityAttributeView(new BuiltInProperty(DeviceBuiltInPropertyName.BIP_P_O_REFERENCE, device.getPurchaseOrder(), strDataType)));
-        attributes.add(new EntityAttributeView(new BuiltInProperty(DeviceBuiltInPropertyName.BIP_STATUS, new EnumValue(device.getStatus().name()), enumDataType)));
-        attributes.add(new EntityAttributeView(new BuiltInProperty(DeviceBuiltInPropertyName.BIP_MANUFACTURER, device.getManufacturer(), strDataType)));
-        attributes.add(new EntityAttributeView(new BuiltInProperty(DeviceBuiltInPropertyName.BIP_MANUFACTURER_MODEL, device.getManufacturerModel(), strDataType)));
-        attributes.add(new EntityAttributeView(new BuiltInProperty(DeviceBuiltInPropertyName.BIP_MANUFACTURER_SERIAL_NO, device.getManufacturerSerialNumber(), strDataType)));
+        attributes.add(new EntityAttributeView(new BuiltInProperty(DeviceBuiltInPropertyName.BIP_DESCRIPTION,
+                                                            device.getDescription(), strDataType)));
+        attributes.add(new EntityAttributeView(new BuiltInProperty(DeviceBuiltInPropertyName.BIP_LOCATION,
+                                                            device.getLocation(), strDataType)));
+        attributes.add(new EntityAttributeView(new BuiltInProperty(DeviceBuiltInPropertyName.BIP_P_O_REFERENCE,
+                                                            device.getPurchaseOrder(), strDataType)));
+        attributes.add(new EntityAttributeView(new BuiltInProperty(DeviceBuiltInPropertyName.BIP_STATUS,
+                                                            new EnumValue(device.getStatus().name()), enumDataType)));
+        attributes.add(new EntityAttributeView(new BuiltInProperty(DeviceBuiltInPropertyName.BIP_MANUFACTURER,
+                                                            device.getManufacturer(), strDataType)));
+        attributes.add(new EntityAttributeView(new BuiltInProperty(DeviceBuiltInPropertyName.BIP_MANUFACTURER_MODEL,
+                                                            device.getManufacturerModel(), strDataType)));
+        attributes.add(new EntityAttributeView(new BuiltInProperty(
+                                                            DeviceBuiltInPropertyName.BIP_MANUFACTURER_SERIAL_NO,
+                                                            device.getManufacturerSerialNumber(), strDataType)));
 
         for (ComptypePropertyValue parentProp : parentProperties) {
             if (parentProp.getPropValue() != null) {
@@ -183,8 +191,8 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
         final BuiltInProperty builtInProperty = (BuiltInProperty) selectedAttribute.getEntity();
         final DeviceBuiltInPropertyName builtInPropertyName = (DeviceBuiltInPropertyName)builtInProperty.getName();
 
-        final String userValueStr = (propertyValue == null ? null
-                : (propertyValue instanceof StrValue ? ((StrValue)propertyValue).getStrValue() : null));
+        final String userValueStr = propertyValue == null ? null
+                : (propertyValue instanceof StrValue ? ((StrValue)propertyValue).getStrValue() : null);
 
         switch (builtInPropertyName) {
             case BIP_DESCRIPTION:
@@ -224,10 +232,10 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
                 }
                 break;
             case BIP_STATUS:
-                final String userValueEnum = (propertyValue == null ? null
-                        : (propertyValue instanceof EnumValue ? ((EnumValue)propertyValue).getEnumValue() : null));
+                final String userValueEnum = propertyValue == null ? null
+                        : (propertyValue instanceof EnumValue ? ((EnumValue)propertyValue).getEnumValue() : null);
                 if ((userValueEnum == null) || !userValueEnum.equals(device.getStatus().name())) {
-                    device.setStatus(Enum.valueOf(DeviceStatus.class, userValueEnum));;
+                    device.setStatus(Enum.valueOf(DeviceStatus.class, userValueEnum));
                     deviceEJB.save(device);
                 }
                 break;
@@ -242,7 +250,8 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
         final String[] devStatusEnumStrs = new String[devStatusEnumValues.length];
         int i = 0;
         for (DeviceStatus status : devStatusEnumValues) {
-            devStatusEnumStrs[i++] = status.name();
+            devStatusEnumStrs[i] = status.name();
+            i++;
         }
         final SedsEnum devStatusEnum = Seds.newFactory().newEnum(devStatusEnumStrs[0], devStatusEnumStrs);
         JsonObject jsonEnum = Seds.newDBConverter().serialize(devStatusEnum);
@@ -264,9 +273,10 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
     public void saveNewName() {
         final Device deviceById = deviceEJB.findDeviceBySerialNumber(entityName);
         if (entityName.isEmpty()) {
-            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error", "Device instance inventory ID must not be empty.");
+            Utility.showMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
+                    "Device instance inventory ID must not be empty.");
         } else if ((deviceById != null) && (deviceById != device)) {
-            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Error",
+            Utility.showMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
                     "Device instance with this inventory ID already exists.");
         } else {
             device.setSerialNumber(entityName);

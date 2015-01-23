@@ -36,7 +36,6 @@ import javax.json.JsonObject;
 
 import org.openepics.discs.conf.ejb.DataTypeEJB;
 import org.openepics.discs.conf.ent.DataType;
-import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.util.BuiltInDataType;
 import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.views.UserEnumerationView;
@@ -64,8 +63,8 @@ public class DataTypeManager implements Serializable {
     @Inject private transient  DataTypeEJB dataTypeEJB;
 
     private List<UserEnumerationView> dataTypeViews;
-    private List<UserEnumerationView> filteredDataTypesViews;
-    private UserEnumerationView selectedEnum;
+    private transient List<UserEnumerationView> filteredDataTypesViews;
+    private transient UserEnumerationView selectedEnum;
     private List<DataType> dataTypes;
     private List<String> builtInDataTypeNames;
 
@@ -81,6 +80,10 @@ public class DataTypeManager implements Serializable {
     public DataTypeManager() {
     }
 
+
+    /**
+     * Java EE post construct life-cycle method.
+     */
     @PostConstruct
     public void init() {
         Builder<String> builtInDataTypeBuilder = ImmutableList.builder();
@@ -324,7 +327,7 @@ public class DataTypeManager implements Serializable {
     }
 
     /**
-     * @param selectedProperty The {@link Property} selected in the dialog (modify property dialog).
+     * @param selectedEnum The user enumeration selected in the dialog (modify property dialog).
      */
     public void setSelectedEnumToModify(UserEnumerationView selectedEnum) {
         this.selectedEnum = selectedEnum;

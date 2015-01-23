@@ -1,2 +1,3 @@
 #!/bin/sh
-mvn failsafe:integration-test -P jboss
+mvn jacoco:prepare-agent failsafe:integration-test -P jboss -X -Djacoco.append=true -Dit.test=*EJBIT* $@
+mvn jacoco:prepare-agent failsafe:integration-test -P jboss -Djacoco.append=true -Dit.test=*DataLoaderIT* $@

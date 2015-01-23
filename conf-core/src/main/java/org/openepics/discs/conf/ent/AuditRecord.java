@@ -119,11 +119,11 @@ public class AuditRecord implements Serializable {
     }
 
     public Date getLogTime() {
-        return logTime;
+        return new Date(logTime.getTime());
     }
 
     public void setLogTime(Date logTime) {
-        this.logTime = logTime;
+        this.logTime = new Date(logTime.getTime());
     }
 
     public EntityTypeOperation getOper() {

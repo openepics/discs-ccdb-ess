@@ -101,14 +101,16 @@ public abstract class AbstractSlotsController implements Serializable{
      * Deletes selected container
      */
     public void onDelete() {
-        if (!selectedSlotView.getIsHostingSlot() || installationEJB.getActiveInstallationRecordForSlot(selectedSlotView.getSlot()) == null) {
+        if (!selectedSlotView.getIsHostingSlot()
+                    || installationEJB.getActiveInstallationRecordForSlot(selectedSlotView.getSlot()) == null) {
             slotEJB.delete(selectedSlotView.getSlot());
             selectedSlotView = null;
             selectedNode = null;
             updateRootNode();
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Slot deleted", "Slot has been successfully deleted");
         } else {
-            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Deletion failed", "Installation slot could not be deleted because it has a device installed on it.");
+            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Deletion failed",
+                                "Installation slot could not be deleted because it has a device installed on it.");
         }
     }
 
@@ -157,10 +159,8 @@ public abstract class AbstractSlotsController implements Serializable{
      * @param event Event triggered on node expand action
      */
     public void onNodeExpand(NodeExpandEvent event) {
-        if (event != null && event.getTreeNode() != null) {
-            if (collapsedNodes != null) {
-                collapsedNodes.remove(((SlotView)event.getTreeNode().getData()).getId());
-            }
+        if (event != null && event.getTreeNode() != null && collapsedNodes != null) {
+            collapsedNodes.remove(((SlotView)event.getTreeNode().getData()).getId());
         }
     }
 
@@ -182,7 +182,7 @@ public abstract class AbstractSlotsController implements Serializable{
             TreeNode element = listIterator.next();
             if (element.equals(currentNode) && listIterator.hasPrevious()) {
                 final SlotView movedSlotView = (SlotView) currentNode.getData();
-                final SlotView parentSlotView = (SlotView) parent.getData();
+                final SlotView currentNodesParentSlotView = (SlotView) parent.getData();
                 listIterator.remove();
                 final SlotView affectedNode = (SlotView) listIterator.previous().getData();
                 affectedNode.setLast(movedSlotView.isLast());
@@ -190,7 +190,7 @@ public abstract class AbstractSlotsController implements Serializable{
                 movedSlotView.setLast(false);
                 movedSlotView.setFirst(!listIterator.hasPrevious());
                 listIterator.add(currentNode);
-                slotPairEJB.moveUp(parentSlotView.getSlot(), movedSlotView.getSlot());
+                slotPairEJB.moveUp(currentNodesParentSlotView.getSlot(), movedSlotView.getSlot());
                 selectNodeAfterMove(currentNode);
                 break;
             }
@@ -215,7 +215,7 @@ public abstract class AbstractSlotsController implements Serializable{
             TreeNode element = listIterator.next();
             if (element.equals(currentNode) && listIterator.hasNext()) {
                 final SlotView movedSlotView = (SlotView) currentNode.getData();
-                final SlotView parentSlotView = (SlotView) parent.getData();
+                final SlotView currentNodesParentSlotView = (SlotView) parent.getData();
                 listIterator.remove();
                 final SlotView affectedNode = (SlotView) listIterator.next().getData();
                 affectedNode.setFirst(movedSlotView.isFirst());
@@ -223,7 +223,7 @@ public abstract class AbstractSlotsController implements Serializable{
                 movedSlotView.setFirst(false);
                 movedSlotView.setLast(!listIterator.hasNext());
                 listIterator.add(currentNode);
-                slotPairEJB.moveDown(parentSlotView.getSlot(), movedSlotView.getSlot());
+                slotPairEJB.moveDown(currentNodesParentSlotView.getSlot(), movedSlotView.getSlot());
                 selectNodeAfterMove(currentNode);
                 break;
             }

@@ -36,8 +36,8 @@ public class EnumValueConverter extends ValueConverter<EnumValue> {
 
     @Override
     public String convertToDatabaseColumn(EnumValue attribute) {
-        final SedsEnum sedsEnum = sedsFactory.getFactory().newEnum(attribute.getEnumValue(),
+        final SedsEnum sedsEnum = SEDS_FACTORY.getFactory().newEnum(attribute.getEnumValue(),
                 new String[] { attribute.getEnumValue() });
-        return sedsDbConverter.serialize(sedsEnum).toString();
+        return SEDS_DB_CONVERTER.serialize(sedsEnum).toString();
     }
 }

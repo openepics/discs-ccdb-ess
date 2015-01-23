@@ -147,11 +147,11 @@ public class SlotsTreeBuilder implements Serializable {
         }
     }
 
-    private class SlotTree {
+    private static class SlotTree {
         /**
          * A helper class for building the tree. This helps by keeping the SlotTree API to minimum.
          */
-        private class TreeNodeBuilder {
+        private static class TreeNodeBuilder {
             private final TreeNode root;
             /**
             * Contains all the nodes which have already been added to the tree. This helps with building the tree,

@@ -27,14 +27,18 @@ import org.openepics.discs.conf.ent.Tag;
 
 /**
  * @author apozar
- * 
+ *
  * Class with static methods that are used in many entity loggers
  */
 public class EntityLoggerUtil {
-    
+
+    private EntityLoggerUtil() {
+        // utility class. No public constructor.
+    }
+
     /**
      * Creates and returns a {@link List} of tag names from given {@link Set} of tags
-     * 
+     *
      * @param tagsSet   {@link Set} of tags for certain entity
      * @return          {@link List} of tag names for certain entity
      */

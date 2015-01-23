@@ -39,7 +39,7 @@ public class IntVectorValueConverter extends ValueConverter<IntVectorValue> {
     public String convertToDatabaseColumn(IntVectorValue attribute) {
         final List<Integer> intVector = attribute.getIntVectorValue();
         final Integer[] intVectorArray = intVector.toArray(new Integer[intVector.size()]);
-        final SedsScalarArray<Integer> sedsScalarArray = sedsFactory.newScalarArray(intVectorArray);
-        return sedsDbConverter.serialize(sedsScalarArray).toString();
+        final SedsScalarArray<Integer> sedsScalarArray = SEDS_FACTORY.newScalarArray(intVectorArray);
+        return SEDS_DB_CONVERTER.serialize(sedsScalarArray).toString();
     }
 }

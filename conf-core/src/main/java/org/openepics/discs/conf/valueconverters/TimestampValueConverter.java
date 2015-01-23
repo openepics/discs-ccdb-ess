@@ -35,7 +35,7 @@ public class TimestampValueConverter extends ValueConverter<TimestampValue> {
 
     @Override
     public String convertToDatabaseColumn(TimestampValue attribute) {
-        final SedsTime sedsTime = sedsFactory.getFactory().newTime(attribute.getTimestampValue(), null);
-        return sedsDbConverter.serialize(sedsTime).toString();
+        final SedsTime sedsTime = SEDS_FACTORY.getFactory().newTime(attribute.getTimestampValue(), null);
+        return SEDS_DB_CONVERTER.serialize(sedsTime).toString();
     }
 }

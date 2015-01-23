@@ -37,6 +37,11 @@ public class UserEnumerationView {
     private final String definitionString;
     private final DataType enumeration;
 
+    /**
+     *  Creates an new view object that will expose the user enumeration to the UI layer.
+     *
+     * @param enumeration The user defined enumeration to base the view object on
+     */
     public UserEnumerationView(DataType enumeration) {
         Preconditions.checkArgument(!Preconditions.checkNotNull(enumeration).isScalar());
 
@@ -47,22 +52,27 @@ public class UserEnumerationView {
         this.enumeration = enumeration;
     }
 
+    /** @return the user enumeration name */
     public String getName() {
         return name;
     }
 
+    /** @return the user enumeration description */
     public String getDescription() {
         return description;
     }
 
+    /** @return the {@link List} of possible user enumeration values */
     public List<String> getDefinition() {
         return definition;
     }
 
+    /** @return all possible enumeration values as a string - to display in the UI */
     public String getDefinitionAsString() {
         return definitionString;
     }
 
+    /** @return the enumeration data type entity */
     public DataType getEnumeration() {
         return enumeration;
     }

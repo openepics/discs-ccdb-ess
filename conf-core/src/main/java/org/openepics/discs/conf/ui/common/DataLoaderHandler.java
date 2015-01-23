@@ -58,13 +58,14 @@ public class DataLoaderHandler {
      * then the transaction is rolled back. In any case, the notification is shown to the user.
      *
      * @param inputStream input file from which the data should be loaded
-     * @param dataLoader depending on which entity is to be loaded to database, different implementation of {@link DataLoader} interface is passed
+     * @param dataLoader depending on which entity is to be loaded to database, different implementation of
+     * the {@link DataLoader} interface is passed
      * @return a {@link DataLoaderResult} containing information about the operation completion status
      */
     public DataLoaderResult loadData(InputStream inputStream, DataLoader dataLoader) {
         final List<Pair<Integer, List<String>>> inputRows = ExcelImportFileReader.importExcelFile(inputStream);
 
-        if (inputRows != null && inputRows.size() > 0) {
+        if (inputRows != null && !inputRows.isEmpty()) {
             loaderResult = dataLoader.loadDataToDatabase(inputRows, null);
             if (loaderResult.isError()) {
                 context.setRollbackOnly();

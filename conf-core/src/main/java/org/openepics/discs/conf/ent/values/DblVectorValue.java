@@ -52,7 +52,7 @@ public class DblVectorValue implements Value {
             throw new IllegalArgumentException("Invalid number of parameters");
         }
 
-        final int MAX_ELEMENTS = dimensions[0];
+        final int maxElements = dimensions[0];
         final StringBuilder retStr = new StringBuilder();
         final int vectorSize = dblVectorValue.size();
         int rowIndex = 0;
@@ -64,7 +64,7 @@ public class DblVectorValue implements Value {
             if (rowIndex < vectorSize) {
                 retStr.append(", ");
             }
-            if ((vectorSize > MAX_ELEMENTS) && (rowIndex >= MAX_ELEMENTS - 1)) {
+            if ((vectorSize > maxElements) && (rowIndex >= maxElements - 1)) {
                 retStr.append("..., ").append(dblVectorValue.get(vectorSize - 1));
                 break;
             }

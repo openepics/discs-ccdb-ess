@@ -75,9 +75,9 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
 
     private static final Logger LOGGER = Logger.getLogger(SlotAttributesController.class.getCanonicalName());
 
-    @Inject transient private SlotEJB slotEJB;
-    @Inject transient private PropertyEJB propertyEJB;
-    @Inject transient private InstallationEJB installationEJB;
+    @Inject private transient SlotEJB slotEJB;
+    @Inject private transient PropertyEJB propertyEJB;
+    @Inject private transient InstallationEJB installationEJB;
 
     private Slot slot;
     private String parentSlot;
@@ -121,16 +121,24 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
         // refresh the component type from database. This refreshes all related collections as well.
         slot = slotEJB.findById(slot.getId());
 
-        attributes.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_DESCRIPTION, slot.getDescription(), strDataType)));
+        attributes.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_DESCRIPTION,
+                slot.getDescription(), strDataType)));
         if (slot.isHostingSlot()) {
-            attributes.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_BEAMLINE_POS, slot.getBeamlinePosition(), dblDataType)));
+            attributes.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_BEAMLINE_POS,
+                    slot.getBeamlinePosition(), dblDataType)));
             final PositionInformation slotPosition = slot.getPositionInformation();
-            attributes.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_GLOBAL_X, slotPosition.getGlobalX(), dblDataType)));
-            attributes.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_GLOBAL_Y, slotPosition.getGlobalY(), dblDataType)));
-            attributes.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_GLOBAL_Z, slotPosition.getGlobalZ(), dblDataType)));
-            attributes.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_GLOBAL_PITCH, slotPosition.getGlobalPitch(), dblDataType)));
-            attributes.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_GLOBAL_ROLL, slotPosition.getGlobalRoll(), dblDataType)));
-            attributes.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_GLOBAL_YAW, slotPosition.getGlobalYaw(), dblDataType)));
+            attributes.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_GLOBAL_X,
+                    slotPosition.getGlobalX(), dblDataType)));
+            attributes.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_GLOBAL_Y,
+                    slotPosition.getGlobalY(), dblDataType)));
+            attributes.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_GLOBAL_Z,
+                    slotPosition.getGlobalZ(), dblDataType)));
+            attributes.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_GLOBAL_PITCH,
+                    slotPosition.getGlobalPitch(), dblDataType)));
+            attributes.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_GLOBAL_ROLL,
+                    slotPosition.getGlobalRoll(), dblDataType)));
+            attributes.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_GLOBAL_YAW,
+                    slotPosition.getGlobalYaw(), dblDataType)));
         }
 
         for (ComptypePropertyValue parentProp : parentProperties) {
@@ -247,10 +255,10 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
             return;
         }
 
-        final String userValueStr = (propertyValue == null ? null
-                        : (propertyValue instanceof StrValue ? ((StrValue)propertyValue).getStrValue() : null));
-        final Double userValueDbl = (propertyValue == null ? null
-                        : (propertyValue instanceof DblValue ? ((DblValue)propertyValue).getDblValue() : null));
+        final String userValueStr = propertyValue == null ? null
+                        : (propertyValue instanceof StrValue ? ((StrValue)propertyValue).getStrValue() : null);
+        final Double userValueDbl = propertyValue == null ? null
+                        : (propertyValue instanceof DblValue ? ((DblValue)propertyValue).getDblValue() : null);
         switch (builtInPropertyName) {
             case BIP_DESCRIPTION:
                 if ((userValueStr == null) || !userValueStr.equals(slot.getDescription())) {
@@ -266,37 +274,37 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
                 break;
             case BIP_GLOBAL_X:
                 if ((userValueDbl == null) || !userValueDbl.equals(slot.getPositionInformation().getGlobalX())) {
-                    slot.getPositionInformation().setGlobalX(userValueDbl);;
+                    slot.getPositionInformation().setGlobalX(userValueDbl);
                     slotEJB.save(slot);
                 }
                 break;
             case BIP_GLOBAL_Y:
                 if ((userValueDbl == null) || !userValueDbl.equals(slot.getPositionInformation().getGlobalY())) {
-                    slot.getPositionInformation().setGlobalY(userValueDbl);;
+                    slot.getPositionInformation().setGlobalY(userValueDbl);
                     slotEJB.save(slot);
                 }
                 break;
             case BIP_GLOBAL_Z:
                 if ((userValueDbl != null) && !userValueDbl.equals(slot.getPositionInformation().getGlobalZ())) {
-                    slot.getPositionInformation().setGlobalZ(userValueDbl);;
+                    slot.getPositionInformation().setGlobalZ(userValueDbl);
                     slotEJB.save(slot);
                 }
                 break;
             case BIP_GLOBAL_PITCH:
                 if ((userValueDbl != null) && !userValueDbl.equals(slot.getPositionInformation().getGlobalPitch())) {
-                    slot.getPositionInformation().setGlobalPitch(userValueDbl);;
+                    slot.getPositionInformation().setGlobalPitch(userValueDbl);
                     slotEJB.save(slot);
                 }
                 break;
             case BIP_GLOBAL_ROLL:
                 if ((userValueDbl != null) && !userValueDbl.equals(slot.getPositionInformation().getGlobalRoll())) {
-                    slot.getPositionInformation().setGlobalRoll(userValueDbl);;
+                    slot.getPositionInformation().setGlobalRoll(userValueDbl);
                     slotEJB.save(slot);
                 }
                 break;
             case BIP_GLOBAL_YAW:
                 if ((userValueDbl != null) && !userValueDbl.equals(slot.getPositionInformation().getGlobalYaw())) {
-                    slot.getPositionInformation().setGlobalYaw(userValueDbl);;
+                    slot.getPositionInformation().setGlobalYaw(userValueDbl);
                     slotEJB.save(slot);
                 }
                 break;
@@ -339,7 +347,7 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
      * <code>false</code> otherwise.
      */
     public boolean isBasicInfoUnchanged() {
-        return (slot.getName().equals(entityName) && slot.getComponentType().equals(deviceType));
+        return slot.getName().equals(entityName) && slot.getComponentType().equals(deviceType);
     }
 
     /**

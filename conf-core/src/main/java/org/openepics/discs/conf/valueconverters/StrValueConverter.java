@@ -35,7 +35,7 @@ public class StrValueConverter extends ValueConverter<StrValue> {
 
     @Override
     public String convertToDatabaseColumn(StrValue attribute) {
-        final SedsScalar<String> sedsScalar = sedsFactory.newScalar(attribute.getStrValue());
-        return sedsDbConverter.serialize(sedsScalar).toString();
+        final SedsScalar<String> sedsScalar = SEDS_FACTORY.newScalar(attribute.getStrValue());
+        return SEDS_DB_CONVERTER.serialize(sedsScalar).toString();
     }
 }
