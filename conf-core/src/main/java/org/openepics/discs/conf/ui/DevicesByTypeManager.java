@@ -231,7 +231,8 @@ public class DevicesByTypeManager implements Serializable {
     public void newDeviceSerialNoValidator(FacesContext ctx, UIComponent component, Object value)
             throws ValidatorException {
         if (value == null) {
-            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_FATAL, "Error", "No value to parse."));
+            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
+                                                                    "No value to parse."));
         }
         final String strValue = value.toString();
 
@@ -239,8 +240,8 @@ public class DevicesByTypeManager implements Serializable {
         if (!strValue.isEmpty()) {
             final Device existingDevice = deviceEJB.findDeviceBySerialNumber(strValue);
             if (existingDevice != null) {
-                throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
-                        "Device instance with this inventory ID already exists."));
+                throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                            Utility.MESSAGE_SUMMARY_ERROR, "Device instance with this inventory ID already exists."));
             }
         }
     }

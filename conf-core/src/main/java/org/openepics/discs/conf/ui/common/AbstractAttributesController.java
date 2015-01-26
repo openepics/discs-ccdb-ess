@@ -827,7 +827,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
      */
     public void areaValidator(FacesContext ctx, UIComponent component, Object value) throws ValidatorException {
         if (value == null) {
-            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_FATAL,
+            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
                     Utility.MESSAGE_SUMMARY_ERROR, "No value to parse."));
         }
         if (property == null && builtInProperteryName == null) {
@@ -935,7 +935,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
      */
     public void inputValidator(FacesContext ctx, UIComponent component, Object value) throws ValidatorException {
         if (value == null) {
-            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_FATAL,
+            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
                     Utility.MESSAGE_SUMMARY_ERROR, "No value to parse."));
         }
 

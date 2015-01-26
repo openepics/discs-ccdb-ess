@@ -28,7 +28,7 @@
             
             <p:commandButton value="Cancel" styleClass="dialogButton" onclick="#{widgetName}.hide();" update="grp" resetValues="true" />
             <p:commandButton value="Save" styleClass="dialogButton" update=":dataDefinitionsContainer grp" 
-                    oncomplete="if (args &amp;&amp; !args.validationFailed) #{widgetName}.hide(); deviceTypeTableVar.filter();" 
+                    oncomplete="if (args &amp;&amp; !args.validationFailed) { #{widgetName}.hide(); deviceTypeTableVar.filter(); }" 
                     action="#{componentTypeManager[submitHandler]}"/>
         </p:dialog>
 

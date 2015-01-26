@@ -133,15 +133,16 @@ public class DataTypeManager implements Serializable {
      */
     public void nameValidator(FacesContext ctx, UIComponent component, Object value) {
         if (value == null) {
-            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_FATAL, "Error", "Enumeration name required."));
+            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
+                                                                    "Enumeration name required."));
         }
 
         final String enumName = value.toString();
         final DataType existingDataType = dataTypeEJB.findByName(enumName);
         if ((selectedEnum == null && existingDataType != null)
                 || (selectedEnum != null && !selectedEnum.getEnumeration().equals(existingDataType))) {
-            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_FATAL, "Error",
-                    "Enumeration with the same name already exists."));
+            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
+                                                                    "Enumeration with the same name already exists."));
         }
     }
 
@@ -237,14 +238,15 @@ public class DataTypeManager implements Serializable {
      */
     public void enumValidator(FacesContext ctx, UIComponent component, Object value) throws ValidatorException {
         if (value == null) {
-            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_FATAL, "Error", "No value to parse."));
+            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
+                                                        "No value to parse."));
         }
 
         final List<String> enumDefs = multilineToDefinitions(value.toString());
         // check whether redefinition is possible and correct
         if ((selectedEnum != null) && !isEnumModificationSafe(enumDefs)) {
-            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_FATAL, "Error",
-                                                    "Enumeration already in use. Values can only be added."));
+            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
+                                                        "Enumeration already in use. Values can only be added."));
         }
     }
 

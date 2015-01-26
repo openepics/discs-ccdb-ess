@@ -21,6 +21,7 @@ package org.openepics.discs.conf.ejb;
 
 import javax.ejb.Stateless;
 
+import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.Unit;
 
 /**
@@ -34,5 +35,14 @@ public class UnitEJB extends DAO<Unit> {
     @Override
     protected Class<Unit> getEntityClass() {
         return Unit.class;
+    }
+
+    /**
+     * @param unit unit to check
+     * @return <code>true</code> if the unit is used in some property definition, <code>false</code> otherwise.
+     */
+    public boolean isUnitUsed(Unit unit) {
+        return !em.createNamedQuery("Property.findByUnit", Property.class).setParameter("unit", unit).getResultList()
+                        .isEmpty();
     }
 }
