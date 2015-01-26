@@ -26,15 +26,10 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.apache.commons.io.FilenameUtils;
 import org.openepics.discs.conf.dl.DevicesLoaderQualifier;
 import org.openepics.discs.conf.dl.common.DataLoader;
-import org.openepics.discs.conf.dl.common.DataLoaderResult;
+import org.openepics.discs.conf.ui.common.AbstractExcelSingleFileImportUI;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
-import org.openepics.discs.conf.ui.common.ExcelSingleFileImportUIHandlers;
-import org.primefaces.event.FileUploadEvent;
-
-import com.google.common.io.ByteStreams;
 
 /**
  *
@@ -45,15 +40,11 @@ import com.google.common.io.ByteStreams;
  */
 @Named
 @ViewScoped
-public class DeviceManager implements Serializable, ExcelSingleFileImportUIHandlers {
+public class DeviceManager extends AbstractExcelSingleFileImportUI implements Serializable {
     private static final long serialVersionUID = -931725234946680611L;
 
     @Inject private transient DataLoaderHandler dataLoaderHandler;
     @Inject @DevicesLoaderQualifier private transient DataLoader devicesDataLoader;
-
-    private byte[] importData;
-    private String importFileName;
-    private transient DataLoaderResult loaderResult;
 
     /**
      * Creates a new instance of DeviceManager
@@ -62,36 +53,9 @@ public class DeviceManager implements Serializable, ExcelSingleFileImportUIHandl
     }
 
     @Override
-    public String getImportFileName() {
-        return importFileName;
-    }
-
-    @Override
     public void doImport() {
         try (InputStream inputStream = new ByteArrayInputStream(importData)) {
             loaderResult = dataLoaderHandler.loadData(inputStream, devicesDataLoader);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public DataLoaderResult getLoaderResult() {
-        return loaderResult;
-    }
-
-    @Override
-    public void prepareImportPopup() {
-        loaderResult = null;
-        importData = null;
-        importFileName = null;
-    }
-
-    @Override
-    public void handleImportFileUpload(FileUploadEvent event) {
-        try (InputStream inputStream = event.getFile().getInputstream()) {
-            this.importData = ByteStreams.toByteArray(inputStream);
-            this.importFileName = FilenameUtils.getName(event.getFile().getFileName());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

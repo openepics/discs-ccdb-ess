@@ -32,24 +32,19 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.apache.commons.io.FilenameUtils;
 import org.openepics.discs.conf.dl.PropertiesLoaderQualifier;
 import org.openepics.discs.conf.dl.common.DataLoader;
-import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.ejb.PropertyEJB;
 import org.openepics.discs.conf.ent.DataType;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyAssociation;
 import org.openepics.discs.conf.ent.PropertyValue;
 import org.openepics.discs.conf.ent.Unit;
+import org.openepics.discs.conf.ui.common.AbstractExcelSingleFileImportUI;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
-import org.openepics.discs.conf.ui.common.ExcelSingleFileImportUIHandlers;
 import org.openepics.discs.conf.util.BuiltInDataType;
 import org.openepics.discs.conf.util.Utility;
 import org.primefaces.context.RequestContext;
-import org.primefaces.event.FileUploadEvent;
-
-import com.google.common.io.ByteStreams;
 
 /**
  *
@@ -61,7 +56,7 @@ import com.google.common.io.ByteStreams;
  */
 @Named
 @ViewScoped
-public class PropertyManager implements Serializable, ExcelSingleFileImportUIHandlers {
+public class PropertyManager extends AbstractExcelSingleFileImportUI implements Serializable {
     private static final long serialVersionUID = 1056645993595744719L;
 
     @Inject private transient PropertyEJB propertyEJB;
@@ -71,10 +66,6 @@ public class PropertyManager implements Serializable, ExcelSingleFileImportUIHan
 
     private List<Property> properties;
     private List<Property> filteredProperties;
-
-    private byte[] importData;
-    private String importFileName;
-    private transient DataLoaderResult loaderResult;
 
     private String name;
     private String description;
@@ -107,10 +98,12 @@ public class PropertyManager implements Serializable, ExcelSingleFileImportUIHan
         propertyToAdd.setUnit(unit);
         try {
             propertyEJB.add(propertyToAdd);
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "New property has been created");
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+                                                                "New property has been created");
         } catch (Exception e) {
             if (Utility.causedByPersistenceException(e)) {
-                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Failure", "Property could not be added because a device instance with same name already exists.");
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Failure",
+                        "Property could not be added because a device instance with same name already exists.");
             } else {
                 throw e;
             }
@@ -131,7 +124,7 @@ public class PropertyManager implements Serializable, ExcelSingleFileImportUIHan
 
         try {
             propertyEJB.save(selectedProperty);
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Property was modified");
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS, "Property was modified");
         } finally {
             init();
         }
@@ -166,10 +159,11 @@ public class PropertyManager implements Serializable, ExcelSingleFileImportUIHan
     public void onDelete() {
         try {
             propertyEJB.delete(selectedProperty);
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Property was deleted");
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS, "Property was deleted");
         } catch (Exception e) {
             if (Utility.causedByPersistenceException(e)) {
-                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Deletion failed", "The property could not be deleted because it is used.");
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Deletion failed",
+                                                        "The property could not be deleted because it is used.");
             } else {
                 throw e;
             }
@@ -203,36 +197,9 @@ public class PropertyManager implements Serializable, ExcelSingleFileImportUIHan
     }
 
     @Override
-    public String getImportFileName() {
-        return importFileName;
-    }
-
-    @Override
     public void doImport() {
         try (InputStream inputStream = new ByteArrayInputStream(importData)) {
             loaderResult = dataLoaderHandler.loadData(inputStream, propertiesDataLoader);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public void prepareImportPopup() {
-        loaderResult = null;
-        importData = null;
-        importFileName = null;
-    }
-
-    @Override
-    public DataLoaderResult getLoaderResult() {
-        return loaderResult;
-    }
-
-    @Override
-    public void handleImportFileUpload(FileUploadEvent event) {
-        try (InputStream inputStream = event.getFile().getInputstream()) {
-            this.importData = ByteStreams.toByteArray(inputStream);
-            this.importFileName = FilenameUtils.getName(event.getFile().getFileName());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -414,7 +381,8 @@ public class PropertyManager implements Serializable, ExcelSingleFileImportUIHan
     }
 
     /**
-     * @return <code>true</code> if the property is already used in some {@link PropertyValue}, <code>false</code> otherwise.
+     * @return <code>true</code> if the property is already used in some {@link PropertyValue},
+     * <code>false</code> otherwise.
      */
     public boolean isPropertyUsed() {
         return isPropertyUsed;

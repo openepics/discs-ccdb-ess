@@ -22,8 +22,9 @@
                     <h:outputText value="#{unit.description}" />
                 </p:column>
     
-                <p:column headerText="Symbol" sortBy="#{unit.symbol}" width="10%" filterBy="#{unit.symbol}">
-                    <h:outputText value="#{unit.symbol}" width="10%"/>
+                <p:column headerText="Symbol" sortBy="#{unit.symbol}" width="10%" filterBy="#{unit.symbol}" 
+                        filterStyle="width: 90%;">
+                    <h:outputText value="#{unit.symbol}" />
                 </p:column>
     
                 <p:column headerText="Quantity" filterBy="#{unit.quantity}" sortBy="#{unit.quantity}" width="10%" 

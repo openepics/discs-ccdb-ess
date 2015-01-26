@@ -13,7 +13,8 @@
                     filteredValue="#{dataTypeManager.filteredDataTypeViews}" rows="15" paginator="true" 
                     paginatorPosition="bottom">
                 <p:ajax event="filter" ignoreAutoUpdate="true"/>
-                <p:column headerText="Name" sortBy="#{enum.name}" filterBy="#{enum.name}" width="10%" filterMatchMode="contains">
+                <p:column headerText="Name" sortBy="#{enum.name}" filterBy="#{enum.name}" width="10%" 
+                        filterMatchMode="contains" filterStyle="width: 90%;">
                     <h:outputText value="#{enum.name}" />
                 </p:column>
     

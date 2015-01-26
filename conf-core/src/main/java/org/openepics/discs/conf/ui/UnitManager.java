@@ -35,23 +35,19 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.apache.commons.io.FilenameUtils;
 import org.openepics.discs.conf.dl.UnitsLoaderQualifier;
 import org.openepics.discs.conf.dl.common.DataLoader;
-import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.ejb.UnitEJB;
 import org.openepics.discs.conf.ent.Unit;
+import org.openepics.discs.conf.ui.common.AbstractExcelSingleFileImportUI;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
-import org.openepics.discs.conf.ui.common.ExcelSingleFileImportUIHandlers;
 import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.views.UnitView;
-import org.primefaces.event.FileUploadEvent;
 
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.google.common.io.ByteStreams;
 
 /**
  * The Java EE managed bean for supporting UI actions for Unit manipulation.
@@ -62,7 +58,7 @@ import com.google.common.io.ByteStreams;
 @Named
 @ManagedBean
 @ViewScoped
-public class UnitManager implements Serializable, ExcelSingleFileImportUIHandlers {
+public class UnitManager extends AbstractExcelSingleFileImportUI implements Serializable {
     private static final long serialVersionUID = 5504821804362597703L;
 
     @Inject private transient  UnitEJB unitEJB;
@@ -72,10 +68,6 @@ public class UnitManager implements Serializable, ExcelSingleFileImportUIHandler
     private List<Unit> units;
     private List<UnitView> unitViews;
     private List<UnitView> filteredUnits;
-
-    private transient DataLoaderResult loaderResult;
-    private byte[] importData;
-    private String importFileName;
 
     private UnitView selectedUnit;
 
@@ -128,37 +120,10 @@ public class UnitManager implements Serializable, ExcelSingleFileImportUIHandler
     }
 
     @Override
-    public String getImportFileName() {
-        return importFileName;
-    }
-
-    @Override
     public void doImport() {
         try (InputStream inputStream = new ByteArrayInputStream(importData)) {
             loaderResult = dataLoaderHandler.loadData(inputStream, unitsDataLoader);
             units = unitEJB.findAll();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public void prepareImportPopup() {
-        loaderResult = null;
-        importData = null;
-        importFileName = null;
-    }
-
-    @Override
-    public DataLoaderResult getLoaderResult() {
-        return loaderResult;
-    }
-
-    @Override
-    public void handleImportFileUpload(FileUploadEvent event) {
-        try (InputStream inputStream = event.getFile().getInputstream()) {
-            this.importData = ByteStreams.toByteArray(inputStream);
-            this.importFileName = FilenameUtils.getName(event.getFile().getFileName());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

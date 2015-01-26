@@ -32,23 +32,18 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.apache.commons.io.FilenameUtils;
 import org.openepics.discs.conf.dl.ComponentTypesLoaderQualifier;
 import org.openepics.discs.conf.dl.common.DataLoader;
-import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.ejb.AuditRecordEJB;
 import org.openepics.discs.conf.ejb.ComptypeEJB;
 import org.openepics.discs.conf.ent.AuditRecord;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.EntityType;
+import org.openepics.discs.conf.ui.common.AbstractExcelSingleFileImportUI;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
-import org.openepics.discs.conf.ui.common.ExcelSingleFileImportUIHandlers;
 import org.openepics.discs.conf.ui.common.UIException;
 import org.openepics.discs.conf.util.Utility;
 import org.primefaces.context.RequestContext;
-import org.primefaces.event.FileUploadEvent;
-
-import com.google.common.io.ByteStreams;
 
 /**
  *
@@ -59,17 +54,13 @@ import com.google.common.io.ByteStreams;
  */
 @Named
 @ViewScoped
-public class ComponentTypeManager implements Serializable, ExcelSingleFileImportUIHandlers {
+public class ComponentTypeManager extends AbstractExcelSingleFileImportUI implements Serializable {
     private static final long serialVersionUID = -9007187646811006328L;
 
     @Inject private transient ComptypeEJB comptypeEJB;
     @Inject private transient AuditRecordEJB auditRecordEJB;
     @Inject private transient DataLoaderHandler dataLoaderHandler;
     @Inject @ComponentTypesLoaderQualifier private transient DataLoader compTypesDataLoader;
-
-    private byte[] importData;
-    private String importFileName;
-    private transient DataLoaderResult loaderResult;
 
     private List<ComponentType> deviceTypes;
     private List<ComponentType> filteredDeviceTypes;
@@ -160,38 +151,11 @@ public class ComponentTypeManager implements Serializable, ExcelSingleFileImport
     }
 
     @Override
-    public String getImportFileName() {
-        return importFileName;
-    }
-
-    @Override
     public void doImport() {
         try (InputStream inputStream = new ByteArrayInputStream(importData)) {
             loaderResult = dataLoaderHandler.loadData(inputStream, compTypesDataLoader);
             deviceTypes = comptypeEJB.findAll();
             RequestContext.getCurrentInstance().update("deviceTypesForm");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public DataLoaderResult getLoaderResult() {
-        return loaderResult;
-    }
-
-    @Override
-    public void prepareImportPopup() {
-        loaderResult = null;
-        importData = null;
-        importFileName = null;
-    }
-
-    @Override
-    public void handleImportFileUpload(FileUploadEvent event) {
-        try (InputStream inputStream = event.getFile().getInputstream()) {
-            this.importData = ByteStreams.toByteArray(inputStream);
-            this.importFileName = FilenameUtils.getName(event.getFile().getFileName());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
