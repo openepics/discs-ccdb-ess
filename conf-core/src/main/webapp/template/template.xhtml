@@ -19,14 +19,14 @@
                 var menusHeight = $('#top').outerHeight(true);
                 var headerHeight = $('#containersForm\\:containersTree\\:name').outerHeight(true);
                 var addSlotHeight = $('#containersForm\\:addSlot').outerHeight(true);
-                var em = $('#top').outerHeight(true) - $('#top').outerHeight();
+                var em = emHeight();
 
                 if (headerHeight == null) {
                     headerHeight = $('#installationSlotsForm\\:installationSlotsTree\\:name').outerHeight(true);
                     addSlotHeight = $('#installationSlotsForm\\:addSlot').outerHeight(true);
                 }
                
-                var totalMenusHeight = menusHeight + headerHeight + addSlotHeight + 2*em;
+                var totalMenusHeight = menusHeight + headerHeight + addSlotHeight + 3*em;
                 $('.ui-treetable-scrollable-body').css({"height":window.innerHeight-totalMenusHeight});
             }
             
@@ -34,8 +34,7 @@
                 var menusHeight = $('#top').outerHeight(true);
                 var headerHeight = $('#hierarchies\\:tree\\:name').outerHeight(true);
                 if (headerHeight != null) {
-                    var em = $('#top').outerHeight(true) - $('#top').outerHeight();
-                   
+                    var em = emHeight();
                     var totalMenusHeight = menusHeight + headerHeight + 3*em;
                     $('.ui-treetable-scrollable-body').css({"height":window.innerHeight-totalMenusHeight});  
                 }
@@ -43,8 +42,8 @@
             
             function resizeEmptyColumnInHierarchies() {
                 var menusHeight = $('#top').outerHeight(true);
-                var em = $('#top').outerHeight(true) - $('#top').outerHeight();
-                var slotAttributesTitle = $('#slotAttributesTitle').outerHeight(true);
+                var em = emHeight();
+                var slotAttributesTitle = $('#hierarchies\\:slotAttributesTitle').parent().outerHeight(true);
                 var slotAttributesTable = $('#hierarchies\\:attributesTable').outerHeight(true);
                 var slotRelationshipsTitle = $('#slotRelationshipsTitle').outerHeight(true);
                 var slotRelationshipsTable = $('#hierarchies\\:relationsTable').outerHeight(true);
@@ -56,11 +55,15 @@
                 
                 var totalHeight = menusHeight + 4*em  + slotAttributesTitle + slotAttributesTable + slotRelationshipsTitle + slotRelationshipsTable + installationDetails;
                
-                var totalMenusHeight = $('#hierarchies\\:hierarchiesEmptyColumn').css({"height":window.innerHeight-totalHeight});
+                $('#hierarchies\\:hierarchiesEmptyColumn').css({"height":window.innerHeight-totalHeight});
             }
             
             function removeParametersFromUrl() {
                window.history.pushState("", "", window.location.href.replace(window.location.search, ''));
+            }
+            
+            function emHeight() {
+                return $('#top').outerHeight(true) - $('#top').outerHeight();
             }
 
             $(window).resize(function() {
@@ -81,7 +84,7 @@
     <h:body style="overflow-x: hidden">
         <h:panelGroup id="top" layout="block">
             <ui:insert name="top">
-                <h:panelGroup id="header" layout="block">
+                <h:panelGroup id="header" layout="block" rendered="#{msgs.showHeader}">
                     <ui:include src="header.xhtml" />
                 </h:panelGroup>
                 <h:panelGroup id="menu" layout="block">
@@ -91,8 +94,14 @@
         </h:panelGroup>
 
         <h:panelGroup id="content" layout="block">
-            <ui:insert name="content">Content</ui:insert>
+            <h:panelGroup rendered="#{loginManager.loggedIn}">
+                <ui:insert name="content">Content</ui:insert>
+            </h:panelGroup>
         </h:panelGroup>
+        
+        <div class="footer-message">
+            <h:outputText value="#{msgs.title} v#{msgs.titleVersion}" />
+        </div>
         
         <p:dialog modal="true" widgetVar="statusDialog" showHeader="false" draggable="false" closable="false" 
                 resizable="false">  
