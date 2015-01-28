@@ -28,6 +28,9 @@
                
                 var totalMenusHeight = menusHeight + headerHeight + addSlotHeight + 3*em;
                 $('.ui-treetable-scrollable-body').css({"height":window.innerHeight-totalMenusHeight});
+                
+                var footerWidth = $('.footer-message').outerWidth(true);
+                $('.footer-message').css({"left":(window.innerWidth/2)-(footerWidth/2) });
             }
             
             function resizeHierarchiesTree() {
@@ -100,7 +103,7 @@
         </h:panelGroup>
         
         <div class="footer-message">
-            <h:outputText value="#{msgs.title} v#{msgs.titleVersion}" />
+            <h:outputText value="#{msgs.title} v#{msgs.titleVersion} - " /><a style="color: lightgray;" href="mailto:#{msgs.supportEmail}">Contact us</a>
         </div>
         
         <p:dialog modal="true" widgetVar="statusDialog" showHeader="false" draggable="false" closable="false" 

@@ -16,9 +16,10 @@ body {
 
 .footer-message {
 	position: absolute;
-	float: left;
 	bottom: 0.25em;
-	color: darkgrey;
+	color: lightgray;
+	text-align: center;
+	font-size: 0.9em;
 	margin-left: 1.5em;
 }
 
