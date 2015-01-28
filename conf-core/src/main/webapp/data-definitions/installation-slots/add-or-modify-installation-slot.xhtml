@@ -1,6 +1,6 @@
-<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
-    xmlns:p="http://primefaces.org/ui"
-    xmlns:f="http://java.sun.com/jsf/core"
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets" 
+    xmlns:p="http://primefaces.org/ui" 
+    xmlns:f="http://java.sun.com/jsf/core" 
     xmlns:h="http://java.sun.com/jsf/html">
 
     <h:form id="#{formId}">
@@ -72,9 +72,10 @@
                 </p:row>
             </p:panelGrid>
 
-            <p:commandButton value="Cancel" styleClass="dialogButton" onclick="#{widgetName}.hide();" update="grp" resetValues="true" />
+            <p:commandButton value="Cancel" styleClass="dialogButton" onclick="#{widgetName}.hide();" update="grp" 
+                    resetValues="true" />
             <p:commandButton value="Save" styleClass="dialogButton" 
-                    oncomplete="if (args &amp;&amp; !args.validationFailed) #{widgetName}.hide(); resizePanel()" 
+                    oncomplete="if (args &amp;&amp; !args.validationFailed) { #{widgetName}.hide(); resizePanel(); }" 
                     action="#{installationSlotsController[submitHandler]}" 
                     update=":installationSlotsForm:installationSlotsTree :installationSlotsForm:addSlot grp" />
         </p:dialog>

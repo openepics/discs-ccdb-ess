@@ -1,10 +1,11 @@
-<ui:composition template="../template.xhtml" 
+<ui:composition template="/template/template.xhtml" 
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:f="http://java.sun.com/jsf/core"
     xmlns:h="http://java.sun.com/jsf/html"
     xmlns:ui="http://java.sun.com/jsf/facelets"
     xmlns:p="http://primefaces.org/ui">
-    <ui:define name="dataDefContent">
+
+    <ui:define name="content">
         <h:form id="containersForm">
             <p:commandButton ajax="true" id="addSlot" actionListener="#{containerController.prepareAddPopup()}" 
                 value="Add new container to parent" oncomplete="addContainer.show()" 
@@ -14,15 +15,15 @@
                     scrollWidth="auto">
                 <p:ajax event="collapse" listener="#{containerController.onNodeCollapse}" />
                 <p:ajax event="expand" listener="#{containerController.onNodeExpand}" />
-                
+
                 <p:column id="name" headerText="Name">
                     <h:outputText value="#{container.name}"/>
                 </p:column>
-                
+
                 <p:column id="desc" headerText="Description">
                     <h:outputText value="#{container.description}"/>
                 </p:column>
-                
+
                 <p:column headerText="Actions" style="padding: 0px !important; text-align: center;" width="144">                    
                     <p:commandLink ajax="true" title="Edit" action="#{containerController.redirectToAttributes(container.id)}">
                         <h:outputText styleClass="ui-icon ui-icon-pencil" style="display: inline-block !important; margin-right: 6px;" />
@@ -46,30 +47,30 @@
                         <p:ajax event="click" listener="#{auditManager.selectEntityForLog(container.slot, 'SLOT')}" oncomplete="containerLog.show()" update=":containerLogForm"/>
                     </p:commandLink>
                 </p:column>
-                
+
             </p:treeTable>
         </h:form>
-        
+
         <ui:include src="add-or-modify-container.xhtml" >
             <ui:param name="formId" value="addContainerForm" />
             <ui:param name="dialogTitle" value="Add new container" />
             <ui:param name="widgetName" value="addContainer" />
             <ui:param name="submitHandler" value="onSlotAdd" />
         </ui:include>
-        
+
          <ui:include src="../../audit/audit-log-table.xhtml">
-            <ui:param name="formId" value="containerLogForm" />
-            <ui:param name="dialogTitle" value="Container Log" />
-            <ui:param name="widgetName" value="containerLog" />
+             <ui:param name="formId" value="containerLogForm" />
+             <ui:param name="dialogTitle" value="Container Log" />
+             <ui:param name="widgetName" value="containerLog" />
         </ui:include>
-        
+
         <ui:include src="../add-or-modify-dialogs/delete-confirmation.xhtml" >
-                <ui:param name="formId" value="deleteContainerForm" />
-                <ui:param name="dialogTitle" value="Delete container" />
-                <ui:param name="widgetName" value="deleteContainer" />
-                <ui:param name="controller" value="#{containerController}" />
-                <ui:param name="submitHandler" value="onDelete" />
-                <ui:param name="formToUpdate" value=":containersForm:containersTree" />
+            <ui:param name="formId" value="deleteContainerForm" />
+            <ui:param name="dialogTitle" value="Delete container" />
+            <ui:param name="widgetName" value="deleteContainer" />
+            <ui:param name="controller" value="#{containerController}" />
+            <ui:param name="submitHandler" value="onDelete" />
+            <ui:param name="formToUpdate" value=":containersForm:containersTree" />
         </ui:include>
     </ui:define>
 </ui:composition>

@@ -241,8 +241,8 @@ a {
   border:1px solid !important;
 }
 
-.menu-selected {
-	font-weight: bold !important;
+.menu-selected, .menu-selected > .ui-menuitem-text, .menu-selected > a > .ui-menuitem-text {
+	text-decoration: underline;
 }
 
 .dialog-labels-width-1 {

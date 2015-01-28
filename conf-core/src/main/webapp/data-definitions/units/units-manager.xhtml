@@ -1,10 +1,11 @@
-<ui:composition template="../template.xhtml" 
+<ui:composition template="/template/template.xhtml" 
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:f="http://java.sun.com/jsf/core"
     xmlns:h="http://java.sun.com/jsf/html"
     xmlns:ui="http://java.sun.com/jsf/facelets"
     xmlns:p="http://primefaces.org/ui">
-    <ui:define name="dataDefContent">
+
+    <ui:define name="content">
         <h:form id="unitsForm">
             <p:commandButton ajax="true" actionListener="#{unitManager.prepareAddPopup()}" value="Add new" update=":addUnitForm"
                     oncomplete="addUnit.show()" style="margin-bottom: 1em;" />
@@ -17,16 +18,16 @@
                         filterMatchMode="contains">
                     <h:outputText value="#{unit.name}" />
                 </p:column>
-    
+
                 <p:column headerText="Description" filterBy="#{unit.description}" width="50%" filterMatchMode="contains">
                     <h:outputText value="#{unit.description}" />
                 </p:column>
-    
+
                 <p:column headerText="Symbol" sortBy="#{unit.symbol}" width="10%" filterBy="#{unit.symbol}" 
                         filterStyle="width: 90%;">
                     <h:outputText value="#{unit.symbol}" />
                 </p:column>
-    
+
                 <p:column headerText="Quantity" filterBy="#{unit.quantity}" sortBy="#{unit.quantity}" width="10%" 
                         filterStyle="width: 90%;">
                     <h:outputText value="#{unit.quantity}" />
@@ -48,7 +49,7 @@
                 </p:column>
             </p:dataTable>
         </h:form>
-        
+
         <ui:include src="../add-or-modify-dialogs/delete-confirmation.xhtml" >
             <ui:param name="formId" value="deleteUnitForm" />
             <ui:param name="dialogTitle" value="Delete unit" />
@@ -58,26 +59,26 @@
             <ui:param name="formToUpdate" value=":unitsForm:unitsTable" />
             <ui:param name="resetFilter" value="unitsTableVar.filter()" />               
         </ui:include>
-        
+
         <ui:include src="add-or-modify-unit.xhtml">
             <ui:param name="formId" value="modifyUnitForm" />
             <ui:param name="dialogTitle" value="Modify unit" />
             <ui:param name="widgetName" value="modifyUnit" />
             <ui:param name="submitHandler" value="onModify" />
         </ui:include>
-    
+
         <ui:include src="add-or-modify-unit.xhtml">
             <ui:param name="formId" value="addUnitForm" />
             <ui:param name="dialogTitle" value="Add unit" />
             <ui:param name="widgetName" value="addUnit" />
             <ui:param name="submitHandler" value="onAdd" />
         </ui:include>
-        
+
         <ui:include src="../../audit/audit-log-table.xhtml">
             <ui:param name="formId" value="unitLogForm" />
             <ui:param name="dialogTitle" value="Unit Log" />
             <ui:param name="widgetName" value="unitLog" />
-    </ui:include>
-        
+        </ui:include>
+
     </ui:define>
 </ui:composition>

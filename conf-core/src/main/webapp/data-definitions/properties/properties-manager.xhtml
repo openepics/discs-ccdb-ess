@@ -1,10 +1,11 @@
-<ui:composition template="../template.xhtml" 
+<ui:composition template="/template/template.xhtml" 
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:f="http://java.sun.com/jsf/core"
     xmlns:h="http://java.sun.com/jsf/html"
     xmlns:ui="http://java.sun.com/jsf/facelets"
     xmlns:p="http://primefaces.org/ui">
-    <ui:define name="dataDefContent">
+
+    <ui:define name="content">
         <h:form id="propertiesForm">
             <p:commandButton ajax="true" actionListener="#{propertyManager.prepareAddPopup()}" value="Add new"
                     oncomplete="addProperty.show()" style="margin-bottom: 1em;" />
@@ -16,18 +17,19 @@
                 <p:column headerText="Name" sortBy="#{property.name.toUpperCase()}" filterBy="#{property.name}" width="20%" filterMatchMode="contains">
                     <h:outputText value="#{property.name}" />
                 </p:column>
-    
+
                 <p:column headerText="Description" filterBy="#{property.description}" width="50%" filterMatchMode="contains">
                     <h:outputText value="#{property.description}" />
                 </p:column>
-    
+
                 <p:column headerText="Unit" sortBy="#{property.unit.name}">
                     <h:outputText value="#{property.unit.name}" width="10%"/>
                 </p:column>
-    
+
                 <p:column headerText="Data Type" filterBy="#{property.dataType.name}" width="10%" filterStyle="width: 90%;">
                     <h:outputText value="#{property.dataType.name}" />
                 </p:column>
+
                 <p:column headerText="Action" style="text-align: center;" width="70">
                     <p:commandLink ajax="true" title="Edit" update=":modifyPropertyForm" oncomplete="modifyProperty.show()">
                         <h:outputText styleClass="ui-icon ui-icon-pencil" style="display: inline-block !important; margin-right: 6px;" />
@@ -44,7 +46,7 @@
                 </p:column>
             </p:dataTable>
         </h:form>
-        
+
         <ui:include src="../add-or-modify-dialogs/delete-confirmation.xhtml" >
             <ui:param name="formId" value="deletePropertyForm" />
             <ui:param name="dialogTitle" value="Delete property" />
@@ -54,26 +56,26 @@
             <ui:param name="formToUpdate" value=":propertiesForm:propertiesTable" />
             <ui:param name="resetFilter" value="propertiesTableVar.filter()" />               
         </ui:include>
-        
+
         <ui:include src="../add-or-modify-dialogs/property.xhtml">
             <ui:param name="formId" value="modifyPropertyForm" />
             <ui:param name="dialogTitle" value="Modify Property" />
             <ui:param name="widgetName" value="modifyProperty" />
             <ui:param name="submitHandler" value="onModify" />
         </ui:include>
-    
+
         <ui:include src="../add-or-modify-dialogs/property.xhtml">
             <ui:param name="formId" value="addPropertyForm" />
             <ui:param name="dialogTitle" value="Add Property" />
             <ui:param name="widgetName" value="addProperty" />
             <ui:param name="submitHandler" value="onAdd" />
         </ui:include>
-        
+
         <ui:include src="../../audit/audit-log-table.xhtml">
             <ui:param name="formId" value="propertyLogForm" />
             <ui:param name="dialogTitle" value="Property Log" />
             <ui:param name="widgetName" value="propertyLog" />
-    </ui:include>
-        
+        </ui:include>
+
     </ui:define>
 </ui:composition>
