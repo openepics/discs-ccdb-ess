@@ -1,5 +1,6 @@
 /target
 /.sonar
+sonar-project.properties
 
 # Eclipse specific files
 .project
@@ -11,4 +12,9 @@
 # Eclipse EE specific
 src/main/java/resources
 /target/
-/target/
+
+# working files that are taken from elsewhere during war assembly
+src/main/resources/META-INF/persistence.xml
+src/main/webapp/WEB-INF/beans.xml
+src/main/webapp/WEB-INF/jboss-all.xml
+src/main/webapp/WEB-INF/jboss-web.xml

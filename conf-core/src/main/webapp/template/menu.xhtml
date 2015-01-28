@@ -10,8 +10,36 @@
 
 		<p:menubar id="mainMenu" styleClass="menubar">
 			<p:menuitem value="Home" icon="ui-icon-home" title="Home" url="/" />
-			<p:menuitem value="Hierarchies" icon="ui-icon-link" title="Hierarchies" url="/hierarchies/hierarchies.xhtml" />
-			<p:menuitem value="Devices" icon="ui-icon-gear" title="Devices" url="/devices/index.xhtml" />
+   
+            <p:submenu label="Slots" icon="ui-icon-document-b">
+                <p:menuitem value="View" title="View Installation Slots" 
+                    url="/data-definitions/installation-slots/installation-slots-manager.xhtml" />
+                
+                <p:menuitem value="Import" update=":importSlotsForm" 
+                    oncomplete="importSlots.show()" title="Import Slots and Slot Pairs" 
+                    actionListener="#{slotManager.prepareImportPopup()}" 
+                    disabled="#{!securityPolicy.getUIHint('SLOT')}"/>
+            </p:submenu>
+            
+            <p:submenu label="Devices" icon="ui-icon-gear">
+                <p:menuitem value="View" title="View Device Instances" url="/devices/index.xhtml" />
+            
+                <p:menuitem value="Import" update=":importDevicesForm" 
+                    oncomplete="importDevices.show()" title="Import Device Instances" 
+                    actionListener="#{deviceManager.prepareImportPopup()}" 
+                    disabled="#{!securityPolicy.getUIHint('DEVICE')}"/>
+            </p:submenu>
+            
+            <p:submenu label="Device Types" icon="ui-icon-wrench">
+                <p:menuitem value="View" title="View Device Types" 
+                    url="/data-definitions/device-types/device-types-manager.xhtml" />
+            
+                <p:menuitem value="Import" update=":importCompTypesForm" 
+                    oncomplete="importCompTypes.show()" title="Import Device Types" 
+                    actionListener="#{componentTypeManager.prepareImportPopup()}" 
+                    disabled="#{! securityPolicy.getUIHint('COMPONENT_TYPE')}" />
+            </p:submenu>
+            
 			<p:menuitem value="Reports" icon="ui-icon-home" title="Reports" url="/" disabled="true" />
 			<p:submenu label="Import" icon="ui-icon-folder-open" rendered="true">
                 <p:menuitem value="Import Units" update=":importUnitsForm" 
@@ -24,20 +52,6 @@
                     actionListener="#{propertyManager.prepareImportPopup()}" 
                     disabled="#{!securityPolicy.getUIHint('PROPERTY')}" />
 
-                <p:menuitem value="Import Device Types" update=":importCompTypesForm" 
-                    oncomplete="importCompTypes.show()" title="Import Component Types" 
-                    actionListener="#{componentTypeManager.prepareImportPopup()}" 
-                    disabled="#{! securityPolicy.getUIHint('COMPONENT_TYPE')}" />
-
-                <p:menuitem value="Import Slots and Slot Pairs" update=":importSlotsForm" 
-                    oncomplete="importSlots.show()" title="Import Slots" 
-                    actionListener="#{slotManager.prepareImportPopup()}" 
-                    disabled="#{!securityPolicy.getUIHint('SLOT')}"/>
-
-                <p:menuitem value="Import Device Instances" update=":importDevicesForm" 
-                    oncomplete="importDevices.show()" title="Import Devices" 
-                    actionListener="#{deviceManager.prepareImportPopup()}" 
-                    disabled="#{!securityPolicy.getUIHint('DEVICE')}"/>
             </p:submenu>
 
 			<p:menuitem value="Data Definitions" icon="ui-icon-script" title="Data Definitions" 
