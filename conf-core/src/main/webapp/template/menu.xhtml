@@ -11,7 +11,7 @@
 
         <p:menubar id="mainMenu" styleClass="menubar">
             <p:menuitem value="Home" icon="ui-icon-home" title="Home" url="/" 
-                styleClass="#{request.requestURL == '/' ? 'menu-selected' : ''}" />
+                styleClass="#{fn:endsWith(request.requestURL,'hierarchies.xhtml') ? 'menu-selected' : ''}" />
 
             <p:submenu label="Slots" icon="ui-icon-document-b" 
                     styleClass="#{fn:endsWith(request.requestURL,'installation-slots-manager.xhtml') ? 'menu-selected' : ''}">
