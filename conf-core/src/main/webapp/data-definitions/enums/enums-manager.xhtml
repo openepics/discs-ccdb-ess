@@ -19,11 +19,13 @@
                     <h:outputText value="#{enum.name}" />
                 </p:column>
     
-                <p:column headerText="Description" filterBy="#{enum.description}" width="30%" filterMatchMode="contains">
+                <p:column headerText="Description" sortBy="#{enum.description}" filterBy="#{enum.description}" 
+                        width="30%" filterStyle="width: 20em;" filterMatchMode="contains">
                     <h:outputText value="#{enum.description}" />
                 </p:column>
     
-                <p:column headerText="Definition">
+                <p:column headerText="Definition" sortBy="#{enum.definitionAsString}" 
+                        filterBy="#{enum.definitionAsString}" filterMatchMode="contains">
                     <h:outputText value="#{enum.definitionAsString}" width="50%"/>
                 </p:column>
     

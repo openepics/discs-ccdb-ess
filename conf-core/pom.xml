@@ -41,7 +41,7 @@
         <jacoco.out.file>jacoco.exec</jacoco.out.file>
         <!-- Tells Sonar where the Jacoco coverage result file is located for Unit Tests -->
         <sonar.jacoco.reportPath>${jacoco.outputDir}/${jacoco.out.file}</sonar.jacoco.reportPath>
-        <argLine>-Xmx3g -Xms2g -XX:MaxPermSize=128m</argLine>
+        <!-- <argLine>-Xmx3g -Xms2g -XX:MaxPermSize=128m</argLine> -->
     </properties>
 
     <dependencies>

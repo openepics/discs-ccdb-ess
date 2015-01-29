@@ -30,7 +30,7 @@
                 $('.ui-treetable-scrollable-body').css({"height":window.innerHeight-totalMenusHeight});
                 
                 var footerWidth = $('.footer-message').outerWidth(true);
-                $('.footer-message').css({"left":(window.innerWidth/2)-(footerWidth/2) });
+                $('.footer-message').css({"left":(window.innerWidth-footerWidth)/2 });
             }
             
             function resizeHierarchiesTree() {

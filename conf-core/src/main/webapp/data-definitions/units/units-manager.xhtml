@@ -19,7 +19,8 @@
                     <h:outputText value="#{unit.name}" />
                 </p:column>
 
-                <p:column headerText="Description" filterBy="#{unit.description}" width="50%" filterMatchMode="contains">
+                <p:column headerText="Description" sortBy="#{unit.description}" filterBy="#{unit.description}" 
+                        width="50%" filterStyle="width: 20em;" filterMatchMode="contains">
                     <h:outputText value="#{unit.description}" />
                 </p:column>
 

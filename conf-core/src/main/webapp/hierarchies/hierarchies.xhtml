@@ -12,7 +12,7 @@
                     <p:column rowspan="4" id="treeColumn">
                         <p:treeTable id="tree" value="#{hierarchiesController.rootNode}" var="installationSlot" 
                                 selectionMode="single" selection="#{hierarchiesController.selectedNode}"
-                                scrollable="true" scrollWidth="auto" style="width: 300px;">
+                                scrollable="true" scrollWidth="auto" style="width: 300px;" rowStyleClass="treeRows">
                             <p:ajax event="select" listener="#{hierarchiesController.initAttributeList()}"
                                 update=":hierarchies:attributesTable :hierarchies:relationsTable :hierarchies:installationDetails :hierarchies:slotAttributesTitle" 
                                 oncomplete="resizeEmptyColumnInHierarchies();" />

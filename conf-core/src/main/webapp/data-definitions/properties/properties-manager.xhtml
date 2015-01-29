@@ -9,24 +9,28 @@
         <h:form id="propertiesForm">
             <p:commandButton ajax="true" actionListener="#{propertyManager.prepareAddPopup()}" value="Add new"
                     oncomplete="addProperty.show()" style="margin-bottom: 1em;" />
-            <p:dataTable widgetVar="propertiesTableVar" var="property" id="propertiesTable" value="#{propertyManager.properties}" 
+            <p:dataTable widgetVar="propertiesTableVar" var="property" id="propertiesTable" 
+                    value="#{propertyManager.properties}" rows="15" paginator="true" 
                     resizableColumns="true" style="table-layout: fixed; word-wrap: break-word;" 
-                    filteredValue="#{propertyManager.filteredProperties}"
-                    rows="15" paginator="true" paginatorPosition="bottom">
+                    filteredValue="#{propertyManager.filteredProperties}" paginatorPosition="bottom">
                 <p:ajax event="filter" ignoreAutoUpdate="true"/>
-                <p:column headerText="Name" sortBy="#{property.name.toUpperCase()}" filterBy="#{property.name}" width="20%" filterMatchMode="contains">
+                <p:column headerText="Name" sortBy="#{property.name.toUpperCase()}" filterBy="#{property.name}" 
+                        width="20%" filterMatchMode="contains">
                     <h:outputText value="#{property.name}" />
                 </p:column>
 
-                <p:column headerText="Description" filterBy="#{property.description}" width="50%" filterMatchMode="contains">
+                <p:column headerText="Description" sortBy="#{property.description}" filterBy="#{property.description}" 
+                        width="50%" filterStyle="width: 20em;" filterMatchMode="contains">
                     <h:outputText value="#{property.description}" />
                 </p:column>
 
-                <p:column headerText="Unit" sortBy="#{property.unit.name}">
-                    <h:outputText value="#{property.unit.name}" width="10%"/>
+                <p:column headerText="Unit" sortBy="#{property.unit.name}" filterBy="#{property.unit.name}" 
+                        width="10%" filterStyle="width: 90%;"> 
+                    <h:outputText value="#{property.unit.name}" />
                 </p:column>
 
-                <p:column headerText="Data Type" filterBy="#{property.dataType.name}" width="10%" filterStyle="width: 90%;">
+                <p:column headerText="Data Type" sortBy="#{property.dataType.name}" filterBy="#{property.dataType.name}" 
+                        width="10%" filterStyle="width: 90%;">
                     <h:outputText value="#{property.dataType.name}" />
                 </p:column>
 

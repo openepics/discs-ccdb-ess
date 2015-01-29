@@ -15,11 +15,13 @@
                     paginatorPosition="bottom">
                 <p:ajax event="filter" ignoreAutoUpdate="true"/>
                 
-	            <p:column headerText="Name" sortBy="#{deviceType.name.toUpperCase()}" filterBy="#{deviceType.name}" filterMatchMode="contains" width="20%">
+	            <p:column headerText="Name" sortBy="#{deviceType.name.toUpperCase()}" filterBy="#{deviceType.name}" 
+                        filterMatchMode="contains" width="20%">
 	                <h:outputText value="#{deviceType.name}" />
 	            </p:column>
 	
-	            <p:column headerText="Description" filterBy="#{deviceType.description}" filterMatchMode="contains" width="65%">
+	            <p:column headerText="Description" sortBy="#{deviceType.description}" filterBy="#{deviceType.description}" 
+                        filterMatchMode="contains" width="65%" filterStyle="width: 20em;">
 	                <h:outputText value="#{deviceType.description}" />
 	            </p:column>
 	

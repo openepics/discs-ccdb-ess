@@ -56,6 +56,7 @@ public class DevicesByTypeManager implements Serializable {
     private ComponentType selectedComponentType;
 
     private List<Device> devices;
+    private List<Device> filteredDevices;
     private Device selectedDevice;
 
     private String serialNumber;
@@ -244,5 +245,15 @@ public class DevicesByTypeManager implements Serializable {
                             Utility.MESSAGE_SUMMARY_ERROR, "Device instance with this inventory ID already exists."));
             }
         }
+    }
+
+    /** @return the filteredDevices */
+    public List<Device> getFilteredDevices() {
+        return filteredDevices;
+    }
+
+    /** @param filteredDevices the filteredDevices to set */
+    public void setFilteredDevices(List<Device> filteredDevices) {
+        this.filteredDevices = filteredDevices;
     }
 }

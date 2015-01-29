@@ -27,13 +27,15 @@
                             style="margin-bottom: 1em;" />                        
                         
                         <p:dataTable id="devicesTable" var="device" rows="15" paginator="true" paginatorPosition="bottom"
-                                value="#{devicesByTypeManager.devices}" emptyMessage="No devices.">
+                                value="#{devicesByTypeManager.devices}" emptyMessage="No devices." 
+                                filteredValue="#{devicesByTypeManager.filteredDevices}">
                                 
-                            <p:column headerText="Inventory ID" width="40%">
+                            <p:column headerText="Inventory ID" sortBy="#{device.serialNumber}" 
+                                    filterBy="#{device.serialNumber}" width="40%" filterMatchMode="contains">
                                 <h:outputText value="#{device.serialNumber}" />
                             </p:column>
                             
-                            <p:column headerText="Status">
+                            <p:column headerText="Status" sortBy="#{device.status.label}" filterBy="#{device.status.label}">
                                 <h:outputText value="#{device.status.label}" />
                             </p:column>
                    
