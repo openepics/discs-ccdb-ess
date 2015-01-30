@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -47,15 +48,24 @@ public class AuditManager implements Serializable {
 
     private static final Logger LOGGER = Logger.getLogger(AuditManager.class.getCanonicalName());
 
-    @Inject transient private AuditRecordEJB auditRecordEJB;
+    @Inject private transient AuditRecordEJB auditRecordEJB;
 
     private List<AuditRecord> auditRecordsForEntity;
     private AuditRecord displayRecord;
+    private List<AuditRecord> auditRecords;
 
     /**
      * Creates a new instance of AuditManager
      */
     public AuditManager() {
+    }
+
+    /**
+     * Java EE post construct life-cycle method.
+     */
+    @PostConstruct
+    public void init() {
+        auditRecords = auditRecordEJB.findAll();
     }
 
     /**
@@ -110,5 +120,9 @@ public class AuditManager implements Serializable {
         return auditRecordsForEntity;
     }
 
+    /** @return the auditRecords */
+    public List<AuditRecord> getAuditRecords() {
+        return auditRecords;
+    }
 
 }

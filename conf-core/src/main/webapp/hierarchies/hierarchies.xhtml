@@ -18,7 +18,7 @@
                                 oncomplete="resizeEmptyColumnInHierarchies();" />
                             <p:ajax event="unselect" listener="#{hierarchiesController.clearAttributeList()}"
                                 update=":hierarchies:attributesTable :hierarchies:relationsTable :hierarchies:installationDetails :hierarchies:slotAttributesTitle" 
-                                oncomplete="resizeEmptyColumnInHierarchies();"/>
+                                oncomplete="resizeEmptyColumnInHierarchies();" />
 
                             <p:column id="name" headerText="Name">
                                 <h:outputText value="" rendered="#{installationSlot.isHostingSlot}" 

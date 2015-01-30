@@ -18,17 +18,17 @@
                         filterMatchMode="contains" filterStyle="width: 90%;">
                     <h:outputText value="#{enum.name}" />
                 </p:column>
-    
+
                 <p:column headerText="Description" sortBy="#{enum.description}" filterBy="#{enum.description}" 
                         width="30%" filterStyle="width: 20em;" filterMatchMode="contains">
                     <h:outputText value="#{enum.description}" />
                 </p:column>
-    
+
                 <p:column headerText="Definition" sortBy="#{enum.definitionAsString}" 
                         filterBy="#{enum.definitionAsString}" filterMatchMode="contains">
                     <h:outputText value="#{enum.definitionAsString}" width="50%"/>
                 </p:column>
-    
+
                 <p:column headerText="Action" style="text-align: center;" width="70">
                     <p:commandLink ajax="true" title="Edit" update=":modifyEnumForm" oncomplete="modifyEnum.show()">
                         <h:outputText styleClass="ui-icon ui-icon-pencil" style="display: inline-block !important; margin-right: 6px;" />
@@ -41,12 +41,12 @@
                     <p:commandLink ajax="true" title="Log">
                         <h:outputText styleClass="ui-icon ui-icon-clock" style="display: inline-block !important; margin-right: 6px;" />
                         <p:ajax event="click" listener="#{auditManager.selectEntityForLog(enum.enumeration, 'DATA_TYPE')}" 
-                                update=":enumLogForm" oncomplete="enumLog.show()"/>
+                                update=":enumLogForm" oncomplete="enumLog.show()" />
                     </p:commandLink>
                 </p:column>
             </p:dataTable>
         </h:form>
-        
+
         <ui:include src="../add-or-modify-dialogs/delete-confirmation.xhtml" >
             <ui:param name="formId" value="deleteEnumForm" />
             <ui:param name="dialogTitle" value="Delete enumeration" />
@@ -56,7 +56,7 @@
             <ui:param name="formToUpdate" value=":enumsForm:enumsTable" />
             <ui:param name="resetFilter" value="enumsTableVar.filter()" />               
         </ui:include>
-        
+
         <ui:include src="add-or-modify-enum.xhtml">
             <ui:param name="formId" value="modifyEnumForm" />
             <ui:param name="dialogTitle" value="Modify enumeration" />
@@ -64,7 +64,7 @@
             <ui:param name="submitHandler" value="onModify" />
             <ui:param name="componentToUpdate" value=":enumsForm:enumsTable" />
         </ui:include>
-    
+
         <ui:include src="add-or-modify-enum.xhtml">
             <ui:param name="formId" value="addEnumForm" />
             <ui:param name="dialogTitle" value="Add Enumeration" />
@@ -72,12 +72,18 @@
             <ui:param name="submitHandler" value="onAdd" />
             <ui:param name="componentToUpdate" value=":enumsForm:enumsTable" />
         </ui:include>
-        
+
         <ui:include src="../../audit/audit-log-table.xhtml">
             <ui:param name="formId" value="enumLogForm" />
             <ui:param name="dialogTitle" value="Enumeration Log" />
             <ui:param name="widgetName" value="enumLog" />
-    </ui:include>
-        
+        </ui:include>
+
+        <ui:include src="../../audit/audit-log-details.xhtml">
+            <ui:param name="formId" value="logDetailsForm" />
+            <ui:param name="dialogTitle" value="Long Entry Details" />
+            <ui:param name="widgetName" value="logDetails" />
+        </ui:include>
+
     </ui:define>
 </ui:composition>

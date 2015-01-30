@@ -13,7 +13,7 @@
                     resizableColumns="true" style="table-layout: fixed; word-wrap: break-word;" 
                     filteredValue="#{unitManager.filteredUnits}" rows="15" paginator="true" 
                     paginatorPosition="bottom">
-                <p:ajax event="filter" ignoreAutoUpdate="true"/>
+                <p:ajax event="filter" ignoreAutoUpdate="true" />
                 <p:column headerText="Name" sortBy="#{unit.name.toUpperCase()}" filterBy="#{unit.name}" width="20%" 
                         filterMatchMode="contains">
                     <h:outputText value="#{unit.name}" />
@@ -45,7 +45,7 @@
                     <p:commandLink ajax="true" title="Log">
                         <h:outputText styleClass="ui-icon ui-icon-clock" style="display: inline-block !important; margin-right: 6px;" />
                         <p:ajax event="click" listener="#{auditManager.selectEntityForLog(unit.unit, 'UNIT')}" 
-                                update=":unitLogForm" oncomplete="unitLog.show()"/>
+                                update=":unitLogForm" oncomplete="unitLog.show()" />
                     </p:commandLink>
                 </p:column>
             </p:dataTable>
@@ -81,5 +81,10 @@
             <ui:param name="widgetName" value="unitLog" />
         </ui:include>
 
+        <ui:include src="../../audit/audit-log-details.xhtml">
+            <ui:param name="formId" value="logDetailsForm" />
+            <ui:param name="dialogTitle" value="Long Entry Details" />
+            <ui:param name="widgetName" value="logDetails" />
+        </ui:include>
     </ui:define>
 </ui:composition>
