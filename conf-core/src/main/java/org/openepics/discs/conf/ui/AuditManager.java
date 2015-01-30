@@ -53,6 +53,7 @@ public class AuditManager implements Serializable {
     private List<AuditRecord> auditRecordsForEntity;
     private AuditRecord displayRecord;
     private List<AuditRecord> auditRecords;
+    private List<AuditRecord> filteredAuditRecords;
 
     /**
      * Creates a new instance of AuditManager
@@ -123,6 +124,20 @@ public class AuditManager implements Serializable {
     /** @return the auditRecords */
     public List<AuditRecord> getAuditRecords() {
         return auditRecords;
+    }
+
+    /**
+     * @return the filteredAuditRecords
+     */
+    public List<AuditRecord> getFilteredAuditRecords() {
+        return filteredAuditRecords;
+    }
+
+    /**
+     * @param filteredAuditRecords the filteredAuditRecords to set
+     */
+    public void setFilteredAuditRecords(List<AuditRecord> filteredAuditRecords) {
+        this.filteredAuditRecords = filteredAuditRecords;
     }
 
 }

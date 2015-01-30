@@ -7,9 +7,9 @@
 
     <ui:define name="content">
         <h:form id="logsForm">
-            <p:dataTable widgetVar="unitsTableVar" var="unit" id="unitsTable" value="#{unitManager.unitViews}" 
+            <p:dataTable widgetVar="logTableVar" var="auditRecord" id="logTable" value="#{auditManager.auditRecords}" 
                     resizableColumns="true" style="table-layout: fixed; word-wrap: break-word;" 
-                    filteredValue="#{unitManager.filteredUnits}" rows="15" paginator="true" 
+                    filteredValue="#{auditManager.filteredAuditRecords}" rows="15" paginator="true" 
                     paginatorPosition="bottom">
                 <p:ajax event="filter" ignoreAutoUpdate="true"/>
 
