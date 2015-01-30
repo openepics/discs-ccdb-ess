@@ -24,6 +24,7 @@ import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
+import javax.faces.model.SelectItem;
 import javax.faces.validator.ValidatorException;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -35,9 +36,15 @@ import org.openepics.discs.conf.ejb.DeviceEJB;
 import org.openepics.discs.conf.ejb.InstallationEJB;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.Device;
+import org.openepics.discs.conf.ent.DeviceStatus;
+import org.openepics.discs.conf.ent.InstallationRecord;
 import org.openepics.discs.conf.util.Utility;
+import org.openepics.discs.conf.views.DeviceView;
 
+import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 
 
 /**
@@ -55,9 +62,11 @@ public class DevicesByTypeManager implements Serializable {
 
     private ComponentType selectedComponentType;
 
-    private List<Device> devices;
-    private List<Device> filteredDevices;
+    private List<DeviceView> devices;
+    private List<DeviceView> filteredDevices;
     private Device selectedDevice;
+
+    private List<SelectItem> statusLabels;
 
     private String serialNumber;
     private String description;
@@ -77,6 +86,7 @@ public class DevicesByTypeManager implements Serializable {
                     getParameter("id"));
             selectedComponentType = componentTypesEJB.findById(id);
             prepareDevicesForDisplay();
+            prepareStatusLabels();
         }
     }
 
@@ -168,20 +178,42 @@ public class DevicesByTypeManager implements Serializable {
      * the left hand side table listing all available device type.
      */
     public void prepareDevicesForDisplay() {
-        devices = deviceEJB.findDevicesByComponentType(selectedComponentType);
+        final List<Device> deviceList = deviceEJB.findDevicesByComponentType(selectedComponentType);
+
+        // transform the list of Unit into a list of UnitView
+        devices = ImmutableList.copyOf(Lists.transform(deviceList, new Function<Device, DeviceView>() {
+                                                @Override
+                                                public DeviceView apply(Device input) {
+                                                    return new DeviceView(input, getInstalledSlotForDevice(input));
+                                                }}));
+    }
+
+    private String getInstalledSlotForDevice(Device device) {
+        final InstallationRecord record = installationEJB.getActiveInstallationRecordForDevice(device);
+        return record == null ? "-" : record.getSlot().getName();
+    }
+
+    private void prepareStatusLabels() {
+        if (statusLabels == null) {
+            statusLabels = Lists.newArrayList();
+            statusLabels.add(new SelectItem("", "Select one"));
+            for (DeviceStatus status : DeviceStatus.values()) {
+                statusLabels.add(new SelectItem(status.getLabel(), status.getLabel()));
+            }
+        }
+    }
+
+    /** @return the list of labels for the filter */
+    public List<SelectItem> getStatusLabels() {
+        prepareStatusLabels();
+        return statusLabels;
     }
 
     /**
      * @return The list of all {@link Device} instances to display to the the user
      */
-    public List<Device> getDevices() {
+    public List<DeviceView> getDevices() {
         return devices;
-    }
-    /**
-     * @param devices The list of all {@link Device} instances to display to the the user
-     */
-    public void setDevices(List<Device> devices) {
-        this.devices = devices;
     }
 
     /**
@@ -248,12 +280,12 @@ public class DevicesByTypeManager implements Serializable {
     }
 
     /** @return the filteredDevices */
-    public List<Device> getFilteredDevices() {
+    public List<DeviceView> getFilteredDevices() {
         return filteredDevices;
     }
 
     /** @param filteredDevices the filteredDevices to set */
-    public void setFilteredDevices(List<Device> filteredDevices) {
+    public void setFilteredDevices(List<DeviceView> filteredDevices) {
         this.filteredDevices = filteredDevices;
     }
 }

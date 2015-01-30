@@ -81,15 +81,6 @@ public class InstallationManager implements Serializable {
         return this.installedDevice != null;
     }
 
-    /** Used in the listing of device instances screen.
-     * @param device the device to query for.
-     * @return The name of the installation slot the device is currently installed in.
-     */
-    public String getInstalledSlotForDevice(Device device) {
-        final InstallationRecord record = installationEJB.getActiveInstallationRecordForDevice(device);
-        return record == null ? "-" : record.getSlot().getName();
-    }
-
     private void setInstalledDevice(InstallationRecord installationRecord) {
         if (installationRecord != null) {
             this.installedDevice = installationRecord.getDevice();

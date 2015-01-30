@@ -15,7 +15,8 @@
                                 value="#{componentTypeManager.deviceTypes}" scrollHeight="600" 
                                 filteredValue="#{componentTypeManager.filteredDeviceTypes}" emptyMessage="No device types defined.">
                             <p:ajax event="rowSelect" listener="#{devicesByTypeManager.prepareDevicesForDisplay()}" 
-                                update=":deviceTypesForm:devicesTable :deviceTypesForm:addDeviceButton :deviceAddForm:addDeviceDialog" oncomplete="removeParametersFromUrl()" />
+                                update=":deviceTypesForm:devicesTable :deviceTypesForm:addDeviceButton :deviceAddForm:addDeviceDialog" 
+                                oncomplete="removeParametersFromUrl()" onstart="devicesTable.clearFilters()" />
         	                <p:column headerText="Type" filterBy="#{devType.name}" filterMatchMode="contains">
         	                    <h:outputText value="#{devType.name}" />
         	                </p:column>
@@ -28,19 +29,21 @@
                         
                         <p:dataTable id="devicesTable" var="device" rows="15" paginator="true" paginatorPosition="bottom"
                                 value="#{devicesByTypeManager.devices}" emptyMessage="No devices." 
-                                filteredValue="#{devicesByTypeManager.filteredDevices}">
+                                widgetVar="devicesTable" filteredValue="#{devicesByTypeManager.filteredDevices}">
                                 
-                            <p:column headerText="Inventory ID" sortBy="#{device.serialNumber}" 
-                                    filterBy="#{device.serialNumber}" width="40%" filterMatchMode="contains">
-                                <h:outputText value="#{device.serialNumber}" />
+                            <p:column headerText="Inventory ID" sortBy="#{device.inventoryId}" 
+                                    filterBy="#{device.inventoryId}" width="40%" filterMatchMode="contains">
+                                <h:outputText value="#{device.inventoryId}" />
                             </p:column>
                             
-                            <p:column headerText="Status" sortBy="#{device.status.label}" filterBy="#{device.status.label}">
-                                <h:outputText value="#{device.status.label}" />
+                            <p:column headerText="Status" sortBy="#{device.statusLabel}" filterBy="#{device.statusLabel}" 
+                                    filterMatchMode="exact" filterOptions="#{devicesByTypeManager.statusLabels}">
+                                <h:outputText value="#{device.statusLabel}" />
                             </p:column>
                    
-                            <p:column headerText="Installed in" width="30%">
-                                <h:outputText value="#{installationManager.getInstalledSlotForDevice(device)}" />
+                            <p:column headerText="Installed in" width="30%" sortBy="#{device.installedIn}" 
+                                    filterBy="#{device.installedIn}" filterMatchMode="contains">
+                                <h:outputText value="#{device.installedIn}" />
                             </p:column>
                    
                             <p:column headerText="Actions" width="70">
