@@ -41,6 +41,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.openepics.discs.conf.util.Conversion;
+
 /**
  * {@link AuditRecord} entity stores audit logs for changes on entity types
  *
@@ -50,7 +52,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(name = "audit_record", indexes = { @Index(columnList = "entity_id, entity_type") })
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "AuditRecord.findAll", query = "SELECT a FROM AuditRecord a"),
+    @NamedQuery(name = "AuditRecord.findAll", query = "SELECT a FROM AuditRecord a ORDER BY a.id DESC"),
     @NamedQuery(name = "AuditRecord.findByEntityIdAndType", query = "SELECT a FROM AuditRecord a "
             + "WHERE a.entityId = :entityId AND a.entityType = :entityType ORDER BY a.logTime DESC")
 })
@@ -124,6 +126,10 @@ public class AuditRecord implements Serializable {
 
     public void setLogTime(Date logTime) {
         this.logTime = new Date(logTime.getTime());
+    }
+
+    public String getLogTimeFormatted() {
+        return Conversion.TIMESTAMP_FORMATTER.format(logTime);
     }
 
     public EntityTypeOperation getOper() {

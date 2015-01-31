@@ -75,7 +75,8 @@
                 url="/data-definitions/containers/containers-manager.xhtml" 
                 styleClass="#{fn:endsWith(request.requestURL,'containers-manager.xhtml') ? 'menu-selected' : ''}" />
 
-            <p:menuitem value="Log" icon="ui-icon-script" title="View Audit Log" url="/audit/log-manager.xhtml" />
+            <p:menuitem value="Log" icon="ui-icon-script" title="View Audit Log" url="/audit/log-manager.xhtml" 
+                styleClass="#{fn:endsWith(request.requestURL,'log-manager.xhtml') ? 'menu-selected' : ''}" />
 
             <p:menuitem value="Help" icon="ui-icon-home" title="Help" url="/" disabled="true" />
 

@@ -66,18 +66,20 @@ public class Conversion {
         // utility class
     }
 
-    /**
-     * Format string for acceptable date format (ISO 8601: yyyy-MM-dd).
-     */
+    /** Format string for acceptable date format (ISO 8601: yyyy-MM-dd). */
     public static final String DATE_ONLY_FORMAT = "yyyy-MM-dd";
-    /**
-     * Format string for acceptable time format (HH:mm:ss). HH is a value 00-23.
-     */
+
+    /** Format string for acceptable time format (HH:mm:ss). HH is a value 00-23. */
     public static final String TIME_ONLY_FORMAT = "HH:mm:ss";
-    /**
-     * Format string for acceptable date time format (yyyy-MM-dd HH:mm:ss). HH is a value 00-23.
-     */
+
+    /** Format string for acceptable date time format (yyyy-MM-dd HH:mm:ss). HH is a value 00-23. */
     public static final String DATE_TIME_FORMAT = DATE_ONLY_FORMAT + " " + TIME_ONLY_FORMAT;
+
+    /** Format string for displaying date time as a timestamp (yyyy-MM-dd HH:mm:ss.SSS). */
+    public static final String TIMESTAMP_FORMAT = DATE_TIME_FORMAT + ".SSS";
+
+    /** A simple date formatter for displaying date time formatted as a timestamp. */
+    public static final SimpleDateFormat TIMESTAMP_FORMATTER = new SimpleDateFormat(TIMESTAMP_FORMAT);
 
     /**
      * Returns a built-in data type enumeration (description) based on the DataType entity.

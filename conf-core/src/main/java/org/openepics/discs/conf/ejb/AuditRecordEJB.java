@@ -60,4 +60,12 @@ public class AuditRecordEJB extends ReadOnlyDAO<AuditRecord> {
     protected Class<AuditRecord> getEntityClass() {
         return AuditRecord.class;
     }
+
+    /** @return A list of all {@link AuditRecord}s in the database ordered by creation date */
+    public List<AuditRecord> findAllOrdered() {
+        final List<AuditRecord> auditRecords = em.createNamedQuery("AuditRecord.findAll", AuditRecord.class)
+                .getResultList();
+
+        return auditRecords == null ? new ArrayList<AuditRecord>() : auditRecords;
+    }
 }

@@ -26,6 +26,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
+import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -34,8 +35,10 @@ import org.openepics.discs.conf.ejb.AuditRecordEJB;
 import org.openepics.discs.conf.ent.AuditRecord;
 import org.openepics.discs.conf.ent.ConfigurationEntity;
 import org.openepics.discs.conf.ent.EntityType;
+import org.openepics.discs.conf.ent.EntityTypeOperation;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Lists;
 
 /**
  * @author vuppala
@@ -54,6 +57,7 @@ public class AuditManager implements Serializable {
     private AuditRecord displayRecord;
     private List<AuditRecord> auditRecords;
     private List<AuditRecord> filteredAuditRecords;
+    private List<SelectItem> auditOperations;
 
     /**
      * Creates a new instance of AuditManager
@@ -66,7 +70,8 @@ public class AuditManager implements Serializable {
      */
     @PostConstruct
     public void init() {
-        auditRecords = auditRecordEJB.findAll();
+        auditRecords = auditRecordEJB.findAllOrdered();
+        prepareAuditOperations();
     }
 
     /**
@@ -140,4 +145,18 @@ public class AuditManager implements Serializable {
         this.filteredAuditRecords = filteredAuditRecords;
     }
 
+    private void prepareAuditOperations() {
+        if (auditOperations == null) {
+            auditOperations = Lists.newArrayList();
+            auditOperations.add(new SelectItem("", "Select one"));
+            for (EntityTypeOperation operation : EntityTypeOperation.values()) {
+                auditOperations.add(new SelectItem(operation.toString(), operation.toString()));
+            }
+        }
+    }
+
+    /** @return the list of audit operations */
+    public List<SelectItem> getAuditOperations() {
+        return auditOperations;
+    }
 }

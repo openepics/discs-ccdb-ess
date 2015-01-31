@@ -13,22 +13,22 @@
                     paginatorPosition="bottom">
                 <p:ajax event="filter" ignoreAutoUpdate="true"/>
 
-                <p:column headerText="Timestamp">
-                    <h:outputText value="#{auditRecord.logTime}">
-                        <f:convertDateTime pattern="yyyy-MM-dd HH:mm:ss.sss"/>
-                    </h:outputText>
+                <p:column headerText="Timestamp" filterBy="#{auditRecord.logTimeFormatted}" 
+                        sortBy="#{auditRecord.logTime}" filterMatchMode="contains">
+                    <h:outputText value="#{auditRecord.logTimeFormatted}" />
                 </p:column>
 
-                <p:column headerText="User">
+                <p:column headerText="User" sortBy="#{auditRecord.user}" filterBy="#{auditRecord.user}">
                     <h:outputText value="#{auditRecord.user}" />
                 </p:column>
                 
-                <p:column headerText="Operation">
+                <p:column headerText="Operation" sortBy="#{auditRecord.oper}" filterBy="#{auditRecord.oper}" 
+                        filterMatchMode="exact" filterOptions="#{auditManager.auditOperations}">
                     <h:outputText value="#{auditRecord.oper}" />
                 </p:column>
 
-                <p:column headerText="Entity Name">
-                    <h:outputText value="#{auditRecord.entityKey}" />
+                <p:column headerText="Entity Name" sortBy="#{auditRecord.entityKey}" filterBy="#{auditRecord.entityKey}">
+                    <h:outputText value="#{auditRecord.entityKey} (#{auditRecord.entityId})" />
                 </p:column>
                 
                 <p:column headerText="Change">
