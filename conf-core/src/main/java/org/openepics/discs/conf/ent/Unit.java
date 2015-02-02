@@ -43,7 +43,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Table(name = "unit")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Unit.findAll", query = "SELECT u FROM Unit u"),
+    @NamedQuery(name = "Unit.findAllOrdered", query = "SELECT u FROM Unit u ORDER BY u.name"),
     @NamedQuery(name = "Unit.findByName", query = "SELECT u FROM Unit u WHERE u.name = :name"),
     @NamedQuery(name = "Unit.findByQuantity", query = "SELECT u FROM Unit u WHERE u.quantity = :quantity"),
     @NamedQuery(name = "Unit.findBySymbol", query = "SELECT u FROM Unit u WHERE u.symbol = :symbol"),

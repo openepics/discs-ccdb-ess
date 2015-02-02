@@ -34,6 +34,9 @@ import javax.faces.validator.ValidatorException;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.servlet.http.HttpServletRequest;
+
+import joptsimple.internal.Strings;
 
 import org.openepics.discs.conf.dl.UnitsLoaderQualifier;
 import org.openepics.discs.conf.dl.common.DataLoader;
@@ -77,6 +80,9 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
     private String symbol;
     private String quantity;
 
+    // * * * * * * * Unit scroll position * * * * * * *
+    private long unitPosition;
+
     /**
      * Creates a new instance of UnitManager
      */
@@ -88,7 +94,25 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
      */
     @PostConstruct
     public void init() {
+        unitPosition = -1;
+        final String unitId = ((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().
+                                    getRequest()).getParameter("id");
         refreshUnits();
+        getUnitPosition(unitId);
+    }
+
+    private void getUnitPosition(final String unitId) {
+        if (!Strings.isNullOrEmpty(unitId)) {
+            final long id = Long.parseLong(unitId);
+            int elementPosition = 0;
+            for (Unit unit : units) {
+                if (unit.getId() == id) {
+                    unitPosition = elementPosition;
+                    break;
+                }
+                ++elementPosition;
+            }
+        }
     }
 
     /**
@@ -130,7 +154,7 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
     }
 
     private void refreshUnits() {
-        units = ImmutableList.copyOf(unitEJB.findAll());
+        units = ImmutableList.copyOf(unitEJB.findAllOrdered());
 
         // transform the list of Unit into a list of UnitView
         unitViews = ImmutableList.copyOf(Lists.transform(units, new Function<Unit, UnitView>() {
@@ -303,4 +327,22 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
     public void setQuantity(String quantity) {
         this.quantity = quantity;
     }
+
+    public String getStartupScript() {
+        final StringBuilder js = new StringBuilder();
+        js.append("<script type=\"text/javascript\">").append("\r\n");
+        js.append("jQuery(document).ready(function() {").append("\r\n");
+
+        //js.append("alert(\"Debug CP#1\");").append("\r\n");
+        js.append("if ((").append(unitPosition).append(" < 0) || (").append(unitPosition)
+                        .append(" > unitsTableVar.getPaginator().cfg.rowCount)) {").append("\r\n");
+        js.append("    return;").append("\r\n");
+        js.append("}").append("\r\n");
+        js.append("var page = Math.floor(").append(unitPosition).append(" / unitsTableVar.getPaginator().cfg.rows);").append("\r\n");
+        js.append("unitsTableVar.getPaginator().setPage(page);").append("\r\n");
+        js.append("});").append("\r\n");
+        js.append("</script>").append("\r\n");
+        return js.toString();
+    }
+
 }

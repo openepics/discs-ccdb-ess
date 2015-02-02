@@ -19,6 +19,8 @@
  */
 package org.openepics.discs.conf.ejb;
 
+import java.util.List;
+
 import javax.ejb.Stateless;
 
 import org.openepics.discs.conf.ent.Property;
@@ -35,6 +37,10 @@ public class UnitEJB extends DAO<Unit> {
     @Override
     protected Class<Unit> getEntityClass() {
         return Unit.class;
+    }
+
+    public List<Unit> findAllOrdered() {
+        return em.createNamedQuery("Unit.findAllOrdered", Unit.class).getResultList();
     }
 
     /**
