@@ -25,8 +25,12 @@
                 </p:column>
 
                 <p:column headerText="Unit" sortBy="#{property.unit.name}" filterBy="#{property.unit.name}" 
-                        width="10%" filterStyle="width: 90%;"> 
-                    <h:outputText value="#{property.unit.name}" />
+                        width="10%" filterStyle="width: 90%;">
+                    <h:outputLink rendered="#{!empty property.unit}" 
+                            value="#{request.contextPath}/data-definitions/units/units-manager.xhtml?id=#{property.unit.id}">
+                        <h:outputText value="#{property.unit.name}" style="text-decoration: underline;" />
+                    </h:outputLink>
+                    <h:outputText value="-" rendered="#{empty property.unit}" />
                 </p:column>
 
                 <p:column headerText="Data Type" sortBy="#{property.dataType.name}" filterBy="#{property.dataType.name}" 
