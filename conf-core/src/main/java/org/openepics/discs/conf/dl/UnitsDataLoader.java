@@ -108,10 +108,15 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
         if (unitByName.containsKey(nameFld)) {
             try {
                 final Unit unitToUpdate = unitByName.get(nameFld);
-                unitToUpdate.setDescription(descriptionFld);
-                unitToUpdate.setQuantity(quantityFld);
-                unitToUpdate.setSymbol(symbolFld);
-                unitEJB.save(unitToUpdate);
+                // if unit is in use, we cannot modify name or symbol attributes.
+                if (unitEJB.isUnitUsed(unitToUpdate) && !unitToUpdate.getSymbol().equals(symbolFld)) {
+                    result.addRowMessage(ErrorMessage.MODIFY_IN_USE, HDR_SYMBOL);
+                } else {
+                    unitToUpdate.setDescription(descriptionFld);
+                    unitToUpdate.setQuantity(quantityFld);
+                    unitToUpdate.setSymbol(symbolFld);
+                    unitEJB.save(unitToUpdate);
+                }
             } catch (EJBTransactionRolledbackException e) {
                 handleLoadingError(LOGGER, e);
             }
@@ -132,6 +137,8 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
             final Unit unitToDelete = unitByName.get(nameFld);
             if (unitToDelete == null) {
                 result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_NAME);
+            } else if (unitEJB.isUnitUsed(unitToDelete)) {
+                result.addRowMessage(ErrorMessage.DELETE_IN_USE);
             } else {
                 unitEJB.delete(unitToDelete);
                 unitByName.remove(unitToDelete.getName());
@@ -159,10 +166,15 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
                     result.addRowMessage(ErrorMessage.NAME_ALREADY_EXISTS, HDR_NAME);
                 } else {
                     final Unit unitToRename = unitByName.get(oldName);
-                    unitToRename.setName(newName);
-                    unitEJB.save(unitToRename);
-                    unitByName.remove(oldName);
-                    unitByName.put(newName, unitToRename);
+                    // if unit is in use, we cannot modify name or symbol attributes.
+                    if (unitEJB.isUnitUsed(unitToRename)) {
+                        result.addRowMessage(ErrorMessage.MODIFY_IN_USE, HDR_NAME);
+                    } else {
+                        unitToRename.setName(newName);
+                        unitEJB.save(unitToRename);
+                        unitByName.remove(oldName);
+                        unitByName.put(newName, unitToRename);
+                    }
                 }
             } else {
                 result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_NAME);

@@ -48,7 +48,9 @@ public enum ErrorMessage {
     PROPERTY_NOT_FOUND("Property with this name was not found"),
     DEVICE_STATUS_NOT_FOUND("This value of device status does not exist"),
     HEADER_ROW_EXPECTED("Expected a header row. Please note that the first row must always be a header row."),
-    SYSTEM_EXCEPTION("Internal error occured");
+    SYSTEM_EXCEPTION("Internal error occured"),
+    MODIFY_IN_USE("Cannot modify entity field because it is in use."),
+    DELETE_IN_USE("Cannot delete entity because it is in use.");
 
     private final String text;
 
