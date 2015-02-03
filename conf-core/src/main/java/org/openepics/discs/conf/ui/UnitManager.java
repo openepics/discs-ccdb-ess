@@ -46,6 +46,7 @@ import org.openepics.discs.conf.ui.common.AbstractExcelSingleFileImportUI;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
 import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.views.UnitView;
+import org.primefaces.context.RequestContext;
 
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
@@ -147,7 +148,8 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
     public void doImport() {
         try (InputStream inputStream = new ByteArrayInputStream(importData)) {
             loaderResult = dataLoaderHandler.loadData(inputStream, unitsDataLoader);
-            units = unitEJB.findAll();
+            refreshUnits();
+            RequestContext.getCurrentInstance().update("unitsForm");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -208,6 +210,7 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
         unitEJB.save(unitToSave);
 
         // reset the input fields
+        refreshUnits();
         prepareAddPopup();
     }
 
