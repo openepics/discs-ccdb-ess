@@ -78,9 +78,6 @@ public class Conversion {
     /** Format string for displaying date time as a timestamp (yyyy-MM-dd HH:mm:ss.SSS). */
     public static final String TIMESTAMP_FORMAT = DATE_TIME_FORMAT + ".SSS";
 
-    /** A simple date formatter for displaying date time formatted as a timestamp. */
-    public static final SimpleDateFormat TIMESTAMP_FORMATTER = new SimpleDateFormat(TIMESTAMP_FORMAT);
-
     /**
      * Returns a built-in data type enumeration (description) based on the DataType entity.
      * <br/>

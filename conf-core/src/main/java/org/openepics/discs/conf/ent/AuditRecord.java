@@ -20,6 +20,7 @@
 package org.openepics.discs.conf.ent;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.persistence.Basic;
@@ -120,6 +121,7 @@ public class AuditRecord implements Serializable {
         return id;
     }
 
+    /** @return a copy of the log entry timestamp */
     public Date getLogTime() {
         return new Date(logTime.getTime());
     }
@@ -128,8 +130,10 @@ public class AuditRecord implements Serializable {
         this.logTime = new Date(logTime.getTime());
     }
 
+    /** @return a string representation of the audit log entry timestamp */
     public String getLogTimeFormatted() {
-        return Conversion.TIMESTAMP_FORMATTER.format(logTime);
+        final SimpleDateFormat timestampFormatter = new SimpleDateFormat(Conversion.TIMESTAMP_FORMAT);
+        return timestampFormatter.format(logTime);
     }
 
     public EntityTypeOperation getOper() {

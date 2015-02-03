@@ -244,7 +244,7 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
         final String unitName = value.toString();
         final Unit existingUnit = unitEJB.findByName(unitName);
         if ((selectedUnit == null && existingUnit != null)
-                || (selectedUnit != null && !selectedUnit.equals(existingUnit))) {
+                || (selectedUnit != null && !selectedUnit.getUnit().equals(existingUnit))) {
             throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
                                                                     "The unit with this name already exists."));
         }
