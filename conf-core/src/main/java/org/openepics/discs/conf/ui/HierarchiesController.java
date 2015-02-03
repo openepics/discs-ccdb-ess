@@ -335,4 +335,38 @@ public class HierarchiesController implements Serializable {
         final String slotPath = Utility.buildSlotPath(selectedSlot).toString();
         return slotPath.substring(1, slotPath.length() - 1);
     }
+
+    /** The function to select a different node in the TreeTable by clicking on the link in the relationship table.
+     * @param id the ID of the slot we want to switch to.
+     */
+    public void selectNode(Long id) {
+        Preconditions.checkNotNull(id);
+
+        final TreeNode nodeToSelect = findNode(id, rootNode);
+        if (nodeToSelect != null) {
+            selectedNode.setSelected(false);
+            nodeToSelect.setSelected(true);
+            setSelectedNode(nodeToSelect);
+            initAttributeList();
+        }
+    }
+
+    /** The recursive function to search for the node in the "depth first" order.
+     *
+     * @param id the database ID of the {@link Slot} we're searching for
+     * @param parent the node we're searching at the moment
+     * @return The TreeNode containing the {@link Slot} we're looking for or <code>null</code>, if it dies not exist.
+     */
+    private TreeNode findNode(Long id, TreeNode parent) {
+        if (id.equals(((SlotView)parent.getData()).getId())) {
+            return parent;
+        }
+        for (TreeNode child : parent.getChildren()) {
+            final TreeNode foundNode = findNode(id, child);
+            if (foundNode != null) {
+                return foundNode;
+            }
+        }
+        return null;
+    }
 }

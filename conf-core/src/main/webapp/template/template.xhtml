@@ -61,6 +61,12 @@
                 $('#hierarchies\\:hierarchiesEmptyColumn').css({"height":window.innerHeight-totalHeight});
             }
             
+            function hierarchiesResizeAll() {
+                resizePanel();
+                resizeHierarchiesTree();
+                resizeEmptyColumnInHierarchies();
+            }
+            
             function removeParametersFromUrl() {
                window.history.pushState("", "", window.location.href.replace(window.location.search, ''));
             }
@@ -69,18 +75,6 @@
                 return $('#top').outerHeight(true) - $('#top').outerHeight();
             }
 
-            $(window).resize(function() {
-                resizePanel();
-                resizeHierarchiesTree();
-                resizeEmptyColumnInHierarchies();
-            });
-
-            $(window).ready(function() {
-                resizePanel();
-                resizeHierarchiesTree();
-                resizeEmptyColumnInHierarchies();
-            });
-            
         </script>
     </h:head>
 

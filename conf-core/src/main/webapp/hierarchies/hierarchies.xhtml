@@ -83,7 +83,11 @@
                             </p:column>
 
                             <p:column headerText="Target">
-                                <h:outputText value="#{relationship.targetSlotName}" />
+                                <p:commandLink action="#{hierarchiesController.selectNode(relationship.slot.id)}" 
+                                        update=":hierarchies" oncomplete="hierarchiesResizeAll();">
+                                    <h:outputText value="#{relationship.targetSlotName}" 
+                                        style="text-decoration: underline;" />
+                                </p:commandLink>
                             </p:column>
                         </p:dataTable>
                     </p:column>
@@ -142,5 +146,14 @@
                 value=":hierarchies:attributesTable :hierarchies:relationsTable :hierarchies:installationDetails" />
         </ui:include>
 
+        <script type="text/javascript">
+            jQuery(window).resize(function() {
+                hierarchiesResizeAll();
+            });
+
+            jQuery(document).ready(function() {
+                hierarchiesResizeAll();
+            });
+        </script>
     </ui:define>
 </ui:composition>
