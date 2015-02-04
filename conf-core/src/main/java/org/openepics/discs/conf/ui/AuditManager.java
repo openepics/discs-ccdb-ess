@@ -58,6 +58,7 @@ public class AuditManager implements Serializable {
     private List<AuditRecord> auditRecords;
     private List<AuditRecord> filteredAuditRecords;
     private List<SelectItem> auditOperations;
+    private List<SelectItem> entityTypes;
 
     /**
      * Creates a new instance of AuditManager
@@ -72,6 +73,7 @@ public class AuditManager implements Serializable {
     public void init() {
         auditRecords = auditRecordEJB.findAllOrdered();
         prepareAuditOperations();
+        prepareEntityTypes();
     }
 
     /**
@@ -153,6 +155,21 @@ public class AuditManager implements Serializable {
                 auditOperations.add(new SelectItem(operation.toString(), operation.toString()));
             }
         }
+    }
+
+    private void prepareEntityTypes() {
+        if (entityTypes == null) {
+            entityTypes = Lists.newArrayList();
+            entityTypes.add(new SelectItem("", "Select one"));
+            for (EntityType type : EntityType.values()) {
+                entityTypes.add(new SelectItem(type.toString(), type.toString()));
+            }
+        }
+    }
+
+    /** @return the list of entity types */
+    public List<SelectItem> getEntityTypes() {
+        return entityTypes;
     }
 
     /** @return the list of audit operations */

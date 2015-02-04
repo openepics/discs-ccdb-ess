@@ -7,41 +7,50 @@
 
     <ui:define name="content">
         <h:form id="logsForm">
-            <p:dataTable widgetVar="logTableVar" var="auditRecord" id="logTable" value="#{auditManager.auditRecords}" 
-                    resizableColumns="true" style="table-layout: fixed; word-wrap: break-word;" 
-                    filteredValue="#{auditManager.filteredAuditRecords}" rows="15" paginator="true" 
-                    paginatorPosition="bottom">
-                <p:ajax event="filter" ignoreAutoUpdate="true"/>
+            <p:fieldset legend="Log" style="padding-bottom: 1em;">
 
-                <p:column headerText="Timestamp" filterBy="#{auditRecord.logTimeFormatted}" 
-                        sortBy="#{auditRecord.logTime}" filterMatchMode="contains">
-                    <h:outputText value="#{auditRecord.logTimeFormatted}" />
-                </p:column>
+                <p:dataTable widgetVar="logTableVar" var="auditRecord" id="logTable" value="#{auditManager.auditRecords}" 
+                        resizableColumns="true" style="table-layout: fixed; word-wrap: break-word;" 
+                        filteredValue="#{auditManager.filteredAuditRecords}" rows="15" paginator="true" 
+                        paginatorPosition="bottom">
+                    <p:ajax event="filter" ignoreAutoUpdate="true"/>
 
-                <p:column headerText="User" sortBy="#{auditRecord.user}" filterBy="#{auditRecord.user}">
-                    <h:outputText value="#{auditRecord.user}" />
-                </p:column>
-                
-                <p:column headerText="Operation" sortBy="#{auditRecord.oper}" filterBy="#{auditRecord.oper}" 
-                        filterMatchMode="exact" filterOptions="#{auditManager.auditOperations}">
-                    <h:outputText value="#{auditRecord.oper}" />
-                </p:column>
+                    <p:column headerText="Timestamp" filterBy="#{auditRecord.logTimeFormatted}" 
+                            sortBy="#{auditRecord.logTime}" filterMatchMode="contains">
+                        <h:outputText value="#{auditRecord.logTimeFormatted}" />
+                    </p:column>
 
-                <p:column headerText="Entity Name" sortBy="#{auditRecord.entityKey}" filterBy="#{auditRecord.entityKey}">
-                    <h:outputText value="#{auditRecord.entityKey} (#{auditRecord.entityId})" />
-                </p:column>
-                
-                <p:column headerText="Change">
-                    <h:outputText value="#{auditRecord.entry.length() lt 46 ? auditRecord.entry : auditRecord.entry.substring(0,45) += '...'}" />
-                </p:column>
-                
-                <p:column headerText="Action" width="50" style="text-align: center;" >
-                    <p:commandLink ajax="true" title="Details" update=":logDetailsForm" oncomplete="logDetails.show()" 
-                            action="#{auditManager.chooseDisplayRecord(auditRecord.id)}">
-                        <h:outputText styleClass="ui-icon ui-icon-info" style="display: inline-block !important; margin-right: 6px;" />
-                    </p:commandLink>
-                </p:column>
-            </p:dataTable>
+                    <p:column headerText="User" sortBy="#{auditRecord.user}" filterBy="#{auditRecord.user}">
+                        <h:outputText value="#{auditRecord.user}" />
+                    </p:column>
+
+                    <p:column headerText="Operation" sortBy="#{auditRecord.oper}" filterBy="#{auditRecord.oper}" 
+                            filterMatchMode="exact" filterOptions="#{auditManager.auditOperations}">
+                        <h:outputText value="#{auditRecord.oper}" />
+                    </p:column>
+
+                    <p:column headerText="Entity Name" sortBy="#{auditRecord.entityKey}" filterBy="#{auditRecord.entityKey}">
+                        <h:outputText value="#{auditRecord.entityKey} (#{auditRecord.entityId})" />
+                    </p:column>
+
+                    <p:column headerText="Entity Type" sortBy="#{auditRecord.entityType}" filterBy="#{auditRecord.entityType}" 
+                            filterMatchMode="exact" filterOptions="#{auditManager.entityTypes}">
+                        <h:outputText value="#{auditRecord.entityType}" />
+                    </p:column>
+
+                    <p:column headerText="Change" sortBy="#{auditRecord.entry}" filterBy="#{auditRecord.entry}" filterMatchMode="contains">
+                        <h:outputText value="#{auditRecord.entry.length() lt 46 ? auditRecord.entry : auditRecord.entry.substring(0,45) += '...'}" />
+                    </p:column>
+
+                    <p:column headerText="Action" width="50" style="text-align: center;" >
+                        <p:commandLink ajax="true" title="Details" update=":logDetailsForm" oncomplete="logDetails.show()" 
+                                action="#{auditManager.chooseDisplayRecord(auditRecord.id)}">
+                            <h:outputText styleClass="ui-icon ui-icon-info" style="display: inline-block !important; margin-right: 6px;" />
+                        </p:commandLink>
+                    </p:column>
+                </p:dataTable>
+
+            </p:fieldset>
         </h:form>
 
         <ui:include src="audit-log-details.xhtml">
