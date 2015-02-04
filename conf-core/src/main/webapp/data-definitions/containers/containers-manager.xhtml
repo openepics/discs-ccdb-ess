@@ -78,5 +78,15 @@
             <ui:param name="submitHandler" value="onDelete" />
             <ui:param name="formToUpdate" value=":containersForm:containersTree" />
         </ui:include>
+
+        <script type="text/javascript">
+            jQuery(window).resize(function() {
+                resizeContainerPanel();
+            });
+
+            jQuery(document).ready(function() {
+                resizeContainerPanel();
+            });
+        </script>
     </ui:define>
 </ui:composition>

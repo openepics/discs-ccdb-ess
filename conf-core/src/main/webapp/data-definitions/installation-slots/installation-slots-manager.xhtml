@@ -102,5 +102,15 @@
             <ui:param name="submitHandler" value="onDelete" />
             <ui:param name="formToUpdate" value=":installationSlotsForm:installationSlotsTree" />
         </ui:include>
+
+        <script type="text/javascript">
+            jQuery(window).resize(function() {
+                resizeInstallationSlotPanel();
+            });
+
+            jQuery(document).ready(function() {
+                resizeInstallationSlotPanel();
+            });
+        </script>
     </ui:define>
 </ui:composition>

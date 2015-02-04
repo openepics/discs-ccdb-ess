@@ -15,24 +15,26 @@
         <link rel="shortcut icon" href="resources/images/proteus.ico" />
         <title>Controls Configuration Database</title>
         <script type="text/javascript">
-            function resizePanel() {
+            function resizeContainerPanel() {
                 var menusHeight = $('#top').outerHeight(true);
                 var headerHeight = $('#containersForm\\:containersTree\\:name').outerHeight(true);
                 var addSlotHeight = $('#containersForm\\:addSlot').outerHeight(true);
                 var em = emHeight();
 
-                if (headerHeight == null) {
-                    headerHeight = $('#installationSlotsForm\\:installationSlotsTree\\:name').outerHeight(true);
-                    addSlotHeight = $('#installationSlotsForm\\:addSlot').outerHeight(true);
-                }
-               
                 var totalMenusHeight = menusHeight + headerHeight + addSlotHeight + 3*em;
                 $('.ui-treetable-scrollable-body').css({"height":window.innerHeight-totalMenusHeight});
-                
-                var footerWidth = $('.footer-message').outerWidth(true);
-                $('.footer-message').css({"left":(window.innerWidth-footerWidth)/2 });
             }
-            
+
+            function resizeInstallationSlotPanel() {
+                var menusHeight = $('#top').outerHeight(true);
+                var headerHeight = $('#installationSlotsForm\\:installationSlotsTree\\:name').outerHeight(true);
+                var addSlotHeight = $('#installationSlotsForm\\:addSlot').outerHeight(true);
+                var em = emHeight();
+
+                var totalMenusHeight = menusHeight + headerHeight + addSlotHeight + 3*em;
+                $('.ui-treetable-scrollable-body').css({"height":window.innerHeight-totalMenusHeight});
+            }
+
             function resizeHierarchiesTree() {
                 var menusHeight = $('#top').outerHeight(true);
                 var headerHeight = $('#hierarchies\\:tree\\:name').outerHeight(true);
@@ -42,7 +44,7 @@
                     $('.ui-treetable-scrollable-body').css({"height":window.innerHeight-totalMenusHeight});  
                 }
             }
-            
+
             function resizeEmptyColumnInHierarchies() {
                 var menusHeight = $('#top').outerHeight(true);
                 var em = emHeight();
@@ -51,26 +53,25 @@
                 var slotRelationshipsTitle = $('#slotRelationshipsTitle').outerHeight(true);
                 var slotRelationshipsTable = $('#hierarchies\\:relationsTable').outerHeight(true);
                 var installationDetails = $('#hierarchies\\:installationDetails').outerHeight(true);
-                
+
                 if (installationDetails == null) { 
                     installationDetails = 0;
                 }
-                
+
                 var totalHeight = menusHeight + 4*em  + slotAttributesTitle + slotAttributesTable + slotRelationshipsTitle + slotRelationshipsTable + installationDetails;
-               
+
                 $('#hierarchies\\:hierarchiesEmptyColumn').css({"height":window.innerHeight-totalHeight});
             }
-            
+
             function hierarchiesResizeAll() {
-                resizePanel();
                 resizeHierarchiesTree();
                 resizeEmptyColumnInHierarchies();
             }
-            
+
             function removeParametersFromUrl() {
                window.history.pushState("", "", window.location.href.replace(window.location.search, ''));
             }
-            
+
             function emHeight() {
                 return $('#top').outerHeight(true) - $('#top').outerHeight();
             }
@@ -131,6 +132,9 @@
             </p:dialog>
         </h:form>
 
+        <script type="text/javascript">
+            var footerWidth = $('.footer-message').outerWidth(true);
+            $('.footer-message').css({"left":(window.innerWidth-footerWidth)/2 });
+        </script>
     </h:body>
-
 </html>
