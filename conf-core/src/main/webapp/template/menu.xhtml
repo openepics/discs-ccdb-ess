@@ -50,7 +50,7 @@
                 <p:menuitem value="View" title="View Properties" 
                     url="/data-definitions/properties/properties-manager.xhtml" />
 
-                <p:menuitem value="Import Properties" update=":importPropertiesForm" 
+                <p:menuitem value="Import" update=":importPropertiesForm" 
                     oncomplete="importProperties.show()" title="Import Properties" 
                     actionListener="#{propertyManager.prepareImportPopup()}" 
                     disabled="#{!securityPolicy.getUIHint('PROPERTY')}" />
@@ -65,7 +65,7 @@
                 <p:menuitem value="View" title="View Units" 
                     url="/data-definitions/units/units-manager.xhtml" />
 
-                <p:menuitem value="Import Units" update=":importUnitsForm" 
+                <p:menuitem value="Import" update=":importUnitsForm" 
                     oncomplete="importUnits.show()" title="Import Units" 
                     actionListener="#{unitManager.prepareImportPopup()}" 
                     disabled="#{!securityPolicy.getUIHint('UNIT')}" />
