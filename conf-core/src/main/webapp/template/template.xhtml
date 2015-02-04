@@ -98,7 +98,8 @@
         </h:panelGroup>
         
         <div class="footer-message">
-            <h:outputText value="#{msgs.title} v#{msgs.titleVersion} - " /><a style="color: lightgray;" href="mailto:#{msgs.supportEmail}">Contact us</a>
+            <h:outputText value="#{msgs.title} v#{msgs.titleVersion} - " /><a style="color: lightgray;" 
+                href="mailto:#{msgs.supportEmail}?subject=#{msgs.supportEmailSubject}">Contact us</a>
         </div>
         
         <p:dialog modal="true" widgetVar="statusDialog" showHeader="false" draggable="false" closable="false" 
