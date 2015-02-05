@@ -76,6 +76,11 @@
                 return $('#top').outerHeight(true) - $('#top').outerHeight();
             }
 
+            function adjustFooterPosition() {
+                var footerWidth = $('.footer-message').outerWidth(true);
+                $('.footer-message').css({"left":(window.innerWidth-footerWidth)/2 });
+            }
+
         </script>
     </h:head>
 
@@ -134,8 +139,13 @@
         </h:form>
 
         <script type="text/javascript">
-            var footerWidth = $('.footer-message').outerWidth(true);
-            $('.footer-message').css({"left":(window.innerWidth-footerWidth)/2 });
+            jQuery(window).resize(function() {
+                adjustFooterPosition();
+            });
+
+            jQuery(document).ready(function() {
+                adjustFooterPosition();
+            });
         </script>
     </h:body>
 </html>
