@@ -28,6 +28,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
+import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -78,6 +79,8 @@ public class HierarchiesController implements Serializable {
     @Inject private transient DataTypeEJB dataTypeEJB;
 
     private transient List<EntityAttributeView> attributes;
+    private transient List<EntityAttributeView> filteredAttributes;
+    private transient List<SelectItem> attributeKinds;
     private TreeNode rootNode;
     private TreeNode selectedNode;
     private InstallationRecord installationRecord;
@@ -95,6 +98,7 @@ public class HierarchiesController implements Serializable {
             rootNode = slotsTreeBuilder.newSlotsTree(slotEJB.findAll(), null, true);
             strDataType = dataTypeEJB.findByName(BuiltInDataType.STR_NAME);
             dblDataType = dataTypeEJB.findByName(BuiltInDataType.DBL_NAME);
+            attributeKinds = Utility.buildAttributeKinds();
         } catch(Exception e) {
             throw new UIException("Hierarchies display initialization fialed: " + e.getMessage(), e);
         }
@@ -368,5 +372,19 @@ public class HierarchiesController implements Serializable {
             }
         }
         return null;
+    }
+
+    /** @return the filteredAttributes */
+    public List<EntityAttributeView> getFilteredAttributes() {
+        return filteredAttributes;
+    }
+
+    /** @param filteredAttributes the filteredAttributes to set */
+    public void setFilteredAttributes(List<EntityAttributeView> filteredAttributes) {
+        this.filteredAttributes = filteredAttributes;
+    }
+
+    public List<SelectItem> getAttributeKinds() {
+        return attributeKinds;
     }
 }

@@ -39,12 +39,16 @@ import java.util.List;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import javax.faces.model.SelectItem;
 import javax.persistence.PersistenceException;
 
 import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotRelationName;
+import org.openepics.discs.conf.views.EntityAttributeViewKind;
+
+import com.google.common.collect.Lists;
 /**
  *
  * @author vuppala
@@ -115,6 +119,18 @@ public class Utility {
             }
             return list;
         }
+    }
+
+    /** @return the list of {@link SelectItem}s to show in the table filter */
+    public static List<SelectItem> buildAttributeKinds() {
+        List<SelectItem> attributeKinds = Lists.newArrayList();
+        attributeKinds.add(new SelectItem("", "Select one"));
+        for (EntityAttributeViewKind kind : EntityAttributeViewKind.values()) {
+            if (kind != EntityAttributeViewKind.UNKNOWN_PROPERTY) {
+                attributeKinds.add(new SelectItem(kind, kind.toString()));
+            }
+        }
+        return attributeKinds;
     }
 
 }

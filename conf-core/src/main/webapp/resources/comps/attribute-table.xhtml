@@ -13,25 +13,34 @@
 
     <cc:implementation> 
         <p:dataTable id="#{cc.attrs.id}" var="attribute" value="#{cc.attrs.controllerBean.attributes}" 
-                style="table-layout: fixed; word-wrap: break-word; margin-top: 1em;" rows="15" 
-                paginator="true" paginatorPosition="bottom">
-            <p:column headerText="Name" sortBy="#{attribute.name}">
+                style="table-layout: fixed; word-wrap: break-word; margin-top: 1em;" rows="15" paginator="true" 
+                paginatorPosition="bottom" filteredValue="#{cc.attrs.controllerBean.filteredAttributes}">
+            <p:column headerText="Name" sortBy="#{attribute.name}" filterBy="#{attribute.name}" 
+                    filterMatchMode="contains">
                 <h:outputText value="#{attribute.name}" />
             </p:column>
     
-            <p:column headerText="Value" style="width: 30%" sortBy="#{attribute.value}">
+            <p:column headerText="Value" style="width: 30%" sortBy="#{attribute.value}" filterBy="#{attribute.value}" 
+                    filterMatchMode="contains">
                 <h:outputText value="#{!empty attribute.value ? attribute.value : '-'}" />
             </p:column>
     
-            <p:column headerText="Unit" sortBy="#{attribute.unit}">
-                <h:outputText value="#{!empty attribute.unit ? attribute.unit.name : '-'}" />
+            <p:column headerText="Unit" sortBy="#{attribute.unit}" filterBy="#{attribute.unit.name}" 
+                    filterMatchMode="contains">
+                <h:outputLink rendered="#{!empty attribute.unit}" 
+                        value="#{request.contextPath}/data-definitions/units/units-manager.xhtml?id=#{attribute.unit.id}">
+                    <h:outputText value="#{attribute.unit.name}" style="text-decoration: underline;" />
+                </h:outputLink>
+                <h:outputText value="-" rendered="#{empty attribute.unit}" />                    
             </p:column>
     
-            <p:column headerText="Kind" sortBy="#{attribute.kind.toString()}">
+            <p:column headerText="Kind" sortBy="#{attribute.kind.toString()}" filterBy="#{attribute.kind}" 
+                    filterMatchMode="exact" filterOptions="#{cc.attrs.controllerBean.attributeKinds}">
                 <h:outputText value="#{attribute.kind.toString()}" />
             </p:column>
     
-            <p:column headerText="Data type" sortBy="#{attribute.type.name}">
+            <p:column headerText="Data type" sortBy="#{attribute.type.name}" filterBy="#{attribute.type.name}" 
+                    filterMatchMode="contains">
                 <h:outputText value="#{!empty attribute.type ? attribute.type.name : '-'}" />
             </p:column>
     

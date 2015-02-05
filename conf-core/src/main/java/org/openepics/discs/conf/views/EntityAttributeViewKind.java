@@ -24,7 +24,11 @@ package org.openepics.discs.conf.views;
  *
  */
 public enum EntityAttributeViewKind {
-    
+
+    BUILT_IN_PROPERTY("Built-in property"),
+    DEVICE_TYPE_PROPERTY("Device type property"),
+    DEVICE_TYPE_ARTIFACT("Device type artifact"),
+    DEVICE_TYPE_TAG("Device type tag"),
     INSTALL_SLOT_PROPERTY("Installation slot property"),
     INSTALL_SLOT_ARTIFACT("Installation slot artifact"),
     INSTALL_SLOT_TAG("Installation slot tag"),
@@ -34,15 +38,11 @@ public enum EntityAttributeViewKind {
     DEVICE_PROPERTY("Device instance property"),
     DEVICE_ARTIFACT("Device artifact"),
     DEVICE_TAG("Device tag"),
-    DEVICE_TYPE_PROPERTY("Device type property"),
-    DEVICE_TYPE_ARTIFACT("Device type artifact"),
-    DEVICE_TYPE_TAG("Device type tag"),
-    BUILT_IN_PROPERTY("Built-in property"),
     ARTIFACT("Artifact"),
     PROPERTY("Property"),
     TAG("Tag"),
-    UNKNOWN_PROPERTY("Unknown type property");       
-    
+    UNKNOWN_PROPERTY("Unknown type property");
+
     private final String text;
 
     /**

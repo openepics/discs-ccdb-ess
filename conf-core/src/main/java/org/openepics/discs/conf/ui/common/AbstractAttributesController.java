@@ -36,6 +36,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
+import javax.faces.model.SelectItem;
 import javax.faces.validator.ValidatorException;
 import javax.inject.Inject;
 
@@ -123,6 +124,8 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
     protected boolean isArtifactBeingModified;
 
     protected List<EntityAttributeView> attributes;
+    private List<EntityAttributeView> filteredAttributes;
+    private final List<SelectItem> attributeKinds = Utility.buildAttributeKinds();
     protected EntityAttributeView selectedAttribute;
 
     protected byte[] importData;
@@ -1021,5 +1024,20 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
         final int size = entityName.length() < HI_CONTENT_LEN ? entityName.length() + ELEMENT_SIZE_PADDING
                                 : MAX_ELEMENT_SIZE;
         return Integer.toString(size);
+    }
+
+    /** @return the filteredAttributes */
+    public List<EntityAttributeView> getFilteredAttributes() {
+        return filteredAttributes;
+    }
+
+    /** @param filteredAttributes the filteredAttributes to set */
+    public void setFilteredAttributes(List<EntityAttributeView> filteredAttributes) {
+        this.filteredAttributes = filteredAttributes;
+    }
+
+    /** @return the attributeKinds */
+    public List<SelectItem> getAttributeKinds() {
+        return attributeKinds;
     }
 }
