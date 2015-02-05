@@ -200,6 +200,8 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
     public void doImport() {
         try (InputStream inputStream = new ByteArrayInputStream(importData)) {
             loaderResult = dataLoaderHandler.loadData(inputStream, propertiesDataLoader);
+            init();
+            RequestContext.getCurrentInstance().update("propertiesForm");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

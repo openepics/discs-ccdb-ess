@@ -126,8 +126,9 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
             try {
                 final Property propertyToUpdate = propertyByName.get(nameFld);
                 propertyToUpdate.setDescription(descFld);
-                setPropertyAssociation(associationFld, propertyToUpdate);
-                setPropertyFields(propertyToUpdate, unitFld, dataTypeFld);
+                final boolean inUse = propertyEJB.isPropertyUsed(propertyToUpdate);
+                setPropertyAssociation(associationFld, propertyToUpdate, inUse);
+                setPropertyFields(propertyToUpdate, unitFld, dataTypeFld, inUse);
                 if (!result.isRowError()) {
                     propertyEJB.save(propertyToUpdate);
                 }
@@ -137,8 +138,8 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
         } else {
             try {
                 final Property propertyToAdd = new Property(nameFld, descFld);
-                setPropertyAssociation(associationFld, propertyToAdd);
-                setPropertyFields(propertyToAdd, unitFld, dataTypeFld);
+                setPropertyAssociation(associationFld, propertyToAdd, false);
+                setPropertyFields(propertyToAdd, unitFld, dataTypeFld, false);
                 if (!result.isRowError()) {
                     propertyEJB.add(propertyToAdd);
                     propertyByName.put(propertyToAdd.getName(), propertyToAdd);
@@ -195,51 +196,88 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
         }
     }
 
-    private void setPropertyFields(Property property, @Nullable String unit, String dataType) {
+    private void setPropertyFields(Property property, @Nullable String unit, String dataType, final boolean inUse) {
         if (unit != null) {
             final Unit newUnit = unitEJB.findByName(unit);
             if (newUnit != null) {
-                property.setUnit(newUnit);
+                // is modification allowed
+                if (inUse && !newUnit.equals(property.getUnit())) {
+                    result.addRowMessage(ErrorMessage.MODIFY_IN_USE, HDR_UNIT);
+                } else {
+                    property.setUnit(newUnit);
+                }
             } else {
                 result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_UNIT);
             }
         } else {
-            property.setUnit(null);
+            if (inUse && (property.getUnit() != null)) {
+                result.addRowMessage(ErrorMessage.MODIFY_IN_USE, HDR_UNIT);
+            } else {
+                property.setUnit(null);
+            }
         }
 
         final DataType newDataType = dataTypeEJB.findByName(dataType);
         if (newDataType != null) {
-            property.setDataType(newDataType);
+            if (inUse && !newDataType.equals(property.getDataType())) {
+                result.addRowMessage(ErrorMessage.MODIFY_IN_USE, HDR_DATATYPE);
+            } else {
+                property.setDataType(newDataType);
+            }
         } else {
             result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_DATATYPE);
         }
     }
 
-    private void setPropertyAssociation(String association, Property setAssociationProperty) {
-        setAssociationProperty.setNoneAssociation();
+    private void setPropertyAssociation(String association, Property setAssociationProperty, final boolean inUse) {
+        boolean associationType = false;
+        boolean associationSlot = false;
+        boolean associationDevice = false;
+        boolean associationAlignment = false;
 
         final String associationCaps = association == null ? PropertyAssociation.TYPE : association.toUpperCase();
 
         if (associationCaps.contains(PropertyAssociation.ALL)) {
-            setAssociationProperty.setAllAssociation();
-            return;
-        }
-        if (associationCaps.contains(PropertyAssociation.DEVICE)) {
-            setAssociationProperty.setDeviceAssociation(true);
-        }
-        if (associationCaps.contains(PropertyAssociation.SLOT)) {
-            setAssociationProperty.setSlotAssociation(true);
-        }
-        if (associationCaps.contains(PropertyAssociation.TYPE)) {
-            setAssociationProperty.setTypeAssociation(true);
-        }
-        if (associationCaps.contains(PropertyAssociation.ALIGNMENT)) {
-            setAssociationProperty.setAlignmentAssociation(true);
+            associationType = true;
+            associationSlot = true;
+            associationDevice = true;
+            associationAlignment = true;
+        } else {
+            if (associationCaps.contains(PropertyAssociation.DEVICE)) {
+                associationDevice = true;
+            }
+            if (associationCaps.contains(PropertyAssociation.SLOT)) {
+                associationSlot = true;
+            }
+            if (associationCaps.contains(PropertyAssociation.TYPE)) {
+                associationType = true;
+            }
+            if (associationCaps.contains(PropertyAssociation.ALIGNMENT)) {
+                associationAlignment = true;
+            }
         }
 
-        // default if nothing was set
-        if (setAssociationProperty.isAssociationNone()) {
-            setAssociationProperty.setTypeAssociation(true);
+        final boolean associationChange = (associationType != setAssociationProperty.isTypeAssociation())
+                                        || (associationSlot != setAssociationProperty.isSlotAssociation())
+                                        || (associationDevice != setAssociationProperty.isDeviceAssociation())
+                                        || (associationAlignment != setAssociationProperty.isAlignmentAssociation());
+
+        if (inUse && associationChange) {
+            result.addRowMessage(ErrorMessage.MODIFY_IN_USE, HDR_ASSOCIATION);
+        } else {
+            // apply new values only if changed
+            if (associationChange) {
+                setAssociationProperty.setNoneAssociation();
+                setAssociationProperty.setAlignmentAssociation(associationAlignment);
+                setAssociationProperty.setTypeAssociation(associationType);
+                setAssociationProperty.setSlotAssociation(associationSlot);
+                setAssociationProperty.setDeviceAssociation(associationDevice);
+            }
+
+            // default if nothing was set
+            if (setAssociationProperty.isAssociationNone()) {
+                setAssociationProperty.setTypeAssociation(true);
+            }
         }
     }
 }
