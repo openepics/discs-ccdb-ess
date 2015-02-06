@@ -41,6 +41,7 @@ import org.openepics.discs.conf.ejb.UnitEJB;
 import org.openepics.discs.conf.ent.DataType;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyAssociation;
+import org.openepics.discs.conf.ent.PropertyValueUniqueness;
 import org.openepics.discs.conf.ent.Unit;
 
 /**
@@ -60,10 +61,11 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
     private static final String HDR_ASSOCIATION = "ASSOCIATION";
     private static final String HDR_UNIT = "UNIT";
     private static final String HDR_DATATYPE = "DATA-TYPE";
-    private static final String HDR_DESC= "DESCRIPTION";
+    private static final String HDR_DESC = "DESCRIPTION";
+    private static final String HDR_UNIQUE = "UNIQUE";
 
     private static final List<String> KNOWN_COLUMNS = Arrays.asList(HDR_NAME, HDR_ASSOCIATION, HDR_UNIT,
-            HDR_DATATYPE, HDR_DESC);
+            HDR_DATATYPE, HDR_DESC, HDR_UNIQUE);
     private static final Set<String> REQUIRED_COLUMNS = new HashSet<>(Arrays.asList(HDR_ASSOCIATION,
             HDR_DATATYPE, HDR_DESC));
 
@@ -78,6 +80,7 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
 
     // Row data for individual cells within a row
     private String nameFld, associationFld, unitFld, dataTypeFld, descFld;
+    private PropertyValueUniqueness uniqueFld;
 
     /**
      * Local cache of all properties by their names to speed up operations.
@@ -110,14 +113,11 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
     @Override
     protected void assignMembersForCurrentRow() {
         nameFld = readCurrentRowCellForHeader(HDR_NAME);
-
-        // was like:
-        // unit = unitIndex == -1 ? null : rowData.get(unitIndex);
-        // but cannot occur as the check in setUpIndexesForFields will prevent further processing if UNIT column is absent
         unitFld = readCurrentRowCellForHeader(HDR_UNIT);
         dataTypeFld = readCurrentRowCellForHeader(HDR_DATATYPE);
         descFld = readCurrentRowCellForHeader(HDR_DESC);
         associationFld = readCurrentRowCellForHeader(HDR_ASSOCIATION);
+        uniqueFld = uniquenessAsValue(readCurrentRowCellForHeader(HDR_UNIQUE));
     }
 
     @Override
@@ -127,8 +127,10 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
                 final Property propertyToUpdate = propertyByName.get(nameFld);
                 propertyToUpdate.setDescription(descFld);
                 final boolean inUse = propertyEJB.isPropertyUsed(propertyToUpdate);
-                setPropertyAssociation(associationFld, propertyToUpdate, inUse);
-                setPropertyFields(propertyToUpdate, unitFld, dataTypeFld, inUse);
+                setPropertyAssociation(propertyToUpdate, associationFld, inUse);
+                setPropertyUnit(propertyToUpdate, unitFld, inUse);
+                setPropertyDataType(propertyToUpdate, dataTypeFld, inUse);
+                setPropertyUniqueness(propertyToUpdate, uniqueFld, inUse);
                 if (!result.isRowError()) {
                     propertyEJB.save(propertyToUpdate);
                 }
@@ -138,8 +140,11 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
         } else {
             try {
                 final Property propertyToAdd = new Property(nameFld, descFld);
-                setPropertyAssociation(associationFld, propertyToAdd, false);
-                setPropertyFields(propertyToAdd, unitFld, dataTypeFld, false);
+                setPropertyAssociation(propertyToAdd, associationFld, false);
+                setPropertyUnit(propertyToAdd, unitFld, false);
+                setPropertyDataType(propertyToAdd, dataTypeFld, false);
+                setPropertyUniqueness(propertyToAdd, uniqueFld, false);
+                propertyToAdd.setValueUniqueness(uniqueFld);
                 if (!result.isRowError()) {
                     propertyEJB.add(propertyToAdd);
                     propertyByName.put(propertyToAdd.getName(), propertyToAdd);
@@ -196,7 +201,7 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
         }
     }
 
-    private void setPropertyFields(Property property, @Nullable String unit, String dataType, final boolean inUse) {
+    private void setPropertyUnit(Property property, @Nullable String unit, final boolean inUse) {
         if (unit != null) {
             final Unit newUnit = unitEJB.findByName(unit);
             if (newUnit != null) {
@@ -216,7 +221,9 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
                 property.setUnit(null);
             }
         }
+    }
 
+    private void setPropertyDataType(Property property, String dataType, final boolean inUse) {
         final DataType newDataType = dataTypeEJB.findByName(dataType);
         if (newDataType != null) {
             if (inUse && !newDataType.equals(property.getDataType())) {
@@ -229,7 +236,15 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
         }
     }
 
-    private void setPropertyAssociation(String association, Property setAssociationProperty, final boolean inUse) {
+    private void setPropertyUniqueness(Property property, PropertyValueUniqueness unique, final boolean inUse) {
+       if (inUse && property.getValueUniqueness() != unique) {
+           result.addRowMessage(ErrorMessage.MODIFY_IN_USE, HDR_UNIQUE);
+       } else {
+           property.setValueUniqueness(unique);
+       }
+    }
+
+    private void setPropertyAssociation(Property setAssociationProperty, String association, final boolean inUse) {
         boolean associationType = false;
         boolean associationSlot = false;
         boolean associationDevice = false;
@@ -279,5 +294,17 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
                 setAssociationProperty.setTypeAssociation(true);
             }
         }
+    }
+
+    private PropertyValueUniqueness uniquenessAsValue(String uniqueness) {
+        PropertyValueUniqueness uniquenessValue = PropertyValueUniqueness.NONE;
+        if (uniqueness != null) {
+            try {
+                uniquenessValue = PropertyValueUniqueness.valueOf(uniqueness.trim().toUpperCase());
+            } catch (IllegalArgumentException e) {
+                result.addRowMessage(ErrorMessage.UNIQUE_INCORRECT, HDR_UNIQUE);
+            }
+        }
+        return uniquenessValue;
     }
 }

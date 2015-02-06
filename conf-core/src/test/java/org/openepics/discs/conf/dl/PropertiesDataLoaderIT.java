@@ -43,6 +43,8 @@ import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.dl.common.ErrorMessage;
 import org.openepics.discs.conf.dl.common.ValidationMessage;
 import org.openepics.discs.conf.ejb.PropertyEJB;
+import org.openepics.discs.conf.ent.Property;
+import org.openepics.discs.conf.ent.PropertyValueUniqueness;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
 import org.openepics.discs.conf.util.TestUtility;
 
@@ -123,6 +125,22 @@ public class PropertiesDataLoaderIT {
 
         Assert.assertFalse(loaderResult.isError());
         Assert.assertEquals(NUM_OF_PROPS_IF_SUCCESS, propertyEJB.findAll().size());
+
+        // check default value for properties without the UNIQUE column
+        final Property propertyAlias = propertyEJB.findByName("ALIAS");
+        Assert.assertTrue(propertyAlias.getValueUniqueness() == PropertyValueUniqueness.NONE);
+        // check property with explicit value of the UNIQUE column : NONE
+        final Property propertyFieldPoly = propertyEJB.findByName("FIELDPOLY");
+        Assert.assertTrue(propertyFieldPoly.getValueUniqueness() == PropertyValueUniqueness.NONE);
+        // check property with explicit value of the UNIQUE column : UNIVERSAL
+        final Property propertyDoc01 = propertyEJB.findByName("DOC01");
+        Assert.assertTrue(propertyDoc01.getValueUniqueness() == PropertyValueUniqueness.UNIVERSAL);
+        // check property with explicit value of the UNIQUE column : TYPE
+        final Property propertyDcfleo = propertyEJB.findByName("DCFLEO");
+        Assert.assertTrue(propertyDcfleo.getValueUniqueness() == PropertyValueUniqueness.TYPE);
+        // check property with NO/EMPTY value of the UNIQUE column : NONE (default)
+        final Property propertyLfelb = propertyEJB.findByName("LFELB");
+        Assert.assertTrue(propertyLfelb.getValueUniqueness() == PropertyValueUniqueness.NONE);
     }
 
 }
