@@ -22,6 +22,8 @@ package org.openepics.discs.conf.ent;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
@@ -71,6 +73,11 @@ public class Property extends ConfigurationEntity {
     @JoinColumn(name = "unit")
     @ManyToOne
     private Unit unit;
+
+    @Basic(optional = false)
+    @Column(name = "value_unique")
+    @Enumerated(EnumType.STRING)
+    private PropertyValueUniqueness valueUniqueness = PropertyValueUniqueness.NONE;
 
     /* * * * * Property association section * * * * * * * * */
     @Basic
@@ -139,6 +146,14 @@ public class Property extends ConfigurationEntity {
     }
     public void setUnit(Unit unit) {
         this.unit = unit;
+    }
+
+    /** @return the type of the property value uniqueness as defined in {@link PropertyValueUniqueness} enumeration */
+    public PropertyValueUniqueness getValueUniqueness() {
+        return valueUniqueness;
+    }
+    public void setValueUniqueness(PropertyValueUniqueness valueUniqueness) {
+        this.valueUniqueness = valueUniqueness;
     }
 
     /**

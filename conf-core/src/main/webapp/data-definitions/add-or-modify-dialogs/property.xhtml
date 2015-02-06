@@ -79,6 +79,20 @@
 
                 <p:row>
                     <p:column styleClass="alignRight dialog-labels-width-2" style="padding-top: 1em;">
+                        <p:outputLabel for="valueUniqueness" value="Value uniqueness:" />
+                    </p:column>
+                    <p:column>
+                        <p:selectOneMenu id="valueUniqueness" value="#{propertyManager.valueUniqueness}" 
+                                required="true" requiredMessage="Please select value uniqueness" 
+                                disabled="#{propertyManager.propertyUsed}">
+                            <f:selectItems value="#{propertyManager.uniqunessValues}" />
+                        </p:selectOneMenu>
+                        <p:message for="valueUniqueness"/>
+                    </p:column>
+                </p:row>
+
+                <p:row>
+                    <p:column styleClass="alignRight dialog-labels-width-2" style="padding-top: 1em;">
                         <p:outputLabel for="propertyAssociation" value="Association:" />
                     </p:column>
                     <p:column>
