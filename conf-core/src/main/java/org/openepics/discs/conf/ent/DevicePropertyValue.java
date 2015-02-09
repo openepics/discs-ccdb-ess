@@ -46,7 +46,9 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "DevicePropertyValue.findByDataType", query = "SELECT d FROM DevicePropertyValue d "
             + "WHERE d.property.dataType = :dataType"),
     @NamedQuery(name = "DevicePropertyValue.findSamePropertyValueByType", query = "SELECT d FROM DevicePropertyValue d "
-            + "WHERE d.device.componentType = :componentType AND d.property = :property AND d.propValue = :propValue")
+            + "WHERE d.device.componentType = :componentType AND d.property = :property AND d.propValue = :propValue"),
+    @NamedQuery(name = "DevicePropertyValue.findSamePropertyValue", query = "SELECT d FROM DevicePropertyValue d "
+            + "WHERE d.property = :property AND d.propValue = :propValue")
 
 })
 public class DevicePropertyValue extends PropertyValue {

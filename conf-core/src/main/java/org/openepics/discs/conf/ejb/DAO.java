@@ -26,7 +26,9 @@ import org.openepics.discs.conf.ent.Artifact;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.EntityWithArtifacts;
 import org.openepics.discs.conf.ent.EntityWithProperties;
+import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyValue;
+import org.openepics.discs.conf.ent.values.Value;
 import org.openepics.discs.conf.security.Authorized;
 import org.openepics.discs.conf.util.CRUDOperation;
 import org.openepics.discs.conf.util.PropertyValueNotUniqueException;
@@ -135,6 +137,9 @@ public abstract class DAO<T> extends ReadOnlyDAO<T> {
                     }
                     break;
                 case UNIVERSAL:
+                    if (!isPropertyValueUniversallyUnique(propVal)) {
+                        throw new PropertyValueNotUniqueException();
+                    }
                     break;
                 default:
                     throw new UnhandledCaseException();
@@ -199,5 +204,36 @@ public abstract class DAO<T> extends ReadOnlyDAO<T> {
      */
     protected boolean isPropertyValueTypeUnique(PropertyValue child, T parent) {
         throw new UnhandledCaseException();
+    }
+
+    private boolean isPropertyValueUniversallyUnique(PropertyValue child) {
+        Preconditions.checkNotNull(child);
+        final Property property = Preconditions.checkNotNull(child.getProperty());
+        final Value value = child.getPropValue();
+        if (value == null) {
+            return true;
+        }
+
+        List<PropertyValue> results = em.createNamedQuery("ComptypePropertyValue.findSamePropertyValue",
+                                                        PropertyValue.class)
+                    .setParameter("property", property)
+                    .setParameter("propValue", value).setMaxResults(2).getResultList();
+        // value is unique if there is no property value with the same value, or the only one found us the entity itself
+        boolean valueUnique = (results.size() < 2) && (results.isEmpty() || results.get(0).equals(child));
+        if (valueUnique) {
+            results = em.createNamedQuery("SlotPropertyValue.findSamePropertyValue", PropertyValue.class)
+                        .setParameter("property", property)
+                        .setParameter("propValue", value).setMaxResults(2).getResultList();
+            // value is unique if there is no same property value, or the only one found us the entity itself
+            valueUnique = (results.size() < 2) && (results.isEmpty() || results.get(0).equals(child));
+        }
+        if (valueUnique) {
+            results = em.createNamedQuery("DevicePropertyValue.findSamePropertyValue", PropertyValue.class)
+                        .setParameter("property", property)
+                        .setParameter("propValue", value).setMaxResults(2).getResultList();
+            // value is unique if there is no same property value, or the only one found us the entity itself
+            valueUnique = (results.size() < 2) && (results.isEmpty() || results.get(0).equals(child));
+        }
+        return valueUnique;
     }
 }
