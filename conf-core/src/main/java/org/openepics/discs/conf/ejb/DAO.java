@@ -29,6 +29,8 @@ import org.openepics.discs.conf.ent.EntityWithProperties;
 import org.openepics.discs.conf.ent.PropertyValue;
 import org.openepics.discs.conf.security.Authorized;
 import org.openepics.discs.conf.util.CRUDOperation;
+import org.openepics.discs.conf.util.PropertyValueNotUniqueException;
+import org.openepics.discs.conf.util.UnhandledCaseException;
 
 import com.google.common.base.Preconditions;
 
@@ -96,6 +98,8 @@ public abstract class DAO<T> extends ReadOnlyDAO<T> {
         Preconditions.checkNotNull(child);
         final T parent = getParent(child);
 
+        uniquePropertyValueCheck(child, parent);
+
         entityUtility.setModified(parent, child);
 
         getChildrenFromParent(child).add(child);
@@ -112,8 +116,30 @@ public abstract class DAO<T> extends ReadOnlyDAO<T> {
     @Authorized
     public <S> void saveChild(S child) {
         Preconditions.checkNotNull(child);
-        final S mergedChild = em.merge( child );
+
+        uniquePropertyValueCheck(child, getParent(child));
+
+        final S mergedChild = em.merge(child);
         entityUtility.setModified(getParent(mergedChild), mergedChild);
+    }
+
+    private <S> void uniquePropertyValueCheck(final S child, final T parent) {
+        if (child instanceof PropertyValue) {
+            final PropertyValue propVal = (PropertyValue) child;
+            switch (propVal.getProperty().getValueUniqueness()) {
+                case NONE:
+                    break;
+                case TYPE:
+                    if (!isPropertyValueTypeUnique(propVal, parent)) {
+                        throw new PropertyValueNotUniqueException();
+                    }
+                    break;
+                case UNIVERSAL:
+                    break;
+                default:
+                    throw new UnhandledCaseException();
+            }
+        }
     }
 
     /**
@@ -152,9 +178,26 @@ public abstract class DAO<T> extends ReadOnlyDAO<T> {
             return (List<S>) parent.getEntityPropertyList();
         } else if (child instanceof Artifact) {
             final EntityWithArtifacts parent = ((Artifact)child).getArtifactsParent();
-            return (List<S>) parent.getEntityArtifactList(); 
+            return (List<S>) parent.getEntityArtifactList();
         } else {
             throw new IllegalStateException("getParent called on entity that has neither properties nor artifacts.");
         }
+    }
+
+    /**
+     * Default implementation of the of the property value uniqueness check. This implementation only throws an
+     * exception, since default functionality is only intended to provide implementation to entities without a
+     * property value child.
+     * <br />
+     * <br />
+     * Every EJB that supports property value children must override this method.
+     *
+     * @param child
+     * @param parent
+     * @return <code>true</code> if the property values is unique or <code>null</code>, <code>false</code> otherwise.
+     * <br /><code>null</code> value can only be achieved through adding a property definition.
+     */
+    protected boolean isPropertyValueTypeUnique(PropertyValue child, T parent) {
+        throw new UnhandledCaseException();
     }
 }

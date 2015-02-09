@@ -44,7 +44,10 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "DevicePropertyValue.findByModifiedBy", query = "SELECT d FROM DevicePropertyValue d "
             + "WHERE d.modifiedBy = :modifiedBy"),
     @NamedQuery(name = "DevicePropertyValue.findByDataType", query = "SELECT d FROM DevicePropertyValue d "
-            + "WHERE d.property.dataType = :dataType")
+            + "WHERE d.property.dataType = :dataType"),
+    @NamedQuery(name = "DevicePropertyValue.findSamePropertyValueByType", query = "SELECT d FROM DevicePropertyValue d "
+            + "WHERE d.device.componentType = :componentType AND d.property = :property AND d.propValue = :propValue")
+
 })
 public class DevicePropertyValue extends PropertyValue {
     private static final long serialVersionUID = -1803230486932708585L;
