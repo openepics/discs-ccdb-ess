@@ -93,21 +93,28 @@ public class AuditManager implements Serializable {
     }
 
     /**
-     * @return A pretty printed representation of the log entry JSON.
+     * @param details the JSON details text we want to format.
+     * @return A pretty printed representation of the log entry details passed to the function.
      */
-    public String getDisplayRecordEntry() {
-        if (displayRecord == null) {
-            return "";
-        }
-
+    public String formatRecordEntryDetails(String details) {
         try {
             final ObjectMapper mapper = new ObjectMapper();
-            final Object json = mapper.readValue(displayRecord.getEntry(), Object.class);
+            final Object json = mapper.readValue(details, Object.class);
             return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(json);
         } catch (IOException e) {
             LOGGER.log(Level.FINE, e.getMessage(), e);
             return "";
         }
+    }
+
+    /**
+     * @return A pretty printed representation of the selected log entry JSON.
+     */
+    public String getDisplayRecordEntry() {
+        if (displayRecord == null) {
+            return "";
+        }
+        return formatRecordEntryDetails(displayRecord.getEntry());
     }
 
     /**
