@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -103,15 +104,15 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
             propertyEJB.add(propertyToAdd);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
                                                                 "New property has been created");
+            init();
         } catch (Exception e) {
             if (Utility.causedByPersistenceException(e)) {
-                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Failure",
-                        "Property could not be added because a device instance with same name already exists.");
+                FacesContext.getCurrentInstance().addMessage("uniqueProp", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
+                        "Property with the same name already exists."));
+                FacesContext.getCurrentInstance().validationFailed();
             } else {
                 throw e;
             }
-        } finally {
-            init();
         }
     }
 
@@ -129,8 +130,15 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
         try {
             propertyEJB.save(selectedProperty);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS, "Property was modified");
-        } finally {
             init();
+        } catch (Exception e) {
+            if (Utility.causedByPersistenceException(e)) {
+                FacesContext.getCurrentInstance().addMessage("uniqueProp", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
+                        "Property with the same name already exists."));
+                FacesContext.getCurrentInstance().validationFailed();
+            } else {
+                throw e;
+            }
         }
     }
 
@@ -374,7 +382,7 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
      * @param selectedProperty The {@link Property} selected in the dialog (modify property dialog).
      */
     public void setSelectedPropertyToModify(Property selectedProperty) {
-        this.selectedProperty = selectedProperty;
+        this.selectedProperty = propertyEJB.findById(selectedProperty.getId());
         prepareModifyPopup();
     }
 
