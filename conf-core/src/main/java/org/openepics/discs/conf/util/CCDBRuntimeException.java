@@ -20,7 +20,7 @@
 package org.openepics.discs.conf.util;
 
 /**
- * Generic unchecked exception used throught the app..
+ * Generic unchecked exception used throughout the application.
  *
  * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
  */

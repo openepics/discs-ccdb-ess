@@ -31,8 +31,12 @@ import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
+import org.openepics.discs.conf.ent.PropertyValue;
+import org.openepics.discs.conf.ent.values.Value;
 import org.openepics.discs.conf.security.Authorized;
 import org.openepics.discs.conf.util.CRUDOperation;
+
+import com.google.common.base.Preconditions;
 
 /**
  * DAO service for accessing device instances.
@@ -92,5 +96,22 @@ public class DeviceEJB extends DAO<Device> {
     @Override
     protected Class<Device> getEntityClass() {
         return Device.class;
+    }
+
+    @Override
+    protected boolean isPropertyValueTypeUnique(PropertyValue child, Device parent) {
+        Preconditions.checkNotNull(child);
+        Preconditions.checkNotNull(parent);
+        final Value value = child.getPropValue();
+        if (value == null) {
+            return true;
+        }
+        final List<PropertyValue> results = em.createNamedQuery("DevicePropertyValue.findSamePropertyValueByType",
+                                                        PropertyValue.class)
+                    .setParameter("componentType", parent.getComponentType())
+                    .setParameter("property", child.getProperty())
+                    .setParameter("propValue", value).setMaxResults(2).getResultList();
+        // value is unique if there is no property value with the same value, or the only one found us the entity itself
+        return (results.size() < 2) && (results.isEmpty() || results.get(0).equals(child));
     }
 }

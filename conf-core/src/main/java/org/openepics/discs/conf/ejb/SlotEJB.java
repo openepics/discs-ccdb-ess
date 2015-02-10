@@ -30,12 +30,16 @@ import org.openepics.discs.conf.dl.SlotsAndSlotPairsDataLoader;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
+import org.openepics.discs.conf.ent.PropertyValue;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.ent.SlotRelationName;
+import org.openepics.discs.conf.ent.values.Value;
 import org.openepics.discs.conf.security.Authorized;
 import org.openepics.discs.conf.util.CRUDOperation;
+
+import com.google.common.base.Preconditions;
 
 /**
  * DAO Service for accessing Installation Slot entities ( {@link Slot} )
@@ -165,5 +169,22 @@ public class SlotEJB extends DAO<Slot> {
     @Override
     protected Class<Slot> getEntityClass() {
         return Slot.class;
+    }
+
+    @Override
+    protected boolean isPropertyValueTypeUnique(PropertyValue child, Slot parent) {
+        Preconditions.checkNotNull(child);
+        Preconditions.checkNotNull(parent);
+        final Value value = child.getPropValue();
+        if (value == null) {
+            return true;
+        }
+        final List<PropertyValue> results = em.createNamedQuery("SlotPropertyValue.findSamePropertyValueByType",
+                                                        PropertyValue.class)
+                    .setParameter("componentType", parent.getComponentType())
+                    .setParameter("property", child.getProperty())
+                    .setParameter("propValue", value).setMaxResults(2).getResultList();
+        // value is unique if there is no property value with the same value, or the only one found us the entity itself
+        return (results.size() < 2) && (results.isEmpty() || results.get(0).equals(child));
     }
 }

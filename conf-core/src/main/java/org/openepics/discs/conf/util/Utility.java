@@ -84,10 +84,25 @@ public class Utility {
      * <code>false</code> otherwise.
      */
     public static boolean causedByPersistenceException(Throwable t) {
-        if (t instanceof PersistenceException) {
+        return causedBySpecifiedExceptionClass(t, PersistenceException.class);
+    }
+
+    /** The method determines whether the cause of the exception is an exception of a specified class or not.
+     * <br />
+     * <br />
+     * <strong>Please note</strong> that the <code>cause</code> must explicitly be the exception class you are looking
+     * for, the method will not work for descendants of that class.
+     *
+     * @param t the exception to inspect
+     * @param cause the cause Exception type to test for
+     * @return <code>true</code> if the cause of the exception is <code>cause</code> Class,
+     * <code>false</code> otherwise.
+     */
+    public static boolean causedBySpecifiedExceptionClass(Throwable t, Class<? extends Exception> cause) {
+        if (t != null && t.getClass() == cause) {
             return true;
         } else if (t != null && t.getCause() != null) {
-            return causedByPersistenceException(t.getCause());
+            return causedBySpecifiedExceptionClass(t.getCause(), cause);
         } else {
             return false;
         }

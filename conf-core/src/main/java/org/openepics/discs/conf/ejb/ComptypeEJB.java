@@ -25,6 +25,7 @@ import javax.ejb.Stateless;
 
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
+import org.openepics.discs.conf.ent.PropertyValue;
 
 /**
  * DAO Service for accesing Component Types ( {@link ComponentType} )
@@ -63,4 +64,11 @@ public class ComptypeEJB extends DAO<ComponentType> {
     protected Class<ComponentType> getEntityClass() {
         return ComponentType.class;
     }
+
+    @Override
+    protected boolean isPropertyValueTypeUnique(PropertyValue child, ComponentType parent) {
+        // each component type can have only one property value for some property. This is true by definition.
+        return true;
+    }
+
 }

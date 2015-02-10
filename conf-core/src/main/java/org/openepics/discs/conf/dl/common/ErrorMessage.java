@@ -50,7 +50,8 @@ public enum ErrorMessage {
     HEADER_ROW_EXPECTED("Expected a header row. Please note that the first row must always be a header row."),
     SYSTEM_EXCEPTION("Internal error occured"),
     MODIFY_IN_USE("Cannot modify entity field because it is in use."),
-    DELETE_IN_USE("Cannot delete entity because it is in use.");
+    DELETE_IN_USE("Cannot delete entity because it is in use."),
+    UNIQUE_INCORRECT("The value of the uniquness is incorrect.");
 
     private final String text;
 

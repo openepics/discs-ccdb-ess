@@ -39,6 +39,7 @@ import org.openepics.discs.conf.ent.DataType;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyAssociation;
 import org.openepics.discs.conf.ent.PropertyValue;
+import org.openepics.discs.conf.ent.PropertyValueUniqueness;
 import org.openepics.discs.conf.ent.Unit;
 import org.openepics.discs.conf.ui.common.AbstractExcelSingleFileImportUI;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
@@ -75,6 +76,7 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
     private Property selectedProperty;
     private boolean unitComboEnabled;
     private boolean isPropertyUsed;
+    private PropertyValueUniqueness valueUniqueness;
 
     /**
      * Creates a new instance of PropertyManager
@@ -96,6 +98,7 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
         setAssociationOnProperty(propertyToAdd);
         propertyToAdd.setDataType(dataType);
         propertyToAdd.setUnit(unit);
+        propertyToAdd.setValueUniqueness(valueUniqueness);
         try {
             propertyEJB.add(propertyToAdd);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
@@ -121,6 +124,7 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
         selectedProperty.setDataType(dataType);
         setAssociationOnProperty(selectedProperty);
         selectedProperty.setUnit(unit);
+        selectedProperty.setValueUniqueness(valueUniqueness);
 
         try {
             propertyEJB.save(selectedProperty);
@@ -148,6 +152,7 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
         dataType = selectedProperty.getDataType();
         unit = selectedProperty.getUnit();
         association = constructSetAssociations(selectedProperty);
+        valueUniqueness = selectedProperty.getValueUniqueness();
         isPropertyUsed = propertyEJB.isPropertyUsed(selectedProperty);
         setIsUnitComboEnabled();
         RequestContext.getCurrentInstance().update("modifyPropertyForm:modifyProperty");
@@ -380,6 +385,7 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
         unit = null;
         association = null;
         unitComboEnabled = true;
+        valueUniqueness = PropertyValueUniqueness.NONE;
     }
 
     /**
@@ -388,5 +394,21 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
      */
     public boolean isPropertyUsed() {
         return isPropertyUsed;
+    }
+
+    /**
+     * @return the valueUniqueness
+     */
+    public PropertyValueUniqueness getValueUniqueness() {
+        return valueUniqueness;
+    }
+    /**
+     * @param valueUniqueness the valueUniqueness to set
+     */
+    public void setValueUniqueness(PropertyValueUniqueness valueUniqueness) {
+        this.valueUniqueness = valueUniqueness;
+    }
+    public PropertyValueUniqueness[] getUniqunessValues() {
+        return PropertyValueUniqueness.values();
     }
 }

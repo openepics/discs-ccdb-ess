@@ -32,6 +32,7 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import javax.ejb.EJBException;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -58,6 +59,7 @@ import org.openepics.discs.conf.ent.values.Value;
 import org.openepics.discs.conf.util.BlobStore;
 import org.openepics.discs.conf.util.BuiltInDataType;
 import org.openepics.discs.conf.util.Conversion;
+import org.openepics.discs.conf.util.PropertyValueNotUniqueException;
 import org.openepics.discs.conf.util.PropertyValueUIElement;
 import org.openepics.discs.conf.util.UnhandledCaseException;
 import org.openepics.discs.conf.util.Utility;
@@ -202,6 +204,14 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
             } else {
                 Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
                         "New property has been created");
+            }
+        } catch (EJBException e) {
+            if (Utility.causedBySpecifiedExceptionClass(e, PropertyValueNotUniqueException.class)) {
+                FacesContext.getCurrentInstance().addMessage("uniqueMessage",
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Value is not unique."));
+                FacesContext.getCurrentInstance().validationFailed();
+            } else {
+                throw e;
             }
         } finally {
             internalPopulateAttributesList();
@@ -404,6 +414,14 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
             dao.saveChild(selectedPropertyValue);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
                                                                         "Property value has been modified");
+        } catch (EJBException e) {
+            if (Utility.causedBySpecifiedExceptionClass(e, PropertyValueNotUniqueException.class)) {
+                FacesContext.getCurrentInstance().addMessage("uniqueMessage",
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Value is not unique."));
+                FacesContext.getCurrentInstance().validationFailed();
+            } else {
+                throw e;
+            }
         } finally {
             internalPopulateAttributesList();
         }

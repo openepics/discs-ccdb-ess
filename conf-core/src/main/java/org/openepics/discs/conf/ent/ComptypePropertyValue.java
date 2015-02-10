@@ -48,7 +48,9 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "ComptypePropertyValue.findByModifiedBy", query = "SELECT c FROM ComptypePropertyValue c "
             + "WHERE c.modifiedBy = :modifiedBy"),
     @NamedQuery(name = "ComptypePropertyValue.findByDataType", query = "SELECT c FROM ComptypePropertyValue c "
-            + "WHERE c.property.dataType = :dataType")
+            + "WHERE c.property.dataType = :dataType"),
+    @NamedQuery(name = "ComptypePropertyValue.findSamePropertyValue", query = "SELECT c FROM ComptypePropertyValue c "
+            + "WHERE c.property = :property AND c.propValue = :propValue")
 })
 public class ComptypePropertyValue extends PropertyValue {
     private static final long serialVersionUID = -5402331155307049268L;

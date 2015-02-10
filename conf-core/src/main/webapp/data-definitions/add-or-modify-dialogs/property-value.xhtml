@@ -48,6 +48,7 @@
                         <f:selectItems value="#{controller.enumSelections}" var="enum" itemLabel="#{enum}" itemValue="#{enum}" />        
                     </p:selectOneMenu>
                     <p:message for="propertyValueEnum" rendered="#{controller.propertyValueUIElement eq 'SELECT_ONE_MENU'}"/>
+                    <p:messages for="uniqueMessage" showDetail="true" autoUpdate="true" />
                 </h:panelGroup>
                 
                 <p:outputLabel value="Data type:" />
