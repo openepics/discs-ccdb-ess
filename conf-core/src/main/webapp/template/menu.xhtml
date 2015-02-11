@@ -14,7 +14,7 @@
                 styleClass="#{fn:endsWith(request.requestURL,'hierarchies.xhtml') ? 'menu-selected' : ''}" />
 
             <p:submenu label="Slots" icon="ui-icon-document-b" 
-                    styleClass="#{fn:endsWith(request.requestURL,'installation-slots-manager.xhtml') ? 'menu-selected' : ''}">
+                    styleClass="#{fn:endsWith(request.requestURL,'installation-slots-manager.xhtml') ? 'menu-selected' : ''} slotsMenu">
                 <p:menuitem value="View" title="View Installation Slots" 
                     url="/data-definitions/installation-slots/installation-slots-manager.xhtml" />
 
@@ -25,7 +25,7 @@
             </p:submenu>
 
             <p:submenu label="Devices" icon="ui-icon-gear" 
-                    styleClass="#{fn:endsWith(request.requestURL,'devices/index.xhtml') ? 'menu-selected' : ''}">
+                    styleClass="#{fn:endsWith(request.requestURL,'devices/index.xhtml') ? 'menu-selected' : ''} devicesMenu">
                 <p:menuitem value="View" title="View Device Instances" url="/devices/index.xhtml" />
             
                 <p:menuitem value="Import" update=":importDevicesForm" 
@@ -35,7 +35,7 @@
             </p:submenu>
 
             <p:submenu label="Device Types" icon="ui-icon-wrench" 
-                    styleClass="#{fn:endsWith(request.requestURL,'device-types-manager.xhtml') ? 'menu-selected' : ''}">
+                    styleClass="#{fn:endsWith(request.requestURL,'device-types-manager.xhtml') ? 'menu-selected' : ''} devTypesMenu">
                 <p:menuitem value="View" title="View Device Types" 
                     url="/data-definitions/device-types/device-types-manager.xhtml" />
 
@@ -46,7 +46,7 @@
             </p:submenu>
             
             <p:submenu label="Properties" icon="ui-icon-contact" 
-                    styleClass="#{fn:endsWith(request.requestURL,'properties-manager.xhtml') ? 'menu-selected' : ''}">
+                    styleClass="#{fn:endsWith(request.requestURL,'properties-manager.xhtml') ? 'menu-selected' : ''} propertiesMenu">
                 <p:menuitem value="View" title="View Properties" 
                     url="/data-definitions/properties/properties-manager.xhtml" />
 
@@ -61,7 +61,7 @@
                 styleClass="#{fn:endsWith(request.requestURL,'enums-manager.xhtml') ? 'menu-selected' : ''}" />
 
             <p:submenu label="Units" icon="ui-icon-folder-open"
-                    styleClass="#{fn:endsWith(request.requestURL,'units-manager.xhtml') ? 'menu-selected' : ''}">
+                    styleClass="#{fn:endsWith(request.requestURL,'units-manager.xhtml') ? 'menu-selected' : ''} unitsMenu">
                 <p:menuitem value="View" title="View Units" 
                     url="/data-definitions/units/units-manager.xhtml" />
 
@@ -78,7 +78,7 @@
             <p:menuitem value="Log" icon="ui-icon-script" title="View Audit Log" url="/audit/log-manager.xhtml" 
                 styleClass="#{fn:endsWith(request.requestURL,'log-manager.xhtml') ? 'menu-selected' : ''}" />
 
-            <p:menuitem value="Help" icon="ui-icon-home" title="Help" url="/" disabled="true" />
+            <p:menuitem value="Help" icon="ui-icon-help" title="Help" url="/" disabled="true" />
 
             <f:facet name="options">
                 <rc:logincomp ajax="false" />
@@ -122,4 +122,26 @@
         <ui:param name="widgetName" value="importDevices" />
         <ui:param name="controller" value="#{deviceManager}" />
     </ui:include>
+
+    <script type="text/javascript">
+        jQuery(".slotsMenu").click(function() {
+            window.location.replace("#{request.contextPath}/data-definitions/installation-slots/installation-slots-manager.xhtml");
+        });
+
+        jQuery(".devicesMenu").click(function() {
+            window.location.replace("#{request.contextPath}/devices/index.xhtml");
+        });
+
+        jQuery(".devTypesMenu").click(function() {
+            window.location.replace("#{request.contextPath}/data-definitions/device-types/device-types-manager.xhtml");
+        });
+
+        jQuery(".propertiesMenu").click(function() {
+            window.location.replace("#{request.contextPath}/data-definitions/properties/properties-manager.xhtml");
+        });
+
+        jQuery(".unitsMenu").click(function() {
+            window.location.replace("#{request.contextPath}/data-definitions/units/units-manager.xhtml");
+        });
+    </script>
 </ui:composition>
