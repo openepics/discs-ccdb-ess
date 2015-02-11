@@ -15,10 +15,10 @@
 
             <p:submenu label="Slots" icon="ui-icon-document-b" 
                     styleClass="#{fn:endsWith(request.requestURL,'installation-slots-manager.xhtml') ? 'menu-selected' : ''} slotsMenu">
-                <p:menuitem value="View" title="View Installation Slots" 
+                <p:menuitem value="View" title="View Installation Slots" styleClass="noClickEvent" 
                     url="/data-definitions/installation-slots/installation-slots-manager.xhtml" />
 
-                <p:menuitem value="Import" update=":importSlotsForm" 
+                <p:menuitem value="Import" update=":importSlotsForm" styleClass="noClickEvent" 
                     oncomplete="importSlots.show()" title="Import Slots and Slot Pairs" 
                     actionListener="#{slotManager.prepareImportPopup()}" 
                     disabled="#{!securityPolicy.getUIHint('SLOT')}"/>
@@ -26,9 +26,9 @@
 
             <p:submenu label="Devices" icon="ui-icon-gear" 
                     styleClass="#{fn:endsWith(request.requestURL,'devices/index.xhtml') ? 'menu-selected' : ''} devicesMenu">
-                <p:menuitem value="View" title="View Device Instances" url="/devices/index.xhtml" />
+                <p:menuitem value="View" title="View Device Instances" styleClass="noClickEvent" url="/devices/index.xhtml" />
             
-                <p:menuitem value="Import" update=":importDevicesForm" 
+                <p:menuitem value="Import" update=":importDevicesForm" styleClass="noClickEvent" 
                     oncomplete="importDevices.show()" title="Import Device Instances" 
                     actionListener="#{deviceManager.prepareImportPopup()}" 
                     disabled="#{!securityPolicy.getUIHint('DEVICE')}"/>
@@ -36,10 +36,10 @@
 
             <p:submenu label="Device Types" icon="ui-icon-wrench" 
                     styleClass="#{fn:endsWith(request.requestURL,'device-types-manager.xhtml') ? 'menu-selected' : ''} devTypesMenu">
-                <p:menuitem value="View" title="View Device Types" 
+                <p:menuitem value="View" title="View Device Types" styleClass="noClickEvent" 
                     url="/data-definitions/device-types/device-types-manager.xhtml" />
 
-                <p:menuitem value="Import" update=":importCompTypesForm" 
+                <p:menuitem value="Import" update=":importCompTypesForm" styleClass="noClickEvent" 
                     oncomplete="importCompTypes.show()" title="Import Device Types" 
                     actionListener="#{componentTypeManager.prepareImportPopup()}" 
                     disabled="#{! securityPolicy.getUIHint('COMPONENT_TYPE')}" />
@@ -47,10 +47,10 @@
             
             <p:submenu label="Properties" icon="ui-icon-contact" 
                     styleClass="#{fn:endsWith(request.requestURL,'properties-manager.xhtml') ? 'menu-selected' : ''} propertiesMenu">
-                <p:menuitem value="View" title="View Properties" 
+                <p:menuitem value="View" title="View Properties" styleClass="noClickEvent" 
                     url="/data-definitions/properties/properties-manager.xhtml" />
 
-                <p:menuitem value="Import" update=":importPropertiesForm" 
+                <p:menuitem value="Import" update=":importPropertiesForm" styleClass="noClickEvent" 
                     oncomplete="importProperties.show()" title="Import Properties" 
                     actionListener="#{propertyManager.prepareImportPopup()}" 
                     disabled="#{!securityPolicy.getUIHint('PROPERTY')}" />
@@ -62,11 +62,11 @@
 
             <p:submenu label="Units" icon="ui-icon-folder-open"
                     styleClass="#{fn:endsWith(request.requestURL,'units-manager.xhtml') ? 'menu-selected' : ''} unitsMenu">
-                <p:menuitem value="View" title="View Units" 
+                <p:menuitem value="View" title="View Units" styleClass="noClickEvent" 
                     url="/data-definitions/units/units-manager.xhtml" />
 
                 <p:menuitem value="Import" update=":importUnitsForm" 
-                    oncomplete="importUnits.show()" title="Import Units" 
+                    oncomplete="importUnits.show()" title="Import Units" styleClass="noClickEvent" 
                     actionListener="#{unitManager.prepareImportPopup()}" 
                     disabled="#{!securityPolicy.getUIHint('UNIT')}" />
             </p:submenu>
@@ -124,24 +124,43 @@
     </ui:include>
 
     <script type="text/javascript">
-        jQuery(".slotsMenu").click(function() {
-            window.location.replace("#{request.contextPath}/data-definitions/installation-slots/installation-slots-manager.xhtml");
+        //<![CDATA[
+        function noClickTarget(target) {
+            if (target == null) return false;
+            if (target.classList && target.classList.contains("noClickEvent")) return true;
+            if ((target.nodeName == null) || (target.nodeName == "LI") || (target.nodeName == "UL")) return false;
+            return noClickTarget(target.parentNode);
+        }
+    
+        jQuery(".slotsMenu").click(function(event) {
+            if (noClickTarget(event.target) == false) {
+                window.location.replace("#{request.contextPath}/data-definitions/installation-slots/installation-slots-manager.xhtml");
+            }
         });
 
-        jQuery(".devicesMenu").click(function() {
-            window.location.replace("#{request.contextPath}/devices/index.xhtml");
+        jQuery(".devicesMenu").click(function(event) {
+            if (noClickTarget(event.target) == false) {
+                window.location.replace("#{request.contextPath}/devices/index.xhtml");
+            }
         });
 
-        jQuery(".devTypesMenu").click(function() {
-            window.location.replace("#{request.contextPath}/data-definitions/device-types/device-types-manager.xhtml");
+        jQuery(".devTypesMenu").click(function(event) {
+            if (noClickTarget(event.target) == false) {
+                window.location.replace("#{request.contextPath}/data-definitions/device-types/device-types-manager.xhtml");
+            }
         });
 
-        jQuery(".propertiesMenu").click(function() {
-            window.location.replace("#{request.contextPath}/data-definitions/properties/properties-manager.xhtml");
+        jQuery(".propertiesMenu").click(function(event) {
+            if (noClickTarget(event.target) == false) {
+                window.location.replace("#{request.contextPath}/data-definitions/properties/properties-manager.xhtml");
+            }
         });
 
-        jQuery(".unitsMenu").click(function() {
-            window.location.replace("#{request.contextPath}/data-definitions/units/units-manager.xhtml");
+        jQuery(".unitsMenu").click(function(event) {
+            if (!this.noClickTarget(event.target)) {
+                window.location.replace("#{request.contextPath}/data-definitions/units/units-manager.xhtml");
+            }
         });
+        // ]]>
     </script>
 </ui:composition>
