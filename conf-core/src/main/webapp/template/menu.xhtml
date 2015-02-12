@@ -157,7 +157,7 @@
         });
 
         jQuery(".unitsMenu").click(function(event) {
-            if (!this.noClickTarget(event.target)) {
+            if (noClickTarget(event.target) == false) {
                 window.location.replace("#{request.contextPath}/data-definitions/units/units-manager.xhtml");
             }
         });
