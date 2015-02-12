@@ -28,7 +28,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import javax.faces.application.FacesMessage;
+import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
+import javax.faces.validator.ValidatorException;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -100,20 +102,10 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
         propertyToAdd.setDataType(dataType);
         propertyToAdd.setUnit(unit);
         propertyToAdd.setValueUniqueness(valueUniqueness);
-        try {
-            propertyEJB.add(propertyToAdd);
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+        propertyEJB.add(propertyToAdd);
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
                                                                 "New property has been created");
-            init();
-        } catch (Exception e) {
-            if (Utility.causedByPersistenceException(e)) {
-                FacesContext.getCurrentInstance().addMessage("uniqueProp", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
-                        "Property with the same name already exists."));
-                FacesContext.getCurrentInstance().validationFailed();
-            } else {
-                throw e;
-            }
-        }
+        init();
     }
 
     /**
@@ -127,19 +119,9 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
         selectedProperty.setUnit(unit);
         selectedProperty.setValueUniqueness(valueUniqueness);
 
-        try {
-            propertyEJB.save(selectedProperty);
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS, "Property was modified");
-            init();
-        } catch (Exception e) {
-            if (Utility.causedByPersistenceException(e)) {
-                FacesContext.getCurrentInstance().addMessage("uniqueProp", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
-                        "Property with the same name already exists."));
-                FacesContext.getCurrentInstance().validationFailed();
-            } else {
-                throw e;
-            }
-        }
+        propertyEJB.save(selectedProperty);
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS, "Property was modified");
+        init();
     }
 
     /**
@@ -419,4 +401,20 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
     public PropertyValueUniqueness[] getUniqunessValues() {
         return PropertyValueUniqueness.values();
     }
+
+    public void nameValidator(FacesContext ctx, UIComponent component, Object value) throws ValidatorException {
+        if (value == null) {
+            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
+                                                                    "Please enter a name"));
+        }
+
+        final String propertyName = value.toString();
+        final Property existingProperty = propertyEJB.findByName(propertyName);
+        if ((selectedProperty == null && existingProperty != null)
+                || (selectedProperty != null && !selectedProperty.equals(existingProperty))) {
+            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
+                                                                    "The property with this name already exists."));
+        }
+    }
+
 }

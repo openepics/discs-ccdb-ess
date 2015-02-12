@@ -16,9 +16,8 @@
                     </p:column>
                     <p:column>
                         <p:inputText id="propertyName" value="#{propertyManager.name}" required="true" 
-                            requiredMessage="Please enter a name" />
+                            validator="#{propertyManager.nameValidator}" requiredMessage="Please enter a name." />
                         <p:message for="propertyName" />
-                        <p:messages for="uniqueProp" showDetail="true" autoUpdate="true" />
                     </p:column>
                 </p:row>
 

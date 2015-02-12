@@ -241,7 +241,7 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
     public void nameValidator(FacesContext ctx, UIComponent component, Object value) throws ValidatorException {
         if (value == null) {
             throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
-                                                                    "No name defined."));
+                                                                    "Please enter a name"));
         }
 
         final String unitName = value.toString();
