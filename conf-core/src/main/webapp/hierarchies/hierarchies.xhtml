@@ -14,7 +14,7 @@
                                 selectionMode="single" selection="#{hierarchiesController.selectedNode}" 
                                 scrollable="true" scrollWidth="auto" style="width: 300px;" rowStyleClass="treeRows" 
                                 widgetVar="hierarchyWidget">
-                            <p:ajax event="select" listener="#{hierarchiesController.initAttributeList()}"
+                            <p:ajax event="select" listener="#{hierarchiesController.initSelectedItemLists()}"
                                 update=":hierarchies:attributesTable :hierarchies:relationsTable :hierarchies:installationDetails :hierarchies:slotAttributesTitle" 
                                 oncomplete="resizeEmptyColumnInHierarchies();" />
                             <p:ajax event="unselect" listener="#{hierarchiesController.clearAttributeList()}"
@@ -84,12 +84,16 @@
 
                         <p:dataTable id="relationsTable" value="#{hierarchiesController.relationships}" 
                                 style="width: 100%; overflow-y: hidden; max-height: 324px;" var="relationship" 
-                                emptyMessage="No element selected." scrollable="true" class="hierarchies-attributes-cell">
-                            <p:column headerText="Relationship">
+                                emptyMessage="No element selected." scrollable="true" class="hierarchies-attributes-cell" 
+                                filteredValue="#{hierarchiesController.filteredRelationships}">
+                            <p:column headerText="Relationship" sortBy="#{relationship.relationshipName}" 
+                                    filterOptions="#{hierarchiesController.relationshipTypes}" 
+                                    filterBy="#{relationship.relationshipName}" filterMatchMode="exact">
                                 <h:outputText value="#{relationship.relationshipName}" />
                             </p:column>
 
-                            <p:column headerText="Target">
+                            <p:column headerText="Target" sortBy="#{relationship.targetSlotName}" 
+                                    filterBy="#{relationship.targetSlotName}" filterMatchMode="contains">
                                 <p:commandLink action="#{hierarchiesController.selectNode(relationship.slot.id)}" 
                                         update=":hierarchies" oncomplete="hierarchiesResizeAll();">
                                     <h:outputText value="#{relationship.targetSlotName}" 

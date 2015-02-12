@@ -37,6 +37,7 @@ import org.openepics.discs.conf.ejb.DataTypeEJB;
 import org.openepics.discs.conf.ejb.InstallationEJB;
 import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ejb.SlotPairEJB;
+import org.openepics.discs.conf.ejb.SlotRelationEJB;
 import org.openepics.discs.conf.ent.ComptypeArtifact;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.DataType;
@@ -47,6 +48,7 @@ import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotArtifact;
 import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
+import org.openepics.discs.conf.ent.SlotRelation;
 import org.openepics.discs.conf.ent.Tag;
 import org.openepics.discs.conf.ui.common.UIException;
 import org.openepics.discs.conf.util.BuiltInDataType;
@@ -60,6 +62,9 @@ import org.openepics.discs.conf.views.SlotView;
 import org.primefaces.model.TreeNode;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableList.Builder;
+import com.google.common.collect.Lists;
 
 /**
  * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
@@ -77,10 +82,14 @@ public class HierarchiesController implements Serializable {
     @Inject private transient SlotPairEJB slotPairEJB;
     @Inject private transient InstallationEJB installationEJB;
     @Inject private transient DataTypeEJB dataTypeEJB;
+    @Inject private transient SlotRelationEJB slotRelationEJB;
 
     private transient List<EntityAttributeView> attributes;
     private transient List<EntityAttributeView> filteredAttributes;
     private transient List<SelectItem> attributeKinds;
+    private transient List<SlotRelationshipView> relationships;
+    private transient List<SlotRelationshipView> filteredRelationships;
+    private transient List<SelectItem> relationshipTypes;
     private TreeNode rootNode;
     private TreeNode selectedNode;
     private InstallationRecord installationRecord;
@@ -89,9 +98,7 @@ public class HierarchiesController implements Serializable {
     protected DataType strDataType;
     protected DataType dblDataType;
 
-    /**
-     * Java EE post construct life-cycle method.
-     */
+    /** Java EE post construct life-cycle method. */
     @PostConstruct
     public void init() {
         try {
@@ -99,15 +106,13 @@ public class HierarchiesController implements Serializable {
             strDataType = dataTypeEJB.findByName(BuiltInDataType.STR_NAME);
             dblDataType = dataTypeEJB.findByName(BuiltInDataType.DBL_NAME);
             attributeKinds = Utility.buildAttributeKinds();
+            relationshipTypes = buildRelationshipTypeList();
         } catch(Exception e) {
             throw new UIException("Hierarchies display initialization fialed: " + e.getMessage(), e);
         }
     }
 
-    /**
-     * Prepares the attribute list for display when user selects the slot in the hierarchy.
-     */
-    public void initAttributeList() {
+    private void initAttributeList() {
         final List<EntityAttributeView> attributesList = new ArrayList<>();
 
         if (selectedNode != null) {
@@ -171,11 +176,25 @@ public class HierarchiesController implements Serializable {
         this.attributes = attributesList;
     }
 
-    /**
-     * Clears the attribute list for display when user deselects the slot in the hierarchy.
-     */
+    private void initRelationshipList() {
+        relationships = Lists.newArrayList();
+
+        if (selectedNode != null) {
+            final Slot rootSlot = slotEJB.getRootNode();
+            final List<SlotPair> slotPairs = slotPairEJB.getSlotRleations(selectedSlot);
+
+            for (SlotPair slotPair : slotPairs) {
+                if (!slotPair.getParentSlot().equals(rootSlot)) {
+                    relationships.add(new SlotRelationshipView(slotPair, selectedSlot));
+                }
+            }
+        }
+    }
+
+    /** Clears the attribute list for display when user deselects the slot in the hierarchy. */
     public void clearAttributeList() {
-        this.attributes = null;
+        attributes = null;
+        relationships = null;
     }
 
     /**
@@ -193,42 +212,26 @@ public class HierarchiesController implements Serializable {
         this.attributes = attributes;
     }
 
-    /**
-     * @return The slot (container or installation slot) that is currently selected in the tree.
-     */
+    /** @return The slot (container or installation slot) that is currently selected in the tree. */
     public Slot getSelectedNodeSlot() {
         return selectedSlot;
     }
 
-    /**
-     * @return The list of relationships for the currently selected slot.
-     */
+    /** @return The list of relationships for the currently selected slot. */
     public List<SlotRelationshipView> getRelationships() {
-        final List<SlotRelationshipView> relationships = new ArrayList<>();
-
-        if (selectedNode != null) {
-            final Slot rootSlot = slotEJB.getRootNode();
-            final List<SlotPair> slotPairs = slotPairEJB.getSlotRleations(selectedSlot);
-
-            for (SlotPair slotPair : slotPairs) {
-                if (!slotPair.getParentSlot().equals(rootSlot)) {
-                    relationships.add(new SlotRelationshipView(slotPair, selectedSlot));
-                }
-            }
-        }
         return relationships;
     }
+    public void setRelationships(List<SlotRelationshipView> relationships) {
+        this.relationships = relationships;
+    }
 
-    /**
-     * @return The root node of (and consequently the entire) hierarchy tree.
-     */
+
+    /** @return The root node of (and consequently the entire) hierarchy tree. */
     public TreeNode getRootNode() {
         return rootNode;
     }
 
-    /**
-     * @return Getter for the currently selected node in a tree (required by PrimeFaces).
-     */
+    /** @return Getter for the currently selected node in a tree (required by PrimeFaces). */
     public TreeNode getSelectedNode() {
         return selectedNode;
     }
@@ -274,16 +277,12 @@ public class HierarchiesController implements Serializable {
         return installationEJB.getUninstalledDevices(selectedSlot.getComponentType());
     }
 
-    /**
-     * @return the deviceToInstall
-     */
+    /** @return the deviceToInstall */
     public Device getDeviceToInstall() {
         return deviceToInstall;
     }
 
-    /**
-     * @param deviceToInstall the deviceToInstall to set
-     */
+    /** @param deviceToInstall the deviceToInstall to set */
     public void setDeviceToInstall(Device deviceToInstall) {
         this.deviceToInstall = deviceToInstall;
     }
@@ -351,7 +350,7 @@ public class HierarchiesController implements Serializable {
             selectedNode.setSelected(false);
             nodeToSelect.setSelected(true);
             setSelectedNode(nodeToSelect);
-            initAttributeList();
+            initSelectedItemLists();
         }
     }
 
@@ -386,5 +385,39 @@ public class HierarchiesController implements Serializable {
 
     public List<SelectItem> getAttributeKinds() {
         return attributeKinds;
+    }
+
+    /** Prepares the attribute and relationship lists for display when user selects the slot in the hierarchy. */
+    public void initSelectedItemLists() {
+        initAttributeList();
+        initRelationshipList();
+    }
+
+    /** @return the {@link List} of relationship types to display in the filter drop down selection. */
+    public List<SelectItem> getRelationshipTypes() {
+        return relationshipTypes;
+    }
+
+    private List<SelectItem> buildRelationshipTypeList() {
+        Builder<SelectItem> immutableListBuilder = ImmutableList.builder();
+        immutableListBuilder.add(new SelectItem("", "Select one"));
+
+        final List<SlotRelation> slotRelations = slotRelationEJB.findAll();
+        for (SlotRelation slotRelation : slotRelations) {
+            immutableListBuilder.add(new SelectItem(slotRelation.getNameAsString(), slotRelation.getNameAsString()));
+            immutableListBuilder.add(new SelectItem(slotRelation.getIname(), slotRelation.getIname()));
+        }
+
+        return immutableListBuilder.build();
+    }
+
+    /** @return the filteredRelationships */
+    public List<SlotRelationshipView> getFilteredRelationships() {
+        return filteredRelationships;
+    }
+
+    /** @param filteredRelationships the filteredRelationships to set */
+    public void setFilteredRelationships(List<SlotRelationshipView> filteredRelationships) {
+        this.filteredRelationships = filteredRelationships;
     }
 }
