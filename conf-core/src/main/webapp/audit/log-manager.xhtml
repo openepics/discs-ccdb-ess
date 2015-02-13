@@ -43,24 +43,28 @@
                     </p:column>
 
                     <p:column headerText="Change" sortBy="#{auditRecord.entry}" filterBy="#{auditRecord.entry}" filterMatchMode="contains">
-                        <h:commandLink id="logDetails">
-                            <p:ajax event="mouseover" onstart="overlay.hide()" oncomplete="overlay.show()" global="false" update="detailsPanel" />
-                            <h:outputText value="#{auditRecord.entry.length() lt 46 ? auditRecord.entry : auditRecord.entry.substring(0,45) += '...'}" />
-                        </h:commandLink>
-                        <p:overlayPanel id="detailsPanel" for="logDetails" hideEvent="mousedown" appendToBody="true" 
-                                showCloseIcon="true" widgetVar="overlay" my="top left" at="left center">
-                            <p:panel>
-                                <f:facet name="header">
-                                    <h:outputText value="Entry details" />
-                                </f:facet>
-                                <h:outputText value="#{auditManager.formatRecordEntryDetails(auditRecord.entry)}" 
-                                        escape="false" style="font-family: monospace; white-space:pre;" />
-                            </p:panel>
-                        </p:overlayPanel>
+                        <p:commandLink id="logDetails" update=":logsForm:logDetailsPanel" action="#{auditManager.handleDetails()}" 
+                                oncomplete="var ovl=PF('overlay');var cfg=ovl.cfg;cfg.target='#{component.clientId}';ovl.refresh(cfg);ovl.show();">
+                            <f:setPropertyActionListener target="#{auditManager.displayRecord}" value="#{auditRecord}" />
+                            <h:outputText value="#{auditRecord.entry.length() lt 46 ? auditRecord.entry : auditRecord.entry.substring(0,45).concat('...')}" />
+                        </p:commandLink>
                     </p:column>
                 </p:dataTable>
 
             </p:fieldset>
+
+            <p:overlayPanel widgetVar="overlay" for="logTable" dismissable="true" showCloseIcon="true">
+                <p:outputPanel id="logDetailsPanel">
+                    <p:panel rendered="#{not empty auditManager.formattedDetails}">
+                        <f:facet name="header">
+                            <h:outputText value="Entry details" />
+                        </f:facet>
+                        <h:outputText value="#{auditManager.formattedDetails}" escape="false" 
+                                style="font-family: monospace; white-space:pre;" />
+                    </p:panel>
+                </p:outputPanel>
+            </p:overlayPanel>
+
         </h:form>
     </ui:define>
 </ui:composition>

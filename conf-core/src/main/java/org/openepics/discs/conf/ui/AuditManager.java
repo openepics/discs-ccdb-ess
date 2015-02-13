@@ -59,6 +59,7 @@ public class AuditManager implements Serializable {
     private List<AuditRecord> filteredAuditRecords;
     private List<SelectItem> auditOperations;
     private List<SelectItem> entityTypes;
+    private String formattedDetails;
 
     /**
      * Creates a new instance of AuditManager
@@ -91,20 +92,29 @@ public class AuditManager implements Serializable {
     public AuditRecord getDisplayRecord() {
         return displayRecord;
     }
+    public void setDisplayRecord(AuditRecord displayRecord) {
+        this.displayRecord = displayRecord;
+    }
 
-    /**
-     * @param details the JSON details text we want to format.
-     * @return A pretty printed representation of the log entry details passed to the function.
-     */
-    public String formatRecordEntryDetails(String details) {
+    private String formatEntryDetails(AuditRecord record) {
         try {
             final ObjectMapper mapper = new ObjectMapper();
-            final Object json = mapper.readValue(details, Object.class);
+            final Object json = mapper.readValue(record.getEntry(), Object.class);
             return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(json);
         } catch (IOException e) {
             LOGGER.log(Level.FINE, e.getMessage(), e);
             return "";
         }
+    }
+
+    /** This method is called from xhtml to prepare the entry details for display in overlay panel. */
+    public void handleDetails() {
+        formattedDetails = formatEntryDetails(displayRecord);
+    }
+
+    /** @return the formattedDetails */
+    public String getFormattedDetails() {
+        return formattedDetails;
     }
 
     /**
@@ -114,7 +124,8 @@ public class AuditManager implements Serializable {
         if (displayRecord == null) {
             return "";
         }
-        return formatRecordEntryDetails(displayRecord.getEntry());
+
+        return formatEntryDetails(displayRecord);
     }
 
     /**
