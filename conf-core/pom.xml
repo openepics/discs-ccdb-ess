@@ -217,6 +217,7 @@
                                 </goals>
                                 <configuration>
                                     <outputDirectory>${basedir}/target/${project.artifactId}-${project.version}/WEB-INF</outputDirectory>
+                                    <overwrite>true</overwrite>
                                     <resources>
                                         <resource>
                                             <directory>AS-specific-resources/glassfish</directory>
@@ -237,6 +238,7 @@
                                 </goals>
                                 <configuration>
                                     <outputDirectory>${basedir}/target/${project.artifactId}-${project.version}/WEB-INF/classes/META-INF</outputDirectory>
+                                    <overwrite>true</overwrite>
                                     <resources>
                                         <resource>
                                             <directory>AS-specific-resources/glassfish</directory>
@@ -457,6 +459,7 @@
                                 </goals>
                                 <configuration>
                                     <outputDirectory>${basedir}/target/${project.artifactId}-${project.version}/WEB-INF</outputDirectory>
+                                    <overwrite>true</overwrite>
                                     <resources>
                                         <resource>
                                             <directory>AS-specific-resources/jboss</directory>
@@ -478,6 +481,7 @@
                                 </goals>
                                 <configuration>
                                     <outputDirectory>${basedir}/target/${project.artifactId}-${project.version}/WEB-INF/classes/META-INF</outputDirectory>
+                                    <overwrite>true</overwrite>
                                     <resources>
                                         <resource>
                                             <directory>AS-specific-resources/jboss</directory>
