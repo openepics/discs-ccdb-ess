@@ -62,10 +62,18 @@
 
                 $('#hierarchies\\:hierarchiesEmptyColumn').css({"height":window.innerHeight-totalHeight});
             }
+            
+            function hierarchiesResizeAttributes() {
+                var attrbiutesTableHeight = $(".hierarchies-attributes-cell").outerHeight(true);
+                var attrbiutesTableHeaderHeight = $(".hierarchies-attributes-cell .ui-datatable-scrollable-header").outerHeight(true);
+                var attrbiutesTableBodyHeight = attrbiutesTableHeight - attrbiutesTableHeaderHeight;
+                $('.hierarchies-attributes-cell .ui-datatable-scrollable-body').css({"max-height":attrbiutesTableBodyHeight});
+            }
 
             function hierarchiesResizeAll() {
                 resizeHierarchiesTree();
                 resizeEmptyColumnInHierarchies();
+                hierarchiesResizeAttributes();
             }
 
             function removeParametersFromUrl() {

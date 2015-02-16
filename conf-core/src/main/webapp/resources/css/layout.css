@@ -137,7 +137,7 @@ body {
 .hierarchies-attributes-cell .ui-datatable-scrollable-body {
 	margin-right: 0 !important;
 	overflow-y: scroll;
-	max-height: 300px;
+	max-height: 276px;
 	overflow-x: hidden;
 }
 

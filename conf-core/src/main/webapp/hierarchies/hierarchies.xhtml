@@ -16,7 +16,7 @@
                                 widgetVar="hierarchyWidget">
                             <p:ajax event="select" listener="#{hierarchiesController.initSelectedItemLists()}"
                                 update=":hierarchies:attributesTable :hierarchies:relationsTable :hierarchies:installationDetails :hierarchies:slotAttributesTitle" 
-                                oncomplete="resizeEmptyColumnInHierarchies();" />
+                                oncomplete="resizeEmptyColumnInHierarchies();hierarchiesResizeAttributes();" />
                             <p:ajax event="unselect" listener="#{hierarchiesController.clearAttributeList()}"
                                 update=":hierarchies:attributesTable :hierarchies:relationsTable :hierarchies:installationDetails :hierarchies:slotAttributesTitle" 
                                 oncomplete="resizeEmptyColumnInHierarchies();" />
