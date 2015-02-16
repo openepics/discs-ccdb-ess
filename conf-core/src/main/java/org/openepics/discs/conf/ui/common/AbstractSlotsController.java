@@ -109,7 +109,7 @@ public abstract class AbstractSlotsController implements Serializable{
             updateRootNode();
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Slot deleted", "Slot has been successfully deleted");
         } else {
-            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Deletion failed",
+            Utility.showMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_DELETE_FAIL,
                                 "Installation slot could not be deleted because it has a device installed on it.");
         }
     }

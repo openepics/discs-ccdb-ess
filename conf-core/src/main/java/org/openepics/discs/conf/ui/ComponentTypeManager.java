@@ -118,10 +118,11 @@ public class ComponentTypeManager extends AbstractExcelSingleFileImportUI implem
         componentTypeToAdd.setDescription(description);
         try {
             comptypeEJB.add(componentTypeToAdd);
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "New device type has been created");
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+                    "New device type has been created");
         } catch (Exception e) {
             if (Utility.causedByPersistenceException(e)) {
-                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Failure",
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
                         "Device type could not be added because a device type instance with same name already exists.");
             } else {
                 throw e;
@@ -137,10 +138,11 @@ public class ComponentTypeManager extends AbstractExcelSingleFileImportUI implem
     public void onDelete() {
         try {
             comptypeEJB.delete(selectedDeviceType);
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Device type was deleted");
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+                    "Device type was deleted");
         } catch (Exception e) {
             if (Utility.causedByPersistenceException(e)) {
-                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Deletion failed",
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_DELETE_FAIL,
                         "The device type could not be deleted because it is used.");
             } else {
                 throw e;

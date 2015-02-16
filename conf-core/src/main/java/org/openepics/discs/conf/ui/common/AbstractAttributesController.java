@@ -208,7 +208,8 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
         } catch (EJBException e) {
             if (Utility.causedBySpecifiedExceptionClass(e, PropertyValueNotUniqueException.class)) {
                 FacesContext.getCurrentInstance().addMessage("uniqueMessage",
-                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Value is not unique."));
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
+                                "Value is not unique."));
                 FacesContext.getCurrentInstance().validationFailed();
             } else {
                 throw e;
@@ -417,7 +418,8 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
         } catch (EJBException e) {
             if (Utility.causedBySpecifiedExceptionClass(e, PropertyValueNotUniqueException.class)) {
                 FacesContext.getCurrentInstance().addMessage("uniqueMessage",
-                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Value is not unique."));
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
+                                "Value is not unique."));
                 FacesContext.getCurrentInstance().validationFailed();
             } else {
                 throw e;

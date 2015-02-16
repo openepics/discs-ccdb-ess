@@ -124,14 +124,14 @@ public class DevicesByTypeManager implements Serializable {
                         new FacesMessage(FacesMessage.SEVERITY_INFO, "Device deleted.", null));
             } catch (Exception e) {
                 if (Utility.causedByPersistenceException(e)) {
-                    Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Deletion failed",
+                    Utility.showMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_DELETE_FAIL,
                             "The property could not be deleted because it is used.");
                 } else {
                     throw e;
                 }
             }
         } else {
-            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Deletion failed",
+            Utility.showMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_DELETE_FAIL,
                     "Device instance could not be deleted because it is installed.");
         }
     }

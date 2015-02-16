@@ -58,6 +58,7 @@ public class Utility {
 
     public static final String MESSAGE_SUMMARY_SUCCESS = "Success";
     public static final String MESSAGE_SUMMARY_ERROR = "Error";
+    public static final String MESSAGE_SUMMARY_DELETE_FAIL = "Deletion failed";
 
     private static final String PATH_SEPARATOR = "\u00A0\u00A0\u00BB\u00A0\u00A0";
 

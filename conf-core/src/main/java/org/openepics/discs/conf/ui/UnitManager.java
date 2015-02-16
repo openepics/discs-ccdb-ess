@@ -230,7 +230,7 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
         Preconditions.checkNotNull(selectedUnit);
         final Unit unitToDelete = selectedUnit.getUnit();
         if (unitEJB.isUnitUsed(unitToDelete)) {
-            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "In use",
+            Utility.showMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
                                                     "The unit cannot be deleted because it is in use.");
         } else {
             unitEJB.delete(unitToDelete);
@@ -247,7 +247,7 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
         final String unitName = value.toString();
         final Unit existingUnit = unitEJB.findByName(unitName);
         if ((selectedUnit == null && existingUnit != null)
-                || (selectedUnit != null && !selectedUnit.getUnit().equals(existingUnit))) {
+                || (selectedUnit != null && existingUnit != null && !selectedUnit.getUnit().equals(existingUnit))) {
             throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
                                                                     "The unit with this name already exists."));
         }

@@ -140,7 +140,8 @@ public class DataTypeManager implements Serializable {
         final String enumName = value.toString();
         final DataType existingDataType = dataTypeEJB.findByName(enumName);
         if ((selectedEnum == null && existingDataType != null)
-                || (selectedEnum != null && !selectedEnum.getEnumeration().equals(existingDataType))) {
+                || (selectedEnum != null && existingDataType != null
+                        && !selectedEnum.getEnumeration().equals(existingDataType))) {
             throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
                                                                     "Enumeration with the same name already exists."));
         }
@@ -219,7 +220,7 @@ public class DataTypeManager implements Serializable {
         Preconditions.checkNotNull(selectedEnum);
         final DataType enumerationDataType = selectedEnum.getEnumeration();
         if (dataTypeEJB.isDataTypeUsed(enumerationDataType)) {
-            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "In use",
+            Utility.showMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
                         "The enumeration data type cannot be deleted because it is in use.");
         } else {
             dataTypeEJB.delete(enumerationDataType);
@@ -267,7 +268,8 @@ public class DataTypeManager implements Serializable {
                 String enumVal = scanner.nextLine().replaceAll("\\u00A0", " ").trim();
                 if (!enumVal.isEmpty()) {
                     if (!enumVal.matches("^\\w*$")) {
-                        throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
+                        throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                Utility.MESSAGE_SUMMARY_ERROR,
                                 "Enumeration value can only contain alphanumerical characters: " + enumVal));
                     }
                     // ignore multiple definitions of the same value
@@ -278,8 +280,8 @@ public class DataTypeManager implements Serializable {
                 }
             }
             if (lines < 2) {
-                throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error",
-                        "Enumeration definition must contain at least 2 values."));
+                throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                        Utility.MESSAGE_SUMMARY_ERROR, "Enumeration definition must contain at least 2 values."));
             }
         }
         return definitions;

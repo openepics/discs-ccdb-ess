@@ -157,7 +157,7 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
             Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS, "Property was deleted");
         } catch (Exception e) {
             if (Utility.causedByPersistenceException(e)) {
-                Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Deletion failed",
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_DELETE_FAIL,
                                                         "The property could not be deleted because it is used.");
             } else {
                 throw e;

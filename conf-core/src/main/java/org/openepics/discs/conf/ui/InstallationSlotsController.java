@@ -116,7 +116,8 @@ public class InstallationSlotsController extends AbstractSlotsController {
             newSlot.setComponentType(deviceType);
             super.onSlotAdd();
         } else {
-            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Failure", "Installation slot could not be added since and instance of installation slot with this name already exists");
+            Utility.showMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
+                    "Installation slot could not be added since and instance of installation slot with this name already exists");
         }
     }
 
@@ -210,7 +211,7 @@ public class InstallationSlotsController extends AbstractSlotsController {
         }
 
         if (childSlot.equals(parentSlot)) {
-            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Reflexive relationship",
+            Utility.showMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
                     "The installation slot cannot be in relationship with itself.");
             return;
         }
@@ -224,7 +225,8 @@ public class InstallationSlotsController extends AbstractSlotsController {
             }
             prepareRelationshipsPopup();
         } else {
-            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Duplicate relationship", "This relationship already exists.");
+            Utility.showMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
+                    "This relationship already exists.");
         }
     }
 
