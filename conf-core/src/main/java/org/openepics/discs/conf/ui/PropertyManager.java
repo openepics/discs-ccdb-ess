@@ -411,7 +411,8 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
         final String propertyName = value.toString();
         final Property existingProperty = propertyEJB.findByName(propertyName);
         if ((selectedProperty == null && existingProperty != null)
-                || (selectedProperty != null && !selectedProperty.equals(existingProperty))) {
+                || (selectedProperty != null &&  existingProperty != null
+                        && !selectedProperty.equals(existingProperty))) {
             throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
                                                                     "The property with this name already exists."));
         }
