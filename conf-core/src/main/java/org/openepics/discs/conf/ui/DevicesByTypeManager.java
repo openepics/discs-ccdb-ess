@@ -63,7 +63,7 @@ public class DevicesByTypeManager implements Serializable {
     private ComponentType selectedComponentType;
 
     private List<DeviceView> devices;
-    private List<DeviceView> filteredDevices;
+    private transient List<DeviceView> filteredDevices;
     private Device selectedDevice;
 
     private List<SelectItem> statusLabels;

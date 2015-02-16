@@ -21,6 +21,8 @@ package org.openepics.discs.conf.views;
 
 import org.openepics.discs.conf.ent.Device;
 
+import com.google.common.base.Preconditions;
+
 /**
  * An UI view object for showing {@link Device} entity in a table.
  *
@@ -34,7 +36,13 @@ public class DeviceView {
 
     private final Device device;
 
+    /** Creates a new immutable instance of the DeviceView object to be used in UI.
+     * @param device device entity
+     * @param installedIn name of the installation slot.
+     */
     public DeviceView(Device device, String installedIn) {
+        Preconditions.checkNotNull(device);
+        Preconditions.checkNotNull(installedIn);
         inventoryId = device.getSerialNumber();
         statusLabel = device.getStatus().getLabel();
         this.installedIn = installedIn;

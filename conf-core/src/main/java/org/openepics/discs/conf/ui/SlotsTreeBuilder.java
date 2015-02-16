@@ -315,13 +315,6 @@ public class SlotsTreeBuilder implements Serializable {
         return null;
     }
 
-    /**
-     * @return <code>true</code> if the root node is selectable, <code>false</code> otherwise.
-     */
-    protected boolean isRootNodeSelectable() {
-        return true;
-    }
-
     /** This method determines whether the node is selectable based on the slot the node is for, the device type the
      * user has requested and device that is installed in this slot.
      * @param slot the slot this node is for.

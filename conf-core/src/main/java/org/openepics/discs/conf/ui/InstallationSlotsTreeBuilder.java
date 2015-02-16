@@ -87,12 +87,6 @@ public class InstallationSlotsTreeBuilder extends SlotsTreeBuilder {
     }
 
     @Override
-    protected boolean isRootNodeSelectable() {
-        // in installation dialog the root is never selectable
-        return false;
-    }
-
-    @Override
     protected boolean isNodeSelectable(Slot slot, ComponentType installationSlotType, Device installedDevice) {
         return installedDevice == null && slot.isHostingSlot() && slot.getComponentType().equals(installationSlotType);
     }

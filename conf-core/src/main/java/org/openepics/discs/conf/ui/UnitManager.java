@@ -71,9 +71,9 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
 
     private List<Unit> units;
     private List<UnitView> unitViews;
-    private List<UnitView> filteredUnits;
+    private transient List<UnitView> filteredUnits;
 
-    private UnitView selectedUnit;
+    private transient UnitView selectedUnit;
 
     // * * * * * * * Add/modify dialog fields * * * * * * *
     private String name;
@@ -238,6 +238,13 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
         }
     }
 
+    /**
+     * A validator to check whether the unit name is unique.
+     * @param ctx
+     * @param component
+     * @param value
+     * @throws ValidatorException
+     */
     public void nameValidator(FacesContext ctx, UIComponent component, Object value) throws ValidatorException {
         if (value == null) {
             throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
@@ -331,17 +338,20 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
         this.quantity = quantity;
     }
 
+    /**
+     * @return a script element to be inserted into the units-manager.xhtml
+     */
     public String getStartupScript() {
         final StringBuilder js = new StringBuilder();
         js.append("<script type=\"text/javascript\">").append("\r\n");
         js.append("jQuery(document).ready(function() {").append("\r\n");
 
-        //js.append("alert(\"Debug CP#1\");").append("\r\n");
         js.append("if ((").append(unitPosition).append(" < 0) || (").append(unitPosition)
                         .append(" > unitsTableVar.getPaginator().cfg.rowCount)) {").append("\r\n");
         js.append("    return;").append("\r\n");
         js.append("}").append("\r\n");
-        js.append("var page = Math.floor(").append(unitPosition).append(" / unitsTableVar.getPaginator().cfg.rows);").append("\r\n");
+        js.append("var page = Math.floor(").append(unitPosition).append(" / unitsTableVar.getPaginator().cfg.rows);").
+                append("\r\n");
         js.append("unitsTableVar.getPaginator().setPage(page);").append("\r\n");
         js.append("});").append("\r\n");
         js.append("</script>").append("\r\n");

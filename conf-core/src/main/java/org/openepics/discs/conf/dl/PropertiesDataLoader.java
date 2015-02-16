@@ -237,11 +237,11 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
     }
 
     private void setPropertyUniqueness(Property property, PropertyValueUniqueness unique, final boolean inUse) {
-       if (inUse && property.getValueUniqueness() != unique) {
-           result.addRowMessage(ErrorMessage.MODIFY_IN_USE, HDR_UNIQUE);
-       } else {
-           property.setValueUniqueness(unique);
-       }
+        if (inUse && property.getValueUniqueness() != unique) {
+            result.addRowMessage(ErrorMessage.MODIFY_IN_USE, HDR_UNIQUE);
+        } else {
+            property.setValueUniqueness(unique);
+        }
     }
 
     private void setPropertyAssociation(Property setAssociationProperty, String association, final boolean inUse) {

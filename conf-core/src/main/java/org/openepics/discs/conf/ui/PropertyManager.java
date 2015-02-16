@@ -50,6 +50,8 @@ import org.openepics.discs.conf.util.BuiltInDataType;
 import org.openepics.discs.conf.util.Utility;
 import org.primefaces.context.RequestContext;
 
+import com.google.common.collect.ImmutableList;
+
 /**
  *
  * @author vuppala
@@ -398,10 +400,19 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
     public void setValueUniqueness(PropertyValueUniqueness valueUniqueness) {
         this.valueUniqueness = valueUniqueness;
     }
-    public PropertyValueUniqueness[] getUniqunessValues() {
-        return PropertyValueUniqueness.values();
+    /**
+     * @return the set of possible uniqueness values to show in the drop-down control.
+     */
+    public List<PropertyValueUniqueness> getUniqunessValues() {
+        return ImmutableList.copyOf(PropertyValueUniqueness.values());
     }
 
+    /** Validates the {@link Property} name for uniqueness.
+     * @param ctx
+     * @param component
+     * @param value
+     * @throws ValidatorException
+     */
     public void nameValidator(FacesContext ctx, UIComponent component, Object value) throws ValidatorException {
         if (value == null) {
             throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,

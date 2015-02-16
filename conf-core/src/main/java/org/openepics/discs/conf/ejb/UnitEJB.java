@@ -39,6 +39,9 @@ public class UnitEJB extends DAO<Unit> {
         return Unit.class;
     }
 
+    /**
+     * @return a list of all {@link Unit}s ordered by name.
+     */
     public List<Unit> findAllOrdered() {
         return em.createNamedQuery("Unit.findAllOrdered", Unit.class).getResultList();
     }
