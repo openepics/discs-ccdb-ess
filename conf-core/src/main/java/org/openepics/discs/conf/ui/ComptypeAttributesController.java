@@ -23,6 +23,8 @@ package org.openepics.discs.conf.ui;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
@@ -70,6 +72,8 @@ import com.google.common.collect.ImmutableList;
 public class ComptypeAttributesController extends AbstractAttributesController<ComptypePropertyValue, ComptypeArtifact> {
     private static final long serialVersionUID = 1156974438243970794L;
 
+    private static final Logger LOGGER = Logger.getLogger(ComptypeAttributesController.class.getCanonicalName());
+
     @Inject private transient ComptypeEJB comptypeEJB;
     @Inject private transient PropertyEJB propertyEJB;
     @Inject private transient SlotEJB slotEJB;
@@ -109,6 +113,10 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
                         newSlotProperty.setProperty(propertyValueInstance.getProperty());
                         newSlotProperty.setSlot(slot);
                         slotEJB.addChild(newSlotProperty);
+                    } else {
+                        LOGGER.log(Level.FINE, "Type: " + compType.getName() + "; Slot: " + slot.getName()
+                                + ";  Trying to add the same property value again: "
+                                + propertyValueInstance.getProperty().getName());
                     }
                 }
             }
@@ -120,6 +128,10 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
                         newDeviceProperty.setProperty(propertyValueInstance.getProperty());
                         newDeviceProperty.setDevice(device);
                         deviceEJB.addChild(newDeviceProperty);
+                    } else {
+                        LOGGER.log(Level.FINE, "Type: " + compType.getName() + "; Device: " + device.getSerialNumber()
+                                + ";  Trying to add the same property value again: "
+                                + propertyValueInstance.getProperty().getName());
                     }
                 }
             }
