@@ -34,7 +34,6 @@ public enum ErrorMessage {
     UNKNOWN_SLOT_RELATION_TYPE("Slot Relation specified is of unknown type"),
     REQUIRED_FIELD_MISSING("Required field is missing"),
     HEADER_FIELD_MISSING("Header field is missing"),
-    PROPERTY_ASSOCIATION_FAILURE("This entity can not be associated with this property"),
     SHOULD_BE_NUMERIC_VALUE("The value of this field should be numeric"),
     SHOULD_BE_BOOLEAN_VALUE("The value of this field should be TRUE or FALSE"),
     CANT_ADD_PARENT_TO_ROOT("Can't add parent to root node"),

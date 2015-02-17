@@ -40,7 +40,6 @@ import org.openepics.discs.conf.ejb.DAO;
 import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.PositionInformation;
-import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
 
@@ -90,6 +89,7 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
     @Override
     protected void init() {
         super.init();
+        setPropertyValueClass(SlotPropertyValue.class);
         newSlots = new ArrayList<>();
 
         result.getContextualData().put(DataLoaderResult.CTX_NEW_SLOTS, newSlots);
@@ -141,7 +141,6 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
     protected void handleUpdate() {
         @Nullable Slot slot = slotEJB.findByName(name);
         @Nullable final ComponentType compType = comptypeEJB.findByName(componentTypeString);
-        setPropertyValueClass(SlotPropertyValue.class);
         if (compType == null) {
             result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_CTYPE);
             return;
@@ -225,11 +224,6 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
         }
     }
 
-    @Override
-    protected boolean checkPropertyAssociation(Property property) {
-        return property.isSlotAssociation();
-    }
-
     @SuppressWarnings("unchecked")
     @Override
     protected DAO<Slot> getDAO() {
@@ -243,8 +237,7 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
             return null;
 
         try {
-            double doubleValue = Double.parseDouble(stringValue);
-            return doubleValue;
+            return Double.parseDouble(stringValue);
         } catch (NumberFormatException e) {
             result.addRowMessage(ErrorMessage.SHOULD_BE_NUMERIC_VALUE, columnName);
             return null;

@@ -90,23 +90,6 @@
                         <p:message for="valueUniqueness" />
                     </p:column>
                 </p:row>
-
-                <p:row>
-                    <p:column styleClass="alignRight dialog-labels-width-2" style="padding-top: 1em;">
-                        <p:outputLabel for="propertyAssociation" value="Association:" />
-                    </p:column>
-                    <p:column>
-                        <p:selectManyCheckbox id="propertyAssociation" value="#{propertyManager.propertyAssociation}" 
-                                required="true" requiredMessage="Please select association" 
-                                disabled="#{propertyManager.propertyUsed}" layout="grid" columns="1">
-                            <f:selectItem itemLabel="Device type" itemValue="TYPE" />
-                            <f:selectItem itemLabel="Installation Slot" itemValue="SLOT" />
-                            <f:selectItem itemLabel="Device instance" itemValue="DEVICE" />
-                            <f:selectItem itemLabel="Alignment" itemValue="ALIGNMENT" />
-                        </p:selectManyCheckbox>
-                        <p:message for="propertyAssociation" />
-                    </p:column>
-                </p:row>
             </p:panelGrid>
 
             <p:commandButton value="Cancel" styleClass="dialogButton" onclick="#{widgetName}.hide();" 

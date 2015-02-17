@@ -66,7 +66,6 @@ public class PropertiesDataLoaderIT {
 
     final static private String HDR_NAME = "NAME";
     final static private String HDR_DESC = "DESCRIPTION";
-    final static private String HDR_ASSOCIATION = "ASSOCIATION";
     final static private String HDR_DATATYPE = "DATA-TYPE";
     final static private String HDR_UNIT = "UNIT";
 
@@ -89,10 +88,9 @@ public class PropertiesDataLoaderIT {
         final List<ValidationMessage> expectedValidationMessages = new ArrayList<>();
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 4, HDR_NAME));
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 5, HDR_DESC));
-        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 6, HDR_ASSOCIATION));
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 8, HDR_DATATYPE));
 
-        final InputStream testDataStream = this.getClass().getResourceAsStream(TestUtility.DATALOADERS_PATH + "properties-required-fields-filure-test.xlsx");
+        final InputStream testDataStream = this.getClass().getResourceAsStream(TestUtility.DATALOADERS_PATH + "properties-required-fields-failure-test.xlsx");
         final DataLoaderResult loaderResult = dataLoaderHandler.loadData(testDataStream, propertiesDataLoader);
         testDataStream.close();
 
@@ -107,7 +105,7 @@ public class PropertiesDataLoaderIT {
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, 3, HDR_UNIT));
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, 4, HDR_DATATYPE));
 
-        final InputStream testDataStream = this.getClass().getResourceAsStream(TestUtility.DATALOADERS_PATH + "properties-entity-not-found-filure-test.xlsx");
+        final InputStream testDataStream = this.getClass().getResourceAsStream(TestUtility.DATALOADERS_PATH + "properties-entity-not-found-failure-test.xlsx");
         final DataLoaderResult loaderResult = dataLoaderHandler.loadData(testDataStream, propertiesDataLoader);
         testDataStream.close();
 

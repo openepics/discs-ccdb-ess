@@ -123,7 +123,7 @@ public class CommonDataLoadersIT {
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.HEADER_FIELD_MISSING, 1, HDR_NAME));
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.HEADER_FIELD_MISSING, 1, HDR_QUANTITY));
 
-        final InputStream testDataStream = this.getClass().getResourceAsStream(TestUtility.DATALOADERS_PATH + "required-header-fields-filure-test.xlsx");
+        final InputStream testDataStream = this.getClass().getResourceAsStream(TestUtility.DATALOADERS_PATH + "required-header-fields-failure-test.xlsx");
         final DataLoaderResult loaderResult = dataLoaderHandler.loadData(testDataStream, unitsDataLoader);
         testDataStream.close();
 

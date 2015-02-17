@@ -23,7 +23,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
@@ -97,7 +96,6 @@ public class PropertyEJBIT {
     @ApplyScriptBefore(value= {"update_sequences.sql"})
     public void testAdd() {
         final Property newProperty = new Property("TESTPROP", "TestPropDescription");
-        newProperty.setSlotAssociation(true);
         newProperty.setDataType( dataTypeService.findByName("Double") );
         newProperty.setUnit( unitService.findByName("meter") );
         propertyService.add(newProperty);
@@ -106,7 +104,6 @@ public class PropertyEJBIT {
         assertNotNull(newerProperty);
         assertEquals(newerProperty.getName(), "TESTPROP");
         assertEquals(newerProperty.getDescription(), "TestPropDescription");
-        assertTrue(newerProperty.isSlotAssociation());
         assertEquals(newerProperty.getDataType().getName(), "Double");
         assertEquals(newerProperty.getUnit().getName(), "meter");
     }

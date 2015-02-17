@@ -84,21 +84,7 @@ public class DeviceTypesDataLoaderIT {
         final List<ValidationMessage> expectedValidationMessages = new ArrayList<>();
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 10, HDR_NAME));
 
-        final InputStream testDataStream = this.getClass().getResourceAsStream(TestUtility.DATALOADERS_PATH + "device-types-required-fields-filure-test.xlsx");
-        final DataLoaderResult loaderResult = dataLoaderHandler.loadData(testDataStream, compTypesDataLoader);
-        testDataStream.close();
-
-        Assert.assertEquals(expectedValidationMessages, loaderResult.getMessages());
-        Assert.assertEquals(NUM_OF_DEV_TYPES_IF_FAILURE, compTypeEJB.findAll().size());
-    }
-
-    @Test
-    @Transactional(TransactionMode.DISABLED)
-    public void deviceTypesImportPropertyAssociationFailureTest() throws IOException {
-        final List<ValidationMessage> expectedValidationMessages = new ArrayList<>();
-        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.PROPERTY_ASSOCIATION_FAILURE, 5, HDR_ACENPOS));
-
-        final InputStream testDataStream = this.getClass().getResourceAsStream(TestUtility.DATALOADERS_PATH + "device-types-association-failure-test.xlsx");
+        final InputStream testDataStream = this.getClass().getResourceAsStream(TestUtility.DATALOADERS_PATH + "device-types-required-fields-failure-test.xlsx");
         final DataLoaderResult loaderResult = dataLoaderHandler.loadData(testDataStream, compTypesDataLoader);
         testDataStream.close();
 
@@ -117,5 +103,4 @@ public class DeviceTypesDataLoaderIT {
         Assert.assertFalse(loaderResult.isError());
         Assert.assertEquals(NUM_OF_DEV_TYPES_IF_SUCCESS, compTypeEJB.findAll().size());
     }
-
 }

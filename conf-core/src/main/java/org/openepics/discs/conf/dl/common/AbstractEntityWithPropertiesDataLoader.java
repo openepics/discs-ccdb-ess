@@ -31,7 +31,6 @@ import org.openepics.discs.conf.ejb.DAO;
 import org.openepics.discs.conf.ejb.PropertyEJB;
 import org.openepics.discs.conf.ent.EntityWithProperties;
 import org.openepics.discs.conf.ent.Property;
-import org.openepics.discs.conf.ent.PropertyAssociation;
 import org.openepics.discs.conf.ent.PropertyValue;
 import org.openepics.discs.conf.util.Conversion;
 
@@ -59,10 +58,6 @@ public abstract class AbstractEntityWithPropertiesDataLoader<S extends PropertyV
         final @Nullable Property property = propertyEJB.findByName(propertyName);
         if (property == null) {
             result.addRowMessage(ErrorMessage.PROPERTY_NOT_FOUND, propertyName);
-        } else {
-            if (!checkPropertyAssociation(property)) {
-                result.addGlobalMessage(ErrorMessage.PROPERTY_ASSOCIATION_FAILURE, propertyName);
-            }
         }
         return !result.isError();
     }
@@ -120,17 +115,6 @@ public abstract class AbstractEntityWithPropertiesDataLoader<S extends PropertyV
     protected void setPropertyValueClass(Class<S> propertyValueClass) {
         this.propertyValueClass = propertyValueClass;
     }
-
-
-    /**
-     * To be implemented by sub-classes. Should check whether a property association is appropriate for the entities
-     * covered by this data loader.
-     *
-     * @param propAssociation the {@link PropertyAssociation} to be checked against
-     * @return <code>false</code> if the property association type is not valid for the entities covered by this
-     * data loader
-     */
-    protected abstract boolean checkPropertyAssociation(final Property propAssociation);
 
     /**
      * To be implemented by sub-classes. Returns a DAO EJB for accessing properties

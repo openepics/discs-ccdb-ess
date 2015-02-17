@@ -23,7 +23,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -40,7 +39,6 @@ import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.ejb.PropertyEJB;
 import org.openepics.discs.conf.ent.DataType;
 import org.openepics.discs.conf.ent.Property;
-import org.openepics.discs.conf.ent.PropertyAssociation;
 import org.openepics.discs.conf.ent.PropertyValue;
 import org.openepics.discs.conf.ent.PropertyValueUniqueness;
 import org.openepics.discs.conf.ent.Unit;
@@ -77,7 +75,6 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
     private String description;
     private DataType dataType;
     private Unit unit;
-    private String[] association = new String[] {};
     private Property selectedProperty;
     private boolean unitComboEnabled;
     private boolean isPropertyUsed;
@@ -100,7 +97,6 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
      */
     public void onAdd() {
         final Property propertyToAdd = new Property(name, description);
-        setAssociationOnProperty(propertyToAdd);
         propertyToAdd.setDataType(dataType);
         propertyToAdd.setUnit(unit);
         propertyToAdd.setValueUniqueness(valueUniqueness);
@@ -117,7 +113,6 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
         selectedProperty.setName(name);
         selectedProperty.setDescription(description);
         selectedProperty.setDataType(dataType);
-        setAssociationOnProperty(selectedProperty);
         selectedProperty.setUnit(unit);
         selectedProperty.setValueUniqueness(valueUniqueness);
 
@@ -143,7 +138,6 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
         description = selectedProperty.getDescription();
         dataType = selectedProperty.getDataType();
         unit = selectedProperty.getUnit();
-        association = constructSetAssociations(selectedProperty);
         valueUniqueness = selectedProperty.getValueUniqueness();
         isPropertyUsed = propertyEJB.isPropertyUsed(selectedProperty);
         setIsUnitComboEnabled();
@@ -257,66 +251,6 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
     }
 
     /**
-     * @see PropertyAssociation
-     * @return The list of the possible property associations. Used by the PrimeFaces ManyCheckbox element.
-     */
-    public String[] getPropertyAssociation() {
-        return association;
-    }
-    /**
-     * @see PropertyAssociation
-     * @param association The list of the possible property associations. Used by the PrimeFaces ManyCheckbox element.
-     */
-    public void setPropertyAssociation(String[] association) {
-        this.association = association;
-    }
-
-    private String[] constructSetAssociations(Property property) {
-        final List<String> associations = new ArrayList<>();
-        if (property.isTypeAssociation()) {
-            associations.add(PropertyAssociation.TYPE);
-        }
-        if (property.isSlotAssociation()) {
-            associations.add(PropertyAssociation.SLOT);
-        }
-        if (property.isDeviceAssociation()) {
-            associations.add(PropertyAssociation.DEVICE);
-        }
-        if (property.isAlignmentAssociation()) {
-            associations.add(PropertyAssociation.ALIGNMENT);
-        }
-        return associations.toArray(new String[] {});
-    }
-
-    private void setAssociationOnProperty(Property property) {
-        if (association == null || association.length == 0) {
-            throw new RuntimeException("Property association target not selected.");
-        }
-
-        // reset all data
-        property.setNoneAssociation();
-
-        for (String assoc : association) {
-            switch (assoc) {
-                case PropertyAssociation.ALIGNMENT:
-                    property.setAlignmentAssociation(true);
-                    break;
-                case PropertyAssociation.DEVICE:
-                    property.setDeviceAssociation(true);
-                    break;
-                case PropertyAssociation.SLOT:
-                    property.setSlotAssociation(true);
-                    break;
-                case PropertyAssociation.TYPE:
-                    property.setTypeAssociation(true);
-                    break;
-                default:
-                    throw new RuntimeException("Unknow property associaton target.");
-            }
-        }
-    }
-
-    /**
      * Determines whether the {@link Unit} combo box in the property dialog should be enabled
      * (the user can change the {@link Unit}, or not. <br />
      * The {@link Unit} can be set only for some {@link DataType}s:
@@ -375,7 +309,6 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
         description = null;
         dataType = null;
         unit = null;
-        association = null;
         unitComboEnabled = true;
         valueUniqueness = PropertyValueUniqueness.NONE;
     }

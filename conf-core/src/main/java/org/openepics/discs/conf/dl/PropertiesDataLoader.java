@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.Nullable;
@@ -40,7 +41,6 @@ import org.openepics.discs.conf.ejb.PropertyEJB;
 import org.openepics.discs.conf.ejb.UnitEJB;
 import org.openepics.discs.conf.ent.DataType;
 import org.openepics.discs.conf.ent.Property;
-import org.openepics.discs.conf.ent.PropertyAssociation;
 import org.openepics.discs.conf.ent.PropertyValueUniqueness;
 import org.openepics.discs.conf.ent.Unit;
 
@@ -58,16 +58,14 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
 
     // Header column name constants
     private static final String HDR_NAME = "NAME";
-    private static final String HDR_ASSOCIATION = "ASSOCIATION";
     private static final String HDR_UNIT = "UNIT";
     private static final String HDR_DATATYPE = "DATA-TYPE";
     private static final String HDR_DESC = "DESCRIPTION";
     private static final String HDR_UNIQUE = "UNIQUE";
 
-    private static final List<String> KNOWN_COLUMNS = Arrays.asList(HDR_NAME, HDR_ASSOCIATION, HDR_UNIT,
-            HDR_DATATYPE, HDR_DESC, HDR_UNIQUE);
-    private static final Set<String> REQUIRED_COLUMNS = new HashSet<>(Arrays.asList(HDR_ASSOCIATION,
-            HDR_DATATYPE, HDR_DESC));
+    private static final List<String> KNOWN_COLUMNS = Arrays.asList(HDR_NAME, HDR_UNIT, HDR_DATATYPE, HDR_DESC,
+            HDR_UNIQUE);
+    private static final Set<String> REQUIRED_COLUMNS = new HashSet<>(Arrays.asList(HDR_DATATYPE, HDR_DESC));
 
     @Inject private PropertyEJB propertyEJB;
     @Inject private DataTypeEJB dataTypeEJB;
@@ -79,7 +77,7 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
     private Map<String, Property> propertyByName;
 
     // Row data for individual cells within a row
-    private String nameFld, associationFld, unitFld, dataTypeFld, descFld;
+    private String nameFld, unitFld, dataTypeFld, descFld;
     private PropertyValueUniqueness uniqueFld;
 
     /**
@@ -116,7 +114,6 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
         unitFld = readCurrentRowCellForHeader(HDR_UNIT);
         dataTypeFld = readCurrentRowCellForHeader(HDR_DATATYPE);
         descFld = readCurrentRowCellForHeader(HDR_DESC);
-        associationFld = readCurrentRowCellForHeader(HDR_ASSOCIATION);
         uniqueFld = uniquenessAsValue(readCurrentRowCellForHeader(HDR_UNIQUE));
     }
 
@@ -127,7 +124,6 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
                 final Property propertyToUpdate = propertyByName.get(nameFld);
                 propertyToUpdate.setDescription(descFld);
                 final boolean inUse = propertyEJB.isPropertyUsed(propertyToUpdate);
-                setPropertyAssociation(propertyToUpdate, associationFld, inUse);
                 setPropertyUnit(propertyToUpdate, unitFld, inUse);
                 setPropertyDataType(propertyToUpdate, dataTypeFld, inUse);
                 setPropertyUniqueness(propertyToUpdate, uniqueFld, inUse);
@@ -140,7 +136,6 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
         } else {
             try {
                 final Property propertyToAdd = new Property(nameFld, descFld);
-                setPropertyAssociation(propertyToAdd, associationFld, false);
                 setPropertyUnit(propertyToAdd, unitFld, false);
                 setPropertyDataType(propertyToAdd, dataTypeFld, false);
                 setPropertyUniqueness(propertyToAdd, uniqueFld, false);
@@ -244,64 +239,13 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
         }
     }
 
-    private void setPropertyAssociation(Property setAssociationProperty, String association, final boolean inUse) {
-        boolean associationType = false;
-        boolean associationSlot = false;
-        boolean associationDevice = false;
-        boolean associationAlignment = false;
-
-        final String associationCaps = association == null ? PropertyAssociation.TYPE : association.toUpperCase();
-
-        if (associationCaps.contains(PropertyAssociation.ALL)) {
-            associationType = true;
-            associationSlot = true;
-            associationDevice = true;
-            associationAlignment = true;
-        } else {
-            if (associationCaps.contains(PropertyAssociation.DEVICE)) {
-                associationDevice = true;
-            }
-            if (associationCaps.contains(PropertyAssociation.SLOT)) {
-                associationSlot = true;
-            }
-            if (associationCaps.contains(PropertyAssociation.TYPE)) {
-                associationType = true;
-            }
-            if (associationCaps.contains(PropertyAssociation.ALIGNMENT)) {
-                associationAlignment = true;
-            }
-        }
-
-        final boolean associationChange = (associationType != setAssociationProperty.isTypeAssociation())
-                                        || (associationSlot != setAssociationProperty.isSlotAssociation())
-                                        || (associationDevice != setAssociationProperty.isDeviceAssociation())
-                                        || (associationAlignment != setAssociationProperty.isAlignmentAssociation());
-
-        if (inUse && associationChange) {
-            result.addRowMessage(ErrorMessage.MODIFY_IN_USE, HDR_ASSOCIATION);
-        } else {
-            // apply new values only if changed
-            if (associationChange) {
-                setAssociationProperty.setNoneAssociation();
-                setAssociationProperty.setAlignmentAssociation(associationAlignment);
-                setAssociationProperty.setTypeAssociation(associationType);
-                setAssociationProperty.setSlotAssociation(associationSlot);
-                setAssociationProperty.setDeviceAssociation(associationDevice);
-            }
-
-            // default if nothing was set
-            if (setAssociationProperty.isAssociationNone()) {
-                setAssociationProperty.setTypeAssociation(true);
-            }
-        }
-    }
-
     private PropertyValueUniqueness uniquenessAsValue(String uniqueness) {
         PropertyValueUniqueness uniquenessValue = PropertyValueUniqueness.NONE;
         if (uniqueness != null) {
             try {
                 uniquenessValue = PropertyValueUniqueness.valueOf(uniqueness.trim().toUpperCase());
             } catch (IllegalArgumentException e) {
+                LOGGER.log(Level.FINE, "Incorrect value for property uniqueness.", e);
                 result.addRowMessage(ErrorMessage.UNIQUE_INCORRECT, HDR_UNIQUE);
             }
         }

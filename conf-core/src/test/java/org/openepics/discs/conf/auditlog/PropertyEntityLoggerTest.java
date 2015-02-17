@@ -44,7 +44,6 @@ public class PropertyEntityLoggerTest {
 
     @Before
     public void setUp() throws Exception {
-        prop.setTypeAssociation(true);
         prop.setUnit(unit);
         prop.setDataType(dt);
     }

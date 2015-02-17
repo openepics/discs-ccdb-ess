@@ -40,7 +40,6 @@ import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ent.DeviceStatus;
-import org.openepics.discs.conf.ent.Property;
 
 /**
  * Data loader for loading device instances.
@@ -82,6 +81,12 @@ public class DevicesDataLoader extends AbstractEntityWithPropertiesDataLoader<De
     @Inject private DeviceEJB deviceEJB;
 
     @Override
+    protected void init() {
+        super.init();
+        setPropertyValueClass(DevicePropertyValue.class);
+    }
+
+    @Override
     protected List<String> getKnownColumnNames() {
         return KNOWN_COLUMNS;
     }
@@ -94,11 +99,6 @@ public class DevicesDataLoader extends AbstractEntityWithPropertiesDataLoader<De
     @Override
     protected String getUniqueColumnName() {
         return HDR_SERIAL;
-    }
-
-    @Override
-    protected boolean checkPropertyAssociation(Property property) {
-        return property.isDeviceAssociation();
     }
 
     @Override
@@ -120,7 +120,6 @@ public class DevicesDataLoader extends AbstractEntityWithPropertiesDataLoader<De
     protected void handleUpdate() {
         if (deviceEJB.findDeviceBySerialNumber(serial) != null) {
             final @Nullable ComponentType compType = comptypeEJB.findByName(componentType);
-            setPropertyValueClass(DevicePropertyValue.class);
             if (compType == null) {
                 result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_CTYPE);
             } else {
@@ -167,7 +166,7 @@ public class DevicesDataLoader extends AbstractEntityWithPropertiesDataLoader<De
 
     @Override
     protected void handleRename() {
-        result.addRowMessage(ErrorMessage.COMMAND_NOT_VALID, CMD_HEADER);
+        result.addRowMessage(ErrorMessage.COMMAND_NOT_VALID, CMD_RENAME);
     }
 
     @SuppressWarnings("unchecked")

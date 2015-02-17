@@ -76,26 +76,13 @@ public class SlotsDataLoaderIT {
     @Test
     @Transactional(TransactionMode.DISABLED)
     public void slotsImportRequiredFieldsFailureTest() throws IOException {
-        final String slotsImportFileName = "slots-required-fields-filure-test.xlsx";
+        final String slotsImportFileName = "slots-required-fields-failure-test.xlsx";
         final List<ValidationMessage> expectedValidationMessages = new ArrayList<>();
         expectedValidationMessages.add(new ValidationMessage(slotsImportFileName));
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 4, HDR_NAME));
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 5, HDR_CTYPE));
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 6, HDR_IS_HOSTING_SLOT));
 
-        final DataLoaderResult loaderResult = dataLoaderHelper.importSlotsAndSlotPairs(slotsImportFileName, null);
-
-        Assert.assertEquals(expectedValidationMessages, loaderResult.getMessages());
-        Assert.assertEquals(SlotsAndSlotPairsDataLoaderHelper.NUM_OF_SLOTS_IF_FAILURE, slotEJB.findAll().size());
-    }
-
-    @Test
-    @Transactional(TransactionMode.DISABLED)
-    public void slotsImportPropertyAssociationFailureTest() throws IOException {
-        final String slotsImportFileName = "slots-association-failure-test.xlsx";
-        final List<ValidationMessage> expectedValidationMessages = new ArrayList<>();
-        expectedValidationMessages.add(new ValidationMessage(slotsImportFileName));
-        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.PROPERTY_ASSOCIATION_FAILURE, 5, HDR_APERTURE));
         final DataLoaderResult loaderResult = dataLoaderHelper.importSlotsAndSlotPairs(slotsImportFileName, null);
 
         Assert.assertEquals(expectedValidationMessages, loaderResult.getMessages());

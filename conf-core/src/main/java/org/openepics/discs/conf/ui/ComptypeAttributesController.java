@@ -56,8 +56,6 @@ import org.openepics.discs.conf.views.EntityAttributeView;
 import org.openepics.discs.conf.views.EntityAttributeViewKind;
 import org.primefaces.context.RequestContext;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableList;
 
 /**
@@ -72,10 +70,10 @@ import com.google.common.collect.ImmutableList;
 public class ComptypeAttributesController extends AbstractAttributesController<ComptypePropertyValue, ComptypeArtifact> {
     private static final long serialVersionUID = 1156974438243970794L;
 
-    @Inject transient private ComptypeEJB comptypeEJB;
-    @Inject transient private PropertyEJB propertyEJB;
-    @Inject transient private SlotEJB slotEJB;
-    @Inject transient private DeviceEJB deviceEJB;
+    @Inject private transient ComptypeEJB comptypeEJB;
+    @Inject private transient PropertyEJB propertyEJB;
+    @Inject private transient SlotEJB slotEJB;
+    @Inject private transient DeviceEJB deviceEJB;
 
     private ComponentType compType;
 
@@ -133,7 +131,8 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
      * @param propertyToAdd the property we want to add
      * @return <code>true</code> if the property is safe to add, <code>false</code> otherwise (it already exists).
      */
-    private <T extends PropertyValue> boolean canAddProperty(final List<T> entityProperties, final Property propertyToAdd) {
+    private <T extends PropertyValue> boolean canAddProperty(final List<T> entityProperties,
+                                                                        final Property propertyToAdd) {
         for (T entityProperty : entityProperties) {
             if (entityProperty.getProperty().equals(propertyToAdd)) {
                 return false;
@@ -186,7 +185,8 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
         // refresh the component type from database. This refreshes all related collections as well.
         compType = comptypeEJB.findById(this.compType.getId());
 
-        attributes.add(new EntityAttributeView(new BuiltInProperty(ComptypeBuiltInPropertyName.BIP_DESCRIPTION, compType.getDescription(), strDataType)));
+        attributes.add(new EntityAttributeView(new BuiltInProperty(ComptypeBuiltInPropertyName.BIP_DESCRIPTION,
+                                                        compType.getDescription(), strDataType)));
 
         for (ComptypePropertyValue prop : compType.getComptypePropertyList()) {
             attributes.add(new EntityAttributeView(prop));
@@ -213,7 +213,7 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
             }
         }
 
-        filteredProperties = ImmutableList.copyOf(Collections2.filter(propertyCandidates, getPropertyFilterPredicate()));
+        filteredProperties = ImmutableList.copyOf(propertyCandidates);
     }
 
     /**
@@ -301,33 +301,6 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
         definitionTarget = AbstractAttributesController.DefinitionTarget.DEVICE;
         isPropertyDefinition = true;
         super.prepareForPropertyValueAdd();
-    }
-
-    private Predicate<Property> getPropertyFilterPredicate() {
-        if (isPropertyDefinition) {
-            if (definitionTarget == AbstractAttributesController.DefinitionTarget.SLOT) {
-                return new Predicate<Property>() {
-                    @Override
-                    public boolean apply(Property property) {
-                        return property.isSlotAssociation();
-                    }
-                };
-            } else {
-                return new Predicate<Property>() {
-                    @Override
-                    public boolean apply(Property property) {
-                        return property.isDeviceAssociation();
-                    }
-                };
-            }
-        } else {
-            return new Predicate<Property>() {
-                @Override
-                public boolean apply(Property property) {
-                    return property.isTypeAssociation();
-                }
-            };
-        }
     }
 
     @Override

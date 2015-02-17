@@ -60,8 +60,6 @@ import org.openepics.discs.conf.views.SlotBuiltInPropertyName;
 import org.primefaces.context.RequestContext;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableList;
 
 /**
@@ -184,12 +182,7 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
             propertyCandidates.remove(slotPropertyValue.getProperty());
         }
 
-        filteredProperties = ImmutableList.copyOf(Collections2.filter(propertyCandidates, new Predicate<Property>() {
-            @Override
-            public boolean apply(Property property) {
-                return property.isSlotAssociation();
-            }
-        }));
+        filteredProperties = ImmutableList.copyOf(propertyCandidates);
     }
 
     /**

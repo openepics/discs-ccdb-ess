@@ -37,7 +37,6 @@ import org.openepics.discs.conf.ejb.DAO;
 import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
-import org.openepics.discs.conf.ent.Property;
 
 /**
  * Implementation of data loader for device types.
@@ -63,6 +62,12 @@ public class ComponentTypesDataLoader extends AbstractEntityWithPropertiesDataLo
     private String nameFld, descriptionFld;
 
     @Inject private ComptypeEJB comptypeEJB;
+
+    @Override
+    protected void init() {
+        super.init();
+        setPropertyValueClass(ComptypePropertyValue.class);
+    }
 
     @Override
     protected List<String> getKnownColumnNames() {
@@ -92,14 +97,8 @@ public class ComponentTypesDataLoader extends AbstractEntityWithPropertiesDataLo
     }
 
     @Override
-    protected boolean checkPropertyAssociation(Property property) {
-        return property.isTypeAssociation();
-    }
-
-    @Override
     protected void handleUpdate() {
         final ComponentType componentTypeToUpdate = comptypeEJB.findByName(nameFld);
-        setPropertyValueClass(ComptypePropertyValue.class);
         if (componentTypeToUpdate != null) {
             if (componentTypeToUpdate.getName().equals(SlotEJB.ROOT_COMPONENT_TYPE)) {
                 result.addRowMessage(ErrorMessage.NOT_AUTHORIZED, CMD_HEADER);
