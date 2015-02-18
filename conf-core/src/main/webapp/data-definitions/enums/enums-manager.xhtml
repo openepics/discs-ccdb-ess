@@ -8,7 +8,7 @@
     <ui:define name="content">
         <h:form id="enumsForm">
             <p:commandButton ajax="true" actionListener="#{dataTypeManager.prepareAddPopup()}" value="Add new"
-                    oncomplete="addEnum.show()" style="margin-bottom: 1em;" />
+                    oncomplete="addEnum.show()" update=":addEnumForm:addEnum" style="margin-bottom: 1em;" />
             <p:dataTable widgetVar="enumsTableVar" var="enum" id="enumsTable" value="#{dataTypeManager.dataTypeViews}" 
                     resizableColumns="true" style="table-layout: fixed; word-wrap: break-word;" 
                     filteredValue="#{dataTypeManager.filteredDataTypeViews}" rows="15" paginator="true" 
