@@ -61,6 +61,7 @@ import org.primefaces.context.RequestContext;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 
 /**
  * @author Andraz Pozar <andraz.pozar@cosylab.com>
@@ -309,12 +310,42 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
 
     @Override
     public void saveNewName() {
+        final ComponentType oldComponentType = slot.getComponentType();
         slot.setName(entityName);
         slot.setComponentType(deviceType);
         slotEJB.save(slot);
+        handleComponentTypeChange(oldComponentType, deviceType);
         populateAttributesList();
         RequestContext.getCurrentInstance().update("slotPropertiesManagerForm");
     }
+
+
+    /* this method updates the slot if the type changes. Otherwise it doesn't do anything. */
+    private void handleComponentTypeChange(ComponentType oldComponentType, ComponentType newComponentType) {
+        if (!oldComponentType.equals(newComponentType)) {
+            final List<SlotPropertyValue> existingPropertyValues = slot.getSlotPropertyList();
+            final List<SlotPropertyValue> deleteList = Lists.newArrayListWithCapacity(existingPropertyValues.size());
+            // mark all property values that are not present in the new component type for removal
+            for (SlotPropertyValue propertyValueChild : existingPropertyValues) {
+                final Property propertyType = propertyValueChild.getProperty();
+                if (isDefinedInType(propertyType, oldComponentType)
+                        && !isDefinedInType(propertyType, newComponentType)) {
+                    deleteList.add(propertyValueChild);
+                }
+            }
+            slotEJB.removePropertyDefinitionsForTypeChange(slot, deleteList);
+            slotEJB.addPropertyDefinitionsForTypeChange(slot, newComponentType);
+        }
+    }
+
+    private boolean isDefinedInType(Property prop, ComponentType componentType) {
+        for (ComptypePropertyValue propValue : componentType.getComptypePropertyList()) {
+            if (propValue.getProperty().equals(prop))
+                return propValue.isDefinitionTargetSlot();
+        }
+        return false;
+    }
+
 
     /**
      * @return <code>true</code> if a {@link Device} is installed into the current slot, <code>false</code> otherwise.

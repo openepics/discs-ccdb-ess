@@ -89,7 +89,8 @@ public class EntityTypeResolver {
     public static EntityType resolveEntityType(Object entity) {
         EntityType result = entityTypes.get(entity.getClass().getCanonicalName());
         if (result == null) {
-            throw new SecurityException("Unhandled or invalid entity type in the security system.");
+            throw new SecurityException("Unhandled or invalid entity type in the security system: "
+                                                + entity.getClass().getCanonicalName());
         }
 
         return result;

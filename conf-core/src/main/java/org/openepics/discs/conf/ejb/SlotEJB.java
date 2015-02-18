@@ -30,6 +30,7 @@ import org.openepics.discs.conf.dl.SlotsAndSlotPairsDataLoader;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
+import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyValue;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotPair;
@@ -155,6 +156,57 @@ public class SlotEJB extends DAO<Slot> {
                 addChild(slotPropertyValue);
             }
         }
+    }
+
+    /** This method removed all needless property values in a single transaction.
+     * Also, all the removals are only logged once.
+     * @param slot the {@link Slot} to work on
+     * @param deleteList property values to delete
+     */
+    @CRUDOperation(operation=EntityTypeOperation.UPDATE)
+    @Audit
+    @Authorized
+    public void removePropertyDefinitionsForTypeChange(final Slot slot, final List<SlotPropertyValue> deleteList) {
+        // delete all properties marked for removal
+        for (SlotPropertyValue propertyValueToDelete : deleteList) {
+            deleteChild(propertyValueToDelete);
+        }
+    }
+
+
+    /** This adds all the new properties in a single transaction.
+     * @param slot the {@link Slot} to work on
+     * @param newComponentType the new {@link ComponentType} to add the properties on
+     */
+    @CRUDOperation(operation=EntityTypeOperation.UPDATE)
+    @Audit
+    @Authorized
+    public void addPropertyDefinitionsForTypeChange(final Slot slot, final ComponentType newComponentType) {
+        // add all property values to the new type
+        final Slot slotFromDatabase = findById(slot.getId());
+        slotFromDatabase.setComponentType(newComponentType);
+        final List<SlotPropertyValue> existingPropertyValues = slotFromDatabase.getSlotPropertyList();
+        for (ComptypePropertyValue newPropDefinition : newComponentType.getComptypePropertyList()) {
+            if (newPropDefinition.isDefinitionTargetSlot()
+                    && !isPropertyInParentList(newPropDefinition.getProperty(), existingPropertyValues)) {
+                final SlotPropertyValue newPropertyValue = new SlotPropertyValue(false);
+                newPropertyValue.setProperty(newPropDefinition.getProperty());
+                newPropertyValue.setPropValue(null);
+                newPropertyValue.setSlot(slotFromDatabase);
+                addChild(newPropertyValue);
+                // this is for logging only, since the application is logging the slot, instead the new one
+                slot.getSlotPropertyList().add(newPropertyValue);
+            }
+        }
+    }
+
+    private boolean isPropertyInParentList(Property prop, List<SlotPropertyValue> parentPropertyValues) {
+        for (SlotPropertyValue propertyValueChild : parentPropertyValues) {
+            if (propertyValueChild.getProperty().equals(prop)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

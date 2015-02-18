@@ -275,7 +275,7 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
         if (entityName.isEmpty()) {
             Utility.showMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
                     "Device instance inventory ID must not be empty.");
-        } else if ((deviceById != null) && (deviceById != device)) {
+        } else if ((deviceById != null) && !deviceById.equals(device)) {
             Utility.showMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
                     "Device instance with this inventory ID already exists.");
         } else {
@@ -286,3 +286,5 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
         }
     }
 }
+
+
