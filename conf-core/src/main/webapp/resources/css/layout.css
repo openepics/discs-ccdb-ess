@@ -253,3 +253,7 @@ a {
 .dialog-labels-width-2 {
     width: 12ex;
 }
+
+.property-selection .ui-dialog-content {
+	overflow-y: hidden !important;
+}

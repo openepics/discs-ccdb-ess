@@ -106,6 +106,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
     @Inject protected DataTypeEJB dataTypeEJB;
 
     protected Property property;
+    protected List<Property> selectedProperties;
     protected Value propertyValue;
     protected List<String> enumSelections;
     protected List<Property> filteredProperties;
@@ -172,39 +173,16 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
     public void addNewPropertyValue() {
         try {
             propertyValueInstance = propertyValueClass.newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-        propertyValueInstance.setInRepository(false);
-        propertyValueInstance.setProperty(property);
-        propertyValueInstance.setPropValue(propertyValue);
-        setPropertyValueParent(propertyValueInstance);
+            propertyValueInstance.setInRepository(false);
+            propertyValueInstance.setProperty(property);
+            propertyValueInstance.setPropValue(propertyValue);
+            setPropertyValueParent(propertyValueInstance);
 
-        if ((propertyValueInstance instanceof ComptypePropertyValue) && isPropertyDefinition) {
-            final ComptypePropertyValue ctPropValueInstance = (ComptypePropertyValue) propertyValueInstance;
-            ctPropValueInstance.setPropertyDefinition(true);
-            if (definitionTarget == DefinitionTarget.SLOT) {
-                ctPropValueInstance.setDefinitionTargetSlot(true);
-            } else {
-                ctPropValueInstance.setDefinitionTargetDevice(true);
-            }
-        }
-
-        try {
             dao.addChild(propertyValueInstance);
+            internalPopulateAttributesList();
 
-            if (isPropertyDefinition) {
-                if (definitionTarget == DefinitionTarget.SLOT) {
-                    Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
-                            "New installation slot property has been created");
-                } else {
-                    Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
-                            "New device instance property has been created");
-                }
-            } else {
-                Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
-                        "New property has been created");
-            }
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+                    "New property has been created");
         } catch (EJBException e) {
             if (Utility.causedBySpecifiedExceptionClass(e, PropertyValueNotUniqueException.class)) {
                 FacesContext.getCurrentInstance().addMessage("uniqueMessage",
@@ -214,8 +192,34 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
             } else {
                 throw e;
             }
-        } finally {
-            internalPopulateAttributesList();
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void addNewPropertyValueDefs() {
+        for (Property selectedProperty : selectedProperties) {
+            try {
+                final T newPropertyValueInstance = propertyValueClass.newInstance();
+                newPropertyValueInstance.setInRepository(false);
+                newPropertyValueInstance.setProperty(selectedProperty);
+                newPropertyValueInstance.setPropValue(null);
+                setPropertyValueParent(newPropertyValueInstance);
+
+                if ((newPropertyValueInstance instanceof ComptypePropertyValue) && isPropertyDefinition) {
+                    final ComptypePropertyValue ctPropValueInstance = (ComptypePropertyValue) newPropertyValueInstance;
+                    ctPropValueInstance.setPropertyDefinition(true);
+                    if (definitionTarget == DefinitionTarget.SLOT) {
+                        ctPropValueInstance.setDefinitionTargetSlot(true);
+                    } else {
+                        ctPropValueInstance.setDefinitionTargetDevice(true);
+                    }
+                }
+                dao.addChild(newPropertyValueInstance);
+                populateAttributesList();
+            } catch (InstantiationException | IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -1059,5 +1063,15 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
     /** @return the attributeKinds */
     public List<SelectItem> getAttributeKinds() {
         return attributeKinds;
+    }
+
+    /** @return the selectedProperties */
+    public List<Property> getSelectedProperties() {
+        return selectedProperties;
+    }
+
+    /** @param selectedProperties the selectedProperties to set */
+    public void setSelectedProperties(List<Property> selectedProperties) {
+        this.selectedProperties = selectedProperties;
     }
 }

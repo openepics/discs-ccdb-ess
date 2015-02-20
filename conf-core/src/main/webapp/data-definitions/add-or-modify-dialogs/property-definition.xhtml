@@ -5,40 +5,33 @@
 
     <h:form id="#{formId}">
         <p:dialog widgetVar="#{widgetName}" id="#{widgetName}" modal="true" resizable="false" closable="false" 
-                dynamic="true">
+                dynamic="true" styleClass="property-selection">
             <f:facet name="header">
                 <h:outputText value="#{dialogTitle}" />
             </f:facet>
-            <p:panelGrid id="grp" styleClass="dialog-grid-panel noBorders" columns="2" 
-                    style="margin-bottom: 2ex; margin-right: 1ex;" 
-                    columnClasses="alignMiddle alignRight dialog-labels-width-2, noPaddingRight">
-
-                <p:outputLabel for="propertySelect" value="Property:" />
-                <h:panelGroup>
-                    <p:selectOneMenu id="propertySelect" value="#{controller.property}" var="prop" 
-                            converter="#{propertyConverter}" rendered="true" required="true" 
-                            requiredMessage="Please select a property">
-                        <p:ajax update=":#{formId}:propertyUnit :#{formId}:propertyDataType"/>
-                        <f:selectItem itemLabel="Select One" itemValue="" />
-                        <f:selectItems value="#{controller.filteredProperties}" var="property" 
-                            itemLabel="#{property.name}" itemValue="#{property}" />
-                        <p:column>  
-                            #{prop.name}
-                        </p:column>                    
-                    </p:selectOneMenu>
-                    <p:message for="propertySelect"/>
-                </h:panelGroup>
-
-                <p:outputLabel value="Data type:" />
-                <p:inputText id="propertyDataType" value="#{controller.property.dataType.name}" disabled="true"/>
-
-                <p:outputLabel value="Unit:" />
-                <p:inputText id="propertyUnit" value="#{controller.property.unit.name}" disabled="true"/>
-            </p:panelGrid>
+            <p:panel style="margin-bottom: 2ex; border: 0;">
+                <p:dataTable id="propertySelect" value="#{controller.filteredProperties}" var="prop" 
+                        selection="#{controller.selectedProperties}" rowKey="#{prop.id}" scrollable="true" 
+                        scrollHeight="200" tableStyle="width: 52em; table-layout: auto;">
+                    <p:column selectionMode="multiple" style="width: 2em;" />
+                    <p:column headerText="Property" style="width: 22em;">
+                        <h:outputText value="#{prop.name}" />
+                    </p:column>
+                    <p:column headerText="Description" style="width: 16em;">
+                        <h:outputText value="#{prop.description}" />
+                    </p:column>
+                    <p:column headerText="Data type" style="width: 6em;">
+                        <h:outputText value="#{prop.dataType.name}" />
+                    </p:column>
+                    <p:column headerText="Unit" style="width: 6em;">
+                        <h:outputText value="#{not empty prop.unit ? prop.unit.name : '-'}" />
+                    </p:column>
+                </p:dataTable>
+            </p:panel>
 
             <p:commandButton value="Cancel" styleClass="dialogButton" onclick="#{widgetName}.hide();" 
-                    update="grp" resetValues="true" />
-            <p:commandButton value="Save" styleClass="dialogButton" update="#{componentToUpdate} grp" 
+                    update="propertySelect" resetValues="true" />
+            <p:commandButton value="Save" styleClass="dialogButton" update="#{componentToUpdate} propertySelect" 
                     oncomplete="if (args &amp;&amp; !args.validationFailed) #{widgetName}.hide()" 
                     action="#{controller[submitHandler]}"/>
         </p:dialog>
