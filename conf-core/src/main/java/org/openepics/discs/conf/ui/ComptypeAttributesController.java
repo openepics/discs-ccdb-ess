@@ -58,8 +58,6 @@ import org.openepics.discs.conf.views.EntityAttributeView;
 import org.openepics.discs.conf.views.EntityAttributeViewKind;
 import org.primefaces.context.RequestContext;
 
-import com.google.common.collect.ImmutableList;
-
 /**
  * Controller bean for manipulation of {@link ComponentType} attributes
  *
@@ -225,7 +223,7 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
             }
         }
 
-        filteredProperties = ImmutableList.copyOf(propertyCandidates);
+        filteredProperties = propertyCandidates;
     }
 
     /**

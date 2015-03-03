@@ -70,6 +70,7 @@ import org.openepics.discs.conf.views.DeviceBuiltInPropertyName;
 import org.openepics.discs.conf.views.EntityAttributeView;
 import org.openepics.discs.conf.views.EntityAttributeViewKind;
 import org.openepics.discs.conf.views.SlotBuiltInPropertyName;
+import org.primefaces.component.datatable.DataTable;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.DefaultStreamedContent;
@@ -106,7 +107,8 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
     @Inject protected DataTypeEJB dataTypeEJB;
 
     protected Property property;
-    protected List<Property> selectedProperties;
+    private List<Property> selectedProperties;
+    private List<Property> selectionPropertiesFiltered;
     protected Value propertyValue;
     protected List<String> enumSelections;
     protected List<Property> filteredProperties;
@@ -117,8 +119,8 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
     protected boolean isPropertyDefinition;
     protected DefinitionTarget definitionTarget;
 
-    protected String tag;
-    protected List<String> tagsForAutocomplete;
+    private String tag;
+    private List<String> tagsForAutocomplete;
 
     protected String artifactName;
     protected String artifactDescription;
@@ -257,9 +259,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
         }
     }
 
-    /**
-     * Adds new {@link Tag} to parent {@link ConfigurationEntity}
-     */
+    /** Adds new {@link Tag} to parent {@link ConfigurationEntity} */
     public void addNewTag() {
         final String normalizedTag = tag.trim();
         Tag existingTag = tagEJB.findById(normalizedTag);
@@ -277,7 +277,6 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
      * This attribute can be {@link Tag}, {@link PropertyValue} or {@link Artifact}
      * @throws IOException
      */
-
     public void deleteAttribute() throws IOException {
         Preconditions.checkState(selectedAttribute != null);
         Preconditions.checkState(propertyValueClass != null);
@@ -406,9 +405,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
         RequestContext.getCurrentInstance().execute("PF('modifyBuiltInProperty').show()");
     }
 
-    /**
-     * Modifies {@link PropertyValue}
-     */
+    /** Modifies {@link PropertyValue} */
     @SuppressWarnings("unchecked")
     public void modifyPropertyValue() {
         final T selectedPropertyValue = (T) selectedAttribute.getEntity();
@@ -439,14 +436,10 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
      */
     public abstract void saveNewName();
 
-    /**
-     * This method is called by the built-in property dialog "Save" button to save the new built-in property value.
-     */
+    /** This method is called by the built-in property dialog "Save" button to save the new built-in property value. */
     public abstract void modifyBuiltInProperty();
 
-    /**
-     * Modifies {@link Artifact}
-     */
+    /** Modifies {@link Artifact} */
     @SuppressWarnings("unchecked")
     public void modifyArtifact() {
         final S selectedArtifact = (S) selectedAttribute.getEntity();
@@ -524,9 +517,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
 
     protected abstract void deleteTagFromParent(Tag tag);
 
-    /**
-     * Filters a list of possible properties to attach to the entity based on the association type.
-     */
+    /** Filters a list of possible properties to attach to the entity based on the association type. */
     protected abstract void filterProperties();
 
     protected abstract void populateAttributesList();
@@ -535,7 +526,6 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
 
     private void internalPopulateAttributesList() {
         fillTagsAutocomplete();
-
         populateAttributesList();
     }
 
@@ -557,9 +547,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
         return attributes;
     }
 
-    /**
-     * Prepares data for addition of {@link PropertyValue}
-     */
+    /** Prepares data for addition of {@link PropertyValue} */
     public void prepareForPropertyValueAdd() {
         propertyNameChangeDisabled = false;
         property = null;
@@ -567,20 +555,18 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
         enumSelections = null;
         selectedAttribute = null;
         propertyValueUIElement = PropertyValueUIElement.NONE;
+        selectedProperties = null;
+        selectionPropertiesFiltered = null;
         filterProperties();
     }
 
-    /**
-     * Prepares the UI data for addition of {@link Tag}
-     */
+    /** Prepares the UI data for addition of {@link Tag} */
     public void prepareForTagAdd() {
         fillTagsAutocomplete();
         tag = null;
     }
 
-    /**
-     * Prepares the UI data for addition of {@link Artifact}
-     */
+    /** Prepares the UI data for addition of {@link Artifact} */
     public void prepareForArtifactAdd() {
         artifactName = null;
         artifactDescription = null;
@@ -604,17 +590,13 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
         }
     }
 
-    /**
-     * If user changes the type of the artifact, any previously uploaded file gets deleted
-     */
+    /** If user changes the type of the artifact, any previously uploaded file gets deleted */
     public void artifactTypeChanged() {
         importData = null;
         importFileName = null;
     }
 
-    /**
-     * @return The name of the imported file.
-     */
+    /** @return The name of the imported file. */
     public String getImportFileName() {
         return importFileName;
     }
@@ -625,9 +607,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
     public void setProperty(Property property) {
         this.property = property;
     }
-    /**
-     * @return The property associated with the property value
-     */
+    /** @return The property associated with the property value */
     public Property getProperty() {
         return property;
     }
@@ -640,16 +620,12 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
         final DataType dataType = selectedAttribute != null ? selectedAttribute.getType() : property.getDataType();
         this.propertyValue = Conversion.stringToValue(propertyValue, dataType);
     }
-    /**
-     * @return String representation of the property value.
-     */
+    /** @return String representation of the property value. */
     public String getPropertyValue() {
         return Conversion.valueToString(propertyValue);
     }
 
-    /**
-     * @return The value of the tag
-     */
+    /** @return The value of the tag */
     public String getTag() {
         return tag;
     }
@@ -660,16 +636,12 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
         this.tag = tag;
     }
 
-    /**
-     * @return The list of {@link Property} entities the user can select from the drop-down control.
-     */
+    /** @return The list of {@link Property} entities the user can select from the drop-down control. */
     public List<Property> getFilteredProperties() {
         return filteredProperties;
     }
 
-    /**
-     * @return The user specified {@link Artifact} name.
-     */
+    /** @return The user specified {@link Artifact} name. */
     public String getArtifactName() {
         return artifactName;
     }
@@ -680,9 +652,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
         this.artifactName = artifactName;
     }
 
-    /**
-     * @return The user specified {@link Artifact} description.
-     */
+    /** @return The user specified {@link Artifact} description. */
     public String getArtifactDescription() {
         return artifactDescription;
     }
@@ -693,9 +663,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
         this.artifactDescription = artifactDescription;
     }
 
-    /**
-     * @return <code>true</code> if the {@link Artifact} is a file attachment, <code>false</code> if its an URL.
-     */
+    /** @return <code>true</code> if the {@link Artifact} is a file attachment, <code>false</code> if its an URL. */
     public boolean getIsArtifactInternal() {
         return isArtifactInternal;
     }
@@ -706,9 +674,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
         this.isArtifactInternal = isArtifactInternal;
     }
 
-    /**
-     * @return The URL the user stored in the database.
-     */
+    /** @return The URL the user stored in the database. */
     public String getArtifactURI() {
         return artifactURI;
     }
@@ -719,9 +685,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
         this.artifactURI = artifactURI.trim();
     }
 
-    /**
-     * @return <code>true</code> if a "Modify artifact" dialog is open, <code>false</code> otherwise.
-     */
+    /** @return <code>true</code> if a "Modify artifact" dialog is open, <code>false</code> otherwise. */
     public boolean getIsArtifactBeingModified() {
         return isArtifactBeingModified;
     }
@@ -818,9 +782,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
         }
     }
 
-    /**
-     * @return The type of the UI control to use depending on the {@link PropertyValue} {@link DataType}
-     */
+    /** @return The type of the UI control to use depending on the {@link PropertyValue} {@link DataType} */
     public PropertyValueUIElement getPropertyValueUIElement() {
         return propertyValueUIElement;
     }
@@ -831,9 +793,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
         this.propertyValueUIElement = propertyValueUIElement;
     }
 
-    /**
-     * @return The list of values the user can select a value from if the {@link DataType} is an enumeration.
-     */
+    /** @return The list of values the user can select a value from if the {@link DataType} is an enumeration. */
     public List<String> getEnumSelections() {
         return enumSelections;
     }
@@ -1017,9 +977,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
         return builtInProperteryName;
     }
 
-    /**
-     * @return The string describing the data type of the built-in property.
-     */
+    /** @return The string describing the data type of the built-in property. */
     public String getBuiltInPropertyDataType() {
         return builtInPropertyDataType;
     }
@@ -1073,5 +1031,24 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
     /** @param selectedProperties the selectedProperties to set */
     public void setSelectedProperties(List<Property> selectedProperties) {
         this.selectedProperties = selectedProperties;
+    }
+
+    /** @return the selectionPropertiesFiltered */
+    public List<Property> getSelectionPropertiesFiltered() {
+        return selectionPropertiesFiltered;
+    }
+
+    /** @param selectionPropertiesFiltered the selectionPropertiesFiltered to set */
+    public void setSelectionPropertiesFiltered(List<Property> selectionPropertiesFiltered) {
+        this.selectionPropertiesFiltered = selectionPropertiesFiltered;
+    }
+
+    public void resetPropertySelection(String id) {
+        DataTable dataTable = (DataTable) FacesContext.getCurrentInstance().getViewRoot()
+                .findComponent(id + ":propertySelect");
+        dataTable.setSortBy(null);
+        dataTable.setFirst(0);
+        dataTable.setFilteredValue(null);
+        dataTable.setFilters(null);
     }
 }

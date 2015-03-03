@@ -183,7 +183,7 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
             propertyCandidates.remove(slotPropertyValue.getProperty());
         }
 
-        filteredProperties = ImmutableList.copyOf(propertyCandidates);
+        filteredProperties = propertyCandidates;
     }
 
     /**

@@ -12,27 +12,31 @@
             <p:panel style="margin-bottom: 2ex; border: 0;">
                 <p:dataTable id="propertySelect" value="#{controller.filteredProperties}" var="prop" 
                         selection="#{controller.selectedProperties}" rowKey="#{prop.id}" scrollable="true" 
-                        scrollHeight="200" tableStyle="width: 52em; table-layout: auto;">
+                        scrollHeight="200" tableStyle="width: 52em; table-layout: auto;" widgetVar="propSelectTable" 
+                        filteredValue="#{controller.selectionPropertiesFiltered}">
                     <p:column selectionMode="multiple" style="width: 2em;" />
-                    <p:column headerText="Property" style="width: 22em;">
+                    <p:column headerText="Property" style="width: 20em;" sortBy="#{prop.name}" filterBy="#{prop.name}">
                         <h:outputText value="#{prop.name}" />
                     </p:column>
-                    <p:column headerText="Description" style="width: 16em;">
+                    <p:column headerText="Description" style="width: 16em;" sortBy="#{prop.description}" 
+                            filterBy="#{prop.description}" filterMatchMode="contains">
                         <h:outputText value="#{prop.description}" />
                     </p:column>
-                    <p:column headerText="Data type" style="width: 6em;">
+                    <p:column headerText="Data type" style="width: 8em;" sortBy="#{prop.dataType.name}" 
+                            filterBy="#{prop.dataType.name}" filterMatchMode="contains" filterStyle="width: 90%;">
                         <h:outputText value="#{prop.dataType.name}" />
                     </p:column>
-                    <p:column headerText="Unit" style="width: 6em;">
+                    <p:column headerText="Unit" style="width: 6em;" sortBy="#{prop.unit.name}" 
+                            filterBy="#{prop.unit.name}" filterMatchMode="contains" filterStyle="width: 90%;">
                         <h:outputText value="#{not empty prop.unit ? prop.unit.name : '-'}" />
                     </p:column>
                 </p:dataTable>
             </p:panel>
 
-            <p:commandButton value="Cancel" styleClass="dialogButton" onclick="#{widgetName}.hide();" 
-                    update="propertySelect" resetValues="true" />
+            <p:commandButton value="Cancel" styleClass="dialogButton" oncomplete="#{widgetName}.hide();" 
+                    update="propertySelect" resetValues="true" action="#{controller.resetPropertySelection(formId)}" />
             <p:commandButton value="Save" styleClass="dialogButton" update="#{componentToUpdate} propertySelect" 
-                    oncomplete="if (args &amp;&amp; !args.validationFailed) #{widgetName}.hide()" 
+                    oncomplete="if (args &amp;&amp; !args.validationFailed) { #{widgetName}.hide(); propSelectTable.filter(); }" 
                     action="#{controller[submitHandler]}"/>
         </p:dialog>
 
