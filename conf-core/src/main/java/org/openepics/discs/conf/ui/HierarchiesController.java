@@ -42,6 +42,8 @@ import org.openepics.discs.conf.ent.ComptypeArtifact;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.DataType;
 import org.openepics.discs.conf.ent.Device;
+import org.openepics.discs.conf.ent.DeviceArtifact;
+import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ent.InstallationRecord;
 import org.openepics.discs.conf.ent.PositionInformation;
 import org.openepics.discs.conf.ent.Slot;
@@ -116,64 +118,107 @@ public class HierarchiesController implements Serializable {
         final List<EntityAttributeView> attributesList = new ArrayList<>();
 
         if (selectedNode != null) {
-            final boolean isHostingSlot = selectedSlot.isHostingSlot();
-
-            attributesList.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_DESCRIPTION,
-                                            selectedSlot.getDescription(), strDataType)));
-            if (selectedSlot.isHostingSlot()) {
-                attributesList.add(new EntityAttributeView(
-                                            new BuiltInProperty(SlotBuiltInPropertyName.BIP_BEAMLINE_POS,
-                                                    selectedSlot.getBeamlinePosition(), dblDataType)));
-                final PositionInformation slotPosition = selectedSlot.getPositionInformation();
-                attributesList.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_GLOBAL_X,
-                                                                    slotPosition.getGlobalX(), dblDataType)));
-                attributesList.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_GLOBAL_Y,
-                                                                    slotPosition.getGlobalY(), dblDataType)));
-                attributesList.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_GLOBAL_Z,
-                                                                    slotPosition.getGlobalZ(), dblDataType)));
-                attributesList.add(new EntityAttributeView(
-                                            new BuiltInProperty(SlotBuiltInPropertyName.BIP_GLOBAL_PITCH,
-                                                    slotPosition.getGlobalPitch(), dblDataType)));
-                attributesList.add(new EntityAttributeView(
-                                            new BuiltInProperty(SlotBuiltInPropertyName.BIP_GLOBAL_ROLL,
-                                                    slotPosition.getGlobalRoll(), dblDataType)));
-                attributesList.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_GLOBAL_YAW,
-                                                                    slotPosition.getGlobalYaw(), dblDataType)));
-            }
-
-            for (ComptypePropertyValue value : selectedSlot.getComponentType().getComptypePropertyList()) {
-                if (!value.isPropertyDefinition()) {
-                    attributesList.add(new EntityAttributeView(value, EntityAttributeViewKind.DEVICE_TYPE_PROPERTY));
-                }
-            }
-
-            for (SlotPropertyValue value : selectedSlot.getSlotPropertyList()) {
-                attributesList.add(new EntityAttributeView(value, isHostingSlot
-                                                                ? EntityAttributeViewKind.INSTALL_SLOT_PROPERTY
-                                                                : EntityAttributeViewKind.CONTAINER_SLOT_PROPERTY));
-            }
-
-            for (ComptypeArtifact artifact : selectedSlot.getComponentType().getComptypeArtifactList()) {
-                attributesList.add(new EntityAttributeView(artifact, EntityAttributeViewKind.DEVICE_TYPE_ARTIFACT));
-            }
-
-            for (SlotArtifact artifact : selectedSlot.getSlotArtifactList()) {
-                attributesList.add(new EntityAttributeView(artifact, isHostingSlot
-                                                                ? EntityAttributeViewKind.INSTALL_SLOT_ARTIFACT
-                                                                : EntityAttributeViewKind.CONTAINER_SLOT_ARTIFACT));
-            }
-
-            for (Tag tag : selectedSlot.getComponentType().getTags()) {
-                attributesList.add(new EntityAttributeView(tag, EntityAttributeViewKind.DEVICE_TYPE_TAG));
-            }
-
-            for (Tag tag : selectedSlot.getTags()) {
-                attributesList.add(new EntityAttributeView(tag, isHostingSlot
-                                                                ? EntityAttributeViewKind.INSTALL_SLOT_TAG
-                                                                : EntityAttributeViewKind.CONTAINER_SLOT_TAG));
-            }
+            addBuiltInProperties(attributesList);
+            addPropertyValues(attributesList);
+            addArtifacts(attributesList);
+            addTags(attributesList);
         }
         this.attributes = attributesList;
+    }
+
+    private void addBuiltInProperties(List<EntityAttributeView> attributesList) {
+        final boolean isHostingSlot = selectedSlot.isHostingSlot();
+
+        attributesList.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_DESCRIPTION,
+                                        selectedSlot.getDescription(), strDataType)));
+        if (isHostingSlot) {
+            attributesList.add(new EntityAttributeView(
+                                        new BuiltInProperty(SlotBuiltInPropertyName.BIP_BEAMLINE_POS,
+                                                selectedSlot.getBeamlinePosition(), dblDataType)));
+            final PositionInformation slotPosition = selectedSlot.getPositionInformation();
+            attributesList.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_GLOBAL_X,
+                                                                slotPosition.getGlobalX(), dblDataType)));
+            attributesList.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_GLOBAL_Y,
+                                                                slotPosition.getGlobalY(), dblDataType)));
+            attributesList.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_GLOBAL_Z,
+                                                                slotPosition.getGlobalZ(), dblDataType)));
+            attributesList.add(new EntityAttributeView(
+                                        new BuiltInProperty(SlotBuiltInPropertyName.BIP_GLOBAL_PITCH,
+                                                slotPosition.getGlobalPitch(), dblDataType)));
+            attributesList.add(new EntityAttributeView(
+                                        new BuiltInProperty(SlotBuiltInPropertyName.BIP_GLOBAL_ROLL,
+                                                slotPosition.getGlobalRoll(), dblDataType)));
+            attributesList.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_GLOBAL_YAW,
+                                                                slotPosition.getGlobalYaw(), dblDataType)));
+        }
+
+    }
+
+    private void addPropertyValues(List<EntityAttributeView> attributesList) {
+        final boolean isHostingSlot = selectedSlot.isHostingSlot();
+        final Device installedDevice = getInstalledDevice();
+
+        for (ComptypePropertyValue value : selectedSlot.getComponentType().getComptypePropertyList()) {
+            if (!value.isPropertyDefinition()) {
+                attributesList.add(new EntityAttributeView(value, EntityAttributeViewKind.DEVICE_TYPE_PROPERTY));
+            }
+        }
+
+        for (SlotPropertyValue value : selectedSlot.getSlotPropertyList()) {
+            attributesList.add(new EntityAttributeView(value, isHostingSlot
+                                                            ? EntityAttributeViewKind.INSTALL_SLOT_PROPERTY
+                                                            : EntityAttributeViewKind.CONTAINER_SLOT_PROPERTY));
+        }
+
+        if (installedDevice != null) {
+            for (DevicePropertyValue devicePropertyValue : installedDevice.getDevicePropertyList()) {
+                attributesList.add(new EntityAttributeView(devicePropertyValue,
+                                                            EntityAttributeViewKind.DEVICE_PROPERTY));
+            }
+        }
+    }
+
+    private void addArtifacts(List<EntityAttributeView> attributesList) {
+        final boolean isHostingSlot = selectedSlot.isHostingSlot();
+        final Device installedDevice = getInstalledDevice();
+
+        for (ComptypeArtifact artifact : selectedSlot.getComponentType().getComptypeArtifactList()) {
+            attributesList.add(new EntityAttributeView(artifact, EntityAttributeViewKind.DEVICE_TYPE_ARTIFACT));
+        }
+
+        for (SlotArtifact artifact : selectedSlot.getSlotArtifactList()) {
+            attributesList.add(new EntityAttributeView(artifact, isHostingSlot
+                                                            ? EntityAttributeViewKind.INSTALL_SLOT_ARTIFACT
+                                                            : EntityAttributeViewKind.CONTAINER_SLOT_ARTIFACT));
+        }
+
+        if (installedDevice != null) {
+            for (DeviceArtifact deviceArtifact : installedDevice.getDeviceArtifactList()) {
+                attributesList.add(new EntityAttributeView(deviceArtifact,
+                                                            EntityAttributeViewKind.DEVICE_ARTIFACT));
+            }
+        }
+    }
+
+    private void addTags(List<EntityAttributeView> attributesList) {
+        final boolean isHostingSlot = selectedSlot.isHostingSlot();
+        final Device installedDevice = getInstalledDevice();
+
+        for (Tag tag : selectedSlot.getComponentType().getTags()) {
+            attributesList.add(new EntityAttributeView(tag, EntityAttributeViewKind.DEVICE_TYPE_TAG));
+        }
+
+        for (Tag tag : selectedSlot.getTags()) {
+            attributesList.add(new EntityAttributeView(tag, isHostingSlot
+                                                            ? EntityAttributeViewKind.INSTALL_SLOT_TAG
+                                                            : EntityAttributeViewKind.CONTAINER_SLOT_TAG));
+        }
+
+        if (installedDevice != null) {
+            for (Tag tag : installedDevice.getTags()) {
+                attributesList.add(new EntityAttributeView(tag, EntityAttributeViewKind.DEVICE_TAG));
+            }
+        }
     }
 
     private void initRelationshipList() {
