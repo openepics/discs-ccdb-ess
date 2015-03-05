@@ -319,7 +319,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
                                                                         "Device type artifact has been deleted");
     }
 
-    protected void prepareModifyPropertyPopUp() {
+    public void prepareModifyPropertyPopUp() {
         Preconditions.checkState(selectedAttribute != null);
         Preconditions.checkState(propertyValueClass != null);
         Preconditions.checkState(artifactClass != null);

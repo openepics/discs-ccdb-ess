@@ -69,15 +69,11 @@ public class ComponentTypeManager extends AbstractExcelSingleFileImportUI implem
     private ComponentType selectedDeviceType;
     private List<AuditRecord> auditRecordsForEntity;
 
-    /**
-     * Creates a new instance of ComponentTypeMananger
-     */
+    /** Creates a new instance of ComponentTypeMananger */
     public ComponentTypeManager() {
     }
 
-    /**
-     * Java EE post construct life-cycle method.
-     */
+    /** Java EE post construct life-cycle method. */
     @PostConstruct
     public void init() {
         try {
@@ -97,9 +93,7 @@ public class ComponentTypeManager extends AbstractExcelSingleFileImportUI implem
         return "device-type-attributes-manager.xhtml?faces-redirect=true&id=" + id;
     }
 
-    /**
-     * Prepares the UI data for the "Add a new device type" dialog.
-     */
+    /** Prepares the UI data for the "Add a new device type" dialog. */
     public void prepareAddPopup() {
         resetFields();
         RequestContext.getCurrentInstance().update("addDeviceTypeForm:addDeviceType");
@@ -110,9 +104,7 @@ public class ComponentTypeManager extends AbstractExcelSingleFileImportUI implem
         description = null;
     }
 
-    /**
-     * Called when the user presses the "Save" button in the "Add a new device type" dialog.
-     */
+    /** Called when the user presses the "Save" button in the "Add a new device type" dialog. */
     public void onAdd() {
         final ComponentType componentTypeToAdd = new ComponentType(name);
         componentTypeToAdd.setDescription(description);
@@ -132,14 +124,38 @@ public class ComponentTypeManager extends AbstractExcelSingleFileImportUI implem
         }
     }
 
-    /**
-     * Called when the user clicks the "trash can" icon in the table listing the devices types.
-     */
+    public void prepareEditPopup() {
+        name = selectedDeviceType.getName();
+        description = selectedDeviceType.getDescription();
+    }
+
+    public void onChange() {
+        selectedDeviceType.setName(name);
+        selectedDeviceType.setDescription(description);
+        try {
+            comptypeEJB.save(selectedDeviceType);
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+                    "Device type updated");
+            selectedDeviceType = null;
+        } catch (Exception e) {
+            if (Utility.causedByPersistenceException(e)) {
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
+                        "Device type could not be modified because a device type instance with same name already exists.");
+            } else {
+                throw e;
+            }
+        } finally {
+            deviceTypes = comptypeEJB.findAll();
+        }
+    }
+
+    /** Called when the user clicks the "trash can" icon in the table listing the devices types. */
     public void onDelete() {
         try {
             comptypeEJB.delete(selectedDeviceType);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
                     "Device type was deleted");
+            selectedDeviceType = null;
         } catch (Exception e) {
             if (Utility.causedByPersistenceException(e)) {
                 Utility.showMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_DELETE_FAIL,
@@ -207,22 +223,16 @@ public class ComponentTypeManager extends AbstractExcelSingleFileImportUI implem
         return auditRecordsForEntity;
     }
 
-    /**
-     * @return The name of the device type the user is adding or modifying. Used in the UI dialog.
-     */
+    /** @return The name of the device type the user is adding or modifying. Used in the UI dialog. */
     public String getName() {
         return name;
     }
-    /**
-     * @param name The name of the device type the user is adding or modifying. Used in the UI dialog.
-     */
+    /** @param name The name of the device type the user is adding or modifying. Used in the UI dialog. */
     public void setName(String name) {
         this.name = name;
     }
 
-    /**
-     * @return The description of the device type the user is adding or modifying. Used in the UI dialog.
-     */
+    /** @return The description of the device type the user is adding or modifying. Used in the UI dialog. */
     public String getDescription() {
         return description;
     }
@@ -233,22 +243,16 @@ public class ComponentTypeManager extends AbstractExcelSingleFileImportUI implem
         this.description = description;
     }
 
-    /**
-     * @return The list of filtered device types used by the PrimeFaces filter field.
-     */
+    /** @return The list of filtered device types used by the PrimeFaces filter field. */
     public List<ComponentType> getFilteredDeviceTypes() {
         return filteredDeviceTypes;
     }
-    /**
-     * @param filteredDeviceTypes The list of filtered device types used by the PrimeFaces filter field.
-     */
+    /** @param filteredDeviceTypes The list of filtered device types used by the PrimeFaces filter field. */
     public void setFilteredDeviceTypes(List<ComponentType> filteredDeviceTypes) {
         this.filteredDeviceTypes = filteredDeviceTypes;
     }
 
-    /**
-     * @return The list of all device types in the database.
-     */
+    /** @return The list of all device types in the database. */
     public List<ComponentType> getDeviceTypes() {
         return deviceTypes;
     }

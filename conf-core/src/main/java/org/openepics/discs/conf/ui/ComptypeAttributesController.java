@@ -27,11 +27,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
-import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.servlet.http.HttpServletRequest;
 
 import org.openepics.discs.conf.ejb.ComptypeEJB;
 import org.openepics.discs.conf.ejb.DAO;
@@ -84,16 +82,9 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
     public void init() {
         try {
             super.init();
-            final Long id = Long.parseLong(((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext()
-                    .getRequest()).getParameter("id"));
-            compType = comptypeEJB.findById(id);
             setArtifactClass(ComptypeArtifact.class);
             setPropertyValueClass(ComptypePropertyValue.class);
             setDao(comptypeEJB);
-
-            entityName = compType.getName();
-            populateAttributesList();
-            filterProperties();
         } catch(Exception e) {
             throw new UIException("Device type details display initialization fialed: " + e.getMessage(), e);
         }
@@ -195,9 +186,6 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
         // refresh the component type from database. This refreshes all related collections as well.
         compType = comptypeEJB.findById(this.compType.getId());
 
-        attributes.add(new EntityAttributeView(new BuiltInProperty(ComptypeBuiltInPropertyName.BIP_DESCRIPTION,
-                                                        compType.getDescription(), strDataType)));
-
         for (ComptypePropertyValue prop : compType.getComptypePropertyList()) {
             attributes.add(new EntityAttributeView(prop));
         }
@@ -232,6 +220,18 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
      */
     public ComponentType getDeviceType() {
         return compType;
+    }
+
+    public void prepareDeviceType(ComponentType deviceType) {
+        compType = deviceType;
+        populateAttributesList();
+        filterProperties();
+    }
+
+    public void clearDeviceType() {
+        compType = null;
+        attributes = null;
+        filteredProperties = null;
     }
 
     @Override

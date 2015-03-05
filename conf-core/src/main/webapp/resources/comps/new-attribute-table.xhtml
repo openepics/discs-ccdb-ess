@@ -1,0 +1,61 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:cc="http://java.sun.com/jsf/composite"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+
+    <cc:interface>
+        <cc:attribute name="id" required="true" />
+        <cc:attribute name="controllerBean" required="true" />
+        <cc:attribute name="updateButtons" />
+        <cc:attribute name="updateTargets" />
+    </cc:interface>
+
+    <cc:implementation> 
+        <p:dataTable id="#{cc.attrs.id}" var="attribute" value="#{cc.attrs.controllerBean.attributes}" 
+                selection="#{cc.attrs.controllerBean.selectedAttribute}" selectionMode="single" rowKey="#{attribute.id}" 
+                style="table-layout: fixed; word-wrap: break-word; margin-top: 1em; margin-bottom: 1em;" rows="15" 
+                paginator="true" paginatorPosition="bottom" filteredValue="#{cc.attrs.controllerBean.filteredAttributes}">
+            <p:ajax event="rowSelect" update="#{cc.attrs.updateButtons}" />
+            <p:ajax event="rowUnselect" update="#{cc.attrs.updateButtons}" />
+            
+            <p:column headerText="Name" sortBy="#{attribute.name}" filterBy="#{attribute.name}" 
+                    filterMatchMode="contains">
+                <h:outputText value="#{attribute.name}" />
+            </p:column>
+    
+            <p:column headerText="Value" style="width: 30%" sortBy="#{attribute.value}" filterBy="#{attribute.value}" 
+                    filterMatchMode="contains">
+                <h:outputText value="#{!empty attribute.value ? attribute.value : '-'}" />
+                <p:commandLink ajax="false" title="Download" rendered="#{attribute.hasFile}" style="margin-left: 1ex;">
+                    <h:outputText styleClass="ui-icon ui-icon-arrowthick-1-s" style="display: inline-block !important; margin-right: 6px;" />
+                    <f:setPropertyActionListener value="#{attribute}" target="#{cc.attrs.controllerBean.selectedAttribute}" />
+                    <p:fileDownload value="#{cc.attrs.controllerBean.downloadFile}" />
+                </p:commandLink>
+                <h:outputLink rendered="#{attribute.hasURL}" title="Go to URL" target="_blank" value="#{attribute.value}" style="margin-left: 1ex;">
+                    <h:outputText styleClass="ui-icon ui-icon-extlink" style="display: inline-block !important; margin-right: 6px;" />
+                </h:outputLink>                
+            </p:column>
+    
+            <p:column headerText="Unit" sortBy="#{attribute.unit}" filterBy="#{attribute.unit.name}" 
+                    filterMatchMode="contains">
+                <h:outputLink rendered="#{!empty attribute.unit}" 
+                        value="#{request.contextPath}/data-definitions/units/units-manager.xhtml?id=#{attribute.unit.id}">
+                    <h:outputText value="#{attribute.unit.name}" style="text-decoration: underline;" />
+                </h:outputLink>
+                <h:outputText value="-" rendered="#{empty attribute.unit}" />                    
+            </p:column>
+    
+            <p:column headerText="Kind" sortBy="#{attribute.kind.toString()}" filterBy="#{attribute.kind}" 
+                    filterMatchMode="exact" filterOptions="#{cc.attrs.controllerBean.attributeKinds}">
+                <h:outputText value="#{attribute.kind.toString()}" />
+            </p:column>
+    
+            <p:column headerText="Data type" sortBy="#{attribute.type.name}" filterBy="#{attribute.type.name}" 
+                    filterMatchMode="contains">
+                <h:outputText value="#{!empty attribute.type ? attribute.type.name : '-'}" />
+            </p:column>
+        </p:dataTable>                    
+    </cc:implementation>
+</html>

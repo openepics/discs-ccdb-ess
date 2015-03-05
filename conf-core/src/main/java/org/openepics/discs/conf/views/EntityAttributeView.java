@@ -44,6 +44,7 @@ import com.google.common.base.Preconditions;
  *
  */
 public class EntityAttributeView {
+    private String id;
     private String name;
     private @Nullable DataType type;
     private @Nullable Unit unit;
@@ -104,6 +105,7 @@ public class EntityAttributeView {
                 kind = EntityAttributeViewKind.UNKNOWN_PROPERTY;
             }
         }
+        id = comptypePropertyValue.getId().toString();
     }
 
     private void setPropValueParameters() {
@@ -113,6 +115,7 @@ public class EntityAttributeView {
         unit = devicePropertyValue.getProperty().getUnit();
         value = devicePropertyValue.getPropValue();
         kind =  EntityAttributeViewKind.PROPERTY;
+        id = devicePropertyValue.getId().toString();
     }
 
     private void setArtifactParameters() {
@@ -122,20 +125,24 @@ public class EntityAttributeView {
         hasURL = !artifact.isInternal();
         value = hasURL ? new StrValue(artifact.getUri()) : null;
         kind =  EntityAttributeViewKind.ARTIFACT;
+        id = artifact.getId().toString();
     }
 
     private void setTagParameters() {
         name = ((Tag) entity).getName();
         kind =  EntityAttributeViewKind.TAG;
         value = new StrValue("-");
+        id = "TAG_" + name;
     }
 
     private void setBuiltInProperty() {
-        name = ((BuiltInProperty) entity).getName().toString();
-        value = ((BuiltInProperty) entity).getValue();
-        type = ((BuiltInProperty) entity).getDataType();
+        final BuiltInProperty builtInProperty = (BuiltInProperty) entity;
+        name = builtInProperty.getName().toString();
+        value = builtInProperty.getValue();
+        type = builtInProperty.getDataType();
         kind = EntityAttributeViewKind.BUILT_IN_PROPERTY;
         isBuiltIn = true;
+        id = "BIP_" + name;
     }
 
     public String getName() {
@@ -175,5 +182,9 @@ public class EntityAttributeView {
 
     public boolean isBuiltIn() {
         return isBuiltIn;
+    }
+
+    public String getId() {
+        return id;
     }
 }
