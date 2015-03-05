@@ -74,7 +74,7 @@ public class DataType extends ConfigurationEntity {
      * @param name a unique name of the data type
      * @param description user defined description
      * @param scalar <code>true</code> if the values of this type are scalars, <code>false</code> otherwise
-     * @param definition the data type definition. Used unly for user defined enumerations so far.
+     * @param definition the data type definition. Used only for user defined enumerations so far.
      */
     public DataType(String name, String description, boolean scalar, String definition) {
         this.name = name;
