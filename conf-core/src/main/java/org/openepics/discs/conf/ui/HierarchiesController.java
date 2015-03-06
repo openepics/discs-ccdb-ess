@@ -21,7 +21,6 @@ package org.openepics.discs.conf.ui;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
@@ -92,6 +91,8 @@ public class HierarchiesController implements Serializable {
     private transient List<SlotRelationshipView> relationships;
     private transient List<SlotRelationshipView> filteredRelationships;
     private transient List<SelectItem> relationshipTypes;
+    private List<Device> uninstalledDevices;
+    private List<Device> filteredUninstalledDevices;
     private TreeNode rootNode;
     private TreeNode selectedNode;
     private InstallationRecord installationRecord;
@@ -311,15 +312,32 @@ public class HierarchiesController implements Serializable {
         return installationRecord;
     }
 
+    public void prepareUninstalledDevices() {
+        uninstalledDevices = (selectedSlot == null) || !selectedSlot.isHostingSlot() ? null
+                : installationEJB.getUninstalledDevices(selectedSlot.getComponentType());
+        filteredUninstalledDevices = null;
+    }
+
     /**
      * @return Based on the device type of the currently selected slot, this returns a list of all appropriate device
      * instances that are not installed.
      */
     public List<Device> getUninstalledDevices() {
-        if (selectedSlot == null || !selectedSlot.isHostingSlot()) {
-            return Collections.emptyList();
-        }
-        return installationEJB.getUninstalledDevices(selectedSlot.getComponentType());
+        return uninstalledDevices;
+    }
+
+    public void setUninstalledDevices(List<Device> uninstalledDevices) {
+        this.uninstalledDevices = uninstalledDevices;
+    }
+
+    /** @return the filteredUninstalledDevices */
+    public List<Device> getFilteredUninstalledDevices() {
+        return filteredUninstalledDevices;
+    }
+
+    /** @param filteredUninstalledDevices the filteredUninstalledDevices to set */
+    public void setFilteredUninstalledDevices(List<Device> filteredUninstalledDevices) {
+        this.filteredUninstalledDevices = filteredUninstalledDevices;
     }
 
     /** @return the deviceToInstall */

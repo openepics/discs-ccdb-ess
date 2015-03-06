@@ -1,6 +1,6 @@
-<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
-    xmlns:p="http://primefaces.org/ui"
-    xmlns:f="http://java.sun.com/jsf/core"
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets" 
+    xmlns:p="http://primefaces.org/ui" 
+    xmlns:f="http://java.sun.com/jsf/core" 
     xmlns:h="http://java.sun.com/jsf/html">
 
     <h:form id="#{formId}">
@@ -30,15 +30,18 @@
                 <p:row>
                     <p:column colspan="2">
                         <p:dataTable var="device" value="#{hierarchiesController.uninstalledDevices}" 
-                                selectionMode="single" selection="#{hierarchiesController.deviceToInstall}"
-                                rowKey="#{device.id}" scrollable="true" scrollHeight="180"  
+                                selectionMode="single" selection="#{hierarchiesController.deviceToInstall}" 
+                                rowKey="#{device.id}" scrollable="true" scrollHeight="180" 
+                                filteredValue="#{hierarchiesController.filteredUninstalledDevices}" 
                                 emptyMessage="No device available for installation.">
                             <p:ajax event="rowSelect" update=":#{formId}:installButton" />
                             <p:ajax event="rowUnselect" update=":#{formId}:installButton" />
-                            <p:column headerText="Inventory Id">
+                            <p:column headerText="Inventory Id" sortBy="#{device.serialNumber}" 
+                                    filterBy="#{device.serialNumber}" filterMatchMode="contains">
                                 <h:outputText value="#{device.serialNumber}" />
                             </p:column>
-                            <p:column headerText="Description">
+                            <p:column headerText="Description" sortBy="#{device.description}" 
+                                    filterBy="#{device.description}" filterMatchMode="contains">
                                 <h:outputText value="#{device.description}" />
                             </p:column>
                         </p:dataTable>
@@ -56,7 +59,7 @@
                     </p:column>
                 </p:row>
             </p:panelGrid>
-            
+
         </p:dialog>
     </h:form>
 </ui:composition>

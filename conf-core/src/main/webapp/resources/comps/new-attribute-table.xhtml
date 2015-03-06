@@ -27,15 +27,15 @@
     
             <p:column headerText="Value" style="width: 30%" sortBy="#{attribute.value}" filterBy="#{attribute.value}" 
                     filterMatchMode="contains">
-                <h:outputText value="#{!empty attribute.value ? attribute.value : '-'}" />
+                <h:outputLink rendered="#{attribute.hasURL}" target="_blank" value="#{attribute.value}" title="Go to URL">
+                    <h:outputText value="#{attribute.value}" style="text-decoration: underline;" />
+                </h:outputLink>
+                <h:outputText value="#{!empty attribute.value ? attribute.value : '-'}" rendered="#{not attribute.hasURL}" />
                 <p:commandLink ajax="false" title="Download" rendered="#{attribute.hasFile}" style="margin-left: 1ex;">
                     <h:outputText styleClass="ui-icon ui-icon-arrowthick-1-s" style="display: inline-block !important; margin-right: 6px;" />
                     <f:setPropertyActionListener value="#{attribute}" target="#{cc.attrs.controllerBean.selectedAttribute}" />
                     <p:fileDownload value="#{cc.attrs.controllerBean.downloadFile}" />
                 </p:commandLink>
-                <h:outputLink rendered="#{attribute.hasURL}" title="Go to URL" target="_blank" value="#{attribute.value}" style="margin-left: 1ex;">
-                    <h:outputText styleClass="ui-icon ui-icon-extlink" style="display: inline-block !important; margin-right: 6px;" />
-                </h:outputLink>                
             </p:column>
     
             <p:column headerText="Unit" sortBy="#{attribute.unit}" filterBy="#{attribute.unit.name}" 

@@ -129,10 +129,11 @@
                                                 oncomplete="resizeEmptyColumnInHierarchies();" />
                                     </p:column>
                                 </p:dataTable>
-                                <p:commandButton title="Install device to this slot" type="button" 
-                                        value="Install device to this slot" 
+                                <p:commandButton title="Install device to this slot" 
+                                        value="Install device to this slot" ajax="true" 
+                                        actionListener="#{hierarchiesController.prepareUninstalledDevices}" 
                                         rendered="#{empty hierarchiesController.installedDevice}" 
-                                        onclick="installDevice.show()" update=":hierarchies:installationDetails" />
+                                        oncomplete="installDevice.show()" update=":hierarchies:installationDetails" />
                             </p:panel>
                         </h:panelGroup>
                     </p:column>
