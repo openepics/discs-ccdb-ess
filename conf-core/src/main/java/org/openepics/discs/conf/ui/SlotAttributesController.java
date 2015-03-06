@@ -60,7 +60,6 @@ import org.openepics.discs.conf.views.SlotBuiltInPropertyName;
 import org.primefaces.context.RequestContext;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
 /**
@@ -95,22 +94,26 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
             setPropertyValueClass(SlotPropertyValue.class);
             setDao(slotEJB);
 
-            parentProperties = slot.getComponentType().getComptypePropertyList();
-            parentArtifacts = slot.getComponentType().getComptypeArtifactList();
-            populateParentTags();
-            entityName = slot.getName();
-            deviceType = slot.getComponentType();
-
-            populateAttributesList();
-            filterProperties();
-            parentSlot = !slot.getPairsInWhichThisSlotIsAChildList().isEmpty()
-                    ? slot.getPairsInWhichThisSlotIsAChildList().get(0).getParentSlot().getName()
-                            : null;
-            if ("_ROOT".equals(parentSlot)) {
-                parentSlot = null;
-            }
+            initializeDeviceTypeRelatedInformation();
         } catch(Exception e) {
             throw new UIException("Slot details display initialization failed: " + e.getMessage(), e);
+        }
+    }
+
+    private void initializeDeviceTypeRelatedInformation() {
+        parentProperties = slot.getComponentType().getComptypePropertyList();
+        parentArtifacts = slot.getComponentType().getComptypeArtifactList();
+        populateParentTags();
+        entityName = slot.getName();
+        deviceType = slot.getComponentType();
+
+        populateAttributesList();
+        filterProperties();
+        parentSlot = !slot.getPairsInWhichThisSlotIsAChildList().isEmpty()
+                ? slot.getPairsInWhichThisSlotIsAChildList().get(0).getParentSlot().getName()
+                        : null;
+        if ("_ROOT".equals(parentSlot)) {
+            parentSlot = null;
         }
     }
 
@@ -315,7 +318,7 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
         slot.setComponentType(deviceType);
         slotEJB.save(slot);
         handleComponentTypeChange(oldComponentType, deviceType);
-        populateAttributesList();
+        initializeDeviceTypeRelatedInformation();
         RequestContext.getCurrentInstance().update("slotPropertiesManagerForm");
     }
 
