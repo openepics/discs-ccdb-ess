@@ -46,9 +46,9 @@ import com.google.common.base.Preconditions;
 public class EntityAttributeView {
     private String id;
     private String name;
-    private @Nullable DataType type;
-    private @Nullable Unit unit;
-    private @Nullable Value value;
+    @Nullable private DataType type;
+    @Nullable private Unit unit;
+    @Nullable private Value value;
     private EntityAttributeViewKind kind;
     private boolean hasFile;
     private boolean hasURL;
@@ -123,7 +123,7 @@ public class EntityAttributeView {
         name = artifact.getName();
         hasFile = artifact.isInternal();
         hasURL = !artifact.isInternal();
-        value = hasURL ? new StrValue(artifact.getUri()) : null;
+        value = hasURL ? new StrValue(artifact.getUri()) : new StrValue("Download attachment");
         kind =  EntityAttributeViewKind.ARTIFACT;
         id = artifact.getId().toString();
     }
@@ -131,7 +131,7 @@ public class EntityAttributeView {
     private void setTagParameters() {
         name = ((Tag) entity).getName();
         kind =  EntityAttributeViewKind.TAG;
-        value = new StrValue("-");
+        value = null;
         id = "TAG_" + name;
     }
 
@@ -157,9 +157,7 @@ public class EntityAttributeView {
         return unit;
     }
 
-    /**
-     * @return A String representation of the associated entity.
-     */
+    /** @return A String representation of the associated entity */
     public String getValue() {
         return Conversion.valueToString(value);
     }

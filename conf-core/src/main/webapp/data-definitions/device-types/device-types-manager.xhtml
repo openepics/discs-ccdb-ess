@@ -7,6 +7,8 @@
     xmlns:p="http://primefaces.org/ui">
     <ui:define name="content">
         <h:form id="deviceTypesForm">
+            <p:remoteCommand name="clearDeviceType" actionListener="#{comptypeAttributesController.clearDeviceType}" 
+                update=":deviceTypesForm:editAttrButton :deviceTypesForm:deleteAttrButton" />
             <p:panelGrid styleClass="noBorders">
                 <p:row>
                     <p:column style="width: 40%; min-width: 20em;">
@@ -19,8 +21,8 @@
                             <p:ajax event="filter" ignoreAutoUpdate="true" />
                             <p:ajax event="rowSelect"
                                 listener="#{comptypeAttributesController.prepareDeviceType(componentTypeManager.selectedDeviceType)}" 
-                                update=":deviceTypesForm:deleteButton :deviceTypesForm:editButton :deviceTypesForm:logButton :deviceTypesForm:attributesDataTable:attributesDataTable" />
-                            <p:ajax event="rowUnselect" 
+                                update=":deviceTypesForm:deleteButton :deviceTypesForm:editButton :deviceTypesForm:logButton :deviceTypesForm:attributesDataTable:attributesDataTable :deviceTypesForm:editAttrButton :deviceTypesForm:deleteAttrButton" />
+                            <p:ajax event="rowUnselect" oncomplete="clearDeviceType()"
                                 listener="#{comptypeAttributesController.clearDeviceType()}" 
                                 update=":deviceTypesForm:deleteButton :deviceTypesForm:editButton :deviceTypesForm:logButton :deviceTypesForm:attributesDataTable:attributesDataTable" />
 

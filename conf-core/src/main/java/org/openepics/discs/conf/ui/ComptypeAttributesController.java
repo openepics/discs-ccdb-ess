@@ -46,15 +46,10 @@ import org.openepics.discs.conf.ent.PropertyValue;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.ent.Tag;
-import org.openepics.discs.conf.ent.values.StrValue;
 import org.openepics.discs.conf.ui.common.AbstractAttributesController;
 import org.openepics.discs.conf.ui.common.UIException;
-import org.openepics.discs.conf.util.UnhandledCaseException;
-import org.openepics.discs.conf.views.BuiltInProperty;
-import org.openepics.discs.conf.views.ComptypeBuiltInPropertyName;
 import org.openepics.discs.conf.views.EntityAttributeView;
 import org.openepics.discs.conf.views.EntityAttributeViewKind;
-import org.primefaces.context.RequestContext;
 
 /**
  * Controller bean for manipulation of {@link ComponentType} attributes
@@ -191,11 +186,11 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
         }
 
         for (ComptypeArtifact art : compType.getComptypeArtifactList()) {
-            attributes.add(new EntityAttributeView(art));
+            attributes.add(new EntityAttributeView(art, EntityAttributeViewKind.DEVICE_TYPE_ARTIFACT));
         }
 
         for (Tag tagAttr : compType.getTags()) {
-            attributes.add(new EntityAttributeView(tagAttr));
+            attributes.add(new EntityAttributeView(tagAttr, EntityAttributeViewKind.DEVICE_TYPE_TAG));
         }
     }
 
@@ -224,6 +219,7 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
 
     public void prepareDeviceType(ComponentType deviceType) {
         compType = deviceType;
+        selectedAttribute = null;
         populateAttributesList();
         filterProperties();
     }
@@ -232,14 +228,12 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
         compType = null;
         attributes = null;
         filteredProperties = null;
+        selectedAttribute = null;
     }
 
     @Override
     public void saveNewName() {
-        compType.setName(entityName);
-        comptypeEJB.save(compType);
-        populateAttributesList();
-        RequestContext.getCurrentInstance().update("deviceTypePropertiesManagerForm");
+        // TODO ready for removal
     }
 
     @Override
@@ -280,19 +274,7 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
 
     @Override
     public void modifyBuiltInProperty() {
-        final BuiltInProperty builtInProperty = (BuiltInProperty) selectedAttribute.getEntity();
-        final String userValue = propertyValue == null ? null : ((StrValue)propertyValue).getStrValue();
-        switch ((ComptypeBuiltInPropertyName)builtInProperty.getName()) {
-            case BIP_DESCRIPTION:
-                if ((userValue == null) || !userValue.equals(compType.getDescription())) {
-                    compType.setDescription(userValue);
-                    comptypeEJB.save(compType);
-                }
-                break;
-            default:
-                throw new UnhandledCaseException();
-        }
-        populateAttributesList();
+        // no built in property to modify
     }
 
     /**
@@ -316,9 +298,16 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
     @Override
     public boolean canEdit(EntityAttributeView attribute) {
         final EntityAttributeViewKind attributeKind = attribute.getKind();
-        return !(attributeKind == EntityAttributeViewKind.INSTALL_SLOT_PROPERTY) &&
-                !(attributeKind == EntityAttributeViewKind.DEVICE_PROPERTY) &&
-                !(attributeKind == EntityAttributeViewKind.TAG);
+        return attributeKind != EntityAttributeViewKind.INSTALL_SLOT_PROPERTY
+                && attributeKind != EntityAttributeViewKind.DEVICE_PROPERTY
+                && attributeKind != EntityAttributeViewKind.DEVICE_TYPE_TAG
+                && attributeKind != EntityAttributeViewKind.TAG;
+    }
+
+    @Override
+    public boolean canDelete(EntityAttributeView attribute) {
+        return attribute.getKind() == EntityAttributeViewKind.DEVICE_TYPE_ARTIFACT
+                || attribute.getKind() == EntityAttributeViewKind.DEVICE_TYPE_TAG
+                || super.canDelete(attribute);
     }
 }
-
