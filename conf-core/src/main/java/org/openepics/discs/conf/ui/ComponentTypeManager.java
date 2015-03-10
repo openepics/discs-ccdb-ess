@@ -104,6 +104,11 @@ public class ComponentTypeManager extends AbstractExcelSingleFileImportUI implem
         description = null;
     }
 
+    /** Support method to enable clearing the selected device type from the UI */
+    public void clearSelectedDeviceType() {
+        selectedDeviceType = null;
+    }
+
     /** Called when the user presses the "Save" button in the "Add a new device type" dialog. */
     public void onAdd() {
         final ComponentType componentTypeToAdd = new ComponentType(name);
@@ -152,7 +157,8 @@ public class ComponentTypeManager extends AbstractExcelSingleFileImportUI implem
     /** Called when the user clicks the "trash can" icon in the table listing the devices types. */
     public void onDelete() {
         try {
-            comptypeEJB.delete(selectedDeviceType);
+            final ComponentType deleteDeviceType = comptypeEJB.findById(selectedDeviceType.getId());
+            comptypeEJB.delete(deleteDeviceType);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
                     "Device type was deleted");
             selectedDeviceType = null;
