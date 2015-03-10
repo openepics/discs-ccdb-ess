@@ -38,7 +38,7 @@
                     resetValues="true" />
             <p:commandButton value="Save" styleClass="dialogButton" 
                     update="grp :containersForm:containersTree :containersForm:addSlot" 
-                    oncomplete="if (args &amp;&amp; !args.validationFailed) #{widgetName}.hide(); resizePanel()" 
+                    oncomplete="if (args &amp;&amp; !args.validationFailed) { #{widgetName}.hide(); resizeContainerPanel(); }" 
                     action="#{containerController[submitHandler]}" />
         </p:dialog>
 

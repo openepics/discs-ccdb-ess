@@ -42,6 +42,8 @@ import org.primefaces.event.NodeCollapseEvent;
 import org.primefaces.event.NodeExpandEvent;
 import org.primefaces.model.TreeNode;
 
+import com.google.common.base.Preconditions;
+
 /**
  * @author Andraz Pozar <andraz.pozar@cosylab.com>
  * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
@@ -72,9 +74,7 @@ public abstract class AbstractSlotsController implements Serializable{
 
     protected Slot newSlot;
 
-    /**
-     * Prepares fields that are used in pop up for adding new container
-     */
+    /** Prepares fields that are used in pop up for adding new container */
     public void prepareAddPopup() {
         if (selectedNode != null) {
             parentSlotView = (SlotView) selectedNode.getData();
@@ -83,6 +83,21 @@ public abstract class AbstractSlotsController implements Serializable{
         }
         name = null;
         description = null;
+    }
+
+    /** Prepares fields that are used in pop up for editing an existing container */
+    public void prepareEditPopup() {
+        Preconditions.checkNotNull(selectedNode);
+        selectedSlotView = (SlotView) selectedNode.getData();
+        name = selectedSlotView.getName();
+        description = selectedSlotView.getDescription();
+        parentSlotView = selectedSlotView.getParentNode();
+    }
+
+    /** Prepares back-end data used for container deletion */
+    public void prepareDeletePopup() {
+        Preconditions.checkNotNull(selectedNode);
+        selectedSlotView = (SlotView) selectedNode.getData();
     }
 
     /**
@@ -97,9 +112,15 @@ public abstract class AbstractSlotsController implements Serializable{
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Slot created", "Slot has been successfully created");
     }
 
-    /**
-     * Deletes selected container
-     */
+    public void onSlotModify() {
+        final Slot modifiedSlot = selectedSlotView.getSlot();
+        modifiedSlot.setName(name);
+        modifiedSlot.setDescription(description);
+        slotEJB.save(modifiedSlot);
+        selectedSlotView.setSlot(slotEJB.findById(modifiedSlot.getId()));
+    }
+
+    /** Deletes selected container */
     public void onDelete() {
         if (!selectedSlotView.getIsHostingSlot()
                     || installationEJB.getActiveInstallationRecordForSlot(selectedSlotView.getSlot()) == null) {
@@ -123,15 +144,11 @@ public abstract class AbstractSlotsController implements Serializable{
         return rootNode;
     }
 
-    /**
-     * @return The currently selected {@link TreeNode} in the UI.
-     */
+    /** @return The currently selected {@link TreeNode} in the UI */
     public TreeNode getSelectedNode() {
         return selectedNode;
     }
-    /**
-     * @param selectedNode The {@link TreeNode} the user selected in the UI.
-     */
+    /** @param selectedNode The {@link TreeNode} the user selected in the UI */
     public void setSelectedNode(TreeNode selectedNode) {
         this.selectedNode = selectedNode;
     }
@@ -197,6 +214,62 @@ public abstract class AbstractSlotsController implements Serializable{
         }
     }
 
+    /** The action event to be called when the user presses the "move up" action button. This action moves the current
+     * container/installation slot up one space, if that is possible.
+     * @param ev
+     */
+    public void moveSlotUp() {
+        TreeNode currentNode = selectedNode;
+        TreeNode parent = currentNode.getParent();
+
+        ListIterator<TreeNode> listIterator = parent.getChildren().listIterator();
+        while (listIterator.hasNext()) {
+            TreeNode element = listIterator.next();
+            if (element.equals(currentNode) && listIterator.hasPrevious()) {
+                final SlotView movedSlotView = (SlotView) currentNode.getData();
+                final SlotView currentNodesParentSlotView = (SlotView) parent.getData();
+                listIterator.remove();
+                final SlotView affectedNode = (SlotView) listIterator.previous().getData();
+                affectedNode.setLast(movedSlotView.isLast());
+                affectedNode.setFirst(false);
+                movedSlotView.setLast(false);
+                movedSlotView.setFirst(!listIterator.hasPrevious());
+                listIterator.add(currentNode);
+                slotPairEJB.moveUp(currentNodesParentSlotView.getSlot(), movedSlotView.getSlot());
+                // selectNodeAfterMove(currentNode);
+                break;
+            }
+        }
+    }
+
+    /** The action event to be called when the user presses the "move down" action button. This action moves the current
+     * container/installation slot down one space, if that is possible.
+     * @param ev
+     */
+    public void moveSlotDown() {
+        TreeNode currentNode = selectedNode;
+        TreeNode parent = currentNode.getParent();
+
+        ListIterator<TreeNode> listIterator = parent.getChildren().listIterator();
+        while (listIterator.hasNext()) {
+            TreeNode element = listIterator.next();
+            if (element.equals(currentNode) && listIterator.hasNext()) {
+                final SlotView movedSlotView = (SlotView) currentNode.getData();
+                final SlotView currentNodesParentSlotView = (SlotView) parent.getData();
+                listIterator.remove();
+                final SlotView affectedNode = (SlotView) listIterator.next().getData();
+                affectedNode.setFirst(movedSlotView.isFirst());
+                affectedNode.setLast(false);
+                movedSlotView.setFirst(false);
+                movedSlotView.setLast(!listIterator.hasNext());
+                listIterator.add(currentNode);
+                slotPairEJB.moveDown(currentNodesParentSlotView.getSlot(), movedSlotView.getSlot());
+                //selectNodeAfterMove(currentNode);
+                break;
+            }
+        }
+    }
+
     /** The action event to be called when the user presses the "move down" action icon. This action moves the current
      * container/installation slot down one space, if that is possible.
      * @param ev
@@ -246,53 +319,40 @@ public abstract class AbstractSlotsController implements Serializable{
      */
     public abstract String redirectToAttributes(Long id);
 
-    /**
-     * @param name The name of the installation slot or container.
-     */
+    /** @param name The name of the installation slot or container */
     public void setName(String name) {
         this.name = name;
     }
-    /**
-     * @return The name of the installation slot or container.
-     */
+    /** @return The name of the installation slot or container */
     public String getName() {
         return name;
     }
 
-    /**
-     * @return The description of the installation slot or container.
-     */
+    /** @return The description of the installation slot or container */
     public String getDescription() {
         return description;
     }
-    /**
-     * @param description The description of the installation slot or container.
-     */
+    /** @param description The description of the installation slot or container */
     public void setDescription(String description) {
         this.description = description;
     }
 
-    /**
-     * @return The element containing the information about the parent.
-     */
+    /** @return The element containing the information about the parent */
     public SlotView getParentSlotView() {
         return parentSlotView;
     }
-    /**
-     * @param parentContainer The element containing the information about the parent.
-     */
+    /** @param parentContainer The element containing the information about the parent */
     public void setParentSlotView(SlotView parentContainer) {
         this.parentSlotView = parentContainer;
     }
 
-    /**
-     * @return The element containing the information about currently selected container or installation slot.
-     */
+    /** @return The element containing the information about currently selected container or installation slot */
     public SlotView getSelectedSlotView() {
         return selectedSlotView;
     }
     /**
-     * @param selectedSlotView The element containing the information about currently selected container or installation slot.
+     * @param selectedSlotView The element containing the information about currently selected container or
+     * installation slot.
      */
     public void setSelectedSlotView(SlotView selectedSlotView) {
         this.selectedSlotView = selectedSlotView;

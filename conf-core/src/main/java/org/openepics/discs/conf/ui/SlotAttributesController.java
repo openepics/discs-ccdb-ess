@@ -57,7 +57,9 @@ import org.openepics.discs.conf.views.BuiltInProperty;
 import org.openepics.discs.conf.views.EntityAttributeView;
 import org.openepics.discs.conf.views.EntityAttributeViewKind;
 import org.openepics.discs.conf.views.SlotBuiltInPropertyName;
+import org.openepics.discs.conf.views.SlotView;
 import org.primefaces.context.RequestContext;
+import org.primefaces.model.TreeNode;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -87,17 +89,37 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
     public void init() {
         try {
             super.init();
-            final Long id = Long.parseLong(((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext()
-                    .getRequest()).getParameter("id"));
-            slot = slotEJB.findById(id);
+            // TODO this will get removed after the UI transition is complete
+            String paramValue = ((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext()
+                    .getRequest()).getParameter("id");
+            if (paramValue != null) {
+                final Long id = Long.parseLong(paramValue);
+                slot = slotEJB.findById(id);
+            }
+            // end of removal
             setArtifactClass(SlotArtifact.class);
             setPropertyValueClass(SlotPropertyValue.class);
             setDao(slotEJB);
 
-            initializeDeviceTypeRelatedInformation();
+            // TODO this will get removed after the UI transition is complete
+            if (slot != null) initializeDeviceTypeRelatedInformation();
         } catch(Exception e) {
             throw new UIException("Slot details display initialization failed: " + e.getMessage(), e);
         }
+    }
+
+    public void prepareSelectedSlot(TreeNode slotNode) {
+        this.slot = ((SlotView) slotNode.getData()).getSlot();
+        initializeDeviceTypeRelatedInformation();
+    }
+
+    public void clearSelectedSlot() {
+        slot = null;
+        parentSlot = null;
+        deviceType = null;
+        attributes = null;
+        filteredProperties = null;
+        selectedAttribute = null;
     }
 
     private void initializeDeviceTypeRelatedInformation() {
@@ -123,9 +145,9 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
         // refresh the component type from database. This refreshes all related collections as well.
         slot = slotEJB.findById(slot.getId());
 
-        attributes.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_DESCRIPTION,
-                slot.getDescription(), strDataType)));
         if (slot.isHostingSlot()) {
+            attributes.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_DESCRIPTION,
+                    slot.getDescription(), strDataType)));
             attributes.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_BEAMLINE_POS,
                     slot.getBeamlinePosition(), dblDataType)));
             final PositionInformation slotPosition = slot.getPositionInformation();
@@ -189,9 +211,7 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
         filteredProperties = propertyCandidates;
     }
 
-    /**
-     * Returns {@link Slot} for which attributes are being manipulated
-     */
+    /** Returns {@link Slot} for which attributes are being manipulated */
     public Slot getSlot() {
         return slot;
     }
@@ -377,9 +397,7 @@ public class SlotAttributesController extends AbstractAttributesController<SlotP
         return slot.getName().equals(entityName) && slot.getComponentType().equals(deviceType);
     }
 
-    /**
-     * @return path from the root slot to the currently selected slot
-     */
+    /** @return path from the root slot to the currently selected slot */
     public String getSlotPath() {
         final String slotPath = Utility.buildSlotPath(slot).toString();
         return slotPath.substring(1, slotPath.length() - 1);

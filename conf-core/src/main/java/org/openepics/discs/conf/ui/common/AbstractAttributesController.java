@@ -481,7 +481,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
         final Object attribute = attributeView.getEntity();
         return attribute instanceof BuiltInProperty
                     || (attribute instanceof PropertyValue && !(attribute instanceof ComptypePropertyValue))
-                    || (attribute instanceof Artifact && !(attribute instanceof  ComptypeArtifact));
+                    || (attribute instanceof Artifact && !(attribute instanceof ComptypeArtifact));
     }
 
     /** This method determines whether the entity attribute should have the "trash can" icon displayed in the UI.

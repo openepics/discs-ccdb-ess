@@ -35,20 +35,13 @@ import org.openepics.discs.conf.ent.SlotRelationName;
  */
 public class SlotView {
     private final Long id;
-    private final String name;
-    private final String description;
+    private String name;
+    private String description;
     private boolean canDelete;
     private final SlotView parentNode;
-    private final Slot slot;
+    private Slot slot;
     private final boolean isHostingSlot;
     private final ComponentType deviceType;
-    private final Double beamlinePosition;
-    private final Double globalX;
-    private final Double globalY;
-    private final Double globalZ;
-    private final Double globalPitch;
-    private final Double globalRoll;
-    private final Double globalYaw;
     private final Device installedDevice;
     private final int order;
     private boolean isFirst;
@@ -69,13 +62,6 @@ public class SlotView {
         this.parentNode = parentNode;
         this.isHostingSlot = slot.isHostingSlot();
         this.deviceType = slot.getComponentType();
-        this.beamlinePosition = slot.getBeamlinePosition();
-        this.globalX = slot.getPositionInformation().getGlobalX();
-        this.globalY = slot.getPositionInformation().getGlobalY();
-        this.globalZ = slot.getPositionInformation().getGlobalZ();
-        this.globalPitch = slot.getPositionInformation().getGlobalPitch();
-        this.globalRoll = slot.getPositionInformation().getGlobalRoll();
-        this.globalYaw = slot.getPositionInformation().getGlobalYaw();
         this.installedDevice = installedDevice;
         this.order = order;
 
@@ -112,40 +98,18 @@ public class SlotView {
         return slot;
     }
 
+    public void setSlot(Slot slot) {
+        this.slot = slot;
+        name = slot.getName();
+        description = slot.getDescription();
+    }
+
     public boolean getIsHostingSlot() {
         return isHostingSlot;
     }
 
     public ComponentType getDeviceType() {
         return deviceType;
-    }
-
-    public Double getBeamlinePosition() {
-        return beamlinePosition;
-    }
-
-    public Double getGlobalX() {
-        return globalX;
-    }
-
-    public Double getGlobalY() {
-        return globalY;
-    }
-
-    public Double getGlobalZ() {
-        return globalZ;
-    }
-
-    public Double getGlobalPitch() {
-        return globalPitch;
-    }
-
-    public Double getGlobalRoll() {
-        return globalRoll;
-    }
-
-    public Double getGlobalYaw() {
-        return globalYaw;
     }
 
     public Device getInstalledDevice() {
