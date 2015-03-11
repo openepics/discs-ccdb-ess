@@ -20,8 +20,12 @@
 
 package org.openepics.discs.conf.ui;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -46,10 +50,17 @@ import org.openepics.discs.conf.ent.PropertyValue;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.ent.Tag;
+import org.openepics.discs.conf.ent.values.EnumValue;
+import org.openepics.discs.conf.ent.values.Value;
 import org.openepics.discs.conf.ui.common.AbstractAttributesController;
 import org.openepics.discs.conf.ui.common.UIException;
+import org.openepics.discs.conf.util.Conversion;
+import org.openepics.discs.conf.util.UnhandledCaseException;
 import org.openepics.discs.conf.views.EntityAttributeView;
 import org.openepics.discs.conf.views.EntityAttributeViewKind;
+import org.primefaces.context.RequestContext;
+import org.primefaces.event.SelectEvent;
+import org.primefaces.event.UnselectEvent;
 
 /**
  * Controller bean for manipulation of {@link ComponentType} attributes
@@ -71,6 +82,8 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
     @Inject private transient DeviceEJB deviceEJB;
 
     private ComponentType compType;
+    private Map<Long, Value> propertyValues;
+    private SimpleDateFormat defaultFormatter;
 
     @Override
     @PostConstruct
@@ -80,6 +93,7 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
             setArtifactClass(ComptypeArtifact.class);
             setPropertyValueClass(ComptypePropertyValue.class);
             setDao(comptypeEJB);
+            defaultFormatter = new SimpleDateFormat(Conversion.DATE_ONLY_FORMAT);
         } catch(Exception e) {
             throw new UIException("Device type details display initialization fialed: " + e.getMessage(), e);
         }
@@ -265,6 +279,38 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
     public void prepareForPropertyValueAdd() {
         isPropertyDefinition = false;
         super.prepareForPropertyValueAdd();
+        prepareDefaultPropertyValues();
+    }
+
+    private void prepareDefaultPropertyValues() {
+        // TODO re-think this. If we leave this unitialized until the user sets a value, we can check whether something is missing
+        propertyValues = new HashMap<Long, Value>(filteredProperties.size());
+        final Date today = new Date();
+        for (Property prop : filteredProperties) {
+            Value valueToStore;
+            switch (Conversion.getBuiltInDataType(prop.getDataType())) {
+            case DOUBLE:
+            case INTEGER:
+            case INT_VECTOR:
+            case DBL_VECTOR:
+            case DBL_TABLE:
+                valueToStore = Conversion.stringToValue("0", prop.getDataType());
+                break;
+            case STRING:
+            case STRING_LIST:
+                valueToStore = Conversion.stringToValue("", prop.getDataType());
+                break;
+            case TIMESTAMP:
+                valueToStore = Conversion.stringToValue(defaultFormatter.format(today), prop.getDataType());
+                break;
+            case USER_DEFINED_ENUM:
+                valueToStore = new EnumValue("");
+                break;
+            default:
+                throw new UnhandledCaseException();
+            }
+            propertyValues.put(prop.getId(), valueToStore);
+        }
     }
 
     @Override
@@ -309,5 +355,28 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
         return attribute.getKind() == EntityAttributeViewKind.DEVICE_TYPE_ARTIFACT
                 || attribute.getKind() == EntityAttributeViewKind.DEVICE_TYPE_TAG
                 || super.canDelete(attribute);
+    }
+
+    public boolean canEdit(Property prop) {
+        return getSelectedProperties() != null && getSelectedProperties().contains(prop);
+    }
+
+    // TODO remove
+    public void propertyRowSelect(SelectEvent event) {
+        final List<Property> uiProps = getSelectionPropertiesFiltered() == null ? filteredProperties : getSelectionPropertiesFiltered();
+        int lineIndex = uiProps.indexOf(event.getObject());
+        RequestContext.getCurrentInstance().update("addPropertyValueForm:propertySelect:" + lineIndex + ":valuePanel");
+    }
+
+    // TODO remove
+    public void propertyRowUnselect(UnselectEvent event) {
+        final List<Property> uiProps = getSelectionPropertiesFiltered() == null ? filteredProperties : getSelectionPropertiesFiltered();
+        int lineIndex = uiProps.indexOf(event.getObject());
+        RequestContext.getCurrentInstance().update("addPropertyValueForm:propertySelect:" + lineIndex + ":valuePanel");
+    }
+
+    public String displayPropertyValue(Property prop) {
+        final Value val = propertyValues.get(prop.getId());
+        return val == null ? "No default value" : Conversion.valueToString(propertyValues.get(prop.getId()));
     }
 }

@@ -1,0 +1,57 @@
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html">
+
+    <h:form id="#{formId}">
+        <p:dialog widgetVar="#{widgetName}" id="#{widgetName}" modal="true" resizable="false" closable="false" 
+                dynamic="true" styleClass="property-selection">
+            <f:facet name="header">
+                <h:outputText value="#{dialogTitle}" />
+            </f:facet>
+            <p:panel style="margin-bottom: 2ex; border: 0;">
+                <p:dataTable id="propertySelect" value="#{comptypeAttributesController.filteredProperties}" var="prop" 
+                        selection="#{comptypeAttributesController.selectedProperties}" rowKey="#{prop.id}" scrollable="true" 
+                        scrollHeight="200" tableStyle="width: 52em; table-layout: auto;" widgetVar="propSelectTable" 
+                        filteredValue="#{comptypeAttributesController.selectionPropertiesFiltered}">
+                    <p:ajax event="rowSelect" update=":#{formId}:propertySelect" />
+                    <p:ajax event="rowUnselect" update=":#{formId}:propertySelect" />
+                    <p:ajax event="rowSelectCheckbox" update=":#{formId}:propertySelect" />
+                    <p:ajax event="rowUnselectCheckbox" update=":#{formId}:propertySelect" />
+                    <p:ajax event="toggleSelect" update=":#{formId}:propertySelect" />
+
+                    <p:column selectionMode="multiple" style="width: 2em;" />
+                    <p:column headerText="Property" style="width: 20em;" sortBy="#{prop.name}" filterBy="#{prop.name}">
+                        <h:outputText value="#{prop.name}" />
+                    </p:column>
+                    <p:column headerText="Description" style="width: 16em;" sortBy="#{prop.description}" 
+                            filterBy="#{prop.description}" filterMatchMode="contains">
+                        <h:outputText value="#{prop.description}" />
+                    </p:column>
+                    <p:column headerText="Data type" style="width: 8em;" sortBy="#{prop.dataType.name}" 
+                            filterBy="#{prop.dataType.name}" filterMatchMode="contains" filterStyle="width: 90%;">
+                        <h:outputText value="#{prop.dataType.name}" />
+                    </p:column>
+                    <p:column headerText="Unit" style="width: 6em;" sortBy="#{prop.unit.name}" 
+                            filterBy="#{prop.unit.name}" filterMatchMode="contains" filterStyle="width: 90%;">
+                        <h:outputText value="#{not empty prop.unit ? prop.unit.name : '-'}" />
+                    </p:column>
+                    <p:column headerText="Value" style="width: 16em;">
+                        <p:outputPanel id="valuePanel">
+                            <h:outputText value="Editable" rendered="#{comptypeAttributesController.canEdit(prop)}" />
+                            <h:outputText value="#{comptypeAttributesController.displayPropertyValue(prop)}" 
+                                rendered="#{!comptypeAttributesController.canEdit(prop)}" />
+                        </p:outputPanel>
+                    </p:column>
+                </p:dataTable>
+            </p:panel>
+
+            <p:commandButton value="Cancel" styleClass="dialogButton" oncomplete="#{widgetName}.hide();" 
+                    update="propertySelect" resetValues="true" action="#{comptypeAttributesController.resetPropertySelection(formId)}" />
+            <p:commandButton value="Save" styleClass="dialogButton" update="#{componentToUpdate} propertySelect" 
+                    oncomplete="if (args &amp;&amp; !args.validationFailed) { #{widgetName}.hide(); propSelectTable.filter(); }" 
+                    action="#{comptypeAttributesController[submitHandler]}"/>
+        </p:dialog>
+
+    </h:form>
+</ui:composition>
