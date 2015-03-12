@@ -41,6 +41,7 @@ public class MultiPropertyValueView {
     private final List<String> enumValues;
     private final PropertyValueUIElement propertyValueUIElement;
     private Value value;
+    private String uiValue;
 
     public MultiPropertyValueView(Property property) {
         this.property = property;
@@ -153,5 +154,15 @@ public class MultiPropertyValueView {
     /** @return the propertyValueUIElement */
     public PropertyValueUIElement getPropertyValueUIElement() {
         return propertyValueUIElement;
+    }
+
+    /** @return the uiValue */
+    public String getUiValue() {
+        return uiValue;
+    }
+
+    /** @param uiValue the uiValue to set */
+    public void setUiValue(String uiValue) {
+        this.uiValue = uiValue;
     }
 }

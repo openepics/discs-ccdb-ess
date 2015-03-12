@@ -27,6 +27,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
+import javax.faces.context.FacesContext;
+import javax.faces.validator.ValidatorException;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -39,6 +41,7 @@ import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypeArtifact;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
+import org.openepics.discs.conf.ent.DataType;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ent.Property;
@@ -50,14 +53,13 @@ import org.openepics.discs.conf.ent.values.Value;
 import org.openepics.discs.conf.ui.common.AbstractAttributesController;
 import org.openepics.discs.conf.ui.common.UIException;
 import org.openepics.discs.conf.util.Conversion;
+import org.openepics.discs.conf.util.PropertyValueUIElement;
+import org.openepics.discs.conf.util.UnhandledCaseException;
 import org.openepics.discs.conf.views.EntityAttributeView;
 import org.openepics.discs.conf.views.EntityAttributeViewKind;
 import org.openepics.discs.conf.views.MultiPropertyValueView;
-import org.primefaces.context.RequestContext;
-import org.primefaces.event.SelectEvent;
-import org.primefaces.event.UnselectEvent;
+import org.primefaces.event.CellEditEvent;
 
-import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
 /**
@@ -276,14 +278,17 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
     @Override
     public void prepareForPropertyValueAdd() {
         filterProperties();
-        filteredPropertyValues = Lists.transform(filteredProperties, new Function<Property, MultiPropertyValueView>() {
-                                                                @Override
-                                                                public MultiPropertyValueView apply(Property input) {
-                                                                    return new MultiPropertyValueView(input);
-                                                                }
-                                                            });
+        filteredPropertyValues = transformIntoViewList(filteredProperties);
         selectedPropertyValues = null;
         selectionPropertyValuesFiltered = null;
+    }
+
+    private List<MultiPropertyValueView> transformIntoViewList(List<Property> fromList) {
+        List<MultiPropertyValueView> destination = Lists.newArrayList();
+        for (Property prop : fromList) {
+            destination.add(new MultiPropertyValueView(prop));
+        }
+        return destination;
     }
 
     @Override
@@ -330,18 +335,66 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
         return selectedPropertyValues != null && selectedPropertyValues.contains(prop);
     }
 
-    // TODO remove
-    public void propertyRowSelect(SelectEvent event) {
-        final List<Property> uiProps = getSelectionPropertiesFiltered() == null ? filteredProperties : getSelectionPropertiesFiltered();
-        int lineIndex = uiProps.indexOf(event.getObject());
-        RequestContext.getCurrentInstance().update("addPropertyValueForm:propertySelect:" + lineIndex + ":valuePanel");
+    public void onEditCell(CellEditEvent event) {
+        final Object newValue = event.getNewValue();
+        final Object oldValue = event.getOldValue();
+
+        if (newValue != null && !newValue.equals(oldValue)) {
+            final MultiPropertyValueView editedPropVal = selectionPropertyValuesFiltered == null
+                                                            ? filteredPropertyValues.get(event.getRowIndex())
+                                                            : selectionPropertyValuesFiltered.get(event.getRowIndex());
+            final DataType dataType = editedPropVal.getDataType();
+            String newValueStr = getEditEventValue(newValue, editedPropVal.getPropertyValueUIElement());
+            try {
+                switch (editedPropVal.getPropertyValueUIElement()) {
+                    case INPUT:
+                        validateSingleLine(newValueStr, dataType);
+                        break;
+                    case TEXT_AREA:
+                        validateMultiLine(newValueStr, dataType);
+                        break;
+                    case SELECT_ONE_MENU:
+                        break;
+                    case NONE:
+                    default:
+                        throw new UnhandledCaseException();
+                }
+                editedPropVal.setValue(Conversion.stringToValue(newValueStr, dataType));
+            } catch (ValidatorException e) {
+                editedPropVal.setUiValue(oldValue == null ? null : getEditEventValue(oldValue, null));
+                FacesContext.getCurrentInstance().addMessage("inputValidationFail", e.getFacesMessage());
+                FacesContext.getCurrentInstance().validationFailed();
+            }
+        }
     }
 
-    // TODO remove
-    public void propertyRowUnselect(UnselectEvent event) {
-        final List<Property> uiProps = getSelectionPropertiesFiltered() == null ? filteredProperties : getSelectionPropertiesFiltered();
-        int lineIndex = uiProps.indexOf(event.getObject());
-        RequestContext.getCurrentInstance().update("addPropertyValueForm:propertySelect:" + lineIndex + ":valuePanel");
+    private String getEditEventValue(Object val, PropertyValueUIElement propValueUIElement) {
+        if (val == null) return null;
+        if (val instanceof String) return val.toString();
+        if (val instanceof List<?>) {
+            List<?> valList = (List<?>)val;
+            if (propValueUIElement == null) {
+                for (Object v : valList) {
+                    if (v != null) {
+                        return v.toString();
+                    }
+                }
+                return null;
+            } else {
+                switch (propValueUIElement) {
+                    case INPUT:
+                        return valList.get(0).toString();
+                    case TEXT_AREA:
+                        return valList.get(1).toString();
+                    case SELECT_ONE_MENU:
+                        return valList.get(2).toString();
+                    case NONE:
+                    default:
+                        throw new UnhandledCaseException();
+                }
+            }
+        }
+        throw new RuntimeException("MultiPropertyValue: UI string value cannot be extracted.");
     }
 
     public String displayPropertyValue(MultiPropertyValueView prop) {

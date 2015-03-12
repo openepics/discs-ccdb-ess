@@ -9,8 +9,10 @@
             <f:facet name="header">
                 <h:outputText value="#{dialogTitle}" />
             </f:facet>
+            <p:messages id="inputValidationFail" showDetail="true" autoUpdate="true" />
             <p:panel style="margin-bottom: 2ex; border: 0;">
                 <p:dataTable id="propertySelect" value="#{comptypeAttributesController.filteredPropertyValues}" var="prop" 
+                        editable="true" editMode="cell"
                         selection="#{comptypeAttributesController.selectedPropertyValues}" rowKey="#{prop.id}" scrollable="true" 
                         scrollHeight="200" tableStyle="width: 68em; table-layout: auto;" widgetVar="propSelectTable" 
                         filteredValue="#{comptypeAttributesController.selectionPropertyValuesFiltered}">
@@ -19,6 +21,7 @@
                     <p:ajax event="rowSelectCheckbox" update=":#{formId}:propertySelect" />
                     <p:ajax event="rowUnselectCheckbox" update=":#{formId}:propertySelect" />
                     <p:ajax event="toggleSelect" update=":#{formId}:propertySelect" />
+                    <p:ajax event="cellEdit" listener="#{comptypeAttributesController.onEditCell}" update=":#{formId}:propertySelect" />
 
                     <p:column selectionMode="multiple" style="width: 2em;" />
                     <p:column headerText="Property" style="width: 20em;" sortBy="#{prop.name}" filterBy="#{prop.name}">
@@ -37,34 +40,24 @@
                         <h:outputText value="#{not empty prop.unit ? prop.unit.name : '-'}" />
                     </p:column>
                     <p:column headerText="Value" style="width: 16em;">
-                        <p:outputPanel id="valuePanel">
-                            <p:cellEditor rendered="#{comptypeAttributesController.canEdit(prop)}">
-                                <f:facet name="output">
-                                    <h:outputText value="#{comptypeAttributesController.displayPropertyValue(prop)}" />
-                                </f:facet>
-                                <f:facet name="input">
-                                    <p:inputText id="propertyValueSimple" value="#{prop.value}" required="true"
-                                            requiredMessage="Please enter a property value" validator="#{comptypeAttributesController.inputValidator}" 
-                                            rendered="#{prop.propertyValueUIElement eq 'INPUT'}" />
-                                    <p:message for="propertyValueSimple" rendered="#{prop.propertyValueUIElement eq 'INPUT'}"/>
-                                    
-                                    <p:inputTextarea id="propertyValueArea" value="#{prop.value}" required="true" 
-                                            rows="7" cols="40" style="width: 100% !important; white-space: nowrap; resize: none;" autoResize="false" 
-                                            requiredMessage="Please enter a property value" validator="#{comptypeAttributesController.areaValidator}" 
-                                            rendered="#{prop.propertyValueUIElement eq 'TEXT_AREA'}" />
-                                    <p:message for="propertyValueArea" rendered="#{prop.propertyValueUIElement eq 'TEXT_AREA'}"/>
-                                    
-                                    <p:selectOneMenu id="propertyValueEnum" value="#{prop.value}" required="true" 
-                                            rendered="#{prop.propertyValueUIElement eq 'SELECT_ONE_MENU'}">
-                                        <f:selectItems value="#{prop.enumOptions}" var="enum" itemLabel="#{enum}" itemValue="#{enum}" />        
-                                    </p:selectOneMenu>
-                                    <p:message for="propertyValueEnum" rendered="#{prop.propertyValueUIElement eq 'SELECT_ONE_MENU'}"/>
-                                    <p:messages for="uniqueMessage" showDetail="true" autoUpdate="true" />
-                                </f:facet>
-                            </p:cellEditor>
-                            <h:outputText value="-" 
-                                rendered="#{!comptypeAttributesController.canEdit(prop)}" />
-                        </p:outputPanel>
+                        <p:cellEditor rendered="#{comptypeAttributesController.canEdit(prop)}">
+                            <f:facet name="output">
+                                <h:outputText value="#{comptypeAttributesController.displayPropertyValue(prop)}" />
+                            </f:facet>
+                            <f:facet name="input">
+                                <p:inputText id="propertyValueSimple" value="#{prop.uiValue}" rendered="#{prop.propertyValueUIElement eq 'INPUT'}" />
+                                
+                                <p:inputTextarea id="propertyValueArea" rows="7" value="#{prop.uiValue}" 
+                                        style="width: 90%; white-space: nowrap; resize: none;" autoResize="false" 
+                                        rendered="#{prop.propertyValueUIElement eq 'TEXT_AREA'}" />
+                                
+                                <p:selectOneMenu id="propertyValueEnum" style="width: 90%;" value="#{prop.uiValue}" 
+                                        rendered="#{prop.propertyValueUIElement eq 'SELECT_ONE_MENU'}">
+                                    <f:selectItems value="#{prop.enumOptions}" var="enum" itemLabel="#{enum}" itemValue="#{enum}" />        
+                                </p:selectOneMenu>
+                            </f:facet>
+                        </p:cellEditor>
+                        <h:outputText value="-" rendered="#{!comptypeAttributesController.canEdit(prop)}" />
                     </p:column>
                 </p:dataTable>
             </p:panel>

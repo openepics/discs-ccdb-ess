@@ -94,6 +94,8 @@ import com.google.common.io.ByteStreams;
 public abstract class AbstractAttributesController<T extends PropertyValue, S extends Artifact> implements Serializable {
     private static final long serialVersionUID = 523935015308933240L;
 
+    private static final String MULTILINE_DELIMITER = "(\\r\\n)|\\r|\\n";
+
     private static final int MIN_ELEMENT_SIZE = 20;
     private static final int MAX_ELEMENT_SIZE = 40;
     private static final int ELEMENT_SIZE_PADDING = 8;
@@ -822,9 +824,11 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
                     Utility.MESSAGE_SUMMARY_ERROR, "You must select a property first."));
         }
 
-        DataType dataType = property != null ? property.getDataType() : selectedAttribute.getType();
+        final DataType dataType = property != null ? property.getDataType() : selectedAttribute.getType();
+        validateMultiLine(value.toString(), dataType);
+    }
 
-        String strValue = value.toString();
+    protected void validateMultiLine(String strValue, DataType dataType) {
         switch (Conversion.getBuiltInDataType(dataType)) {
             case DBL_TABLE:
                 validateTable(strValue);
@@ -845,7 +849,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
 
     private void validateTable(String value) throws ValidatorException {
         try (Scanner lineScanner = new Scanner(value)) {
-            lineScanner.useDelimiter(Pattern.compile("(\\r\\n)|\\r|\\n"));
+            lineScanner.useDelimiter(Pattern.compile(MULTILINE_DELIMITER));
 
             int lineLength = -1;
             while (lineScanner.hasNext()) {
@@ -878,7 +882,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
 
     private void validateIntVector(String value) throws ValidatorException {
         try (Scanner scanner = new Scanner(value)) {
-            scanner.useDelimiter(Pattern.compile("(\\r\\n)|\\r|\\n"));
+            scanner.useDelimiter(Pattern.compile(MULTILINE_DELIMITER));
 
             while (scanner.hasNext()) {
                 String intValue = "<error>";
@@ -896,7 +900,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
 
     private void validateDblVector(String value) throws ValidatorException {
         try (Scanner scanner = new Scanner(value)) {
-            scanner.useDelimiter(Pattern.compile("(\\r\\n)|\\r|\\n"));
+            scanner.useDelimiter(Pattern.compile(MULTILINE_DELIMITER));
 
             while (scanner.hasNext()) {
                 String dblValue = "<error>";
@@ -931,9 +935,12 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
                     Utility.MESSAGE_SUMMARY_ERROR, "You must select a property first."));
         }
 
-        DataType dataType = property != null ? property.getDataType() : selectedAttribute.getType();
+        final DataType dataType = property != null ? property.getDataType() : selectedAttribute.getType();
 
-        String strValue = value.toString();
+        validateSingleLine(value.toString(), dataType);
+    }
+
+    protected void validateSingleLine(String strValue, DataType dataType) {
         switch (Conversion.getBuiltInDataType(dataType)) {
             case DOUBLE:
                 try {
