@@ -38,6 +38,7 @@ public class MultiPropertyValueView {
     private final PropertyValueUIElement propertyValueUIElement;
     private Value value;
     private String uiValue;
+    private boolean selected;
 
     public MultiPropertyValueView(Property property) {
         this.property = property;
@@ -133,5 +134,15 @@ public class MultiPropertyValueView {
     /** @param uiValue the uiValue to set */
     public void setUiValue(String uiValue) {
         this.uiValue = uiValue;
+    }
+
+    /** @return the selected */
+    public boolean isSelected() {
+        return selected;
+    }
+
+    /** @param selected the selected to set */
+    public void setSelected(boolean selected) {
+        this.selected = selected;
     }
 }

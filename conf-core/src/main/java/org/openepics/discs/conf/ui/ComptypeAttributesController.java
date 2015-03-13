@@ -88,6 +88,7 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
     private List<MultiPropertyValueView> filteredPropertyValues;
     private List<MultiPropertyValueView> selectedPropertyValues;
     private List<MultiPropertyValueView> selectionPropertyValuesFiltered;
+    private boolean selectAllRows;
 
     @Override
     @PostConstruct
@@ -282,8 +283,9 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
     public void prepareForPropertyValueAdd() {
         filterProperties();
         filteredPropertyValues = transformIntoViewList(filteredProperties);
-        selectedPropertyValues = null;
+        selectedPropertyValues = Lists.newArrayList();
         selectionPropertyValuesFiltered = null;
+        selectAllRows = false;
     }
 
     private List<MultiPropertyValueView> transformIntoViewList(List<Property> fromList) {
@@ -334,10 +336,63 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
                 || super.canDelete(attribute);
     }
 
-    public boolean canEdit(MultiPropertyValueView prop) {
-        return selectedPropertyValues != null && selectedPropertyValues.contains(prop);
+    /** The event handler for when user clicks on the check-box in the "Add property values" dialog.
+     * @param prop the property value to handle the event for
+     */
+    public void rowSelectListener(MultiPropertyValueView prop) {
+        if (prop.isSelected()) {
+            selectedPropertyValues.add(prop);
+        } else {
+            selectedPropertyValues.remove(prop);
+        }
     }
 
+    /** The function to handle the state of the "Select all" checkbox after the filter change */
+    public void updateToggle() {
+        final List<MultiPropertyValueView> pvList = selectionPropertyValuesFiltered == null
+                                                        ? filteredPropertyValues : selectionPropertyValuesFiltered;
+        for (MultiPropertyValueView pv : pvList) {
+            if (!pv.isSelected()) {
+                selectAllRows = false;
+                return;
+            }
+        }
+        selectAllRows = true;
+    }
+
+    /** The event handler for toggling selection of all property values */
+    public void handleToggleAll() {
+        final List<MultiPropertyValueView> pvList = selectionPropertyValuesFiltered == null
+                ? filteredPropertyValues : selectionPropertyValuesFiltered;
+        if (selectAllRows) {
+            selectAllFiltered(pvList);
+        } else {
+            unselectAllFiltered(pvList);
+        }
+    }
+
+    private void selectAllFiltered(List<MultiPropertyValueView> pvList) {
+        for (MultiPropertyValueView pv : pvList) {
+            if (!pv.isSelected()) {
+                pv.setSelected(true);
+                selectedPropertyValues.add(pv);
+            }
+        }
+    }
+
+    private void unselectAllFiltered(List<MultiPropertyValueView> pvList) {
+        for (MultiPropertyValueView pv : pvList) {
+            if (pv.isSelected()) {
+                pv.setSelected(false);
+                selectedPropertyValues.remove(pv);
+            }
+        }
+    }
+
+    /** This method handled the value once the users is done putting it in. This method actually performs the
+     * input validation.
+     * @param event
+     */
     public void onEditCell(CellEditEvent event) {
         final Object newValue = event.getNewValue();
         final Object oldValue = event.getOldValue();
@@ -405,9 +460,13 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
         throw new RuntimeException("MultiPropertyValue: UI string value cannot be extracted.");
     }
 
+    /** This method returns a String representation of the property value.
+     * @param prop the value of the property to show value for
+     * @return the string representation
+     */
     public String displayPropertyValue(MultiPropertyValueView prop) {
         final Value val = prop.getValue();
-        return val == null ? "<Please define!>" : Conversion.valueToString(val);
+        return val == null ? "<Please define>" : Conversion.valueToString(val);
     }
 
     /** @return the filteredPropertyValues */
@@ -438,5 +497,19 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
     /** @param selectionPropertyValuesFiltered the selectionPropertyValuesFiltered to set */
     public void setSelectionPropertyValuesFiltered(List<MultiPropertyValueView> selectionPropertyValuesFiltered) {
         this.selectionPropertyValuesFiltered = selectionPropertyValuesFiltered;
+    }
+
+    /**
+     * @return the selectAllRows
+     */
+    public boolean isSelectAllRows() {
+        return selectAllRows;
+    }
+
+    /**
+     * @param selectAllRows the selectAllRows to set
+     */
+    public void setSelectAllRows(boolean selectAllRows) {
+        this.selectAllRows = selectAllRows;
     }
 }

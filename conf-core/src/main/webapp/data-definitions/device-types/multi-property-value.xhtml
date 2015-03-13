@@ -4,6 +4,8 @@
     xmlns:h="http://java.sun.com/jsf/html">
 
     <h:form id="#{formId}">
+        <p:remoteCommand name="updateToggle" actionListener="#{comptypeAttributesController.updateToggle()}" 
+            update=":#{formId}:propertySelect" />
         <p:dialog widgetVar="#{widgetName}" id="#{widgetName}" modal="true" resizable="false" closable="false" 
                 dynamic="true" styleClass="property-selection">
             <f:facet name="header">
@@ -12,18 +14,24 @@
             <p:messages id="inputValidationFail" showDetail="true" autoUpdate="true" />
             <p:panel style="margin-bottom: 2ex; border: 0;">
                 <p:dataTable id="propertySelect" value="#{comptypeAttributesController.filteredPropertyValues}" var="prop" 
-                        editable="true" editMode="cell"
-                        selection="#{comptypeAttributesController.selectedPropertyValues}" rowKey="#{prop.id}" scrollable="true" 
+                        editable="true" editMode="cell" scrollable="true" 
                         scrollHeight="200" tableStyle="width: 68em; table-layout: auto;" widgetVar="propSelectTable" 
                         filteredValue="#{comptypeAttributesController.selectionPropertyValuesFiltered}">
-                    <p:ajax event="rowSelect" update=":#{formId}:propertySelect" />
-                    <p:ajax event="rowUnselect" update=":#{formId}:propertySelect" />
-                    <p:ajax event="rowSelectCheckbox" update=":#{formId}:propertySelect" />
-                    <p:ajax event="rowUnselectCheckbox" update=":#{formId}:propertySelect" />
-                    <p:ajax event="toggleSelect" update=":#{formId}:propertySelect" />
                     <p:ajax event="cellEdit" listener="#{comptypeAttributesController.onEditCell}" update=":#{formId}:propertySelect" />
+                    <p:ajax event="filter" oncomplete="updateToggle()" />
 
-                    <p:column selectionMode="multiple" style="width: 2em;" />
+                    <p:column id="rowSelection" style="width: 2em;">
+                        <f:facet name="header">
+                            <p:selectBooleanCheckbox id="toggleAll" value="#{comptypeAttributesController.selectAllRows}">
+                                <p:ajax listener="#{comptypeAttributesController.handleToggleAll}" 
+                                    update=":#{formId}:propertySelect" />
+                            </p:selectBooleanCheckbox>
+                        </f:facet>
+                        <p:selectBooleanCheckbox value="#{prop.selected}">
+                            <p:ajax update=":#{formId}:propertySelect" oncomplete="updateToggle()" 
+                                listener="#{comptypeAttributesController.rowSelectListener(prop)}"/>
+                        </p:selectBooleanCheckbox>
+                    </p:column>
                     <p:column headerText="Property" style="width: 20em;" sortBy="#{prop.name}" filterBy="#{prop.name}">
                         <h:outputText value="#{prop.name}" />
                     </p:column>
@@ -40,7 +48,7 @@
                         <h:outputText value="#{not empty prop.unit ? prop.unit.name : '-'}" />
                     </p:column>
                     <p:column headerText="Value" style="width: 16em;">
-                        <p:cellEditor rendered="#{comptypeAttributesController.canEdit(prop)}">
+                        <p:cellEditor rendered="#{prop.selected}">
                             <f:facet name="output">
                                 <h:outputText value="#{comptypeAttributesController.displayPropertyValue(prop)}" />
                             </f:facet>
@@ -58,7 +66,7 @@
                                 </p:selectOneMenu>
                             </f:facet>
                         </p:cellEditor>
-                        <h:outputText value="-" rendered="#{!comptypeAttributesController.canEdit(prop)}" />
+                        <h:outputText value="-" rendered="#{!prop.selected}" />
                     </p:column>
                 </p:dataTable>
             </p:panel>
@@ -69,6 +77,12 @@
                     oncomplete="if (args &amp;&amp; !args.validationFailed) { #{widgetName}.hide(); propSelectTable.filter(); }" 
                     action="#{comptypeAttributesController[submitHandler]}"/>
         </p:dialog>
-
+        <script type="text/javascript">
+            // prevent focus of the first element, select the first button (Cancel) instead
+            // http://forum.primefaces.org/viewtopic.php?f=3&t=29050
+            PrimeFaces.widget.Dialog.prototype.applyFocus = function() {
+                this.jq.find(':button:input:visible:enabled:first').focus();
+            }
+        </script>
     </h:form>
 </ui:composition>
