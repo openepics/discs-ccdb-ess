@@ -53,6 +53,7 @@
                                 
                                 <p:selectOneMenu id="propertyValueEnum" style="width: 90%;" value="#{prop.uiValue}" 
                                         rendered="#{prop.propertyValueUIElement eq 'SELECT_ONE_MENU'}">
+                                    <f:selectItem itemLabel="&lt;Select value&gt;" itemValue="" />        
                                     <f:selectItems value="#{prop.enumOptions}" var="enum" itemLabel="#{enum}" itemValue="#{enum}" />        
                                 </p:selectOneMenu>
                             </f:facet>

@@ -27,6 +27,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
+import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.validator.ValidatorException;
 import javax.faces.view.ViewScoped;
@@ -55,11 +56,13 @@ import org.openepics.discs.conf.ui.common.UIException;
 import org.openepics.discs.conf.util.Conversion;
 import org.openepics.discs.conf.util.PropertyValueUIElement;
 import org.openepics.discs.conf.util.UnhandledCaseException;
+import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.views.EntityAttributeView;
 import org.openepics.discs.conf.views.EntityAttributeViewKind;
 import org.openepics.discs.conf.views.MultiPropertyValueView;
 import org.primefaces.event.CellEditEvent;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
 /**
@@ -339,6 +342,7 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
         final Object newValue = event.getNewValue();
         final Object oldValue = event.getOldValue();
 
+        // TODO check for uniqueness as well
         if (newValue != null && !newValue.equals(oldValue)) {
             final MultiPropertyValueView editedPropVal = selectionPropertyValuesFiltered == null
                                                             ? filteredPropertyValues.get(event.getRowIndex())
@@ -354,6 +358,10 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
                         validateMultiLine(newValueStr, dataType);
                         break;
                     case SELECT_ONE_MENU:
+                        if (Strings.isNullOrEmpty(newValueStr)) {
+                            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                    Utility.MESSAGE_SUMMARY_ERROR, "A value must be selected."));
+                        }
                         break;
                     case NONE:
                     default:

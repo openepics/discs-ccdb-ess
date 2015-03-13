@@ -19,18 +19,14 @@
  */
 package org.openepics.discs.conf.views;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 import org.openepics.discs.conf.ent.DataType;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.Unit;
-import org.openepics.discs.conf.ent.values.EnumValue;
 import org.openepics.discs.conf.ent.values.Value;
 import org.openepics.discs.conf.util.Conversion;
 import org.openepics.discs.conf.util.PropertyValueUIElement;
-import org.openepics.discs.conf.util.UnhandledCaseException;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -122,33 +118,6 @@ public class MultiPropertyValueView {
         } else {
             return false;
         }
-    }
-
-    private Value defaultPropertyValue() {
-        Value returnValue;
-        switch (Conversion.getBuiltInDataType(property.getDataType())) {
-            case DOUBLE:
-            case INTEGER:
-            case INT_VECTOR:
-            case DBL_VECTOR:
-            case DBL_TABLE:
-                returnValue = Conversion.stringToValue("0", property.getDataType());
-                break;
-            case STRING:
-            case STRING_LIST:
-                returnValue = Conversion.stringToValue("", property.getDataType());
-                break;
-            case TIMESTAMP:
-                final SimpleDateFormat sdf = new SimpleDateFormat(Conversion.DATE_ONLY_FORMAT);
-                returnValue = Conversion.stringToValue(sdf.format(new Date()), property.getDataType());
-                break;
-            case USER_DEFINED_ENUM:
-                returnValue = new EnumValue("");
-                break;
-            default:
-                throw new UnhandledCaseException();
-        }
-        return returnValue;
     }
 
     /** @return the propertyValueUIElement */
