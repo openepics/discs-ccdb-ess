@@ -13,7 +13,7 @@
     </cc:interface>
 
     <cc:implementation> 
-        <p:dataTable id="#{cc.attrs.id}" var="attribute" value="#{cc.attrs.controllerBean.attributes}" 
+        <p:dataTable id="#{cc.attrs.id}" var="attribute" value="#{cc.attrs.controllerBean.attributes}" resizableColumns="true"
                 selection="#{cc.attrs.controllerBean.selectedAttribute}" selectionMode="single" rowKey="#{attribute.id}" 
                 style="table-layout: fixed; word-wrap: break-word; margin-top: 1em; margin-bottom: 1em;" rows="15" 
                 paginator="true" paginatorPosition="bottom" filteredValue="#{cc.attrs.controllerBean.filteredAttributes}">
