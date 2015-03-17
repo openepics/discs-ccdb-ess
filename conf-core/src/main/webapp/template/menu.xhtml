@@ -25,8 +25,8 @@
             </p:submenu>
 
             <p:submenu label="Devices" icon="ui-icon-gear" 
-                    styleClass="#{fn:endsWith(request.requestURL,'devices/index.xhtml') ? 'menu-selected' : ''} devicesMenu">
-                <p:menuitem value="View" title="View Device Instances" styleClass="noClickEvent" url="/devices/index.xhtml" />
+                    styleClass="#{fn:endsWith(request.requestURL,'devices/device-manager.xhtml') ? 'menu-selected' : ''} devicesMenu">
+                <p:menuitem value="View" title="View Device Instances" styleClass="noClickEvent" url="/devices/device-manager.xhtml" />
             
                 <p:menuitem value="Import" update=":importDevicesForm" styleClass="noClickEvent" 
                     oncomplete="importDevices.show()" title="Import Device Instances" 
@@ -140,7 +140,7 @@
 
         jQuery(".devicesMenu").click(function(event) {
             if (noClickTarget(event.target) == false) {
-                window.location.replace("#{request.contextPath}/devices/index.xhtml");
+                window.location.replace("#{request.contextPath}/devices/device-manager.xhtml");
             }
         });
 
