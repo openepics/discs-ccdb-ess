@@ -6,37 +6,28 @@
 
     <ui:define name="content">
         <p:growl showDetail="true" globalOnly="true" autoUpdate="true" />
-        <h:form id="deviceTypesForm">
+        <h:form id="devicesForm">
             <p:panelGrid styleClass="noBorders noPaddingLeft">
                 <p:row>
-                    <p:column style="width: 20%; vertical-align: top;">
-        	            <p:dataTable id="typesTable" var="devType" selection="#{devicesByTypeManager.selectedComponentType}"
-                                selectionMode="single" rowKey="#{devType.id}" scrollable="true" 
-                                value="#{componentTypeManager.deviceTypes}" scrollHeight="600" 
-                                filteredValue="#{componentTypeManager.filteredDeviceTypes}" emptyMessage="No device types defined.">
-                            <p:ajax event="rowSelect" listener="#{devicesByTypeManager.prepareDevicesForDisplay()}" 
-                                update=":deviceTypesForm:devicesTable :deviceTypesForm:addDeviceButton :deviceAddForm:addDeviceDialog" 
-                                oncomplete="removeParametersFromUrl()" onstart="devicesTable.clearFilters()" />
-        	                <p:column headerText="Type" filterBy="#{devType.name}" filterMatchMode="contains">
-        	                    <h:outputText value="#{devType.name}" />
-        	                </p:column>
-        	            </p:dataTable>
-                    </p:column>            
-                    <p:column style="width: 80%; vertical-align: top;">
-                        <p:commandButton value="Add new" oncomplete="addDeviceDialog.show()" id="addDeviceButton" 
-                            disabled="#{empty devicesByTypeManager.selectedComponentType}" update=":deviceAddForm"
-                            style="margin-bottom: 1em;" />                        
+                    <p:column style="width: 50%; vertical-align: top;">
+        	            <p:dataTable id="devicesTable" var="device" selection="#{devicesByTypeManager.selectedDevice}"
+                                selectionMode="single" rowKey="#{device.device.id}" scrollable="true" 
+                                value="#{devicesByTypeManager.devices}" scrollHeight="600" 
+                                filteredValue="#{devicesByTypeManager.filteredDevices}" emptyMessage="No devices found.">
+                            <p:ajax event="rowSelect" update=":deviceAddForm:addDeviceDialog" />
 
-                        <p:dataTable id="devicesTable" var="device" rows="15" paginator="true" paginatorPosition="bottom"
-                                value="#{devicesByTypeManager.devices}" emptyMessage="No devices." 
-                                widgetVar="devicesTable" filteredValue="#{devicesByTypeManager.filteredDevices}">
+        	                <p:column headerText="Type" sortBy="#{device.device.componentType.name}" filterStyle="width: 90%;" 
+                                    filterBy="#{device.device.componentType.name}" filterMatchMode="contains">
+        	                    <h:outputText value="#{device.device.componentType.name}" />
+        	                </p:column>
 
                             <p:column headerText="Inventory ID" sortBy="#{device.inventoryId}" 
-                                    filterBy="#{device.inventoryId}" width="40%" filterMatchMode="contains">
+                                    filterBy="#{device.inventoryId}" width="30%" filterMatchMode="contains">
                                 <h:outputText value="#{device.inventoryId}" />
                             </p:column>
 
                             <p:column headerText="Status" sortBy="#{device.statusLabel}" filterBy="#{device.statusLabel}" 
+                                    filterStyle="width: 90%;"
                                     filterMatchMode="exact" filterOptions="#{devicesByTypeManager.statusLabels}">
                                 <h:outputText value="#{device.statusLabel}" />
                             </p:column>
@@ -46,37 +37,20 @@
                                 <h:outputText value="#{device.installedIn}" />
                             </p:column>
 
-                            <p:column headerText="Actions" width="70">
-                                <p:commandLink ajax="true" title="Edit" action="#{devicesByTypeManager.deviceDetailsRedirect(device.device.id)}">
-                                    <h:outputText styleClass="ui-icon ui-icon-pencil" style="display: inline-block !important; margin-right: 6px;" />
-                                </p:commandLink>
-                                <p:commandLink ajax="true" title="Delete" oncomplete="deleteDevice.show()">
-                                    <h:outputText styleClass="ui-icon ui-icon-trash" style="display: inline-block !important; margin-right: 6px;" />
-                                    <f:setPropertyActionListener value="#{device.device}" target="#{devicesByTypeManager.selectedDevice}" />
-                                </p:commandLink>
-                                <p:commandLink ajax="true" title="Log">
-                                    <h:outputText styleClass="ui-icon ui-icon-clock" style="display: inline-block !important; margin-right: 6px;" />
-                                    <p:ajax event="click" listener="#{auditManager.selectEntityForLog(device.device, 'DEVICE')}" 
-                                            update=":deviceLogForm" oncomplete="deviceLog.show()" />
-                                </p:commandLink>
+                            <p:column headerText="Installation timestamp">
+                                <h:outputText value="#{device.installationDate}">
+                                    <f:convertDateTime pattern="#{msgs.timestampFormat}" />
+                                </h:outputText>
                             </p:column>
-                        </p:dataTable>
+
+         	            </p:dataTable>
+                    </p:column>            
+                    <p:column style="width: 50%; vertical-align: top;">
+                        Filler
     	            </p:column>
                 </p:row>
             </p:panelGrid>
         </h:form>
-
-        <ui:include src="/audit/audit-log-table.xhtml">
-            <ui:param name="formId" value="deviceLogForm" />
-            <ui:param name="dialogTitle" value="Device log" />
-            <ui:param name="widgetName" value="deviceLog" />
-        </ui:include>
-
-        <ui:include src="/audit/audit-log-details.xhtml">
-            <ui:param name="formId" value="logDetailsForm" />
-            <ui:param name="dialogTitle" value="Log entry details" />
-            <ui:param name="widgetName" value="logDetails" />
-        </ui:include>
 
         <ui:include src="/devices/device-add-or-modify-dialog.xhtml">
             <ui:param name="formId" value="deviceAddForm" />
@@ -91,7 +65,7 @@
             <ui:param name="widgetName" value="deleteDevice" />
             <ui:param name="controller" value="#{devicesByTypeManager}" />
             <ui:param name="submitHandler" value="onDeviceDelete" />
-            <ui:param name="formToUpdate" value=":deviceTypesForm:devicesTable" />
+            <ui:param name="formToUpdate" value=":devicesForm:devicesTable" />
             <ui:param name="entityType" value="this device" />
         </ui:include>
     </ui:define>

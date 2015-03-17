@@ -18,6 +18,7 @@
 package org.openepics.discs.conf.ui;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -29,7 +30,6 @@ import javax.faces.validator.ValidatorException;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.servlet.http.HttpServletRequest;
 
 import org.openepics.discs.conf.ejb.ComptypeEJB;
 import org.openepics.discs.conf.ejb.DeviceEJB;
@@ -49,7 +49,6 @@ import com.google.common.collect.Lists;
 
 /**
  * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
- *
  */
 @Named
 @ViewScoped
@@ -64,7 +63,7 @@ public class DevicesByTypeManager implements Serializable {
 
     private List<DeviceView> devices;
     private transient List<DeviceView> filteredDevices;
-    private Device selectedDevice;
+    private DeviceView selectedDevice;
 
     private List<SelectItem> statusLabels;
 
@@ -74,25 +73,14 @@ public class DevicesByTypeManager implements Serializable {
     public DevicesByTypeManager() {
     }
 
-    /**
-     * Java EE post construct life-cycle method.
-     */
+    /** Java EE post construct life-cycle method */
     @PostConstruct
     public void init() {
-        if (((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest()).getParameter("id")
-                != null) {
-            final Long id = Long.parseLong(
-                    ((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest()).
-                    getParameter("id"));
-            selectedComponentType = componentTypesEJB.findById(id);
-            prepareDevicesForDisplay();
-            prepareStatusLabels();
-        }
+        prepareDevicesForDisplay();
+        prepareStatusLabels();
     }
 
-    /**
-     * Creates a new device instance and adds all properties to it which are defined by device type.
-     */
+    /** Creates a new device instance and adds all properties to it which are defined by device type */
     public void onDeviceAdd() {
         final Device newDevice = new Device(serialNumber);
         newDevice.setComponentType(selectedComponentType);
@@ -107,15 +95,13 @@ public class DevicesByTypeManager implements Serializable {
         }
     }
 
-    /**
-     * Event handler which handles the device delete
-     */
+    /** Event handler which handles the device delete */
     public void onDeviceDelete() {
         Preconditions.checkNotNull(selectedDevice);
 
-        if (installationEJB.getActiveInstallationRecordForDevice(selectedDevice) == null) {
+        if (installationEJB.getActiveInstallationRecordForDevice(selectedDevice.getDevice()) == null) {
             try {
-                deviceEJB.delete(selectedDevice);
+                deviceEJB.delete(selectedDevice.getDevice());
 
                 selectedDevice = null;
                 prepareDevicesForDisplay();
@@ -159,9 +145,7 @@ public class DevicesByTypeManager implements Serializable {
         return "index.html?faces-redirect=true&id=" + id;
     }
 
-    /**
-     * @return The device type the user selected in the left hand side table listing all available device type
-     */
+    /** @return The device type the user selected in the left hand side table listing all available device type */
     public ComponentType getSelectedComponentType() {
         return selectedComponentType;
     }
@@ -178,19 +162,20 @@ public class DevicesByTypeManager implements Serializable {
      * the left hand side table listing all available device type.
      */
     public void prepareDevicesForDisplay() {
-        final List<Device> deviceList = deviceEJB.findDevicesByComponentType(selectedComponentType);
+        final List<Device> deviceList = deviceEJB.findAll();
 
         // transform the list of Unit into a list of UnitView
         devices = ImmutableList.copyOf(Lists.transform(deviceList, new Function<Device, DeviceView>() {
-                                                @Override
-                                                public DeviceView apply(Device input) {
-                                                    return new DeviceView(input, getInstalledSlotForDevice(input));
-                                                }}));
-    }
-
-    private String getInstalledSlotForDevice(Device device) {
-        final InstallationRecord record = installationEJB.getActiveInstallationRecordForDevice(device);
-        return record == null ? "-" : record.getSlot().getName();
+                        @Override
+                        public DeviceView apply(Device input) {
+                            final InstallationRecord installationRecord =
+                                                installationEJB.getActiveInstallationRecordForDevice(input);
+                            final String installationSlot = installationRecord == null ? "-"
+                                                                    : installationRecord.getSlot().getName();
+                            final Date installationDate = installationRecord == null ? null
+                                                                    : installationRecord.getInstallDate();
+                            return new DeviceView(input, installationSlot, installationDate);
+                        }}));
     }
 
     private void prepareStatusLabels() {
@@ -205,27 +190,22 @@ public class DevicesByTypeManager implements Serializable {
 
     /** @return the list of labels for the filter */
     public List<SelectItem> getStatusLabels() {
-        prepareStatusLabels();
         return statusLabels;
     }
 
-    /**
-     * @return The list of all {@link Device} instances to display to the the user
-     */
+    /** @return The list of all {@link Device} instances to display to the the user */
     public List<DeviceView> getDevices() {
         return devices;
     }
 
-    /**
-     * @return The reference to the device instance displayed in the row the user clicked the action for.
-     */
-    public Device getSelectedDevice() {
+    /** @return The reference to the device instance displayed in the row the user clicked the action for */
+    public DeviceView getSelectedDevice() {
         return selectedDevice;
     }
     /**
      * @param selectedDevice The reference to the device instance displayed in the row the user clicked the action for.
      */
-    public void setSelectedDevice(Device selectedDevice) {
+    public void setSelectedDevice(DeviceView selectedDevice) {
         this.selectedDevice = selectedDevice;
     }
 
@@ -242,15 +222,11 @@ public class DevicesByTypeManager implements Serializable {
         this.serialNumber = serialNumber;
     }
 
-    /**
-     * @return The description (see {@link Device#getDescription()}) of the {@link Device}
-     */
+    /** @return The description (see {@link Device#getDescription()}) of the {@link Device} */
     public String getDescription() {
         return description;
     }
-    /**
-     * @param description The description (see {@link Device#getDescription()}) of the {@link Device}
-     */
+    /** @param description The description (see {@link Device#getDescription()}) of the {@link Device} */
     public void setDescription(String description) {
         this.description = description;
     }

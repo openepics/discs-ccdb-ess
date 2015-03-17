@@ -19,6 +19,8 @@
  */
 package org.openepics.discs.conf.views;
 
+import java.util.Date;
+
 import org.openepics.discs.conf.ent.Device;
 
 import com.google.common.base.Preconditions;
@@ -33,6 +35,7 @@ public class DeviceView {
     private final String inventoryId;
     private final String statusLabel;
     private final String installedIn;
+    private final Date installationDate;
 
     private final Device device;
 
@@ -40,13 +43,14 @@ public class DeviceView {
      * @param device device entity
      * @param installedIn name of the installation slot.
      */
-    public DeviceView(Device device, String installedIn) {
+    public DeviceView(Device device, String installedIn, Date installationDate) {
         Preconditions.checkNotNull(device);
         Preconditions.checkNotNull(installedIn);
         inventoryId = device.getSerialNumber();
         statusLabel = device.getStatus().getLabel();
         this.installedIn = installedIn;
         this.device = device;
+        this.installationDate = installationDate;
     }
 
     /** @return the inventoryId  */
@@ -67,5 +71,10 @@ public class DeviceView {
     /** @return the device */
     public Device getDevice() {
         return device;
+    }
+
+    /** @return the installationDate */
+    public Date getInstallationDate() {
+        return installationDate;
     }
 }
