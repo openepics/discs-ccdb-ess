@@ -27,6 +27,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
+import javax.ejb.EJBException;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.validator.ValidatorException;
@@ -54,6 +55,7 @@ import org.openepics.discs.conf.ent.values.Value;
 import org.openepics.discs.conf.ui.common.AbstractAttributesController;
 import org.openepics.discs.conf.ui.common.UIException;
 import org.openepics.discs.conf.util.Conversion;
+import org.openepics.discs.conf.util.PropertyValueNotUniqueException;
 import org.openepics.discs.conf.util.PropertyValueUIElement;
 import org.openepics.discs.conf.util.UnhandledCaseException;
 import org.openepics.discs.conf.util.Utility;
@@ -397,7 +399,6 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
         final Object newValue = event.getNewValue();
         final Object oldValue = event.getOldValue();
 
-        // TODO check for uniqueness as well
         if (newValue != null && !newValue.equals(oldValue)) {
             final MultiPropertyValueView editedPropVal = selectionPropertyValuesFiltered == null
                                                             ? filteredPropertyValues.get(event.getRowIndex())
@@ -422,11 +423,22 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
                     default:
                         throw new UnhandledCaseException();
                 }
-                editedPropVal.setValue(Conversion.stringToValue(newValueStr, dataType));
+                final Value val = Conversion.stringToValue(newValueStr, dataType);
+                comptypeEJB.checkPropertyValueUnique(createPropertyValue(editedPropVal.getProperty(), val));
+                editedPropVal.setValue(val);
             } catch (ValidatorException e) {
                 editedPropVal.setUiValue(oldValue == null ? null : getEditEventValue(oldValue, null));
                 FacesContext.getCurrentInstance().addMessage("inputValidationFail", e.getFacesMessage());
                 FacesContext.getCurrentInstance().validationFailed();
+            } catch (EJBException e) {
+                if (Utility.causedBySpecifiedExceptionClass(e, PropertyValueNotUniqueException.class)) {
+                    FacesContext.getCurrentInstance().addMessage("inputValidationFail",
+                            new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
+                                    "Value is not unique."));
+                    FacesContext.getCurrentInstance().validationFailed();
+                } else {
+                    throw e;
+                }
             }
         }
     }
@@ -499,17 +511,42 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
         this.selectionPropertyValuesFiltered = selectionPropertyValuesFiltered;
     }
 
-    /**
-     * @return the selectAllRows
-     */
+    /** @return the selectAllRows */
     public boolean isSelectAllRows() {
         return selectAllRows;
     }
 
-    /**
-     * @param selectAllRows the selectAllRows to set
-     */
+    /** @param selectAllRows the selectAllRows to set */
     public void setSelectAllRows(boolean selectAllRows) {
         this.selectAllRows = selectAllRows;
+    }
+
+    private ComptypePropertyValue createPropertyValue(Property prop, Value value) {
+        final ComptypePropertyValue pv = new ComptypePropertyValue();
+        pv.setComponentType(compType);
+        pv.setProperty(prop);
+        pv.setPropValue(value);
+        return pv;
+    }
+
+    /** The save action for adding multiple property values to a device type. */
+    public void saveMultiplePropertyValues() {
+        // check if all values are set, because we want to save all in one batch
+        for (MultiPropertyValueView pv : selectedPropertyValues) {
+            if (pv.getValue() == null) {
+                FacesContext.getCurrentInstance().addMessage("inputValidationFail",
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
+                                pv.getName() + ": value not set."));
+                FacesContext.getCurrentInstance().validationFailed();
+                return;
+            }
+        }
+
+        for (MultiPropertyValueView pv : selectedPropertyValues) {
+            ComptypePropertyValue newValue = createPropertyValue(pv.getProperty(), pv.getValue());
+            comptypeEJB.addChild(newValue);
+            compType = comptypeEJB.findById(compType.getId());
+        }
+        populateAttributesList();
     }
 }

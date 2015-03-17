@@ -54,15 +54,15 @@
                             </f:facet>
                             <f:facet name="input">
                                 <p:inputText id="propertyValueSimple" value="#{prop.uiValue}" rendered="#{prop.propertyValueUIElement eq 'INPUT'}" />
-                                
+
                                 <p:inputTextarea id="propertyValueArea" rows="7" value="#{prop.uiValue}" 
                                         style="width: 90%; white-space: nowrap; resize: none;" autoResize="false" 
                                         rendered="#{prop.propertyValueUIElement eq 'TEXT_AREA'}" />
-                                
+
                                 <p:selectOneMenu id="propertyValueEnum" style="width: 90%;" value="#{prop.uiValue}" 
                                         rendered="#{prop.propertyValueUIElement eq 'SELECT_ONE_MENU'}">
-                                    <f:selectItem itemLabel="&lt;Select value&gt;" itemValue="" />        
-                                    <f:selectItems value="#{prop.enumOptions}" var="enum" itemLabel="#{enum}" itemValue="#{enum}" />        
+                                    <f:selectItem itemLabel="&lt;Select value&gt;" itemValue="" />
+                                    <f:selectItems value="#{prop.enumOptions}" var="enum" itemLabel="#{enum}" itemValue="#{enum}" />
                                 </p:selectOneMenu>
                             </f:facet>
                         </p:cellEditor>
@@ -78,8 +78,10 @@
                     action="#{comptypeAttributesController[submitHandler]}"/>
         </p:dialog>
         <script type="text/javascript">
+            <!-- 
             // prevent focus of the first element, select the first button (Cancel) instead
             // http://forum.primefaces.org/viewtopic.php?f=3&t=29050
+            // --> 
             PrimeFaces.widget.Dialog.prototype.applyFocus = function() {
                 this.jq.find(':button:input:visible:enabled:first').focus();
             }
