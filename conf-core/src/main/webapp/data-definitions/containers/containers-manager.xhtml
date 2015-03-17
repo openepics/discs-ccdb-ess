@@ -87,7 +87,7 @@
 
                         <p:commandButton id="addButton" value="Add" type="button" icon="ui-icon-plus" disabled="true" 
                             style="margin-right: 1ex; float: right;" />
-                        <p:menu overlay="true" trigger="addButton" my="left top" at="left bottom">
+                        <p:menu overlay="true" trigger="addButton" my="left bottom" at="left top">
                             <p:menuitem value="Property" oncomplete="addPropertyValue.show()" 
                                     actionListener="#{slotAttributesController.prepareForPropertyValueAdd}" 
                                     update=":addPropertyValueForm:addPropertyValue" />
