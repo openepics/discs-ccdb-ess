@@ -32,12 +32,12 @@ import com.google.common.base.Preconditions;
  *
  */
 public class DeviceView {
-    private final String inventoryId;
-    private final String statusLabel;
+    private String inventoryId;
+    private String statusLabel;
     private final String installedIn;
     private final Date installationDate;
 
-    private final Device device;
+    private Device device;
 
     /** Creates a new immutable instance of the DeviceView object to be used in UI.
      * @param device device entity
@@ -46,10 +46,10 @@ public class DeviceView {
     public DeviceView(Device device, String installedIn, Date installationDate) {
         Preconditions.checkNotNull(device);
         Preconditions.checkNotNull(installedIn);
+        this.device = device;
         inventoryId = device.getSerialNumber();
         statusLabel = device.getStatus().getLabel();
         this.installedIn = installedIn;
-        this.device = device;
         this.installationDate = installationDate;
     }
 
@@ -76,5 +76,13 @@ public class DeviceView {
     /** @return the installationDate */
     public Date getInstallationDate() {
         return installationDate;
+    }
+
+    /** Updates the view information from the database. The installation status and information is unaffected. */
+    public void refreshDevice(Device device) {
+        Preconditions.checkArgument(this.device.getId().equals(device.getId()));
+        this.device = device;
+        inventoryId = device.getSerialNumber();
+        statusLabel = device.getStatus().getLabel();
     }
 }

@@ -60,6 +60,7 @@ public class DevicesByTypeManager implements Serializable {
     @Inject private transient InstallationEJB installationEJB;
 
     private ComponentType selectedComponentType;
+    private List<ComponentType> availableDeviceTypes;
 
     private List<DeviceView> devices;
     private transient List<DeviceView> filteredDevices;
@@ -76,6 +77,7 @@ public class DevicesByTypeManager implements Serializable {
     /** Java EE post construct life-cycle method */
     @PostConstruct
     public void init() {
+        availableDeviceTypes = componentTypesEJB.findAll();
         prepareDevicesForDisplay();
         prepareStatusLabels();
     }
@@ -90,9 +92,22 @@ public class DevicesByTypeManager implements Serializable {
             deviceEJB.addDeviceAndPropertyDefs(newDevice);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Device saved.", null);
         } finally {
-            resetDeviceDialogFields();
+            clearDeviceDialogFields();
             prepareDevicesForDisplay();
         }
+    }
+
+    /** Updates an existing device with new information from the dialog */
+    public void onDeviceEdit() {
+        Preconditions.checkNotNull(selectedDevice);
+        final Device exitingDevice = selectedDevice.getDevice();
+        exitingDevice.setSerialNumber(serialNumber);
+        exitingDevice.setComponentType(selectedComponentType);
+        exitingDevice.setDescription(description);
+        deviceEJB.save(exitingDevice);
+
+        selectedDevice.refreshDevice(deviceEJB.findById(exitingDevice.getId()));
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Device updates.", null);
     }
 
     /** Event handler which handles the device delete */
@@ -122,39 +137,30 @@ public class DevicesByTypeManager implements Serializable {
         }
     }
 
-    private void resetDeviceDialogFields() {
+    public void clearDeviceDialogFields() {
         serialNumber = null;
         description = null;
+        selectedComponentType = null;
     }
 
-    /** Called when the user clicks the "pencil" icon in the table listing the devices. The user is redirected
-     * to the attribute manager screen.
-     * @param id The primary key of the {@link Device} entity
-     * @return The URL to redirect to
-     */
-    public String deviceDetailsRedirect(Long id) {
-        return "device-details.xhtml?faces-redirect=true&id=" + id;
+    public void prepareEditPopup() {
+        serialNumber = selectedDevice.getInventoryId();
+        description = selectedDevice.getDevice().getDescription();
+        selectedComponentType = selectedDevice.getDevice().getComponentType();
     }
 
-    /** Called when the user clicks the "Close" button on the device details screen. The user is redirected
-     * to the list of all device instances of the current device type.
-     * @param id The primary key of the {@link ComponentType} entity
-     * @return The URL to redirect to
-     */
-    public String redirectToAllDevices(Long id) {
-        return "index.html?faces-redirect=true&id=" + id;
+    /** @return The ID of device type of the device the user is adding or editing in device manager */
+    public Long getDeviceTypeSelection() {
+        return selectedComponentType == null ? null : selectedComponentType.getId();
     }
 
-    /** @return The device type the user selected in the left hand side table listing all available device type */
-    public ComponentType getSelectedComponentType() {
-        return selectedComponentType;
-    }
-    /**
-     * @param selectedComponentType The device type the user selected in the left hand side table listing all available
-     * device type
-     */
-    public void setSelectedComponentType(ComponentType selectedComponentType) {
-        this.selectedComponentType = selectedComponentType;
+    /** @param deviceTypeId The ID of the device type of device the user is adding or editing in device manager */
+    public void setDeviceTypeSelection(Long deviceTypeId) {
+        if (deviceTypeId == null) {
+            selectedComponentType = null;
+        } else {
+            selectedComponentType = componentTypesEJB.findById(deviceTypeId);
+        }
     }
 
     /**
@@ -263,5 +269,10 @@ public class DevicesByTypeManager implements Serializable {
     /** @param filteredDevices the filteredDevices to set */
     public void setFilteredDevices(List<DeviceView> filteredDevices) {
         this.filteredDevices = filteredDevices;
+    }
+
+    /** @return the availableDeviceTypes */
+    public List<ComponentType> getAvailableDeviceTypes() {
+        return availableDeviceTypes;
     }
 }
