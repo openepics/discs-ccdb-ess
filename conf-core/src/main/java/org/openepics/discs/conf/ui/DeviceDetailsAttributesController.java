@@ -25,7 +25,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
-import javax.faces.application.FacesMessage;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -45,14 +44,12 @@ import org.openepics.discs.conf.ent.values.StrValue;
 import org.openepics.discs.conf.ui.common.AbstractAttributesController;
 import org.openepics.discs.conf.ui.common.UIException;
 import org.openepics.discs.conf.util.UnhandledCaseException;
-import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.views.BuiltInProperty;
 import org.openepics.discs.conf.views.DeviceBuiltInPropertyName;
 import org.openepics.discs.conf.views.EntityAttributeView;
 import org.openepics.discs.conf.views.EntityAttributeViewKind;
 import org.openepics.seds.api.datatypes.SedsEnum;
 import org.openepics.seds.core.Seds;
-import org.primefaces.context.RequestContext;
 
 /**
  * Controller bean for manipulation of {@link Device} attributes
@@ -107,6 +104,7 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
         parentProperties = device.getComponentType().getComptypePropertyList();
         parentArtifacts = device.getComponentType().getComptypeArtifactList();
         entityName = device.getSerialNumber();
+        selectedAttribute = null;
         populateParentTags();
         populateAttributesList();
     }
@@ -118,6 +116,7 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
         entityName = null;
         parentTags = null;
         attributes = null;
+        selectedAttribute = null;
     }
 
     @Override
@@ -138,8 +137,6 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
         // refresh the device from database. This refreshes all related collections as well.
         device = deviceEJB.findById(device.getId());
 
-        attributes.add(new EntityAttributeView(new BuiltInProperty(DeviceBuiltInPropertyName.BIP_DESCRIPTION,
-                                                            device.getDescription(), strDataType)));
         attributes.add(new EntityAttributeView(new BuiltInProperty(DeviceBuiltInPropertyName.BIP_LOCATION,
                                                             device.getLocation(), strDataType)));
         attributes.add(new EntityAttributeView(new BuiltInProperty(DeviceBuiltInPropertyName.BIP_P_O_REFERENCE,
@@ -200,12 +197,6 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
                 : (propertyValue instanceof StrValue ? ((StrValue)propertyValue).getStrValue() : null);
 
         switch (builtInPropertyName) {
-            case BIP_DESCRIPTION:
-                if ((userValueStr == null) || !userValueStr.equals(device.getDescription())) {
-                    device.setDescription(userValueStr);
-                    deviceEJB.save(device);
-                }
-                break;
             case BIP_LOCATION:
                 if ((userValueStr == null) || !userValueStr.equals(device.getLocation())) {
                     device.setLocation(userValueStr);
@@ -267,29 +258,8 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
         enumDataType.setModifiedAt(new Date());
     }
 
-    public Device getDevice() {
-        return device;
-    }
-    public void setDevice(Device device) {
-        this.device = device;
-    }
-
     @Override
     public void saveNewName() {
-        final Device deviceById = deviceEJB.findDeviceBySerialNumber(entityName);
-        if (entityName.isEmpty()) {
-            Utility.showMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
-                    "Device instance inventory ID must not be empty.");
-        } else if ((deviceById != null) && !deviceById.equals(device)) {
-            Utility.showMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
-                    "Device instance with this inventory ID already exists.");
-        } else {
-            device.setSerialNumber(entityName);
-            deviceEJB.save(device);
-            populateAttributesList();
-            RequestContext.getCurrentInstance().update("deviceDetailsForm");
-        }
+        // TODO ready for removal
     }
 }
-
-

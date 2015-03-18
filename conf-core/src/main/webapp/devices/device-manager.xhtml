@@ -8,6 +8,14 @@
     <ui:define name="content">
         <p:growl showDetail="true" globalOnly="true" autoUpdate="true" />
         <h:form id="devicesForm">
+            <script type="text/javascript">
+                function disableAddButton() {
+                   $('#devicesForm\\:addButton').prop('disabled',true).addClass('ui-state-disabled');
+                }
+                function enableAddButton() {
+                    $('#devicesForm\\:addButton').prop('disabled',false).removeClass('ui-state-disabled');
+                }
+            </script>
             <p:panelGrid styleClass="noBorders noPaddingLeft">
                 <p:row>
                     <p:column style="width: 50%; vertical-align: top;">
@@ -16,11 +24,11 @@
                                     selectionMode="single" rowKey="#{device.device.id}" scrollable="true" 
                                     value="#{devicesByTypeManager.devices}" scrollHeight="600" 
                                     filteredValue="#{devicesByTypeManager.filteredDevices}" emptyMessage="No devices found.">
-                                <p:ajax event="rowSelect" 
+                                <p:ajax event="rowSelect" oncomplete="enableAddButton();"
                                         update=":deviceAddForm:addDeviceDialog :devicesForm:deleteButton :devicesForm:editButton 
                                                 :devicesForm:attributesDataTable:attributesDataTable" 
                                         listener="#{deviceDetailsAttributesController.prepareDeviceInstance(devicesByTypeManager.selectedDevice.device)}" />
-                                <p:ajax event="rowUnselect" 
+                                <p:ajax event="rowUnselect" oncomplete="disableAddButton();" 
                                         listener="#{deviceDetailsAttributesController.clearDeviceInstance()}" 
                                         update=":deviceAddForm:addDeviceDialog :devicesForm:deleteButton :devicesForm:editButton 
                                                 :devicesForm:attributesDataTable:attributesDataTable" />
@@ -62,7 +70,6 @@
                             <p:commandButton ajax="true" style="float: right; margin-right: 1ex;" icon="ui-icon-plus" 
                                 actionListener="#{devicesByTypeManager.clearDeviceDialogFields()}" value="Add" 
                                 oncomplete="addDeviceDialog.show()" />
-
                         </p:fieldset>
                     </p:column>            
                     <p:column style="width: 50%; vertical-align: top;">
@@ -79,6 +86,17 @@
                                 action="#{deviceDetailsAttributesController.prepareModifyPropertyPopUp()}" 
                                 style="float: right; margin-right: 1ex;" update=":modifyPropertyValueForm :modifyArtifactForm" 
                                 disabled="#{empty deviceDetailsAttributesController.selectedAttribute ? true : not deviceDetailsAttributesController.canEdit(deviceDetailsAttributesController.selectedAttribute)}"/>
+
+                            <p:commandButton id="addButton" value="Add" type="button" icon="ui-icon-plus" 
+                                    style="float: right; margin-right: 1ex;" disabled="true" />
+                            <p:menu overlay="true" trigger="addButton" my="left bottom" at="left top">
+                                <p:menuitem value="Tag" oncomplete="addDeviceTag.show()" update=":addDeviceTagForm:addDeviceTag" 
+                                        actionListener="#{deviceDetailsAttributesController.prepareForTagAdd}" />
+                                <p:menuitem value="Artifact" oncomplete="addArtifact.show()" 
+                                        actionListener="#{deviceDetailsAttributesController.prepareForArtifactAdd}" 
+                                        update=":addArtifactForm:addArtifact" />
+                            </p:menu>
+
                         </p:fieldset>
     	            </p:column>
                 </p:row>
@@ -107,6 +125,24 @@
             <ui:param name="widgetName" value="modifyPropertyValue" />
             <ui:param name="controller" value="#{deviceDetailsAttributesController}" />
             <ui:param name="submitHandler" value="modifyPropertyValue" />
+            <ui:param name="componentToUpdate" value=":devicesForm:attributesDataTable:attributesDataTable" />
+        </ui:include>
+
+        <ui:include src="/data-definitions/add-or-modify-dialogs/tag.xhtml" >
+            <ui:param name="formId" value="addDeviceTagForm" />
+            <ui:param name="dialogTitle" value="Add new device instance tag" />
+            <ui:param name="widgetName" value="addDeviceTag" />
+            <ui:param name="controller" value="#{deviceDetailsAttributesController}" />
+            <ui:param name="submitHandler" value="addNewTag" />
+            <ui:param name="componentToUpdate" value=":devicesForm:attributesDataTable:attributesDataTable" />
+        </ui:include>
+
+        <ui:include src="/data-definitions/add-or-modify-dialogs/artifact.xhtml" >
+            <ui:param name="formId" value="addArtifactForm" />
+            <ui:param name="dialogTitle" value="Add new device instance artifact" />
+            <ui:param name="widgetName" value="addArtifact" />
+            <ui:param name="controller" value="#{deviceDetailsAttributesController}" />
+            <ui:param name="submitHandler" value="addNewArtifact" />
             <ui:param name="componentToUpdate" value=":devicesForm:attributesDataTable:attributesDataTable" />
         </ui:include>
 
