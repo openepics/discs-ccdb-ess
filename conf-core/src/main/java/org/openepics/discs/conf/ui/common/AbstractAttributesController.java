@@ -94,6 +94,8 @@ import com.google.common.io.ByteStreams;
 public abstract class AbstractAttributesController<T extends PropertyValue, S extends Artifact> implements Serializable {
     private static final long serialVersionUID = 523935015308933240L;
 
+    private static final String MULTILINE_DELIMITER = "(\\r\\n)|\\r|\\n";
+
     private static final int MIN_ELEMENT_SIZE = 20;
     private static final int MAX_ELEMENT_SIZE = 40;
     private static final int ELEMENT_SIZE_PADDING = 8;
@@ -501,7 +503,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
         }
 
         final String propertyName = propertyValue.getProperty().getName();
-        for (PropertyValue inheritedPropVal : parentProperties) {
+        for (final PropertyValue inheritedPropVal : parentProperties) {
             if (propertyName.equals(inheritedPropVal.getProperty().getName())) {
                 return true;
             }
@@ -756,7 +758,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
     public List<String> tagAutocompleteText(String query) {
         final List<String> resultList = new ArrayList<String>();
         final String queryUpperCase = query.toUpperCase();
-        for (String element : tagsForAutocomplete) {
+        for (final String element : tagsForAutocomplete) {
             if (element.toUpperCase().startsWith(queryUpperCase))
                 resultList.add(element);
         }
@@ -822,9 +824,11 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
                     Utility.MESSAGE_SUMMARY_ERROR, "You must select a property first."));
         }
 
-        DataType dataType = property != null ? property.getDataType() : selectedAttribute.getType();
+        final DataType dataType = property != null ? property.getDataType() : selectedAttribute.getType();
+        validateMultiLine(value.toString(), dataType);
+    }
 
-        String strValue = value.toString();
+    protected void validateMultiLine(final String strValue, final DataType dataType) {
         switch (Conversion.getBuiltInDataType(dataType)) {
             case DBL_TABLE:
                 validateTable(strValue);
@@ -843,9 +847,9 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
         }
     }
 
-    private void validateTable(String value) throws ValidatorException {
+    private void validateTable(final String value) throws ValidatorException {
         try (Scanner lineScanner = new Scanner(value)) {
-            lineScanner.useDelimiter(Pattern.compile("(\\r\\n)|\\r|\\n"));
+            lineScanner.useDelimiter(Pattern.compile(MULTILINE_DELIMITER));
 
             int lineLength = -1;
             while (lineScanner.hasNext()) {
@@ -876,9 +880,9 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
         }
     }
 
-    private void validateIntVector(String value) throws ValidatorException {
+    private void validateIntVector(final String value) throws ValidatorException {
         try (Scanner scanner = new Scanner(value)) {
-            scanner.useDelimiter(Pattern.compile("(\\r\\n)|\\r|\\n"));
+            scanner.useDelimiter(Pattern.compile(MULTILINE_DELIMITER));
 
             while (scanner.hasNext()) {
                 String intValue = "<error>";
@@ -894,9 +898,9 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
         }
     }
 
-    private void validateDblVector(String value) throws ValidatorException {
+    private void validateDblVector(final String value) throws ValidatorException {
         try (Scanner scanner = new Scanner(value)) {
-            scanner.useDelimiter(Pattern.compile("(\\r\\n)|\\r|\\n"));
+            scanner.useDelimiter(Pattern.compile(MULTILINE_DELIMITER));
 
             while (scanner.hasNext()) {
                 String dblValue = "<error>";
@@ -931,9 +935,12 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
                     Utility.MESSAGE_SUMMARY_ERROR, "You must select a property first."));
         }
 
-        DataType dataType = property != null ? property.getDataType() : selectedAttribute.getType();
+        final DataType dataType = property != null ? property.getDataType() : selectedAttribute.getType();
 
-        String strValue = value.toString();
+        validateSingleLine(value.toString(), dataType);
+    }
+
+    protected void validateSingleLine(final String strValue, final DataType dataType) {
         switch (Conversion.getBuiltInDataType(dataType)) {
             case DOUBLE:
                 try {
@@ -1043,8 +1050,12 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
         this.selectionPropertiesFiltered = selectionPropertiesFiltered;
     }
 
-    public void resetPropertySelection(String id) {
-        DataTable dataTable = (DataTable) FacesContext.getCurrentInstance().getViewRoot()
+    /** This method is called from the UI and resets a table with the implicit ID "propertySelect" in the form
+     * indicated by the parameter.
+     * @param id the ID of the from containing a table #propertySelect
+     */
+    public void resetPropertySelection(final String id) {
+        final DataTable dataTable = (DataTable) FacesContext.getCurrentInstance().getViewRoot()
                 .findComponent(id + ":propertySelect");
         dataTable.setSortBy(null);
         dataTable.setFirst(0);

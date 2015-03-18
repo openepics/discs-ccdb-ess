@@ -33,10 +33,10 @@
                 </p:dataTable>
             </p:panel>
 
-            <p:commandButton value="Cancel" styleClass="dialogButton" oncomplete="#{widgetName}.hide();" 
+            <p:commandButton value="Cancel" styleClass="dialogButton" oncomplete="#{widgetName}.hide(); #{resetFilter}" 
                     update="propertySelect" resetValues="true" action="#{controller.resetPropertySelection(formId)}" />
             <p:commandButton value="Save" styleClass="dialogButton" update="#{componentToUpdate} propertySelect" 
-                    oncomplete="if (args &amp;&amp; !args.validationFailed) { #{widgetName}.hide(); propSelectTable.filter(); }" 
+                    oncomplete="if (args &amp;&amp; !args.validationFailed) { #{widgetName}.hide(); #{resetFilter} }" 
                     action="#{controller[submitHandler]}"/>
         </p:dialog>
 
