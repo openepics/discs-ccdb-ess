@@ -52,7 +52,7 @@
                                     <h:outputText value="#{deviceType.description}" />
                                 </p:column>
                             </p:dataTable>
-                            <p:commandButton id="deleteButton" ajax="true" style="float: right; margin-right: 1ex;" value="Delete" 
+                            <p:commandButton id="deleteButton" ajax="true" style="float: right;" value="Delete" 
                                 icon="ui-icon-trash"
                                 oncomplete="deleteDeviceType.show()" disabled="#{empty componentTypeManager.selectedDeviceType}" />
                             <p:commandButton id="editButton" ajax="true" style="float: right; margin-right: 1ex;" value="Edit" 

@@ -26,12 +26,10 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.json.JsonObject;
-import javax.servlet.http.HttpServletRequest;
 
 import org.openepics.discs.conf.ejb.DeviceEJB;
 import org.openepics.discs.conf.ent.ComptypeArtifact;
@@ -76,21 +74,10 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
     public void init() {
         try {
             super.init();
-            final Long id = Long.parseLong(((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext()
-                    .getRequest()).getParameter("id"));
-            device = deviceEJB.findById(id);
             setArtifactClass(DeviceArtifact.class);
             setPropertyValueClass(DevicePropertyValue.class);
             setDao(deviceEJB);
-
-            parentProperties = device.getComponentType().getComptypePropertyList();
-            parentArtifacts = device.getComponentType().getComptypeArtifactList();
-            populateParentTags();
-
-            entityName = device.getSerialNumber();
-
             constructDeviceStatusEnum();
-            populateAttributesList();
         } catch(Exception e) {
             throw new UIException("Device details display initialization fialed: " + e.getMessage(), e);
         }
@@ -113,6 +100,24 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
             existingTags.add(tag);
             deviceEJB.save(device);
         }
+    }
+
+    public void prepareDeviceInstance(Device device) {
+        this.device = device;
+        parentProperties = device.getComponentType().getComptypePropertyList();
+        parentArtifacts = device.getComponentType().getComptypeArtifactList();
+        entityName = device.getSerialNumber();
+        populateParentTags();
+        populateAttributesList();
+    }
+
+    public void clearDeviceInstance() {
+        device = null;
+        parentProperties = null;
+        parentArtifacts = null;
+        entityName = null;
+        parentTags = null;
+        attributes = null;
     }
 
     @Override

@@ -2,6 +2,7 @@
     xmlns:p="http://primefaces.org/ui"
     template="/template/template.xhtml"
     xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:rc="http://java.sun.com/jsf/composite/comps"
     xmlns:h="http://java.sun.com/jsf/html">
 
     <ui:define name="content">
@@ -15,10 +16,14 @@
                                     selectionMode="single" rowKey="#{device.device.id}" scrollable="true" 
                                     value="#{devicesByTypeManager.devices}" scrollHeight="600" 
                                     filteredValue="#{devicesByTypeManager.filteredDevices}" emptyMessage="No devices found.">
-                                <p:ajax event="rowSelect" update=":deviceAddForm:addDeviceDialog :devicesForm:deleteButton 
-                                                :devicesForm:editButton" />
-                                <p:ajax event="rowUnselect" update=":deviceAddForm:addDeviceDialog :devicesForm:deleteButton 
-                                                :devicesForm:editButton" />
+                                <p:ajax event="rowSelect" 
+                                        update=":deviceAddForm:addDeviceDialog :devicesForm:deleteButton :devicesForm:editButton 
+                                                :devicesForm:attributesDataTable:attributesDataTable" 
+                                        listener="#{deviceDetailsAttributesController.prepareDeviceInstance(devicesByTypeManager.selectedDevice.device)}" />
+                                <p:ajax event="rowUnselect" 
+                                        listener="#{deviceDetailsAttributesController.clearDeviceInstance()}" 
+                                        update=":deviceAddForm:addDeviceDialog :devicesForm:deleteButton :devicesForm:editButton 
+                                                :devicesForm:attributesDataTable:attributesDataTable" />
 
                                 <p:column headerText="Type" sortBy="#{device.device.componentType.name}" filterStyle="width: 90%;" 
                                         filterBy="#{device.device.componentType.name}" filterMatchMode="contains">
@@ -62,7 +67,18 @@
                     </p:column>            
                     <p:column style="width: 50%; vertical-align: top;">
                         <p:fieldset id="propertiesFieldset" legend="Properties">
-                            filler
+                            <rc:new-attribute-table id="attributesDataTable" controllerBean="#{deviceDetailsAttributesController}" 
+                                updateTargets=":modifyPropertyValueForm :modifyArtifactForm" 
+                                updateButtons=":devicesForm:editAttrButton :devicesForm:deleteAttrButton" />
+
+                            <p:commandButton id="deleteAttrButton" value="Delete" icon="ui-icon-trash" 
+                                style="float: right;" oncomplete="deleteAttribute.show()"
+                                disabled="#{empty deviceDetailsAttributesController.selectedAttribute ? true : not deviceDetailsAttributesController.canDelete(deviceDetailsAttributesController.selectedAttribute)}"/>
+                                
+                            <p:commandButton id="editAttrButton" value="Edit" icon="ui-icon-pencil" 
+                                action="#{deviceDetailsAttributesController.prepareModifyPropertyPopUp()}" 
+                                style="float: right; margin-right: 1ex;" update=":modifyPropertyValueForm :modifyArtifactForm" 
+                                disabled="#{empty deviceDetailsAttributesController.selectedAttribute ? true : not deviceDetailsAttributesController.canEdit(deviceDetailsAttributesController.selectedAttribute)}"/>
                         </p:fieldset>
     	            </p:column>
                 </p:row>
@@ -85,6 +101,33 @@
             <ui:param name="submitHandler" value="onDeviceEdit" />
         </ui:include>
 
+        <ui:include src="/data-definitions/add-or-modify-dialogs/property-value.xhtml" >
+            <ui:param name="formId" value="modifyPropertyValueForm" />
+            <ui:param name="dialogTitle" value="Modify device type property" />
+            <ui:param name="widgetName" value="modifyPropertyValue" />
+            <ui:param name="controller" value="#{deviceDetailsAttributesController}" />
+            <ui:param name="submitHandler" value="modifyPropertyValue" />
+            <ui:param name="componentToUpdate" value=":devicesForm:attributesDataTable:attributesDataTable" />
+        </ui:include>
+
+        <ui:include src="/data-definitions/add-or-modify-dialogs/artifact.xhtml" >
+            <ui:param name="formId" value="modifyArtifactForm" />
+            <ui:param name="dialogTitle" value="Modify device type artifact" />
+            <ui:param name="widgetName" value="modifyArtifact" />
+            <ui:param name="controller" value="#{deviceDetailsAttributesController}" />
+            <ui:param name="submitHandler" value="modifyArtifact" />
+            <ui:param name="componentToUpdate" value=":devicesForm:attributesDataTable:attributesDataTable" />
+        </ui:include>
+
+        <ui:include src="/data-definitions/add-or-modify-dialogs/builtin-property-value.xhtml" >
+            <ui:param name="formId" value="modifyBuiltInPropertyForm" />
+            <ui:param name="dialogTitle" value="Modify device instance property" />
+            <ui:param name="widgetName" value="modifyBuiltInProperty" />
+            <ui:param name="controller" value="#{deviceDetailsAttributesController}" />
+            <ui:param name="submitHandler" value="modifyBuiltInProperty" />
+            <ui:param name="componentToUpdate" value=":devicesForm:attributesDataTable:attributesDataTable" />
+        </ui:include>
+
         <ui:include src="/data-definitions/add-or-modify-dialogs/delete-confirmation.xhtml" >
             <ui:param name="formId" value="deleteDeviceForm" />
             <ui:param name="dialogTitle" value="Delete device" />
@@ -94,5 +137,15 @@
             <ui:param name="formToUpdate" value=":devicesForm:devicesTable :devicesForm:deleteButton :devicesForm:editButton" />
             <ui:param name="entityType" value="this device" />
         </ui:include>
+
+        <ui:include src="/data-definitions/add-or-modify-dialogs/delete-confirmation.xhtml" >
+            <ui:param name="formId" value="deleteAttributeForm" />
+            <ui:param name="dialogTitle" value="Delete attribute" />
+            <ui:param name="widgetName" value="deleteAttribute" />
+            <ui:param name="controller" value="#{deviceDetailsAttributesController}" />
+            <ui:param name="submitHandler" value="deleteAttribute" />
+            <ui:param name="formToUpdate" value=":devicesForm:attributesDataTable:attributesDataTable :devicesForm:editAttrButton :devicesForm:deleteAttrButton" />
+            <ui:param name="entityType" value="selected attribute" />
+        </ui:include>        
     </ui:define>
 </ui:composition>

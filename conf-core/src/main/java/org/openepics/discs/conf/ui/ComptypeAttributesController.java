@@ -217,6 +217,7 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
         return compType;
     }
 
+    /** @param deviceType the device type the user selected */
     public void prepareDeviceType(ComponentType deviceType) {
         compType = deviceType;
         selectedAttribute = null;
@@ -224,6 +225,7 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
         filterProperties();
     }
 
+    /** Called when a user deselects a device type */
     public void clearDeviceType() {
         compType = null;
         attributes = null;
