@@ -31,6 +31,10 @@ import org.openepics.discs.conf.util.PropertyValueUIElement;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
+/**
+ * The class stores view reprepsentarion of property values used in the device type add multiple property values dialog
+ * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
+ */
 public class MultiPropertyValueView {
 
     private final Property property;
@@ -40,6 +44,9 @@ public class MultiPropertyValueView {
     private String uiValue;
     private boolean selected;
 
+    /** Constructs a view element based on the {@link Property}
+     * @param property
+     */
     public MultiPropertyValueView(Property property) {
         this.property = property;
         propertyValueUIElement = Conversion.getUIElementFromProperty(property);
@@ -98,6 +105,8 @@ public class MultiPropertyValueView {
         result = prime * result + ((enumValues == null) ? 0 : enumValues.hashCode());
         result = prime * result + ((property == null) ? 0 : property.hashCode());
         result = prime * result + ((value == null) ? 0 : value.hashCode());
+        result = prime * result + ((uiValue == null) ? 0 : uiValue.hashCode());
+        result = prime * result + ((propertyValueUIElement == null) ? 0 : propertyValueUIElement.hashCode());
         return result;
     }
 

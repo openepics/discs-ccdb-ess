@@ -111,7 +111,7 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
 
         if (propertyValueInstance.isPropertyDefinition()) {
             if (propertyValueInstance.isDefinitionTargetSlot()) {
-                for (Slot slot : slotEJB.findByComponentType(compType)) {
+                for (final Slot slot : slotEJB.findByComponentType(compType)) {
                     if (canAddProperty(slot.getSlotPropertyList(), propertyValueInstance.getProperty())) {
                         final SlotPropertyValue newSlotProperty = new SlotPropertyValue();
                         newSlotProperty.setProperty(propertyValueInstance.getProperty());
@@ -126,7 +126,7 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
             }
 
             if (propertyValueInstance.isDefinitionTargetDevice()) {
-                for (Device device : deviceEJB.findDevicesByComponentType(compType)) {
+                for (final Device device : deviceEJB.findDevicesByComponentType(compType)) {
                     if (canAddProperty(device.getDevicePropertyList(), propertyValueInstance.getProperty())) {
                         final DevicePropertyValue newDeviceProperty = new DevicePropertyValue();
                         newDeviceProperty.setProperty(propertyValueInstance.getProperty());
@@ -149,7 +149,7 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
      */
     private <T extends PropertyValue> boolean canAddProperty(final List<T> entityProperties,
                                                                         final Property propertyToAdd) {
-        for (T entityProperty : entityProperties) {
+        for (final T entityProperty : entityProperties) {
             if (entityProperty.getProperty().equals(propertyToAdd)) {
                 return false;
             }
@@ -163,13 +163,13 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
         final ComptypePropertyValue propValue = (ComptypePropertyValue) selectedAttribute.getEntity();
         if (propValue.isPropertyDefinition()) {
             if (propValue.isDefinitionTargetSlot()) {
-                for (Slot slot : slotEJB.findByComponentType(compType)) {
+                for (final Slot slot : slotEJB.findByComponentType(compType)) {
                     removeUndefinedProperty(slot.getSlotPropertyList(), propValue.getProperty(), slotEJB);
                 }
             }
 
             if (propValue.isDefinitionTargetDevice()) {
-                for (Device device : deviceEJB.findDevicesByComponentType(compType)) {
+                for (final Device device : deviceEJB.findDevicesByComponentType(compType)) {
                     removeUndefinedProperty(device.getDevicePropertyList(), propValue.getProperty(), deviceEJB);
                 }
             }
@@ -180,7 +180,7 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
     private <T extends PropertyValue> void removeUndefinedProperty(final List<T> entityProperties,
                                                 final Property propertyToDelete, final DAO<?> daoEJB) {
         T propValueToDelete = null;
-        for (T entityPropValue : entityProperties) {
+        for (final T entityPropValue : entityProperties) {
             if (entityPropValue.getProperty().equals(propertyToDelete)) {
                 if (entityPropValue.getPropValue() == null) {
                     // value not defined, safe to delete
@@ -201,24 +201,24 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
         // refresh the component type from database. This refreshes all related collections as well.
         compType = comptypeEJB.findById(this.compType.getId());
 
-        for (ComptypePropertyValue prop : compType.getComptypePropertyList()) {
+        for (final ComptypePropertyValue prop : compType.getComptypePropertyList()) {
             attributes.add(new EntityAttributeView(prop));
         }
 
-        for (ComptypeArtifact art : compType.getComptypeArtifactList()) {
+        for (final ComptypeArtifact art : compType.getComptypeArtifactList()) {
             attributes.add(new EntityAttributeView(art, EntityAttributeViewKind.DEVICE_TYPE_ARTIFACT));
         }
 
-        for (Tag tagAttr : compType.getTags()) {
+        for (final Tag tagAttr : compType.getTags()) {
             attributes.add(new EntityAttributeView(tagAttr, EntityAttributeViewKind.DEVICE_TYPE_TAG));
         }
     }
 
     @Override
     protected void filterProperties() {
-        List<Property> propertyCandidates = propertyEJB.findAllOrderedByName();
+        final List<Property> propertyCandidates = propertyEJB.findAllOrderedByName();
 
-        for (ComptypePropertyValue comptypePropertyValue : compType.getComptypePropertyList()) {
+        for (final ComptypePropertyValue comptypePropertyValue : compType.getComptypePropertyList()) {
             final Property currentProperty = comptypePropertyValue.getProperty();
             // in modify dialog the 'property' is set to the property of the current value
             if (!currentProperty.equals(property)) {
@@ -290,12 +290,12 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
         selectAllRows = false;
     }
 
-    private List<MultiPropertyValueView> transformIntoViewList(List<Property> fromList) {
-        List<MultiPropertyValueView> destination = Lists.newArrayList();
-        for (Property prop : fromList) {
-            destination.add(new MultiPropertyValueView(prop));
+    private List<MultiPropertyValueView> transformIntoViewList(final List<Property> properties) {
+        final List<MultiPropertyValueView> pvViewList = Lists.newArrayList();
+        for (final Property prop : properties) {
+            pvViewList.add(new MultiPropertyValueView(prop));
         }
-        return destination;
+        return pvViewList;
     }
 
     @Override
@@ -341,7 +341,7 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
     /** The event handler for when user clicks on the check-box in the "Add property values" dialog.
      * @param prop the property value to handle the event for
      */
-    public void rowSelectListener(MultiPropertyValueView prop) {
+    public void rowSelectListener(final MultiPropertyValueView prop) {
         if (prop.isSelected()) {
             selectedPropertyValues.add(prop);
         } else {
@@ -353,7 +353,7 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
     public void updateToggle() {
         final List<MultiPropertyValueView> pvList = selectionPropertyValuesFiltered == null
                                                         ? filteredPropertyValues : selectionPropertyValuesFiltered;
-        for (MultiPropertyValueView pv : pvList) {
+        for (final MultiPropertyValueView pv : pvList) {
             if (!pv.isSelected()) {
                 selectAllRows = false;
                 return;
@@ -373,8 +373,8 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
         }
     }
 
-    private void selectAllFiltered(List<MultiPropertyValueView> pvList) {
-        for (MultiPropertyValueView pv : pvList) {
+    private void selectAllFiltered(final List<MultiPropertyValueView> pvList) {
+        for (final MultiPropertyValueView pv : pvList) {
             if (!pv.isSelected()) {
                 pv.setSelected(true);
                 selectedPropertyValues.add(pv);
@@ -382,8 +382,8 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
         }
     }
 
-    private void unselectAllFiltered(List<MultiPropertyValueView> pvList) {
-        for (MultiPropertyValueView pv : pvList) {
+    private void unselectAllFiltered(final List<MultiPropertyValueView> pvList) {
+        for (final MultiPropertyValueView pv : pvList) {
             if (pv.isSelected()) {
                 pv.setSelected(false);
                 selectedPropertyValues.remove(pv);
@@ -404,7 +404,7 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
                                                             ? filteredPropertyValues.get(event.getRowIndex())
                                                             : selectionPropertyValuesFiltered.get(event.getRowIndex());
             final DataType dataType = editedPropVal.getDataType();
-            String newValueStr = getEditEventValue(newValue, editedPropVal.getPropertyValueUIElement());
+            final String newValueStr = getEditEventValue(newValue, editedPropVal.getPropertyValueUIElement());
             try {
                 switch (editedPropVal.getPropertyValueUIElement()) {
                     case INPUT:
@@ -443,13 +443,13 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
         }
     }
 
-    private String getEditEventValue(Object val, PropertyValueUIElement propValueUIElement) {
+    private String getEditEventValue(final Object val, final PropertyValueUIElement propValueUIElement) {
         if (val == null) return null;
         if (val instanceof String) return val.toString();
         if (val instanceof List<?>) {
-            List<?> valList = (List<?>)val;
+            final List<?> valList = (List<?>)val;
             if (propValueUIElement == null) {
-                for (Object v : valList) {
+                for (final Object v : valList) {
                     if (v != null) {
                         return v.toString();
                     }
@@ -521,7 +521,7 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
         this.selectAllRows = selectAllRows;
     }
 
-    private ComptypePropertyValue createPropertyValue(Property prop, Value value) {
+    private ComptypePropertyValue createPropertyValue(final Property prop, final Value value) {
         final ComptypePropertyValue pv = new ComptypePropertyValue();
         pv.setComponentType(compType);
         pv.setProperty(prop);
@@ -532,7 +532,7 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
     /** The save action for adding multiple property values to a device type. */
     public void saveMultiplePropertyValues() {
         // check if all values are set, because we want to save all in one batch
-        for (MultiPropertyValueView pv : selectedPropertyValues) {
+        for (final MultiPropertyValueView pv : selectedPropertyValues) {
             if (pv.getValue() == null) {
                 FacesContext.getCurrentInstance().addMessage("inputValidationFail",
                         new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
@@ -542,7 +542,7 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
             }
         }
 
-        for (MultiPropertyValueView pv : selectedPropertyValues) {
+        for (final MultiPropertyValueView pv : selectedPropertyValues) {
             ComptypePropertyValue newValue = createPropertyValue(pv.getProperty(), pv.getValue());
             comptypeEJB.addChild(newValue);
             compType = comptypeEJB.findById(compType.getId());

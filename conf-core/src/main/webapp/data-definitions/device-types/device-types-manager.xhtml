@@ -157,6 +157,7 @@
             <ui:param name="dialogTitle" value="Modify device type property" />
             <ui:param name="widgetName" value="modifyPropertyValue" />
             <ui:param name="controller" value="#{comptypeAttributesController}" />
+            <ui:param name="resetFilter" value="attributesDataTable.filter();" />
             <ui:param name="submitHandler" value="modifyPropertyValue" />
             <ui:param name="componentToUpdate" value=":deviceTypesForm:attributesDataTable:attributesDataTable" />
         </ui:include>
@@ -166,6 +167,7 @@
             <ui:param name="dialogTitle" value="Modify device type artifact" />
             <ui:param name="widgetName" value="modifyArtifact" />
             <ui:param name="controller" value="#{comptypeAttributesController}" />
+            <ui:param name="resetFilter" value="attributesDataTable.filter();" />
             <ui:param name="submitHandler" value="modifyArtifact" />
             <ui:param name="componentToUpdate" value=":deviceTypesForm:attributesDataTable:attributesDataTable" />
         </ui:include>
@@ -175,6 +177,7 @@
             <ui:param name="dialogTitle" value="Add new device type property" />
             <ui:param name="widgetName" value="addPropertyValue" />
             <ui:param name="controller" value="#{comptypeAttributesController}" />
+            <ui:param name="resetFilter" value="attributesDataTable.filter();" />
             <ui:param name="submitHandler" value="saveMultiplePropertyValues" />
             <ui:param name="componentToUpdate" value=":deviceTypesForm:attributesDataTable:attributesDataTable" />
         </ui:include>
@@ -184,6 +187,7 @@
             <ui:param name="dialogTitle" value="Add new installation slot property" />
             <ui:param name="widgetName" value="installationSlotProperty" />
             <ui:param name="controller" value="#{comptypeAttributesController}" />
+            <ui:param name="resetFilter" value="attributesDataTable.filter();" />
             <ui:param name="submitHandler" value="addNewPropertyValueDefs" />
             <ui:param name="componentToUpdate" value=":deviceTypesForm:attributesDataTable:attributesDataTable" />
         </ui:include>
@@ -193,6 +197,7 @@
             <ui:param name="dialogTitle" value="Add new device instance property" />
             <ui:param name="widgetName" value="deviceInstanceProperty" />
             <ui:param name="controller" value="#{comptypeAttributesController}" />
+            <ui:param name="resetFilter" value="attributesDataTable.filter();" />
             <ui:param name="submitHandler" value="addNewPropertyValueDefs" />
             <ui:param name="componentToUpdate" value=":deviceTypesForm:attributesDataTable:attributesDataTable" />
         </ui:include>
@@ -202,6 +207,7 @@
             <ui:param name="dialogTitle" value="Add new device type tag" />
             <ui:param name="widgetName" value="deviceTypeTag" />
             <ui:param name="controller" value="#{comptypeAttributesController}" />
+            <ui:param name="resetFilter" value="attributesDataTable.filter();" />
             <ui:param name="submitHandler" value="addNewTag" />
             <ui:param name="componentToUpdate" value=":deviceTypesForm:attributesDataTable:attributesDataTable" />
         </ui:include>
@@ -211,6 +217,7 @@
             <ui:param name="dialogTitle" value="Add new device type artifact" />
             <ui:param name="widgetName" value="addArtifact" />
             <ui:param name="controller" value="#{comptypeAttributesController}" />
+            <ui:param name="resetFilter" value="attributesDataTable.filter();" />
             <ui:param name="submitHandler" value="addNewArtifact" />
             <ui:param name="componentToUpdate" value=":deviceTypesForm:attributesDataTable:attributesDataTable" />
         </ui:include>
@@ -221,6 +228,7 @@
             <ui:param name="widgetName" value="deleteAttribute" />
             <ui:param name="controller" value="#{comptypeAttributesController}" />
             <ui:param name="submitHandler" value="deleteAttribute" />
+            <ui:param name="resetFilter" value="attributesDataTable.filter();" />
             <ui:param name="formToUpdate" value=":deviceTypesForm:attributesDataTable:attributesDataTable :deviceTypesForm:editAttrButton :deviceTypesForm:deleteAttrButton" />
             <ui:param name="entityType" value="selected attribute" />
         </ui:include>        
