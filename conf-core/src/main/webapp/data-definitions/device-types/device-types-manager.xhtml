@@ -16,11 +16,10 @@
                 }
                 function adjustTableHights() {
                     var menusHeight = $('#top').outerHeight(true);
-                    var fieldSetLegendHeight = $('#deviceTypesForm\\:devTypeFieldset legend').outerHeight(true);
+                    var fieldsetLegendHeight = $('#deviceTypesForm\\:devTypeFieldset legend').outerHeight(true);
                     var em = emHeight();
-                    var contentHeight = $('#content').outerHeight(true);
                     
-                    var totalOtherHeight = menusHeight + fieldSetLegendHeight + 2*em + 7*em;
+                    var totalOtherHeight = menusHeight + fieldsetLegendHeight + 2*em + 7*em;
                     var tableHeight = window.innerHeight - totalOtherHeight;
                     $('#deviceTypesForm\\:deviceTypeTable').css({"height":tableHeight});
                     $('#deviceTypesForm\\:attributesDataTable\\:attributesDataTable').css({"height":tableHeight});
@@ -36,13 +35,14 @@
                 <p:row>
                     <p:column style="width: 35%; min-width: 20em;">
                         <p:fieldset legend="Device type" id="devTypeFieldset">
-                            <p:dataTable id="deviceTypeTable" widgetVar="deviceTypeTableVar" var="deviceType" value="#{componentTypeManager.deviceTypes}" 
-                                    resizableColumns="true" style="table-layout: fixed; word-wrap: break-word; margin-top: 1em; margin-bottom: 1em;" 
+                            <p:dataTable id="deviceTypeTable" widgetVar="deviceTypeTableVar" var="deviceType" 
+                                    value="#{componentTypeManager.deviceTypes}" resizableColumns="true" 
+                                    style="table-layout: fixed; word-wrap: break-word; margin: 1em 0 1em 0;" 
                                     filteredValue="#{componentTypeManager.filteredDeviceTypes}" rows="15" paginator="true" 
                                     paginatorPosition="bottom" selection="#{componentTypeManager.selectedDeviceType}" 
                                     selectionMode="single" rowKey="#{deviceType.id}">
                                 <p:ajax event="filter" ignoreAutoUpdate="true" />
-                                <p:ajax event="rowSelect" oncomplete="enableAddButton()"
+                                <p:ajax event="rowSelect" oncomplete="enableAddButton();adjustTableHights();"
                                     listener="#{comptypeAttributesController.prepareDeviceType(componentTypeManager.selectedDeviceType)}" 
                                     update=":deviceTypesForm:deleteButton :deviceTypesForm:editButton  
                                         :deviceTypesForm:attributesDataTable:attributesDataTable :deviceTypesForm:editAttrButton 

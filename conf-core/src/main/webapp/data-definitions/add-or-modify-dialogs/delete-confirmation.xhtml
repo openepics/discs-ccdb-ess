@@ -15,8 +15,9 @@
             <br />
 
 			<p:commandButton value="No" styleClass="dialogButton" onclick="#{widgetName}.hide(); #{resetFilter}" />
-			<p:commandButton value="Yes" styleClass="dialogButton" oncomplete="#{widgetName}.hide(); #{resizeContent} #{resetFilter}" 
-                    ajax="true" action="#{controller[submitHandler]}" update="#{formToUpdate}" />
+			<p:commandButton value="Yes" styleClass="dialogButton" ajax="true" update="#{formToUpdate}" 
+                    oncomplete="#{widgetName}.hide(); #{resizeContent} #{resetFilter}" 
+                    action="#{controller[submitHandler]}" />
 		</p:dialog>
 	</h:form>
 </ui:composition>
