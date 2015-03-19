@@ -64,7 +64,7 @@ public class DevicesByTypeManager implements Serializable {
 
     private List<DeviceView> devices;
     private transient List<DeviceView> filteredDevices;
-    private DeviceView selectedDevice;
+    private transient DeviceView selectedDevice;
 
     private List<SelectItem> statusLabels;
 
@@ -133,12 +133,14 @@ public class DevicesByTypeManager implements Serializable {
         }
     }
 
+    /** Clears the data displayed in the "Add device instance" dialog */
     public void clearDeviceDialogFields() {
         serialNumber = null;
         selectedComponentType = null;
         isDeviceBeingEdited = false;
     }
 
+    /** Prepares the data displayed in the "Edit device instance" dialog */
     public void prepareEditPopup() {
         serialNumber = selectedDevice.getInventoryId();
         selectedComponentType = selectedDevice.getDevice().getComponentType();

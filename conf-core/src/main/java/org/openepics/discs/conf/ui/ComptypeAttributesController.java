@@ -87,9 +87,9 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
     @Inject private transient DeviceEJB deviceEJB;
 
     private ComponentType compType;
-    private List<MultiPropertyValueView> filteredPropertyValues;
-    private List<MultiPropertyValueView> selectedPropertyValues;
-    private List<MultiPropertyValueView> selectionPropertyValuesFiltered;
+    private transient List<MultiPropertyValueView> filteredPropertyValues;
+    private transient List<MultiPropertyValueView> selectedPropertyValues;
+    private transient List<MultiPropertyValueView> selectionPropertyValuesFiltered;
     private boolean selectAllRows;
 
     @Override
@@ -446,8 +446,12 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
     }
 
     private String getEditEventValue(final Object val, final PropertyValueUIElement propValueUIElement) {
-        if (val == null) return null;
-        if (val instanceof String) return val.toString();
+        if (val == null) {
+            return null;
+        }
+        if (val instanceof String) {
+            return val.toString();
+        }
         if (val instanceof List<?>) {
             final List<?> valList = (List<?>)val;
             if (propValueUIElement == null) {
