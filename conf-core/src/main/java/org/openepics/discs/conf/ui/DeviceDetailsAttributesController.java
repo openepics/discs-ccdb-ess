@@ -59,7 +59,8 @@ import org.openepics.seds.core.Seds;
  */
 @Named
 @ViewScoped
-public class DeviceDetailsAttributesController extends AbstractAttributesController<DevicePropertyValue, DeviceArtifact> {
+public class DeviceDetailsAttributesController extends
+                        AbstractAttributesController<DevicePropertyValue, DeviceArtifact> {
     private static final long serialVersionUID = -2881746639197321061L;
 
     @Inject private transient DeviceEJB deviceEJB;
@@ -137,6 +138,8 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
         // refresh the device from database. This refreshes all related collections as well.
         device = deviceEJB.findById(device.getId());
 
+        attributes.add(new EntityAttributeView(new BuiltInProperty(DeviceBuiltInPropertyName.BIP_DESCRIPTION,
+                                                            device.getDescription(), strDataType)));
         attributes.add(new EntityAttributeView(new BuiltInProperty(DeviceBuiltInPropertyName.BIP_LOCATION,
                                                             device.getLocation(), strDataType)));
         attributes.add(new EntityAttributeView(new BuiltInProperty(DeviceBuiltInPropertyName.BIP_P_O_REFERENCE,
@@ -151,29 +154,29 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
                                                             DeviceBuiltInPropertyName.BIP_MANUFACTURER_SERIAL_NO,
                                                             device.getManufacturerSerialNumber(), strDataType)));
 
-        for (ComptypePropertyValue parentProp : parentProperties) {
+        for (final ComptypePropertyValue parentProp : parentProperties) {
             if (parentProp.getPropValue() != null) {
                 attributes.add(new EntityAttributeView(parentProp, EntityAttributeViewKind.DEVICE_TYPE_PROPERTY));
             }
         }
 
-        for (ComptypeArtifact parentArtifact : parentArtifacts) {
+        for (final ComptypeArtifact parentArtifact : parentArtifacts) {
             attributes.add(new EntityAttributeView(parentArtifact, EntityAttributeViewKind.DEVICE_TYPE_ARTIFACT));
         }
 
-        for (Tag parentTag : parentTags) {
+        for (final Tag parentTag : parentTags) {
             attributes.add(new EntityAttributeView(parentTag, EntityAttributeViewKind.DEVICE_TYPE_TAG));
         }
 
-        for (DevicePropertyValue propVal : device.getDevicePropertyList()) {
+        for (final DevicePropertyValue propVal : device.getDevicePropertyList()) {
             attributes.add(new EntityAttributeView(propVal, EntityAttributeViewKind.DEVICE_PROPERTY));
         }
 
-        for (DeviceArtifact artf : device.getDeviceArtifactList()) {
+        for (final DeviceArtifact artf : device.getDeviceArtifactList()) {
             attributes.add(new EntityAttributeView(artf, EntityAttributeViewKind.DEVICE_ARTIFACT));
         }
 
-        for (Tag tagAttr : device.getTags()) {
+        for (final Tag tagAttr : device.getTags()) {
             attributes.add(new EntityAttributeView(tagAttr, EntityAttributeViewKind.DEVICE_TAG));
         }
     }
@@ -181,7 +184,7 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
     @Override
     protected void populateParentTags() {
         parentTags = new HashSet<Tag>();
-        for (Tag parentTag : device.getComponentType().getTags()) {
+        for (final Tag parentTag : device.getComponentType().getTags()) {
             if (!device.getTags().contains(parentTag)) {
                 parentTags.add(parentTag);
             }
@@ -197,6 +200,12 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
                 : (propertyValue instanceof StrValue ? ((StrValue)propertyValue).getStrValue() : null);
 
         switch (builtInPropertyName) {
+            case BIP_DESCRIPTION:
+                    if ((userValueStr == null) || !userValueStr.equals(device.getDescription())) {
+                        device.setDescription(userValueStr);
+                        deviceEJB.save(device);
+                    }
+                    break;
             case BIP_LOCATION:
                 if ((userValueStr == null) || !userValueStr.equals(device.getLocation())) {
                     device.setLocation(userValueStr);
@@ -245,12 +254,12 @@ public class DeviceDetailsAttributesController extends AbstractAttributesControl
         final DeviceStatus[] devStatusEnumValues = DeviceStatus.values();
         final String[] devStatusEnumStrs = new String[devStatusEnumValues.length];
         int i = 0;
-        for (DeviceStatus status : devStatusEnumValues) {
+        for (final DeviceStatus status : devStatusEnumValues) {
             devStatusEnumStrs[i] = status.name();
             i++;
         }
         final SedsEnum devStatusEnum = Seds.newFactory().newEnum(devStatusEnumStrs[0], devStatusEnumStrs);
-        JsonObject jsonEnum = Seds.newDBConverter().serialize(devStatusEnum);
+        final JsonObject jsonEnum = Seds.newDBConverter().serialize(devStatusEnum);
 
         enumDataType = new DataType("Built-in status", "Built in device status temporary data type", false,
                                         jsonEnum.toString());

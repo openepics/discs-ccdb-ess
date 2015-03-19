@@ -69,7 +69,7 @@ public class DevicesByTypeManager implements Serializable {
     private List<SelectItem> statusLabels;
 
     private String serialNumber;
-    private String description;
+    private boolean isDeviceBeingEdited;
 
     public DevicesByTypeManager() {
     }
@@ -86,7 +86,6 @@ public class DevicesByTypeManager implements Serializable {
     public void onDeviceAdd() {
         final Device newDevice = new Device(serialNumber);
         newDevice.setComponentType(selectedComponentType);
-        newDevice.setDescription(description);
 
         try {
             deviceEJB.addDeviceAndPropertyDefs(newDevice);
@@ -103,11 +102,10 @@ public class DevicesByTypeManager implements Serializable {
         final Device exitingDevice = selectedDevice.getDevice();
         exitingDevice.setSerialNumber(serialNumber);
         exitingDevice.setComponentType(selectedComponentType);
-        exitingDevice.setDescription(description);
         deviceEJB.save(exitingDevice);
 
         selectedDevice.refreshDevice(deviceEJB.findById(exitingDevice.getId()));
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Device updates.", null);
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Device updated.", null);
     }
 
     /** Event handler which handles the device delete */
@@ -116,11 +114,9 @@ public class DevicesByTypeManager implements Serializable {
 
         if (installationEJB.getActiveInstallationRecordForDevice(selectedDevice.getDevice()) == null) {
             try {
-                deviceEJB.delete(selectedDevice.getDevice());
-
-                selectedDevice = null;
+                final Device deleteDevice = deviceEJB.findById(selectedDevice.getDevice().getId());
+                deviceEJB.delete(deleteDevice);
                 prepareDevicesForDisplay();
-
                 FacesContext.getCurrentInstance().addMessage(null,
                         new FacesMessage(FacesMessage.SEVERITY_INFO, "Device deleted.", null));
             } catch (Exception e) {
@@ -139,14 +135,14 @@ public class DevicesByTypeManager implements Serializable {
 
     public void clearDeviceDialogFields() {
         serialNumber = null;
-        description = null;
         selectedComponentType = null;
+        isDeviceBeingEdited = false;
     }
 
     public void prepareEditPopup() {
         serialNumber = selectedDevice.getInventoryId();
-        description = selectedDevice.getDevice().getDescription();
         selectedComponentType = selectedDevice.getDevice().getComponentType();
+        isDeviceBeingEdited = true;
     }
 
     /** @return The ID of device type of the device the user is adding or editing in device manager */
@@ -163,11 +159,10 @@ public class DevicesByTypeManager implements Serializable {
         }
     }
 
-    /**
-     * The method prepares the list of {@link Device} instances to show to the user when he selects a device type in
-     * the left hand side table listing all available device type.
-     */
-    public void prepareDevicesForDisplay() {
+    /** The method prepares the list of all {@link Device} instances in the database to show to the user. */
+    private void prepareDevicesForDisplay() {
+        selectedDevice = null;
+        isDeviceBeingEdited = false;
         final List<Device> deviceList = deviceEJB.findAll();
 
         // transform the list of Unit into a list of UnitView
@@ -185,12 +180,10 @@ public class DevicesByTypeManager implements Serializable {
     }
 
     private void prepareStatusLabels() {
-        if (statusLabels == null) {
-            statusLabels = Lists.newArrayList();
-            statusLabels.add(new SelectItem("", "Select one"));
-            for (DeviceStatus status : DeviceStatus.values()) {
-                statusLabels.add(new SelectItem(status.getLabel(), status.getLabel()));
-            }
+        statusLabels = Lists.newArrayList();
+        statusLabels.add(new SelectItem("", "Select one"));
+        for (final DeviceStatus status : DeviceStatus.values()) {
+            statusLabels.add(new SelectItem(status.getLabel(), status.getLabel()));
         }
     }
 
@@ -215,26 +208,13 @@ public class DevicesByTypeManager implements Serializable {
         this.selectedDevice = selectedDevice;
     }
 
-    /**
-     * @return The inventory ID (see {@link Device#getSerialNumber()}) of the {@link Device}
-     */
+    /** @return The inventory ID (see {@link Device#getSerialNumber()}) of the {@link Device} */
     public String getSerialNumber() {
         return serialNumber;
     }
-    /**
-     * @param serialNumber The inventory ID (see {@link Device#getSerialNumber()}) of the {@link Device}
-     */
+    /** @param serialNumber The inventory ID (see {@link Device#getSerialNumber()}) of the {@link Device} */
     public void setSerialNumber(String serialNumber) {
         this.serialNumber = serialNumber;
-    }
-
-    /** @return The description (see {@link Device#getDescription()}) of the {@link Device} */
-    public String getDescription() {
-        return description;
-    }
-    /** @param description The description (see {@link Device#getDescription()}) of the {@link Device} */
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     /** The validator for the inventory ID input field. Called when creating a new device {@link Device}
@@ -254,7 +234,9 @@ public class DevicesByTypeManager implements Serializable {
         // empty input value is handled by PrimeFaces and configured from xhtml
         if (!strValue.isEmpty()) {
             final Device existingDevice = deviceEJB.findDeviceBySerialNumber(strValue);
-            if (existingDevice != null) {
+            final Device editedDevice = (selectedDevice == null || !isDeviceBeingEdited)
+                                                    ? null : selectedDevice.getDevice();
+            if (existingDevice != null && !existingDevice.equals(editedDevice)) {
                 throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
                             Utility.MESSAGE_SUMMARY_ERROR, "Device instance with this inventory ID already exists."));
             }

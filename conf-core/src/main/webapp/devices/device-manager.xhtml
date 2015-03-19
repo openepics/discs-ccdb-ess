@@ -22,7 +22,7 @@
                         <p:fieldset id="deviceFieldset" legend="Devices">
                             <p:dataTable id="devicesTable" var="device" selection="#{devicesByTypeManager.selectedDevice}"
                                     selectionMode="single" rowKey="#{device.device.id}" scrollable="true" 
-                                    value="#{devicesByTypeManager.devices}" scrollHeight="600" 
+                                    value="#{devicesByTypeManager.devices}" scrollHeight="600" widgetVar="devicesTableVar"
                                     filteredValue="#{devicesByTypeManager.filteredDevices}" emptyMessage="No devices found.">
                                 <p:ajax event="rowSelect" oncomplete="enableAddButton();"
                                         update=":deviceAddForm:addDeviceDialog :devicesForm:deleteButton :devicesForm:editButton 
@@ -103,18 +103,20 @@
             </p:panelGrid>
         </h:form>
 
-        <ui:include src="/devices/device-add-or-modify-dialog.xhtml">
+        <ui:include src="device-add-or-modify-dialog.xhtml">
             <ui:param name="formId" value="deviceAddForm" />
             <ui:param name="widgetName" value="addDeviceDialog" />
             <ui:param name="dialogTitle" value="Add device" />
+            <ui:param name="resetFilter" value="devicesTableVar.filter();" />
             <ui:param name="updateComponents" value=":devicesForm:devicesTable" />
             <ui:param name="submitHandler" value="onDeviceAdd" />
         </ui:include>
 
-        <ui:include src="/devices/device-add-or-modify-dialog.xhtml">
+        <ui:include src="device-add-or-modify-dialog.xhtml">
             <ui:param name="formId" value="deviceEditForm" />
             <ui:param name="widgetName" value="editDeviceDialog" />
             <ui:param name="dialogTitle" value="Edit device" />
+            <ui:param name="resetFilter" value="devicesTableVar.filter();" />
             <ui:param name="updateComponents" value=":devicesForm:devicesTable" />
             <ui:param name="submitHandler" value="onDeviceEdit" />
         </ui:include>
@@ -123,6 +125,7 @@
             <ui:param name="formId" value="modifyPropertyValueForm" />
             <ui:param name="dialogTitle" value="Modify device type property" />
             <ui:param name="widgetName" value="modifyPropertyValue" />
+            <ui:param name="resetFilter" value="devicesTableVar.filter();" />
             <ui:param name="controller" value="#{deviceDetailsAttributesController}" />
             <ui:param name="submitHandler" value="modifyPropertyValue" />
             <ui:param name="componentToUpdate" value=":devicesForm:attributesDataTable:attributesDataTable" />
