@@ -1,0 +1,90 @@
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html">
+
+    <h:form id="#{formId}">
+        <p:remoteCommand name="updateToggle" actionListener="#{comptypeAttributesController.updateToggle()}" 
+            update=":#{formId}:propertySelect" />
+        <p:dialog widgetVar="#{widgetName}" id="#{widgetName}" modal="true" resizable="false" closable="false" 
+                dynamic="true" styleClass="property-selection">
+            <f:facet name="header">
+                <h:outputText value="#{dialogTitle}" />
+            </f:facet>
+            <p:messages id="inputValidationFail" showDetail="true" autoUpdate="true" />
+            <p:panel style="margin-bottom: 2ex; border: 0;">
+                <p:dataTable id="propertySelect" value="#{comptypeAttributesController.filteredPropertyValues}" var="prop" 
+                        editable="true" editMode="cell" scrollable="true" 
+                        scrollHeight="200" tableStyle="width: 68em; table-layout: auto;" widgetVar="propSelectTable" 
+                        filteredValue="#{comptypeAttributesController.selectionPropertyValuesFiltered}">
+                    <p:ajax event="cellEdit" listener="#{comptypeAttributesController.onEditCell}" update=":#{formId}:propertySelect" />
+                    <p:ajax event="filter" oncomplete="updateToggle()" />
+
+                    <p:column id="rowSelection" style="width: 2em;">
+                        <f:facet name="header">
+                            <p:selectBooleanCheckbox id="toggleAll" value="#{comptypeAttributesController.selectAllRows}">
+                                <p:ajax listener="#{comptypeAttributesController.handleToggleAll}" 
+                                    update=":#{formId}:propertySelect" />
+                            </p:selectBooleanCheckbox>
+                        </f:facet>
+                        <p:selectBooleanCheckbox value="#{prop.selected}">
+                            <p:ajax update=":#{formId}:propertySelect" oncomplete="updateToggle()" 
+                                listener="#{comptypeAttributesController.rowSelectListener(prop)}"/>
+                        </p:selectBooleanCheckbox>
+                    </p:column>
+                    <p:column headerText="Property" style="width: 20em;" sortBy="#{prop.name}" filterBy="#{prop.name}">
+                        <h:outputText value="#{prop.name}" />
+                    </p:column>
+                    <p:column headerText="Description" style="width: 16em;" sortBy="#{prop.description}" 
+                            filterBy="#{prop.description}" filterMatchMode="contains">
+                        <h:outputText value="#{prop.description}" />
+                    </p:column>
+                    <p:column headerText="Data type" style="width: 8em;" sortBy="#{prop.dataType.name}" 
+                            filterBy="#{prop.dataType.name}" filterMatchMode="contains" filterStyle="width: 90%;">
+                        <h:outputText value="#{prop.dataType.name}" />
+                    </p:column>
+                    <p:column headerText="Unit" style="width: 6em;" sortBy="#{prop.unit.name}" 
+                            filterBy="#{prop.unit.name}" filterMatchMode="contains" filterStyle="width: 90%;">
+                        <h:outputText value="#{not empty prop.unit ? prop.unit.name : '-'}" />
+                    </p:column>
+                    <p:column headerText="Value" style="width: 16em;">
+                        <p:cellEditor rendered="#{prop.selected}">
+                            <f:facet name="output">
+                                <h:outputText value="#{comptypeAttributesController.displayPropertyValue(prop)}" />
+                            </f:facet>
+                            <f:facet name="input">
+                                <p:inputText id="propertyValueSimple" value="#{prop.uiValue}" rendered="#{prop.propertyValueUIElement eq 'INPUT'}" />
+
+                                <p:inputTextarea id="propertyValueArea" rows="7" value="#{prop.uiValue}" 
+                                        style="width: 90%; white-space: nowrap; resize: none;" autoResize="false" 
+                                        rendered="#{prop.propertyValueUIElement eq 'TEXT_AREA'}" />
+
+                                <p:selectOneMenu id="propertyValueEnum" style="width: 90%;" value="#{prop.uiValue}" 
+                                        rendered="#{prop.propertyValueUIElement eq 'SELECT_ONE_MENU'}">
+                                    <f:selectItem itemLabel="&lt;Select value&gt;" itemValue="" />
+                                    <f:selectItems value="#{prop.enumOptions}" var="enum" itemLabel="#{enum}" itemValue="#{enum}" />
+                                </p:selectOneMenu>
+                            </f:facet>
+                        </p:cellEditor>
+                        <h:outputText value="-" rendered="#{!prop.selected}" />
+                    </p:column>
+                </p:dataTable>
+            </p:panel>
+
+            <p:commandButton value="Cancel" styleClass="dialogButton" oncomplete="#{widgetName}.hide();#{resetFilter}" 
+                    update="propertySelect" resetValues="true" action="#{comptypeAttributesController.resetPropertySelection(formId)}" />
+            <p:commandButton value="Save" styleClass="dialogButton" update="#{componentToUpdate} propertySelect" 
+                    oncomplete="if (args &amp;&amp; !args.validationFailed) { #{widgetName}.hide(); #{resetFilter} }" 
+                    action="#{comptypeAttributesController[submitHandler]}"/>
+        </p:dialog>
+        <script type="text/javascript">
+            <!-- 
+            // prevent focus of the first element, select the first button (Cancel) instead
+            // http://forum.primefaces.org/viewtopic.php?f=3&t=29050
+            // --> 
+            PrimeFaces.widget.Dialog.prototype.applyFocus = function() {
+                this.jq.find(':button:input:visible:enabled:first').focus();
+            }
+        </script>
+    </h:form>
+</ui:composition>

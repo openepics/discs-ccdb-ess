@@ -26,9 +26,12 @@ import javax.ejb.Stateless;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.PropertyValue;
+import org.openepics.discs.conf.util.PropertyValueNotUniqueException;
+
+import com.google.common.base.Preconditions;
 
 /**
- * DAO Service for accesing Component Types ( {@link ComponentType} )
+ * DAO Service for accessing Component Types ( {@link ComponentType} )
  *
  * @author vuppala
  * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
@@ -71,4 +74,12 @@ public class ComptypeEJB extends DAO<ComponentType> {
         return true;
     }
 
+    /** If the property value fails the uniqueness check, this method throws an unchecked
+     * {@link PropertyValueNotUniqueException}
+     * @param pv the property value to check for
+     */
+    public void checkPropertyValueUnique(final ComptypePropertyValue pv) {
+        Preconditions.checkNotNull(pv);
+        uniquePropertyValueCheck(pv, (ComponentType)pv.getPropertiesParent());
+    }
 }

@@ -19,10 +19,10 @@
                 </h:panelGroup>               
             </p:panelGrid>
 
-            <p:commandButton value="Cancel" styleClass="dialogButton" onclick="#{widgetName}.hide();" update="grp" 
-                    resetValues="true" />
+            <p:commandButton value="Cancel" styleClass="dialogButton" onclick="#{widgetName}.hide();#{resetFilter}" 
+                    update="grp" resetValues="true" />
             <p:commandButton value="Save" styleClass="dialogButton" update="#{componentToUpdate} grp" 
-                    oncomplete="if (args &amp;&amp; !args.validationFailed) { #{widgetName}.hide(); }" 
+                    oncomplete="if (args &amp;&amp; !args.validationFailed) { #{widgetName}.hide(); #{resetFilter} }" 
                     action="#{controller[submitHandler]}" />
         </p:dialog>
 

@@ -47,6 +47,9 @@ import com.google.common.base.Preconditions;
  * @param <T> The entity type for which this DAO is defined.
  */
 public abstract class DAO<T> extends ReadOnlyDAO<T> {
+    private static final String PROPERTY_PARAM = "property";
+    private static final String PROPERTY_VALUE_PARAM = "propValue";
+
     /**
      * Adds a new entity to the database
      *
@@ -125,7 +128,7 @@ public abstract class DAO<T> extends ReadOnlyDAO<T> {
         entityUtility.setModified(getParent(mergedChild), mergedChild);
     }
 
-    private <S> void uniquePropertyValueCheck(final S child, final T parent) {
+    protected <S> void uniquePropertyValueCheck(final S child, final T parent) {
         if (child instanceof PropertyValue) {
             final PropertyValue propVal = (PropertyValue) child;
             switch (propVal.getProperty().getValueUniqueness()) {
@@ -216,21 +219,21 @@ public abstract class DAO<T> extends ReadOnlyDAO<T> {
 
         List<PropertyValue> results = em.createNamedQuery("ComptypePropertyValue.findSamePropertyValue",
                                                         PropertyValue.class)
-                    .setParameter("property", property)
-                    .setParameter("propValue", value).setMaxResults(2).getResultList();
+                    .setParameter(PROPERTY_PARAM, property)
+                    .setParameter(PROPERTY_VALUE_PARAM, value).setMaxResults(2).getResultList();
         // value is unique if there is no property value with the same value, or the only one found us the entity itself
         boolean valueUnique = (results.size() < 2) && (results.isEmpty() || results.get(0).equals(child));
         if (valueUnique) {
             results = em.createNamedQuery("SlotPropertyValue.findSamePropertyValue", PropertyValue.class)
-                        .setParameter("property", property)
-                        .setParameter("propValue", value).setMaxResults(2).getResultList();
+                        .setParameter(PROPERTY_PARAM, property)
+                        .setParameter(PROPERTY_VALUE_PARAM, value).setMaxResults(2).getResultList();
             // value is unique if there is no same property value, or the only one found us the entity itself
             valueUnique = (results.size() < 2) && (results.isEmpty() || results.get(0).equals(child));
         }
         if (valueUnique) {
             results = em.createNamedQuery("DevicePropertyValue.findSamePropertyValue", PropertyValue.class)
-                        .setParameter("property", property)
-                        .setParameter("propValue", value).setMaxResults(2).getResultList();
+                        .setParameter(PROPERTY_PARAM, property)
+                        .setParameter(PROPERTY_VALUE_PARAM, value).setMaxResults(2).getResultList();
             // value is unique if there is no same property value, or the only one found us the entity itself
             valueUnique = (results.size() < 2) && (results.isEmpty() || results.get(0).equals(child));
         }

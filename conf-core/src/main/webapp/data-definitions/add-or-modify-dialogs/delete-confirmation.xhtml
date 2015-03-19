@@ -14,7 +14,7 @@
 			<br />
             <br />
 
-			<p:commandButton value="No" styleClass="dialogButton" onclick="#{widgetName}.hide();" />
+			<p:commandButton value="No" styleClass="dialogButton" onclick="#{widgetName}.hide(); #{resetFilter}" />
 			<p:commandButton value="Yes" styleClass="dialogButton" oncomplete="#{widgetName}.hide(); #{resizeContent} #{resetFilter}" 
                     ajax="true" action="#{controller[submitHandler]}" update="#{formToUpdate}" />
 		</p:dialog>

@@ -63,7 +63,7 @@
                     update="grp" resetValues="true" />
             <p:commandButton value="Save" styleClass="dialogButton" update="#{componentToUpdate} grp" 
                     oncomplete="if (args &amp;&amp; !args.validationFailed) {#{widgetName}.hide(); #{resetFilter}}" 
-                    action="#{controller[submitHandler]}"/>
+                    action="#{controller[submitHandler]}" />
         </p:dialog>
 
     </h:form>
