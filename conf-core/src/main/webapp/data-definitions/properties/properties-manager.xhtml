@@ -8,7 +8,7 @@
     <ui:define name="content">
         <h:form id="propertiesForm">
             <p:commandButton ajax="true" actionListener="#{propertyManager.prepareAddPopup()}" value="Add new"
-                    oncomplete="addProperty.show()" style="margin-bottom: 1em;" />
+                    oncomplete="addProperty.show()" style="margin-bottom: 1em;" update=":addPropertyForm:addProperty" />
             <p:dataTable widgetVar="propertiesTableVar" var="property" id="propertiesTable" 
                     value="#{propertyManager.properties}" rows="15" paginator="true" 
                     resizableColumns="true" style="table-layout: fixed; word-wrap: break-word;" 
@@ -78,6 +78,7 @@
             <ui:param name="formId" value="addPropertyForm" />
             <ui:param name="dialogTitle" value="Add Property" />
             <ui:param name="widgetName" value="addProperty" />
+            <ui:param name="batchCreation" value="true" />
             <ui:param name="submitHandler" value="onAdd" />
         </ui:include>
 

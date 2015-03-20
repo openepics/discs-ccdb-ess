@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.faces.application.FacesMessage;
@@ -80,9 +81,50 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
     private boolean isPropertyUsed;
     private PropertyValueUniqueness valueUniqueness;
 
-    /**
-     * Creates a new instance of PropertyManager
-     */
+    // ---- batch property creation
+    private boolean isBatchCreation;
+    private int batchStartIndex;
+    private int batchEndIndex;
+    private int batchLeadingZeros;
+
+    private class BatchIterator implements Iterator<String> {
+        private int index;
+        private String prefix;
+        private int indexLen;
+
+        public BatchIterator() {
+            index = batchStartIndex;
+            final StringBuilder sb = new StringBuilder(batchLeadingZeros);
+            for (int i = 0; i < batchLeadingZeros; i++) {
+                sb.append('0');
+            }
+            prefix = sb.toString();
+            if (batchLeadingZeros == 0) {
+                indexLen = 0;
+            } else {
+                indexLen = (prefix + batchStartIndex).length();
+            }
+        }
+
+        @Override
+        public boolean hasNext() {
+            return index <= batchEndIndex;
+        }
+
+        @Override
+        public String next() {
+            final String indexStr = prefix + index;
+            index++;
+            return indexStr.substring(indexStr.length() - indexLen);
+        }
+
+        @Override
+        public void remove() {
+        }
+
+    }
+
+    /** Creates a new instance of PropertyManager */
     public PropertyManager() {
     }
 
@@ -92,23 +134,56 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
         resetFields();
     }
 
-    /**
-     * Called when the user presses the "Save" button in the "Add new property" dialog.
-     */
+    /** Called when the user presses the "Save" button in the "Add new property" dialog */
     public void onAdd() {
-        final Property propertyToAdd = new Property(name, description);
-        propertyToAdd.setDataType(dataType);
-        propertyToAdd.setUnit(unit);
-        propertyToAdd.setValueUniqueness(valueUniqueness);
-        propertyEJB.add(propertyToAdd);
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
-                                                                "New property has been created");
+        if (isBatchCreation) {
+            multiPropertyAdd();
+        } else {
+            singlePropertyAdd();
+        }
         init();
     }
 
-    /**
-     * Called when the user presses the "Save" button in the "Modify a property" dialog.
-     */
+    private void singlePropertyAdd() {
+        final Property propertyToAdd = createNewProperty(name);
+        propertyEJB.add(propertyToAdd);
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+                                                                "New property has been created");
+    }
+
+    private void multiPropertyAdd() {
+        for (final BatchIterator bi = new BatchIterator(); bi.hasNext();) {
+            final String propertyName = name.replace("{i}", bi.next());
+            if (propertyEJB.findByName(propertyName) != null) {
+                FacesContext.getCurrentInstance().addMessage("propertyNameMsg",
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR,Utility.MESSAGE_SUMMARY_ERROR,
+                                "The property \"" + propertyName + "\" already exists."));
+                FacesContext.getCurrentInstance().validationFailed();
+                return;
+            }
+        }
+
+        // validation complete. Batch creation of all the properties.
+        int propertiesCreated = 0;
+        for (final BatchIterator bi = new BatchIterator(); bi.hasNext();) {
+            final String propertyName = name.replace("{i}", bi.next());
+            final Property propertyToAdd = createNewProperty(propertyName);
+            propertyEJB.add(propertyToAdd);
+            propertiesCreated++;
+        }
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+                "Created " + propertiesCreated + " new properties.");
+    }
+
+    private Property createNewProperty(String propertyName) {
+        final Property newProperty = new Property(propertyName, description);
+        newProperty.setDataType(dataType);
+        newProperty.setUnit(unit);
+        newProperty.setValueUniqueness(valueUniqueness);
+        return newProperty;
+    }
+
+    /** Called when the user presses the "Save" button in the "Modify a property" dialog */
     public void onModify() {
         selectedProperty.setName(name);
         selectedProperty.setDescription(description);
@@ -121,18 +196,14 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
         init();
     }
 
-    /**
-     * Prepares the data to be used in the "Add new property" dialog.
-     */
+    /** Prepares the data to be used in the "Add new property" dialog */
     public void prepareAddPopup() {
         resetFields();
         isPropertyUsed = false;
         RequestContext.getCurrentInstance().update("addPropertyForm:addProperty");
     }
 
-    /**
-     * Prepares the data to be used in the "Modify a property" dialog.
-     */
+    /** Prepares the data to be used in the "Modify a property" dialog */
     public void prepareModifyPopup() {
         name = selectedProperty.getName();
         description = selectedProperty.getDescription();
@@ -144,9 +215,7 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
         RequestContext.getCurrentInstance().update("modifyPropertyForm:modifyProperty");
     }
 
-    /**
-     * Called when the user clicks the "trash can" icon in the UI.
-     */
+    /** Called when the user clicks the "trash can" icon in the UI */
     public void onDelete() {
         try {
             propertyEJB.delete(selectedProperty);
@@ -163,23 +232,17 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
         }
     }
 
-    /**
-     * @return The list of filtered properties used by the PrimeFaces filter field.
-     */
+    /** @return The list of filtered properties used by the PrimeFaces filter field */
     public List<Property> getFilteredProperties() {
         return filteredProperties;
     }
 
-    /**
-     * @param filteredObjects The list of filtered properties used by the PrimeFaces filter field.
-     */
+    /** @param filteredObjects The list of filtered properties used by the PrimeFaces filter field */
     public void setFilteredProperties(List<Property> filteredObjects) {
         this.filteredProperties = filteredObjects;
     }
 
-    /**
-     * @return The list of all properties in the database ordered by name.
-     */
+    /** @return The list of all properties in the database ordered by name */
     public List<Property> getProperties() {
         if (properties == null) {
             properties = propertyEJB.findAllOrderedByName();
@@ -198,54 +261,38 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
         }
     }
 
-    /**
-     * @return The name of the property the user is working on. Used by UI.
-     */
+    /** @return The name of the property the user is working on. Used by UI */
     public String getName() {
         return name;
     }
-    /**
-     * @param name The name of the property the user is working on. Used by UI.
-     */
+    /** @param name The name of the property the user is working on. Used by UI */
     public void setName(String name) {
         this.name = name;
     }
 
-    /**
-     * @return The description of the property the user is working on. Used by UI.
-     */
+    /** @return The description of the property the user is working on. Used by UI */
     public String getDescription() {
         return description;
     }
-    /**
-     * @param description The description of the property the user is working on. Used by UI.
-     */
+    /** @param description The description of the property the user is working on. Used by UI */
     public void setDescription(String description) {
         this.description = description;
     }
 
-    /**
-     * @return The {@link DataType} of the property the user is working on. Used by UI.
-     */
+    /** @return The {@link DataType} of the property the user is working on. Used by UI */
     public DataType getDataType() {
         return dataType;
     }
-    /**
-     * @param dataType The {@link DataType} of the property the user is working on. Used by UI.
-     */
+    /** @param dataType The {@link DataType} of the property the user is working on. Used by UI */
     public void setDataType(DataType dataType) {
         this.dataType = dataType;
     }
 
-    /**
-     * @return The {@link Unit} of the property the user is working on. Used by UI.
-     */
+    /** @return The {@link Unit} of the property the user is working on. Used by UI */
     public Unit getUnit() {
         return unit;
     }
-    /**
-     * @param unit The {@link Unit} of the property the user is working on. Used by UI.
-     */
+    /** @param unit The {@link Unit} of the property the user is working on. Used by UI */
     public void setUnit(Unit unit) {
         this.unit = unit;
     }
@@ -277,28 +324,20 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
         return unitComboEnabled;
     }
 
-    /**
-     * @return The {@link Property} selected in the dialog.
-     */
+    /** @return The {@link Property} selected in the dialog */
     public Property getSelectedProperty() {
         return selectedProperty;
     }
-    /**
-     * @param selectedProperty The {@link Property} selected in the dialog.
-     */
+    /** @param selectedProperty The {@link Property} selected in the dialog */
     public void setSelectedProperty(Property selectedProperty) {
         this.selectedProperty = selectedProperty;
     }
 
-    /**
-     * @return The {@link Property} selected in the dialog (modify property dialog).
-     */
+    /** @return The {@link Property} selected in the dialog (modify property dialog) */
     public Property getSelectedPropertyToModify() {
         return selectedProperty;
     }
-    /**
-     * @param selectedProperty The {@link Property} selected in the dialog (modify property dialog).
-     */
+    /** @param selectedProperty The {@link Property} selected in the dialog (modify property dialog) */
     public void setSelectedPropertyToModify(Property selectedProperty) {
         this.selectedProperty = propertyEJB.findById(selectedProperty.getId());
         prepareModifyPopup();
@@ -321,21 +360,15 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
         return isPropertyUsed;
     }
 
-    /**
-     * @return the valueUniqueness
-     */
+    /** @return the valueUniqueness */
     public PropertyValueUniqueness getValueUniqueness() {
         return valueUniqueness;
     }
-    /**
-     * @param valueUniqueness the valueUniqueness to set
-     */
+    /** @param valueUniqueness the valueUniqueness to set */
     public void setValueUniqueness(PropertyValueUniqueness valueUniqueness) {
         this.valueUniqueness = valueUniqueness;
     }
-    /**
-     * @return the set of possible uniqueness values to show in the drop-down control.
-     */
+    /** @return the set of possible uniqueness values to show in the drop-down control */
     public List<PropertyValueUniqueness> getUniqunessValues() {
         return ImmutableList.copyOf(PropertyValueUniqueness.values());
     }
@@ -353,6 +386,16 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
         }
 
         final String propertyName = value.toString();
+
+        if (isBatchCreation && !propertyName.contains("{i}")) {
+            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
+                    "Batch creation selected, but index position \"{i}\" not set"));
+        }
+        if (!isBatchCreation && propertyName.contains("{i}")) {
+            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
+                    "Error in name: \"{i}\""));
+        }
+
         final Property existingProperty = propertyEJB.findByName(propertyName);
         if ((selectedProperty == null && existingProperty != null)
                 || (selectedProperty != null &&  existingProperty != null
@@ -362,4 +405,65 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
         }
     }
 
+    /** @return the isBatchCreation */
+    public boolean isBatchCreation() {
+        return isBatchCreation;
+    }
+    /** @param isBatchCreation the isBatchCreation to set */
+    public void setBatchCreation(boolean isBatchCreation) {
+        this.isBatchCreation = isBatchCreation;
+    }
+
+    /** @return the batchStartIndex */
+    public int getBatchStartIndex() {
+        return batchStartIndex;
+    }
+    /** @param batchStartIndex the batchStartIndex to set */
+    public void setBatchStartIndex(int batchStartIndex) {
+        this.batchStartIndex = batchStartIndex;
+    }
+
+    /** @return the batchEndIndex */
+    public int getBatchEndIndex() {
+        return batchEndIndex;
+    }
+    /** @param batchEndIndex the batchEndIndex to set */
+    public void setBatchEndIndex(int batchEndIndex) {
+        this.batchEndIndex = batchEndIndex;
+    }
+
+    /** @return the batchLeadingZeros */
+    public int getBatchLeadingZeros() {
+        return batchLeadingZeros;
+    }
+    /** @param batchLeadingZeros the batchLeadingZeros to set */
+    public void setBatchLeadingZeros(int batchLeadingZeros) {
+        this.batchLeadingZeros = batchLeadingZeros;
+    }
+
+    /** The validator for the end index field
+     * @param ctx
+     * @param component
+     * @param value
+     * @throws ValidatorException
+     */
+    public void batchEndValidator(FacesContext ctx, UIComponent component, Object value) throws ValidatorException {
+        if (batchStartIndex >= (Integer)value) {
+            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
+                    "End index must be greater than start index."));
+        }
+    }
+
+    /** The validator for the start index field
+     * @param ctx
+     * @param component
+     * @param value
+     * @throws ValidatorException
+     */
+    public void batchStartValidator(FacesContext ctx, UIComponent component, Object value) throws ValidatorException {
+        if ((Integer)value >= batchEndIndex) {
+            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
+                    "Start index must be less than end index."));
+        }
+    }
 }

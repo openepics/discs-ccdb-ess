@@ -257,3 +257,13 @@ a {
 .property-selection .ui-dialog-content {
 	overflow-y: hidden !important;
 }
+
+#addPropertyForm\:propertyNameMsg > div {
+	padding: 2px 10px 2px 10px;
+}
+
+#addPropertyForm\:propertyNameMsg .ui-messages-error-icon {
+	width: 16px;
+	height: 16px;
+	background-position: 0px -94px;
+}
