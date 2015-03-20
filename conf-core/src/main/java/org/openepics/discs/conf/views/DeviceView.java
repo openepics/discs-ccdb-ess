@@ -19,9 +19,11 @@
  */
 package org.openepics.discs.conf.views;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.openepics.discs.conf.ent.Device;
+import org.openepics.discs.conf.util.Conversion;
 
 import com.google.common.base.Preconditions;
 
@@ -35,7 +37,7 @@ public class DeviceView {
     private String inventoryId;
     private String statusLabel;
     private final String installedIn;
-    private final Date installationDate;
+    private final String installationDate;
 
     private Device device;
 
@@ -50,7 +52,12 @@ public class DeviceView {
         inventoryId = device.getSerialNumber();
         statusLabel = device.getStatus().getLabel();
         this.installedIn = installedIn;
-        this.installationDate = installationDate;
+        if (installationDate == null) {
+            this.installationDate = "-";
+        } else {
+            final SimpleDateFormat timestampFormatter = new SimpleDateFormat(Conversion.TIMESTAMP_FORMAT);
+            this.installationDate = timestampFormatter.format(installationDate);
+        }
     }
 
     /** @return the inventoryId  */
@@ -74,7 +81,7 @@ public class DeviceView {
     }
 
     /** @return the installationDate */
-    public Date getInstallationDate() {
+    public String getInstallationDate() {
         return installationDate;
     }
 

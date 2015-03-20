@@ -77,11 +77,11 @@ public class InstallationRecord extends ConfigurationEntity
     @Basic(optional = false)
     @NotNull
     @Column(name = "install_date")
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date installDate;
 
     @Column(name = "uninstall_date")
-    @Temporal(TemporalType.DATE)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date uninstallDate;
 
     @Column(name = "notes", columnDefinition="TEXT")
@@ -117,9 +117,7 @@ public class InstallationRecord extends ConfigurationEntity
         this.recordNumber = recordNumber;
     }
 
-    /**
-     * @return Returns a new copy of the install date.
-     */
+    /** @return Returns a new copy of the install date */
     public Date getInstallDate() {
         return installDate != null ? new Date(installDate.getTime()) : null;
     }
@@ -127,9 +125,7 @@ public class InstallationRecord extends ConfigurationEntity
         this.installDate = new Date(installDate.getTime());
     }
 
-    /**
-     * @return Returns a new copy of the uninstall date.
-     */
+    /** @return Returns a new copy of the uninstall date */
     public Date getUninstallDate() {
         return uninstallDate != null ? new Date(uninstallDate.getTime()) : null;
     }
