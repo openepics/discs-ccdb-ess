@@ -85,7 +85,7 @@
                                 disabled="#{empty devicesByTypeManager.selectedDevice}" />
                             <p:commandButton ajax="true" style="float: right; margin-right: 1ex;" icon="ui-icon-plus" 
                                 actionListener="#{devicesByTypeManager.clearDeviceDialogFields()}" value="Add" 
-                                oncomplete="addDeviceDialog.show()" />
+                                oncomplete="addDeviceDialog.show()" update=":deviceAddForm:addDeviceDialog" />
                         </p:fieldset>
                     </p:column>            
                     <p:column style="width: 50%; vertical-align: top;">
@@ -136,21 +136,22 @@
             <ui:param name="formId" value="deviceAddForm" />
             <ui:param name="widgetName" value="addDeviceDialog" />
             <ui:param name="dialogTitle" value="Add device" />
-            <ui:param name="resetFilter" value="devicesTableVar.filter();clearDeviceInstance();" />
             <ui:param name="updateComponents" value=":devicesForm:devicesTable :devicesForm:deleteButton :devicesForm:editButton" />
             <ui:param name="submitHandler" value="onDeviceAdd" />
+            <ui:param name="batchCreation" value="true" />
+            <ui:param name="saveAction" value="adjustTableHights();" />
         </ui:include>
 
         <ui:include src="device-add-or-modify-dialog.xhtml">
             <ui:param name="formId" value="deviceEditForm" />
             <ui:param name="widgetName" value="editDeviceDialog" />
             <ui:param name="dialogTitle" value="Edit device" />
-            <ui:param name="resetFilter" value="devicesTableVar.filter();" />
+            <ui:param name="saveAction" value="editDeviceDialog.hide();devicesTableVar.filter();adjustTableHights();" />
             <ui:param name="updateComponents" value=":devicesForm:devicesTable" />
             <ui:param name="submitHandler" value="onDeviceEdit" />
         </ui:include>
 
-        <ui:include src="/data-definitions/add-or-modify-dialogs/property-value.xhtml" >
+        <ui:include src="/data-definitions/add-or-modify-dialogs/property-value.xhtml">
             <ui:param name="formId" value="modifyPropertyValueForm" />
             <ui:param name="dialogTitle" value="Modify device type property" />
             <ui:param name="widgetName" value="modifyPropertyValue" />
@@ -160,7 +161,7 @@
             <ui:param name="componentToUpdate" value=":devicesForm:attributesDataTable:attributesDataTable" />
         </ui:include>
 
-        <ui:include src="/data-definitions/add-or-modify-dialogs/tag.xhtml" >
+        <ui:include src="/data-definitions/add-or-modify-dialogs/tag.xhtml">
             <ui:param name="formId" value="addDeviceTagForm" />
             <ui:param name="dialogTitle" value="Add new device instance tag" />
             <ui:param name="widgetName" value="addDeviceTag" />
@@ -170,7 +171,7 @@
             <ui:param name="componentToUpdate" value=":devicesForm:attributesDataTable:attributesDataTable" />
         </ui:include>
 
-        <ui:include src="/data-definitions/add-or-modify-dialogs/artifact.xhtml" >
+        <ui:include src="/data-definitions/add-or-modify-dialogs/artifact.xhtml">
             <ui:param name="formId" value="addArtifactForm" />
             <ui:param name="dialogTitle" value="Add new device instance artifact" />
             <ui:param name="widgetName" value="addArtifact" />
@@ -180,7 +181,7 @@
             <ui:param name="componentToUpdate" value=":devicesForm:attributesDataTable:attributesDataTable" />
         </ui:include>
 
-        <ui:include src="/data-definitions/add-or-modify-dialogs/artifact.xhtml" >
+        <ui:include src="/data-definitions/add-or-modify-dialogs/artifact.xhtml">
             <ui:param name="formId" value="modifyArtifactForm" />
             <ui:param name="dialogTitle" value="Modify device type artifact" />
             <ui:param name="widgetName" value="modifyArtifact" />
@@ -190,7 +191,7 @@
             <ui:param name="componentToUpdate" value=":devicesForm:attributesDataTable:attributesDataTable" />
         </ui:include>
 
-        <ui:include src="/data-definitions/add-or-modify-dialogs/builtin-property-value.xhtml" >
+        <ui:include src="/data-definitions/add-or-modify-dialogs/builtin-property-value.xhtml">
             <ui:param name="formId" value="modifyBuiltInPropertyForm" />
             <ui:param name="dialogTitle" value="Modify device instance property" />
             <ui:param name="widgetName" value="modifyBuiltInProperty" />
@@ -200,18 +201,19 @@
             <ui:param name="componentToUpdate" value=":devicesForm:attributesDataTable:attributesDataTable" />
         </ui:include>
 
-        <ui:include src="/data-definitions/add-or-modify-dialogs/delete-confirmation.xhtml" >
+        <ui:include src="/data-definitions/add-or-modify-dialogs/delete-confirmation.xhtml">
             <ui:param name="formId" value="deleteDeviceForm" />
             <ui:param name="dialogTitle" value="Delete device" />
             <ui:param name="widgetName" value="deleteDevice" />
             <ui:param name="resetFilter" value="devicesTableVar.filter();clearDeviceInstance();" />
+            <ui:param name="resizeContent" value="adjustTableHights();" />
             <ui:param name="controller" value="#{devicesByTypeManager}" />
             <ui:param name="submitHandler" value="onDeviceDelete" />
             <ui:param name="formToUpdate" value=":devicesForm:devicesTable :devicesForm:deleteButton :devicesForm:editButton" />
             <ui:param name="entityType" value="this device" />
         </ui:include>
 
-        <ui:include src="/data-definitions/add-or-modify-dialogs/delete-confirmation.xhtml" >
+        <ui:include src="/data-definitions/add-or-modify-dialogs/delete-confirmation.xhtml">
             <ui:param name="formId" value="deleteAttributeForm" />
             <ui:param name="dialogTitle" value="Delete attribute" />
             <ui:param name="widgetName" value="deleteAttribute" />
@@ -220,6 +222,19 @@
             <ui:param name="submitHandler" value="deleteAttribute" />
             <ui:param name="formToUpdate" value=":devicesForm:attributesDataTable:attributesDataTable :devicesForm:editAttrButton :devicesForm:deleteAttrButton" />
             <ui:param name="entityType" value="selected attribute" />
-        </ui:include>        
+        </ui:include>
+
+        <ui:include src="/resources/batch-creation-conflict.xhtml">
+            <ui:param name="formId" value="batchConflictForm" />
+            <ui:param name="dialogTitle" value="Conflicting device instances" />
+            <ui:param name="widgetName" value="batchConflict" />
+            <ui:param name="entity" value="device instances" />
+            <ui:param name="entityListing" value="#{devicesByTypeManager.batchSerialConflicts}" />
+            <ui:param name="relatedDialog" value="addDeviceDialog" />
+            <ui:param name="controller" value="#{devicesByTypeManager}" />
+            <ui:param name="submitHandler" value="creationProceed" />
+            <ui:param name="formToUpdate" value=":devicesForm:devicesTable :devicesForm:deleteButton :devicesForm:editButton" />
+            <ui:param name="saveActions" value="adjustTableHights();" />
+        </ui:include>
     </ui:define>
 </ui:composition>

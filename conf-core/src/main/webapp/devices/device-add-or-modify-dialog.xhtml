@@ -15,7 +15,8 @@
                 <h:outputLabel value="Device type:" for="deviceTypeSelection" />
                 <h:panelGroup>
                     <p:selectOneMenu id="deviceTypeSelection" required="true" value="#{devicesByTypeManager.deviceTypeSelection}" 
-                            requiredMessage="Please select a device type." disabled="#{not empty devicesByTypeManager.selectedDevice.installationDate}">
+                            requiredMessage="Please select a device type." 
+                            disabled="#{not empty devicesByTypeManager.selectedDevice.installationDate and not batchCreation}">
                         <f:selectItem itemLabel="&lt;Select type&gt;" itemValue="" noSelectionOption="true" />
                         <f:selectItems value="#{devicesByTypeManager.availableDeviceTypes}" var="dtype" 
                             itemLabel="#{dtype.name}" itemValue="#{dtype.id}" />
@@ -29,13 +30,44 @@
                         required="true" requiredMessage="Please enter an inventory ID" 
                         validator="#{devicesByTypeManager.newDeviceSerialNoValidator}" />
                     <p:message for="devInventoryId" />
+                    <p:messages for="devInventoryIdMsg" id="devInventoryIdMsg" showDetail="true" autoUpdate="true" />
                 </h:panelGroup>
+                
+                <h:outputLabel value="Batch:" for="batchCreation" rendered="#{batchCreation}" />
+                <h:selectBooleanCheckbox id="batchCreation" value="#{devicesByTypeManager.batchCreation}" rendered="#{batchCreation}" >
+                    <p:ajax update=":#{formId}:startSpinner :#{formId}:endSpinner :#{formId}:zeroesSpinner" />
+                </h:selectBooleanCheckbox>
+
+                <h:outputLabel value="Start {i}:" for="startSpinner" rendered="#{batchCreation}" />
+                <h:panelGroup rendered="#{batchCreation}">
+                    <p:spinner id="startSpinner" value="#{devicesByTypeManager.batchStartIndex}" min="0" 
+                            disabled="#{!devicesByTypeManager.batchCreation}" 
+                            validator="#{devicesByTypeManager.batchStartValidator}">
+                        <p:ajax process="@this"/>
+                    </p:spinner>
+                    <p:message for="startSpinner" />
+                </h:panelGroup>
+
+                <h:outputLabel value="End {i}:" for="endSpinner" rendered="#{batchCreation}" />
+                <h:panelGroup rendered="#{batchCreation}">
+                    <p:spinner id="endSpinner" value="#{devicesByTypeManager.batchEndIndex}" min="0" 
+                            disabled="#{!devicesByTypeManager.batchCreation}" 
+                            validator="#{devicesByTypeManager.batchEndValidator}">
+                        <p:ajax process="@this"/>
+                    </p:spinner>
+                    <p:message for="endSpinner" />
+                </h:panelGroup>
+
+                <h:outputLabel value="Leading 0 {i}:" for="zeroesSpinner" rendered="#{batchCreation}" />
+                <p:spinner id="zeroesSpinner" value="#{devicesByTypeManager.batchLeadingZeros}" min="0" max="10" 
+                    disabled="#{!devicesByTypeManager.batchCreation}" rendered="#{batchCreation}" />
+
             </p:panelGrid>
             
-            <p:commandButton value="Cancel" styleClass="dialogButton" onclick="#{widgetName}.hide();#{resetFilter}" 
+            <p:commandButton value="Cancel" styleClass="dialogButton" onclick="#{widgetName}.hide();" 
                 update="grp" resetValues="true" />
             <p:commandButton value="Save" styleClass="dialogButton" update="#{updateComponents} grp" 
-                oncomplete="if (args &amp;&amp; !args.validationFailed) {#{widgetName}.hide(); #{resetFilter}}"
+                oncomplete="if (args &amp;&amp; !args.validationFailed) {#{saveAction}}"
                 action="#{devicesByTypeManager[submitHandler]}" />
             
         </p:dialog>
