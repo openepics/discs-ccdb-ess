@@ -1,0 +1,24 @@
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html">
+
+    <h:form id="#{formId}">
+        <p:dialog widgetVar="#{widgetName}" id="#{widgetName}" modal="true" resizable="false" dynamic="true" closable="false">
+            <f:facet name="header">
+                <h:outputText value="#{dialogTitle}" />
+            </f:facet>
+            <h:outputText value="There are conflicts with existing #{entity}:" />
+            <p:scrollPanel mode="native" style="width: 100%; height: 6em; font-family: monospace; white-space: pre; margin-botton: 1ex;">
+                <h:outputText value="#{entityListing}" />
+            </p:scrollPanel>
+            <br />
+            <br />
+
+            <p:commandButton value="Abort" styleClass="dialogButton" onclick="#{widgetName}.hide();#{relatedDialog}.show();" />
+            <p:commandButton value="Proceed" styleClass="dialogButton" ajax="true" update="#{formToUpdate}" 
+                    oncomplete="#{widgetName}.hide(); #{relatedDialog}.hide();#{saveActions}" 
+                    action="#{controller[submitHandler]}" />
+        </p:dialog>
+    </h:form>
+</ui:composition>

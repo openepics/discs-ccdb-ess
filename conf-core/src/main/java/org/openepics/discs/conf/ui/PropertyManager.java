@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.faces.application.FacesMessage;
@@ -45,6 +44,7 @@ import org.openepics.discs.conf.ent.PropertyValueUniqueness;
 import org.openepics.discs.conf.ent.Unit;
 import org.openepics.discs.conf.ui.common.AbstractExcelSingleFileImportUI;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
+import org.openepics.discs.conf.util.BatchIterator;
 import org.openepics.discs.conf.util.BuiltInDataType;
 import org.openepics.discs.conf.util.Utility;
 import org.primefaces.context.RequestContext;
@@ -87,43 +87,6 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
     private int batchEndIndex;
     private int batchLeadingZeros;
 
-    private class BatchIterator implements Iterator<String> {
-        private int index;
-        private String prefix;
-        private int indexLen;
-
-        public BatchIterator() {
-            index = batchStartIndex;
-            final StringBuilder sb = new StringBuilder(batchLeadingZeros);
-            for (int i = 0; i < batchLeadingZeros; i++) {
-                sb.append('0');
-            }
-            prefix = sb.toString();
-            if (batchLeadingZeros == 0) {
-                indexLen = 0;
-            } else {
-                indexLen = (prefix + batchStartIndex).length();
-            }
-        }
-
-        @Override
-        public boolean hasNext() {
-            return index <= batchEndIndex;
-        }
-
-        @Override
-        public String next() {
-            final String indexStr = prefix + index;
-            index++;
-            return indexStr.substring(indexStr.length() - indexLen);
-        }
-
-        @Override
-        public void remove() {
-        }
-
-    }
-
     /** Creates a new instance of PropertyManager */
     public PropertyManager() {
     }
@@ -152,11 +115,12 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
     }
 
     private void multiPropertyAdd() {
-        for (final BatchIterator bi = new BatchIterator(); bi.hasNext();) {
+        for (final BatchIterator bi = new BatchIterator(batchStartIndex, batchEndIndex, batchLeadingZeros);
+                bi.hasNext();) {
             final String propertyName = name.replace("{i}", bi.next());
             if (propertyEJB.findByName(propertyName) != null) {
                 FacesContext.getCurrentInstance().addMessage("propertyNameMsg",
-                        new FacesMessage(FacesMessage.SEVERITY_ERROR,Utility.MESSAGE_SUMMARY_ERROR,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
                                 "The property \"" + propertyName + "\" already exists."));
                 FacesContext.getCurrentInstance().validationFailed();
                 return;
@@ -165,7 +129,8 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
 
         // validation complete. Batch creation of all the properties.
         int propertiesCreated = 0;
-        for (final BatchIterator bi = new BatchIterator(); bi.hasNext();) {
+        for (final BatchIterator bi = new BatchIterator(batchStartIndex, batchEndIndex, batchLeadingZeros);
+                bi.hasNext();) {
             final String propertyName = name.replace("{i}", bi.next());
             final Property propertyToAdd = createNewProperty(propertyName);
             propertyEJB.add(propertyToAdd);
@@ -350,6 +315,10 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
         unit = null;
         unitComboEnabled = true;
         valueUniqueness = PropertyValueUniqueness.NONE;
+        isBatchCreation = false;
+        batchStartIndex = 0;
+        batchEndIndex = 0;
+        batchLeadingZeros = 0;
     }
 
     /**
