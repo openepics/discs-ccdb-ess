@@ -220,11 +220,16 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
                     }
                 }
                 dao.addChild(newPropertyValueInstance);
+                addPropertyValueBasedOnDef(newPropertyValueInstance);
                 populateAttributesList();
             } catch (InstantiationException | IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    protected void addPropertyValueBasedOnDef(T definition) {
+        // redefined in descendant
     }
 
     /**

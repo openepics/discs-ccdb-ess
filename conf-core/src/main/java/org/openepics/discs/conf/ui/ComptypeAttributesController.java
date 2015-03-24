@@ -106,37 +106,33 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
     }
 
     @Override
-    public void addNewPropertyValue() {
-        super.addNewPropertyValue();
-
-        if (propertyValueInstance.isPropertyDefinition()) {
-            if (propertyValueInstance.isDefinitionTargetSlot()) {
-                for (final Slot slot : slotEJB.findByComponentType(compType)) {
-                    if (canAddProperty(slot.getSlotPropertyList(), propertyValueInstance.getProperty())) {
-                        final SlotPropertyValue newSlotProperty = new SlotPropertyValue();
-                        newSlotProperty.setProperty(propertyValueInstance.getProperty());
-                        newSlotProperty.setSlot(slot);
-                        slotEJB.addChild(newSlotProperty);
-                    } else {
-                        LOGGER.log(Level.FINE, "Type: " + compType.getName() + "; Slot: " + slot.getName()
-                                + ";  Trying to add the same property value again: "
-                                + propertyValueInstance.getProperty().getName());
-                    }
+    protected void addPropertyValueBasedOnDef(ComptypePropertyValue definition) {
+        if (definition.isDefinitionTargetSlot()) {
+            for (final Slot slot : slotEJB.findByComponentType(compType)) {
+                if (canAddProperty(slot.getSlotPropertyList(), definition.getProperty())) {
+                    final SlotPropertyValue newSlotProperty = new SlotPropertyValue();
+                    newSlotProperty.setProperty(definition.getProperty());
+                    newSlotProperty.setSlot(slot);
+                    slotEJB.addChild(newSlotProperty);
+                } else {
+                    LOGGER.log(Level.FINE, "Type: " + compType.getName() + "; Slot: " + slot.getName()
+                            + ";  Trying to add the same property value again: "
+                            + definition.getProperty().getName());
                 }
             }
+        }
 
-            if (propertyValueInstance.isDefinitionTargetDevice()) {
-                for (final Device device : deviceEJB.findDevicesByComponentType(compType)) {
-                    if (canAddProperty(device.getDevicePropertyList(), propertyValueInstance.getProperty())) {
-                        final DevicePropertyValue newDeviceProperty = new DevicePropertyValue();
-                        newDeviceProperty.setProperty(propertyValueInstance.getProperty());
-                        newDeviceProperty.setDevice(device);
-                        deviceEJB.addChild(newDeviceProperty);
-                    } else {
-                        LOGGER.log(Level.FINE, "Type: " + compType.getName() + "; Device: " + device.getSerialNumber()
-                                + ";  Trying to add the same property value again: "
-                                + propertyValueInstance.getProperty().getName());
-                    }
+        if (definition.isDefinitionTargetDevice()) {
+            for (final Device device : deviceEJB.findDevicesByComponentType(compType)) {
+                if (canAddProperty(device.getDevicePropertyList(), definition.getProperty())) {
+                    final DevicePropertyValue newDeviceProperty = new DevicePropertyValue();
+                    newDeviceProperty.setProperty(definition.getProperty());
+                    newDeviceProperty.setDevice(device);
+                    deviceEJB.addChild(newDeviceProperty);
+                } else {
+                    LOGGER.log(Level.FINE, "Type: " + compType.getName() + "; Device: " + device.getSerialNumber()
+                            + ";  Trying to add the same property value again: "
+                            + definition.getProperty().getName());
                 }
             }
         }
