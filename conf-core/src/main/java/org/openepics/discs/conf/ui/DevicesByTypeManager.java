@@ -41,6 +41,7 @@ import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.DeviceStatus;
 import org.openepics.discs.conf.ent.InstallationRecord;
 import org.openepics.discs.conf.util.BatchIterator;
+import org.openepics.discs.conf.util.BatchSaveStage;
 import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.views.DeviceView;
 import org.primefaces.context.RequestContext;
@@ -60,10 +61,6 @@ public class DevicesByTypeManager implements Serializable {
     private static final long serialVersionUID = 3236468538191653638L;
     private static final Logger LOGGER = Logger.getLogger(DevicesByTypeManager.class.getCanonicalName());
     private static final String CRLF = "\r\n";
-
-    private enum BatchSaveStage {
-        VALIDATION, CREATION;
-    }
 
     @Inject private transient ComptypeEJB componentTypesEJB;
     @Inject private transient DeviceEJB deviceEJB;
@@ -107,6 +104,7 @@ public class DevicesByTypeManager implements Serializable {
             if (!multiDeviceAdd()) {
                 return;
             }
+            RequestContext.getCurrentInstance().execute("addDeviceDialog.hide();");
         } else {
             singleDeviceAdd();
         }
@@ -128,9 +126,8 @@ public class DevicesByTypeManager implements Serializable {
             for (final BatchIterator bi = new BatchIterator(batchStartIndex, batchEndIndex, batchLeadingZeros);
                     bi.hasNext();) {
                 final String deviceSerialNo = serialNumber.replace("{i}", bi.next());
-                final Device existingDevice = deviceEJB.findByName(deviceSerialNo);
-                if (existingDevice != null) {
-                    batchSerialConflicts += existingDevice.getSerialNumber() + CRLF;
+                if (deviceEJB.findByName(deviceSerialNo) != null) {
+                    batchSerialConflicts += deviceSerialNo + CRLF;
                 }
             }
             if (batchSerialConflicts.isEmpty()) {
@@ -154,8 +151,7 @@ public class DevicesByTypeManager implements Serializable {
             for (final BatchIterator bi = new BatchIterator(batchStartIndex, batchEndIndex, batchLeadingZeros);
                     bi.hasNext();) {
                 final String deviceSerialNo = serialNumber.replace("{i}", bi.next());
-                final Device existingDevice = deviceEJB.findByName(deviceSerialNo);
-                if (existingDevice == null) {
+                if (deviceEJB.findByName(deviceSerialNo) == null) {
                     final Device deviceToAdd = createNewDevice(deviceSerialNo);
                     deviceEJB.add(deviceToAdd);
                     devicesCreated++;
@@ -429,6 +425,7 @@ public class DevicesByTypeManager implements Serializable {
         }
     }
 
+    /** @return a new line separated list of all devices in conflict */
     public String getBatchSerialConflicts() {
         return batchSerialConflicts;
     }

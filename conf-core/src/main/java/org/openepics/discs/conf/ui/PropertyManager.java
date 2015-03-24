@@ -25,6 +25,8 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
@@ -45,6 +47,7 @@ import org.openepics.discs.conf.ent.Unit;
 import org.openepics.discs.conf.ui.common.AbstractExcelSingleFileImportUI;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
 import org.openepics.discs.conf.util.BatchIterator;
+import org.openepics.discs.conf.util.BatchSaveStage;
 import org.openepics.discs.conf.util.BuiltInDataType;
 import org.openepics.discs.conf.util.Utility;
 import org.primefaces.context.RequestContext;
@@ -63,6 +66,8 @@ import com.google.common.collect.ImmutableList;
 @ViewScoped
 public class PropertyManager extends AbstractExcelSingleFileImportUI implements Serializable {
     private static final long serialVersionUID = 1056645993595744719L;
+    private static final Logger LOGGER = Logger.getLogger(PropertyManager.class.getCanonicalName());
+    private static final String CRLF = "\r\n";
 
     @Inject private transient PropertyEJB propertyEJB;
 
@@ -86,6 +91,9 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
     private int batchStartIndex;
     private int batchEndIndex;
     private int batchLeadingZeros;
+    private String batchPropertyConflicts;
+    private BatchSaveStage batchSaveStage;
+    private boolean batchSkipExisting;
 
     /** Creates a new instance of PropertyManager */
     public PropertyManager() {
@@ -100,7 +108,10 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
     /** Called when the user presses the "Save" button in the "Add new property" dialog */
     public void onAdd() {
         if (isBatchCreation) {
-            multiPropertyAdd();
+            if (!multiPropertyAdd()) {
+                return;
+            }
+            RequestContext.getCurrentInstance().execute("addProperty.hide();");
         } else {
             singlePropertyAdd();
         }
@@ -108,36 +119,60 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
     }
 
     private void singlePropertyAdd() {
-        final Property propertyToAdd = createNewProperty(name);
-        propertyEJB.add(propertyToAdd);
+        propertyEJB.add(createNewProperty(name));
+        RequestContext.getCurrentInstance().execute("addProperty.hide();");
         Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
                                                                 "New property has been created");
     }
 
-    private void multiPropertyAdd() {
-        for (final BatchIterator bi = new BatchIterator(batchStartIndex, batchEndIndex, batchLeadingZeros);
-                bi.hasNext();) {
-            final String propertyName = name.replace("{i}", bi.next());
-            if (propertyEJB.findByName(propertyName) != null) {
-                FacesContext.getCurrentInstance().addMessage("propertyNameMsg",
-                        new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
-                                "The property \"" + propertyName + "\" already exists."));
-                FacesContext.getCurrentInstance().validationFailed();
-                return;
+    private boolean multiPropertyAdd() {
+        if (batchSaveStage == BatchSaveStage.VALIDATION) {
+            batchPropertyConflicts = "";
+            for (final BatchIterator bi = new BatchIterator(batchStartIndex, batchEndIndex, batchLeadingZeros);
+                    bi.hasNext();) {
+                final String propertyName = name.replace("{i}", bi.next());
+                if (propertyEJB.findByName(propertyName) != null) {
+                    batchPropertyConflicts += propertyName + CRLF;
+                }
+            }
+            if (batchPropertyConflicts.isEmpty()) {
+                batchSaveStage = BatchSaveStage.CREATION;
+                batchSkipExisting = true;
+            } else {
+                RequestContext.getCurrentInstance().update("batchConflictForm");
+                RequestContext.getCurrentInstance().execute("batchConflict.show();");
+                return false;
             }
         }
 
         // validation complete. Batch creation of all the properties.
-        int propertiesCreated = 0;
-        for (final BatchIterator bi = new BatchIterator(batchStartIndex, batchEndIndex, batchLeadingZeros);
-                bi.hasNext();) {
-            final String propertyName = name.replace("{i}", bi.next());
-            final Property propertyToAdd = createNewProperty(propertyName);
-            propertyEJB.add(propertyToAdd);
-            propertiesCreated++;
+        if (batchSaveStage == BatchSaveStage.CREATION) {
+            if (!batchSkipExisting) {
+                LOGGER.log(Level.SEVERE,
+                        "Incorrect interal state: Batch device creation triggered with 'skip existing' set to false.");
+                return false;
+            }
+            int propertiesCreated = 0;
+            for (final BatchIterator bi = new BatchIterator(batchStartIndex, batchEndIndex, batchLeadingZeros);
+                    bi.hasNext();) {
+                final String propertyName = name.replace("{i}", bi.next());
+                if (propertyEJB.findByName(propertyName) == null) {
+                    final Property propertyToAdd = createNewProperty(propertyName);
+                    propertyEJB.add(propertyToAdd);
+                    propertiesCreated++;
+                }
+            }
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+                    "Created " + propertiesCreated + " new properties.");
         }
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
-                "Created " + propertiesCreated + " new properties.");
+        return true;
+    }
+
+    public void creationProceed() {
+        batchSaveStage = BatchSaveStage.CREATION;
+        batchSkipExisting = true;
+        multiPropertyAdd();
+        init();
     }
 
     private Property createNewProperty(String propertyName) {
@@ -319,6 +354,8 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
         batchStartIndex = 0;
         batchEndIndex = 0;
         batchLeadingZeros = 0;
+        batchSaveStage = BatchSaveStage.VALIDATION;
+        batchSkipExisting = false;
     }
 
     /**
@@ -434,5 +471,10 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
             throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
                     "Start index must be less than end index."));
         }
+    }
+
+    /** @return a new line separated list of all properties in conflict */
+    public String getBatchPropertyConflicts() {
+        return batchPropertyConflicts;
     }
 }
