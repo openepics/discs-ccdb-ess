@@ -8,7 +8,7 @@
     <ui:define name="content">
         <h:form id="propertiesForm">
             <p:commandButton ajax="true" actionListener="#{propertyManager.prepareAddPopup()}" value="Add new"
-                    oncomplete="addProperty.show()" style="margin-bottom: 1em;" />
+                    oncomplete="addProperty.show()" style="margin-bottom: 1em;" update=":addPropertyForm:addProperty" />
             <p:dataTable widgetVar="propertiesTableVar" var="property" id="propertiesTable" 
                     value="#{propertyManager.properties}" rows="15" paginator="true" 
                     resizableColumns="true" style="table-layout: fixed; word-wrap: break-word;" 
@@ -70,15 +70,20 @@
         <ui:include src="../add-or-modify-dialogs/property.xhtml">
             <ui:param name="formId" value="modifyPropertyForm" />
             <ui:param name="dialogTitle" value="Modify Property" />
+            <ui:param name="updateComponents" value=":propertiesForm:propertiesTable" />
             <ui:param name="widgetName" value="modifyProperty" />
             <ui:param name="submitHandler" value="onModify" />
+            <ui:param name="saveAction" value="modifyProperty.hide(); propertiesTableVar.filter();" />
         </ui:include>
 
         <ui:include src="../add-or-modify-dialogs/property.xhtml">
             <ui:param name="formId" value="addPropertyForm" />
             <ui:param name="dialogTitle" value="Add Property" />
+            <ui:param name="updateComponents" value=":propertiesForm:propertiesTable" />
             <ui:param name="widgetName" value="addProperty" />
+            <ui:param name="batchCreation" value="true" />
             <ui:param name="submitHandler" value="onAdd" />
+            <ui:param name="saveAction" value="modifyProperty.hide(); propertiesTableVar.filter();" />
         </ui:include>
 
         <ui:include src="../../audit/audit-log-table.xhtml">
@@ -93,5 +98,17 @@
             <ui:param name="widgetName" value="logDetails" />
         </ui:include>
 
+        <ui:include src="/resources/batch-creation-conflict.xhtml">
+            <ui:param name="formId" value="batchConflictForm" />
+            <ui:param name="dialogTitle" value="Conflicting properties" />
+            <ui:param name="widgetName" value="batchConflict" />
+            <ui:param name="entity" value="properties" />
+            <ui:param name="entityListing" value="#{propertyManager.batchPropertyConflicts}" />
+            <ui:param name="relatedDialog" value="addProperty" />
+            <ui:param name="controller" value="#{propertyManager}" />
+            <ui:param name="submitHandler" value="creationProceed" />
+            <ui:param name="formToUpdate" value=":propertiesForm:propertiesTable" />
+            <ui:param name="saveActions" value="propertiesTableVar.filter();" />
+        </ui:include>
     </ui:define>
 </ui:composition>

@@ -20,6 +20,8 @@ package org.openepics.discs.conf.ui;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
@@ -38,8 +40,11 @@ import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.DeviceStatus;
 import org.openepics.discs.conf.ent.InstallationRecord;
+import org.openepics.discs.conf.util.BatchIterator;
+import org.openepics.discs.conf.util.BatchSaveStage;
 import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.views.DeviceView;
+import org.primefaces.context.RequestContext;
 
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
@@ -54,6 +59,8 @@ import com.google.common.collect.Lists;
 @ViewScoped
 public class DevicesByTypeManager implements Serializable {
     private static final long serialVersionUID = 3236468538191653638L;
+    private static final Logger LOGGER = Logger.getLogger(DevicesByTypeManager.class.getCanonicalName());
+    private static final String CRLF = "\r\n";
 
     @Inject private transient ComptypeEJB componentTypesEJB;
     @Inject private transient DeviceEJB deviceEJB;
@@ -71,6 +78,15 @@ public class DevicesByTypeManager implements Serializable {
     private String serialNumber;
     private boolean isDeviceBeingEdited;
 
+    //---- batch device creation
+    private boolean isBatchCreation;
+    private int batchStartIndex;
+    private int batchEndIndex;
+    private int batchLeadingZeros;
+    private String batchSerialConflicts;
+    private BatchSaveStage batchSaveStage;
+    private boolean batchSkipExisting;
+
     public DevicesByTypeManager() {
     }
 
@@ -84,16 +100,82 @@ public class DevicesByTypeManager implements Serializable {
 
     /** Creates a new device instance and adds all properties to it which are defined by device type */
     public void onDeviceAdd() {
-        final Device newDevice = new Device(serialNumber);
-        newDevice.setComponentType(selectedComponentType);
-
-        try {
-            deviceEJB.addDeviceAndPropertyDefs(newDevice);
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Device saved.", null);
-        } finally {
-            clearDeviceDialogFields();
-            prepareDevicesForDisplay();
+        if (isBatchCreation) {
+            if (!multiDeviceAdd()) {
+                return;
+            }
+            RequestContext.getCurrentInstance().execute("addDeviceDialog.hide();");
+        } else {
+            singleDeviceAdd();
         }
+
+        clearDeviceDialogFields();
+        prepareDevicesForDisplay();
+    }
+
+    private void singleDeviceAdd() {
+        deviceEJB.addDeviceAndPropertyDefs(createNewDevice(serialNumber));
+        RequestContext.getCurrentInstance().execute("addDeviceDialog.hide();");
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Device saved.", null);
+    }
+
+    /** @return <code>true</code> creation successful, <code>false</code> means error */
+    private boolean multiDeviceAdd() {
+        if (batchSaveStage == BatchSaveStage.VALIDATION) {
+            batchSerialConflicts = "";
+            for (final BatchIterator bi = new BatchIterator(batchStartIndex, batchEndIndex, batchLeadingZeros);
+                    bi.hasNext();) {
+                final String deviceSerialNo = serialNumber.replace("{i}", bi.next());
+                if (deviceEJB.findByName(deviceSerialNo) != null) {
+                    batchSerialConflicts += deviceSerialNo + CRLF;
+                }
+            }
+            if (batchSerialConflicts.isEmpty()) {
+                batchSaveStage = BatchSaveStage.CREATION;
+                batchSkipExisting = true;
+            } else {
+                RequestContext.getCurrentInstance().update("batchConflictForm");
+                RequestContext.getCurrentInstance().execute("batchConflict.show();");
+                return false;
+            }
+        }
+
+        // validation complete. Batch creation of all the properties.
+        if (batchSaveStage == BatchSaveStage.CREATION) {
+            if (!batchSkipExisting) {
+                LOGGER.log(Level.SEVERE,
+                        "Incorrect interal state: Batch device creation triggered with 'skip existing' set to false.");
+                return false;
+            }
+            int devicesCreated = 0;
+            for (final BatchIterator bi = new BatchIterator(batchStartIndex, batchEndIndex, batchLeadingZeros);
+                    bi.hasNext();) {
+                final String deviceSerialNo = serialNumber.replace("{i}", bi.next());
+                if (deviceEJB.findByName(deviceSerialNo) == null) {
+                    final Device deviceToAdd = createNewDevice(deviceSerialNo);
+                    deviceEJB.add(deviceToAdd);
+                    devicesCreated++;
+                }
+            }
+            RequestContext.getCurrentInstance().execute("devicesTableVar.filter();clearDeviceInstance();");
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+                    "Created " + devicesCreated + " new properties.");
+        }
+        return true;
+    }
+
+    public void creationProceed() {
+        batchSaveStage = BatchSaveStage.CREATION;
+        batchSkipExisting = true;
+        multiDeviceAdd();
+        clearDeviceDialogFields();
+        prepareDevicesForDisplay();
+    }
+
+    private Device createNewDevice(String deviceSerailNo) {
+        final Device newDevice = new Device(deviceSerailNo);
+        newDevice.setComponentType(selectedComponentType);
+        return newDevice;
     }
 
     /** Updates an existing device with new information from the dialog */
@@ -138,6 +220,12 @@ public class DevicesByTypeManager implements Serializable {
         serialNumber = null;
         selectedComponentType = null;
         isDeviceBeingEdited = false;
+        isBatchCreation = false;
+        batchStartIndex = 0;
+        batchEndIndex = 0;
+        batchLeadingZeros = 0;
+        batchSaveStage = BatchSaveStage.VALIDATION;
+        batchSkipExisting = false;
     }
 
     /** Prepares the data displayed in the "Edit device instance" dialog */
@@ -145,6 +233,12 @@ public class DevicesByTypeManager implements Serializable {
         serialNumber = selectedDevice.getInventoryId();
         selectedComponentType = selectedDevice.getDevice().getComponentType();
         isDeviceBeingEdited = true;
+        isBatchCreation = false;
+        batchStartIndex = 0;
+        batchEndIndex = 0;
+        batchLeadingZeros = 0;
+        batchSaveStage = BatchSaveStage.VALIDATION;
+        batchSkipExisting = false;
     }
 
     /** @return The ID of device type of the device the user is adding or editing in device manager */
@@ -231,11 +325,20 @@ public class DevicesByTypeManager implements Serializable {
             throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
                                                                     "No value to parse."));
         }
-        final String strValue = value.toString();
+        final String newDeviceSerial = value.toString();
+
+        if (isBatchCreation && !newDeviceSerial.contains("{i}")) {
+            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
+                    "Batch creation selected, but index position \"{i}\" not set"));
+        }
+        if (!isBatchCreation && newDeviceSerial.contains("{i}")) {
+            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
+                    "Error in name: \"{i}\""));
+        }
 
         // empty input value is handled by PrimeFaces and configured from xhtml
-        if (!strValue.isEmpty()) {
-            final Device existingDevice = deviceEJB.findDeviceBySerialNumber(strValue);
+        if (!newDeviceSerial.isEmpty()) {
+            final Device existingDevice = deviceEJB.findDeviceBySerialNumber(newDeviceSerial);
             final Device editedDevice = (selectedDevice == null || !isDeviceBeingEdited)
                                                     ? null : selectedDevice.getDevice();
             if (existingDevice != null && !existingDevice.equals(editedDevice)) {
@@ -258,5 +361,72 @@ public class DevicesByTypeManager implements Serializable {
     /** @return the availableDeviceTypes */
     public List<ComponentType> getAvailableDeviceTypes() {
         return availableDeviceTypes;
+    }
+
+    /** @return the isBatchCreation */
+    public boolean isBatchCreation() {
+        return isBatchCreation;
+    }
+    /** @param isBatchCreation the isBatchCreation to set */
+    public void setBatchCreation(boolean isBatchCreation) {
+        this.isBatchCreation = isBatchCreation;
+    }
+
+    /** @return the batchStartIndex */
+    public int getBatchStartIndex() {
+        return batchStartIndex;
+    }
+    /** @param batchStartIndex the batchStartIndex to set */
+    public void setBatchStartIndex(int batchStartIndex) {
+        this.batchStartIndex = batchStartIndex;
+    }
+
+    /** @return the batchEndIndex */
+    public int getBatchEndIndex() {
+        return batchEndIndex;
+    }
+    /** @param batchEndIndex the batchEndIndex to set */
+    public void setBatchEndIndex(int batchEndIndex) {
+        this.batchEndIndex = batchEndIndex;
+    }
+
+    /** @return the batchLeadingZeros */
+    public int getBatchLeadingZeros() {
+        return batchLeadingZeros;
+    }
+    /** @param batchLeadingZeros the batchLeadingZeros to set */
+    public void setBatchLeadingZeros(int batchLeadingZeros) {
+        this.batchLeadingZeros = batchLeadingZeros;
+    }
+
+    /** The validator for the end index field
+     * @param ctx
+     * @param component
+     * @param value
+     * @throws ValidatorException
+     */
+    public void batchEndValidator(FacesContext ctx, UIComponent component, Object value) throws ValidatorException {
+        if (batchStartIndex >= (Integer)value) {
+            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
+                    "End index must be greater than start index."));
+        }
+    }
+
+    /** The validator for the start index field
+     * @param ctx
+     * @param component
+     * @param value
+     * @throws ValidatorException
+     */
+    public void batchStartValidator(FacesContext ctx, UIComponent component, Object value) throws ValidatorException {
+        if ((Integer)value >= batchEndIndex) {
+            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
+                    "Start index must be less than end index."));
+        }
+    }
+
+    /** @return a new line separated list of all devices in conflict */
+    public String getBatchSerialConflicts() {
+        return batchSerialConflicts;
     }
 }

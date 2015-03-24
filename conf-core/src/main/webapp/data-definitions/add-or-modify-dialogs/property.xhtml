@@ -17,7 +17,8 @@
                     <p:column>
                         <p:inputText id="propertyName" value="#{propertyManager.name}" required="true" 
                             validator="#{propertyManager.nameValidator}" requiredMessage="Please enter a name." />
-                        <p:message for="propertyName" />
+                        <p:message for="propertyName"/>
+                        <p:messages for="propertyNameMsg" id="propertyNameMsg" showDetail="true" autoUpdate="true" />
                     </p:column>
                 </p:row>
 
@@ -79,7 +80,7 @@
 
                 <p:row>
                     <p:column styleClass="alignRight dialog-labels-width-2" style="padding-top: 1em;">
-                        <p:outputLabel for="valueUniqueness" value="Value uniqueness:" />
+                        <p:outputLabel for="valueUniqueness" value="Uniqueness:" />
                     </p:column>
                     <p:column>
                         <p:selectOneMenu id="valueUniqueness" value="#{propertyManager.valueUniqueness}" 
@@ -90,12 +91,58 @@
                         <p:message for="valueUniqueness" />
                     </p:column>
                 </p:row>
+                
+                <p:row rendered="#{batchCreation}">
+                    <p:column>
+                        <h:outputLabel value="Batch:" for="batchCreation" />
+                    </p:column>
+                    <p:column>
+                        <h:selectBooleanCheckbox id="batchCreation" value="#{propertyManager.batchCreation}" >
+                            <p:ajax update=":#{formId}:startSpinner :#{formId}:endSpinner :#{formId}:zeroesSpinner" />
+                        </h:selectBooleanCheckbox>
+                    </p:column>
+                </p:row>
+                <p:row rendered="#{batchCreation}">
+                    <p:column>
+                        <h:outputLabel value="Start {i}:" for="startSpinner" />
+                    </p:column>
+                    <p:column>
+                        <p:spinner id="startSpinner" value="#{propertyManager.batchStartIndex}" min="0" 
+                                disabled="#{!propertyManager.batchCreation}" 
+                                validator="#{propertyManager.batchStartValidator}">
+                            <p:ajax process="@this"/>
+                        </p:spinner>
+                        <p:message for="startSpinner" />
+                    </p:column>
+                </p:row>
+                <p:row rendered="#{batchCreation}">
+                    <p:column>
+                        <h:outputLabel value="End {i}:" for="endSpinner" />
+                    </p:column>
+                    <p:column>
+                        <p:spinner id="endSpinner" value="#{propertyManager.batchEndIndex}" min="0" 
+                                disabled="#{!propertyManager.batchCreation}" 
+                                validator="#{propertyManager.batchEndValidator}">
+                            <p:ajax process="@this"/>
+                        </p:spinner>
+                        <p:message for="endSpinner" />
+                    </p:column>
+                </p:row>
+                <p:row rendered="#{batchCreation}">
+                    <p:column>
+                        <h:outputLabel value="Leading 0 {i}:" for="zeroesSpinner" />
+                    </p:column>
+                    <p:column>
+                        <p:spinner id="zeroesSpinner" value="#{propertyManager.batchLeadingZeros}" min="0" max="10" 
+                            disabled="#{!propertyManager.batchCreation}" />
+                    </p:column>
+                </p:row>
             </p:panelGrid>
 
-            <p:commandButton value="Cancel" styleClass="dialogButton" onclick="#{widgetName}.hide();" 
+            <p:commandButton value="Cancel" styleClass="dialogButton" onclick="#{widgetName}.hide();#{resetFilter}" 
                     update="grp" resetValues="true" />
-            <p:commandButton value="Save" styleClass="dialogButton" update=":propertiesForm:propertiesTable grp" 
-                    oncomplete="if (args &amp;&amp; !args.validationFailed) { #{widgetName}.hide(); propertiesTableVar.filter(); }" 
+            <p:commandButton value="Save" styleClass="dialogButton" update="#{updateComponents} grp" 
+                    oncomplete="if (args &amp;&amp; !args.validationFailed) {#{saveAction}}" 
                     action="#{propertyManager[submitHandler]}" />
         </p:dialog>
 
