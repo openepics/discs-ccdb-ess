@@ -117,7 +117,7 @@
                                             <f:param name="id" value="#{installationRecord.device.id}" />
                                         </h:link>                                    
                                     </p:column>
-                                    <p:column headerText="Installation date">
+                                    <p:column headerText="Installation timestamp">
                                         <h:outputText value="#{installationRecord.installDate}">
                                             <f:convertDateTime pattern="#{msgs.timestampFormat}" />
                                         </h:outputText>
