@@ -2,4 +2,5 @@
 <jboss-web>
     <context-root>/confmgr</context-root>
     <security-domain>ccdb.security-domain</security-domain>
+    <server-instance>default-server_external</server-instance>
 </jboss-web>
