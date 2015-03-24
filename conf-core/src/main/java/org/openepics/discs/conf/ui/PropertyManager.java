@@ -149,7 +149,7 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
         if (batchSaveStage == BatchSaveStage.CREATION) {
             if (!batchSkipExisting) {
                 LOGGER.log(Level.SEVERE,
-                        "Incorrect interal state: Batch device creation triggered with 'skip existing' set to false.");
+                    "Incorrect interal state: Batch property creation triggered with 'skip existing' set to false.");
                 return false;
             }
             int propertiesCreated = 0;
