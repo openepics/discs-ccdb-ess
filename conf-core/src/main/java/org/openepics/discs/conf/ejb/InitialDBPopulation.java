@@ -22,7 +22,6 @@ package org.openepics.discs.conf.ejb;
 import java.util.Date;
 
 import javax.ejb.Stateless;
-import javax.json.JsonObject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -38,8 +37,6 @@ import org.openepics.discs.conf.ent.SlotRelationName;
 import org.openepics.discs.conf.ent.User;
 import org.openepics.discs.conf.ent.UserRole;
 import org.openepics.discs.conf.util.BuiltInDataType;
-import org.openepics.seds.api.datatypes.SedsEnum;
-import org.openepics.seds.core.Seds;
 
 /**
  * This EJB populates an empty database with mandatory data (data-types etc) and optional
@@ -49,17 +46,17 @@ import org.openepics.seds.core.Seds;
  */
 @Stateless
 public class InitialDBPopulation {
+    private static final String SYSTEM_USER = "system";
+    private static final String ADMIN = "admin";
+
     @PersistenceContext private EntityManager em;
 
-    /**
-     * Fills out initial data for empty database
-     *
-     */
+    /** Fills out initial data for empty database */
     public void initialPopulation() {
-        final User user = new User("admin", "admin");
+        final User user = new User(ADMIN, ADMIN);
         em.persist(user);
 
-        final Role role = new Role("admin");
+        final Role role = new Role(ADMIN);
         role.setDescription("test role");
         em.persist(role);
 
@@ -68,119 +65,26 @@ public class InitialDBPopulation {
         userRole.setUser(user);
         em.persist(userRole);
 
-        Privilege privilege = new Privilege(EntityType.COMPONENT_TYPE, EntityTypeOperation.CREATE);
-        privilege.setRole(role);
-        em.persist(privilege);
-        privilege = new Privilege(EntityType.COMPONENT_TYPE, EntityTypeOperation.UPDATE);
-        privilege.setRole(role);
-        em.persist(privilege);
-        privilege = new Privilege(EntityType.COMPONENT_TYPE, EntityTypeOperation.RENAME);
-        privilege.setRole(role);
-        em.persist(privilege);
-        privilege = new Privilege(EntityType.COMPONENT_TYPE, EntityTypeOperation.DELETE);
-        privilege.setRole(role);
-        em.persist(privilege);
-
-        privilege = new Privilege(EntityType.UNIT, EntityTypeOperation.CREATE);
-        privilege.setRole(role);
-        em.persist(privilege);
-        privilege = new Privilege(EntityType.UNIT, EntityTypeOperation.UPDATE);
-        privilege.setRole(role);
-        em.persist(privilege);
-        privilege = new Privilege(EntityType.UNIT, EntityTypeOperation.RENAME);
-        privilege.setRole(role);
-        em.persist(privilege);
-        privilege = new Privilege(EntityType.UNIT, EntityTypeOperation.DELETE);
-        privilege.setRole(role);
-        em.persist(privilege);
-
-        privilege = new Privilege(EntityType.PROPERTY, EntityTypeOperation.CREATE);
-        privilege.setRole(role);
-        em.persist(privilege);
-        privilege = new Privilege(EntityType.PROPERTY, EntityTypeOperation.UPDATE);
-        privilege.setRole(role);
-        em.persist(privilege);
-        privilege = new Privilege(EntityType.PROPERTY, EntityTypeOperation.RENAME);
-        privilege.setRole(role);
-        em.persist(privilege);
-        privilege = new Privilege(EntityType.PROPERTY, EntityTypeOperation.DELETE);
-        privilege.setRole(role);
-        em.persist(privilege);
-
-        privilege = new Privilege(EntityType.SLOT, EntityTypeOperation.CREATE);
-        privilege.setRole(role);
-        em.persist(privilege);
-        privilege = new Privilege(EntityType.SLOT, EntityTypeOperation.UPDATE);
-        privilege.setRole(role);
-        em.persist(privilege);
-        privilege = new Privilege(EntityType.SLOT, EntityTypeOperation.RENAME);
-        privilege.setRole(role);
-        em.persist(privilege);
-        privilege = new Privilege(EntityType.SLOT, EntityTypeOperation.DELETE);
-        privilege.setRole(role);
-        em.persist(privilege);
-
-        privilege = new Privilege(EntityType.DEVICE, EntityTypeOperation.CREATE);
-        privilege.setRole(role);
-        em.persist(privilege);
-        privilege = new Privilege(EntityType.DEVICE, EntityTypeOperation.UPDATE);
-        privilege.setRole(role);
-        em.persist(privilege);
-        privilege = new Privilege(EntityType.DEVICE, EntityTypeOperation.DELETE);
-        privilege.setRole(role);
-        em.persist(privilege);
-
-        privilege = new Privilege(EntityType.ALIGNMENT_RECORD, EntityTypeOperation.CREATE);
-        privilege.setRole(role);
-        em.persist(privilege);
-        privilege = new Privilege(EntityType.ALIGNMENT_RECORD, EntityTypeOperation.UPDATE);
-        privilege.setRole(role);
-        em.persist(privilege);
-        privilege = new Privilege(EntityType.ALIGNMENT_RECORD, EntityTypeOperation.RENAME);
-        privilege.setRole(role);
-        em.persist(privilege);
-        privilege = new Privilege(EntityType.ALIGNMENT_RECORD, EntityTypeOperation.DELETE);
-        privilege.setRole(role);
-        em.persist(privilege);
-
-        privilege = new Privilege(EntityType.DATA_TYPE, EntityTypeOperation.CREATE);
-        privilege.setRole(role);
-        em.persist(privilege);
-        privilege = new Privilege(EntityType.DATA_TYPE, EntityTypeOperation.UPDATE);
-        privilege.setRole(role);
-        em.persist(privilege);
-        privilege = new Privilege(EntityType.DATA_TYPE, EntityTypeOperation.RENAME);
-        privilege.setRole(role);
-        em.persist(privilege);
-        privilege = new Privilege(EntityType.DATA_TYPE, EntityTypeOperation.DELETE);
-        privilege.setRole(role);
-        em.persist(privilege);
-
-        privilege = new Privilege(EntityType.INSTALLATION_RECORD, EntityTypeOperation.CREATE);
-        privilege.setRole(role);
-        em.persist(privilege);
-        privilege = new Privilege(EntityType.INSTALLATION_RECORD, EntityTypeOperation.UPDATE);
-        privilege.setRole(role);
-        em.persist(privilege);
-        privilege = new Privilege(EntityType.INSTALLATION_RECORD, EntityTypeOperation.RENAME);
-        privilege.setRole(role);
-        em.persist(privilege);
-        privilege = new Privilege(EntityType.INSTALLATION_RECORD, EntityTypeOperation.DELETE);
-        privilege.setRole(role);
-        em.persist(privilege);
+        createPrivilegesForRole(role, EntityType.COMPONENT_TYPE);
+        createPrivilegesForRole(role, EntityType.UNIT);
+        createPrivilegesForRole(role, EntityType.PROPERTY);
+        createPrivilegesForRole(role, EntityType.SLOT);
+        createPrivilegesForRole(role, EntityType.DEVICE);
+        createPrivilegesForRole(role, EntityType.ALIGNMENT_RECORD);
+        createPrivilegesForRole(role, EntityType.DATA_TYPE);
+        createPrivilegesForRole(role, EntityType.INSTALLATION_RECORD);
 
         em.persist(createDataType(BuiltInDataType.INTEGER.toString(), "Integer number", true, null));
         em.persist(createDataType(BuiltInDataType.DOUBLE.toString(), "Double precision floating point", true, null));
         em.persist(createDataType(BuiltInDataType.STRING.toString(), "String of characters (text)", true, null));
         em.persist(createDataType(BuiltInDataType.TIMESTAMP.toString(), "Date and time", true, null));
-        em.persist(createDataType(BuiltInDataType.INT_VECTOR.toString(), "Vector of integer numbers (1D array)", false, null));
-        em.persist(createDataType(BuiltInDataType.DBL_VECTOR.toString(), "Vector of double precision numbers (1D array)", false, null));
+        em.persist(createDataType(BuiltInDataType.INT_VECTOR.toString(),
+                "Vector of integer numbers (1D array)", false, null));
+        em.persist(createDataType(BuiltInDataType.DBL_VECTOR.toString(),
+                "Vector of double precision numbers (1D array)", false, null));
         em.persist(createDataType(BuiltInDataType.STRING_LIST.toString(), "List of strings (1D array)", false, null));
-        em.persist(createDataType(BuiltInDataType.DBL_TABLE.toString(), "Table of double precision numbers (2D array)", false, null));
-
-        final SedsEnum testEnum = Seds.newFactory().newEnum("TEST1", new String[] {"TEST1", "TEST2", "TEST3", "TEST4"});
-        JsonObject jsonEnum = Seds.newDBConverter().serialize(testEnum);
-        em.persist(createDataType("Test enums", "Testing of enums", false, jsonEnum.toString()));
+        em.persist(createDataType(BuiltInDataType.DBL_TABLE.toString(),
+                "Table of double precision numbers (2D array)", false, null));
 
         em.persist(createSlotRelation(SlotRelationName.CONTAINS));
         em.persist(createSlotRelation(SlotRelationName.POWERS));
@@ -193,9 +97,24 @@ public class InitialDBPopulation {
         final Slot rootContainer = new Slot("_ROOT", false);
         rootContainer.setComponentType(rootComponentType);
         rootContainer.setDescription("Implicit CCDB type.");
-        rootContainer.setModifiedBy("system");
+        rootContainer.setModifiedBy(SYSTEM_USER);
         rootContainer.setModifiedAt(new Date());
         em.persist(rootContainer);
+    }
+
+    private void createPrivilegesForRole(Role role, EntityType entityType) {
+        Privilege privilege = new Privilege(entityType, EntityTypeOperation.CREATE);
+        privilege.setRole(role);
+        em.persist(privilege);
+        privilege = new Privilege(entityType, EntityTypeOperation.UPDATE);
+        privilege.setRole(role);
+        em.persist(privilege);
+        privilege = new Privilege(entityType, EntityTypeOperation.RENAME);
+        privilege.setRole(role);
+        em.persist(privilege);
+        privilege = new Privilege(entityType, EntityTypeOperation.DELETE);
+        privilege.setRole(role);
+        em.persist(privilege);
     }
 
     /**
@@ -209,8 +128,7 @@ public class InitialDBPopulation {
      */
     private DataType createDataType(String name, String description, boolean scalar, String definition) {
         final DataType result = new DataType(name, description, scalar, definition);
-
-        result.setModifiedBy("system");
+        result.setModifiedBy(SYSTEM_USER);
         result.setModifiedAt(new Date());
 
         return result;
@@ -223,8 +141,7 @@ public class InitialDBPopulation {
      */
     private SlotRelation createSlotRelation(SlotRelationName relationName) {
         final SlotRelation slotRelation = new SlotRelation(relationName);
-
-        slotRelation.setModifiedBy("system");
+        slotRelation.setModifiedBy(SYSTEM_USER);
         slotRelation.setModifiedAt(new Date());
 
         return slotRelation;
@@ -233,7 +150,7 @@ public class InitialDBPopulation {
     private ComponentType createContainerType(String containerTypeName) {
         final ComponentType containerType = new ComponentType(containerTypeName);
         containerType.setDescription(containerTypeName);
-        containerType.setModifiedBy("system");
+        containerType.setModifiedBy(SYSTEM_USER);
         containerType.setModifiedAt(new Date());
 
         return containerType;

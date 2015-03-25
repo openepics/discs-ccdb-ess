@@ -30,7 +30,6 @@
                         required="true" requiredMessage="Please enter an inventory ID" 
                         validator="#{devicesByTypeManager.newDeviceSerialNoValidator}" />
                     <p:message for="devInventoryId" />
-                    <p:messages for="devInventoryIdMsg" id="devInventoryIdMsg" showDetail="true" autoUpdate="true" />
                 </h:panelGroup>
                 
                 <h:outputLabel value="Batch:" for="batchCreation" rendered="#{batchCreation}" />
@@ -64,7 +63,7 @@
 
             </p:panelGrid>
             
-            <p:commandButton value="Cancel" styleClass="dialogButton" onclick="#{widgetName}.hide();devicesTable.filter();" 
+            <p:commandButton value="Cancel" styleClass="dialogButton" onclick="#{widgetName}.hide();devicesTableVar.filter();" 
                 update="grp" resetValues="true" />
             <p:commandButton value="Save" styleClass="dialogButton" update="#{updateComponents} grp" 
                 oncomplete="if (args &amp;&amp; !args.validationFailed) {#{saveAction}}"
