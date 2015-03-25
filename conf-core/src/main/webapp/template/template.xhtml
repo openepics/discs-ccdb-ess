@@ -64,10 +64,10 @@
             }
 
             function hierarchiesResizeAttributes() {
-                var attrbiutesTableHeight = $(".hierarchies-attributes-cell").outerHeight(true);
-                var attrbiutesTableHeaderHeight = $(".hierarchies-attributes-cell .ui-datatable-scrollable-header").outerHeight(true);
+                var attrbiutesTableHeight = $("#attributesTable .hierarchies-attributes-cell").outerHeight(true);
+                var attrbiutesTableHeaderHeight = $("#attributesTable .hierarchies-attributes-cell .ui-datatable-scrollable-header").outerHeight(true);
                 var attrbiutesTableBodyHeight = attrbiutesTableHeight - attrbiutesTableHeaderHeight;
-                $('.hierarchies-attributes-cell .ui-datatable-scrollable-body').css({"max-height":attrbiutesTableBodyHeight});
+                $('#attributesTable .hierarchies-attributes-cell .ui-datatable-scrollable-body').css({"max-height":attrbiutesTableBodyHeight});
             }
 
             function hierarchiesResizeAll() {

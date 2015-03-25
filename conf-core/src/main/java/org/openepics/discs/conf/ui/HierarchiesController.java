@@ -60,6 +60,7 @@ import org.openepics.discs.conf.views.EntityAttributeViewKind;
 import org.openepics.discs.conf.views.SlotBuiltInPropertyName;
 import org.openepics.discs.conf.views.SlotRelationshipView;
 import org.openepics.discs.conf.views.SlotView;
+import org.primefaces.context.RequestContext;
 import org.primefaces.model.TreeNode;
 
 import com.google.common.base.Preconditions;
@@ -414,6 +415,8 @@ public class HierarchiesController implements Serializable {
             nodeToSelect.setSelected(true);
             setSelectedNode(nodeToSelect);
             initSelectedItemLists();
+            final String rowClientId = "#hierarchies\\\\:tree_node_" + nodeToSelect.getRowKey();
+            RequestContext.getCurrentInstance().execute("scrollToId('" + rowClientId +"')");
         }
     }
 

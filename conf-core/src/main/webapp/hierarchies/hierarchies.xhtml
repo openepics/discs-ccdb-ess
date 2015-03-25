@@ -6,6 +6,13 @@
 
     <ui:define name="content">
         <h:form id="hierarchies">
+            <script type="text/javascript">
+                function scrollToId(rowClientId) {
+                    resizeHierarchiesTree();
+                    var rowPosition = $(rowClientId).outerHeight() * $(rowClientId).index();
+                    hierarchyWidget.scrollBody.scrollTop(rowPosition);
+                }
+            </script>
             <p:growl showDetail="true" globalOnly="true" autoUpdate="true" />
             <p:panelGrid id="hierarchiesContainer" style="width: 100%;" styleClass="noBorders">
                 <p:row>
@@ -15,10 +22,12 @@
                                 scrollable="true" scrollWidth="auto" style="width: 300px;" rowStyleClass="treeRows" 
                                 widgetVar="hierarchyWidget">
                             <p:ajax event="select" listener="#{hierarchiesController.initSelectedItemLists()}"
-                                update=":hierarchies:attributesTable :hierarchies:relationsTable :hierarchies:installationDetails :hierarchies:slotAttributesTitle" 
+                                update=":hierarchies:attributesTable :hierarchies:relationsTable 
+                                        :hierarchies:installationDetails :hierarchies:slotAttributesTitle" 
                                 oncomplete="resizeEmptyColumnInHierarchies();hierarchiesResizeAttributes();" />
                             <p:ajax event="unselect" listener="#{hierarchiesController.clearAttributeList()}"
-                                update=":hierarchies:attributesTable :hierarchies:relationsTable :hierarchies:installationDetails :hierarchies:slotAttributesTitle" 
+                                update=":hierarchies:attributesTable :hierarchies:relationsTable 
+                                        :hierarchies:installationDetails :hierarchies:slotAttributesTitle" 
                                 oncomplete="resizeEmptyColumnInHierarchies();" />
 
                             <p:column id="name" headerText="Name">
