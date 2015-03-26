@@ -7,11 +7,20 @@
     <ui:define name="content">
         <h:form id="hierarchies">
             <script type="text/javascript">
-                function scrollToId(rowClientId) {
-                    resizeHierarchiesTree();
-                    var rowPosition = $(rowClientId).outerHeight() * $(rowClientId).index();
-                    hierarchyWidget.scrollBody.scrollTop(rowPosition);
+                //<![CDATA[
+                function scrollSelectedIntoView() {
+                    if (hierarchyWidget.selections.length > 0) {
+                        var scrollableBodyHeight = $('#hierarchies\\:tree .ui-treetable-scrollable-body')[0].clientHeight;
+                        var selectedNodeId = "#hierarchies\\:tree_node_" + hierarchyWidget.selections[0];
+                        var selectedNode = $(selectedNodeId);
+                        var selectedNodePosition = selectedNode[0].offsetTop;
+                        var lowerLimit = Math.max(0, selectedNodePosition - scrollableBodyHeight + selectedNode.outerHeight());
+                        if (hierarchyWidget.scrollBody.scrollTop() < lowerLimit || hierarchyWidget.scrollBody.scrollTop() > selectedNodePosition) {
+                            hierarchyWidget.scrollBody.scrollTop(Math.max(0,selectedNodePosition-scrollableBodyHeight/2));
+                        }
+                    }
                 }
+            // ]]>
             </script>
             <p:growl showDetail="true" globalOnly="true" autoUpdate="true" />
             <p:panelGrid id="hierarchiesContainer" style="width: 100%;" styleClass="noBorders">
@@ -104,7 +113,7 @@
                             <p:column headerText="Target" sortBy="#{relationship.targetSlotName}" 
                                     filterBy="#{relationship.targetSlotName}" filterMatchMode="contains">
                                 <p:commandLink action="#{hierarchiesController.selectNode(relationship.slot.id)}" 
-                                        update=":hierarchies" oncomplete="hierarchiesResizeAll();">
+                                        update=":hierarchies" oncomplete="hierarchiesResizeAll();scrollSelectedIntoView();">
                                     <h:outputText value="#{relationship.targetSlotName}" 
                                         style="text-decoration: underline;" />
                                 </p:commandLink>
@@ -170,10 +179,12 @@
         <script type="text/javascript">
             jQuery(window).resize(function() {
                 hierarchiesResizeAll();
+                scrollSelectedIntoView();                
             });
 
             jQuery(document).ready(function() {
                 hierarchiesResizeAll();
+                scrollSelectedIntoView();                
             });
         </script>
     </ui:define>
