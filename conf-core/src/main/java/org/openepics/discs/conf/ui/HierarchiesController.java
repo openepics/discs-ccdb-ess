@@ -27,10 +27,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
+import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.servlet.http.HttpServletRequest;
 
 import org.openepics.discs.conf.ejb.DataTypeEJB;
 import org.openepics.discs.conf.ejb.InstallationEJB;
@@ -110,6 +112,12 @@ public class HierarchiesController implements Serializable {
             dblDataType = dataTypeEJB.findByName(BuiltInDataType.DBL_NAME);
             attributeKinds = Utility.buildAttributeKinds();
             relationshipTypes = buildRelationshipTypeList();
+
+            final String slotId = ((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().
+                    getRequest()).getParameter("id");
+            if (slotId != null) {
+                selectNode(Long.parseLong(slotId));
+            }
         } catch(Exception e) {
             throw new UIException("Hierarchies display initialization fialed: " + e.getMessage(), e);
         }
@@ -410,7 +418,9 @@ public class HierarchiesController implements Serializable {
 
         final TreeNode nodeToSelect = findNode(id, rootNode);
         if (nodeToSelect != null) {
-            selectedNode.setSelected(false);
+            if (selectedNode != null) {
+                selectedNode.setSelected(false);
+            }
             nodeToSelect.setSelected(true);
             setSelectedNode(nodeToSelect);
             initSelectedItemLists();
