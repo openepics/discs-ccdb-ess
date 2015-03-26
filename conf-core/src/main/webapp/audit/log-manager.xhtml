@@ -44,7 +44,7 @@
 
                     <p:column headerText="Change" sortBy="#{auditRecord.entry}" filterBy="#{auditRecord.entry}" filterMatchMode="contains">
                         <p:commandLink id="logDetails" update=":logsForm:logDetailsPanel" action="#{auditManager.handleDetails()}" 
-                                oncomplete="var ovl=PF('overlay');var cfg=ovl.cfg;cfg.target='#{component.clientId}';ovl.refresh(cfg);ovl.show();">
+                                oncomplete="PF('overlay').show('#{component.clientId}')">
                             <f:setPropertyActionListener target="#{auditManager.displayRecord}" value="#{auditRecord}" />
                             <h:outputText value="#{auditRecord.entry.length() lt 46 ? auditRecord.entry : auditRecord.entry.substring(0,45).concat('...')}" />
                         </p:commandLink>
@@ -53,7 +53,7 @@
 
             </p:fieldset>
 
-            <p:overlayPanel widgetVar="overlay" for="logTable" dismissable="true" showCloseIcon="true">
+            <p:overlayPanel widgetVar="overlay" dismissable="false" showCloseIcon="true">
                 <p:outputPanel id="logDetailsPanel">
                     <p:panel rendered="#{not empty auditManager.formattedDetails}">
                         <f:facet name="header">

@@ -26,46 +26,46 @@
                                     scrollWidth="auto">
                                 <p:ajax event="collapse" listener="#{containerController.onNodeCollapse}" />
                                 <p:ajax event="expand" listener="#{containerController.onNodeExpand}" />
-                                <p:ajax event="select" oncomplete="enableAddButton()" 
+                                <p:ajax event="select" oncomplete="enableAddButton();" 
                                     listener="#{slotAttributesController.prepareSelectedSlot(containerController.selectedNode)}" 
                                     update=":containersForm:editButton :containersForm:upButton :containersForm:downButton 
                                                 :containersForm:deleteButton :containersForm:attributesDataTable:attributesDataTable
                                                 :containersForm:editAttrButton :containersForm:deleteAttrButton" />
-                                <p:ajax event="unselect" oncomplete="disableAddButton()" 
+                                <p:ajax event="unselect" oncomplete="disableAddButton();" 
                                     listener="#{slotAttributesController.clearSelectedSlot()}" 
                                     update=":containersForm:editButton :containersForm:upButton :containersForm:downButton 
                                                 :containersForm:deleteButton :containersForm:attributesDataTable:attributesDataTable
                                                 :containersForm:editAttrButton :containersForm:deleteAttrButton" />
 
                                 <p:column id="name" headerText="Name">
-                                    <h:outputText value="#{container.name}"/>
+                                    <h:outputText value="#{container.name}" />
                                 </p:column>
 
                                 <p:column id="desc" headerText="Description">
-                                    <h:outputText value="#{container.description}"/>
+                                    <h:outputText value="#{container.description}" />
                                 </p:column>
                             </p:treeTable>
 
                             <p:commandButton id="deleteButton" icon="ui-icon-trash" value="Delete" title="Delete" 
-                                style="float: right;  margin-top: 1em;" oncomplete="deleteContainer.show()" 
+                                style="float: right;  margin-top: 1em;" oncomplete="PF('deleteContainer').show();" 
                                 disabled="#{empty containerController.selectedNode || !containerController.selectedNode.data.canDelete}" 
                                 actionListener="#{containerController.prepareDeletePopup()}" />
                             <p:commandButton id="downButton" icon="ui-icon-arrowthick-1-s" value="Down" title="Move down" 
-                                style="float: right; margin: 1em 1ex 0 0;" oncomplete="resizeContainerPanel()"
+                                style="float: right; margin: 1em 1ex 0 0;" oncomplete="resizeContainerPanel();"
                                 update=":containersForm:containersTree :containersForm:downButton :containersForm:upButton" 
                                 disabled="#{empty containerController.selectedNode || containerController.selectedNode.data.last}" 
                                 actionListener="#{containerController.moveSlotDown()}" />
                             <p:commandButton id="upButton" icon="ui-icon-arrowthick-1-n" value="Up" title="Move up" 
-                                style="float: right; margin: 1em 1ex 0 0;" oncomplete="resizeContainerPanel()"
+                                style="float: right; margin: 1em 1ex 0 0;" oncomplete="resizeContainerPanel();"
                                 update=":containersForm:containersTree :containersForm:upButton :containersForm:downButton" 
                                 disabled="#{empty containerController.selectedNode || containerController.selectedNode.data.first}" 
                                 actionListener="#{containerController.moveSlotUp()}" />
                             <p:commandButton id="editButton" icon="ui-icon-pencil" value="Edit" title="Edit" 
                                 style="float: right; margin: 1em 1ex 0 0;" update=":modifyContainerForm:modifyContainer" 
-                                disabled="#{empty containerController.selectedNode}" oncomplete="modifyContainer.show()" 
+                                disabled="#{empty containerController.selectedNode}" oncomplete="PF('modifyContainer').show();" 
                                 actionListener="#{containerController.prepareEditPopup()}" />
                             <p:commandButton id="addSlot" actionListener="#{containerController.prepareAddPopup()}" 
-                                value="Add" oncomplete="addContainer.show()" icon="ui-icon-plus" 
+                                value="Add" oncomplete="PF('addContainer').show();" icon="ui-icon-plus" 
                                 title="Add new container to parent" style="float: right; margin: 1em 1ex 0 0;"
                                 update=":addContainerForm:addContainer" />
                         </p:fieldset>
@@ -77,7 +77,7 @@
                                 updateButtons=":containersForm:editAttrButton :containersForm:deleteAttrButton" />
 
                         <p:commandButton id="deleteAttrButton" value="Delete" icon="ui-icon-trash" 
-                            style="float: right;" oncomplete="deleteAttribute.show()" 
+                            style="float: right;" oncomplete="PF('deleteAttribute').show();" 
                             disabled="#{empty slotAttributesController.selectedAttribute ? true : not slotAttributesController.canDelete(slotAttributesController.selectedAttribute)}" />
 
                         <p:commandButton id="editAttrButton" value="Edit" icon="ui-icon-pencil" 
@@ -88,12 +88,12 @@
                         <p:commandButton id="addButton" value="Add" type="button" icon="ui-icon-plus" disabled="true" 
                             style="margin-right: 1ex; float: right;" />
                         <p:menu overlay="true" trigger="addButton" my="left bottom" at="left top">
-                            <p:menuitem value="Property" oncomplete="addPropertyValue.show()" 
+                            <p:menuitem value="Property" oncomplete="PF('addPropertyValue').show();" 
                                     actionListener="#{slotAttributesController.prepareForPropertyValueAdd}" 
                                     update=":addPropertyValueForm:addPropertyValue" />
-                            <p:menuitem value="Tag" oncomplete="containerTag.show()" update=":containerTagForm" 
+                            <p:menuitem value="Tag" oncomplete="PF('containerTag').show();" update=":containerTagForm" 
                                     actionListener="#{slotAttributesController.prepareForTagAdd}" />
-                            <p:menuitem value="Artifact" oncomplete="addArtifact.show()" 
+                            <p:menuitem value="Artifact" oncomplete="PF('addArtifact').show();" 
                                     actionListener="#{slotAttributesController.prepareForArtifactAdd}" 
                                     update=":addArtifactForm:addArtifact" />
                         </p:menu>
@@ -137,7 +137,7 @@
             <ui:param name="submitHandler" value="deleteAttribute" />
             <ui:param name="formToUpdate" value=":containersForm:attributesDataTable:attributesDataTable :containersForm:editAttrButton :containersForm:deleteAttrButton" />
             <ui:param name="entityType" value="selected attribute" />
-        </ui:include>        
+        </ui:include>
 
         <ui:include src="../add-or-modify-dialogs/property-value.xhtml" >
             <ui:param name="formId" value="addPropertyValueForm" />
@@ -183,7 +183,7 @@
             <ui:param name="submitHandler" value="modifyArtifact" />
             <ui:param name="componentToUpdate" value=":containersForm:attributesDataTable:attributesDataTable" />
         </ui:include>
-                                                
+
         <script type="text/javascript">
             jQuery(window).resize(function() {
                 resizeContainerPanel();

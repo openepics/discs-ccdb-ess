@@ -21,7 +21,7 @@
                              value="#{loginManager.userId}" 
                              icon="ui-icon-person" rendered="#{loginManager.loggedIn}" />
             <p:overlayPanel id="_loginExitPanel" for="_loginOutButton" 
-                            widgetVar="_loginExitWidget" style="border: 0px" rendered="#{loginManager.loggedIn}" >
+                            widgetVar="_loginExitWidget" style="border: 0px;" rendered="#{loginManager.loggedIn}" >
                 <p:panelGrid styleClass="noBorders">
                     <p:row>
                         <p:column>
@@ -33,13 +33,13 @@
                             <p:panelGrid styleClass="noBorders">
                                 <p:row>
                                     <p:column>  
-				                        <p:commandButton  value="#{msgs.loginCancelBtn}" 
-				                                              type="button" onclick="_loginExitWidget.hide()"/>
+				                        <p:commandButton value="#{msgs.loginCancelBtn}" 
+                                            type="button" onclick="PF('_loginExitWidget').hide()"/>
 				                    </p:column>
 				                    <p:column>
-						                <p:commandButton value="#{msgs.loginLogoutBtn}"  process="@this" 
-						                                             update="@form #{cc.attrs.update}" 
-						                                             action="#{loginManager.onLogout()}" ajax="#{cc.attrs.ajax}"/>  
+						                <p:commandButton value="#{msgs.loginLogoutBtn}" process="@this" 
+                                            update="@form #{cc.attrs.update}" 
+                                            action="#{loginManager.onLogout()}" ajax="#{cc.attrs.ajax}"/>  
 						            </p:column>
 						        </p:row>
 						    </p:panelGrid>

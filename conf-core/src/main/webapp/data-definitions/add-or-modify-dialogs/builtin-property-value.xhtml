@@ -33,13 +33,12 @@
 
                 <p:outputLabel value="Data type:" />
                 <p:inputText disabled="true" id="propertyDataType" value="#{controller.builtInPropertyDataType}"/>
-
             </p:panelGrid>
 
-            <p:commandButton value="Cancel" styleClass="dialogButton" onclick="#{widgetName}.hide();#{resetFilter}" 
+            <p:commandButton value="Cancel" styleClass="dialogButton" onclick="PF('#{widgetName}').hide();#{resetFilter}" 
                 update="grp" resetValues="true" />
             <p:commandButton value="Save" styleClass="dialogButton" update="#{componentToUpdate} grp" 
-                oncomplete="if (args &amp;&amp; !args.validationFailed) {#{widgetName}.hide(); #{resetFilter}}" 
+                oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('#{widgetName}').hide(); #{resetFilter}}" 
                 action="#{controller[submitHandler]}" />
         </p:dialog>
 

@@ -54,11 +54,11 @@
             </p:panelGrid>
             <p:separator />
 
-            <p:commandButton value="Cancel" styleClass="dialogButton" onclick="addSlotRelationship.hide()" 
+            <p:commandButton value="Cancel" styleClass="dialogButton" onclick="PF('addSlotRelationship').hide();" 
                     resetValues="true"/>
             <p:commandButton value="Add" styleClass="dialogButton" id="addButton" 
                     disabled="#{installationSlotsController.selectedSlotViewForRelationshipAdd == null}" 
-                    action="#{installationSlotsController.onRelationshipAdd}" oncomplete="addSlotRelationship.hide();" 
+                    action="#{installationSlotsController.onRelationshipAdd}" oncomplete="PF('addSlotRelationship').hide();" 
                     update=":slotRelationshipsForm:relationshipTable"/>
         </p:dialog>
     </h:form>

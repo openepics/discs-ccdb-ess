@@ -345,7 +345,7 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
         final StringBuilder js = new StringBuilder();
         js.append("<script type=\"text/javascript\">").append("\r\n");
         js.append("jQuery(document).ready(function() {").append("\r\n");
-
+        js.append("var unitsTableVar = PF('unitsTableVar');").append("\r\n");
         js.append("if ((").append(unitPosition).append(" < 0) || (").append(unitPosition)
                         .append(" > unitsTableVar.getPaginator().cfg.rowCount)) {").append("\r\n");
         js.append("    return;").append("\r\n");

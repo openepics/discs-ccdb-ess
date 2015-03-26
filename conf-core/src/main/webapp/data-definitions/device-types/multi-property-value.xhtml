@@ -18,7 +18,7 @@
                         scrollHeight="200" tableStyle="width: 68em; table-layout: auto;" widgetVar="propSelectTable" 
                         filteredValue="#{comptypeAttributesController.selectionPropertyValuesFiltered}">
                     <p:ajax event="cellEdit" listener="#{comptypeAttributesController.onEditCell}" update=":#{formId}:propertySelect" />
-                    <p:ajax event="filter" oncomplete="updateToggle()" />
+                    <p:ajax event="filter" oncomplete="updateToggle();" />
 
                     <p:column id="rowSelection" style="width: 2em;">
                         <f:facet name="header">
@@ -28,7 +28,7 @@
                             </p:selectBooleanCheckbox>
                         </f:facet>
                         <p:selectBooleanCheckbox value="#{prop.selected}">
-                            <p:ajax update=":#{formId}:propertySelect" oncomplete="updateToggle()" 
+                            <p:ajax update=":#{formId}:propertySelect" oncomplete="updateToggle();" 
                                 listener="#{comptypeAttributesController.rowSelectListener(prop)}"/>
                         </p:selectBooleanCheckbox>
                     </p:column>
@@ -71,20 +71,11 @@
                 </p:dataTable>
             </p:panel>
 
-            <p:commandButton value="Cancel" styleClass="dialogButton" oncomplete="#{widgetName}.hide();#{resetFilter}" 
+            <p:commandButton value="Cancel" styleClass="dialogButton" oncomplete="PF('#{widgetName}').hide();#{resetFilter}" 
                     update="propertySelect" resetValues="true" action="#{comptypeAttributesController.resetPropertySelection(formId)}" />
             <p:commandButton value="Save" styleClass="dialogButton" update="#{componentToUpdate} propertySelect" 
-                    oncomplete="if (args &amp;&amp; !args.validationFailed) { #{widgetName}.hide(); #{resetFilter} }" 
+                    oncomplete="if (args &amp;&amp; !args.validationFailed) { PF('#{widgetName}').hide(); #{resetFilter} }" 
                     action="#{comptypeAttributesController[submitHandler]}"/>
         </p:dialog>
-        <script type="text/javascript">
-            <!-- 
-            // prevent focus of the first element, select the first button (Cancel) instead
-            // http://forum.primefaces.org/viewtopic.php?f=3&t=29050
-            // --> 
-            PrimeFaces.widget.Dialog.prototype.applyFocus = function() {
-                this.jq.find(':button:input:visible:enabled:first').focus();
-            }
-        </script>
     </h:form>
 </ui:composition>

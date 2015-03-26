@@ -20,7 +20,7 @@
                             rendered="true" required="true" requiredMessage="Please select a property"
                             disabled="#{controller.propertyNameChangeDisabled}" valueChangeListener="#{controller.propertyChangeListener}">
                         <p:ajax update=":#{formId}:propertyUnit :#{formId}:propertyDataType :#{formId}:valueInputGroup"/>
-                        <f:selectItem itemLabel="Select One" itemValue="" />
+                        <f:selectItem itemLabel="Select One" itemValue="" noSelectionOption="true" />
                         <f:selectItems value="#{controller.filteredProperties}" var="property" itemLabel="#{property.name}" itemValue="#{property}" />
                         <p:column>  
                             #{prop.name}
@@ -59,10 +59,10 @@
                
             </p:panelGrid>
             
-            <p:commandButton value="Cancel" styleClass="dialogButton" onclick="#{widgetName}.hide();#{resetFilter}" 
+            <p:commandButton value="Cancel" styleClass="dialogButton" onclick="PF('#{widgetName}').hide();#{resetFilter}" 
                     update="grp" resetValues="true" />
             <p:commandButton value="Save" styleClass="dialogButton" update="#{componentToUpdate} grp" 
-                    oncomplete="if (args &amp;&amp; !args.validationFailed) {#{widgetName}.hide(); #{resetFilter}}" 
+                    oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('#{widgetName}').hide(); #{resetFilter}}" 
                     action="#{controller[submitHandler]}" />
         </p:dialog>
 

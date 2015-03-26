@@ -27,10 +27,9 @@
                     </p:column>
                     <p:column>
                         <p:inputTextarea id="enumDesc" rows="5" style="width: 100%; height: 7em; overflow-y: scroll;" 
-                            counter="icounter" maxlength="254" counterTemplate="{0} characters remaining." required="true" 
-                            requiredMessage="Please enter a description" value="#{dataTypeManager.description}" />
+                            maxlength="254" required="true" requiredMessage="Please enter a description" 
+                            value="#{dataTypeManager.description}" />
                         <br/>
-                        <h:outputText id="icounter" />
                         <p:message for="enumDesc"/>
                     </p:column>
                 </p:row>
@@ -49,10 +48,10 @@
                 </p:row>
             </p:panelGrid>
             
-            <p:commandButton value="Cancel" styleClass="dialogButton" onclick="#{widgetName}.hide();" 
+            <p:commandButton value="Cancel" styleClass="dialogButton" onclick="PF('#{widgetName}').hide();" 
                     update="grp" resetValues="true" />
             <p:commandButton value="Save" styleClass="dialogButton" update="#{componentToUpdate} grp" 
-                    oncomplete="if (args &amp;&amp; !args.validationFailed) #{widgetName}.hide(); enumsTableVar.filter();" 
+                    oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('#{widgetName}').hide();PF('enumsTableVar').filter();}" 
                     action="#{dataTypeManager[submitHandler]}"/>
         </p:dialog>
 

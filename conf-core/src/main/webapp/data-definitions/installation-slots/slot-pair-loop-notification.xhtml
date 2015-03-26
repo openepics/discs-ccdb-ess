@@ -12,7 +12,7 @@
             <h:panelGroup style="margin-top: 1ex; margin-bottom: 1em;" layout="block">
                 <h:outputText value="Relationship 'contains' between these two slots cannot be created because this would result in loop." />
             </h:panelGroup>
-            <p:commandButton value="Ok" styleClass="dialogButton" onclick="slotPairLoopNotification.hide();" />
+            <p:commandButton value="Ok" styleClass="dialogButton" onclick="PF('slotPairLoopNotification').hide();" />
         </p:dialog>
     </h:form>
 </ui:composition>

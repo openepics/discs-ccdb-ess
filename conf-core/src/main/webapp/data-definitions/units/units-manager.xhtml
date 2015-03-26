@@ -8,7 +8,7 @@
     <ui:define name="content">
         <h:form id="unitsForm">
             <p:commandButton ajax="true" actionListener="#{unitManager.prepareAddPopup()}" value="Add new" update=":addUnitForm"
-                    oncomplete="addUnit.show()" style="margin-bottom: 1em;" />
+                    oncomplete="PF('addUnit').show()" style="margin-bottom: 1em;" />
             <p:dataTable widgetVar="unitsTableVar" var="unit" id="unitsTable" value="#{unitManager.unitViews}" 
                     resizableColumns="true" style="table-layout: fixed; word-wrap: break-word;" 
                     filteredValue="#{unitManager.filteredUnits}" rows="15" paginator="true" 
@@ -34,18 +34,18 @@
                     <h:outputText value="#{unit.quantity}" />
                 </p:column>
                 <p:column headerText="Action" style="text-align: center;" width="70">
-                    <p:commandLink ajax="true" title="Edit" update=":modifyUnitForm" oncomplete="modifyUnit.show()">
+                    <p:commandLink ajax="true" title="Edit" update=":modifyUnitForm" oncomplete="PF('modifyUnit').show()">
                         <h:outputText styleClass="ui-icon ui-icon-pencil" style="display: inline-block !important; margin-right: 6px;" />
                         <f:setPropertyActionListener value="#{unit}" target="#{unitManager.selectedUnitToModify}" />
                     </p:commandLink>
-                    <p:commandLink ajax="true" title="Delete" oncomplete="deleteUnit.show()">
+                    <p:commandLink ajax="true" title="Delete" oncomplete="PF('deleteUnit').show()">
                         <h:outputText styleClass="ui-icon ui-icon-trash" style="display: inline-block !important; margin-right: 6px;" />
                         <f:setPropertyActionListener value="#{unit}" target="#{unitManager.selectedUnit}" />
                     </p:commandLink>
                     <p:commandLink ajax="true" title="Log">
                         <h:outputText styleClass="ui-icon ui-icon-clock" style="display: inline-block !important; margin-right: 6px;" />
                         <p:ajax event="click" listener="#{auditManager.selectEntityForLog(unit.unit, 'UNIT')}" 
-                                update=":unitLogForm" oncomplete="unitLog.show()" />
+                                update=":unitLogForm" oncomplete="PF('unitLog').show()" />
                     </p:commandLink>
                 </p:column>
             </p:dataTable>
@@ -58,7 +58,7 @@
             <ui:param name="controller" value="#{unitManager}" />
             <ui:param name="submitHandler" value="onDelete" />
             <ui:param name="formToUpdate" value=":unitsForm:unitsTable" />
-            <ui:param name="resetFilter" value="unitsTableVar.filter();" />               
+            <ui:param name="resetFilter" value="PF('unitsTableVar').filter();" />               
             <ui:param name="entityType" value="this unit" />
         </ui:include>
 

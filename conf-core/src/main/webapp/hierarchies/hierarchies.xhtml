@@ -9,6 +9,7 @@
             <script type="text/javascript">
                 //<![CDATA[
                 function scrollSelectedIntoView() {
+                    var hierarchyWidget = PF('hierarchyWidget');
                     if (hierarchyWidget.selections.length > 0) {
                         var scrollableBodyHeight = $('#hierarchies\\:tree .ui-treetable-scrollable-body')[0].clientHeight;
                         var selectedNodeId = "#hierarchies\\:tree_node_" + hierarchyWidget.selections[0];

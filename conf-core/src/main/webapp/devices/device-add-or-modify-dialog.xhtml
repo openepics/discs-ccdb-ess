@@ -63,8 +63,8 @@
 
             </p:panelGrid>
             
-            <p:commandButton value="Cancel" styleClass="dialogButton" onclick="#{widgetName}.hide();devicesTableVar.filter();" 
-                update="grp" resetValues="true" />
+            <p:commandButton value="Cancel" styleClass="dialogButton" update="grp" resetValues="true" 
+                onclick="PF('#{widgetName}').hide();PF('devicesTableVar').filter();" />
             <p:commandButton value="Save" styleClass="dialogButton" update="#{updateComponents} grp" 
                 oncomplete="if (args &amp;&amp; !args.validationFailed) {#{saveAction}}"
                 action="#{devicesByTypeManager[submitHandler]}" />

@@ -50,12 +50,12 @@
                 <p:row>
                     <p:column colspan="2">
                         <p:commandButton title="Cancel" styleClass="dialogButton" label="Cancel" value="Cancel" 
-                            onclick="#{widgetName}.hide()" resetValues="true" update=":#{formId}" ajax="true" 
+                            onclick="PF('#{widgetName}').hide();" resetValues="true" update=":#{formId}" ajax="true" 
                             action="#{hierarchiesController.setDeviceToInstall(null)}" />
                         <p:commandButton id="installButton" styleClass="dialogButton" title="Install" label="Install" 
                             disabled="#{empty hierarchiesController.deviceToInstall}" value="Install" 
                             action="#{hierarchiesController.installDevice()}" update="#{componentToUpdate} :#{formId}" 
-                            oncomplete="#{widgetName}.hide(); resizeEmptyColumnInHierarchies();" />
+                            oncomplete="PF('#{widgetName}').hide(); resizeEmptyColumnInHierarchies();" />
                     </p:column>
                 </p:row>
             </p:panelGrid>

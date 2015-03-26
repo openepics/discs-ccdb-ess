@@ -8,7 +8,7 @@
     <ui:define name="content">
         <h:form id="enumsForm">
             <p:commandButton ajax="true" actionListener="#{dataTypeManager.prepareAddPopup()}" value="Add new"
-                    oncomplete="addEnum.show()" update=":addEnumForm:addEnum" style="margin-bottom: 1em;" />
+                    oncomplete="PF('addEnum').show();" update=":addEnumForm:addEnum" style="margin-bottom: 1em;" />
             <p:dataTable widgetVar="enumsTableVar" var="enum" id="enumsTable" value="#{dataTypeManager.dataTypeViews}" 
                     resizableColumns="true" style="table-layout: fixed; word-wrap: break-word;" 
                     filteredValue="#{dataTypeManager.filteredDataTypeViews}" rows="15" paginator="true" 
@@ -30,18 +30,18 @@
                 </p:column>
 
                 <p:column headerText="Action" style="text-align: center;" width="70">
-                    <p:commandLink ajax="true" title="Edit" update=":modifyEnumForm" oncomplete="modifyEnum.show()">
+                    <p:commandLink ajax="true" title="Edit" update=":modifyEnumForm" oncomplete="PF('modifyEnum').show();">
                         <h:outputText styleClass="ui-icon ui-icon-pencil" style="display: inline-block !important; margin-right: 6px;" />
                         <f:setPropertyActionListener value="#{enum}" target="#{dataTypeManager.selectedEnumToModify}" />
                     </p:commandLink>
-                    <p:commandLink ajax="true" title="Delete" oncomplete="deleteEnum.show()">
+                    <p:commandLink ajax="true" title="Delete" oncomplete="PF('deleteEnum').show();">
                         <h:outputText styleClass="ui-icon ui-icon-trash" style="display: inline-block !important; margin-right: 6px;" />
                         <f:setPropertyActionListener value="#{enum}" target="#{dataTypeManager.selectedEnum}" />
                     </p:commandLink>
                     <p:commandLink ajax="true" title="Log">
                         <h:outputText styleClass="ui-icon ui-icon-clock" style="display: inline-block !important; margin-right: 6px;" />
                         <p:ajax event="click" listener="#{auditManager.selectEntityForLog(enum.enumeration, 'DATA_TYPE')}" 
-                                update=":enumLogForm" oncomplete="enumLog.show()" />
+                                update=":enumLogForm" oncomplete="PF('enumLog').show();" />
                     </p:commandLink>
                 </p:column>
             </p:dataTable>
@@ -54,7 +54,7 @@
             <ui:param name="controller" value="#{dataTypeManager}" />
             <ui:param name="submitHandler" value="onDelete" />
             <ui:param name="formToUpdate" value=":enumsForm:enumsTable" />
-            <ui:param name="resetFilter" value="enumsTableVar.filter();" />               
+            <ui:param name="resetFilter" value="PF('enumsTableVar').filter();" />
             <ui:param name="entityType" value="this enumeration" />
         </ui:include>
 

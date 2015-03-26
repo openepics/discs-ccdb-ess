@@ -52,11 +52,9 @@
                     </p:column>
                     <p:column>
                         <h:panelGroup style="width: 100%">
-                            <p:inputTextarea id="installSlotDesc" rows="5" style="width: 20em;" counter="icounter" 
-                                maxlength="254" counterTemplate="{0} characters remaining." required="true" 
+                            <p:inputTextarea id="installSlotDesc" rows="5" style="width: 20em;" maxlength="254" required="true" 
                                 requiredMessage="Please enter a description" value="#{installationSlotsController.description}" />
                             <br />
-                            <h:outputText id="icounter" />
                             <p:message for="installSlotDesc" />
                         </h:panelGroup>
                     </p:column>
@@ -72,10 +70,10 @@
                 </p:row>
             </p:panelGrid>
 
-            <p:commandButton value="Cancel" styleClass="dialogButton" onclick="#{widgetName}.hide();" update="grp" 
+            <p:commandButton value="Cancel" styleClass="dialogButton" onclick="PF('#{widgetName}').hide();" update="grp" 
                     resetValues="true" />
             <p:commandButton value="Save" styleClass="dialogButton" 
-                    oncomplete="if (args &amp;&amp; !args.validationFailed) { #{widgetName}.hide(); resizePanel(); }" 
+                    oncomplete="if (args &amp;&amp; !args.validationFailed) { PF('#{widgetName}').hide(); resizeInstallationSlotPanel(); }" 
                     action="#{installationSlotsController[submitHandler]}" 
                     update=":installationSlotsForm:installationSlotsTree :installationSlotsForm:addSlot grp" />
         </p:dialog>

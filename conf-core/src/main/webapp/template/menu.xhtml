@@ -19,7 +19,7 @@
                     url="/data-definitions/installation-slots/installation-slots-manager.xhtml" />
 
                 <p:menuitem value="Import" update=":importSlotsForm" styleClass="noClickEvent" 
-                    oncomplete="importSlots.show()" title="Import Slots and Slot Pairs" 
+                    oncomplete="PF('importSlots').show();" title="Import Slots and Slot Pairs" 
                     actionListener="#{slotManager.prepareImportPopup()}" 
                     disabled="#{!securityPolicy.getUIHint('SLOT')}"/>
             </p:submenu>
@@ -29,7 +29,7 @@
                 <p:menuitem value="View" title="View Device Instances" styleClass="noClickEvent" url="/devices/device-manager.xhtml" />
             
                 <p:menuitem value="Import" update=":importDevicesForm" styleClass="noClickEvent" 
-                    oncomplete="importDevices.show()" title="Import Device Instances" 
+                    oncomplete="PF('importDevices').show();" title="Import Device Instances" 
                     actionListener="#{deviceManager.prepareImportPopup()}" 
                     disabled="#{!securityPolicy.getUIHint('DEVICE')}"/>
             </p:submenu>
@@ -40,7 +40,7 @@
                     url="/data-definitions/device-types/device-types-manager.xhtml" />
 
                 <p:menuitem value="Import" update=":importCompTypesForm" styleClass="noClickEvent" 
-                    oncomplete="importCompTypes.show()" title="Import Device Types" 
+                    oncomplete="PF('importCompTypes').show();" title="Import Device Types" 
                     actionListener="#{componentTypeManager.prepareImportPopup()}" 
                     disabled="#{! securityPolicy.getUIHint('COMPONENT_TYPE')}" />
             </p:submenu>
@@ -51,10 +51,10 @@
                     url="/data-definitions/properties/properties-manager.xhtml" />
 
                 <p:menuitem value="Import" update=":importPropertiesForm" styleClass="noClickEvent" 
-                    oncomplete="importProperties.show()" title="Import Properties" 
+                    oncomplete="PF('importProperties').show();" title="Import Properties" 
                     actionListener="#{propertyManager.prepareImportPopup()}" 
                     disabled="#{!securityPolicy.getUIHint('PROPERTY')}" />
-            </p:submenu>      
+            </p:submenu>
 
             <p:menuitem value="Enumerations" icon="ui-icon-radio-off" title="User Defined Enumerations" 
                 url="/data-definitions/enums/enums-manager.xhtml" 
@@ -66,7 +66,7 @@
                     url="/data-definitions/units/units-manager.xhtml" />
 
                 <p:menuitem value="Import" update=":importUnitsForm" 
-                    oncomplete="importUnits.show()" title="Import Units" styleClass="noClickEvent" 
+                    oncomplete="PF('importUnits').show();" title="Import Units" styleClass="noClickEvent" 
                     actionListener="#{unitManager.prepareImportPopup()}" 
                     disabled="#{!securityPolicy.getUIHint('UNIT')}" />
             </p:submenu>
@@ -88,28 +88,28 @@
 
     <ui:include src="../loaders/single-file-DL.xhtml">
         <ui:param name="formId" value="importUnitsForm" />
-        <ui:param name="dialogTitle" value="Units Import" />
+        <ui:param name="dialogTitle" value="Units import" />
         <ui:param name="widgetName" value="importUnits" />
         <ui:param name="controller" value="#{unitManager}" />
     </ui:include>
 
     <ui:include src="../loaders/single-file-DL.xhtml">
         <ui:param name="formId" value="importPropertiesForm" />
-        <ui:param name="dialogTitle" value="Properties Import" />
+        <ui:param name="dialogTitle" value="Properties import" />
         <ui:param name="widgetName" value="importProperties" />
         <ui:param name="controller" value="#{propertyManager}" />
     </ui:include>
 
     <ui:include src="../loaders/single-file-DL.xhtml">
         <ui:param name="formId" value="importCompTypesForm" />
-        <ui:param name="dialogTitle" value="Device Types Import" />
+        <ui:param name="dialogTitle" value="Device types import" />
         <ui:param name="widgetName" value="importCompTypes" />
         <ui:param name="controller" value="#{componentTypeManager}" />
     </ui:include>
 
     <ui:include src="../loaders/multiple-files-DL.xhtml">
         <ui:param name="formId" value="importSlotsForm" />
-        <ui:param name="dialogTitle" value="Slots and Slot Pairs Import" />
+        <ui:param name="dialogTitle" value="Slots and slot pairs import" />
         <ui:param name="widgetName" value="importSlots" />
         <ui:param name="controller" value="#{slotManager}" />
         <ui:param name="firstFileContents" value="slots" />
@@ -118,7 +118,7 @@
 
     <ui:include src="../loaders/single-file-DL.xhtml">
         <ui:param name="formId" value="importDevicesForm" />
-        <ui:param name="dialogTitle" value="Devices Import" />
+        <ui:param name="dialogTitle" value="Devices import" />
         <ui:param name="widgetName" value="importDevices" />
         <ui:param name="controller" value="#{deviceManager}" />
     </ui:include>

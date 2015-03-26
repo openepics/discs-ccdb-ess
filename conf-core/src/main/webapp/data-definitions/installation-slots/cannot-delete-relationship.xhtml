@@ -12,7 +12,7 @@
             <h:panelGroup style="margin-top: 1ex; margin-bottom: 1em;" layout="block">
                 <h:outputText value="This relationship cannot be deleted, because every slot must have at least one 'contained in' relationship." />
             </h:panelGroup>
-            <p:commandButton value="Ok" styleClass="dialogButton" onclick="cantDeleteRelation.hide();" />
+            <p:commandButton value="Ok" styleClass="dialogButton" onclick="PF('cantDeleteRelation').hide();" />
         </p:dialog>
     </h:form>
 </ui:composition>

@@ -27,11 +27,9 @@
                         <p:outputLabel for="propertyDesc" value="Description:" />
                     </p:column>
                     <p:column>
-                        <p:inputTextarea id="propertyDesc" rows="5" style="width: 100%" counter="icounter" maxlength="254" 
-                            counterTemplate="{0} characters remaining." required="true" 
+                        <p:inputTextarea id="propertyDesc" rows="5" style="width: 100%" maxlength="254" required="true" 
                             requiredMessage="Please enter a description" value="#{propertyManager.description}" />
                         <br/>
-                        <h:outputText id="icounter" />
                         <p:message for="propertyDesc" />
                     </p:column>
                 </p:row>
@@ -51,7 +49,7 @@
                                 converter="#{dataTypeConverter}" required="true" requiredMessage="Please select data type" 
                                 disabled="#{propertyManager.propertyUsed}">
                             <p:ajax update=":#{formId}:propertyUnit" listener="#{propertyManager.setIsUnitComboEnabled}"/>
-                            <f:selectItem itemLabel="Select One" itemValue="" />
+                            <f:selectItem itemLabel="Select One" itemValue="" noSelectionOption="true" />
                             <f:selectItems value="#{dataTypeManager.dataTypes}" var="dataType" itemLabel="#{dataType.name}" 
                                 itemValue="#{dataType}" />
                             <p:column>
@@ -69,7 +67,7 @@
                     <p:column>
                         <p:selectOneMenu id="propertyUnit" value="#{propertyManager.unit}" var="u" converter="#{unitConverter}"  
                                 disabled="#{!propertyManager.unitComboEnabled || propertyManager.propertyUsed}">
-                            <f:selectItem itemLabel="Select One" itemValue="" />
+                            <f:selectItem itemLabel="Select One" itemValue="" noSelectionOption="true" />
                             <f:selectItems value="#{unitManager.units}" var="unit" itemLabel="#{unit.name}" itemValue="#{unit}" />
                             <p:column>
                                 <h:outputText value="#{u.name}" />
@@ -139,7 +137,7 @@
                 </p:row>
             </p:panelGrid>
 
-            <p:commandButton value="Cancel" styleClass="dialogButton" onclick="#{widgetName}.hide();#{resetFilter}" 
+            <p:commandButton value="Cancel" styleClass="dialogButton" onclick="PF('#{widgetName}').hide();#{resetFilter}" 
                     update="grp" resetValues="true" />
             <p:commandButton value="Save" styleClass="dialogButton" update="#{updateComponents} grp" 
                     oncomplete="if (args &amp;&amp; !args.validationFailed) {#{saveAction}}" 

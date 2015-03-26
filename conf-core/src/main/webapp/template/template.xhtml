@@ -77,7 +77,9 @@
             }
 
             function removeParametersFromUrl() {
-               window.history.pushState("", "", window.location.href.replace(window.location.search, ''));
+                if (window.location.search != '') {
+                    window.history.pushState("", "", window.location.href.replace(window.location.search, ''));
+                } 
             }
 
             function emHeight() {
@@ -159,6 +161,7 @@
             });
 
             jQuery(document).ready(function() {
+                removeParametersFromUrl();            
                 adjustFooterPosition();
             });
         </script>

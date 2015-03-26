@@ -366,7 +366,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
         filterProperties();
 
         RequestContext.getCurrentInstance().update("modifyPropertyValueForm:modifyPropertyValue");
-        RequestContext.getCurrentInstance().execute("PF('modifyPropertyValue').show()");
+        RequestContext.getCurrentInstance().execute("PF('modifyPropertyValue').show();");
     }
 
     @SuppressWarnings("unchecked")
@@ -387,7 +387,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
         isArtifactBeingModified = true;
 
         RequestContext.getCurrentInstance().update("modifyArtifactForm:modifyArtifact");
-        RequestContext.getCurrentInstance().execute("PF('modifyArtifact').show()");
+        RequestContext.getCurrentInstance().execute("PF('modifyArtifact').show();");
     }
 
     private void prepareModifyBuiltInPropertyPopUp() {
@@ -409,7 +409,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
         }
 
         RequestContext.getCurrentInstance().update("modifyBuiltInPropertyForm:modifyBuiltInProperty");
-        RequestContext.getCurrentInstance().execute("PF('modifyBuiltInProperty').show()");
+        RequestContext.getCurrentInstance().execute("PF('modifyBuiltInProperty').show();");
     }
 
     /** Modifies {@link PropertyValue} */

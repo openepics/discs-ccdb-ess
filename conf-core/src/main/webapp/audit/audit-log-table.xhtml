@@ -4,11 +4,14 @@
     xmlns:h="http://java.sun.com/jsf/html">
 
     <h:form id="#{formId}">
-        <p:dialog widgetVar="#{widgetName}" id="#{widgetName}" width="900" modal="true" resizable="false" closable="false" dynamic="true">
+        <p:dialog widgetVar="#{widgetName}" id="#{widgetName}" width="900" modal="true" resizable="false" 
+                closable="false" dynamic="true">
             <f:facet name="header">
                 <h:outputText value="#{dialogTitle}" />
             </f:facet>
-             <p:dataTable var="auditRecord" id="auditLogTable" value="#{auditManager.auditRecordsForEntity}" style="table-layout: fixed; word-wrap: break-word;margin-bottom: 1em;" resizableColumns="true" paginator="false" scrollable="true" scrollHeight="300">
+             <p:dataTable var="auditRecord" id="auditLogTable" value="#{auditManager.auditRecordsForEntity}" 
+                    style="table-layout: fixed; word-wrap: break-word;margin-bottom: 1em;" resizableColumns="true" 
+                    paginator="false" scrollable="true" scrollHeight="300">
                 <p:column headerText="Entity Name">
                     <h:outputText value="#{auditRecord.entityKey}" />
                 </p:column>
@@ -36,13 +39,13 @@
                 </p:column>
                 
                 <p:column headerText="Action" width="50" style="text-align: center;" >
-                    <p:commandLink ajax="true" title="Details" update=":logDetailsForm" oncomplete="logDetails.show()" 
+                    <p:commandLink ajax="true" title="Details" update=":logDetailsForm" oncomplete="PF('logDetails').show()" 
                             action="#{auditManager.chooseDisplayRecord(auditRecord.id)}">
                         <h:outputText styleClass="ui-icon ui-icon-info" style="display: inline-block !important; margin-right: 6px;" />
                     </p:commandLink>
                 </p:column>
             </p:dataTable>
-            <p:commandButton value="Close" styleClass="dialogButton" onclick="#{widgetName}.hide();" />
+            <p:commandButton value="Close" styleClass="dialogButton" onclick="PF('#{widgetName}').hide();" />
         </p:dialog>
     </h:form>
 </ui:composition>

@@ -153,7 +153,7 @@ public class InstallationSlotsController extends AbstractSlotsController {
         if (canRelationshipBeDeleted()) {
             slotPairEJB.delete(selectedRelationship.getSlotPair());
         } else {
-            RequestContext.getCurrentInstance().execute("PF('cantDeleteRelation').show()");
+            RequestContext.getCurrentInstance().execute("PF('cantDeleteRelation').show();");
         }
         prepareRelationshipsPopup();
     }
@@ -221,7 +221,7 @@ public class InstallationSlotsController extends AbstractSlotsController {
             if (!slotPairEJB.slotPairCreatesLoop(newSlotPair, childSlot)) {
                 slotPairEJB.add(newSlotPair);
             } else {
-                RequestContext.getCurrentInstance().execute("PF('slotPairLoopNotification').show()");
+                RequestContext.getCurrentInstance().execute("PF('slotPairLoopNotification').show();");
             }
             prepareRelationshipsPopup();
         } else {

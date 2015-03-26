@@ -104,7 +104,7 @@ public class DevicesByTypeManager implements Serializable {
             if (!multiDeviceAdd()) {
                 return;
             }
-            RequestContext.getCurrentInstance().execute("addDeviceDialog.hide();");
+            RequestContext.getCurrentInstance().execute("PF('addDeviceDialog').hide();");
         } else {
             singleDeviceAdd();
         }
@@ -115,7 +115,7 @@ public class DevicesByTypeManager implements Serializable {
 
     private void singleDeviceAdd() {
         deviceEJB.addDeviceAndPropertyDefs(createNewDevice(serialNumber));
-        RequestContext.getCurrentInstance().execute("addDeviceDialog.hide();");
+        RequestContext.getCurrentInstance().execute("PF('addDeviceDialog').hide();");
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Device saved.", null);
     }
 
@@ -135,7 +135,7 @@ public class DevicesByTypeManager implements Serializable {
                 batchSkipExisting = true;
             } else {
                 RequestContext.getCurrentInstance().update("batchConflictForm");
-                RequestContext.getCurrentInstance().execute("batchConflict.show();");
+                RequestContext.getCurrentInstance().execute("PF('batchConflict').show();");
                 return false;
             }
         }
@@ -157,7 +157,7 @@ public class DevicesByTypeManager implements Serializable {
                     devicesCreated++;
                 }
             }
-            RequestContext.getCurrentInstance().execute("devicesTableVar.filter();clearDeviceInstance();");
+            RequestContext.getCurrentInstance().execute("PF('devicesTableVar').filter();clearDeviceInstance();");
             Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
                     "Created " + devicesCreated + " new properties.");
         }

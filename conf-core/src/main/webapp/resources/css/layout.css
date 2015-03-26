@@ -44,7 +44,7 @@ body {
 
 .noBorders, .noBorders>tbody>tr, .noBorders>tbody>tr>td {
     background: none;
-    border: none;
+    border: none !important;
     vertical-align: top;
 }
 

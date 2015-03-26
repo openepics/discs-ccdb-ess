@@ -13,7 +13,7 @@
             <p:panelGrid id="grp" styleClass="dialog-grid-panel noBorders">
                 <p:row>
                     <p:column style="text-align: letf">
-                        <p:commandButton value="Add relationship" oncomplete="addSlotRelationship.show()" 
+                        <p:commandButton value="Add relationship" oncomplete="PF('addSlotRelationship').show()" 
                             update=":addSlotRelationshipForm" actionListener="#{installationSlotsController.prepareAddRelationshipPopup}" />
                     </p:column>
                     <p:column style="text-align: letf">
@@ -42,9 +42,9 @@
                 </p:row>
 			</p:panelGrid>
 			
-			<p:commandButton value="Close" styleClass="dialogButton" onclick="#{widgetName}.hide();" 
+			<p:commandButton value="Close" styleClass="dialogButton" onclick="PF('#{widgetName}').hide();" 
                     action="#{installationSlotsController.onRelationshipPopupClose}" update=":installationSlotsForm" 
-                    oncomplete="resizePanel()"/>
+                    oncomplete="resizeInstallationSlotPanel()"/>
 		</p:dialog>
 	</h:form>
 	

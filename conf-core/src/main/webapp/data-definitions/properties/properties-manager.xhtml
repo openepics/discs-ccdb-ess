@@ -8,7 +8,7 @@
     <ui:define name="content">
         <h:form id="propertiesForm">
             <p:commandButton ajax="true" actionListener="#{propertyManager.prepareAddPopup()}" value="Add new"
-                    oncomplete="addProperty.show()" style="margin-bottom: 1em;" update=":addPropertyForm:addProperty" />
+                    oncomplete="PF('addProperty').show()" style="margin-bottom: 1em;" update=":addPropertyForm:addProperty" />
             <p:dataTable widgetVar="propertiesTableVar" var="property" id="propertiesTable" 
                     value="#{propertyManager.properties}" rows="15" paginator="true" 
                     resizableColumns="true" style="table-layout: fixed; word-wrap: break-word;" 
@@ -39,18 +39,18 @@
                 </p:column>
 
                 <p:column headerText="Action" style="text-align: center;" width="70">
-                    <p:commandLink ajax="true" title="Edit" update=":modifyPropertyForm" oncomplete="modifyProperty.show()">
+                    <p:commandLink ajax="true" title="Edit" update=":modifyPropertyForm" oncomplete="PF('modifyProperty').show();">
                         <h:outputText styleClass="ui-icon ui-icon-pencil" style="display: inline-block !important; margin-right: 6px;" />
                         <f:setPropertyActionListener value="#{property}" target="#{propertyManager.selectedPropertyToModify}" />
                     </p:commandLink>
-                    <p:commandLink ajax="true" title="Delete" oncomplete="deleteProperty.show()">
+                    <p:commandLink ajax="true" title="Delete" oncomplete="PF('deleteProperty').show();">
                         <h:outputText styleClass="ui-icon ui-icon-trash" style="display: inline-block !important; margin-right: 6px;" />
                         <f:setPropertyActionListener value="#{property}" target="#{propertyManager.selectedProperty}" />
                     </p:commandLink>
                     <p:commandLink ajax="true" title="Log">
                         <h:outputText styleClass="ui-icon ui-icon-clock" style="display: inline-block !important; margin-right: 6px;" />
                         <p:ajax event="click" listener="#{auditManager.selectEntityForLog(property, 'PROPERTY')}" 
-                                update=":propertyLogForm" oncomplete="propertyLog.show()" />
+                                update=":propertyLogForm" oncomplete="PF('propertyLog').show()" />
                     </p:commandLink>
                 </p:column>
             </p:dataTable>
@@ -64,7 +64,7 @@
             <ui:param name="submitHandler" value="onDelete" />
             <ui:param name="entityType" value="this property" />
             <ui:param name="formToUpdate" value=":propertiesForm:propertiesTable" />
-            <ui:param name="resetFilter" value="propertiesTableVar.filter();" />               
+            <ui:param name="resetFilter" value="PF('propertiesTableVar').filter();" />               
         </ui:include>
 
         <ui:include src="../add-or-modify-dialogs/property.xhtml">
@@ -73,7 +73,7 @@
             <ui:param name="updateComponents" value=":propertiesForm:propertiesTable" />
             <ui:param name="widgetName" value="modifyProperty" />
             <ui:param name="submitHandler" value="onModify" />
-            <ui:param name="saveAction" value="modifyProperty.hide(); propertiesTableVar.filter();" />
+            <ui:param name="saveAction" value="PF('modifyProperty').hide(); PF('propertiesTableVar').filter();" />
         </ui:include>
 
         <ui:include src="../add-or-modify-dialogs/property.xhtml">
@@ -83,7 +83,7 @@
             <ui:param name="widgetName" value="addProperty" />
             <ui:param name="batchCreation" value="true" />
             <ui:param name="submitHandler" value="onAdd" />
-            <ui:param name="saveAction" value="modifyProperty.hide(); propertiesTableVar.filter();" />
+            <ui:param name="saveAction" value="PF('modifyProperty').hide(); PF('propertiesTableVar').filter();" />
         </ui:include>
 
         <ui:include src="../../audit/audit-log-table.xhtml">
@@ -108,7 +108,7 @@
             <ui:param name="controller" value="#{propertyManager}" />
             <ui:param name="submitHandler" value="creationProceed" />
             <ui:param name="formToUpdate" value=":propertiesForm:propertiesTable" />
-            <ui:param name="saveActions" value="propertiesTableVar.filter();" />
+            <ui:param name="saveActions" value="PF('propertiesTableVar').filter();" />
         </ui:include>
     </ui:define>
 </ui:composition>

@@ -77,14 +77,14 @@
                 <h:panelGroup layout="block">
                    <p:commandButton id="addButton" value="Add" type="button" icon="ui-icon-plus" />
                    <p:menu overlay="true" trigger="addButton" my="left top" at="left bottom">
-                         <p:menuitem value="Tag" oncomplete="containerTag.show()" update=":containerTagForm" 
+                         <p:menuitem value="Tag" oncomplete="PF('containerTag').show();" update=":containerTagForm" 
                                  actionListener="#{slotAttributesController.prepareForTagAdd}" />
-                         <p:menuitem value="Artifact" oncomplete="addArtifact.show()" 
+                         <p:menuitem value="Artifact" oncomplete="PF('addArtifact').show()" 
                                  actionListener="#{slotAttributesController.prepareForArtifactAdd}" 
                                  update=":addArtifactForm:addArtifact" />
                     </p:menu>
                     <p:commandButton value="History" icon="ui-icon-clock" style="margin-left: 1ex;">
-                        <p:ajax event="click"  update=":installSlotLogForm" oncomplete="installSlotLog.show()" 
+                        <p:ajax event="click"  update=":installSlotLogForm" oncomplete="PF('installSlotLog').show()" 
                                 listener="#{auditManager.selectEntityForLog(slotAttributesController.slot, 'SLOT')}" />
                     </p:commandButton>
                     <p:commandButton value="Close" style="margin-left: 1ex;" action="installation-slots-manager.xhtml?faces-redirect=true" />
@@ -97,13 +97,13 @@
 
         <ui:include src="../../audit/audit-log-table.xhtml">
             <ui:param name="formId" value="installSlotLogForm" />
-            <ui:param name="dialogTitle" value="Installation Slot Log" />
+            <ui:param name="dialogTitle" value="Installation slot log" />
             <ui:param name="widgetName" value="installSlotLog" />
         </ui:include>
 
         <ui:include src="../../audit/audit-log-details.xhtml">
             <ui:param name="formId" value="logDetailsForm" />
-            <ui:param name="dialogTitle" value="Long Entry Details" />
+            <ui:param name="dialogTitle" value="Long entry details" />
             <ui:param name="widgetName" value="logDetails" />
         </ui:include>
 

@@ -15,9 +15,9 @@
             <br />
             <br />
 
-            <p:commandButton value="Abort" styleClass="dialogButton" onclick="#{widgetName}.hide();#{relatedDialog}.show();" />
+            <p:commandButton value="Abort" styleClass="dialogButton" onclick="PF('#{widgetName}').hide();PF('#{relatedDialog}').show();" />
             <p:commandButton value="Proceed" styleClass="dialogButton" ajax="true" update="#{formToUpdate}" 
-                    oncomplete="#{widgetName}.hide(); #{relatedDialog}.hide();#{saveActions}" 
+                    oncomplete="PF('#{widgetName}').hide();PF('#{relatedDialog}').hide();#{saveActions}" 
                     action="#{controller[submitHandler]}" />
         </p:dialog>
     </h:form>

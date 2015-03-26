@@ -111,7 +111,7 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
             if (!multiPropertyAdd()) {
                 return;
             }
-            RequestContext.getCurrentInstance().execute("addProperty.hide();");
+            RequestContext.getCurrentInstance().execute("PF('addProperty').hide();");
         } else {
             singlePropertyAdd();
         }
@@ -120,7 +120,7 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
 
     private void singlePropertyAdd() {
         propertyEJB.add(createNewProperty(name));
-        RequestContext.getCurrentInstance().execute("addProperty.hide();");
+        RequestContext.getCurrentInstance().execute("PF('addProperty').hide();");
         Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
                                                                 "New property has been created");
     }
@@ -140,7 +140,7 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
                 batchSkipExisting = true;
             } else {
                 RequestContext.getCurrentInstance().update("batchConflictForm");
-                RequestContext.getCurrentInstance().execute("batchConflict.show();");
+                RequestContext.getCurrentInstance().execute("PF('batchConflict').show();");
                 return false;
             }
         }

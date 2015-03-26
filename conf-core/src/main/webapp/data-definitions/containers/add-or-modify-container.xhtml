@@ -21,25 +21,21 @@
 
                 <p:outputLabel for="description" value="Description:" />
                 <h:panelGroup style="width: 100%">
-                    <p:inputTextarea id="description" rows="5" style="width: 100%;" counter="icounter" maxlength="254" 
-                            counterTemplate="{0} characters remaining." required="true" 
+                    <p:inputTextarea id="description" rows="5" style="width: 100%;" maxlength="254" required="true" 
                             requiredMessage="Please enter a description" value="#{containerController.description}" />
                     <br/>
-                    <h:outputText id="icounter" />
                     <p:message for="description"/>
                 </h:panelGroup>
 
                 <p:outputLabel for="parent" value="Parent container:" />
                 <p:inputText id="parent" value="#{containerController.parentSlotView.name}" disabled="true"/>
-
             </p:panelGrid>
 
-            <p:commandButton value="Cancel" styleClass="dialogButton" onclick="#{widgetName}.hide();" update="grp" 
+            <p:commandButton value="Cancel" styleClass="dialogButton" onclick="PF('#{widgetName}').hide();" update="grp" 
                     resetValues="true" />
-            <p:commandButton value="Save" styleClass="dialogButton" 
+            <p:commandButton value="Save" styleClass="dialogButton" action="#{containerController[submitHandler]}" 
                     update="grp :containersForm:containersTree :containersForm:addSlot" 
-                    oncomplete="if (args &amp;&amp; !args.validationFailed) { #{widgetName}.hide(); resizeContainerPanel(); }" 
-                    action="#{containerController[submitHandler]}" />
+                    oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('#{widgetName}').hide();resizeContainerPanel();}" />
         </p:dialog>
 
     </h:form>
