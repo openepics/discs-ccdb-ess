@@ -37,6 +37,7 @@ public class DeviceView {
     private String inventoryId;
     private String statusLabel;
     private final String installedIn;
+    private final String installedSlotId;
     private final String installationDate;
 
     private Device device;
@@ -44,14 +45,17 @@ public class DeviceView {
     /** Creates a new immutable instance of the DeviceView object to be used in UI.
      * @param device device entity
      * @param installedIn name of the installation slot.
+     * @param installedSlotId the id of the installation slot, <code>null</code> if none
+     * @param installationDate the timestamp of the installation, <code>null</code> if none
      */
-    public DeviceView(Device device, String installedIn, Date installationDate) {
+    public DeviceView(Device device, String installedIn, String installedSlotId, Date installationDate) {
         Preconditions.checkNotNull(device);
         Preconditions.checkNotNull(installedIn);
         this.device = device;
         inventoryId = device.getSerialNumber();
         statusLabel = device.getStatus().getLabel();
         this.installedIn = installedIn;
+        this.installedSlotId = installedSlotId;
         if (installationDate == null) {
             this.installationDate = "-";
         } else {
@@ -85,6 +89,11 @@ public class DeviceView {
         return installationDate;
     }
 
+    /** @return the installedSlotId */
+    public String getInstalledSlotId() {
+        return installedSlotId;
+    }
+
     /** Updates the view information from the database. The installation status and information is unaffected. */
     public void refreshDevice(Device device) {
         Preconditions.checkArgument(this.device.getId().equals(device.getId()));
@@ -92,4 +101,5 @@ public class DeviceView {
         inventoryId = device.getSerialNumber();
         statusLabel = device.getStatus().getLabel();
     }
+
 }

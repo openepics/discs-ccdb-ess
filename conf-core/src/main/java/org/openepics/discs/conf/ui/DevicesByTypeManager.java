@@ -269,9 +269,11 @@ public class DevicesByTypeManager implements Serializable {
                                                 installationEJB.getActiveInstallationRecordForDevice(input);
                             final String installationSlot = installationRecord == null ? "-"
                                                                     : installationRecord.getSlot().getName();
+                            final String installationSlotId = installationRecord == null ? null
+                                                                : Long.toString(installationRecord.getSlot().getId());
                             final Date installationDate = installationRecord == null ? null
                                                                     : installationRecord.getInstallDate();
-                            return new DeviceView(input, installationSlot, installationDate);
+                            return new DeviceView(input, installationSlot, installationSlotId, installationDate);
                         }}));
     }
 

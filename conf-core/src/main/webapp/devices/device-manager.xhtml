@@ -67,7 +67,11 @@
 
                                 <p:column headerText="Installed in" sortBy="#{device.installedIn}" 
                                         filterBy="#{device.installedIn}" filterMatchMode="contains">
-                                    <h:outputText value="#{device.installedIn}" />
+                                    <h:outputLink rendered="#{!empty device.installedSlotId}" 
+                                            value="#{request.contextPath}/?id=#{device.installedSlotId}">
+                                        <h:outputText value="#{device.installedIn}" style="text-decoration: underline;" />
+                                    </h:outputLink>
+                                    <h:outputText value="-" rendered="#{empty device.installedSlotId}" />
                                 </p:column>
 
                                 <p:column headerText="Installation timestamp" sortBy="#{device.installationDate}" 
