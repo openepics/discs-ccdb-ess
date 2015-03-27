@@ -152,7 +152,7 @@
                                         value="Install device to this slot" ajax="true" 
                                         actionListener="#{hierarchiesController.prepareUninstalledDevices}" 
                                         rendered="#{empty hierarchiesController.installedDevice}" 
-                                        oncomplete="installDevice.show()" update=":hierarchies:installationDetails" />
+                                        oncomplete="PF('installDevice').show();" update=":hierarchies:installationDetails" />
                             </p:panel>
                         </h:panelGroup>
                     </p:column>

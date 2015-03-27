@@ -50,7 +50,7 @@
                     <h:outputText styleClass="ui-icon ui-icon-pencil" style="display: inline-block !important; margin-right: 6px;" />
                     <f:setPropertyActionListener value="#{attribute}" target="#{cc.attrs.controllerBean.selectedAttributeToModify}" />
                 </p:commandLink>
-                <p:commandLink ajax="true" title="Delete" oncomplete="deleteAttribute.show()"
+                <p:commandLink ajax="true" title="Delete" oncomplete="PF('deleteAttribute').show();" 
                         rendered="#{cc.attrs.controllerBean.canDelete(attribute)}">
                     <h:outputText styleClass="ui-icon ui-icon-trash" style="display: inline-block !important; margin-right: 6px;" />
                     <f:setPropertyActionListener value="#{attribute}" target="#{cc.attrs.controllerBean.selectedAttribute}" />
