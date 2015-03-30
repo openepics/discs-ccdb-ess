@@ -22,11 +22,15 @@ package org.openepics.discs.conf.ui;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.ListIterator;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
+import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.faces.view.ViewScoped;
@@ -62,6 +66,8 @@ import org.openepics.discs.conf.views.EntityAttributeViewKind;
 import org.openepics.discs.conf.views.SlotBuiltInPropertyName;
 import org.openepics.discs.conf.views.SlotRelationshipView;
 import org.openepics.discs.conf.views.SlotView;
+import org.primefaces.event.NodeCollapseEvent;
+import org.primefaces.event.NodeExpandEvent;
 import org.primefaces.model.TreeNode;
 
 import com.google.common.base.Preconditions;
@@ -103,11 +109,15 @@ public class HierarchiesController implements Serializable {
     protected DataType strDataType;
     protected DataType dblDataType;
 
+    // variables from the installation slot / containers editing merger.
+    private Set<Long> collapsedNodes;
+    private SlotView selectedSlotView;
+
     /** Java EE post construct life-cycle method. */
     @PostConstruct
     public void init() {
         try {
-            rootNode = slotsTreeBuilder.newSlotsTree(slotEJB.findAll(), null, true);
+            updateRootNode();
             strDataType = dataTypeEJB.findByName(BuiltInDataType.STR_NAME);
             dblDataType = dataTypeEJB.findByName(BuiltInDataType.DBL_NAME);
             attributeKinds = Utility.buildAttributeKinds();
@@ -160,7 +170,6 @@ public class HierarchiesController implements Serializable {
             attributesList.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_GLOBAL_YAW,
                                                                 slotPosition.getGlobalYaw(), dblDataType)));
         }
-
     }
 
     private void addPropertyValues(List<EntityAttributeView> attributesList) {
@@ -248,7 +257,9 @@ public class HierarchiesController implements Serializable {
     /** Clears the attribute list for display when user deselects the slot in the hierarchy. */
     public void clearAttributeList() {
         attributes = null;
+        filteredAttributes = null;
         relationships = null;
+        filteredRelationships = null;
     }
 
     /**
@@ -279,7 +290,6 @@ public class HierarchiesController implements Serializable {
         this.relationships = relationships;
     }
 
-
     /** @return The root node of (and consequently the entire) hierarchy tree. */
     public TreeNode getRootNode() {
         return rootNode;
@@ -299,9 +309,10 @@ public class HierarchiesController implements Serializable {
      */
     public void setSelectedNode(TreeNode selectedNode) {
         this.selectedNode = selectedNode;
-        this.selectedSlot = selectedNode == null ? null : ((SlotView)selectedNode.getData()).getSlot();
-        this.installationRecord = selectedNode == null ? null
-                                    : installationEJB.getActiveInstallationRecordForSlot(selectedSlot);
+        selectedSlotView = selectedNode == null ? null : (SlotView)selectedNode.getData();
+        selectedSlot = selectedNode == null ? null : this.selectedSlotView.getSlot();
+        installationRecord = selectedNode == null ? null
+                                                    : installationEJB.getActiveInstallationRecordForSlot(selectedSlot);
     }
 
     /**
@@ -492,5 +503,121 @@ public class HierarchiesController implements Serializable {
     /** @param filteredRelationships the filteredRelationships to set */
     public void setFilteredRelationships(List<SlotRelationshipView> filteredRelationships) {
         this.filteredRelationships = filteredRelationships;
+    }
+
+    /**
+     * Adds collapsed node to the set of collapsed nodes which is used to preserve the state of tree
+     * throughout the nodes manipulation.
+     *
+     * @param event Event triggered on node collapse action
+     */
+    public void onNodeCollapse(NodeCollapseEvent event) {
+        if (event != null && event.getTreeNode() != null) {
+            if (collapsedNodes == null) {
+                collapsedNodes = new HashSet<>();
+            }
+            collapsedNodes.add(((SlotView)event.getTreeNode().getData()).getId());
+            event.getTreeNode().setExpanded(false);
+        }
+    }
+
+    /**
+     * Removes expanded node from list of collapsed nodes which is used to preserve the state of tree
+     * throughout the nodes manipulation.
+     *
+     * @param event Event triggered on node expand action
+     */
+    public void onNodeExpand(NodeExpandEvent event) {
+        if (event != null && event.getTreeNode() != null && collapsedNodes != null) {
+            collapsedNodes.remove(((SlotView)event.getTreeNode().getData()).getId());
+        }
+    }
+
+    /** Prepares back-end data used for container deletion */
+    public void prepareDeletePopup() {
+        Preconditions.checkNotNull(selectedNode);
+        selectedSlotView = (SlotView) selectedNode.getData();
+    }
+
+    /** Deletes selected container */
+    public void onSlotDelete() {
+        if (!selectedSlotView.getIsHostingSlot()
+                    || installationEJB.getActiveInstallationRecordForSlot(selectedSlotView.getSlot()) == null) {
+            slotEJB.delete(selectedSlotView.getSlot());
+            selectedSlotView = null;
+            selectedNode = null;
+            clearAttributeList();
+            updateRootNode();
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Slot deleted", "Slot has been successfully deleted");
+        } else {
+            Utility.showMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_DELETE_FAIL,
+                                "Installation slot could not be deleted because it has a device installed on it.");
+        }
+    }
+
+    private void updateRootNode() {
+        if (selectedSlotView != null) {
+            selectedSlot = selectedSlotView.getSlot();
+        } else {
+            selectedSlot = null;
+        }
+
+        rootNode = slotsTreeBuilder.newSlotsTree(slotEJB.findAll(), selectedSlot, collapsedNodes, true);
+        selectedNode = slotsTreeBuilder.getInitiallySelectedTreeNode();
+        selectedSlotView = slotsTreeBuilder.getInitiallySelectedSlotView();
+    }
+
+    /** The action event to be called when the user presses the "move up" action button. This action moves the current
+     * container/installation slot up one space, if that is possible.
+     */
+    public void moveSlotUp() {
+        TreeNode currentNode = selectedNode;
+        TreeNode parent = currentNode.getParent();
+
+        ListIterator<TreeNode> listIterator = parent.getChildren().listIterator();
+        while (listIterator.hasNext()) {
+            TreeNode element = listIterator.next();
+            if (element.equals(currentNode) && listIterator.hasPrevious()) {
+                final SlotView movedSlotView = (SlotView) currentNode.getData();
+                final SlotView currentNodesParentSlotView = (SlotView) parent.getData();
+                listIterator.remove();
+                final SlotView affectedNode = (SlotView) listIterator.previous().getData();
+                affectedNode.setLast(movedSlotView.isLast());
+                affectedNode.setFirst(false);
+                movedSlotView.setLast(false);
+                movedSlotView.setFirst(!listIterator.hasPrevious());
+                listIterator.add(currentNode);
+                slotPairEJB.moveUp(currentNodesParentSlotView.getSlot(), movedSlotView.getSlot());
+                // selectNodeAfterMove(currentNode);
+                break;
+            }
+        }
+    }
+
+    /** The action event to be called when the user presses the "move down" action button. This action moves the current
+     * container/installation slot down one space, if that is possible.
+     */
+    public void moveSlotDown() {
+        TreeNode currentNode = selectedNode;
+        TreeNode parent = currentNode.getParent();
+
+        ListIterator<TreeNode> listIterator = parent.getChildren().listIterator();
+        while (listIterator.hasNext()) {
+            TreeNode element = listIterator.next();
+            if (element.equals(currentNode) && listIterator.hasNext()) {
+                final SlotView movedSlotView = (SlotView) currentNode.getData();
+                final SlotView currentNodesParentSlotView = (SlotView) parent.getData();
+                listIterator.remove();
+                final SlotView affectedNode = (SlotView) listIterator.next().getData();
+                affectedNode.setFirst(movedSlotView.isFirst());
+                affectedNode.setLast(false);
+                movedSlotView.setFirst(false);
+                movedSlotView.setLast(!listIterator.hasNext());
+                listIterator.add(currentNode);
+                slotPairEJB.moveDown(currentNodesParentSlotView.getSlot(), movedSlotView.getSlot());
+                //selectNodeAfterMove(currentNode);
+                break;
+            }
+        }
     }
 }

@@ -30,16 +30,21 @@
                         <p:fieldset id="treeFieldSet" legend="Slots">
                             <p:treeTable id="tree" value="#{hierarchiesController.rootNode}" var="installationSlot" 
                                     selectionMode="single" selection="#{hierarchiesController.selectedNode}" 
-                                    scrollable="true" scrollWidth="auto" style="width: 300px;" rowStyleClass="treeRows" 
+                                    scrollable="true" scrollWidth="auto" rowStyleClass="treeRows" 
+                                    style="width: 300px; border-bottom: 1px;" 
                                     widgetVar="hierarchyWidget">
                                 <p:ajax event="select" listener="#{hierarchiesController.initSelectedItemLists()}"
-                                    update=":hierarchies:relationsTable 
+                                    update=":hierarchies:relationsTable :hierarchies:deleteButton :hierarchies:downButton 
+                                            :hierarchies:upButton 
                                             :hierarchies:installationDetails :hierarchies:slotAttributes" 
                                     oncomplete="resizeEmptyColumnInHierarchies();hierarchiesResizeAttributes();" />
                                 <p:ajax event="unselect" listener="#{hierarchiesController.clearAttributeList()}"
-                                    update=":hierarchies:relationsTable 
+                                    update=":hierarchies:relationsTable :hierarchies:deleteButton :hierarchies:downButton 
+                                            :hierarchies:upButton 
                                             :hierarchies:installationDetails :hierarchies:slotAttributes" 
                                     oncomplete="resizeEmptyColumnInHierarchies();" />
+                                <p:ajax event="collapse" listener="#{hierarchiesController.onNodeCollapse}" />
+                                <p:ajax event="expand" listener="#{hierarchiesController.onNodeExpand}" />
     
                                 <p:column id="name" headerText="Name">
                                     <h:outputText value="" rendered="#{installationSlot.isHostingSlot}" 
@@ -51,6 +56,22 @@
                                     <h:outputText value="#{installationSlot.name}" title="#{installationSlot.description}" />
                                 </p:column>
                             </p:treeTable>
+
+                            <p:commandButton id="deleteButton" icon="ui-icon-trash" value="Delete" title="Delete" 
+                                style="float: right;  margin-top: 1em;" oncomplete="PF('deleteSlot').show();" 
+                                disabled="#{empty hierarchiesController.selectedNode || !hierarchiesController.selectedNode.data.canDelete}" 
+                                actionListener="#{hierarchiesController.prepareDeletePopup()}" />
+                            <p:commandButton id="downButton" icon="ui-icon-arrowthick-1-s" value="Down" title="Move down" 
+                                style="float: right; margin: 1em 1ex 0 0;" oncomplete="hierarchiesResizeAll();scrollSelectedIntoView();"
+                                update=":hierarchies:tree :hierarchies:downButton :hierarchies:upButton" 
+                                disabled="#{empty hierarchiesController.selectedNode || hierarchiesController.selectedNode.data.last}" 
+                                actionListener="#{hierarchiesController.moveSlotDown()}" />
+                            <p:commandButton id="upButton" icon="ui-icon-arrowthick-1-n" value="Up" title="Move up" 
+                                style="float: right; margin: 1em 1ex 0 0;" oncomplete="hierarchiesResizeAll();scrollSelectedIntoView();"
+                                update=":hierarchies:tree :hierarchies:upButton :hierarchies:downButton" 
+                                disabled="#{empty hierarchiesController.selectedNode || hierarchiesController.selectedNode.data.first}" 
+                                actionListener="#{hierarchiesController.moveSlotUp()}" />
+
                         </p:fieldset>
                     </p:column>
                     <p:column styleClass="alignTop" >
@@ -167,7 +188,19 @@
             <ui:param name="widgetName" value="installDevice" />
             <ui:param name="slot" value="#{hierarchiesController.selectedNodeSlot}" />
             <ui:param name="componentToUpdate"
-                value=":hierarchies:attributesTable :hierarchies:relationsTable :hierarchies:installationDetails" />
+                value=":hierarchies:slotAttributes :hierarchies:relationsTable :hierarchies:installationDetails" />
+        </ui:include>
+
+        <ui:include src="/data-definitions/add-or-modify-dialogs/delete-confirmation.xhtml" >
+            <ui:param name="formId" value="deleteSlotForm" />
+            <ui:param name="dialogTitle" value="Delete slot" />
+            <ui:param name="widgetName" value="deleteSlot" />
+            <ui:param name="controller" value="#{hierarchiesController}" />
+            <ui:param name="submitHandler" value="onSlotDelete" />
+            <ui:param name="formToUpdate" value=":hierarchies:tree :hierarchies:deleteButton :hierarchies:slotAttributes 
+                    :hierarchies:relationsTable :hierarchies:installationDetails" />
+            <ui:param name="resizeContent" value="hierarchiesResizeAll();" />
+            <ui:param name="entityType" value="this slot" />
         </ui:include>
 
         <script type="text/javascript">
