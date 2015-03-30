@@ -27,110 +27,103 @@
             <p:panelGrid id="hierarchiesContainer" style="width: 100%;" styleClass="noBorders">
                 <p:row>
                     <p:column rowspan="4" id="treeColumn">
-                        <p:treeTable id="tree" value="#{hierarchiesController.rootNode}" var="installationSlot" 
-                                selectionMode="single" selection="#{hierarchiesController.selectedNode}" 
-                                scrollable="true" scrollWidth="auto" style="width: 300px;" rowStyleClass="treeRows" 
-                                widgetVar="hierarchyWidget">
-                            <p:ajax event="select" listener="#{hierarchiesController.initSelectedItemLists()}"
-                                update=":hierarchies:attributesTable :hierarchies:relationsTable 
-                                        :hierarchies:installationDetails :hierarchies:slotAttributesTitle" 
-                                oncomplete="resizeEmptyColumnInHierarchies();hierarchiesResizeAttributes();" />
-                            <p:ajax event="unselect" listener="#{hierarchiesController.clearAttributeList()}"
-                                update=":hierarchies:attributesTable :hierarchies:relationsTable 
-                                        :hierarchies:installationDetails :hierarchies:slotAttributesTitle" 
-                                oncomplete="resizeEmptyColumnInHierarchies();" />
-
-                            <p:column id="name" headerText="Name">
-                                <h:outputText value="" rendered="#{installationSlot.isHostingSlot}" 
-                                    style="display:inline-block; vertical-align:bottom !important"
-                                    styleClass="ui-icon ui-icon-wrench" />
-                                <h:outputText value="" rendered="#{!installationSlot.isHostingSlot}" 
-                                    style="display:inline-block; vertical-align:bottom !important"
-                                    styleClass="ui-icon ui-icon-folder-collapsed" />
-                                <h:outputText value="#{installationSlot.name}" />
-                            </p:column>
-                        </p:treeTable>
+                        <p:fieldset id="treeFieldSet" legend="Slots">
+                            <p:treeTable id="tree" value="#{hierarchiesController.rootNode}" var="installationSlot" 
+                                    selectionMode="single" selection="#{hierarchiesController.selectedNode}" 
+                                    scrollable="true" scrollWidth="auto" style="width: 300px;" rowStyleClass="treeRows" 
+                                    widgetVar="hierarchyWidget">
+                                <p:ajax event="select" listener="#{hierarchiesController.initSelectedItemLists()}"
+                                    update=":hierarchies:relationsTable 
+                                            :hierarchies:installationDetails :hierarchies:slotAttributes" 
+                                    oncomplete="resizeEmptyColumnInHierarchies();hierarchiesResizeAttributes();" />
+                                <p:ajax event="unselect" listener="#{hierarchiesController.clearAttributeList()}"
+                                    update=":hierarchies:relationsTable 
+                                            :hierarchies:installationDetails :hierarchies:slotAttributes" 
+                                    oncomplete="resizeEmptyColumnInHierarchies();" />
+    
+                                <p:column id="name" headerText="Name">
+                                    <h:outputText value="" rendered="#{installationSlot.isHostingSlot}" 
+                                        style="display:inline-block; vertical-align:bottom !important"
+                                        styleClass="ui-icon ui-icon-wrench" />
+                                    <h:outputText value="" rendered="#{!installationSlot.isHostingSlot}" 
+                                        style="display:inline-block; vertical-align:bottom !important"
+                                        styleClass="ui-icon ui-icon-folder-collapsed" />
+                                    <h:outputText value="#{installationSlot.name}" title="#{installationSlot.description}" />
+                                </p:column>
+                            </p:treeTable>
+                        </p:fieldset>
                     </p:column>
                     <p:column styleClass="alignTop" >
-                        <h3>
-                            <h:panelGroup id="slotAttributesTitle">
-                                <h:outputText rendered="#{hierarchiesController.selectedNodeSlot.hostingSlot}" 
-                                    value="#{hierarchiesController.selectedNodeSlot.componentType.name} installation slot attributes" />
-                                <h:outputText rendered="#{!hierarchiesController.selectedNodeSlot.hostingSlot}" 
-                                    value="Container attributes" />
-                            </h:panelGroup>
-                        </h3>
+                        <p:fieldset id="slotAttributes" legend="#{hierarchiesController.selectedNodeSlot.hostingSlot ? hierarchiesController.selectedNodeSlot.componentType.name.concat(' installation slot attributes') : 'Container attributes'}">
+                            <p:dataTable id="attributesTable" class="hierarchies-attributes-cell" emptyMessage="No element selected."
+                                    value="#{hierarchiesController.attributes}" var="attribute" scrollable="true"
+                                    style="width: 100%; overflow-y: hidden; max-height: 324px;" 
+                                    filteredValue="#{hierarchiesController.filteredAttributes}">
+                                <p:column headerText="Name" sortBy="#{attribute.name}" filterBy="#{attribute.name}" 
+                                        filterMatchMode="contains">
+                                    <h:outputText value="#{attribute.name}" />
+                                </p:column>
+    
+                                <p:column headerText="Value" style="width: 400px;" sortBy="#{attribute.value}" 
+                                        filterBy="#{attribute.value}" filterMatchMode="contains">
+                                    <h:outputText value="#{attribute.value}" />
+                                </p:column>
+    
+                                <p:column headerText="Unit" sortBy="#{attribute.unit.name}" filterBy="#{attribute.unit.name}"
+                                        filterMatchMode="contains">
+                                    <h:outputLink rendered="#{!empty attribute.unit}" 
+                                            value="#{request.contextPath}/data-definitions/units/units-manager.xhtml?id=#{attribute.unit.id}">
+                                        <h:outputText value="#{attribute.unit.name}" style="text-decoration: underline;" />
+                                    </h:outputLink>
+                                    <h:outputText value="-" rendered="#{empty attribute.unit}" />
+                                </p:column>
+    
+                                <p:column headerText="Kind" sortBy="#{attribute.kind.toString()}" 
+                                        filterBy="#{attribute.kind}" filterMatchMode="exact" 
+                                        filterOptions="#{hierarchiesController.attributeKinds}">
+                                    <h:outputText value="#{attribute.kind.toString()}" />
+                                </p:column>
+    
+                                <p:column headerText="Data type" sortBy="#{attribute.type.name}" 
+                                        filterBy="#{attribute.type.name}" filterMatchMode="contains">
+                                    <h:outputText value="#{attribute.type.name}" />
+                                </p:column>
+                            </p:dataTable>
+                        </p:fieldset>
 
-                        <p:dataTable id="attributesTable" class="hierarchies-attributes-cell" emptyMessage="No element selected."
-                                value="#{hierarchiesController.attributes}" var="attribute" scrollable="true"
-                                style="width: 100%; overflow-y: hidden; max-height: 324px;" 
-                                filteredValue="#{hierarchiesController.filteredAttributes}">
-                            <p:column headerText="Name" sortBy="#{attribute.name}" filterBy="#{attribute.name}" 
-                                    filterMatchMode="contains">
-                                <h:outputText value="#{attribute.name}" />
-                            </p:column>
-
-                            <p:column headerText="Value" style="width: 400px;" sortBy="#{attribute.value}" 
-                                    filterBy="#{attribute.value}" filterMatchMode="contains">
-                                <h:outputText value="#{attribute.value}" />
-                            </p:column>
-
-                            <p:column headerText="Unit" sortBy="#{attribute.unit.name}" filterBy="#{attribute.unit.name}"
-                                    filterMatchMode="contains">
-                                <h:outputLink rendered="#{!empty attribute.unit}" 
-                                        value="#{request.contextPath}/data-definitions/units/units-manager.xhtml?id=#{attribute.unit.id}">
-                                    <h:outputText value="#{attribute.unit.name}" style="text-decoration: underline;" />
-                                </h:outputLink>
-                                <h:outputText value="-" rendered="#{empty attribute.unit}" />
-                            </p:column>
-
-                            <p:column headerText="Kind" sortBy="#{attribute.kind.toString()}" 
-                                    filterBy="#{attribute.kind}" filterMatchMode="exact" 
-                                    filterOptions="#{hierarchiesController.attributeKinds}">
-                                <h:outputText value="#{attribute.kind.toString()}" />
-                            </p:column>
-
-                            <p:column headerText="Data type" sortBy="#{attribute.type.name}" 
-                                    filterBy="#{attribute.type.name}" filterMatchMode="contains">
-                                <h:outputText value="#{attribute.type.name}" />
-                            </p:column>
-                        </p:dataTable>
                     </p:column>
                 </p:row>
                 <p:row>
                     <p:column styleClass="alignTop">
-                        <h3 id="slotRelationshipsTitle">Slot relationships</h3>
-
-                        <p:dataTable id="relationsTable" value="#{hierarchiesController.relationships}" 
-                                style="width: 100%; overflow-y: hidden; max-height: 324px;" var="relationship" 
-                                emptyMessage="No element selected." scrollable="true" class="hierarchies-attributes-cell" 
-                                filteredValue="#{hierarchiesController.filteredRelationships}">
-                            <p:column headerText="Relationship" sortBy="#{relationship.relationshipName}" 
-                                    filterOptions="#{hierarchiesController.relationshipTypes}" 
-                                    filterBy="#{relationship.relationshipName}" filterMatchMode="exact">
-                                <h:outputText value="#{relationship.relationshipName}" />
-                            </p:column>
-
-                            <p:column headerText="Target" sortBy="#{relationship.targetSlotName}" 
-                                    filterBy="#{relationship.targetSlotName}" filterMatchMode="contains">
-                                <p:commandLink action="#{hierarchiesController.selectNode(relationship.slot.id)}" 
-                                        update=":hierarchies" oncomplete="hierarchiesResizeAll();scrollSelectedIntoView();">
-                                    <h:outputText value="#{relationship.targetSlotName}" 
-                                        style="text-decoration: underline;" />
-                                </p:commandLink>
-                            </p:column>
-                        </p:dataTable>
+                        <p:fieldset id="relationsTable" legend="Slot relationships">
+                            <p:dataTable value="#{hierarchiesController.relationships}" 
+                                    style="width: 100%; overflow-y: hidden; max-height: 324px;" var="relationship" 
+                                    emptyMessage="No element selected." scrollable="true" class="hierarchies-attributes-cell" 
+                                    filteredValue="#{hierarchiesController.filteredRelationships}">
+                                <p:column headerText="Relationship" sortBy="#{relationship.relationshipName}" 
+                                        filterOptions="#{hierarchiesController.relationshipTypes}" 
+                                        filterBy="#{relationship.relationshipName}" filterMatchMode="exact">
+                                    <h:outputText value="#{relationship.relationshipName}" />
+                                </p:column>
+    
+                                <p:column headerText="Target" sortBy="#{relationship.targetSlotName}" 
+                                        filterBy="#{relationship.targetSlotName}" filterMatchMode="contains">
+                                    <p:commandLink action="#{hierarchiesController.selectNode(relationship.slot.id)}" 
+                                            update=":hierarchies" oncomplete="hierarchiesResizeAll();scrollSelectedIntoView();">
+                                        <h:outputText value="#{relationship.targetSlotName}" 
+                                            style="text-decoration: underline;" />
+                                    </p:commandLink>
+                                </p:column>
+                            </p:dataTable>
+                        </p:fieldset>
                     </p:column>
                 </p:row>
                 <p:row>
                     <p:column>
                         <h:panelGroup id="installationDetails" layout="block">
-                            <p:panel styleClass="noBorders installation-details" rendered="#{hierarchiesController.selectedNodeSlot.hostingSlot}">
-                                <h3>Installation details</h3>
-
+                            <p:fieldset legend="Installation details" rendered="#{not empty hierarchiesController.installedDevice}">
                                 <p:dataTable id="installationTable" value="#{hierarchiesController.installationRecord}" 
-                                        var="installationRecord" style="width: 100%;" 
-                                        rendered="#{not empty hierarchiesController.installedDevice}">
+                                        var="installationRecord" style="width: 100%;">
                                     <p:column headerText="Installed device inventory ID">
                                         <h:link outcome="deviceManager" value="#{installationRecord.device.serialNumber}" class="link">
                                             <f:param name="id" value="#{installationRecord.device.id}" />
@@ -148,12 +141,12 @@
                                                 oncomplete="resizeEmptyColumnInHierarchies();" />
                                     </p:column>
                                 </p:dataTable>
-                                <p:commandButton title="Install device to this slot" 
-                                        value="Install device to this slot" ajax="true" 
-                                        actionListener="#{hierarchiesController.prepareUninstalledDevices}" 
-                                        rendered="#{empty hierarchiesController.installedDevice}" 
-                                        oncomplete="PF('installDevice').show();" update=":hierarchies:installationDetails" />
-                            </p:panel>
+                            </p:fieldset>
+                            <p:commandButton title="Install device to this slot" 
+                                    value="Install device to this slot" ajax="true" 
+                                    actionListener="#{hierarchiesController.prepareUninstalledDevices}" 
+                                    rendered="#{empty hierarchiesController.installedDevice and hierarchiesController.selectedNodeSlot.hostingSlot}" 
+                                    oncomplete="PF('installDevice').show();" update=":hierarchies:installationDetails" />
                         </h:panelGroup>
                     </p:column>
                 </p:row>

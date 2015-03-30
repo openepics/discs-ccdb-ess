@@ -37,28 +37,26 @@
 
             function resizeHierarchiesTree() {
                 var menusHeight = $('#top').outerHeight(true);
-                var headerHeight = $('#hierarchies\\:tree\\:name').outerHeight(true);
+                var headerHeight = $('#hierarchies\\:tree\\:name').outerHeight(true) + $('#hierarchies\\:treeFieldSet legend').outerHeight(true);
                 if (headerHeight != null) {
                     var em = emHeight();
-                    var totalMenusHeight = menusHeight + headerHeight + 3*em;
-                    $('.ui-treetable-scrollable-body').css({"height":window.innerHeight-totalMenusHeight});
+                    var totalMenusHeight = menusHeight + headerHeight + 4*em;
+                    $('#hierarchies\\:tree .ui-treetable-scrollable-body').css({"height":window.innerHeight-totalMenusHeight});
                 }
             }
 
             function resizeEmptyColumnInHierarchies() {
                 var menusHeight = $('#top').outerHeight(true);
                 var em = emHeight();
-                var slotAttributesTitle = $('#hierarchies\\:slotAttributesTitle').parent().outerHeight(true);
-                var slotAttributesTable = $('#hierarchies\\:attributesTable').outerHeight(true);
-                var slotRelationshipsTitle = $('#slotRelationshipsTitle').outerHeight(true);
-                var slotRelationshipsTable = $('#hierarchies\\:relationsTable').outerHeight(true);
-                var installationDetails = $('#hierarchies\\:installationDetails').outerHeight(true);
+                var slotAttributesFieldSet = $('#hierarchies\\:slotAttributes').outerHeight(true);
+                var slotRelationsFieldSet = $('#hierarchies\\:relationsTable').outerHeight(true);
+                var installationDetailsFieldSet = $('#hierarchies\\:installationDetails').parent().outerHeight(true);
 
-                if (installationDetails == null) { 
+                if (installationDetailsFieldSet == null) { 
                     installationDetails = 0;
                 }
 
-                var totalHeight = menusHeight + 4*em  + slotAttributesTitle + slotAttributesTable + slotRelationshipsTitle + slotRelationshipsTable + installationDetails;
+                var totalHeight = menusHeight + slotAttributesFieldSet + slotRelationsFieldSet + installationDetailsFieldSet + 4*em;
 
                 $('#hierarchies\\:hierarchiesEmptyColumn').css({"height":window.innerHeight-totalHeight});
             }

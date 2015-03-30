@@ -114,6 +114,11 @@ body {
     padding-left: 0 !important;
 }
 
+#hierarchies\:tree .ui-treetable-scrollable-body {
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
 .menu {
     background-color: transparent; 
 }
