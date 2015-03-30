@@ -32,6 +32,7 @@ import javax.faces.validator.ValidatorException;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.servlet.http.HttpServletRequest;
 
 import org.openepics.discs.conf.ejb.ComptypeEJB;
 import org.openepics.discs.conf.ejb.DeviceEJB;
@@ -46,9 +47,9 @@ import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.views.DeviceView;
 import org.primefaces.context.RequestContext;
 
-import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableList.Builder;
 import com.google.common.collect.Lists;
 
 
@@ -86,6 +87,7 @@ public class DevicesByTypeManager implements Serializable {
     private String batchSerialConflicts;
     private BatchSaveStage batchSaveStage;
     private boolean batchSkipExisting;
+    private int selectedIndex = -1;
 
     public DevicesByTypeManager() {
     }
@@ -94,8 +96,19 @@ public class DevicesByTypeManager implements Serializable {
     @PostConstruct
     public void init() {
         availableDeviceTypes = componentTypesEJB.findAll();
-        prepareDevicesForDisplay();
+
+        Long selectedDeviceId = null;
+        final String deviceId = ((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().
+                getRequest()).getParameter("id");
+        if (deviceId != null) {
+            selectedDeviceId = new Long(deviceId);
+        }
+
+        prepareDevicesForDisplay(selectedDeviceId);
         prepareStatusLabels();
+        if (selectedIndex > -1) {
+            RequestContext.getCurrentInstance().execute("selectDeviceInTable(" + selectedIndex + ");");
+        }
     }
 
     /** Creates a new device instance and adds all properties to it which are defined by device type */
@@ -110,7 +123,7 @@ public class DevicesByTypeManager implements Serializable {
         }
 
         clearDeviceDialogFields();
-        prepareDevicesForDisplay();
+        prepareDevicesForDisplay(null);
     }
 
     private void singleDeviceAdd() {
@@ -169,7 +182,7 @@ public class DevicesByTypeManager implements Serializable {
         batchSkipExisting = true;
         multiDeviceAdd();
         clearDeviceDialogFields();
-        prepareDevicesForDisplay();
+        prepareDevicesForDisplay(null);
     }
 
     private Device createNewDevice(String deviceSerailNo) {
@@ -198,7 +211,7 @@ public class DevicesByTypeManager implements Serializable {
             try {
                 final Device deleteDevice = deviceEJB.findById(selectedDevice.getDevice().getId());
                 deviceEJB.delete(deleteDevice);
-                prepareDevicesForDisplay();
+                prepareDevicesForDisplay(null);
                 FacesContext.getCurrentInstance().addMessage(null,
                         new FacesMessage(FacesMessage.SEVERITY_INFO, "Device deleted.", null));
             } catch (Exception e) {
@@ -256,25 +269,29 @@ public class DevicesByTypeManager implements Serializable {
     }
 
     /** The method prepares the list of all {@link Device} instances in the database to show to the user. */
-    private void prepareDevicesForDisplay() {
+    private void prepareDevicesForDisplay(final Long deviceToSelect) {
         selectedDevice = null;
         isDeviceBeingEdited = false;
         final List<Device> deviceList = deviceEJB.findAll();
 
-        // transform the list of Unit into a list of UnitView
-        devices = ImmutableList.copyOf(Lists.transform(deviceList, new Function<Device, DeviceView>() {
-                        @Override
-                        public DeviceView apply(Device input) {
-                            final InstallationRecord installationRecord =
-                                                installationEJB.getActiveInstallationRecordForDevice(input);
-                            final String installationSlot = installationRecord == null ? "-"
-                                                                    : installationRecord.getSlot().getName();
-                            final String installationSlotId = installationRecord == null ? null
-                                                                : Long.toString(installationRecord.getSlot().getId());
-                            final Date installationDate = installationRecord == null ? null
-                                                                    : installationRecord.getInstallDate();
-                            return new DeviceView(input, installationSlot, installationSlotId, installationDate);
-                        }}));
+        int devTableRowCounter = 0;
+        final Builder<DeviceView> listBuilder = new ImmutableList.Builder<>();
+        // transform the list of Device into an immutable list of DeviceView
+        for (final Device dev : deviceList) {
+            final InstallationRecord installationRecord = installationEJB.getActiveInstallationRecordForDevice(dev);
+            final String installationSlot = installationRecord == null ? "-": installationRecord.getSlot().getName();
+            final String installationSlotId = installationRecord == null ? null
+                                                    : Long.toString(installationRecord.getSlot().getId());
+            final Date installationDate = installationRecord == null ? null: installationRecord.getInstallDate();
+            final DeviceView devView = new DeviceView(dev, installationSlot, installationSlotId, installationDate);
+            if (deviceToSelect != null && selectedDevice == null && dev.getId().equals(deviceToSelect)) {
+                selectedIndex = devTableRowCounter;
+                selectedDevice = devView;
+            }
+            devTableRowCounter++;
+            listBuilder.add(devView);
+        }
+        devices = listBuilder.build();
     }
 
     private void prepareStatusLabels() {

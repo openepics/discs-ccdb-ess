@@ -132,7 +132,7 @@
                                         var="installationRecord" style="width: 100%;" 
                                         rendered="#{not empty hierarchiesController.installedDevice}">
                                     <p:column headerText="Installed device inventory ID">
-                                        <h:link outcome="deviceDetails" value="#{installationRecord.device.serialNumber}" class="link">
+                                        <h:link outcome="deviceManager" value="#{installationRecord.device.serialNumber}" class="link">
                                             <f:param name="id" value="#{installationRecord.device.id}" />
                                         </h:link>                                    
                                     </p:column>

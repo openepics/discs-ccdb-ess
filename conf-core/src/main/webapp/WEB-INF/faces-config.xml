@@ -28,8 +28,8 @@
     <navigation-rule>
 	    <from-view-id>/hierarchies/hierarchies.xhtml</from-view-id>
         <navigation-case>
-            <from-outcome>deviceDetails</from-outcome>
-            <to-view-id>/devices/device-details.xhtml</to-view-id>
+            <from-outcome>deviceManager</from-outcome>
+            <to-view-id>/devices/device-manager.xhtml</to-view-id>
         </navigation-case>
     </navigation-rule>
     <render-kit>      

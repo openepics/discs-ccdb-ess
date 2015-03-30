@@ -9,6 +9,7 @@
         <p:growl showDetail="true" globalOnly="true" autoUpdate="true" />
         <h:form id="devicesForm">
             <script type="text/javascript">
+                // <![CDATA[
                 function disableAddButton() {
                    $('#devicesForm\\:addButton').prop('disabled',true).addClass('ui-state-disabled');
                 }
@@ -25,6 +26,34 @@
                     $('#devicesForm\\:devicesTable').css({"height":tableHeight});
                     $('#devicesForm\\:attributesDataTable\\:attributesDataTable').css({"height":tableHeight});
                 }
+                function selectDeviceInTable(globalIndex) {
+                    // selectDeviceInTable() only works on page load, so it can be used for navigating to 
+                    //     a device form another screen. 
+                    var devicesTable = PF('devicesTableVar');
+                    if (devicesTable.getPaginator().cfg.rowCount < 1) return;
+                    
+                    var rowsPerPage = devicesTable.getPaginator().cfg.rows;
+                    var pageNumber = Math.trunc(globalIndex / rowsPerPage);
+                    ccdb_tableSelectedIndex = globalIndex % rowsPerPage;
+                    if (pageNumber >= 0) {
+                        devicesTable.unselectAllRows();
+                        if (pageNumber == devicesTable.getPaginator().getCurrentPage()) {
+                            devicesTable.selectRow(ccdb_tableSelectedIndex);
+                            ccdb_tableSelectedIndex = -1;
+                        } else {
+                            // after page change 'onPageLoadAction()' will be called by the framework
+                            devicesTable.getPaginator().setPage(pageNumber);
+                        }
+                    }
+                }
+                var ccdb_tableSelectedIndex = -1;
+                function onPageLoadAction() {
+                    if (ccdb_tableSelectedIndex > -1) {
+                        PF('devicesTableVar').selectRow(ccdb_tableSelectedIndex);
+                        ccdb_tableSelectedIndex = -1;
+                    }
+                }
+                // ]]>
             </script>
             <p:remoteCommand name="clearDeviceInstance" oncomplete="disableAddButton();"
                 actionListener="#{deviceDetailsAttributesController.clearDeviceInstance()}" 
@@ -48,6 +77,7 @@
                                         listener="#{deviceDetailsAttributesController.clearDeviceInstance()}" 
                                         update=":deviceAddForm:addDeviceDialog :devicesForm:deleteButton :devicesForm:editButton 
                                                 :devicesForm:attributesDataTable:attributesDataTable" />
+                                <p:ajax event="page" oncomplete="onPageLoadAction();" />
 
                                 <p:column headerText="Type" sortBy="#{device.device.componentType.name}" filterStyle="width: 90%;" 
                                         filterBy="#{device.device.componentType.name}" filterMatchMode="contains">
