@@ -1,0 +1,11 @@
+
+{
+    "metadata":{
+        "type":"SedsScalar_Boolean",
+        "protocol":"SEDSv1",
+        "version":"1.0.0"
+    },
+    "data":{
+        "value":true
+    }
+}

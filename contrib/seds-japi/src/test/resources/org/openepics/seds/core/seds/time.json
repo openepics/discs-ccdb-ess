@@ -1,0 +1,12 @@
+
+{
+    "metadata":{
+        "type":"SedsTime",
+        "protocol":"SEDSv1",
+        "version":"1.0.0"
+    },
+    "data":{
+        "unixSec":1354719441,
+        "nanoSec":521786982
+    }
+}

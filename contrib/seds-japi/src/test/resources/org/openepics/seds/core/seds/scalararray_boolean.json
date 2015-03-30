@@ -1,0 +1,15 @@
+
+{
+    "metadata":{
+        "type":"SedsScalarArray_Boolean",
+        "protocol":"SEDSv1",
+        "version":"1.0.0"
+    },
+    "data":{
+        "valueArray":[
+            true,
+            false,
+            true
+        ]
+    }
+}

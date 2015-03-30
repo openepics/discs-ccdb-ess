@@ -1,0 +1,25 @@
+
+{
+    "metadata": {
+        "type": "SedsScalar_Integer",
+        "protocol": "SEDSv1",
+        "version": "1.0.0"
+    },
+    "data": {
+        "value": 1234,
+        "alarm": {
+            "severity": 1,
+            "status": "noStatus",
+            "message": "simpleAlarm"
+        },
+        "control": {
+            "lowLimit": 10.0,
+            "highLimit": 100.0
+        },
+        "time": {
+            "unixSec": 1354719441,
+            "nanoSec": 521786982,
+            "userTag": -1
+        }
+    }
+}

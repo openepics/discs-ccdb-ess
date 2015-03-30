@@ -1,0 +1,26 @@
+
+{
+    "meta":{
+        "type":"SedsScalarArray_Enum",
+        "protocol":"SEDSv1",
+        "version":"1.0.0"
+    },
+    "data":{
+        "valueArray":[
+            "A",
+            "C",
+            "C"
+        ],
+        "time":{
+            "unixSec":1354719441,
+            "nanoSec":521786982
+        }
+    },
+    "type":{
+        "elements":[
+            "A",
+            "B",
+            "C"
+        ]
+    }
+}

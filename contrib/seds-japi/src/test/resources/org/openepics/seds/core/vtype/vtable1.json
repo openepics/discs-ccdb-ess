@@ -1,0 +1,45 @@
+
+{
+    "metadata":{
+        "type":"SedsTable",
+        "protocol":"SEDSv1",
+        "version":"1.0.0"
+    },
+    "data":{
+        "numRows":3,
+        "numColumns":3,
+        "names":[
+            "Rack",
+            "Slot",
+            "CPU"
+        ],
+        "columnTypes":[
+            "SedsScalarArray_String",
+            "SedsScalarArray_Number",
+            "SedsScalarArray_String"
+        ],
+        "values":[
+            {
+                "valueArray":[
+                    "A",
+                    "A",
+                    "B"
+                ]
+            },
+            {
+                "valueArray":[
+                    1.0,
+                    2.0,
+                    3.0
+                ]
+            },
+            {
+                "valueArray":[
+                    "286",
+                    "286",
+                    "386"
+                ]
+            }
+        ]
+    }
+}

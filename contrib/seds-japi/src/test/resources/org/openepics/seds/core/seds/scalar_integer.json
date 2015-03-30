@@ -1,0 +1,15 @@
+
+{
+    "metadata":{
+        "type":"SedsScalar_Integer",
+        "protocol":"SEDSv1",
+        "version":"1.0.0"
+    },
+    "data":{
+        "value":1,
+        "time":{
+            "unixSec":1354719441,
+            "nanoSec":521786982
+        }
+    }
+}

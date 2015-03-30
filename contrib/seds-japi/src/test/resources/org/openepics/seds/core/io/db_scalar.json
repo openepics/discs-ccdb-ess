@@ -1,0 +1,27 @@
+
+{
+    "meta":{
+        "type":"SedsScalar_Enum",
+        "protocol":"SEDSv1",
+        "version":"1.0.0"
+    },
+    "data":{
+        "value":"B",
+        "alarm":{
+            "severity":"MAJOR",
+            "status":"3",
+            "message":"sampleAlarm"
+        },
+        "time":{
+            "unixSec":1354719441,
+            "nanoSec":521786982
+        }
+    },
+    "type":{
+        "elements":[
+            "A",
+            "B",
+            "C"
+        ]
+    }
+}

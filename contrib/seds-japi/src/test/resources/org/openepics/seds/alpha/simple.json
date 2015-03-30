@@ -1,0 +1,21 @@
+
+{
+    "metadata": {
+        "type": "SedsScalar_String",
+        "protocol": "SEDSv1",
+        "version": "1.0.0"
+    },
+    "data": {
+        "value": "A",
+        "alarm": {
+            "severity": "MAJOR",
+            "status": "noStatus",
+            "message": "simpleAlarm"
+        },
+        "time": {
+            "unixSec": 1354719441,
+            "nanoSec": 521786982,
+            "userTag": -1
+        }
+    }
+}

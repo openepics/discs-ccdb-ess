@@ -1,0 +1,6 @@
+distance,time,shape
+meters,seconds,
+10.0,5.0,flat
+20.0,5.0,round
+30.0,10.0,flat
+100.0,10.0,round
