@@ -21,6 +21,14 @@
                         }
                     }
                 }
+                function setRightColumnWidths() {
+                    var em = emHeight();
+                    var rightColumnsWidth = $('#hierarchies').outerWidth() - $('#hierarchies\\:treeColumn').outerWidth(true) - 2*em;
+                    $('#hierarchies\\:attributesColumn').css({"max-width":rightColumnsWidth});
+                    $('#hierarchies\\:relationsColumn').css({"max-width":rightColumnsWidth});
+                    $('#hierarchies\\:installationColumn').css({"max-width":rightColumnsWidth});
+                    $('#hierarchies\\:hierarchiesEmptyColumn').css({"max-width":rightColumnsWidth});
+                }
             // ]]>
             </script>
             <p:growl showDetail="true" globalOnly="true" autoUpdate="true" />
@@ -76,7 +84,7 @@
                                 disabled="#{empty hierarchiesController.selectedNode}" oncomplete="PF('editSlotDialog').show();" 
                                 actionListener="#{hierarchiesController.prepareEditPopup()}" />
 
-                            <p:menuButton id="addButton" value="Add" type="button" style="float: right; margin: 1em 1ex 0 0;">
+                            <p:menuButton id="addButton" value="Add" style="float: right; margin: 1em 1ex 0 0;">
                                 <p:menuitem value="Container" oncomplete="PF('addSlotDialog').show();" 
                                         actionListener="#{hierarchiesController.prepareContainerAddPopup}" 
                                         update=":addSlotForm" 
@@ -87,23 +95,23 @@
                             </p:menuButton>
                         </p:fieldset>
                     </p:column>
-                    <p:column styleClass="alignTop" >
+                    <p:column id="attributesColumn" styleClass="alignTop" >
                         <p:fieldset id="slotAttributes" legend="#{hierarchiesController.selectedNodeSlot.hostingSlot ? hierarchiesController.selectedNodeSlot.componentType.name.concat(' installation slot attributes') : 'Container attributes'}">
                             <p:dataTable id="attributesTable" class="hierarchies-attributes-cell" emptyMessage="No element selected."
                                     value="#{hierarchiesController.attributes}" var="attribute" scrollable="true"
-                                    style="width: 100%; overflow-y: hidden; max-height: 324px;" 
+                                    style="width: 100%; overflow-y: hidden; max-height: 30%;" resizableColumns="true"
                                     filteredValue="#{hierarchiesController.filteredAttributes}">
                                 <p:column headerText="Name" sortBy="#{attribute.name}" filterBy="#{attribute.name}" 
                                         filterMatchMode="contains">
                                     <h:outputText value="#{attribute.name}" />
                                 </p:column>
     
-                                <p:column headerText="Value" style="width: 400px;" sortBy="#{attribute.value}" 
+                                <p:column headerText="Value" sortBy="#{attribute.value}" 
                                         filterBy="#{attribute.value}" filterMatchMode="contains">
                                     <h:outputText value="#{attribute.value}" />
                                 </p:column>
     
-                                <p:column headerText="Unit" sortBy="#{attribute.unit.name}" filterBy="#{attribute.unit.name}"
+                                <p:column headerText="Unit" sortBy="#{attribute.unit.name}" filterBy="#{attribute.unit.name}" 
                                         filterMatchMode="contains">
                                     <h:outputLink rendered="#{!empty attribute.unit}" 
                                             value="#{request.contextPath}/data-definitions/units/units-manager.xhtml?id=#{attribute.unit.id}">
@@ -128,7 +136,7 @@
                     </p:column>
                 </p:row>
                 <p:row>
-                    <p:column styleClass="alignTop">
+                    <p:column id="relationsColumn" styleClass="alignTop">
                         <p:fieldset id="relationsTable" legend="Slot relationships">
                             <p:dataTable value="#{hierarchiesController.relationships}" 
                                     style="width: 100%; overflow-y: hidden; max-height: 324px;" var="relationship" 
@@ -153,7 +161,7 @@
                     </p:column>
                 </p:row>
                 <p:row>
-                    <p:column>
+                    <p:column id="installationColumn">
                         <h:panelGroup id="installationDetails" layout="block">
                             <p:fieldset legend="Installation details" rendered="#{not empty hierarchiesController.installationRecord}">
                                 <p:dataTable id="installationTable" value="#{hierarchiesController.installationRecord}" 
@@ -233,12 +241,14 @@
         <script type="text/javascript">
             jQuery(window).resize(function() {
                 hierarchiesResizeAll();
-                scrollSelectedIntoView();                
+                scrollSelectedIntoView();
+                setRightColumnWidths();
             });
 
             jQuery(document).ready(function() {
                 hierarchiesResizeAll();
-                scrollSelectedIntoView();                
+                scrollSelectedIntoView();
+                setRightColumnWidths();
             });
         </script>
     </ui:define>
