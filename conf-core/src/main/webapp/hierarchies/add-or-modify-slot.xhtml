@@ -1,0 +1,80 @@
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets" 
+    xmlns:p="http://primefaces.org/ui" 
+    xmlns:f="http://java.sun.com/jsf/core" 
+    xmlns:h="http://java.sun.com/jsf/html">
+
+    <h:form id="#{formId}">
+        <p:dialog id="#{widgetName}" widgetVar="#{widgetName}" modal="true" resizable="false" closable="false" 
+                dynamic="true">
+            <f:facet name="header">
+                <h:outputText value="#{dialogTitle}" />
+            </f:facet>
+
+            <p:panelGrid id="grp" styleClass="noBorders" style="margin-bottom: 1ex;">
+                <p:row rendered="#{hierarchiesController.installationSlot}">
+                    <p:column style="text-align: right">
+                        <p:outputLabel for="compTypeSelect" value="Device type:" />
+                    </p:column>
+                    <p:column>
+                        <h:panelGroup>
+                            <p:selectOneMenu id="compTypeSelect" value="#{hierarchiesController.deviceType}" 
+                                    converter="#{componentTypeConverter}" rendered="true" required="true" 
+                                    requiredMessage="Please select a device type" disabled="#{not empty hierarchiesController.installationRecord}">
+                                <f:selectItem itemLabel="Select One" itemValue="" noSelectionOption="true" />
+                                <f:selectItems value="#{componentTypeManager.deviceTypes}" var="deviceType" 
+                                    itemLabel="#{deviceType.name}" itemValue="#{deviceType}" />
+                            </p:selectOneMenu>
+                            <p:message for="compTypeSelect"/>
+                        </h:panelGroup>
+                    </p:column>
+                </p:row>
+
+                <p:row>
+                    <p:column style="text-align: right">
+                        <p:outputLabel for="slotName" value="#{hierarchiesController.installationSlot ? 'Installation slot' : 'Container'} name:" />
+                    </p:column>
+                    <p:column>
+                        <h:panelGroup>
+                            <p:autoComplete id="slotName" value="#{hierarchiesController.name}" 
+                                completeMethod="#{hierarchiesController.nameAutocompleteText}" 
+                                required="true" requiredMessage="Please enter an installation slot name" />
+                            <p:message for="slotName" />
+                        </h:panelGroup>
+                    </p:column>
+                </p:row>
+
+                <p:row>
+                    <p:column style="text-align: right">
+                        <p:outputLabel for="slotDesc" value="Description:" />
+                    </p:column>
+                    <p:column>
+                        <h:panelGroup style="width: 100%">
+                            <p:inputTextarea id="slotDesc" rows="5" style="width: 20em;" maxlength="254" required="true" 
+                                requiredMessage="Please enter a description" value="#{hierarchiesController.description}" />
+                            <br />
+                            <p:message for="slotDesc" />
+                        </h:panelGroup>
+                    </p:column>
+                </p:row>
+
+                <p:row>
+                    <p:column style="text-align: right">
+                        <p:outputLabel for="parent" value="Parent:" />
+                    </p:column>
+                    <p:column>
+                        <p:inputText id="parent" value="#{hierarchiesController.parentSlotView.name}" disabled="true" />
+                    </p:column>
+                </p:row>
+            </p:panelGrid>
+
+            <p:commandButton value="Cancel" styleClass="dialogButton" onclick="PF('#{widgetName}').hide();" update="grp" 
+                    resetValues="true" />
+            <p:commandButton value="Save" styleClass="dialogButton" 
+                    oncomplete="if (args &amp;&amp; !args.validationFailed) { PF('#{widgetName}').hide();hierarchiesResizeAll();}" 
+                    action="#{hierarchiesController[submitHandler]}" 
+                    update=":hierarchies:tree :hierarchies:slotAttributes grp" />
+                    <!-- TODO: update the add button after this -->
+        </p:dialog>
+    </h:form>
+
+</ui:composition>

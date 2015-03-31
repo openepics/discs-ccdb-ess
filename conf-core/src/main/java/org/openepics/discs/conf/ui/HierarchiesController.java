@@ -43,6 +43,7 @@ import org.openepics.discs.conf.ejb.InstallationEJB;
 import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ejb.SlotPairEJB;
 import org.openepics.discs.conf.ejb.SlotRelationEJB;
+import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypeArtifact;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.DataType;
@@ -60,6 +61,7 @@ import org.openepics.discs.conf.ent.Tag;
 import org.openepics.discs.conf.ui.common.UIException;
 import org.openepics.discs.conf.util.BuiltInDataType;
 import org.openepics.discs.conf.util.Utility;
+import org.openepics.discs.conf.util.names.Names;
 import org.openepics.discs.conf.views.BuiltInProperty;
 import org.openepics.discs.conf.views.EntityAttributeView;
 import org.openepics.discs.conf.views.EntityAttributeViewKind;
@@ -92,6 +94,7 @@ public class HierarchiesController implements Serializable {
     @Inject private transient InstallationEJB installationEJB;
     @Inject private transient DataTypeEJB dataTypeEJB;
     @Inject private transient SlotRelationEJB slotRelationEJB;
+    @Inject private Names names;
 
     private transient List<EntityAttributeView> attributes;
     private transient List<EntityAttributeView> filteredAttributes;
@@ -106,18 +109,26 @@ public class HierarchiesController implements Serializable {
     private InstallationRecord installationRecord;
     private Device deviceToInstall;
     private Slot selectedSlot;
-    protected DataType strDataType;
-    protected DataType dblDataType;
+    private DataType strDataType;
+    private DataType dblDataType;
 
     // variables from the installation slot / containers editing merger.
-    private Set<Long> collapsedNodes;
+    private transient Set<Long> collapsedNodes;
     private SlotView selectedSlotView;
+    private String name;
+    private String description;
+    /** Used in "add child to parent" operations. This usually reflects the <code>selectedNode</code>. */
+    private SlotView parentSlotView;
+    private boolean isInstallationSlot;
+    private ComponentType deviceType;
+    private transient List<String> namesForAutoComplete;
 
     /** Java EE post construct life-cycle method. */
     @PostConstruct
     public void init() {
         try {
             updateRootNode();
+            fillNamesAutocomplete();
             strDataType = dataTypeEJB.findByName(BuiltInDataType.STR_NAME);
             dblDataType = dataTypeEJB.findByName(BuiltInDataType.DBL_NAME);
             attributeKinds = Utility.buildAttributeKinds();
@@ -260,6 +271,7 @@ public class HierarchiesController implements Serializable {
         filteredAttributes = null;
         relationships = null;
         filteredRelationships = null;
+        installationRecord = null;
     }
 
     /**
@@ -311,7 +323,7 @@ public class HierarchiesController implements Serializable {
         this.selectedNode = selectedNode;
         selectedSlotView = selectedNode == null ? null : (SlotView)selectedNode.getData();
         selectedSlot = selectedNode == null ? null : this.selectedSlotView.getSlot();
-        installationRecord = selectedNode == null ? null
+        installationRecord = selectedNode == null || !selectedSlot.isHostingSlot() ? null
                                                     : installationEJB.getActiveInstallationRecordForSlot(selectedSlot);
     }
 
@@ -475,6 +487,8 @@ public class HierarchiesController implements Serializable {
     public void initSelectedItemLists() {
         initAttributeList();
         initRelationshipList();
+        installationRecord = selectedNode == null || !selectedSlot.isHostingSlot() ? null
+                : installationEJB.getActiveInstallationRecordForSlot(selectedSlot);
     }
 
     /** @return the {@link List} of relationship types to display in the filter drop down selection. */
@@ -567,6 +581,10 @@ public class HierarchiesController implements Serializable {
         selectedSlotView = slotsTreeBuilder.getInitiallySelectedSlotView();
     }
 
+    private void fillNamesAutocomplete() {
+        namesForAutoComplete = ImmutableList.copyOf(names.getAllNames());
+    }
+
     /** The action event to be called when the user presses the "move up" action button. This action moves the current
      * container/installation slot up one space, if that is possible.
      */
@@ -588,7 +606,6 @@ public class HierarchiesController implements Serializable {
                 movedSlotView.setFirst(!listIterator.hasPrevious());
                 listIterator.add(currentNode);
                 slotPairEJB.moveUp(currentNodesParentSlotView.getSlot(), movedSlotView.getSlot());
-                // selectNodeAfterMove(currentNode);
                 break;
             }
         }
@@ -615,9 +632,87 @@ public class HierarchiesController implements Serializable {
                 movedSlotView.setLast(!listIterator.hasNext());
                 listIterator.add(currentNode);
                 slotPairEJB.moveDown(currentNodesParentSlotView.getSlot(), movedSlotView.getSlot());
-                //selectNodeAfterMove(currentNode);
                 break;
             }
         }
     }
+
+    /** Prepares fields that are used in pop up for editing an existing container */
+    public void prepareEditPopup() {
+        Preconditions.checkNotNull(selectedNode);
+        selectedSlotView = (SlotView) selectedNode.getData();
+        isInstallationSlot = selectedSlotView.getIsHostingSlot();
+        name = selectedSlotView.getName();
+        description = selectedSlotView.getDescription();
+        deviceType = selectedSlotView.getDeviceType();
+        parentSlotView = selectedSlotView.getParentNode();
+    }
+
+    /** @return the name */
+    public String getName() {
+        return name;
+    }
+    /** @param name the name to set */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /** @return the description */
+    public String getDescription() {
+        return description;
+    }
+    /** @param description the description to set */
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    /** @return the parentSlotView */
+    public SlotView getParentSlotView() {
+        return parentSlotView;
+    }
+
+    /** @return the isInstallationSlot */
+    public boolean isInstallationSlot() {
+        return isInstallationSlot;
+    }
+
+    /** @return the deviceType */
+    public ComponentType getDeviceType() {
+        return deviceType;
+    }
+    /** @param deviceType the deviceType to set */
+    public void setDeviceType(ComponentType deviceType) {
+        this.deviceType = deviceType;
+    }
+
+    /**
+     * Helper method for auto complete when entering a name for new installation {@link Slot}.
+     *
+     * @param query Text that was entered so far
+     * @return {@link List} of strings with suggestions
+     */
+    public List<String> nameAutocompleteText(String query) {
+        final List<String> resultList = new ArrayList<>();
+        final String queryUpperCase = query.toUpperCase();
+        for (String element : namesForAutoComplete) {
+            if (element.toUpperCase().startsWith(queryUpperCase))
+                resultList.add(element);
+        }
+
+        return resultList;
+    }
+
+    /** Called to save modified installation slot / container information */
+    public void onSlotModify() {
+        final Slot modifiedSlot = selectedSlotView.getSlot();
+        modifiedSlot.setName(name);
+        modifiedSlot.setDescription(description);
+        if (modifiedSlot.isHostingSlot() && installationRecord == null) {
+            modifiedSlot.setComponentType(deviceType);
+        }
+        slotEJB.save(modifiedSlot);
+        selectedSlotView.setSlot(slotEJB.findById(modifiedSlot.getId()));
+        initAttributeList();
+    }
+
 }
