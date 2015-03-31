@@ -31,16 +31,16 @@
                             <p:treeTable id="tree" value="#{hierarchiesController.rootNode}" var="installationSlot" 
                                     selectionMode="single" selection="#{hierarchiesController.selectedNode}" 
                                     scrollable="true" scrollWidth="auto" rowStyleClass="treeRows" 
-                                    style="width: 300px; border-bottom: 1px;" 
+                                    style="width: 30em; border-bottom: solid 1px #a8a8a8;" 
                                     widgetVar="hierarchyWidget">
                                 <p:ajax event="select" listener="#{hierarchiesController.initSelectedItemLists()}"
                                     update=":hierarchies:relationsTable :hierarchies:deleteButton :hierarchies:downButton 
-                                            :hierarchies:upButton :hierarchies:editButton 
+                                            :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton 
                                             :hierarchies:installationDetails :hierarchies:slotAttributes" 
                                     oncomplete="resizeEmptyColumnInHierarchies();hierarchiesResizeAttributes();" />
                                 <p:ajax event="unselect" listener="#{hierarchiesController.clearAttributeList()}"
                                     update=":hierarchies:relationsTable :hierarchies:deleteButton :hierarchies:downButton 
-                                            :hierarchies:upButton :hierarchies:editButton 
+                                            :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton 
                                             :hierarchies:installationDetails :hierarchies:slotAttributes" 
                                     oncomplete="resizeEmptyColumnInHierarchies();" />
                                 <p:ajax event="collapse" listener="#{hierarchiesController.onNodeCollapse}" />
@@ -75,6 +75,16 @@
                                 style="float: right; margin: 1em 1ex 0 0;" update=":editSlotForm:editSlotDialog" 
                                 disabled="#{empty hierarchiesController.selectedNode}" oncomplete="PF('editSlotDialog').show();" 
                                 actionListener="#{hierarchiesController.prepareEditPopup()}" />
+
+                            <p:menuButton id="addButton" value="Add" type="button" style="float: right; margin: 1em 1ex 0 0;">
+                                <p:menuitem value="Container" oncomplete="PF('addSlotDialog').show();" 
+                                        actionListener="#{hierarchiesController.prepareContainerAddPopup}" 
+                                        update=":addSlotForm" 
+                                        disabled="#{not empty hierarchiesController.selectedNode and hierarchiesController.selectedNodeSlot.hostingSlot}" />
+                                <p:menuitem value="Installation slot" oncomplete="PF('addSlotDialog').show();" 
+                                        actionListener="#{hierarchiesController.prepareInstallationSlotPopup}" 
+                                        update=":addSlotForm" disabled="#{empty hierarchiesController.selectedNode}" />
+                            </p:menuButton>
                         </p:fieldset>
                     </p:column>
                     <p:column styleClass="alignTop" >
@@ -211,6 +221,13 @@
             <ui:param name="widgetName" value="editSlotDialog" />
             <ui:param name="dialogTitle" value="Edit #{hierarchiesController.selectedNodeSlot.hostingSlot ? 'installation slot' : 'container'}" />
             <ui:param name="submitHandler" value="onSlotModify" />
+        </ui:include>
+
+        <ui:include src="add-or-modify-slot.xhtml">
+            <ui:param name="formId" value="addSlotForm" />
+            <ui:param name="widgetName" value="addSlotDialog" />
+            <ui:param name="dialogTitle" value="Add #{hierarchiesController.installationSlot ? 'installation slot' : 'container'}" />
+            <ui:param name="submitHandler" value="onSlotAdd" />
         </ui:include>
 
         <script type="text/javascript">

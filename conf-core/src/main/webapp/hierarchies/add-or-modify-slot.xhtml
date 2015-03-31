@@ -37,6 +37,7 @@
                         <h:panelGroup>
                             <p:autoComplete id="slotName" value="#{hierarchiesController.name}" 
                                 completeMethod="#{hierarchiesController.nameAutocompleteText}" 
+                                validator="#{hierarchiesController.validateInstallationSlot}" 
                                 required="true" requiredMessage="Please enter an installation slot name" />
                             <p:message for="slotName" />
                         </h:panelGroup>
@@ -62,7 +63,7 @@
                         <p:outputLabel for="parent" value="Parent:" />
                     </p:column>
                     <p:column>
-                        <p:inputText id="parent" value="#{hierarchiesController.parentSlotView.name}" disabled="true" />
+                        <p:inputText id="parent" value="#{hierarchiesController.selectedNodeSlot.name}" disabled="true" />
                     </p:column>
                 </p:row>
             </p:panelGrid>

@@ -31,13 +31,16 @@ import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
+import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+import javax.faces.validator.ValidatorException;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
+import org.openepics.discs.conf.ejb.ComptypeEJB;
 import org.openepics.discs.conf.ejb.DataTypeEJB;
 import org.openepics.discs.conf.ejb.InstallationEJB;
 import org.openepics.discs.conf.ejb.SlotEJB;
@@ -94,6 +97,7 @@ public class HierarchiesController implements Serializable {
     @Inject private transient InstallationEJB installationEJB;
     @Inject private transient DataTypeEJB dataTypeEJB;
     @Inject private transient SlotRelationEJB slotRelationEJB;
+    @Inject private transient ComptypeEJB comptypeEJB;
     @Inject private Names names;
 
     private transient List<EntityAttributeView> attributes;
@@ -118,7 +122,6 @@ public class HierarchiesController implements Serializable {
     private String name;
     private String description;
     /** Used in "add child to parent" operations. This usually reflects the <code>selectedNode</code>. */
-    private SlotView parentSlotView;
     private boolean isInstallationSlot;
     private ComponentType deviceType;
     private transient List<String> namesForAutoComplete;
@@ -272,6 +275,9 @@ public class HierarchiesController implements Serializable {
         relationships = null;
         filteredRelationships = null;
         installationRecord = null;
+        selectedSlotView = null;
+        selectedSlot = null;
+        selectedNode = null;
     }
 
     /**
@@ -343,6 +349,7 @@ public class HierarchiesController implements Serializable {
         return installationRecord;
     }
 
+    /** Prepares a list of a devices that can still be installed into the selected installation slot */
     public void prepareUninstalledDevices() {
         uninstalledDevices = (selectedSlot == null) || !selectedSlot.isHostingSlot() ? null
                 : installationEJB.getUninstalledDevices(selectedSlot.getComponentType());
@@ -645,7 +652,24 @@ public class HierarchiesController implements Serializable {
         name = selectedSlotView.getName();
         description = selectedSlotView.getDescription();
         deviceType = selectedSlotView.getDeviceType();
-        parentSlotView = selectedSlotView.getParentNode();
+    }
+
+    /** Prepares fields that are used in pop up for adding a new container */
+    public void prepareContainerAddPopup() {
+        isInstallationSlot = false;
+        initAddInputFields();
+    }
+
+    /** Prepares fields that are used in pop up for adding a new installation slot */
+    public void prepareInstallationSlotPopup() {
+        isInstallationSlot = true;
+        initAddInputFields();
+    }
+
+    private void initAddInputFields() {
+        name = null;
+        description = null;
+        deviceType = null;
     }
 
     /** @return the name */
@@ -664,11 +688,6 @@ public class HierarchiesController implements Serializable {
     /** @param description the description to set */
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    /** @return the parentSlotView */
-    public SlotView getParentSlotView() {
-        return parentSlotView;
     }
 
     /** @return the isInstallationSlot */
@@ -715,4 +734,33 @@ public class HierarchiesController implements Serializable {
         initAttributeList();
     }
 
+    /** Called to add a new installation slot / container to the database */
+    public void onSlotAdd() {
+        final Slot newSlot = new Slot(name, isInstallationSlot);
+        newSlot.setDescription(description);
+        if (isInstallationSlot) {
+            newSlot.setComponentType(deviceType);
+        } else {
+            newSlot.setComponentType(comptypeEJB.findByName(SlotEJB.GRP_COMPONENT_TYPE));
+        }
+        final Slot parentSlot = selectedNode != null ? ((SlotView) selectedNode.getData()).getSlot() : null;
+        slotEJB.addSlotToParentWithPropertyDefs(newSlot, parentSlot, false);
+
+        updateRootNode();
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Slot created", "Slot has been successfully created");
+    }
+
+    /**
+     * Throws a validation error exception if the installation slot name is not unique.
+     * @param ctx
+     * @param component
+     * @param value
+     */
+    public void validateInstallationSlot(FacesContext ctx, UIComponent component, Object value) {
+        if (isInstallationSlot && !slotEJB.isInstallationSlotNameUnique(value.toString())) {
+            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
+                    "The installation slot name must be unique."));
+        }
+
+    }
 }
