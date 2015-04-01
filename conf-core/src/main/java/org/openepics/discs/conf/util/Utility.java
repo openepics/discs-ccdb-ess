@@ -140,7 +140,7 @@ public class Utility {
     /** @return the list of {@link SelectItem}s to show in the table filter */
     public static List<SelectItem> buildAttributeKinds() {
         List<SelectItem> attributeKinds = Lists.newArrayList();
-        attributeKinds.add(new SelectItem("", "Select one"));
+        attributeKinds.add(new SelectItem("", "Select one", "", false, false, true));
         for (EntityAttributeViewKind kind : EntityAttributeViewKind.values()) {
             if (kind != EntityAttributeViewKind.UNKNOWN_PROPERTY) {
                 attributeKinds.add(new SelectItem(kind, kind.toString()));

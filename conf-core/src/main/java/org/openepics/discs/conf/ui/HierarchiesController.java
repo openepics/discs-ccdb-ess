@@ -126,6 +126,9 @@ public class HierarchiesController implements Serializable {
     private ComponentType deviceType;
     private transient List<String> namesForAutoComplete;
 
+    // ------ variables for attribute manipulation ------
+    private EntityAttributeView selectedAttribute;
+
     /** Java EE post construct life-cycle method. */
     @PostConstruct
     public void init() {
@@ -762,5 +765,40 @@ public class HierarchiesController implements Serializable {
                     "The installation slot name must be unique."));
         }
 
+    }
+
+    /**
+     * @return the selectedAttribute
+     */
+    public EntityAttributeView getSelectedAttribute() {
+        return selectedAttribute;
+    }
+
+    /**
+     * @param selectedAttribute the selectedAttribute to set
+     */
+    public void setSelectedAttribute(EntityAttributeView selectedAttribute) {
+        this.selectedAttribute = selectedAttribute;
+    }
+
+    public boolean canDeleteAttribute() {
+        if (selectedAttribute == null) {
+            return false;
+        }
+        final EntityAttributeViewKind kind = selectedAttribute.getKind();
+        return kind == EntityAttributeViewKind.ARTIFACT || kind == EntityAttributeViewKind.CONTAINER_SLOT_ARTIFACT
+                || kind == EntityAttributeViewKind.CONTAINER_SLOT_TAG
+                || kind == EntityAttributeViewKind.CONTAINER_SLOT_PROPERTY
+                || kind == EntityAttributeViewKind.INSTALL_SLOT_ARTIFACT
+                || kind == EntityAttributeViewKind.INSTALL_SLOT_TAG;
+    }
+
+    public void deleteAttribute() {
+        if (selectedSlot.isHostingSlot()
+                && selectedAttribute.getKind() == EntityAttributeViewKind.INSTALL_SLOT_PROPERTY) {
+            throw new RuntimeException("Trying to delete an installatin slot property.");
+        }
+        slotEJB.deleteChild(selectedAttribute.getEntity());
+        initAttributeList();
     }
 }
