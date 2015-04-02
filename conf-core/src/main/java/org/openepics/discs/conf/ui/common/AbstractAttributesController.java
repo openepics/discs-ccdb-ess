@@ -671,13 +671,13 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
     }
 
     /** @return <code>true</code> if the {@link Artifact} is a file attachment, <code>false</code> if its an URL. */
-    public boolean getIsArtifactInternal() {
+    public boolean isArtifactInternal() {
         return isArtifactInternal;
     }
     /** Called by the UI input control to set the value.
      * @param isArtifactInternal <code>true</code> if the {@link Artifact} is a file attachment, <code>false</code> if its an URL.
      */
-    public void setIsArtifactInternal(boolean isArtifactInternal) {
+    public void setArtifactInternal(boolean isArtifactInternal) {
         this.isArtifactInternal = isArtifactInternal;
     }
 
@@ -693,14 +693,8 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
     }
 
     /** @return <code>true</code> if a "Modify artifact" dialog is open, <code>false</code> otherwise. */
-    public boolean getIsArtifactBeingModified() {
+    public boolean isArtifactBeingModified() {
         return isArtifactBeingModified;
-    }
-    /**
-     * @param isArtifactBeingModified <code>true</code> if a "Modify artifact" dialog is open, <code>false</code> otherwise.
-     */
-    public void setIsArtifactBeingModified(boolean isArtifactBeingModified) {
-        this.isArtifactBeingModified = isArtifactBeingModified;
     }
 
     /** @see AbstractAttributesController#setSelectedAttribute(EntityAttributeView)

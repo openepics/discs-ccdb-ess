@@ -102,8 +102,8 @@
                                     style="width: 100%; overflow-y: hidden; max-height: 30%;" resizableColumns="true" 
                                     selection="#{hierarchiesController.selectedAttribute}" selectionMode="single" 
                                     filteredValue="#{hierarchiesController.filteredAttributes}" rowKey="#{attribute.id}">
-                                <p:ajax event="rowSelect" update=":hierarchies:deleteAttrButton"/>
-                                <p:ajax event="rowUnselect" update=":hierarchies:deleteAttrButton"/>
+                                <p:ajax event="rowSelect" update=":hierarchies:deleteAttrButton :hierarchies:editAttrButton" />
+                                <p:ajax event="rowUnselect" update=":hierarchies:deleteAttrButton :hierarchies:editAttrButton" />
                                     
                                 <p:column headerText="Name" sortBy="#{attribute.name}" filterBy="#{attribute.name}" 
                                         filterMatchMode="contains">
@@ -112,7 +112,15 @@
 
                                 <p:column headerText="Value" sortBy="#{attribute.value}" 
                                         filterBy="#{attribute.value}" filterMatchMode="contains">
-                                    <h:outputText value="#{attribute.value}" />
+                                    <h:outputLink rendered="#{attribute.hasURL}" target="_blank" value="#{attribute.value}" title="Go to URL">
+                                        <h:outputText value="#{attribute.value}" style="text-decoration: underline;" />
+                                    </h:outputLink>
+                                    <h:outputText value="#{!empty attribute.value ? attribute.value : '-'}" rendered="#{not attribute.hasURL}" />
+                                    <p:commandLink ajax="false" title="Download" rendered="#{attribute.hasFile}" style="margin-left: 1ex;">
+                                        <h:outputText styleClass="ui-icon ui-icon-arrowthick-1-s" style="display: inline-block !important; margin-right: 6px;" />
+                                        <f:setPropertyActionListener value="#{attribute}" target="#{hierarchiesController.selectedAttribute}" />
+                                        <p:fileDownload value="#{hierarchiesController.downloadFile}" />
+                                    </p:commandLink>
                                 </p:column>
 
                                 <p:column headerText="Unit" sortBy="#{attribute.unit.name}" filterBy="#{attribute.unit.name}" 
@@ -135,10 +143,14 @@
                                     <h:outputText value="#{attribute.type.name}" />
                                 </p:column>
                             </p:dataTable>
-                            
+
                             <p:commandButton id="deleteAttrButton" value="Delete" icon="ui-icon-trash" 
-                                style="float: right;" oncomplete="PF('deleteAttribute').show();" 
+                                style="float: right; margin-top: 1em;" oncomplete="PF('deleteAttribute').show();" 
                                 disabled="#{!hierarchiesController.canDeleteAttribute()}" />
+                            <p:commandButton id="editAttrButton" value="Edit" icon="ui-icon-pencil" 
+                                action="#{hierarchiesController.prepareModifyAttributePopup}" 
+                                style="float: right; margin: 1em 1ex 0 0;" update=":modifyPropertyValueForm :modifyArtifactForm" 
+                                disabled="#{!hierarchiesController.canEditAttribute()}" />
                         </p:fieldset>
 
                     </p:column>
@@ -254,6 +266,34 @@
             <ui:param name="submitHandler" value="deleteAttribute" />
             <ui:param name="formToUpdate" value=":hierarchies:attributesTable :hierarchies:deleteAttrButton" />
             <ui:param name="entityType" value="selected attribute" />
+        </ui:include>
+
+        <ui:include src="/data-definitions/add-or-modify-dialogs/property-value.xhtml" >
+            <ui:param name="formId" value="modifyPropertyValueForm" />
+            <ui:param name="dialogTitle" value="Modify #{hierarchiesController.selectedNodeSlot.hostingSlot ? 'installation slot' : 'container'} property" />
+            <ui:param name="widgetName" value="modifyPropertyValue" />
+            <ui:param name="controller" value="#{hierarchiesController}" />
+            <ui:param name="submitHandler" value="modifyPropertyValue" />
+            <ui:param name="componentToUpdate" value=":hierarchies:attributesTable" />
+        </ui:include>
+
+        <ui:include src="/data-definitions/add-or-modify-dialogs/artifact.xhtml" >
+            <ui:param name="formId" value="modifyArtifactForm" />
+            <ui:param name="dialogTitle" value="Modify #{hierarchiesController.selectedNodeSlot.hostingSlot ? 'installation slot' : 'container'} artifact" />
+            <ui:param name="widgetName" value="modifyArtifact" />
+            <ui:param name="controller" value="#{hierarchiesController}" />
+            <ui:param name="submitHandler" value="modifyArtifact" />
+            <ui:param name="componentToUpdate" value=":hierarchies:attributesTable" />
+        </ui:include>
+
+        <ui:include src="/data-definitions/add-or-modify-dialogs/builtin-property-value.xhtml" >
+            <ui:param name="formId" value="modifyBuiltInPropertyForm" />
+            <ui:param name="dialogTitle" value="Modify #{hierarchiesController.selectedNodeSlot.hostingSlot ? 'installation slot' : 'container'} property" />
+            <ui:param name="widgetName" value="modifyBuiltInProperty" />
+            <ui:param name="controller" value="#{hierarchiesController}" />
+            <ui:param name="submitHandler" value="modifyBuiltInProperty" />
+            <ui:param name="componentToUpdate" value=":hierarchies:attributesTable :hierarchies:tree" />
+            <ui:param name="resetFilter" value="hierarchiesResizeAll();" />
         </ui:include>
 
         <script type="text/javascript">

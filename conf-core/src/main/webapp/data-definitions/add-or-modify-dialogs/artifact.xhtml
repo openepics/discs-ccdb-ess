@@ -11,9 +11,9 @@
             </f:facet>
             <h:panelGroup id="group" display="block">
                 <p:panelGrid id="grp" styleClass="dialog-grid-panel noBorders" style="margin-bottom: 1ex;">
-                    <p:row rendered="#{!controller.isArtifactInternal}">
+                    <p:row rendered="#{!controller.artifactInternal}">
                         <p:column class="alignRight dialog-labels-width-2" style="padding-top: 0.5em;">
-                            <h:panelGroup id="artifactNameLabel" rendered="#{!controller.isArtifactInternal}">
+                            <h:panelGroup id="artifactNameLabel">
                                 <p:outputLabel for="artifactName" value="Name" />
                             </h:panelGroup>
                         </p:column>
@@ -47,8 +47,8 @@
                             <p:outputLabel value="File :" />
                         </p:column>
                         <p:column>
-                            <p:selectBooleanCheckbox id="options" value="#{controller.isArtifactInternal}" 
-                                    disabled="#{controller.isArtifactBeingModified}">
+                            <p:selectBooleanCheckbox id="options" value="#{controller.artifactInternal}" 
+                                    disabled="#{controller.artifactBeingModified}">
                                 <p:ajax process="@this" listener="#{controller.artifactTypeChanged}" 
                                     update="#{formId}:group" />
                             </p:selectBooleanCheckbox>
@@ -58,14 +58,14 @@
                     <p:row>
                         <p:column class="alignRight dialog-labels-width-2" style="padding-top: 0.5em;">
                             <h:panelGroup id="urlLabel">
-                                <p:outputLabel value="URL :" rendered="#{!controller.isArtifactInternal}"/>
+                                <p:outputLabel value="URL :" rendered="#{!controller.artifactInternal}"/>
                             </h:panelGroup>
                         </p:column>
                         <p:column>
                             <h:panelGroup style="width: 100%" id="urlValue" >
                                 <p:inputTextarea id="artifactURI" rows="5" style="width: 100%;" required="true" 
                                     value="#{controller.artifactURI}" requiredMessage="Please enter an URL" 
-                                    rendered="#{!controller.isArtifactInternal}"/>
+                                    rendered="#{!controller.artifactInternal}"/>
                                 <p:message for="artifactURI" />
                             </h:panelGroup>
                         </p:column>
@@ -77,11 +77,11 @@
                                 <p:fileUpload fileUploadListener="#{controller.handleImportFileUpload}" 
                                     update="#{formId}:uploader #{formId}:uploadFile #{formId}:saveButton" 
                                     mode="advanced" auto="false" fileLimit="1" dragDropSupport="true"
-                                    rendered="#{controller.isArtifactInternal}" 
-                                    disabled="#{controller.isArtifactBeingModified}" />
+                                    rendered="#{controller.artifactInternal}" 
+                                    disabled="#{controller.artifactBeingModified}" />
                             </h:panelGroup>
                             <h:panelGroup id="uploadFile">
-                                <h:panelGroup rendered="#{controller.importFileName != null}">
+                                <h:panelGroup rendered="#{not empty controller.importFileName}">
                                     <div class="ui-message ui-message-warn ui-widget ui-corner-all">
                                         <span class="ui-message-info-icon"></span>
                                         <span class="ui-message-info-detail">
@@ -99,7 +99,7 @@
                 <p:commandButton value="Save" styleClass="dialogButton" update="#{componentToUpdate} grp" id="saveButton" 
                         oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('#{widgetName}').hide(); #{resetFilter}}" 
                         action="#{controller[submitHandler]}" 
-                        disabled="#{!controller.isArtifactBeingModified and controller.isArtifactInternal and controller.importFileName == null}"/>
+                        disabled="#{!controller.artifactBeingModified and controller.artifactInternal and empty controller.importFileName}"/>
             </h:panelGroup>
         </p:dialog>
 

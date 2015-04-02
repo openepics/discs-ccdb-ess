@@ -19,20 +19,29 @@
  */
 package org.openepics.discs.conf.ui;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Scanner;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 import javax.annotation.PostConstruct;
+import javax.ejb.EJBException;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
+import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
 import javax.faces.validator.ValidatorException;
 import javax.faces.view.ViewScoped;
@@ -40,12 +49,15 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.io.FilenameUtils;
 import org.openepics.discs.conf.ejb.ComptypeEJB;
 import org.openepics.discs.conf.ejb.DataTypeEJB;
 import org.openepics.discs.conf.ejb.InstallationEJB;
+import org.openepics.discs.conf.ejb.PropertyEJB;
 import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ejb.SlotPairEJB;
 import org.openepics.discs.conf.ejb.SlotRelationEJB;
+import org.openepics.discs.conf.ent.Artifact;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypeArtifact;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
@@ -55,30 +67,46 @@ import org.openepics.discs.conf.ent.DeviceArtifact;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ent.InstallationRecord;
 import org.openepics.discs.conf.ent.PositionInformation;
+import org.openepics.discs.conf.ent.Property;
+import org.openepics.discs.conf.ent.PropertyValue;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotArtifact;
 import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.ent.SlotRelation;
 import org.openepics.discs.conf.ent.Tag;
+import org.openepics.discs.conf.ent.values.DblValue;
+import org.openepics.discs.conf.ent.values.StrValue;
+import org.openepics.discs.conf.ent.values.Value;
 import org.openepics.discs.conf.ui.common.UIException;
+import org.openepics.discs.conf.util.BlobStore;
 import org.openepics.discs.conf.util.BuiltInDataType;
+import org.openepics.discs.conf.util.Conversion;
+import org.openepics.discs.conf.util.PropertyValueNotUniqueException;
+import org.openepics.discs.conf.util.PropertyValueUIElement;
+import org.openepics.discs.conf.util.UnhandledCaseException;
 import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.util.names.Names;
 import org.openepics.discs.conf.views.BuiltInProperty;
+import org.openepics.discs.conf.views.BuiltInPropertyName;
 import org.openepics.discs.conf.views.EntityAttributeView;
 import org.openepics.discs.conf.views.EntityAttributeViewKind;
 import org.openepics.discs.conf.views.SlotBuiltInPropertyName;
 import org.openepics.discs.conf.views.SlotRelationshipView;
 import org.openepics.discs.conf.views.SlotView;
+import org.primefaces.context.RequestContext;
+import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.NodeCollapseEvent;
 import org.primefaces.event.NodeExpandEvent;
+import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.StreamedContent;
 import org.primefaces.model.TreeNode;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
 import com.google.common.collect.Lists;
+import com.google.common.io.ByteStreams;
 
 /**
  * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
@@ -90,6 +118,7 @@ public class HierarchiesController implements Serializable {
     private static final long serialVersionUID = 2743408661782529373L;
 
     private static final Logger LOGGER = Logger.getLogger(HierarchiesController.class.getCanonicalName());
+    private static final String MULTILINE_DELIMITER = "(\\r\\n)|\\r|\\n";
 
     @Inject private SlotsTreeBuilder slotsTreeBuilder;
     @Inject private transient SlotEJB slotEJB;
@@ -98,6 +127,8 @@ public class HierarchiesController implements Serializable {
     @Inject private transient DataTypeEJB dataTypeEJB;
     @Inject private transient SlotRelationEJB slotRelationEJB;
     @Inject private transient ComptypeEJB comptypeEJB;
+    @Inject private transient PropertyEJB propertyEJB;
+    @Inject private BlobStore blobStore;
     @Inject private Names names;
 
     private transient List<EntityAttributeView> attributes;
@@ -128,6 +159,21 @@ public class HierarchiesController implements Serializable {
 
     // ------ variables for attribute manipulation ------
     private EntityAttributeView selectedAttribute;
+    private String artifactDescription;
+    private String artifactURI;
+    private String artifactName;
+    private boolean isArtifactInternal;
+    private boolean isArtifactBeingModified;
+    private Property property;
+    private Value propertyValue;
+    private List<String> enumSelections;
+    private List<Property> filteredProperties;
+    private BuiltInPropertyName builtInProperteryName;
+    private String builtInPropertyDataType;
+    private PropertyValueUIElement propertyValueUIElement;
+    private boolean propertyNameChangeDisabled;
+    private byte[] importData;
+    private String importFileName;
 
     /** Java EE post construct life-cycle method. */
     @PostConstruct
@@ -499,6 +545,7 @@ public class HierarchiesController implements Serializable {
         initRelationshipList();
         installationRecord = selectedNode == null || !selectedSlot.isHostingSlot() ? null
                 : installationEJB.getActiveInstallationRecordForSlot(selectedSlot);
+        selectedAttribute = null;
     }
 
     /** @return the {@link List} of relationship types to display in the filter drop down selection. */
@@ -785,20 +832,565 @@ public class HierarchiesController implements Serializable {
         if (selectedAttribute == null) {
             return false;
         }
-        final EntityAttributeViewKind kind = selectedAttribute.getKind();
-        return kind == EntityAttributeViewKind.ARTIFACT || kind == EntityAttributeViewKind.CONTAINER_SLOT_ARTIFACT
-                || kind == EntityAttributeViewKind.CONTAINER_SLOT_TAG
-                || kind == EntityAttributeViewKind.CONTAINER_SLOT_PROPERTY
-                || kind == EntityAttributeViewKind.INSTALL_SLOT_ARTIFACT
-                || kind == EntityAttributeViewKind.INSTALL_SLOT_TAG;
+        switch (selectedAttribute.getKind()) {
+            case ARTIFACT:
+            case CONTAINER_SLOT_ARTIFACT:
+            case CONTAINER_SLOT_TAG:
+            case CONTAINER_SLOT_PROPERTY:
+            case INSTALL_SLOT_ARTIFACT:
+            case INSTALL_SLOT_TAG:
+                return true;
+            default:
+                return false;
+        }
     }
 
     public void deleteAttribute() {
-        if (selectedSlot.isHostingSlot()
-                && selectedAttribute.getKind() == EntityAttributeViewKind.INSTALL_SLOT_PROPERTY) {
-            throw new RuntimeException("Trying to delete an installatin slot property.");
+        switch (selectedAttribute.getKind()) {
+            case INSTALL_SLOT_ARTIFACT:
+            case INSTALL_SLOT_TAG:
+            case CONTAINER_SLOT_ARTIFACT:
+            case CONTAINER_SLOT_PROPERTY:
+            case CONTAINER_SLOT_TAG:
+                // all these things can be deleted
+                break;
+            default:
+                throw new RuntimeException("Trying to delete an attribute that cannot be removed on home screen.");
         }
+
         slotEJB.deleteChild(selectedAttribute.getEntity());
         initAttributeList();
     }
+
+    public boolean canEditAttribute() {
+        if (selectedAttribute == null) {
+            return false;
+        }
+        switch (selectedAttribute.getKind()) {
+            case BUILT_IN_PROPERTY:
+            case CONTAINER_SLOT_ARTIFACT:
+            case CONTAINER_SLOT_PROPERTY:
+            case INSTALL_SLOT_ARTIFACT:
+            case INSTALL_SLOT_PROPERTY:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    public void prepareModifyAttributePopup() {
+        Preconditions.checkState(selectedAttribute != null);
+        if (selectedAttribute.getEntity() instanceof SlotPropertyValue) {
+            prepareModifyPropertyValuePopup();
+        } else if (selectedAttribute.getEntity() instanceof SlotArtifact) {
+            prepareModifyArtifactPopup();
+        } else if (selectedAttribute.getEntity() instanceof BuiltInProperty) {
+            prepareModifyBuiltInPropertyPopup();
+        } else {
+            throw new UnhandledCaseException();
+        }
+    }
+
+    private void prepareModifyPropertyValuePopup() {
+        builtInProperteryName = null;
+        final SlotPropertyValue selectedPropertyValue = (SlotPropertyValue) selectedAttribute.getEntity();
+        property = selectedPropertyValue.getProperty();
+        propertyValue = selectedPropertyValue.getPropValue();
+        propertyNameChangeDisabled = selectedSlot.isHostingSlot();
+        propertyValueUIElement = Conversion.getUIElementFromProperty(property);
+
+        if (Conversion.getBuiltInDataType(property.getDataType()) == BuiltInDataType.USER_DEFINED_ENUM) {
+            // if it is an enumeration, get the list of its options from the data type definition field
+            enumSelections = Conversion.prepareEnumSelections(property.getDataType());
+        } else {
+            enumSelections = null;
+        }
+
+        if (!propertyNameChangeDisabled) {
+            filterProperties();
+        }
+
+        RequestContext.getCurrentInstance().update("modifyPropertyValueForm:modifyPropertyValue");
+        RequestContext.getCurrentInstance().execute("PF('modifyPropertyValue').show();");
+    }
+
+    private void filterProperties() {
+        List<Property> propertyCandidates = propertyEJB.findAllOrderedByName();
+
+        // remove all properties that are already defined.
+        for (final SlotPropertyValue slotPropertyValue : selectedSlot.getSlotPropertyList()) {
+            if (!slotPropertyValue.getProperty().equals(property)) {
+                propertyCandidates.remove(slotPropertyValue.getProperty());
+            }
+        }
+
+        filteredProperties = propertyCandidates;
+    }
+
+    private void prepareModifyArtifactPopup() {
+        builtInProperteryName = null;
+        final SlotArtifact selectedArtifact = (SlotArtifact) selectedAttribute.getEntity();
+        if (selectedArtifact.isInternal()) {
+            importFileName = selectedArtifact.getName();
+            artifactName = null;
+        } else {
+            artifactName = selectedArtifact.getName();
+            importFileName = null;
+        }
+        importData = null;
+        artifactDescription = selectedArtifact.getDescription();
+        isArtifactInternal = selectedArtifact.isInternal();
+        artifactURI = selectedArtifact.getUri();
+        isArtifactBeingModified = true;
+
+        RequestContext.getCurrentInstance().update("modifyArtifactForm:modifyArtifact");
+        RequestContext.getCurrentInstance().execute("PF('modifyArtifact').show();");
+
+    }
+
+    private void prepareModifyBuiltInPropertyPopup() {
+        property = null;
+        enumSelections = null;
+        final BuiltInProperty builtInProperty = (BuiltInProperty) selectedAttribute.getEntity();
+        builtInProperteryName = builtInProperty.getName();
+        builtInPropertyDataType = builtInProperty.getDataType().getName();
+
+        final BuiltInDataType propertyDataType = Conversion.getBuiltInDataType(builtInProperty.getDataType());
+        propertyValueUIElement = Conversion.getUIElementFromBuiltInDataType(propertyDataType);
+
+        propertyValue = builtInProperty.getValue();
+        propertyNameChangeDisabled = true;
+
+        RequestContext.getCurrentInstance().update("modifyBuiltInPropertyForm:modifyBuiltInProperty");
+        RequestContext.getCurrentInstance().execute("PF('modifyBuiltInProperty').show();");
+    }
+
+    /** Modifies the selected artifact properties */
+    public void modifyArtifact() {
+        final SlotArtifact selectedArtifact = (SlotArtifact) selectedAttribute.getEntity();
+        selectedArtifact.setDescription(artifactDescription);
+        selectedArtifact.setUri(artifactURI);
+        if (!selectedArtifact.isInternal()) {
+            selectedArtifact.setName(artifactName);
+        }
+
+        try {
+            slotEJB.saveChild(selectedArtifact);
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+                                                                        "Artifact has been modified");
+        } finally {
+            initAttributeList();
+        }
+    }
+
+    public void modifyBuiltInProperty() {
+        Preconditions.checkState(selectedAttribute != null);
+        Preconditions.checkState(selectedSlot != null);
+
+        final BuiltInProperty builtInProperty = (BuiltInProperty) selectedAttribute.getEntity();
+        final SlotBuiltInPropertyName builtInPropertyName = (SlotBuiltInPropertyName)builtInProperty.getName();
+
+        final String userValueStr = propertyValue == null ? null
+                        : (propertyValue instanceof StrValue ? ((StrValue)propertyValue).getStrValue() : null);
+        final Double userValueDbl = propertyValue == null ? null
+                        : (propertyValue instanceof DblValue ? ((DblValue)propertyValue).getDblValue() : null);
+        switch (builtInPropertyName) {
+            case BIP_DESCRIPTION:
+                if ((userValueStr == null) || !userValueStr.equals(selectedSlot.getDescription())) {
+                    selectedSlot.setDescription(userValueStr);
+                    saveSlotAndRefresh();
+                }
+                break;
+            case BIP_BEAMLINE_POS:
+                if ((userValueDbl == null) || !userValueDbl.equals(selectedSlot.getBeamlinePosition())) {
+                    selectedSlot.setBeamlinePosition(userValueDbl);
+                    saveSlotAndRefresh();
+                }
+                break;
+            case BIP_GLOBAL_X:
+                if ((userValueDbl == null) || !userValueDbl.equals(selectedSlot.getPositionInformation().getGlobalX())) {
+                    selectedSlot.getPositionInformation().setGlobalX(userValueDbl);
+                    saveSlotAndRefresh();
+                }
+                break;
+            case BIP_GLOBAL_Y:
+                if ((userValueDbl == null) || !userValueDbl.equals(selectedSlot.getPositionInformation().getGlobalY())) {
+                    selectedSlot.getPositionInformation().setGlobalY(userValueDbl);
+                    saveSlotAndRefresh();
+                }
+                break;
+            case BIP_GLOBAL_Z:
+                if ((userValueDbl != null) && !userValueDbl.equals(selectedSlot.getPositionInformation().getGlobalZ())) {
+                    selectedSlot.getPositionInformation().setGlobalZ(userValueDbl);
+                    saveSlotAndRefresh();
+                }
+                break;
+            case BIP_GLOBAL_PITCH:
+                if ((userValueDbl != null) && !userValueDbl.equals(selectedSlot.getPositionInformation().getGlobalPitch())) {
+                    selectedSlot.getPositionInformation().setGlobalPitch(userValueDbl);
+                    saveSlotAndRefresh();
+                }
+                break;
+            case BIP_GLOBAL_ROLL:
+                if ((userValueDbl != null) && !userValueDbl.equals(selectedSlot.getPositionInformation().getGlobalRoll())) {
+                    selectedSlot.getPositionInformation().setGlobalRoll(userValueDbl);
+                    saveSlotAndRefresh();
+                }
+                break;
+            case BIP_GLOBAL_YAW:
+                if ((userValueDbl != null) && !userValueDbl.equals(selectedSlot.getPositionInformation().getGlobalYaw())) {
+                    selectedSlot.getPositionInformation().setGlobalYaw(userValueDbl);
+                    saveSlotAndRefresh();
+                }
+                break;
+            default:
+                throw new UnhandledCaseException();
+        }
+        initAttributeList();
+    }
+
+    private void saveSlotAndRefresh() {
+        slotEJB.save(selectedSlot);
+        selectedSlot = slotEJB.findById(selectedSlot.getId());
+        selectedSlotView.setSlot(selectedSlot);
+    }
+
+    public void modifyPropertyValue() {
+        final SlotPropertyValue selectedPropertyValue = (SlotPropertyValue) selectedAttribute.getEntity();
+        selectedPropertyValue.setProperty(property);
+        selectedPropertyValue.setPropValue(propertyValue);
+
+        try {
+            slotEJB.saveChild(selectedPropertyValue);
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+                                                                        "Property value has been modified");
+        } catch (EJBException e) {
+            if (Utility.causedBySpecifiedExceptionClass(e, PropertyValueNotUniqueException.class)) {
+                FacesContext.getCurrentInstance().addMessage("uniqueMessage",
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
+                                "Value is not unique."));
+                FacesContext.getCurrentInstance().validationFailed();
+            } else {
+                throw e;
+            }
+        } finally {
+            initAttributeList();
+        }
+    }
+
+    /** @return the builtInProperteryName */
+    public BuiltInPropertyName getBuiltInProperteryName() {
+        return builtInProperteryName;
+    }
+
+    /** @return the propertyValueUIElement */
+    public PropertyValueUIElement getPropertyValueUIElement() {
+        return propertyValueUIElement;
+    }
+
+    /** @return the propertyValue */
+    public String getPropertyValue() {
+        return Conversion.valueToString(propertyValue);
+    }
+    /** @param propertyValue the propertyValue to set */
+    public void setPropertyValue(String propertyValue) {
+        final DataType dataType = selectedAttribute != null ? selectedAttribute.getType() : property.getDataType();
+        this.propertyValue = Conversion.stringToValue(propertyValue, dataType);
+    }
+
+    /** The validator for the UI input field when UI control accepts a double precision number, and integer number or a
+     * string for input.
+     * Called when saving {@link PropertyValue}
+     * @param ctx {@link javax.faces.context.FacesContext}
+     * @param component {@link javax.faces.component.UIComponent}
+     * @param value The value
+     * @throws ValidatorException {@link javax.faces.validator.ValidatorException}
+     */
+    public void inputValidator(FacesContext ctx, UIComponent component, Object value) throws ValidatorException {
+        if (value == null) {
+            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                    Utility.MESSAGE_SUMMARY_ERROR, "No value to parse."));
+        }
+
+        if (property == null && builtInProperteryName == null) {
+            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                    Utility.MESSAGE_SUMMARY_ERROR, "You must select a property first."));
+        }
+
+        final DataType dataType = property != null ? property.getDataType() : selectedAttribute.getType();
+        validateSingleLine(value.toString(), dataType);
+    }
+
+    private void validateSingleLine(final String strValue, final DataType dataType) {
+        switch (Conversion.getBuiltInDataType(dataType)) {
+            case DOUBLE:
+                try {
+                    Double.parseDouble(strValue.trim());
+                } catch (NumberFormatException e) {
+                    throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                            Utility.MESSAGE_SUMMARY_ERROR, "Not a double value."));
+                }
+                break;
+            case INTEGER:
+                try {
+                    Integer.parseInt(strValue.trim());
+                } catch (NumberFormatException e) {
+                    throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                            Utility.MESSAGE_SUMMARY_ERROR, "Not an integer number."));
+                }
+                break;
+            case STRING:
+                break;
+            case TIMESTAMP:
+                try {
+                    Conversion.toTimestamp(strValue);
+                } catch (RuntimeException e) {
+                    throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                            Utility.MESSAGE_SUMMARY_ERROR, e.getMessage()), e);
+                }
+                break;
+            default:
+                throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                        Utility.MESSAGE_SUMMARY_ERROR, "Incorrect property data type."));
+        }
+    }
+
+    /** The validator for the UI input area when the UI control accepts a matrix of double precision numbers or a list
+     * of values for input.
+     * Called when saving {@link PropertyValue}
+     * @param ctx {@link javax.faces.context.FacesContext}
+     * @param component {@link javax.faces.component.UIComponent}
+     * @param value The value
+     * @throws ValidatorException {@link javax.faces.validator.ValidatorException}
+     */
+    public void areaValidator(FacesContext ctx, UIComponent component, Object value) throws ValidatorException {
+        if (value == null) {
+            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                    Utility.MESSAGE_SUMMARY_ERROR, "No value to parse."));
+        }
+        if (property == null && builtInProperteryName == null) {
+            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                    Utility.MESSAGE_SUMMARY_ERROR, "You must select a property first."));
+        }
+
+        final DataType dataType = property != null ? property.getDataType() : selectedAttribute.getType();
+        validateMultiLine(value.toString(), dataType);
+    }
+
+    private void validateMultiLine(final String strValue, final DataType dataType) {
+        switch (Conversion.getBuiltInDataType(dataType)) {
+            case DBL_TABLE:
+                validateTable(strValue);
+                break;
+            case DBL_VECTOR:
+                validateDblVector(strValue);
+                break;
+            case INT_VECTOR:
+                validateIntVector(strValue);
+                break;
+            case STRING_LIST:
+                break;
+            default:
+                throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                        Utility.MESSAGE_SUMMARY_ERROR, "Incorrect property data type."));
+        }
+    }
+
+    private void validateTable(final String value) throws ValidatorException {
+        try (Scanner lineScanner = new Scanner(value)) {
+            lineScanner.useDelimiter(Pattern.compile(MULTILINE_DELIMITER));
+
+            int lineLength = -1;
+            while (lineScanner.hasNext()) {
+                // replace unicode no-break spaces with normal ones
+                final String line = lineScanner.next().replaceAll("\u00A0", " ");
+
+                try (Scanner valueScanner = new Scanner(line)) {
+                    valueScanner.useDelimiter(",\\s*");
+                    int currentLineLength = 0;
+                    while (valueScanner.hasNext()) {
+                        final String dblValue = valueScanner.next().trim();
+                        currentLineLength++;
+                        try {
+                            Double.valueOf(dblValue);
+                        } catch (NumberFormatException e) {
+                            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                    Utility.MESSAGE_SUMMARY_ERROR, "Incorrect value: " + dblValue));
+                        }
+                    }
+                    if (lineLength < 0) {
+                        lineLength = currentLineLength;
+                    } else if (currentLineLength != lineLength) {
+                        throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                Utility.MESSAGE_SUMMARY_ERROR, "All rows must contain the same number of elements."));
+                    }
+                }
+            }
+        }
+    }
+
+    private void validateIntVector(final String value) throws ValidatorException {
+        try (Scanner scanner = new Scanner(value)) {
+            scanner.useDelimiter(Pattern.compile(MULTILINE_DELIMITER));
+
+            while (scanner.hasNext()) {
+                String intValue = "<error>";
+                try {
+                    // replace unicode no-break spaces with normal ones
+                    intValue = scanner.next().replaceAll("\\u00A0", " ").trim();
+                    Integer.parseInt(intValue);
+                } catch (NumberFormatException e) {
+                    throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                            Utility.MESSAGE_SUMMARY_ERROR, "Incorrect value: " + intValue));
+                }
+            }
+        }
+    }
+
+    private void validateDblVector(final String value) throws ValidatorException {
+        try (Scanner scanner = new Scanner(value)) {
+            scanner.useDelimiter(Pattern.compile(MULTILINE_DELIMITER));
+
+            while (scanner.hasNext()) {
+                String dblValue = "<error>";
+                try {
+                    // replace unicode no-break spaces with normal ones
+                    dblValue = scanner.next().replaceAll("\\u00A0", " ").trim();
+                    Double.parseDouble(dblValue);
+                } catch (NumberFormatException e) {
+                    throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                            Utility.MESSAGE_SUMMARY_ERROR, "Incorrect value: " + dblValue));
+                }
+            }
+        }
+    }
+
+    /**
+     * Uploads file to be saved in the {@link Artifact}
+     * @param event the {@link FileUploadEvent}
+     */
+    public void handleImportFileUpload(FileUploadEvent event) {
+        try (InputStream inputStream = event.getFile().getInputstream()) {
+            this.importData = ByteStreams.toByteArray(inputStream);
+            this.importFileName = FilenameUtils.getName(event.getFile().getFileName());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /** If user changes the type of the artifact, any previously uploaded file gets deleted */
+    public void artifactTypeChanged() {
+        importData = null;
+        importFileName = null;
+    }
+
+    /** Called when the user selects a new {@link Property} in the dialog drop-down control.
+     * @param event {@link javax.faces.event.ValueChangeEvent}
+     */
+    public void propertyChangeListener(ValueChangeEvent event) {
+        // get the newly selected property
+        if (event.getNewValue() instanceof Property) {
+            final Property newProperty = (Property) event.getNewValue();
+            propertyValueUIElement = Conversion.getUIElementFromProperty(newProperty);
+            propertyValue = null;
+            if (Conversion.getBuiltInDataType(newProperty.getDataType()) == BuiltInDataType.USER_DEFINED_ENUM) {
+                // if it is an enumeration, get the list of its options from the data type definition field
+                enumSelections = Conversion.prepareEnumSelections(newProperty.getDataType());
+            } else {
+                enumSelections = null;
+            }
+        }
+    }
+
+    /**
+     * Finds artifact file that was uploaded on the file system and returns it to be downloaded
+     *
+     * @return Artifact file to be downloaded
+     * @throws FileNotFoundException Thrown if file was not found on file system
+     */
+    public StreamedContent getDownloadFile() throws FileNotFoundException {
+        final Artifact selectedArtifact = (Artifact) selectedAttribute.getEntity();
+        final String filePath = blobStore.getBlobStoreRoot() + File.separator + selectedArtifact.getUri();
+        final String contentType = FacesContext.getCurrentInstance().getExternalContext().getMimeType(filePath);
+
+        return new DefaultStreamedContent(new FileInputStream(filePath), contentType, selectedArtifact.getName());
+    }
+
+
+    /** @return the builtInPropertyDataType */
+    public String getBuiltInPropertyDataType() {
+        return builtInPropertyDataType;
+    }
+
+    /** @return the enumSelections */
+    public List<String> getEnumSelections() {
+        return enumSelections;
+    }
+
+    public boolean isPropertyNameChangeDisabled() {
+        return propertyNameChangeDisabled;
+    }
+
+    /** @return the isArtifactInternal */
+    public boolean isArtifactInternal() {
+        return isArtifactInternal;
+    }
+    /** @param isArtifactInternal the isArtifactInternal to set */
+    public void setArtifactInternal(boolean isArtifactInternal) {
+        this.isArtifactInternal = isArtifactInternal;
+    }
+
+    /** @return the isArtifactBeingModified */
+    public boolean isArtifactBeingModified() {
+        return isArtifactBeingModified;
+    }
+
+    /** @return the filteredProperties */
+    public List<Property> getFilteredProperties() {
+        return filteredProperties;
+    }
+
+    /** @return the importFileName */
+    public String getImportFileName() {
+        return importFileName;
+    }
+
+    /** Called by the UI input control to set the value.
+     * @param property The property
+     */
+    public void setProperty(Property property) {
+        this.property = property;
+    }
+    /** @return The property associated with the property value */
+    public Property getProperty() {
+        return property;
+    }
+
+    /** @return the artifactName */
+    public String getArtifactName() {
+        return artifactName;
+    }
+    /** @param artifactName the artifactName to set */
+    public void setArtifactName(String artifactName) {
+        this.artifactName = artifactName;
+    }
+
+    /** @return the artifactDescription */
+    public String getArtifactDescription() {
+        return artifactDescription;
+    }
+    /** @param artifactDescription the artifactDescription to set */
+    public void setArtifactDescription(String artifactDescription) {
+        this.artifactDescription = artifactDescription;
+    }
+
+    /** @return the artifactURI */
+    public String getArtifactURI() {
+        return artifactURI;
+    }
+    /** @param artifactURI the artifactURI to set */
+    public void setArtifactURI(String artifactURI) {
+        this.artifactURI = artifactURI;
+    }
+
 }
