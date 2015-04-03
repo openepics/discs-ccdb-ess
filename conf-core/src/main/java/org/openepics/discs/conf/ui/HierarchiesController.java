@@ -19,6 +19,7 @@
  */
 package org.openepics.discs.conf.ui;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -57,10 +58,12 @@ import org.openepics.discs.conf.ejb.PropertyEJB;
 import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ejb.SlotPairEJB;
 import org.openepics.discs.conf.ejb.SlotRelationEJB;
+import org.openepics.discs.conf.ejb.TagEJB;
 import org.openepics.discs.conf.ent.Artifact;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypeArtifact;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
+import org.openepics.discs.conf.ent.ConfigurationEntity;
 import org.openepics.discs.conf.ent.DataType;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.DeviceArtifact;
@@ -78,6 +81,7 @@ import org.openepics.discs.conf.ent.Tag;
 import org.openepics.discs.conf.ent.values.DblValue;
 import org.openepics.discs.conf.ent.values.StrValue;
 import org.openepics.discs.conf.ent.values.Value;
+import org.openepics.discs.conf.ui.common.AbstractAttributesController;
 import org.openepics.discs.conf.ui.common.UIException;
 import org.openepics.discs.conf.util.BlobStore;
 import org.openepics.discs.conf.util.BuiltInDataType;
@@ -102,6 +106,7 @@ import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 import org.primefaces.model.TreeNode;
 
+import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
@@ -128,6 +133,7 @@ public class HierarchiesController implements Serializable {
     @Inject private transient SlotRelationEJB slotRelationEJB;
     @Inject private transient ComptypeEJB comptypeEJB;
     @Inject private transient PropertyEJB propertyEJB;
+    @Inject private TagEJB tagEJB;
     @Inject private BlobStore blobStore;
     @Inject private Names names;
 
@@ -165,6 +171,8 @@ public class HierarchiesController implements Serializable {
     private boolean isArtifactInternal;
     private boolean isArtifactBeingModified;
     private Property property;
+    private List<Property> selectedProperties;
+    private List<Property> selectionPropertiesFiltered;
     private Value propertyValue;
     private List<String> enumSelections;
     private List<Property> filteredProperties;
@@ -174,6 +182,8 @@ public class HierarchiesController implements Serializable {
     private boolean propertyNameChangeDisabled;
     private byte[] importData;
     private String importFileName;
+    private String tag;
+    private List<String> tagsForAutocomplete;
 
     /** Java EE post construct life-cycle method. */
     @PostConstruct
@@ -239,20 +249,20 @@ public class HierarchiesController implements Serializable {
         final boolean isHostingSlot = selectedSlot.isHostingSlot();
         final Device installedDevice = getInstalledDevice();
 
-        for (ComptypePropertyValue value : selectedSlot.getComponentType().getComptypePropertyList()) {
+        for (final ComptypePropertyValue value : selectedSlot.getComponentType().getComptypePropertyList()) {
             if (!value.isPropertyDefinition()) {
                 attributesList.add(new EntityAttributeView(value, EntityAttributeViewKind.DEVICE_TYPE_PROPERTY));
             }
         }
 
-        for (SlotPropertyValue value : selectedSlot.getSlotPropertyList()) {
+        for (final SlotPropertyValue value : selectedSlot.getSlotPropertyList()) {
             attributesList.add(new EntityAttributeView(value, isHostingSlot
                                                             ? EntityAttributeViewKind.INSTALL_SLOT_PROPERTY
                                                             : EntityAttributeViewKind.CONTAINER_SLOT_PROPERTY));
         }
 
         if (installedDevice != null) {
-            for (DevicePropertyValue devicePropertyValue : installedDevice.getDevicePropertyList()) {
+            for (final DevicePropertyValue devicePropertyValue : installedDevice.getDevicePropertyList()) {
                 attributesList.add(new EntityAttributeView(devicePropertyValue,
                                                             EntityAttributeViewKind.DEVICE_PROPERTY));
             }
@@ -263,18 +273,18 @@ public class HierarchiesController implements Serializable {
         final boolean isHostingSlot = selectedSlot.isHostingSlot();
         final Device installedDevice = getInstalledDevice();
 
-        for (ComptypeArtifact artifact : selectedSlot.getComponentType().getComptypeArtifactList()) {
+        for (final ComptypeArtifact artifact : selectedSlot.getComponentType().getComptypeArtifactList()) {
             attributesList.add(new EntityAttributeView(artifact, EntityAttributeViewKind.DEVICE_TYPE_ARTIFACT));
         }
 
-        for (SlotArtifact artifact : selectedSlot.getSlotArtifactList()) {
+        for (final SlotArtifact artifact : selectedSlot.getSlotArtifactList()) {
             attributesList.add(new EntityAttributeView(artifact, isHostingSlot
                                                             ? EntityAttributeViewKind.INSTALL_SLOT_ARTIFACT
                                                             : EntityAttributeViewKind.CONTAINER_SLOT_ARTIFACT));
         }
 
         if (installedDevice != null) {
-            for (DeviceArtifact deviceArtifact : installedDevice.getDeviceArtifactList()) {
+            for (final DeviceArtifact deviceArtifact : installedDevice.getDeviceArtifactList()) {
                 attributesList.add(new EntityAttributeView(deviceArtifact,
                                                             EntityAttributeViewKind.DEVICE_ARTIFACT));
             }
@@ -285,19 +295,19 @@ public class HierarchiesController implements Serializable {
         final boolean isHostingSlot = selectedSlot.isHostingSlot();
         final Device installedDevice = getInstalledDevice();
 
-        for (Tag tag : selectedSlot.getComponentType().getTags()) {
-            attributesList.add(new EntityAttributeView(tag, EntityAttributeViewKind.DEVICE_TYPE_TAG));
+        for (final Tag tagInstance : selectedSlot.getComponentType().getTags()) {
+            attributesList.add(new EntityAttributeView(tagInstance, EntityAttributeViewKind.DEVICE_TYPE_TAG));
         }
 
-        for (Tag tag : selectedSlot.getTags()) {
-            attributesList.add(new EntityAttributeView(tag, isHostingSlot
+        for (final Tag tagInstance : selectedSlot.getTags()) {
+            attributesList.add(new EntityAttributeView(tagInstance, isHostingSlot
                                                             ? EntityAttributeViewKind.INSTALL_SLOT_TAG
                                                             : EntityAttributeViewKind.CONTAINER_SLOT_TAG));
         }
 
         if (installedDevice != null) {
-            for (Tag tag : installedDevice.getTags()) {
-                attributesList.add(new EntityAttributeView(tag, EntityAttributeViewKind.DEVICE_TAG));
+            for (final Tag tagInstance : installedDevice.getTags()) {
+                attributesList.add(new EntityAttributeView(tagInstance, EntityAttributeViewKind.DEVICE_TAG));
             }
         }
     }
@@ -309,7 +319,7 @@ public class HierarchiesController implements Serializable {
             final Slot rootSlot = slotEJB.getRootNode();
             final List<SlotPair> slotPairs = slotPairEJB.getSlotRleations(selectedSlot);
 
-            for (SlotPair slotPair : slotPairs) {
+            for (final SlotPair slotPair : slotPairs) {
                 if (!slotPair.getParentSlot().equals(rootSlot)) {
                     relationships.add(new SlotRelationshipView(slotPair, selectedSlot));
                 }
@@ -516,7 +526,7 @@ public class HierarchiesController implements Serializable {
         if (id.equals(((SlotView)parent.getData()).getId())) {
             return parent;
         }
-        for (TreeNode child : parent.getChildren()) {
+        for (final TreeNode child : parent.getChildren()) {
             final TreeNode foundNode = findNode(id, child);
             if (foundNode != null) {
                 return foundNode;
@@ -558,7 +568,7 @@ public class HierarchiesController implements Serializable {
         immutableListBuilder.add(new SelectItem("", "Select one"));
 
         final List<SlotRelation> slotRelations = slotRelationEJB.findAll();
-        for (SlotRelation slotRelation : slotRelations) {
+        for (final SlotRelation slotRelation : slotRelations) {
             immutableListBuilder.add(new SelectItem(slotRelation.getNameAsString(), slotRelation.getNameAsString()));
             immutableListBuilder.add(new SelectItem(slotRelation.getIname(), slotRelation.getIname()));
         }
@@ -646,12 +656,12 @@ public class HierarchiesController implements Serializable {
      * container/installation slot up one space, if that is possible.
      */
     public void moveSlotUp() {
-        TreeNode currentNode = selectedNode;
-        TreeNode parent = currentNode.getParent();
+        final TreeNode currentNode = selectedNode;
+        final TreeNode parent = currentNode.getParent();
 
-        ListIterator<TreeNode> listIterator = parent.getChildren().listIterator();
+        final ListIterator<TreeNode> listIterator = parent.getChildren().listIterator();
         while (listIterator.hasNext()) {
-            TreeNode element = listIterator.next();
+            final TreeNode element = listIterator.next();
             if (element.equals(currentNode) && listIterator.hasPrevious()) {
                 final SlotView movedSlotView = (SlotView) currentNode.getData();
                 final SlotView currentNodesParentSlotView = (SlotView) parent.getData();
@@ -672,12 +682,12 @@ public class HierarchiesController implements Serializable {
      * container/installation slot down one space, if that is possible.
      */
     public void moveSlotDown() {
-        TreeNode currentNode = selectedNode;
-        TreeNode parent = currentNode.getParent();
+        final TreeNode currentNode = selectedNode;
+        final TreeNode parent = currentNode.getParent();
 
-        ListIterator<TreeNode> listIterator = parent.getChildren().listIterator();
+        final ListIterator<TreeNode> listIterator = parent.getChildren().listIterator();
         while (listIterator.hasNext()) {
-            TreeNode element = listIterator.next();
+            final TreeNode element = listIterator.next();
             if (element.equals(currentNode) && listIterator.hasNext()) {
                 final SlotView movedSlotView = (SlotView) currentNode.getData();
                 final SlotView currentNodesParentSlotView = (SlotView) parent.getData();
@@ -716,10 +726,118 @@ public class HierarchiesController implements Serializable {
         initAddInputFields();
     }
 
+    /** Prepares data for addition of {@link PropertyValue} */
+    public void prepareForPropertyValueAdd() {
+        propertyNameChangeDisabled = false;
+        property = null;
+        propertyValue = null;
+        enumSelections = null;
+        selectedAttribute = null;
+        propertyValueUIElement = PropertyValueUIElement.NONE;
+        selectedProperties = null;
+        selectionPropertiesFiltered = null;
+        filterProperties();
+    }
+
+    /** Prepares the UI data for addition of {@link Tag} */
+    public void prepareForTagAdd() {
+        fillTagsAutocomplete();
+        tag = null;
+    }
+
+    /** Prepares the UI data for addition of {@link Artifact} */
+    public void prepareForArtifactAdd() {
+        artifactName = null;
+        artifactDescription = null;
+        isArtifactInternal = false;
+        artifactURI = null;
+        isArtifactBeingModified = false;
+        importData = null;
+        importFileName = null;
+    }
+
+    /** Adds new {@link PropertyValue} to container {@link Slot} */
+    public void addNewPropertyValue() {
+        try {
+            final SlotPropertyValue slotValueInstance = new SlotPropertyValue(false);
+            slotValueInstance.setProperty(property);
+            slotValueInstance.setPropValue(propertyValue);
+            slotValueInstance.setPropertiesParent(selectedSlot);
+
+            slotEJB.addChild(slotValueInstance);
+
+            refreshSlot();
+            selectedAttribute = null;
+            initAttributeList();
+
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+                    "New property has been created");
+        } catch (EJBException e) {
+            if (Utility.causedBySpecifiedExceptionClass(e, PropertyValueNotUniqueException.class)) {
+                FacesContext.getCurrentInstance().addMessage("uniqueMessage",
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
+                                "Value is not unique."));
+                FacesContext.getCurrentInstance().validationFailed();
+            } else {
+                throw e;
+            }
+        }
+    }
+
+    /**
+     * Adds new {@link PropertyValue} to parent {@link ConfigurationEntity}
+     * defined in {@link AbstractAttributesController#setArtifactParent(Artifact)}
+     *
+     * @throws IOException thrown if file in the artifact could not be stored on the file system
+     */
+    public void addNewArtifact() throws IOException {
+        Preconditions.checkNotNull(selectedSlot);
+        if (importData != null) {
+            artifactURI = blobStore.storeFile(new ByteArrayInputStream(importData));
+        }
+
+        final SlotArtifact slotArtifact = new SlotArtifact(importData != null ? importFileName : artifactName,
+                isArtifactInternal, artifactDescription, artifactURI);
+        slotArtifact.setSlot(selectedSlot);
+
+        slotEJB.addChild(slotArtifact);
+        refreshSlot();
+        selectedAttribute = null;
+        initAttributeList();
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+                                                                    "New artifact has been created");
+    }
+
+    /** Adds new {@link Tag} to parent {@link ConfigurationEntity} */
+    public void addNewTag() {
+        final String normalizedTag = tag.trim();
+        Tag existingTag = tagEJB.findById(normalizedTag);
+        if (existingTag == null) {
+            existingTag = new Tag(normalizedTag);
+        }
+        selectedSlot.getTags().add(existingTag);
+        saveSlotAndRefresh();
+        initAttributeList();
+        fillTagsAutocomplete();
+
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Tag added", tag);
+    }
+
+
     private void initAddInputFields() {
         name = null;
         description = null;
         deviceType = null;
+    }
+
+    private void fillTagsAutocomplete() {
+        tagsForAutocomplete = ImmutableList.copyOf(Lists.transform(tagEJB.findAllSorted(), new Function<Tag, String>() {
+
+            @Override
+            public String apply(Tag input) {
+                return input.getName();
+            }
+        }));
     }
 
     /** @return the name */
@@ -811,7 +929,6 @@ public class HierarchiesController implements Serializable {
             throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
                     "The installation slot name must be unique."));
         }
-
     }
 
     /**
@@ -846,19 +963,24 @@ public class HierarchiesController implements Serializable {
     }
 
     public void deleteAttribute() {
+        Preconditions.checkNotNull(selectedAttribute);
+        Preconditions.checkNotNull(selectedSlot);
         switch (selectedAttribute.getKind()) {
             case INSTALL_SLOT_ARTIFACT:
-            case INSTALL_SLOT_TAG:
             case CONTAINER_SLOT_ARTIFACT:
             case CONTAINER_SLOT_PROPERTY:
+                slotEJB.deleteChild(selectedAttribute.getEntity());
+                refreshSlot();
+                break;
+            case INSTALL_SLOT_TAG:
             case CONTAINER_SLOT_TAG:
-                // all these things can be deleted
+                selectedSlot.getTags().remove(selectedAttribute.getEntity());
+                saveSlotAndRefresh();
                 break;
             default:
                 throw new RuntimeException("Trying to delete an attribute that cannot be removed on home screen.");
         }
-
-        slotEJB.deleteChild(selectedAttribute.getEntity());
+        selectedAttribute = null;
         initAttributeList();
     }
 
@@ -879,7 +1001,7 @@ public class HierarchiesController implements Serializable {
     }
 
     public void prepareModifyAttributePopup() {
-        Preconditions.checkState(selectedAttribute != null);
+        Preconditions.checkNotNull(selectedAttribute);
         if (selectedAttribute.getEntity() instanceof SlotPropertyValue) {
             prepareModifyPropertyValuePopup();
         } else if (selectedAttribute.getEntity() instanceof SlotArtifact) {
@@ -915,7 +1037,7 @@ public class HierarchiesController implements Serializable {
     }
 
     private void filterProperties() {
-        List<Property> propertyCandidates = propertyEJB.findAllOrderedByName();
+        final List<Property> propertyCandidates = propertyEJB.findAllOrderedByName();
 
         // remove all properties that are already defined.
         for (final SlotPropertyValue slotPropertyValue : selectedSlot.getSlotPropertyList()) {
@@ -974,18 +1096,16 @@ public class HierarchiesController implements Serializable {
             selectedArtifact.setName(artifactName);
         }
 
-        try {
-            slotEJB.saveChild(selectedArtifact);
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
-                                                                        "Artifact has been modified");
-        } finally {
-            initAttributeList();
-        }
+        slotEJB.saveChild(selectedArtifact);
+        refreshSlot();
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+                                                                    "Artifact has been modified");
+        initAttributeList();
     }
 
     public void modifyBuiltInProperty() {
-        Preconditions.checkState(selectedAttribute != null);
-        Preconditions.checkState(selectedSlot != null);
+        Preconditions.checkNotNull(selectedAttribute);
+        Preconditions.checkNotNull(selectedSlot);
 
         final BuiltInProperty builtInProperty = (BuiltInProperty) selectedAttribute.getEntity();
         final SlotBuiltInPropertyName builtInPropertyName = (SlotBuiltInPropertyName)builtInProperty.getName();
@@ -1055,6 +1175,11 @@ public class HierarchiesController implements Serializable {
         selectedSlotView.setSlot(selectedSlot);
     }
 
+    private void refreshSlot() {
+        selectedSlot = slotEJB.findById(selectedSlot.getId());
+        selectedSlotView.setSlot(selectedSlot);
+    }
+
     public void modifyPropertyValue() {
         final SlotPropertyValue selectedPropertyValue = (SlotPropertyValue) selectedAttribute.getEntity();
         selectedPropertyValue.setProperty(property);
@@ -1064,6 +1189,8 @@ public class HierarchiesController implements Serializable {
             slotEJB.saveChild(selectedPropertyValue);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
                                                                         "Property value has been modified");
+            refreshSlot();
+            initAttributeList();
         } catch (EJBException e) {
             if (Utility.causedBySpecifiedExceptionClass(e, PropertyValueNotUniqueException.class)) {
                 FacesContext.getCurrentInstance().addMessage("uniqueMessage",
@@ -1073,8 +1200,6 @@ public class HierarchiesController implements Serializable {
             } else {
                 throw e;
             }
-        } finally {
-            initAttributeList();
         }
     }
 
@@ -1197,7 +1322,7 @@ public class HierarchiesController implements Serializable {
     }
 
     private void validateTable(final String value) throws ValidatorException {
-        try (Scanner lineScanner = new Scanner(value)) {
+        try (final Scanner lineScanner = new Scanner(value)) {
             lineScanner.useDelimiter(Pattern.compile(MULTILINE_DELIMITER));
 
             int lineLength = -1;
@@ -1230,7 +1355,7 @@ public class HierarchiesController implements Serializable {
     }
 
     private void validateIntVector(final String value) throws ValidatorException {
-        try (Scanner scanner = new Scanner(value)) {
+        try (final Scanner scanner = new Scanner(value)) {
             scanner.useDelimiter(Pattern.compile(MULTILINE_DELIMITER));
 
             while (scanner.hasNext()) {
@@ -1248,7 +1373,7 @@ public class HierarchiesController implements Serializable {
     }
 
     private void validateDblVector(final String value) throws ValidatorException {
-        try (Scanner scanner = new Scanner(value)) {
+        try (final Scanner scanner = new Scanner(value)) {
             scanner.useDelimiter(Pattern.compile(MULTILINE_DELIMITER));
 
             while (scanner.hasNext()) {
@@ -1316,6 +1441,21 @@ public class HierarchiesController implements Serializable {
         return new DefaultStreamedContent(new FileInputStream(filePath), contentType, selectedArtifact.getName());
     }
 
+    /** Used by the {@link Tag} input value control to display the list of auto-complete suggestions. The list contains
+     * the tags already stored in the database.
+     * @param query The text the user typed so far.
+     * @return The list of auto-complete suggestions.
+     */
+    public List<String> tagAutocompleteText(String query) {
+        final List<String> resultList = new ArrayList<String>();
+        final String queryUpperCase = query.toUpperCase();
+        for (final String element : tagsForAutocomplete) {
+            if (element.toUpperCase().startsWith(queryUpperCase))
+                resultList.add(element);
+        }
+
+        return resultList;
+    }
 
     /** @return the builtInPropertyDataType */
     public String getBuiltInPropertyDataType() {
@@ -1391,6 +1531,35 @@ public class HierarchiesController implements Serializable {
     /** @param artifactURI the artifactURI to set */
     public void setArtifactURI(String artifactURI) {
         this.artifactURI = artifactURI;
+    }
+
+    /** @return the selectedProperties */
+    public List<Property> getSelectedProperties() {
+        return selectedProperties;
+    }
+    /** @param selectedProperties the selectedProperties to set */
+    public void setSelectedProperties(List<Property> selectedProperties) {
+        this.selectedProperties = selectedProperties;
+    }
+
+    /** @return the selectionPropertiesFiltered */
+    public List<Property> getSelectionPropertiesFiltered() {
+        return selectionPropertiesFiltered;
+    }
+    /** @param selectionPropertiesFiltered the selectionPropertiesFiltered to set */
+    public void setSelectionPropertiesFiltered(List<Property> selectionPropertiesFiltered) {
+        this.selectionPropertiesFiltered = selectionPropertiesFiltered;
+    }
+
+    /** @return The value of the tag */
+    public String getTag() {
+        return tag;
+    }
+    /** Called by the UI input control to set the value.
+     * @param tag The value of the tag
+     */
+    public void setTag(String tag) {
+        this.tag = tag;
     }
 
 }

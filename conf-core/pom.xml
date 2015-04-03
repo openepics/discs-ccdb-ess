@@ -48,7 +48,7 @@
         <dependency>
             <groupId>org.primefaces</groupId>
             <artifactId>primefaces</artifactId>
-            <version>5.2.RC1</version>
+            <version>5.2.RC3</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
@@ -301,6 +301,16 @@
                 <repository>
                     <id>ess-ics-jboss-thirdparty</id>
                     <url>https://artifactory01.esss.lu.se/artifactory/jboss-thirdparty</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </repository>
+                <repository>
+                    <id>ess-ics-jboss</id>
+                    <url>https://artifactory01.esss.lu.se/artifactory/jboss</url>
                     <releases>
                         <enabled>true</enabled>
                     </releases>

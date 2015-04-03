@@ -29,6 +29,12 @@
                     $('#hierarchies\\:installationColumn').css({"max-width":rightColumnsWidth});
                     $('#hierarchies\\:hierarchiesEmptyColumn').css({"max-width":rightColumnsWidth});
                 }
+                function disableAddButton() {
+                   $('#hierarchies\\:addAttrButton').prop('disabled',true).addClass('ui-state-disabled');
+                }
+                function enableAddButton() {
+                    $('#hierarchies\\:addAttrButton').prop('disabled',false).removeClass('ui-state-disabled');
+                }
             // ]]>
             </script>
             <p:growl showDetail="true" globalOnly="true" autoUpdate="true" />
@@ -151,6 +157,20 @@
                                 action="#{hierarchiesController.prepareModifyAttributePopup}" 
                                 style="float: right; margin: 1em 1ex 0 0;" update=":modifyPropertyValueForm :modifyArtifactForm" 
                                 disabled="#{!hierarchiesController.canEditAttribute()}" />
+                            <p:menuButton id="addAttrButton" value="Add" icon="ui-icon-plus" 
+                                    disabled="#{empty hierarchiesController.selectedNode}" 
+                                    style="margin: 1em 1ex 0 0; float: right;">
+                                <p:menuitem value="Container property" oncomplete="PF('addPropertyValue').show();" 
+                                        actionListener="#{hierarchiesController.prepareForPropertyValueAdd}" 
+                                        disabled="#{hierarchiesController.selectedNodeSlot.hostingSlot}" 
+                                        update=":addPropertyValueForm:addPropertyValue" />
+                                <p:menuitem value="Tag" oncomplete="PF('containerTag').show();" update=":containerTagForm" 
+                                        actionListener="#{hierarchiesController.prepareForTagAdd}" />
+                                <p:menuitem value="Artifact" oncomplete="PF('addArtifact').show();" 
+                                        actionListener="#{hierarchiesController.prepareForArtifactAdd}" 
+                                        update=":addArtifactForm:addArtifact" />
+                            </p:menuButton>
+
                         </p:fieldset>
 
                     </p:column>
@@ -258,41 +278,68 @@
             <ui:param name="submitHandler" value="onSlotAdd" />
         </ui:include>
 
-        <ui:include src="/data-definitions/add-or-modify-dialogs/delete-confirmation.xhtml" >
+        <ui:include src="/data-definitions/add-or-modify-dialogs/delete-confirmation.xhtml">
             <ui:param name="formId" value="deleteAttributeForm" />
             <ui:param name="dialogTitle" value="Delete attribute" />
             <ui:param name="widgetName" value="deleteAttribute" />
             <ui:param name="controller" value="#{hierarchiesController}" />
             <ui:param name="submitHandler" value="deleteAttribute" />
-            <ui:param name="formToUpdate" value=":hierarchies:attributesTable :hierarchies:deleteAttrButton" />
+            <ui:param name="formToUpdate" value=":hierarchies:slotAttributes" />
             <ui:param name="entityType" value="selected attribute" />
         </ui:include>
 
-        <ui:include src="/data-definitions/add-or-modify-dialogs/property-value.xhtml" >
+        <ui:include src="/data-definitions/add-or-modify-dialogs/property-value.xhtml">
             <ui:param name="formId" value="modifyPropertyValueForm" />
             <ui:param name="dialogTitle" value="Modify #{hierarchiesController.selectedNodeSlot.hostingSlot ? 'installation slot' : 'container'} property" />
             <ui:param name="widgetName" value="modifyPropertyValue" />
             <ui:param name="controller" value="#{hierarchiesController}" />
             <ui:param name="submitHandler" value="modifyPropertyValue" />
-            <ui:param name="componentToUpdate" value=":hierarchies:attributesTable" />
+            <ui:param name="componentToUpdate" value=":hierarchies:slotAttributes" />
+        </ui:include>
+
+        <ui:include src="/data-definitions/add-or-modify-dialogs/property-value.xhtml">
+            <ui:param name="formId" value="addPropertyValueForm" />
+            <ui:param name="dialogTitle" value="Add new container property" />
+            <ui:param name="widgetName" value="addPropertyValue" />
+            <ui:param name="controller" value="#{hierarchiesController}" />
+            <ui:param name="submitHandler" value="addNewPropertyValue" />
+            <ui:param name="componentToUpdate" value=":hierarchies:slotAttributes" />
+        </ui:include>
+
+        <ui:include src="/data-definitions/add-or-modify-dialogs/tag.xhtml" >
+            <ui:param name="formId" value="containerTagForm" />
+            <ui:param name="dialogTitle" value="Add new #{hierarchiesController.selectedNodeSlot.hostingSlot ? 'installation slot' : 'container'} tag" />
+            <ui:param name="widgetName" value="containerTag" />
+            <ui:param name="controller" value="#{hierarchiesController}" />
+            <ui:param name="submitHandler" value="addNewTag" />
+            <ui:param name="componentToUpdate" value=":hierarchies:slotAttributes" />
         </ui:include>
 
         <ui:include src="/data-definitions/add-or-modify-dialogs/artifact.xhtml" >
+            <ui:param name="formId" value="addArtifactForm" />
+            <ui:param name="dialogTitle" value="Add new #{hierarchiesController.selectedNodeSlot.hostingSlot ? 'installation slot' : 'container'} artifact" />
+            <ui:param name="widgetName" value="addArtifact" />
+            <ui:param name="controller" value="#{hierarchiesController}" />
+            <ui:param name="submitHandler" value="addNewArtifact" />
+            <ui:param name="componentToUpdate" value=":hierarchies:slotAttributes" />
+        </ui:include>
+
+        <ui:include src="/data-definitions/add-or-modify-dialogs/artifact.xhtml">
             <ui:param name="formId" value="modifyArtifactForm" />
             <ui:param name="dialogTitle" value="Modify #{hierarchiesController.selectedNodeSlot.hostingSlot ? 'installation slot' : 'container'} artifact" />
             <ui:param name="widgetName" value="modifyArtifact" />
             <ui:param name="controller" value="#{hierarchiesController}" />
             <ui:param name="submitHandler" value="modifyArtifact" />
-            <ui:param name="componentToUpdate" value=":hierarchies:attributesTable" />
+            <ui:param name="componentToUpdate" value=":hierarchies:slotAttributes" />
         </ui:include>
 
-        <ui:include src="/data-definitions/add-or-modify-dialogs/builtin-property-value.xhtml" >
+        <ui:include src="/data-definitions/add-or-modify-dialogs/builtin-property-value.xhtml">
             <ui:param name="formId" value="modifyBuiltInPropertyForm" />
             <ui:param name="dialogTitle" value="Modify #{hierarchiesController.selectedNodeSlot.hostingSlot ? 'installation slot' : 'container'} property" />
             <ui:param name="widgetName" value="modifyBuiltInProperty" />
             <ui:param name="controller" value="#{hierarchiesController}" />
             <ui:param name="submitHandler" value="modifyBuiltInProperty" />
-            <ui:param name="componentToUpdate" value=":hierarchies:attributesTable :hierarchies:tree" />
+            <ui:param name="componentToUpdate" value=":hierarchies:slotAttributes :hierarchies:tree" />
             <ui:param name="resetFilter" value="hierarchiesResizeAll();" />
         </ui:include>
 

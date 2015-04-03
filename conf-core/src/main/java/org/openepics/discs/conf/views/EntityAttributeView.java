@@ -109,13 +109,13 @@ public class EntityAttributeView {
     }
 
     private void setPropValueParameters() {
-        final PropertyValue devicePropertyValue = (PropertyValue) entity;
-        name = devicePropertyValue.getProperty().getName();
-        type = devicePropertyValue.getProperty().getDataType();
-        unit = devicePropertyValue.getProperty().getUnit();
-        value = devicePropertyValue.getPropValue();
+        final PropertyValue propertyValue = (PropertyValue) entity;
+        name = propertyValue.getProperty().getName();
+        type = propertyValue.getProperty().getDataType();
+        unit = propertyValue.getProperty().getUnit();
+        value = propertyValue.getPropValue();
         kind =  EntityAttributeViewKind.PROPERTY;
-        id = devicePropertyValue.getId().toString();
+        id = propertyValue.getId().toString();
     }
 
     private void setArtifactParameters() {
