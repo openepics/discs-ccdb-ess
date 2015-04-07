@@ -96,13 +96,7 @@ public class SlotRelation extends ConfigurationEntity {
      */
     public void setName(SlotRelationName name) {
         this.name = name;
-        if (name == SlotRelationName.CONTAINS) {
-            iname = "contained in";
-        } else if (name == SlotRelationName.POWERS) {
-            iname = "powered by";
-        } else if (name == SlotRelationName.CONTROLS) {
-            iname = "controlled by";
-        }
+        iname = name.inverseName();
     }
 
     public String getIname() {

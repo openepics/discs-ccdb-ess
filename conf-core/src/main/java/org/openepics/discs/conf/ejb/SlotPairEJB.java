@@ -156,7 +156,7 @@ public class SlotPairEJB extends DAO<SlotPair> {
      * @param slot - the slot to use in query.
      * @return The list of all {@link SlotPair}s where the slot is either a parent or a child.
      */
-    public List<SlotPair> getSlotRleations(Slot slot) {
+    public List<SlotPair> getSlotRelations(Slot slot) {
         return em.createNamedQuery("SlotPair.findSlotRelations", SlotPair.class).setParameter("slot", slot)
                 .getResultList();
     }

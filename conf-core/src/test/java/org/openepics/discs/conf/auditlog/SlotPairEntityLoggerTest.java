@@ -64,7 +64,7 @@ public class SlotPairEntityLoggerTest {
         final List<AuditRecord> auditRecords = spel.auditEntries(slotPair, EntityTypeOperation.CREATE);
 
         final String RESULT_1 = "{\"hostingSlot\":false,\"parentSlots\":[{\"parentSlot\":\"[contained in]\"}]}";
-        final String RESULT_2 = "{\"hostingSlot\":false,\"childrenSlots\":[{\"childSlot\":\"[CONTAINS]\"}]}";
+        final String RESULT_2 = "{\"hostingSlot\":false,\"childrenSlots\":[{\"childSlot\":\"[contains]\"}]}";
 
         assertEquals(RESULT_1, auditRecords.get(0).getEntry());
         assertEquals(RESULT_2, auditRecords.get(1).getEntry());

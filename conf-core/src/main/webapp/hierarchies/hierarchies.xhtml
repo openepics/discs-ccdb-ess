@@ -194,6 +194,12 @@
                                     </p:commandLink>
                                 </p:column>
                             </p:dataTable>
+
+                            <p:commandButton value="Relationships" title="Relationships" icon="ui-icon-link"
+                                    style="margin-top: 1em; float: right;"
+                                    disabled="#{empty hierarchiesController.selectedNode or not hierarchiesController.selectedNodeSlot.hostingSlot}" 
+                                    oncomplete="PF('slotRelationships').show()" update=":slotRelationshipsForm">
+                            </p:commandButton>
                         </p:fieldset>
                     </p:column>
                 </p:row>
@@ -338,6 +344,11 @@
             <ui:param name="submitHandler" value="modifyBuiltInProperty" />
             <ui:param name="componentToUpdate" value=":hierarchies:slotAttributes :hierarchies:tree" />
             <ui:param name="resetFilter" value="hierarchiesResizeAll();" />
+        </ui:include>
+
+        <ui:include src="slot-relationships.xhtml">
+            <ui:param name="formId" value="slotRelationshipsForm" />
+            <ui:param name="widgetName" value="slotRelationships" />
         </ui:include>
 
         <script type="text/javascript">

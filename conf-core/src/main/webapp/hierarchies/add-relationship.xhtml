@@ -7,7 +7,7 @@
         <p:dialog widgetVar="addSlotRelationship" id="addSlotRelationship" modal="true" width="35em" resizable="false" 
                 closable="false" dynamic="true">
             <f:facet name="header">
-                <h:outputText value="Add relationship to #{installationSlotsController.selectedSlotViewForRelationships.name}" />
+                <h:outputText value="Add relationship to #{hierarchiesController.selectedNodeSlot.name}" />
             </f:facet>
             <p:panelGrid id="grid" style="text-align: left" styleClass="dialog-grid-panel noBorders">
                 <p:row>
@@ -19,8 +19,8 @@
                                 </p:column>
                                 <p:column>
                                     <p:selectOneMenu id="relationshipTypeSelect" 
-                                            value="#{installationSlotsController.selectedRelationshipType}">
-                                        <f:selectItems value="#{installationSlotsController.relationshipTypes}" /> 
+                                            value="#{hierarchiesController.selectedRelationshipType}">
+                                        <f:selectItems value="#{hierarchiesController.relationshipTypesForDialog}" /> 
                                         <p:ajax />
             	                     </p:selectOneMenu>
                                  </p:column>
@@ -30,11 +30,11 @@
                 </p:row>
                 <p:row>
                     <p:column>
-                        <p:tree value="#{installationSlotsController.rootNode}" id="relationshipTree" 
+                        <p:tree value="#{hierarchiesController.rootNode}" id="relationshipTree" 
                                 selectionMode="single" var="slotView" style="width: 100%; max-height: 200px; overflow: auto;"
-                                selection="#{installationSlotsController.selectedSlotViewForRelationshipAdd}">
+                                selection="#{hierarchiesController.selectedTreeNodeForRelationshipAdd}">
                             <p:ajax event="select" update=":addSlotRelationshipForm:relationshipTypeSelect :addSlotRelationshipForm:addButton" 
-                                listener="#{installationSlotsController.slotForRelationshipChanged}"/>
+                                listener="#{hierarchiesController.slotForRelationshipChanged}"/>
                             <p:ajax event="unselect" update=":addSlotRelationshipForm:relationshipTypeSelect :addSlotRelationshipForm:addButton" />
 
                             <p:treeNode>
@@ -55,11 +55,11 @@
             <p:separator />
 
             <p:commandButton value="Cancel" styleClass="dialogButton" onclick="PF('addSlotRelationship').hide();" 
-                    resetValues="true"/>
+                    resetValues="true" />
             <p:commandButton value="Add" styleClass="dialogButton" id="addButton" 
-                    disabled="#{installationSlotsController.selectedSlotViewForRelationshipAdd == null}" 
-                    action="#{installationSlotsController.onRelationshipAdd}" oncomplete="PF('addSlotRelationship').hide();" 
-                    update=":slotRelationshipsForm:relationshipTable"/>
+                    disabled="#{empty hierarchiesController.selectedTreeNodeForRelationshipAdd}" 
+                    action="#{hierarchiesController.onRelationshipAdd}" oncomplete="PF('addSlotRelationship').hide();" 
+                    update=":slotRelationshipsForm:relationshipTable" />
         </p:dialog>
     </h:form>
 </ui:composition>

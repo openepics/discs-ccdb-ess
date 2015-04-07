@@ -28,9 +28,11 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.logging.Level;
@@ -77,6 +79,7 @@ import org.openepics.discs.conf.ent.SlotArtifact;
 import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.ent.SlotRelation;
+import org.openepics.discs.conf.ent.SlotRelationName;
 import org.openepics.discs.conf.ent.Tag;
 import org.openepics.discs.conf.ent.values.DblValue;
 import org.openepics.discs.conf.ent.values.StrValue;
@@ -183,6 +186,12 @@ public class HierarchiesController implements Serializable {
     private String tag;
     private transient List<String> tagsForAutocomplete;
 
+    private transient SlotRelationshipView selectedRelationship;
+    private TreeNode selectedTreeNodeForRelationshipAdd;
+    private String selectedRelationshipType;
+    private List<String> relationshipTypesForDialog;
+    private Map<String, SlotRelation> slotRelationBySlotRelationStringName;
+
     /** Java EE post construct life-cycle method. */
     @PostConstruct
     public void init() {
@@ -209,11 +218,15 @@ public class HierarchiesController implements Serializable {
         immutableListBuilder.add(new SelectItem("", "Select one"));
 
         final List<SlotRelation> slotRelations = slotRelationEJB.findAll();
+        slotRelationBySlotRelationStringName = new HashMap<>();
         for (final SlotRelation slotRelation : slotRelations) {
             immutableListBuilder.add(new SelectItem(slotRelation.getNameAsString(), slotRelation.getNameAsString()));
             immutableListBuilder.add(new SelectItem(slotRelation.getIname(), slotRelation.getIname()));
+            slotRelationBySlotRelationStringName.put(slotRelation.getNameAsString(), slotRelation);
+            slotRelationBySlotRelationStringName.put(slotRelation.getIname(), slotRelation);
         }
 
+        relationshipTypesForDialog = ImmutableList.copyOf(slotRelationBySlotRelationStringName.keySet().iterator());
         return immutableListBuilder.build();
     }
 
@@ -348,7 +361,7 @@ public class HierarchiesController implements Serializable {
 
         if (selectedNode != null) {
             final Slot rootSlot = slotEJB.getRootNode();
-            final List<SlotPair> slotPairs = slotPairEJB.getSlotRleations(selectedSlot);
+            final List<SlotPair> slotPairs = slotPairEJB.getSlotRelations(selectedSlot);
 
             for (final SlotPair slotPair : slotPairs) {
                 if (!slotPair.getParentSlot().equals(rootSlot)) {
@@ -1316,6 +1329,117 @@ public class HierarchiesController implements Serializable {
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      * Above: Input field validators regardless of the dialog they are used in.
      *
+     * Below: Relationships related methods
+     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+    public void prepareRelationshipsPopup() {
+        Preconditions.checkNotNull(selectedSlot);
+        selectedRelationship = null;
+        initRelationshipList();
+    }
+
+    /**
+     * This method rebuilds the tree so that all displayed slots are refreshed. This is important for refreshing the
+     * relationship status of all displayed slots. Otherwise the information can get out of synch with the database.
+     */
+    public void onRelationshipPopupClose() {
+        // restore the selection state in the main hierarchy tree
+        if (selectedNode != null) {
+            selectedNode.setSelected(true);
+        }
+        updateRootNode();
+    }
+
+    /**
+     * Called when button to delete relationship is clicked
+     */
+    public void onRelationshipDelete() {
+        if (canRelationshipBeDeleted()) {
+            slotPairEJB.delete(selectedRelationship.getSlotPair());
+        } else {
+            RequestContext.getCurrentInstance().execute("PF('cantDeleteRelation').show();");
+        }
+        prepareRelationshipsPopup();
+    }
+
+    private boolean canRelationshipBeDeleted() {
+        return !(selectedRelationship.getSlotPair().getSlotRelation().getName() == SlotRelationName.CONTAINS
+                && !slotPairEJB.slotHasMoreThanOneContainsRelation(selectedRelationship.getSlotPair().getChildSlot()));
+    }
+
+    /**
+     * Prepares data for adding new relationship
+     */
+    public void prepareAddRelationshipPopup() {
+        // hide the current main selection, since the same data can be used to add new relationships.
+        // Will be restored when the user finishes relationship manipulation.
+        if (selectedNode != null) {
+            selectedNode.setSelected(false);
+        }
+        if (selectedTreeNodeForRelationshipAdd != null) {
+            selectedTreeNodeForRelationshipAdd.setSelected(false);
+        }
+        selectedTreeNodeForRelationshipAdd = null;
+        selectedRelationshipType = SlotRelationName.CONTAINS.toString().toLowerCase();
+    }
+
+    /**
+     * Called when slot to be in relationship selected from tree of installation slots is changed.
+     * This method is needed to modify relationship types drop down menu so that if user selects
+     * container slot the only relationship that can be created is "contained in".
+     */
+    public void slotForRelationshipChanged() {
+        if (((SlotView)selectedTreeNodeForRelationshipAdd.getData()).getIsHostingSlot()) {
+            relationshipTypesForDialog = ImmutableList.copyOf(slotRelationBySlotRelationStringName.keySet().iterator());
+            if (selectedRelationshipType == null) {
+                selectedRelationshipType = SlotRelationName.CONTAINS.toString();
+            }
+        } else {
+            relationshipTypesForDialog = ImmutableList.of(SlotRelationName.CONTAINS.toString(),
+                                                            SlotRelationName.CONTAINS.inverseName());
+            selectedRelationshipType = SlotRelationName.CONTAINS.toString();
+        }
+    }
+
+    /**
+     * Called when user clicks add button to add new relationship. Relationship is added if this does not
+     * cause a loop on CONTAINS relationships
+     */
+    public void onRelationshipAdd() {
+        final SlotRelation slotRelation = slotRelationBySlotRelationStringName.get(selectedRelationshipType);
+        final Slot parentSlot;
+        final Slot childSlot;
+        if (slotRelation.getNameAsString().equals(selectedRelationshipType)) {
+            childSlot = ((SlotView) selectedTreeNodeForRelationshipAdd.getData()).getSlot();
+            parentSlot = selectedSlot;
+        } else {
+            childSlot = selectedSlot;
+            parentSlot = ((SlotView) selectedTreeNodeForRelationshipAdd.getData()).getSlot();
+        }
+
+        if (childSlot.equals(parentSlot)) {
+            Utility.showMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
+                    "The installation slot cannot be in relationship with itself.");
+            return;
+        }
+
+        if (slotPairEJB.findSlotPairsByParentChildRelation(childSlot.getName(), parentSlot.getName(), slotRelation.getName()).isEmpty()) {
+            final SlotPair newSlotPair = new SlotPair(childSlot, parentSlot, slotRelation);
+            if (!slotPairEJB.slotPairCreatesLoop(newSlotPair, childSlot)) {
+                slotPairEJB.add(newSlotPair);
+            } else {
+                RequestContext.getCurrentInstance().execute("PF('slotPairLoopNotification').show();");
+            }
+            prepareRelationshipsPopup();
+        } else {
+            Utility.showMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
+                    "This relationship already exists.");
+        }
+    }
+
+
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     * Above: Relationships related methods
+     *
      * Below: Getters and setter all logically grouped based on where they are used. All getters and setters are
      *        usually called from the UI dialogs.
      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -1609,5 +1733,44 @@ public class HierarchiesController implements Serializable {
      */
     public void setTag(String tag) {
         this.tag = tag;
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Relationship manipulation
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /** @return the selectedRelationship */
+    public SlotRelationshipView getSelectedRelationship() {
+        return selectedRelationship;
+    }
+    /** @param selectedRelationship the selectedRelationship to set */
+    public void setSelectedRelationship(SlotRelationshipView selectedRelationship) {
+        this.selectedRelationship = selectedRelationship;
+    }
+
+    /** @return the selectedRelationshipType */
+    public String getSelectedRelationshipType() {
+        return selectedRelationshipType;
+    }
+    /** @param selectedRelationshipType the selectedRelationshipType to set */
+    public void setSelectedRelationshipType(String selectedRelationshipType) {
+        this.selectedRelationshipType = selectedRelationshipType;
+    }
+
+    /** @return the relationshipTypesForDialog */
+    public List<String> getRelationshipTypesForDialog() {
+        return relationshipTypesForDialog;
+    }
+    /** @param relationshipTypesForDialog the relationshipTypesForDialog to set */
+    public void setRelationshipTypesForDialog(List<String> relationshipTypesForDialog) {
+        this.relationshipTypesForDialog = relationshipTypesForDialog;
+    }
+
+    /** @return the selectedTreeNodeForRelationshipAdd */
+    public TreeNode getSelectedTreeNodeForRelationshipAdd() {
+        return selectedTreeNodeForRelationshipAdd;
+    }
+    /** @param selectedTreeNodeForRelationshipAdd the selectedTreeNodeForRelationshipAdd to set */
+    public void setSelectedTreeNodeForRelationshipAdd(TreeNode selectedTreeNodeForRelationshipAdd) {
+        this.selectedTreeNodeForRelationshipAdd = selectedTreeNodeForRelationshipAdd;
     }
 }

@@ -10,13 +10,10 @@
         <p:growl id="menumsgs" showDetail="true" />
 
         <p:menubar id="mainMenu" styleClass="menubar">
-            <p:menuitem value="Home" icon="ui-icon-home" title="Home" url="/" 
-                styleClass="#{fn:endsWith(request.requestURL,'hierarchies.xhtml') ? 'menu-selected' : ''}" />
-
-            <p:submenu label="Slots" icon="ui-icon-document-b" 
-                    styleClass="#{fn:endsWith(request.requestURL,'installation-slots-manager.xhtml') ? 'menu-selected' : ''} slotsMenu">
-                <p:menuitem value="View" title="View Installation Slots" styleClass="noClickEvent" 
-                    url="/data-definitions/installation-slots/installation-slots-manager.xhtml" />
+        
+            <p:submenu label="Home" icon="ui-icon-home" title="Home" 
+                    styleClass="#{fn:endsWith(request.requestURL,'hierarchies.xhtml') ? 'menu-selected' : ''} homeMenu" >
+                <p:menuitem value="View" title="View Home Screen" styleClass="noClickEvent" url="/" />
 
                 <p:menuitem value="Import" update=":importSlotsForm" styleClass="noClickEvent" 
                     oncomplete="PF('importSlots').show();" title="Import Slots and Slot Pairs" 
@@ -70,10 +67,6 @@
                     actionListener="#{unitManager.prepareImportPopup()}" 
                     disabled="#{!securityPolicy.getUIHint('UNIT')}" />
             </p:submenu>
-
-            <p:menuitem value="Containers" icon="ui-icon-folder-collapsed" 
-                url="/data-definitions/containers/containers-manager.xhtml" 
-                styleClass="#{fn:endsWith(request.requestURL,'containers-manager.xhtml') ? 'menu-selected' : ''}" />
 
             <p:menuitem value="Log" icon="ui-icon-script" title="View Audit Log" url="/audit/log-manager.xhtml" 
                 styleClass="#{fn:endsWith(request.requestURL,'log-manager.xhtml') ? 'menu-selected' : ''}" />
@@ -131,31 +124,26 @@
             if ((target.nodeName == null) || (target.nodeName == "LI") || (target.nodeName == "UL")) return false;
             return noClickTarget(target.parentNode);
         }
-    
-        jQuery(".slotsMenu").click(function(event) {
+        jQuery(".homeMenu").click(function(event) {
             if (noClickTarget(event.target) == false) {
-                window.location.replace("#{request.contextPath}/data-definitions/installation-slots/installation-slots-manager.xhtml");
+                window.location.replace("#{request.contextPath}/");
             }
         });
-
         jQuery(".devicesMenu").click(function(event) {
             if (noClickTarget(event.target) == false) {
                 window.location.replace("#{request.contextPath}/devices/device-manager.xhtml");
             }
         });
-
         jQuery(".devTypesMenu").click(function(event) {
             if (noClickTarget(event.target) == false) {
                 window.location.replace("#{request.contextPath}/data-definitions/device-types/device-types-manager.xhtml");
             }
         });
-
         jQuery(".propertiesMenu").click(function(event) {
             if (noClickTarget(event.target) == false) {
                 window.location.replace("#{request.contextPath}/data-definitions/properties/properties-manager.xhtml");
             }
         });
-
         jQuery(".unitsMenu").click(function(event) {
             if (noClickTarget(event.target) == false) {
                 window.location.replace("#{request.contextPath}/data-definitions/units/units-manager.xhtml");

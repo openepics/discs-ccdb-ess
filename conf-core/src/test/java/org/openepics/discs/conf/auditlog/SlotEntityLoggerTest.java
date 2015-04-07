@@ -96,7 +96,7 @@ public class SlotEntityLoggerTest {
                 + "{\"APERTURE\":\"20\"},{\"DETER\":\"10\"}],"
                 + "\"slotArtifactList\":[{\"CAT Image\":\"/var/usr/images/CAT\"},"
                 + "{\"Manual\":\"www.deteriorator.com/user-manual\"}],"
-                + "\"childrenSlots\":[{\"childSlot\":\"[CONTAINS]\"}],"
+                + "\"childrenSlots\":[{\"childSlot\":\"[contains]\"}],"
                 + "\"parentSlots\":[{\"parentSlot\":\"[contained in]\"}]}";
 
         assertEquals(RESULT, sel.auditEntries(slot, EntityTypeOperation.CREATE).get(0).getEntry());
