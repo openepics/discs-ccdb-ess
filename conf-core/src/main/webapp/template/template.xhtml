@@ -15,26 +15,6 @@
         <link rel="shortcut icon" href="resources/images/proteus.ico" />
         <title>#{msgs.webTitle}</title>
         <script type="text/javascript">
-            function resizeContainerPanel() {
-                var menusHeight = $('#top').outerHeight(true);
-                var headerHeight = $('#containersForm\\:containersTree\\:name').outerHeight(true);
-                var addSlotHeight = $('#containersForm\\:addSlot').outerHeight(true);
-                var em = emHeight();
-
-                var totalMenusHeight = menusHeight + headerHeight + addSlotHeight + 7*em;
-                $('.ui-treetable-scrollable-body').css({"height":window.innerHeight-totalMenusHeight});
-            }
-
-            function resizeInstallationSlotPanel() {
-                var menusHeight = $('#top').outerHeight(true);
-                var headerHeight = $('#installationSlotsForm\\:installationSlotsTree\\:name').outerHeight(true);
-                var addSlotHeight = $('#installationSlotsForm\\:addSlot').outerHeight(true);
-                var em = emHeight();
-
-                var totalMenusHeight = menusHeight + headerHeight + addSlotHeight + 3*em;
-                $('.ui-treetable-scrollable-body').css({"height":window.innerHeight-totalMenusHeight});
-            }
-
             function resizeHierarchiesTree() {
                 var menusHeight = $('#top').outerHeight(true);
                 var headerHeight = $('#hierarchies\\:tree\\:name').outerHeight(true) + $('#hierarchies\\:treeFieldSet legend').outerHeight(true);

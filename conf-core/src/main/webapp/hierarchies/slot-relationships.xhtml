@@ -44,7 +44,7 @@
 
 			<p:commandButton value="Close" styleClass="dialogButton" onclick="PF('#{widgetName}').hide();" 
                     action="#{hierarchiesController.onRelationshipPopupClose}" update=":hierarchies" 
-                    oncomplete="hierarchiesResizeAll();"/>
+                    oncomplete="hierarchiesResizeAll();setRightColumnWidths();"/>
 		</p:dialog>
 	</h:form>
 

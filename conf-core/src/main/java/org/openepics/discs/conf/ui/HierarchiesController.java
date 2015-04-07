@@ -1331,6 +1331,9 @@ public class HierarchiesController implements Serializable {
      *
      * Below: Relationships related methods
      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+    /**
+     * Prepares a list of relationships to display to the user.
+     */
     public void prepareRelationshipsPopup() {
         Preconditions.checkNotNull(selectedSlot);
         selectedRelationship = null;
@@ -1379,7 +1382,7 @@ public class HierarchiesController implements Serializable {
             selectedTreeNodeForRelationshipAdd.setSelected(false);
         }
         selectedTreeNodeForRelationshipAdd = null;
-        selectedRelationshipType = SlotRelationName.CONTAINS.toString().toLowerCase();
+        selectedRelationshipType = SlotRelationName.CONTAINS.toString();
     }
 
     /**
@@ -1435,7 +1438,6 @@ public class HierarchiesController implements Serializable {
                     "This relationship already exists.");
         }
     }
-
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      * Above: Relationships related methods
