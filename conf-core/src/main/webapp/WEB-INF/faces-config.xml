@@ -32,6 +32,13 @@
             <to-view-id>/devices/device-manager.xhtml</to-view-id>
         </navigation-case>
     </navigation-rule>
+    <navigation-rule>
+        <from-view-id>/devices/device-manager.xhtml</from-view-id>
+        <navigation-case>
+            <from-outcome>deviceTypesManager</from-outcome>
+            <to-view-id>/data-definitions/device-types/device-types-manager.xhtml</to-view-id>
+        </navigation-case>
+    </navigation-rule>
     <render-kit>      
         <renderer>
             <component-family>org.primefaces.component</component-family>

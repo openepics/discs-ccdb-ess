@@ -28,9 +28,11 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.servlet.http.HttpServletRequest;
 
 import org.openepics.discs.conf.dl.ComponentTypesLoaderQualifier;
 import org.openepics.discs.conf.dl.common.DataLoader;
@@ -79,6 +81,20 @@ public class ComponentTypeManager extends AbstractExcelSingleFileImportUI implem
         try {
             deviceTypes = comptypeEJB.findAll();
             resetFields();
+
+            final String deviceTypeIdStr = ((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().
+                    getRequest()).getParameter("id");
+            if (deviceTypeIdStr != null) {
+                final Long deviceTypeId = new Long(deviceTypeIdStr);
+                int selectedIndex = 0;
+                for (final ComponentType deviceType : deviceTypes) {
+                    if (deviceType.getId().equals(deviceTypeId)) {
+                        RequestContext.getCurrentInstance().execute("selectDeviceTypeInTable(" + selectedIndex + ");");
+                        return;
+                    }
+                    ++selectedIndex;
+                }
+            }
         } catch(Exception e) {
             throw new UIException("Device type display initialization fialed: " + e.getMessage(), e);
         }

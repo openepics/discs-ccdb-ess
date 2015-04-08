@@ -41,13 +41,13 @@
                             devicesTable.selectRow(ccdb_tableSelectedIndex);
                             ccdb_tableSelectedIndex = -1;
                         } else {
-                            // after page change 'onPageLoadAction()' will be called by the framework
+                            // after page change 'onTablePageSwitchAction()' will be called by the framework
                             devicesTable.getPaginator().setPage(pageNumber);
                         }
                     }
                 }
                 var ccdb_tableSelectedIndex = -1;
-                function onPageLoadAction() {
+                function onTablePageSwitchAction() {
                     if (ccdb_tableSelectedIndex > -1) {
                         PF('devicesTableVar').selectRow(ccdb_tableSelectedIndex);
                         ccdb_tableSelectedIndex = -1;
@@ -77,11 +77,13 @@
                                         listener="#{deviceDetailsAttributesController.clearDeviceInstance()}" 
                                         update=":deviceAddForm:addDeviceDialog :devicesForm:deleteButton :devicesForm:editButton 
                                                 :devicesForm:attributesDataTable:attributesDataTable" />
-                                <p:ajax event="page" oncomplete="onPageLoadAction();" />
+                                <p:ajax event="page" oncomplete="onTablePageSwitchAction();" />
 
                                 <p:column headerText="Type" sortBy="#{device.device.componentType.name}" filterStyle="width: 90%;" 
                                         filterBy="#{device.device.componentType.name}" filterMatchMode="contains">
-                                    <h:outputText value="#{device.device.componentType.name}" />
+                                    <h:link outcome="deviceTypesManager" value="#{device.device.componentType.name}" class="link">
+                                        <f:param name="id" value="#{device.device.componentType.id}" />
+                                    </h:link>                                    
                                 </p:column>
 
                                 <p:column headerText="Inventory ID" sortBy="#{device.inventoryId}" 
