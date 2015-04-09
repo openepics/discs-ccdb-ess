@@ -215,6 +215,11 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
         RequestContext.getCurrentInstance().update("modifyPropertyForm:modifyProperty");
     }
 
+    /** @return <code>true</code> if property can be deleted (UI), <code>false</code> otherwise */
+    public boolean canDeleteProperty() {
+        return selectedProperty != null && !propertyEJB.isPropertyUsed(selectedProperty);
+    }
+
     /** Called when the user clicks the "trash can" icon in the UI */
     public void onDelete() {
         try {
@@ -331,16 +336,6 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
     /** @param selectedProperty The {@link Property} selected in the dialog */
     public void setSelectedProperty(Property selectedProperty) {
         this.selectedProperty = selectedProperty;
-    }
-
-    /** @return The {@link Property} selected in the dialog (modify property dialog) */
-    public Property getSelectedPropertyToModify() {
-        return selectedProperty;
-    }
-    /** @param selectedProperty The {@link Property} selected in the dialog (modify property dialog) */
-    public void setSelectedPropertyToModify(Property selectedProperty) {
-        this.selectedProperty = propertyEJB.findById(selectedProperty.getId());
-        prepareModifyPopup();
     }
 
     private void resetFields() {
