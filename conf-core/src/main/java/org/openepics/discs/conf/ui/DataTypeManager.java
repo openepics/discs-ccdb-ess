@@ -68,22 +68,16 @@ public class DataTypeManager implements Serializable {
     private List<DataType> dataTypes;
     private List<String> builtInDataTypeNames;
 
-
     // * * * * * * * Add/modify dialog fields * * * * * * *
     private String name;
     private String description;
     private String definition;
 
-    /**
-     * Creates a new instance of DataTypeManager
-     */
+    /** Creates a new instance of DataTypeManager */
     public DataTypeManager() {
     }
 
-
-    /**
-     * Java EE post construct life-cycle method.
-     */
+    /** Java EE post construct life-cycle method */
     @PostConstruct
     public void init() {
         Builder<String> builtInDataTypeBuilder = ImmutableList.builder();
@@ -103,9 +97,7 @@ public class DataTypeManager implements Serializable {
         return dataTypeViews;
     }
 
-    /**
-     * @return A list of all {@link DataType} entities in the database.
-     */
+    /** @return A list of all {@link DataType} entities in the database */
     public List<DataType> getDataTypes() {
         return dataTypes;
     }
@@ -172,29 +164,26 @@ public class DataTypeManager implements Serializable {
                     ));
     }
 
-    /**
-     * This method clears all input fields used in the "Add enumeration" dialog.
-     */
+    /** This method clears all input fields used in the "Add enumeration" dialog. */
     public void prepareAddPopup() {
-        selectedEnum = null;
         name = null;
         description = null;
         definition = null;
     }
 
-    private void prepareModifyPopup() {
+    /** This method prepares the input fields used in the "Edit enumeration" dialog. */
+    public void prepareModifyPopup() {
         name = selectedEnum.getName();
         description = selectedEnum.getDescription();
         definition = definitionsToMultiline(selectedEnum.getDefinition());
     }
 
-    /**
-     * Method that saves a new enumeration definition, when user presses the "Save" button in the "Add new" dialog.
-     */
+    /** Method that saves a new enumeration definition, when user presses the "Save" button in the "Add new" dialog */
     public void onAdd() {
         final List<String> enumValues = multilineToDefinitions(definition);
         final DataType newEnum = new DataType(name, description, false, jsonDefinitionFromList(enumValues));
         dataTypeEJB.add(newEnum);
+        selectedEnum = null;
         refreshUserDataTypes();
     }
 
@@ -224,6 +213,7 @@ public class DataTypeManager implements Serializable {
                         "The enumeration data type cannot be deleted because it is in use.");
         } else {
             dataTypeEJB.delete(enumerationDataType);
+            selectedEnum = null;
             refreshUserDataTypes();
         }
     }
@@ -308,74 +298,46 @@ public class DataTypeManager implements Serializable {
         return  jsonEnum.toString();
     }
 
+    /** @return <code>true</code> if selected enumeration is used, <code>false</code> otherwise.
+     */
+    public boolean isSelectedEnumUsed() {
+        return selectedEnum != null && dataTypeEJB.isDataTypeUsed(selectedEnum.getEnumeration());
+    }
+
     /* * * * * * * * * * * * * * * * * getters and setters * * * * * * * * * * * * * * * * */
 
-    /**
-     * @return The {@link DataType} selected in the dialog.
-     */
+    /** @return The {@link DataType} selected in the dialog */
     public UserEnumerationView getSelectedEnum() {
         return selectedEnum;
     }
-    /**
-     * @param selectedEnum The {@link DataType} selected in the dialog.
-     */
+    /** @param selectedEnum The {@link DataType} selected in the dialog */
     public void setSelectedEnum(UserEnumerationView selectedEnum) {
         this.selectedEnum = selectedEnum;
     }
 
-    /**
-     * @return The {@link DataType} selected in the dialog (modify property dialog).
-     */
-    public UserEnumerationView getSelectedEnumToModify() {
-        return selectedEnum;
-    }
-
-    /**
-     * @param selectedEnum The user enumeration selected in the dialog (modify property dialog).
-     */
-    public void setSelectedEnumToModify(UserEnumerationView selectedEnum) {
-        this.selectedEnum = selectedEnum;
-        prepareModifyPopup();
-    }
-
-    /**
-     * @return The name of the user defined enumeration.
-     */
+    /** @return The name of the user defined enumeration */
     public String getName() {
         return name;
     }
-
-    /**
-     * @param name The name of the user defined enumeration as set by the user through the UI.
-     */
+    /** @param name The name of the user defined enumeration as set by the user through the UI */
     public void setName(String name) {
         this.name = name;
     }
 
-    /**
-     * @return the description
-     */
+    /** @return the description */
     public String getDescription() {
         return description;
     }
-
-    /**
-     * @param description the description to set
-     */
+    /** @param description the description to set */
     public void setDescription(String description) {
         this.description = description;
     }
 
-    /**
-     * @return the definition
-     */
+    /** @return the definition */
     public String getDefinition() {
         return definition;
     }
-
-    /**
-     * @param definition the definition to set
-     */
+    /** @param definition the definition to set */
     public void setDefinition(String definition) {
         this.definition = definition;
     }

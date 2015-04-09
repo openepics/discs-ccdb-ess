@@ -30,6 +30,8 @@ import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ent.PropertyValue;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
 
+import com.google.common.base.Preconditions;
+
 /**
  * DAO service for accesing {@link DataType} entities
  *
@@ -51,6 +53,7 @@ public class DataTypeEJB extends DAO<DataType> {
      * @return <code>true</code> if the data type is used in any property value, <code>false</code> otherwise.
      */
     public boolean isDataTypeUsed(DataType dataType) {
+        Preconditions.checkNotNull(dataType);
         List<? extends PropertyValue> valuesWithDataType;
 
         valuesWithDataType = em.createNamedQuery("ComptypePropertyValue.findByDataType", ComptypePropertyValue.class)
