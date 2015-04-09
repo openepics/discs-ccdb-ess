@@ -24,6 +24,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.ManagedBean;
 import javax.annotation.PostConstruct;
@@ -44,6 +46,7 @@ import org.openepics.discs.conf.ejb.UnitEJB;
 import org.openepics.discs.conf.ent.Unit;
 import org.openepics.discs.conf.ui.common.AbstractExcelSingleFileImportUI;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
+import org.openepics.discs.conf.ui.common.UIException;
 import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.views.UnitView;
 import org.primefaces.context.RequestContext;
@@ -64,6 +67,7 @@ import com.google.common.collect.Lists;
 @ViewScoped
 public class UnitManager extends AbstractExcelSingleFileImportUI implements Serializable {
     private static final long serialVersionUID = 5504821804362597703L;
+    private static final Logger LOGGER = Logger.getLogger(UnitManager.class.getCanonicalName());
 
     @Inject private transient  UnitEJB unitEJB;
     @Inject private transient DataLoaderHandler dataLoaderHandler;
@@ -81,65 +85,51 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
     private String symbol;
     private String quantity;
 
-    // * * * * * * * Unit scroll position * * * * * * *
-    private long unitPosition;
-
-    /**
-     * Creates a new instance of UnitManager
-     */
+    /** Creates a new instance of UnitManager */
     public UnitManager() {
     }
 
-    /**
-     * Java EE post-construct life-cycle callback.
-     */
+    /** Java EE post-construct life-cycle callback */
     @PostConstruct
     public void init() {
-        unitPosition = -1;
-        final String unitId = ((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().
+        final String unitIdStr = ((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().
                                     getRequest()).getParameter("id");
-        refreshUnits();
-        getUnitPosition(unitId);
-    }
-
-    private void getUnitPosition(final String unitId) {
-        if (!Strings.isNullOrEmpty(unitId)) {
-            final long id = Long.parseLong(unitId);
-            int elementPosition = 0;
-            for (Unit unit : units) {
-                if (unit.getId() == id) {
-                    unitPosition = elementPosition;
-                    break;
+        try {
+            refreshUnits();
+            if (!Strings.isNullOrEmpty(unitIdStr)) {
+                final long unitId = Long.parseLong(unitIdStr);
+                int elementPosition = 0;
+                for (Unit unit : units) {
+                    if (unit.getId() == unitId) {
+                        RequestContext.getCurrentInstance().execute("selectUnitInTable(" + elementPosition + ");");
+                        return;
+                    }
+                    ++elementPosition;
                 }
-                ++elementPosition;
             }
+        } catch (NumberFormatException e) {
+            // just log
+            LOGGER.log(Level.WARNING, "URL contained strange unit ID: " + unitIdStr );
+        } catch(Exception e) {
+            throw new UIException("Device type display initialization fialed: " + e.getMessage(), e);
         }
     }
 
-    /**
-     * @return The list of all user defined physics units in the database
-     */
+    /** @return The list of all user defined physics units in the database */
     public List<Unit> getUnits() {
         return units;
     }
 
-    /**
-     * @return The list of all user defined physics units in the database
-     */
+    /** @return The list of all user defined physics units in the database */
     public List<UnitView> getUnitViews() {
         return unitViews;
     }
 
-    /**
-     * @return The list of filtered units used by the PrimeFaces filter field.
-     */
+    /** @return The list of filtered units used by the PrimeFaces filter field */
     public List<UnitView> getFilteredUnits() {
         return filteredUnits;
     }
-
-    /**
-     * @param filteredUnits The list of filtered units used by the PrimeFaces filter field.
-     */
+    /** @param filteredUnits The list of filtered units used by the PrimeFaces filter field */
     public void setFilteredUnits(List<UnitView> filteredUnits) {
         this.filteredUnits = filteredUnits;
     }
@@ -166,32 +156,29 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
                                                                         }}));
     }
 
-    /**
-     * This method clears all input fields used in the "Add unit" dialog.
-     */
+    /** This method clears all input fields used in the "Add unit" dialog */
     public void prepareAddPopup() {
-        selectedUnit = null;
         name = null;
         description = null;
         symbol = null;
         quantity = null;
     }
 
-    private void prepareModifyPopup() {
+    /** This method prepares the input fields used in the "Edit unit" dialog */
+    public void prepareModifyPopup() {
         name = selectedUnit.getName();
         description = selectedUnit.getDescription();
         symbol = selectedUnit.getSymbol();
         quantity = selectedUnit.getQuantity();
     }
 
-    /**
-     * Method creates a new unit definition when user presses the "Save" button in the "Add new" dialog.
-     */
+    /** Method creates a new unit definition when user presses the "Save" button in the "Add new" dialog  */
     public void onAdd() {
         Preconditions.checkNotNull(name);
         Preconditions.checkNotNull(description);
         Preconditions.checkNotNull(symbol);
         Preconditions.checkNotNull(quantity);
+        selectedUnit = null;
         final Unit unitToAdd = new Unit(name, quantity, symbol, description);
         unitEJB.add(unitToAdd);
         refreshUnits();
@@ -235,6 +222,7 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
         } else {
             unitEJB.delete(unitToDelete);
             refreshUnits();
+            selectedUnit = null;
         }
     }
 
@@ -260,102 +248,48 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
         }
     }
 
-    /**
-     * @return the selectedUnit
-     */
+    /** @return the selectedUnit */
     public UnitView getSelectedUnit() {
         return selectedUnit;
     }
-
-    /**
-     * @param selectedUnit the selectedUnit to set
-     */
+    /** @param selectedUnit the selectedUnit to set */
     public void setSelectedUnit(UnitView selectedUnit) {
         this.selectedUnit = selectedUnit;
     }
 
-    /**
-     * @param selectedUnit the selectedUnit to set
-     */
-    public void setSelectedUnitToModify(UnitView selectedUnit) {
-        this.selectedUnit = selectedUnit;
-        prepareModifyPopup();
-    }
-
-    /**
-     * @return the name
-     */
+    /** @return the name */
     public String getName() {
         return name;
     }
-
-    /**
-     * @param name the name to set
-     */
+    /** @param name the name to set */
     public void setName(String name) {
         this.name = name;
     }
 
-    /**
-     * @return the description
-     */
+    /** @return the description */
     public String getDescription() {
         return description;
     }
-
-    /**
-     * @param description the description to set
-     */
+    /** @param description the description to set */
     public void setDescription(String description) {
         this.description = description;
     }
 
-    /**
-     * @return the symbol
-     */
+    /** @return the symbol */
     public String getSymbol() {
         return symbol;
     }
-
-    /**
-     * @param symbol the symbol to set
-     */
+    /** @param symbol the symbol to set */
     public void setSymbol(String symbol) {
         this.symbol = symbol;
     }
 
-    /**
-     * @return the quantity
-     */
+    /** @return the quantity */
     public String getQuantity() {
         return quantity;
     }
-
-    /**
-     * @param quantity the quantity to set
-     */
+    /** @param quantity the quantity to set */
     public void setQuantity(String quantity) {
         this.quantity = quantity;
     }
-
-    /**
-     * @return a script element to be inserted into the units-manager.xhtml
-     */
-    public String getStartupScript() {
-        final StringBuilder js = new StringBuilder();
-        js.append("<script type=\"text/javascript\">").append("\r\n");
-        js.append("jQuery(document).ready(function() {").append("\r\n");
-        js.append("var unitsTableVar = PF('unitsTableVar');").append("\r\n");
-        js.append("if ((").append(unitPosition).append(" < 0) || (").append(unitPosition)
-                        .append(" > unitsTableVar.getPaginator().cfg.rowCount)) {").append("\r\n");
-        js.append("    return;").append("\r\n");
-        js.append("}").append("\r\n");
-        js.append("var page = Math.floor(").append(unitPosition).append(" / unitsTableVar.getPaginator().cfg.rows);").
-                append("\r\n");
-        js.append("unitsTableVar.getPaginator().setPage(page);").append("\r\n");
-        js.append("});").append("\r\n");
-        js.append("</script>").append("\r\n");
-        return js.toString();
-    }
-
 }

@@ -66,9 +66,9 @@
             
             <p:commandButton value="Cancel" styleClass="dialogButton" onclick="PF('#{widgetName}').hide();" 
                     update="grp" resetValues="true" />
-            <p:commandButton value="Save" styleClass="dialogButton" update=":unitsForm:unitsTable grp" 
+            <p:commandButton value="Save" styleClass="dialogButton" action="#{unitManager[submitHandler]}" 
                     oncomplete="if (args &amp;&amp; !args.validationFailed) { PF('#{widgetName}').hide(); PF('unitsTableVar').filter(); }" 
-                    action="#{unitManager[submitHandler]}" />
+                    update=":unitsForm:unitsTable :unitsForm:deleteButton :unitsForm:editButton grp" />
         </p:dialog>
 
     </h:form>

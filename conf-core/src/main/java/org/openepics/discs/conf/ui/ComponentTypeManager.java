@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
@@ -33,6 +35,8 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
+
+import joptsimple.internal.Strings;
 
 import org.openepics.discs.conf.dl.ComponentTypesLoaderQualifier;
 import org.openepics.discs.conf.dl.common.DataLoader;
@@ -58,6 +62,7 @@ import org.primefaces.context.RequestContext;
 @ViewScoped
 public class ComponentTypeManager extends AbstractExcelSingleFileImportUI implements Serializable {
     private static final long serialVersionUID = -9007187646811006328L;
+    private static final Logger LOGGER = Logger.getLogger(ComponentTypeManager.class.getCanonicalName());
 
     @Inject private transient ComptypeEJB comptypeEJB;
     @Inject private transient AuditRecordEJB auditRecordEJB;
@@ -78,23 +83,26 @@ public class ComponentTypeManager extends AbstractExcelSingleFileImportUI implem
     /** Java EE post construct life-cycle method. */
     @PostConstruct
     public void init() {
+        final String deviceTypeIdStr = ((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().
+                getRequest()).getParameter("id");
         try {
             deviceTypes = comptypeEJB.findAll();
             resetFields();
 
-            final String deviceTypeIdStr = ((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().
-                    getRequest()).getParameter("id");
-            if (deviceTypeIdStr != null) {
-                final Long deviceTypeId = new Long(deviceTypeIdStr);
-                int selectedIndex = 0;
+            if (!Strings.isNullOrEmpty(deviceTypeIdStr)) {
+                final long deviceTypeId = Long.parseLong(deviceTypeIdStr);
+                int elementPosition = 0;
                 for (final ComponentType deviceType : deviceTypes) {
-                    if (deviceType.getId().equals(deviceTypeId)) {
-                        RequestContext.getCurrentInstance().execute("selectDeviceTypeInTable(" + selectedIndex + ");");
+                    if (deviceType.getId()== deviceTypeId) {
+                        RequestContext.getCurrentInstance().execute("selectDeviceTypeInTable(" + elementPosition + ");");
                         return;
                     }
-                    ++selectedIndex;
+                    ++elementPosition;
                 }
             }
+        } catch (NumberFormatException e) {
+            // just log
+            LOGGER.log(Level.WARNING, "URL contained strange device type ID: " + deviceTypeIdStr );
         } catch(Exception e) {
             throw new UIException("Device type display initialization fialed: " + e.getMessage(), e);
         }

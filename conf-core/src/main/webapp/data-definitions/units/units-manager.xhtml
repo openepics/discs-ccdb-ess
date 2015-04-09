@@ -7,13 +7,47 @@
 
     <ui:define name="content">
         <h:form id="unitsForm">
-            <p:commandButton ajax="true" actionListener="#{unitManager.prepareAddPopup()}" value="Add new" update=":addUnitForm"
-                    oncomplete="PF('addUnit').show()" style="margin-bottom: 1em;" />
+            <script type="text/javascript">
+                // <![CDATA[
+                function selectUnitInTable(globalIndex) {
+                    // selectUnitInTable() only works on page load, so it can be used for navigating to 
+                    //     an unit form another screen. 
+                    var devicesTable = PF('unitsTableVar');
+                    if (devicesTable.getPaginator().cfg.rowCount < 1) return;
+                    
+                    var rowsPerPage = devicesTable.getPaginator().cfg.rows;
+                    var pageNumber = Math.trunc(globalIndex / rowsPerPage);
+                    ccdb_tableSelectedIndex = globalIndex % rowsPerPage;
+                    if (pageNumber >= 0) {
+                        devicesTable.unselectAllRows();
+                        if (pageNumber == devicesTable.getPaginator().getCurrentPage()) {
+                            devicesTable.selectRow(ccdb_tableSelectedIndex);
+                            ccdb_tableSelectedIndex = -1;
+                        } else {
+                            // after page change 'onTablePageSwitchAction()' will be called by the framework
+                            devicesTable.getPaginator().setPage(pageNumber);
+                        }
+                    }
+                }
+                var ccdb_tableSelectedIndex = -1;
+                function onTablePageSwitchAction() {
+                    if (ccdb_tableSelectedIndex > -1) {
+                        PF('unitsTableVar').selectRow(ccdb_tableSelectedIndex);
+                        ccdb_tableSelectedIndex = -1;
+                    }
+                }
+                // ]]>
+            </script>
             <p:dataTable widgetVar="unitsTableVar" var="unit" id="unitsTable" value="#{unitManager.unitViews}" 
+                    selection="#{unitManager.selectedUnit}" selectionMode="single" rowKey="#{unit.unit.id}" 
                     resizableColumns="true" style="table-layout: fixed; word-wrap: break-word;" 
                     filteredValue="#{unitManager.filteredUnits}" rows="15" paginator="true" 
                     paginatorPosition="bottom">
                 <p:ajax event="filter" ignoreAutoUpdate="true" />
+                <p:ajax event="rowSelect" update=":unitsForm:deleteButton :unitsForm:editButton" />
+                <p:ajax event="rowUnselect" update=":unitsForm:deleteButton :unitsForm:editButton" />
+                <p:ajax event="page" oncomplete="onTablePageSwitchAction();" />
+
                 <p:column headerText="Name" sortBy="#{unit.name.toUpperCase()}" filterBy="#{unit.name}" width="20%" 
                         filterMatchMode="contains">
                     <h:outputText value="#{unit.name}" />
@@ -33,22 +67,18 @@
                         filterStyle="width: 90%;">
                     <h:outputText value="#{unit.quantity}" />
                 </p:column>
-                <p:column headerText="Action" style="text-align: center;" width="70">
-                    <p:commandLink ajax="true" title="Edit" update=":modifyUnitForm" oncomplete="PF('modifyUnit').show()">
-                        <h:outputText styleClass="ui-icon ui-icon-pencil" style="display: inline-block !important; margin-right: 6px;" />
-                        <f:setPropertyActionListener value="#{unit}" target="#{unitManager.selectedUnitToModify}" />
-                    </p:commandLink>
-                    <p:commandLink ajax="true" title="Delete" oncomplete="PF('deleteUnit').show()">
-                        <h:outputText styleClass="ui-icon ui-icon-trash" style="display: inline-block !important; margin-right: 6px;" />
-                        <f:setPropertyActionListener value="#{unit}" target="#{unitManager.selectedUnit}" />
-                    </p:commandLink>
-                    <p:commandLink ajax="true" title="Log">
-                        <h:outputText styleClass="ui-icon ui-icon-clock" style="display: inline-block !important; margin-right: 6px;" />
-                        <p:ajax event="click" listener="#{auditManager.selectEntityForLog(unit.unit, 'UNIT')}" 
-                                update=":unitLogForm" oncomplete="PF('unitLog').show()" />
-                    </p:commandLink>
-                </p:column>
             </p:dataTable>
+
+            <p:commandButton id="deleteButton" icon="ui-icon-trash" value="Delete" title="Delete" 
+                style="float: right; margin-top: 1em;" oncomplete="PF('deleteUnit').show();" 
+                disabled="#{empty unitManager.selectedUnit or unitManager.selectedUnitInUse}" />
+            <p:commandButton id="editButton" icon="ui-icon-pencil" value="Edit" title="Edit" 
+                style="float: right; margin: 1em 1ex 0 0;" update=":modifyUnitForm:modifyUnit" 
+                disabled="#{empty unitManager.selectedUnit}" oncomplete="PF('modifyUnit').show();" 
+                actionListener="#{unitManager.prepareModifyPopup}" />
+            <p:commandButton ajax="true" actionListener="#{unitManager.prepareAddPopup}" value="Add" 
+                update=":addUnitForm" title="Add unit" icon="ui-icon-plus"
+                oncomplete="PF('addUnit').show()" style="float: right; margin: 1em 1ex 0 0;" />
         </h:form>
 
         <ui:include src="../add-or-modify-dialogs/delete-confirmation.xhtml" >
@@ -57,7 +87,7 @@
             <ui:param name="widgetName" value="deleteUnit" />
             <ui:param name="controller" value="#{unitManager}" />
             <ui:param name="submitHandler" value="onDelete" />
-            <ui:param name="formToUpdate" value=":unitsForm:unitsTable" />
+            <ui:param name="formToUpdate" value=":unitsForm:unitsTable :unitsForm:deleteButton :unitsForm:editButton" />
             <ui:param name="resetFilter" value="PF('unitsTableVar').filter();" />               
             <ui:param name="entityType" value="this unit" />
         </ui:include>
@@ -75,18 +105,5 @@
             <ui:param name="widgetName" value="addUnit" />
             <ui:param name="submitHandler" value="onAdd" />
         </ui:include>
-
-        <ui:include src="../../audit/audit-log-table.xhtml">
-            <ui:param name="formId" value="unitLogForm" />
-            <ui:param name="dialogTitle" value="Unit Log" />
-            <ui:param name="widgetName" value="unitLog" />
-        </ui:include>
-
-        <ui:include src="../../audit/audit-log-details.xhtml">
-            <ui:param name="formId" value="logDetailsForm" />
-            <ui:param name="dialogTitle" value="Long Entry Details" />
-            <ui:param name="widgetName" value="logDetails" />
-        </ui:include>
-        <h:outputText value="#{unitManager.startupScript}" escape="false" />
     </ui:define>
 </ui:composition>
