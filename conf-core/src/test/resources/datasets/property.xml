@@ -1,34 +1,34 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
-  <property id="145" modified_at="2014-11-14 10:19:45.515" modified_by="admin" version="0" description="Accumulated Center Position" name="ACENPOS" data_type="34" unit="49" value_unique="NONE"/>
-  <property id="147" modified_at="2014-11-14 10:19:45.515" modified_by="admin" version="0" description="Accumulated End Position" name="AENDPOS" data_type="34" unit="49" value_unique="NONE"/>
-  <property id="149" modified_at="2014-11-14 10:19:45.531" modified_by="admin" version="0" description="Another Name" name="ALIAS" data_type="35" value_unique="NONE"/>
-  <property id="151" modified_at="2014-11-14 10:19:45.531" modified_by="admin" version="0" description="Radius Aperture" name="APERTURE" data_type="34" unit="49" value_unique="NONE"/>
-  <property id="153" modified_at="2014-11-14 10:19:45.546" modified_by="admin" version="0" description="Bending Angle" name="BANGLE" data_type="34" unit="77" value_unique="NONE"/>
-  <property id="155" modified_at="2014-11-14 10:19:45.562" modified_by="admin" version="0" description="B-pole" name="BPOLE" data_type="34" unit="67" value_unique="NONE"/>
-  <property id="157" modified_at="2014-11-14 10:19:45.562" modified_by="admin" version="0" description="Bending Radius" name="BRADIUS" data_type="34" unit="49" value_unique="NONE"/>
+  <property id="145" modified_at="2014-11-14 10:19:45.515" modified_by="admin" version="0" description="Accumulated Center Position" name="ACENPOS" data_type="35" unit="49" value_unique="NONE"/>
+  <property id="147" modified_at="2014-11-14 10:19:45.515" modified_by="admin" version="0" description="Accumulated End Position" name="AENDPOS" data_type="35" unit="49" value_unique="NONE"/>
+  <property id="149" modified_at="2014-11-14 10:19:45.531" modified_by="admin" version="0" description="Another Name" name="ALIAS" data_type="36" value_unique="NONE"/>
+  <property id="151" modified_at="2014-11-14 10:19:45.531" modified_by="admin" version="0" description="Radius Aperture" name="APERTURE" data_type="35" unit="49" value_unique="NONE"/>
+  <property id="153" modified_at="2014-11-14 10:19:45.546" modified_by="admin" version="0" description="Bending Angle" name="BANGLE" data_type="35" unit="77" value_unique="NONE"/>
+  <property id="155" modified_at="2014-11-14 10:19:45.562" modified_by="admin" version="0" description="B-pole" name="BPOLE" data_type="35" unit="67" value_unique="NONE"/>
+  <property id="157" modified_at="2014-11-14 10:19:45.562" modified_by="admin" version="0" description="Bending Radius" name="BRADIUS" data_type="35" unit="49" value_unique="NONE"/>
   <property id="159" modified_at="2014-11-14 10:19:45.578" modified_by="admin" version="0" description="Conductor Size" name="CDTRSIZE" data_type="39" unit="55" value_unique="NONE"/>
-  <property id="161" modified_at="2014-11-14 10:19:45.578" modified_by="admin" version="0" description="Current" name="CURRENT" data_type="34" unit="69" value_unique="NONE"/>
-  <property id="163" modified_at="2014-11-14 10:19:45.593" modified_by="admin" version="0" description="Distance from Artemis Source" name="DFAS" data_type="34" unit="49" value_unique="NONE"/>
-  <property id="165" modified_at="2014-11-14 10:19:45.609" modified_by="admin" version="0" description="Edge Angle" name="EANGLE" data_type="34" unit="77" value_unique="NONE"/>
-  <property id="167" modified_at="2014-11-14 10:19:45.609" modified_by="admin" version="0" description="Effective Flange to flange length" name="EF2FLEN" data_type="34" unit="49" value_unique="NONE"/>
-  <property id="169" modified_at="2014-11-14 10:19:45.624" modified_by="admin" version="0" description="Effective Length" name="EFFLENGTH" data_type="34" unit="49" value_unique="NONE"/>
-  <property id="171" modified_at="2014-11-14 10:19:45.640" modified_by="admin" version="0" description="Length" name="LENGTH" data_type="34" unit="49" value_unique="NONE"/>
-  <property id="173" modified_at="2014-11-14 10:19:45.640" modified_by="admin" version="0" description="Maximum Field" name="MAXFIELD" data_type="34" unit="67" value_unique="NONE"/>
-  <property id="175" modified_at="2014-11-14 10:19:45.656" modified_by="admin" version="0" description="Minimum Beampipe Inner Diameter" name="MINBPID" data_type="34" unit="49" value_unique="NONE"/>
-  <property id="177" modified_at="2014-11-14 10:19:45.656" modified_by="admin" version="0" description="Number Required" name="NUMREQ" data_type="33" value_unique="NONE"/>
-  <property id="179" modified_at="2014-11-14 10:19:45.671" modified_by="admin" version="0" description="Power" name="POWER" data_type="34" unit="63" value_unique="NONE"/>
-  <property id="181" modified_at="2014-11-14 10:19:45.687" modified_by="admin" version="0" description="Resistance" name="RESISTNC" data_type="34" unit="75" value_unique="NONE"/>
-  <property id="183" modified_at="2014-11-14 10:19:45.687" modified_by="admin" version="0" description="Temprature Rise" name="TEMPRISE" data_type="34" unit="57" value_unique="NONE"/>
-  <property id="185" modified_at="2014-11-14 10:19:45.703" modified_by="admin" version="0" description="Vaccum Pipe O.D." name="VACPOD" data_type="34" unit="51" value_unique="NONE"/>
-  <property id="187" modified_at="2014-11-14 10:19:45.718" modified_by="admin" version="0" description="Voltage" name="VOLTAGE" data_type="34" unit="71" value_unique="NONE"/>
-  <property id="189" modified_at="2014-11-14 10:19:45.734" modified_by="admin" version="0" description="Quad Gradient" name="QUADGRAD" data_type="34" unit="81" value_unique="NONE"/>
-  <property id="191" modified_at="2014-11-14 10:19:45.749" modified_by="admin" version="0" description="Quad Bpole" name="QUADBPOL" data_type="34" unit="67" value_unique="NONE"/>
-  <property id="193" modified_at="2014-11-14 10:19:45.749" modified_by="admin" version="0" description="Sext Gradient" name="SEXTGRAD" data_type="34" unit="83" value_unique="NONE"/>
-  <property id="195" modified_at="2014-11-14 10:19:45.765" modified_by="admin" version="0" description="Sext Bpole" name="SEXTBPOL" data_type="34" unit="67" value_unique="NONE"/>
-  <property id="197" modified_at="2014-11-14 10:19:45.781" modified_by="admin" version="0" description="Dipole B" name="DIPOLEB" data_type="34" unit="67" value_unique="NONE"/>
-  <property id="199" modified_at="2014-11-14 10:19:45.781" modified_by="admin" version="0" description="Field Measurement Polynomia" name="FIELDPOLY" data_type="35" value_unique="NONE"/>
-  <property id="201" modified_at="2014-11-14 10:19:45.796" modified_by="admin" version="0" description="External Document" name="DOC01" data_type="35" value_unique="NONE"/>
-  <property id="203" modified_at="2014-11-14 10:19:45.812" modified_by="admin" version="0" description="Distance to center from L-Line Extension Origin" name="DCFLEO" data_type="34" unit="49" value_unique="NONE"/>
-  <property id="205" modified_at="2014-11-14 10:19:45.812" modified_by="admin" version="0" description="Length from Element before (c2c) " name="LFELB" data_type="34" unit="49" value_unique="NONE"/>
+  <property id="161" modified_at="2014-11-14 10:19:45.578" modified_by="admin" version="0" description="Current" name="CURRENT" data_type="35" unit="69" value_unique="NONE"/>
+  <property id="163" modified_at="2014-11-14 10:19:45.593" modified_by="admin" version="0" description="Distance from Artemis Source" name="DFAS" data_type="35" unit="49" value_unique="NONE"/>
+  <property id="165" modified_at="2014-11-14 10:19:45.609" modified_by="admin" version="0" description="Edge Angle" name="EANGLE" data_type="35" unit="77" value_unique="NONE"/>
+  <property id="167" modified_at="2014-11-14 10:19:45.609" modified_by="admin" version="0" description="Effective Flange to flange length" name="EF2FLEN" data_type="35" unit="49" value_unique="NONE"/>
+  <property id="169" modified_at="2014-11-14 10:19:45.624" modified_by="admin" version="0" description="Effective Length" name="EFFLENGTH" data_type="35" unit="49" value_unique="NONE"/>
+  <property id="171" modified_at="2014-11-14 10:19:45.640" modified_by="admin" version="0" description="Length" name="LENGTH" data_type="35" unit="49" value_unique="NONE"/>
+  <property id="173" modified_at="2014-11-14 10:19:45.640" modified_by="admin" version="0" description="Maximum Field" name="MAXFIELD" data_type="35" unit="67" value_unique="NONE"/>
+  <property id="175" modified_at="2014-11-14 10:19:45.656" modified_by="admin" version="0" description="Minimum Beampipe Inner Diameter" name="MINBPID" data_type="35" unit="49" value_unique="NONE"/>
+  <property id="177" modified_at="2014-11-14 10:19:45.656" modified_by="admin" version="0" description="Number Required" name="NUMREQ" data_type="34" value_unique="NONE"/>
+  <property id="179" modified_at="2014-11-14 10:19:45.671" modified_by="admin" version="0" description="Power" name="POWER" data_type="35" unit="63" value_unique="NONE"/>
+  <property id="181" modified_at="2014-11-14 10:19:45.687" modified_by="admin" version="0" description="Resistance" name="RESISTNC" data_type="35" unit="75" value_unique="NONE"/>
+  <property id="183" modified_at="2014-11-14 10:19:45.687" modified_by="admin" version="0" description="Temprature Rise" name="TEMPRISE" data_type="35" unit="57" value_unique="NONE"/>
+  <property id="185" modified_at="2014-11-14 10:19:45.703" modified_by="admin" version="0" description="Vaccum Pipe O.D." name="VACPOD" data_type="35" unit="51" value_unique="NONE"/>
+  <property id="187" modified_at="2014-11-14 10:19:45.718" modified_by="admin" version="0" description="Voltage" name="VOLTAGE" data_type="35" unit="71" value_unique="NONE"/>
+  <property id="189" modified_at="2014-11-14 10:19:45.734" modified_by="admin" version="0" description="Quad Gradient" name="QUADGRAD" data_type="35" unit="81" value_unique="NONE"/>
+  <property id="191" modified_at="2014-11-14 10:19:45.749" modified_by="admin" version="0" description="Quad Bpole" name="QUADBPOL" data_type="35" unit="67" value_unique="NONE"/>
+  <property id="193" modified_at="2014-11-14 10:19:45.749" modified_by="admin" version="0" description="Sext Gradient" name="SEXTGRAD" data_type="35" unit="83" value_unique="NONE"/>
+  <property id="195" modified_at="2014-11-14 10:19:45.765" modified_by="admin" version="0" description="Sext Bpole" name="SEXTBPOL" data_type="35" unit="67" value_unique="NONE"/>
+  <property id="197" modified_at="2014-11-14 10:19:45.781" modified_by="admin" version="0" description="Dipole B" name="DIPOLEB" data_type="35" unit="67" value_unique="NONE"/>
+  <property id="199" modified_at="2014-11-14 10:19:45.781" modified_by="admin" version="0" description="Field Measurement Polynomia" name="FIELDPOLY" data_type="36" value_unique="NONE"/>
+  <property id="201" modified_at="2014-11-14 10:19:45.796" modified_by="admin" version="0" description="External Document" name="DOC01" data_type="36" value_unique="NONE"/>
+  <property id="203" modified_at="2014-11-14 10:19:45.812" modified_by="admin" version="0" description="Distance to center from L-Line Extension Origin" name="DCFLEO" data_type="35" unit="49" value_unique="NONE"/>
+  <property id="205" modified_at="2014-11-14 10:19:45.812" modified_by="admin" version="0" description="Length from Element before (c2c) " name="LFELB" data_type="35" unit="49" value_unique="NONE"/>
 </dataset>
