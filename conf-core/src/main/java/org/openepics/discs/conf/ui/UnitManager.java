@@ -84,6 +84,7 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
     private String description;
     private String symbol;
     private String quantity;
+    private boolean unitAdd;
 
     /** Creates a new instance of UnitManager */
     public UnitManager() {
@@ -162,6 +163,7 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
         description = null;
         symbol = null;
         quantity = null;
+        unitAdd = true;
     }
 
     /** This method prepares the input fields used in the "Edit unit" dialog */
@@ -170,6 +172,7 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
         description = selectedUnit.getDescription();
         symbol = selectedUnit.getSymbol();
         quantity = selectedUnit.getQuantity();
+        unitAdd = false;
     }
 
     /** Method creates a new unit definition when user presses the "Save" button in the "Add new" dialog  */
@@ -292,4 +295,10 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
     public void setQuantity(String quantity) {
         this.quantity = quantity;
     }
+
+    /** @return the unitAdd */
+    public boolean isUnitAdd() {
+        return unitAdd;
+    }
+
 }
