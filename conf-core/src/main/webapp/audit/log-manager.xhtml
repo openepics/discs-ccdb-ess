@@ -7,6 +7,20 @@
 
     <ui:define name="content">
         <h:form id="logsForm">
+            <script type="text/javascript">
+                //<![CDATA[
+                function resizeLogPanel() {
+                    var dialogHeight = $('#logsForm\\:logOverlayPanel')[0].clientHeight;
+                    var headerHeight = $('#logsForm\\:headerPanel')[0].clientHeight;
+                    var contentHeight = $('#logsForm\\:contentPanel')[0].clientHeight;
+                    if (contentHeight > dialogHeight - headerHeight) {
+                        contentHeight = dialogHeight - headerHeight - 16;
+                        $('#logsForm\\:contentPanel').css({"max-height":contentHeight});
+                    }
+                }
+                // ]]>
+            </script>
+        
             <p:fieldset legend="Log" style="padding-bottom: 1em;">
 
                 <p:dataTable widgetVar="logTableVar" var="auditRecord" id="logTable" value="#{auditManager.auditRecords}" 
@@ -47,7 +61,7 @@
 
                     <p:column headerText="Change" sortBy="#{auditRecord.entry}" filterBy="#{auditRecord.entry}" filterMatchMode="contains">
                         <p:commandLink id="logDetails" update=":logsForm:logDetailsPanel" action="#{auditManager.handleDetails()}" 
-                                oncomplete="PF('overlay').show('#{component.clientId}')">
+                                oncomplete="PF('overlay').show('#{component.clientId}');resizeLogPanel();">
                             <f:setPropertyActionListener target="#{auditManager.displayRecord}" value="#{auditRecord}" />
                             <h:outputText value="#{auditRecord.entry.length() lt 46 ? auditRecord.entry : auditRecord.entry.substring(0,45).concat('...')}" />
                         </p:commandLink>
@@ -56,15 +70,15 @@
 
             </p:fieldset>
 
-            <p:overlayPanel widgetVar="overlay" dismissable="false" showCloseIcon="true" 
+            <p:overlayPanel id="logOverlayPanel" widgetVar="overlay" dismissable="false" showCloseIcon="true" 
                     style="max-width: 50%; max-height:35%;">
                 <p:outputPanel id="logDetailsPanel">
-                    <p:panel styleClass="logPanelHeader">
+                    <p:panel id="headerPanel" styleClass="logPanelHeader">
                         <f:facet name="header">
                             <h:outputText value="Entry details" />
                         </f:facet>
                     </p:panel>
-                    <p:panel rendered="#{not empty auditManager.formattedDetails}" style="overflow: auto;">
+                    <p:panel id="contentPanel" rendered="#{not empty auditManager.formattedDetails}" style="overflow: auto;">
                         <h:outputText value="#{auditManager.formattedDetails}" escape="false" 
                                 style="font-family: monospace; white-space:pre;" />
                     </p:panel>
