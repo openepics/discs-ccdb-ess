@@ -53,12 +53,15 @@
 
             </p:fieldset>
 
-            <p:overlayPanel widgetVar="overlay" dismissable="false" showCloseIcon="true">
+            <p:overlayPanel widgetVar="overlay" dismissable="false" showCloseIcon="true" 
+                    style="max-width: 50%; max-height:35%;">
                 <p:outputPanel id="logDetailsPanel">
-                    <p:panel rendered="#{not empty auditManager.formattedDetails}">
+                    <p:panel styleClass="logPanelHeader">
                         <f:facet name="header">
                             <h:outputText value="Entry details" />
                         </f:facet>
+                    </p:panel>
+                    <p:panel rendered="#{not empty auditManager.formattedDetails}" style="overflow: auto;">
                         <h:outputText value="#{auditManager.formattedDetails}" escape="false" 
                                 style="font-family: monospace; white-space:pre;" />
                     </p:panel>

@@ -272,3 +272,12 @@ a {
 	height: 16px;
 	background-position: 0px -94px;
 }
+
+.logPanelHeader .ui-widget-content {
+	padding: 0 !important;
+}
+
+.logPanelHeader {
+    border: 0 !important;
+    padding: 0 0 2px 0 !important;
+}
