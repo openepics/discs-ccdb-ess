@@ -10,8 +10,8 @@
          -->
          <!--
          To enable RBAC include this alternative below.
-        <class>org.openepics.discs.conf.security.RBACEntityTypeSecurityPolicy</class>
          -->
+        <class>org.openepics.discs.conf.security.RBACEntityTypeSecurityPolicy</class>
     </alternatives>
 
     <interceptors>
