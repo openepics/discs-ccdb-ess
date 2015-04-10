@@ -72,6 +72,7 @@ public class DataTypeManager implements Serializable {
     private String name;
     private String description;
     private String definition;
+    private boolean isEnumerationBeingAdded;
 
     /** Creates a new instance of DataTypeManager */
     public DataTypeManager() {
@@ -169,6 +170,7 @@ public class DataTypeManager implements Serializable {
         name = null;
         description = null;
         definition = null;
+        isEnumerationBeingAdded = true;
     }
 
     /** This method prepares the input fields used in the "Edit enumeration" dialog. */
@@ -176,6 +178,7 @@ public class DataTypeManager implements Serializable {
         name = selectedEnum.getName();
         description = selectedEnum.getDescription();
         definition = definitionsToMultiline(selectedEnum.getDefinition());
+        isEnumerationBeingAdded = false;
     }
 
     /** Method that saves a new enumeration definition, when user presses the "Save" button in the "Add new" dialog */
@@ -235,7 +238,7 @@ public class DataTypeManager implements Serializable {
 
         final List<String> enumDefs = multilineToDefinitions(value.toString());
         // check whether redefinition is possible and correct
-        if ((selectedEnum != null) && !isEnumModificationSafe(enumDefs)) {
+        if (!isEnumerationBeingAdded && (selectedEnum != null) && !isEnumModificationSafe(enumDefs)) {
             throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
                                                         "Enumeration already in use. Values can only be added."));
         }
