@@ -20,7 +20,8 @@
                         <h:outputText value="#{auditRecord.logTimeFormatted}" />
                     </p:column>
 
-                    <p:column headerText="User" sortBy="#{auditRecord.user}" filterBy="#{auditRecord.user}">
+                    <p:column headerText="User" sortBy="#{auditRecord.user}" filterBy="#{auditRecord.user}" 
+                             filterMatchMode="contains">
                         <h:outputText value="#{auditRecord.user}" />
                     </p:column>
 
@@ -29,7 +30,8 @@
                         <h:outputText value="#{auditRecord.oper}" />
                     </p:column>
 
-                    <p:column headerText="Entity Name" sortBy="#{auditRecord.entityKey}" filterBy="#{auditRecord.entityKey}">
+                    <p:column headerText="Entity Name" sortBy="#{auditRecord.entityKey}" filterBy="#{auditRecord.entityKey}" 
+                             filterMatchMode="contains">
                         <h:outputText value="#{auditRecord.entityKey}" />
                     </p:column>
 
@@ -38,7 +40,8 @@
                         <h:outputText value="#{auditRecord.entityType}" />
                     </p:column>
 
-                    <p:column headerText="Entity ID" sortBy="#{auditRecord.entityId}" filterBy="#{auditRecord.entityId}">
+                    <p:column headerText="Entity ID" sortBy="#{auditRecord.entityId}" filterBy="#{auditRecord.entityId}" 
+                            filterMatchMode="contains">
                         <h:outputText value="#{auditRecord.entityId}" />
                     </p:column>
 
