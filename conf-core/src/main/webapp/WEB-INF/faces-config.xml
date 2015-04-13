@@ -22,7 +22,7 @@
         </navigation-case>             
         <navigation-case>
             <from-outcome>logout</from-outcome>
-            <to-view-id>/hierarchies/hierarchies.xhtml</to-view-id>
+            <to-view-id>/</to-view-id>
         </navigation-case> 
     </navigation-rule>
     <navigation-rule>
