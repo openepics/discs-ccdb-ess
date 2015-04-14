@@ -57,22 +57,27 @@ public class MultiPropertyValueView {
         }
     }
 
+    /** @return the property id */
     public Long getId() {
         return property.getId();
     }
 
+    /** @return the property name */
     public String getName() {
         return property.getName();
     }
 
+    /** @return the property description */
     public String getDescription() {
         return property.getDescription();
     }
 
+    /** @return the property data type */
     public DataType getDataType() {
         return property.getDataType();
     }
 
+    /** @return the property unit */
     public Unit getUnit() {
         return property.getUnit();
     }

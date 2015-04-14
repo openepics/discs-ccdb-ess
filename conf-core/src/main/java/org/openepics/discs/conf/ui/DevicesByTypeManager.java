@@ -101,7 +101,7 @@ public class DevicesByTypeManager implements Serializable {
         final String deviceId = ((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().
                 getRequest()).getParameter("id");
         if (deviceId != null) {
-            selectedDeviceId = new Long(deviceId);
+            selectedDeviceId = Long.valueOf(deviceId);
         }
 
         prepareDevicesForDisplay(selectedDeviceId);
@@ -177,6 +177,7 @@ public class DevicesByTypeManager implements Serializable {
         return true;
     }
 
+    /** Called when the user confirms the batch property creation if there were some conflicts */
     public void creationProceed() {
         batchSaveStage = BatchSaveStage.CREATION;
         batchSkipExisting = true;

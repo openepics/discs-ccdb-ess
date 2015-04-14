@@ -94,7 +94,9 @@ public class DeviceView {
         return installedSlotId;
     }
 
-    /** Updates the view information from the database. The installation status and information is unaffected. */
+    /** Updates the view information from the database. The installation status and information is unaffected.
+     * @param device the device from the database
+     */
     public void refreshDevice(Device device) {
         Preconditions.checkArgument(this.device.getId().equals(device.getId()));
         this.device = device;

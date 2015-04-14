@@ -153,11 +153,13 @@ public class ComponentTypeManager extends AbstractExcelSingleFileImportUI implem
         }
     }
 
+    /** Prepares the data for the device type editing dialog fields based on the selected device type. */
     public void prepareEditPopup() {
         name = selectedDeviceType.getName();
         description = selectedDeviceType.getDescription();
     }
 
+    /** Saves the new devidce type data (name and/or description) */
     public void onChange() {
         selectedDeviceType.setName(name);
         selectedDeviceType.setDescription(description);

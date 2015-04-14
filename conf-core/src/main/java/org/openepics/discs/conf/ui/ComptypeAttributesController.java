@@ -250,11 +250,6 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
     }
 
     @Override
-    public void saveNewName() {
-        // TODO ready for removal
-    }
-
-    @Override
     protected void setPropertyValueParent(ComptypePropertyValue child) {
         child.setComponentType(compType);
     }

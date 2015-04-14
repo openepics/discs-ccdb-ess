@@ -35,6 +35,9 @@ public enum SlotRelationName {
     /** Slot controls another slot */
     CONTROLS;
 
+    /**
+     * @return the name of the inverse slot relation. E.g.: "contained in" for "contains" relation.
+     */
     public String inverseName() {
         switch(this) {
         case CONTAINS:

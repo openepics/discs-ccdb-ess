@@ -201,6 +201,10 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
         }
     }
 
+    /**
+     * A method that adds either installation slot or device instance properties. It adds the definition to the device
+     * type and property values to already existing installation slots or device instances.
+     */
     public void addNewPropertyValueDefs() {
         for (Property selectedProperty : selectedProperties) {
             try {
@@ -326,6 +330,14 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
                                                                         "Device type artifact has been deleted");
     }
 
+    /**
+     * The main method that prepares the fields for any of the following dialogs:
+     * <ul>
+     * <li>the dialog to modify a property value</li>
+     * <li>the dialog to modify an artifact data</li>
+     * <li>the dialog to modify entity built-in properties</li>
+     *</ul>
+     */
     public void prepareModifyPropertyPopUp() {
         Preconditions.checkState(selectedAttribute != null);
         Preconditions.checkState(propertyValueClass != null);
@@ -436,12 +448,6 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
             internalPopulateAttributesList();
         }
     }
-
-    /**
-     * This method is called from UI when the user saves the entity name by pressing the "Save modifications" in
-     * the page header.
-     */
-    public abstract void saveNewName();
 
     /** This method is called by the built-in property dialog "Save" button to save the new built-in property value. */
     public abstract void modifyBuiltInProperty();
@@ -988,15 +994,11 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
         return builtInPropertyDataType;
     }
 
-    /** @see AbstractAttributesController#saveNewName()
-     * @return The name of the entity displayed in the header
-     */
+    /**  @return The name of the entity displayed in the header */
     public String getEntityName() {
         return entityName;
     }
-    /** @see AbstractAttributesController#saveNewName()
-     * @param entityName The name of the entity displayed in the header
-     */
+    /**  @param entityName The name of the entity displayed in the header */
     public void setEntityName(String entityName) {
         this.entityName = entityName;
     }

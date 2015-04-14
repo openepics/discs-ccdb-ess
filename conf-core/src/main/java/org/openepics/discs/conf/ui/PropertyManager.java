@@ -168,6 +168,7 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
         return true;
     }
 
+    /** Called when the user confirms the batch property creation if there were some conflicts */
     public void creationProceed() {
         batchSaveStage = BatchSaveStage.CREATION;
         batchSkipExisting = true;

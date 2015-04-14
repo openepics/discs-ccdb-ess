@@ -98,6 +98,9 @@ public class SlotView {
         return slot;
     }
 
+    /** This method sets the name and description at the same time as the slot.
+     * @param slot the slot
+     */
     public void setSlot(Slot slot) {
         this.slot = slot;
         name = slot.getName();

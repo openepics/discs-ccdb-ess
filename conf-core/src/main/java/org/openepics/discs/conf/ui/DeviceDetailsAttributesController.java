@@ -100,6 +100,11 @@ public class DeviceDetailsAttributesController extends
         }
     }
 
+    /** The method prepares all the UI related data to show to the user, when the user selects a new device instance
+     * in the table.
+     * @param device the device instance user selected in the UI
+     * @see #clearDeviceInstance()
+     */
     public void prepareDeviceInstance(Device device) {
         this.device = device;
         parentProperties = device.getComponentType().getComptypePropertyList();
@@ -110,6 +115,10 @@ public class DeviceDetailsAttributesController extends
         populateAttributesList();
     }
 
+    /** The method clears all the device instance related information when the user deselects the device instance in
+     * the table.
+     * @see #prepareDeviceInstance(Device)
+     */
     public void clearDeviceInstance() {
         device = null;
         parentProperties = null;
@@ -265,10 +274,5 @@ public class DeviceDetailsAttributesController extends
                                         jsonEnum.toString());
         enumDataType.setModifiedBy("system");
         enumDataType.setModifiedAt(new Date());
-    }
-
-    @Override
-    public void saveNewName() {
-        // TODO ready for removal
     }
 }
