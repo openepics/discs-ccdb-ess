@@ -42,7 +42,7 @@
             <p:column headerText="Unit" sortBy="#{attribute.unit}" filterBy="#{attribute.unit.name}" 
                     filterMatchMode="contains" filterStyle="max-width: 90%;">
                 <h:outputLink rendered="#{!empty attribute.unit}" 
-                        value="#{request.contextPath}/data-definitions/units/units-manager.xhtml?id=#{attribute.unit.id}">
+                        value="#{request.contextPath}/units.xhtml?id=#{attribute.unit.id}">
                     <h:outputText value="#{attribute.unit.name}" style="text-decoration: underline;" />
                 </h:outputLink>
                 <h:outputText value="-" rendered="#{empty attribute.unit}" />                    

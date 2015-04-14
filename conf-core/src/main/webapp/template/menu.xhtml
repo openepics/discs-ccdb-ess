@@ -12,7 +12,7 @@
         <p:menubar id="mainMenu" styleClass="menubar">
         
             <p:submenu label="Home" icon="ui-icon-home" title="Home" 
-                    styleClass="#{fn:endsWith(request.requestURL,'hierarchies.xhtml') ? 'menu-selected' : ''} homeMenu" >
+                    styleClass="#{fn:endsWith(request.requestURL,'home.xhtml') ? 'menu-selected' : ''} homeMenu" >
                 <p:menuitem value="View" title="View Home Screen" styleClass="noClickEvent" url="/" />
 
                 <p:menuitem value="Import" update=":importSlotsForm" styleClass="noClickEvent" 
@@ -22,8 +22,8 @@
             </p:submenu>
 
             <p:submenu label="Devices" icon="ui-icon-gear" 
-                    styleClass="#{fn:endsWith(request.requestURL,'devices/device-manager.xhtml') ? 'menu-selected' : ''} devicesMenu">
-                <p:menuitem value="View" title="View Device Instances" styleClass="noClickEvent" url="/devices/device-manager.xhtml" />
+                    styleClass="#{fn:endsWith(request.requestURL,'devices.xhtml') ? 'menu-selected' : ''} devicesMenu">
+                <p:menuitem value="View" title="View Device Instances" styleClass="noClickEvent" url="/devices.xhtml" />
             
                 <p:menuitem value="Import" update=":importDevicesForm" styleClass="noClickEvent" 
                     oncomplete="PF('importDevices').show();" title="Import Device Instances" 
@@ -32,9 +32,8 @@
             </p:submenu>
 
             <p:submenu label="Device Types" icon="ui-icon-wrench" 
-                    styleClass="#{fn:endsWith(request.requestURL,'device-types-manager.xhtml') ? 'menu-selected' : ''} devTypesMenu">
-                <p:menuitem value="View" title="View Device Types" styleClass="noClickEvent" 
-                    url="/data-definitions/device-types/device-types-manager.xhtml" />
+                    styleClass="#{fn:endsWith(request.requestURL,'device-types.xhtml') ? 'menu-selected' : ''} devTypesMenu">
+                <p:menuitem value="View" title="View Device Types" styleClass="noClickEvent" url="/device-types.xhtml" />
 
                 <p:menuitem value="Import" update=":importCompTypesForm" styleClass="noClickEvent" 
                     oncomplete="PF('importCompTypes').show();" title="Import Device Types" 
@@ -43,9 +42,8 @@
             </p:submenu>
             
             <p:submenu label="Properties" icon="ui-icon-contact" 
-                    styleClass="#{fn:endsWith(request.requestURL,'properties-manager.xhtml') ? 'menu-selected' : ''} propertiesMenu">
-                <p:menuitem value="View" title="View Properties" styleClass="noClickEvent" 
-                    url="/data-definitions/properties/properties-manager.xhtml" />
+                    styleClass="#{fn:endsWith(request.requestURL,'properties.xhtml') ? 'menu-selected' : ''} propertiesMenu">
+                <p:menuitem value="View" title="View Properties" styleClass="noClickEvent" url="/properties.xhtml" />
 
                 <p:menuitem value="Import" update=":importPropertiesForm" styleClass="noClickEvent" 
                     oncomplete="PF('importProperties').show();" title="Import Properties" 
@@ -54,13 +52,12 @@
             </p:submenu>
 
             <p:menuitem value="Enumerations" icon="ui-icon-radio-off" title="User Defined Enumerations" 
-                url="/data-definitions/enums/enums-manager.xhtml" 
-                styleClass="#{fn:endsWith(request.requestURL,'enums-manager.xhtml') ? 'menu-selected' : ''}" />
+                url="/enums.xhtml" 
+                styleClass="#{fn:endsWith(request.requestURL,'enums.xhtml') ? 'menu-selected' : ''}" />
 
             <p:submenu label="Units" icon="ui-icon-folder-open"
-                    styleClass="#{fn:endsWith(request.requestURL,'units-manager.xhtml') ? 'menu-selected' : ''} unitsMenu">
-                <p:menuitem value="View" title="View Units" styleClass="noClickEvent" 
-                    url="/data-definitions/units/units-manager.xhtml" />
+                    styleClass="#{fn:endsWith(request.requestURL,'units.xhtml') ? 'menu-selected' : ''} unitsMenu">
+                <p:menuitem value="View" title="View Units" styleClass="noClickEvent" url="/units.xhtml" />
 
                 <p:menuitem value="Import" update=":importUnitsForm" 
                     oncomplete="PF('importUnits').show();" title="Import Units" styleClass="noClickEvent" 
@@ -68,8 +65,8 @@
                     disabled="#{!securityPolicy.getUIHint('UNIT')}" />
             </p:submenu>
 
-            <p:menuitem value="Log" icon="ui-icon-script" title="View Audit Log" url="/audit/log-manager.xhtml" 
-                styleClass="#{fn:endsWith(request.requestURL,'log-manager.xhtml') ? 'menu-selected' : ''}" />
+            <p:menuitem value="Log" icon="ui-icon-script" title="View Audit Log" url="/log.xhtml" 
+                styleClass="#{fn:endsWith(request.requestURL,'log.xhtml') ? 'menu-selected' : ''}" />
 
             <p:menuitem value="Help" icon="ui-icon-help" title="Help" url="/" disabled="true" />
 
@@ -131,22 +128,22 @@
         });
         jQuery(".devicesMenu").click(function(event) {
             if (noClickTarget(event.target) == false) {
-                window.location.replace("#{request.contextPath}/devices/device-manager.xhtml");
+                window.location.replace("#{request.contextPath}/devices.xhtml");
             }
         });
         jQuery(".devTypesMenu").click(function(event) {
             if (noClickTarget(event.target) == false) {
-                window.location.replace("#{request.contextPath}/data-definitions/device-types/device-types-manager.xhtml");
+                window.location.replace("#{request.contextPath}/device-types.xhtml");
             }
         });
         jQuery(".propertiesMenu").click(function(event) {
             if (noClickTarget(event.target) == false) {
-                window.location.replace("#{request.contextPath}/data-definitions/properties/properties-manager.xhtml");
+                window.location.replace("#{request.contextPath}/properties.xhtml");
             }
         });
         jQuery(".unitsMenu").click(function(event) {
             if (noClickTarget(event.target) == false) {
-                window.location.replace("#{request.contextPath}/data-definitions/units/units-manager.xhtml");
+                window.location.replace("#{request.contextPath}/units.xhtml");
             }
         });
         // ]]>

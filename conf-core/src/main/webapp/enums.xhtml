@@ -43,7 +43,7 @@
                     oncomplete="PF('addEnum').show();" update=":addEnumForm:addEnum" />
         </h:form>
 
-        <ui:include src="../add-or-modify-dialogs/delete-confirmation.xhtml" >
+        <ui:include src="/resources/dialogs/delete-confirmation.xhtml" >
             <ui:param name="formId" value="deleteEnumForm" />
             <ui:param name="dialogTitle" value="Delete enumeration" />
             <ui:param name="widgetName" value="deleteEnum" />
@@ -54,7 +54,7 @@
             <ui:param name="entityType" value="this enumeration" />
         </ui:include>
 
-        <ui:include src="add-or-modify-enum.xhtml">
+        <ui:include src="/resources/dialogs/add-or-modify-enum.xhtml">
             <ui:param name="formId" value="modifyEnumForm" />
             <ui:param name="dialogTitle" value="Modify enumeration" />
             <ui:param name="widgetName" value="modifyEnum" />
@@ -62,7 +62,7 @@
             <ui:param name="componentToUpdate" value=":enumsForm:enumsTable :enumsForm:deleteButton :enumsForm:editButton" />
         </ui:include>
 
-        <ui:include src="add-or-modify-enum.xhtml">
+        <ui:include src="/resources/dialogs/add-or-modify-enum.xhtml">
             <ui:param name="formId" value="addEnumForm" />
             <ui:param name="dialogTitle" value="Add Enumeration" />
             <ui:param name="widgetName" value="addEnum" />

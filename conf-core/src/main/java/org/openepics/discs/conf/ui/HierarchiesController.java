@@ -165,6 +165,7 @@ public class HierarchiesController implements Serializable {
     private boolean isInstallationSlot;
     private ComponentType deviceType;
     private transient List<String> namesForAutoComplete;
+    private boolean isNewInstallationSlot;
 
     // ------ variables for attribute manipulation ------
     private EntityAttributeView selectedAttribute;
@@ -572,6 +573,7 @@ public class HierarchiesController implements Serializable {
     /** Prepares fields that are used in pop up for editing an existing container */
     public void prepareEditPopup() {
         Preconditions.checkNotNull(selectedNode);
+        isNewInstallationSlot = false;
         selectedSlotView = (SlotView) selectedNode.getData();
         isInstallationSlot = selectedSlotView.getIsHostingSlot();
         name = selectedSlotView.getName();
@@ -588,6 +590,7 @@ public class HierarchiesController implements Serializable {
     /** Prepares fields that are used in pop up for adding a new installation slot */
     public void prepareInstallationSlotPopup() {
         isInstallationSlot = true;
+        isNewInstallationSlot = true;
         initAddInputFields();
     }
 
@@ -1619,6 +1622,11 @@ public class HierarchiesController implements Serializable {
     /** @param deviceType the deviceType to set */
     public void setDeviceType(ComponentType deviceType) {
         this.deviceType = deviceType;
+    }
+
+    /** return the isNewInstallationSlot */
+    public boolean isNewInstallationSlot() {
+        return isNewInstallationSlot;
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////

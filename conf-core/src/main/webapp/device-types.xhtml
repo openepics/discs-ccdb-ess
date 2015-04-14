@@ -173,7 +173,7 @@
 
         </script>
 
-        <ui:include src="../add-or-modify-dialogs/delete-confirmation.xhtml" >
+        <ui:include src="/resources/dialogs/delete-confirmation.xhtml" >
             <ui:param name="formId" value="deleteDeviceTypeForm" />
             <ui:param name="dialogTitle" value="Delete device type" />
             <ui:param name="widgetName" value="deleteDeviceType" />
@@ -184,21 +184,21 @@
             <ui:param name="entityType" value="this device type" />
         </ui:include>
 
-        <ui:include src="../add-or-modify-dialogs/device-type.xhtml">
+        <ui:include src="/resources/dialogs/device-type.xhtml">
             <ui:param name="formId" value="addDeviceTypeForm" />
             <ui:param name="dialogTitle" value="Add Device Type" />
             <ui:param name="widgetName" value="addDeviceType" />
             <ui:param name="submitHandler" value="onAdd" />
         </ui:include>
 
-        <ui:include src="../add-or-modify-dialogs/device-type.xhtml">
+        <ui:include src="/resources/dialogs/device-type.xhtml">
             <ui:param name="formId" value="editDeviceTypeForm" />
             <ui:param name="dialogTitle" value="Edit Device Type" />
             <ui:param name="widgetName" value="editDeviceType" />
             <ui:param name="submitHandler" value="onChange" />
         </ui:include>
 
-        <ui:include src="../add-or-modify-dialogs/property-value.xhtml" >
+        <ui:include src="/resources/dialogs/property-value.xhtml" >
             <ui:param name="formId" value="modifyPropertyValueForm" />
             <ui:param name="dialogTitle" value="Modify device type property" />
             <ui:param name="widgetName" value="modifyPropertyValue" />
@@ -208,7 +208,7 @@
             <ui:param name="componentToUpdate" value=":deviceTypesForm:attributesDataTable:attributesDataTable" />
         </ui:include>
 
-        <ui:include src="../add-or-modify-dialogs/artifact.xhtml" >
+        <ui:include src="/resources/dialogs/artifact.xhtml" >
             <ui:param name="formId" value="modifyArtifactForm" />
             <ui:param name="dialogTitle" value="Modify device type artifact" />
             <ui:param name="widgetName" value="modifyArtifact" />
@@ -218,7 +218,7 @@
             <ui:param name="componentToUpdate" value=":deviceTypesForm:attributesDataTable:attributesDataTable" />
         </ui:include>
 
-        <ui:include src="multi-property-value.xhtml" >
+        <ui:include src="/resources/dialogs/multi-property-value.xhtml" >
             <ui:param name="formId" value="addPropertyValueForm" />
             <ui:param name="dialogTitle" value="Add new device type property" />
             <ui:param name="widgetName" value="addPropertyValue" />
@@ -228,7 +228,7 @@
             <ui:param name="componentToUpdate" value=":deviceTypesForm:attributesDataTable:attributesDataTable" />
         </ui:include>
 
-        <ui:include src="../add-or-modify-dialogs/property-definition.xhtml" >
+        <ui:include src="/resources/dialogs/property-definition.xhtml" >
             <ui:param name="formId" value="installationSlotPropertyForm" />
             <ui:param name="dialogTitle" value="Add new installation slot property" />
             <ui:param name="widgetName" value="installationSlotProperty" />
@@ -238,7 +238,7 @@
             <ui:param name="componentToUpdate" value=":deviceTypesForm:attributesDataTable:attributesDataTable" />
         </ui:include>
 
-        <ui:include src="../add-or-modify-dialogs/property-definition.xhtml" >
+        <ui:include src="/resources/dialogs/property-definition.xhtml" >
             <ui:param name="formId" value="deviceInstancePropertyForm" />
             <ui:param name="dialogTitle" value="Add new device instance property" />
             <ui:param name="widgetName" value="deviceInstanceProperty" />
@@ -248,7 +248,7 @@
             <ui:param name="componentToUpdate" value=":deviceTypesForm:attributesDataTable:attributesDataTable" />
         </ui:include>
 
-        <ui:include src="../add-or-modify-dialogs/tag.xhtml" >
+        <ui:include src="/resources/dialogs/tag.xhtml" >
             <ui:param name="formId" value="deviceTypeTagForm" />
             <ui:param name="dialogTitle" value="Add new device type tag" />
             <ui:param name="widgetName" value="deviceTypeTag" />
@@ -258,7 +258,7 @@
             <ui:param name="componentToUpdate" value=":deviceTypesForm:attributesDataTable:attributesDataTable" />
         </ui:include>
 
-        <ui:include src="../add-or-modify-dialogs/artifact.xhtml" >
+        <ui:include src="/resources/dialogs/artifact.xhtml" >
             <ui:param name="formId" value="addArtifactForm" />
             <ui:param name="dialogTitle" value="Add new device type artifact" />
             <ui:param name="widgetName" value="addArtifact" />
@@ -268,7 +268,7 @@
             <ui:param name="componentToUpdate" value=":deviceTypesForm:attributesDataTable:attributesDataTable" />
         </ui:include>
 
-        <ui:include src="../add-or-modify-dialogs/delete-confirmation.xhtml" >
+        <ui:include src="/resources/dialogs/delete-confirmation.xhtml" >
             <ui:param name="formId" value="deleteAttributeForm" />
             <ui:param name="dialogTitle" value="Delete attribute" />
             <ui:param name="widgetName" value="deleteAttribute" />

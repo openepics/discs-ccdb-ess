@@ -81,7 +81,7 @@
                 oncomplete="PF('addUnit').show()" style="float: right; margin: 1em 1ex 0 0;" />
         </h:form>
 
-        <ui:include src="../add-or-modify-dialogs/delete-confirmation.xhtml" >
+        <ui:include src="/resources/dialogs/delete-confirmation.xhtml" >
             <ui:param name="formId" value="deleteUnitForm" />
             <ui:param name="dialogTitle" value="Delete unit" />
             <ui:param name="widgetName" value="deleteUnit" />
@@ -92,14 +92,14 @@
             <ui:param name="entityType" value="this unit" />
         </ui:include>
 
-        <ui:include src="add-or-modify-unit.xhtml">
+        <ui:include src="/resources/dialogs/add-or-modify-unit.xhtml">
             <ui:param name="formId" value="modifyUnitForm" />
             <ui:param name="dialogTitle" value="Modify unit" />
             <ui:param name="widgetName" value="modifyUnit" />
             <ui:param name="submitHandler" value="onModify" />
         </ui:include>
 
-        <ui:include src="add-or-modify-unit.xhtml">
+        <ui:include src="/resources/dialogs/add-or-modify-unit.xhtml">
             <ui:param name="formId" value="addUnitForm" />
             <ui:param name="dialogTitle" value="Add unit" />
             <ui:param name="widgetName" value="addUnit" />

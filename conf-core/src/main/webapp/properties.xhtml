@@ -29,7 +29,7 @@
                 <p:column headerText="Unit" sortBy="#{property.unit.name}" filterBy="#{property.unit.name}" 
                         width="10%" filterStyle="width: 90%;">
                     <h:outputLink rendered="#{!empty property.unit}" 
-                            value="#{request.contextPath}/data-definitions/units/units-manager.xhtml?id=#{property.unit.id}">
+                            value="#{request.contextPath}/units.xhtml?id=#{property.unit.id}">
                         <h:outputText value="#{property.unit.name}" style="text-decoration: underline;" />
                     </h:outputLink>
                     <h:outputText value="-" rendered="#{empty property.unit}" />
@@ -53,7 +53,7 @@
                 update=":addPropertyForm:addProperty" title="Add new properties" icon="ui-icon-plus" />
         </h:form>
 
-        <ui:include src="../add-or-modify-dialogs/delete-confirmation.xhtml" >
+        <ui:include src="/resources/dialogs/delete-confirmation.xhtml" >
             <ui:param name="formId" value="deletePropertyForm" />
             <ui:param name="dialogTitle" value="Delete property" />
             <ui:param name="widgetName" value="deleteProperty" />
@@ -65,7 +65,7 @@
             <ui:param name="resetFilter" value="PF('propertiesTableVar').filter();" />               
         </ui:include>
 
-        <ui:include src="../add-or-modify-dialogs/property.xhtml">
+        <ui:include src="/resources/dialogs/property.xhtml">
             <ui:param name="formId" value="modifyPropertyForm" />
             <ui:param name="dialogTitle" value="Modify Property" />
             <ui:param name="updateComponents" 
@@ -75,7 +75,7 @@
             <ui:param name="saveAction" value="PF('modifyProperty').hide(); PF('propertiesTableVar').filter();" />
         </ui:include>
 
-        <ui:include src="../add-or-modify-dialogs/property.xhtml">
+        <ui:include src="/resources/dialogs/property.xhtml">
             <ui:param name="formId" value="addPropertyForm" />
             <ui:param name="dialogTitle" value="Add Property" />
             <ui:param name="updateComponents" 
