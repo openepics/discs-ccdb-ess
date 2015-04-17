@@ -44,6 +44,9 @@ import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyValue;
 import org.openepics.discs.conf.ent.PropertyValueUniqueness;
 import org.openepics.discs.conf.ent.Unit;
+import org.openepics.discs.conf.export.CSVExportTable;
+import org.openepics.discs.conf.export.ExcelExportTable;
+import org.openepics.discs.conf.export.ExportTable;
 import org.openepics.discs.conf.ui.common.AbstractExcelSingleFileImportUI;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
 import org.openepics.discs.conf.util.BatchIterator;
@@ -51,6 +54,8 @@ import org.openepics.discs.conf.util.BatchSaveStage;
 import org.openepics.discs.conf.util.BuiltInDataType;
 import org.openepics.discs.conf.util.Utility;
 import org.primefaces.context.RequestContext;
+import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.StreamedContent;
 
 import com.google.common.collect.ImmutableList;
 
@@ -94,6 +99,10 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
     private String batchPropertyConflicts;
     private BatchSaveStage batchSaveStage;
     private boolean batchSkipExisting;
+
+    // ---- table download properties
+    private String fileFormat;
+    private boolean includeHeaderRow;
 
     /** Creates a new instance of PropertyManager */
     public PropertyManager() {
@@ -472,5 +481,60 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
     /** @return a new line separated list of all properties in conflict */
     public String getBatchPropertyConflicts() {
         return batchPropertyConflicts;
+    }
+
+    /** @return the fileFormat */
+    public String getFileFormat() {
+        return fileFormat;
+    }
+    /** @param fileFormat the fileFormat to set */
+    public void setFileFormat(String fileFormat) {
+        this.fileFormat = fileFormat;
+    }
+
+    /** @return the includeHeaderRow */
+    public boolean isIncludeHeaderRow() {
+        return includeHeaderRow;
+    }
+    /** @param includeHeaderRow the includeHeaderRow to set */
+    public void setIncludeHeaderRow(boolean includeHeaderRow) {
+        this.includeHeaderRow = includeHeaderRow;
+    }
+
+    /** Prepares the default values of the Export data dialog: file format and header row */
+    public void prepareTableExportPopup() {
+        fileFormat = ExportTable.FILE_FORMAT_EXCEL;
+        includeHeaderRow = true;
+    }
+
+    /** @return The data from the table exported into the PrimeFaces file download stream */
+    public StreamedContent getExportedTable() {
+        final List<Property> exportData = filteredProperties == null || filteredProperties.isEmpty() ? properties
+                : filteredProperties;
+        final ExportTable exportTable;
+        final String mimeType;
+        final String fileName;
+
+        if (fileFormat.equals(ExportTable.FILE_FORMAT_EXCEL)) {
+            exportTable = new ExcelExportTable();
+            mimeType = ExportTable.MIME_TYPE_EXCEL;
+            fileName = "properties.xlsx";
+        } else {
+            exportTable = new CSVExportTable();
+            mimeType = ExportTable.MIME_TYPE_CSV;
+            fileName = "properties.csv";
+        }
+
+        exportTable.createTable("Properties");
+        if (includeHeaderRow) {
+            exportTable.addHeaderRow("Name", "Description", "Unit", "Data Type");
+        }
+
+        for (final Property prop : exportData) {
+            final String unitName = prop.getUnit() != null ? prop.getUnit().getName() : "";
+            exportTable.addDataRow(prop.getName(), prop.getDescription(), unitName, prop.getDataType().getName());
+        }
+
+        return new DefaultStreamedContent(exportTable.exportTable(), mimeType, fileName);
     }
 }
