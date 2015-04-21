@@ -86,7 +86,7 @@
                                     </h:link>                                    
                                 </p:column>
 
-                                <p:column headerText="Inventory ID" sortBy="#{device.inventoryId}" 
+                                <p:column headerText="Inventory ID" sortBy="#{device.inventoryId}" filterStyle="width: 90%;" 
                                         filterBy="#{device.inventoryId}" filterMatchMode="contains">
                                     <h:outputText value="#{device.inventoryId}" />
                                 </p:column>
@@ -97,7 +97,7 @@
                                     <h:outputText value="#{device.statusLabel}" />
                                 </p:column>
 
-                                <p:column headerText="Installed in" sortBy="#{device.installedIn}" 
+                                <p:column headerText="Installed in" sortBy="#{device.installedIn}" filterStyle="width: 90%;" 
                                         filterBy="#{device.installedIn}" filterMatchMode="contains">
                                     <h:outputLink rendered="#{!empty device.installedSlotId}" 
                                             value="#{request.contextPath}/?id=#{device.installedSlotId}">
@@ -106,12 +106,16 @@
                                     <h:outputText value="-" rendered="#{empty device.installedSlotId}" />
                                 </p:column>
 
-                                <p:column headerText="Installation timestamp" sortBy="#{device.installationDate}" 
+                                <p:column headerText="Installation timestamp" sortBy="#{device.installationDate}" filterStyle="width: 90%;" 
                                         filterBy="#{device.installationDate}" filterMatchMode="contains">
                                     <h:outputText value="#{device.installationDate}" />
                                 </p:column>
                             </p:dataTable>
-                            <p:commandButton id="deleteButton" ajax="true" style="float: right;" value="Delete" 
+                            <p:commandButton id="exportButton" icon="ui-icon-disk" value="Export" title="Export" 
+                                style="float: right;" oncomplete="PF('exportDevices').show();" 
+                                disabled="#{empty devicesByTypeManager.devices}" update=":exportDevForm:exportDevices" 
+                                actionListener="#{devicesByTypeManager.prepareTableExportPopup}" />
+                            <p:commandButton id="deleteButton" ajax="true" style="float: right; margin-right: 1ex;" value="Delete" 
                                 icon="ui-icon-trash" title="Delete selected device instance" oncomplete="PF('deleteDevice').show();" 
                                 disabled="#{empty devicesByTypeManager.selectedDevice || not empty devicesByTypeManager.selectedDevice.installedSlotId}" />
                             <p:commandButton id="editButton" ajax="true" style="float: right; margin-right: 1ex;" value="Edit" 
@@ -171,7 +175,8 @@
             <ui:param name="formId" value="deviceAddForm" />
             <ui:param name="widgetName" value="addDeviceDialog" />
             <ui:param name="dialogTitle" value="Add device" />
-            <ui:param name="updateComponents" value=":devicesForm:devicesTable :devicesForm:deleteButton :devicesForm:editButton" />
+            <ui:param name="updateComponents" value=":devicesForm:devicesTable :devicesForm:deleteButton 
+                                                    :devicesForm:editButton :devicesForm:exportButton" />
             <ui:param name="submitHandler" value="onDeviceAdd" />
             <ui:param name="batchCreation" value="true" />
             <ui:param name="saveAction" value="adjustTableHights();" />
@@ -244,7 +249,8 @@
             <ui:param name="resizeContent" value="adjustTableHights();" />
             <ui:param name="controller" value="#{devicesByTypeManager}" />
             <ui:param name="submitHandler" value="onDeviceDelete" />
-            <ui:param name="formToUpdate" value=":devicesForm:devicesTable :devicesForm:deleteButton :devicesForm:editButton" />
+            <ui:param name="formToUpdate" value=":devicesForm:devicesTable :devicesForm:deleteButton 
+                                            :devicesForm:editButton :devicesForm:exportButton" />
             <ui:param name="entityType" value="this device" />
         </ui:include>
 
@@ -270,6 +276,15 @@
             <ui:param name="submitHandler" value="creationProceed" />
             <ui:param name="formToUpdate" value=":devicesForm:devicesTable :devicesForm:deleteButton :devicesForm:editButton" />
             <ui:param name="saveActions" value="adjustTableHights();" />
+        </ui:include>
+
+        <ui:include src="/resources/dialogs/export-table.xhtml">
+            <ui:param name="formId" value="exportDevForm" />
+            <ui:param name="widgetName" value="exportDevices" />
+            <ui:param name="dialogTitle" value="Export device instances table" />
+            <ui:param name="fileFormatSelection" value="#{devicesByTypeManager.fileFormat}" />
+            <ui:param name="includeHeader" value="#{devicesByTypeManager.includeHeaderRow}" />
+            <ui:param name="tableFile" value="#{devicesByTypeManager.exportedTable}" />
         </ui:include>
     </ui:define>
 </ui:composition>

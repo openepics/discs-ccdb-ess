@@ -41,11 +41,16 @@ import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.DeviceStatus;
 import org.openepics.discs.conf.ent.InstallationRecord;
+import org.openepics.discs.conf.export.CSVExportTable;
+import org.openepics.discs.conf.export.ExcelExportTable;
+import org.openepics.discs.conf.export.ExportTable;
 import org.openepics.discs.conf.util.BatchIterator;
 import org.openepics.discs.conf.util.BatchSaveStage;
 import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.views.DeviceView;
 import org.primefaces.context.RequestContext;
+import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.StreamedContent;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
@@ -88,6 +93,10 @@ public class DevicesByTypeManager implements Serializable {
     private BatchSaveStage batchSaveStage;
     private boolean batchSkipExisting;
     private int selectedIndex = -1;
+
+    // ---- table download properties
+    private String fileFormat;
+    private boolean includeHeaderRow;
 
     public DevicesByTypeManager() {
     }
@@ -448,5 +457,62 @@ public class DevicesByTypeManager implements Serializable {
     /** @return a new line separated list of all devices in conflict */
     public String getBatchSerialConflicts() {
         return batchSerialConflicts;
+    }
+
+    /** @return the fileFormat */
+    public String getFileFormat() {
+        return fileFormat;
+    }
+    /** @param fileFormat the fileFormat to set */
+    public void setFileFormat(String fileFormat) {
+        this.fileFormat = fileFormat;
+    }
+
+    /** @return the includeHeaderRow */
+    public boolean isIncludeHeaderRow() {
+        return includeHeaderRow;
+    }
+    /** @param includeHeaderRow the includeHeaderRow to set */
+    public void setIncludeHeaderRow(boolean includeHeaderRow) {
+        this.includeHeaderRow = includeHeaderRow;
+    }
+
+    /** Prepares the default values of the Export data dialog: file format and header row */
+    public void prepareTableExportPopup() {
+        fileFormat = ExportTable.FILE_FORMAT_EXCEL;
+        includeHeaderRow = true;
+    }
+
+    /** @return The data from the table exported into the PrimeFaces file download stream */
+    public StreamedContent getExportedTable() {
+        final List<DeviceView> exportData = filteredDevices == null || filteredDevices.isEmpty() ? devices
+                : filteredDevices;
+        final ExportTable exportTable;
+        final String mimeType;
+        final String fileName;
+
+        if (fileFormat.equals(ExportTable.FILE_FORMAT_EXCEL)) {
+            exportTable = new ExcelExportTable();
+            mimeType = ExportTable.MIME_TYPE_EXCEL;
+            fileName = "devices.xlsx";
+        } else {
+            exportTable = new CSVExportTable();
+            mimeType = ExportTable.MIME_TYPE_CSV;
+            fileName = "devices.csv";
+        }
+
+        exportTable.createTable("Device instances");
+        if (includeHeaderRow) {
+            exportTable.addHeaderRow("Type", "Inventory ID", "Status", "Installed in", "Installation timestamp");
+        }
+
+        for (final DeviceView deviceInstance : exportData) {
+            exportTable.addDataRow(deviceInstance.getDevice().getComponentType().getName(),
+                    deviceInstance.getInventoryId(), deviceInstance.getStatusLabel(),
+                    deviceInstance.getInstalledIn().equals("-") ? null : deviceInstance.getInstalledIn(),
+                    deviceInstance.getInstallationTimestamp());
+        }
+
+        return new DefaultStreamedContent(exportTable.exportTable(), mimeType, fileName);
     }
 }

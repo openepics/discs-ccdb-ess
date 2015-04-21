@@ -36,11 +36,16 @@ import javax.json.JsonObject;
 
 import org.openepics.discs.conf.ejb.DataTypeEJB;
 import org.openepics.discs.conf.ent.DataType;
+import org.openepics.discs.conf.export.CSVExportTable;
+import org.openepics.discs.conf.export.ExcelExportTable;
+import org.openepics.discs.conf.export.ExportTable;
 import org.openepics.discs.conf.util.BuiltInDataType;
 import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.views.UserEnumerationView;
 import org.openepics.seds.api.datatypes.SedsEnum;
 import org.openepics.seds.core.Seds;
+import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.StreamedContent;
 
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
@@ -73,6 +78,10 @@ public class DataTypeManager implements Serializable {
     private String description;
     private String definition;
     private boolean isEnumerationBeingAdded;
+
+    // ---- table download properties
+    private String fileFormat;
+    private boolean includeHeaderRow;
 
     /** Creates a new instance of DataTypeManager */
     public DataTypeManager() {
@@ -296,7 +305,8 @@ public class DataTypeManager implements Serializable {
     }
 
     private String jsonDefinitionFromList(List<String> definitionValues) {
-        final SedsEnum testEnum = Seds.newFactory().newEnum(definitionValues.get(0), definitionValues.toArray(new String[] {}));
+        final SedsEnum testEnum = Seds.newFactory().newEnum(definitionValues.get(0),
+                                                                definitionValues.toArray(new String[] {}));
         final JsonObject jsonEnum = Seds.newDBConverter().serialize(testEnum);
         return  jsonEnum.toString();
     }
@@ -343,5 +353,61 @@ public class DataTypeManager implements Serializable {
     /** @param definition the definition to set */
     public void setDefinition(String definition) {
         this.definition = definition;
+    }
+
+    /** @return the fileFormat */
+    public String getFileFormat() {
+        return fileFormat;
+    }
+    /** @param fileFormat the fileFormat to set */
+    public void setFileFormat(String fileFormat) {
+        this.fileFormat = fileFormat;
+    }
+
+    /** @return the includeHeaderRow */
+    public boolean isIncludeHeaderRow() {
+        return includeHeaderRow;
+    }
+    /** @param includeHeaderRow the includeHeaderRow to set */
+    public void setIncludeHeaderRow(boolean includeHeaderRow) {
+        this.includeHeaderRow = includeHeaderRow;
+    }
+
+    /** Prepares the default values of the Export data dialog: file format and header row */
+    public void prepareTableExportPopup() {
+        fileFormat = ExportTable.FILE_FORMAT_EXCEL;
+        includeHeaderRow = true;
+    }
+
+    /** @return The data from the table exported into the PrimeFaces file download stream */
+    public StreamedContent getExportedTable() {
+        final List<UserEnumerationView> exportData = filteredDataTypesViews == null
+                                                        || filteredDataTypesViews.isEmpty()
+                                                            ? dataTypeViews
+                                                            : filteredDataTypesViews;
+        final ExportTable exportTable;
+        final String mimeType;
+        final String fileName;
+
+        if (fileFormat.equals(ExportTable.FILE_FORMAT_EXCEL)) {
+            exportTable = new ExcelExportTable();
+            mimeType = ExportTable.MIME_TYPE_EXCEL;
+            fileName = "enums.xlsx";
+        } else {
+            exportTable = new CSVExportTable();
+            mimeType = ExportTable.MIME_TYPE_CSV;
+            fileName = "enums.csv";
+        }
+
+        exportTable.createTable("Enumerations");
+        if (includeHeaderRow) {
+            exportTable.addHeaderRow("Name", "Description", "Definition");
+        }
+
+        for (final UserEnumerationView enumeration : exportData) {
+            exportTable.addDataRow(enumeration.getName(), enumeration.getDescription(), enumeration.getDefinitionAsString());
+        }
+
+        return new DefaultStreamedContent(exportTable.exportTable(), mimeType, fileName);
     }
 }

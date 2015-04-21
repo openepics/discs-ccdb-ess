@@ -64,8 +64,8 @@
             <ui:param name="controller" value="#{propertyManager}" />
             <ui:param name="submitHandler" value="onDelete" />
             <ui:param name="entityType" value="this property" />
-            <ui:param name="formToUpdate" 
-                value=":propertiesForm:propertiesTable :propertiesForm:deleteButton :propertiesForm:editButton" />
+            <ui:param name="formToUpdate" value=":propertiesForm:propertiesTable :propertiesForm:deleteButton 
+                                                :propertiesForm:editButton :propertiesForm:exportButton" />
             <ui:param name="resetFilter" value="PF('propertiesTableVar').filter();" />               
         </ui:include>
 

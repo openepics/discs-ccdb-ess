@@ -31,8 +31,12 @@
                     <h:outputText value="#{enum.definitionAsString}" width="50%"/>
                 </p:column>
             </p:dataTable>
+            <p:commandButton id="exportButton" icon="ui-icon-disk" value="Export" title="Export" 
+                style="float: right; margin-top: 1em;" oncomplete="PF('exportEnums').show();" 
+                disabled="#{empty dataTypeManager.dataTypeViews}" update=":exportEnumsForm:exportEnums" 
+                actionListener="#{dataTypeManager.prepareTableExportPopup}" />
             <p:commandButton id="deleteButton" icon="ui-icon-trash" value="Delete" title="Delete" 
-                style="float: right; margin-top: 1em;" oncomplete="PF('deleteEnum').show();" 
+                style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('deleteEnum').show();" 
                 disabled="#{empty dataTypeManager.selectedEnum or dataTypeManager.selectedEnumUsed}" />
             <p:commandButton id="editButton" icon="ui-icon-pencil" value="Edit" title="Edit" 
                 style="float: right; margin: 1em 1ex 0 0;" update=":modifyEnumForm:modifyEnum" 
@@ -49,7 +53,8 @@
             <ui:param name="widgetName" value="deleteEnum" />
             <ui:param name="controller" value="#{dataTypeManager}" />
             <ui:param name="submitHandler" value="onDelete" />
-            <ui:param name="formToUpdate" value=":enumsForm:enumsTable :enumsForm:deleteButton :enumsForm:editButton" />
+            <ui:param name="formToUpdate" value=":enumsForm:enumsTable :enumsForm:deleteButton 
+                                                :enumsForm:editButton :enumsForm:exportButton" />
             <ui:param name="resetFilter" value="PF('enumsTableVar').filter();" />
             <ui:param name="entityType" value="this enumeration" />
         </ui:include>
@@ -67,7 +72,17 @@
             <ui:param name="dialogTitle" value="Add Enumeration" />
             <ui:param name="widgetName" value="addEnum" />
             <ui:param name="submitHandler" value="onAdd" />
-            <ui:param name="componentToUpdate" value=":enumsForm:enumsTable :enumsForm:deleteButton :enumsForm:editButton" />
+            <ui:param name="componentToUpdate" value=":enumsForm:enumsTable :enumsForm:deleteButton 
+                                                :enumsForm:editButton :enumsForm:exportButton" />
+        </ui:include>
+
+        <ui:include src="/resources/dialogs/export-table.xhtml">
+            <ui:param name="formId" value="exportEnumsForm" />
+            <ui:param name="widgetName" value="exportEnums" />
+            <ui:param name="dialogTitle" value="Export enumerations table" />
+            <ui:param name="fileFormatSelection" value="#{dataTypeManager.fileFormat}" />
+            <ui:param name="includeHeader" value="#{dataTypeManager.includeHeaderRow}" />
+            <ui:param name="tableFile" value="#{dataTypeManager.exportedTable}" />
         </ui:include>
     </ui:define>
 </ui:composition>

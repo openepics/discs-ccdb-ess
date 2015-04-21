@@ -24,8 +24,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
+import org.openepics.discs.conf.util.Conversion;
 import org.openepics.discs.conf.util.DeleteOnCloseFileInputStream;
 
 import com.google.common.collect.Lists;
@@ -37,9 +41,11 @@ public class CSVExportTable implements ExportTable {
 
     private boolean headerAdded;
     final private List<String> fileLines;
+    final SimpleDateFormat timestampFormatter;
 
     public CSVExportTable() {
         headerAdded = false;
+        timestampFormatter = new SimpleDateFormat(Conversion.DATE_TIME_FORMAT);
         fileLines = Lists.newArrayList();
     }
 
@@ -94,7 +100,16 @@ public class CSVExportTable implements ExportTable {
     }
 
     private String escapeEntry(Object entry) {
+        if (entry == null) {
+            return "";
+        }
         String representation = entry.toString();
+        if (entry instanceof Date) {
+            representation = timestampFormatter.format(entry);
+        } else if (entry instanceof Calendar) {
+            final Calendar calEntry = (Calendar) entry;
+            representation = timestampFormatter.format(calEntry.getTime());
+        }
         boolean addQuotes = false;
         if (representation.contains("\"")) {
             addQuotes = true;

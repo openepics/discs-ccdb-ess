@@ -45,11 +45,16 @@ import org.openepics.discs.conf.ejb.ComptypeEJB;
 import org.openepics.discs.conf.ent.AuditRecord;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.EntityType;
+import org.openepics.discs.conf.export.CSVExportTable;
+import org.openepics.discs.conf.export.ExcelExportTable;
+import org.openepics.discs.conf.export.ExportTable;
 import org.openepics.discs.conf.ui.common.AbstractExcelSingleFileImportUI;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
 import org.openepics.discs.conf.ui.common.UIException;
 import org.openepics.discs.conf.util.Utility;
 import org.primefaces.context.RequestContext;
+import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.StreamedContent;
 
 /**
  *
@@ -75,6 +80,10 @@ public class ComponentTypeManager extends AbstractExcelSingleFileImportUI implem
     private String description;
     private ComponentType selectedDeviceType;
     private List<AuditRecord> auditRecordsForEntity;
+
+    // ---- table download properties
+    private String fileFormat;
+    private boolean includeHeaderRow;
 
     /** Creates a new instance of ComponentTypeMananger */
     public ComponentTypeManager() {
@@ -287,5 +296,59 @@ public class ComponentTypeManager extends AbstractExcelSingleFileImportUI implem
     /** @return The list of all device types in the database. */
     public List<ComponentType> getDeviceTypes() {
         return deviceTypes;
+    }
+
+    /** @return the fileFormat */
+    public String getFileFormat() {
+        return fileFormat;
+    }
+    /** @param fileFormat the fileFormat to set */
+    public void setFileFormat(String fileFormat) {
+        this.fileFormat = fileFormat;
+    }
+
+    /** @return the includeHeaderRow */
+    public boolean isIncludeHeaderRow() {
+        return includeHeaderRow;
+    }
+    /** @param includeHeaderRow the includeHeaderRow to set */
+    public void setIncludeHeaderRow(boolean includeHeaderRow) {
+        this.includeHeaderRow = includeHeaderRow;
+    }
+
+    /** Prepares the default values of the Export data dialog: file format and header row */
+    public void prepareTableExportPopup() {
+        fileFormat = ExportTable.FILE_FORMAT_EXCEL;
+        includeHeaderRow = true;
+    }
+
+    /** @return The data from the table exported into the PrimeFaces file download stream */
+    public StreamedContent getExportedTable() {
+        final List<ComponentType> exportData = filteredDeviceTypes == null || filteredDeviceTypes.isEmpty() ? deviceTypes
+                : filteredDeviceTypes;
+        final ExportTable exportTable;
+        final String mimeType;
+        final String fileName;
+
+        if (fileFormat.equals(ExportTable.FILE_FORMAT_EXCEL)) {
+            exportTable = new ExcelExportTable();
+            mimeType = ExportTable.MIME_TYPE_EXCEL;
+            fileName = "device-types.xlsx";
+        } else {
+            exportTable = new CSVExportTable();
+            mimeType = ExportTable.MIME_TYPE_CSV;
+            fileName = "device-types.csv";
+        }
+
+        exportTable.createTable("Device types");
+        if (includeHeaderRow) {
+            exportTable.addHeaderRow("Name", "Description");
+        }
+
+        for (final ComponentType devType : exportData) {
+            exportTable.addDataRow(devType.getName(), devType.getDescription());
+        }
+
+        return new DefaultStreamedContent(exportTable.exportTable(), mimeType, fileName);
     }
 }

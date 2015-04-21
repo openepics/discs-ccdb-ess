@@ -91,7 +91,8 @@
             <ui:param name="widgetName" value="deleteUnit" />
             <ui:param name="controller" value="#{unitManager}" />
             <ui:param name="submitHandler" value="onDelete" />
-            <ui:param name="formToUpdate" value=":unitsForm:unitsTable :unitsForm:deleteButton :unitsForm:editButton" />
+            <ui:param name="formToUpdate" value=":unitsForm:unitsTable :unitsForm:deleteButton :unitsForm:editButton 
+                                                :unitsForm:exportButton" />
             <ui:param name="resetFilter" value="PF('unitsTableVar').filter();" />               
             <ui:param name="entityType" value="this unit" />
         </ui:include>
