@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -49,6 +50,9 @@ import org.openepics.discs.conf.export.ExcelExportTable;
 import org.openepics.discs.conf.export.ExportTable;
 import org.openepics.discs.conf.ui.common.AbstractExcelSingleFileImportUI;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
+import org.openepics.discs.conf.ui.common.UIException;
+import org.openepics.discs.conf.ui.export.ExportSimpleTableDialog;
+import org.openepics.discs.conf.ui.export.SimpleTableExporter;
 import org.openepics.discs.conf.util.BatchIterator;
 import org.openepics.discs.conf.util.BatchSaveStage;
 import org.openepics.discs.conf.util.BuiltInDataType;
@@ -69,7 +73,7 @@ import com.google.common.collect.ImmutableList;
  */
 @Named
 @ViewScoped
-public class PropertyManager extends AbstractExcelSingleFileImportUI implements Serializable {
+public class PropertyManager extends AbstractExcelSingleFileImportUI implements Serializable, SimpleTableExporter {
     private static final long serialVersionUID = 1056645993595744719L;
     private static final Logger LOGGER = Logger.getLogger(PropertyManager.class.getCanonicalName());
     private static final String CRLF = "\r\n";
@@ -100,18 +104,55 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
     private BatchSaveStage batchSaveStage;
     private boolean batchSkipExisting;
 
-    // ---- table download properties
-    private String fileFormat;
-    private boolean includeHeaderRow;
+    private ExportSimpleTableDialog simpleTableExporterDialog;
+
+    private class ExportSimplePropertyTableDialog extends ExportSimpleTableDialog {
+        @Override
+        public StreamedContent getExportedTable() {
+            final List<Property> exportData = filteredProperties == null || filteredProperties.isEmpty() ? properties
+                    : filteredProperties;
+            final ExportTable exportTable;
+            final String mimeType;
+            final String fileName;
+
+            if (getFileFormat().equals(ExportTable.FILE_FORMAT_EXCEL)) {
+                exportTable = new ExcelExportTable();
+                mimeType = ExportTable.MIME_TYPE_EXCEL;
+                fileName = "properties.xlsx";
+            } else {
+                exportTable = new CSVExportTable();
+                mimeType = ExportTable.MIME_TYPE_CSV;
+                fileName = "properties.csv";
+            }
+
+            exportTable.createTable("Properties");
+            if (isIncludeHeaderRow()) {
+                exportTable.addHeaderRow("Name", "Description", "Unit", "Data Type");
+            }
+
+            for (final Property prop : exportData) {
+                final String unitName = prop.getUnit() != null ? prop.getUnit().getName() : "";
+                exportTable.addDataRow(prop.getName(), prop.getDescription(), unitName, prop.getDataType().getName());
+            }
+            return new DefaultStreamedContent(exportTable.exportTable(), mimeType, fileName);
+        }
+    }
 
     /** Creates a new instance of PropertyManager */
     public PropertyManager() {
     }
 
-    private void init() {
-        properties = propertyEJB.findAllOrderedByName();
-        selectedProperty = null;
-        resetFields();
+    /** Java EE post-construct life-cycle callback */
+    @PostConstruct
+    public void init() {
+        try {
+            simpleTableExporterDialog = new ExportSimplePropertyTableDialog();
+            properties = propertyEJB.findAllOrderedByName();
+            selectedProperty = null;
+            resetFields();
+        } catch(Exception e) {
+            throw new UIException("Device type display initialization fialed: " + e.getMessage(), e);
+        }
     }
 
     /** Called when the user presses the "Save" button in the "Add new property" dialog */
@@ -483,58 +524,8 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
         return batchPropertyConflicts;
     }
 
-    /** @return the fileFormat */
-    public String getFileFormat() {
-        return fileFormat;
-    }
-    /** @param fileFormat the fileFormat to set */
-    public void setFileFormat(String fileFormat) {
-        this.fileFormat = fileFormat;
-    }
-
-    /** @return the includeHeaderRow */
-    public boolean isIncludeHeaderRow() {
-        return includeHeaderRow;
-    }
-    /** @param includeHeaderRow the includeHeaderRow to set */
-    public void setIncludeHeaderRow(boolean includeHeaderRow) {
-        this.includeHeaderRow = includeHeaderRow;
-    }
-
-    /** Prepares the default values of the Export data dialog: file format and header row */
-    public void prepareTableExportPopup() {
-        fileFormat = ExportTable.FILE_FORMAT_EXCEL;
-        includeHeaderRow = true;
-    }
-
-    /** @return The data from the table exported into the PrimeFaces file download stream */
-    public StreamedContent getExportedTable() {
-        final List<Property> exportData = filteredProperties == null || filteredProperties.isEmpty() ? properties
-                : filteredProperties;
-        final ExportTable exportTable;
-        final String mimeType;
-        final String fileName;
-
-        if (fileFormat.equals(ExportTable.FILE_FORMAT_EXCEL)) {
-            exportTable = new ExcelExportTable();
-            mimeType = ExportTable.MIME_TYPE_EXCEL;
-            fileName = "properties.xlsx";
-        } else {
-            exportTable = new CSVExportTable();
-            mimeType = ExportTable.MIME_TYPE_CSV;
-            fileName = "properties.csv";
-        }
-
-        exportTable.createTable("Properties");
-        if (includeHeaderRow) {
-            exportTable.addHeaderRow("Name", "Description", "Unit", "Data Type");
-        }
-
-        for (final Property prop : exportData) {
-            final String unitName = prop.getUnit() != null ? prop.getUnit().getName() : "";
-            exportTable.addDataRow(prop.getName(), prop.getDescription(), unitName, prop.getDataType().getName());
-        }
-
-        return new DefaultStreamedContent(exportTable.exportTable(), mimeType, fileName);
+    @Override
+    public ExportSimpleTableDialog getSimpleTableDialog() {
+        return simpleTableExporterDialog;
     }
 }

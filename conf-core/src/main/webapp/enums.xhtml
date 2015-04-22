@@ -34,7 +34,7 @@
             <p:commandButton id="exportButton" icon="ui-icon-disk" value="Export" title="Export" 
                 style="float: right; margin-top: 1em;" oncomplete="PF('exportEnums').show();" 
                 disabled="#{empty dataTypeManager.dataTypeViews}" update=":exportEnumsForm:exportEnums" 
-                actionListener="#{dataTypeManager.prepareTableExportPopup}" />
+                actionListener="#{dataTypeManager.simpleTableDialog.prepareTableExportPopup}" />
             <p:commandButton id="deleteButton" icon="ui-icon-trash" value="Delete" title="Delete" 
                 style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('deleteEnum').show();" 
                 disabled="#{empty dataTypeManager.selectedEnum or dataTypeManager.selectedEnumUsed}" />
@@ -80,9 +80,9 @@
             <ui:param name="formId" value="exportEnumsForm" />
             <ui:param name="widgetName" value="exportEnums" />
             <ui:param name="dialogTitle" value="Export enumerations table" />
-            <ui:param name="fileFormatSelection" value="#{dataTypeManager.fileFormat}" />
-            <ui:param name="includeHeader" value="#{dataTypeManager.includeHeaderRow}" />
-            <ui:param name="tableFile" value="#{dataTypeManager.exportedTable}" />
+            <ui:param name="fileFormatSelection" value="#{dataTypeManager.simpleTableDialog.fileFormat}" />
+            <ui:param name="includeHeader" value="#{dataTypeManager.simpleTableDialog.includeHeaderRow}" />
+            <ui:param name="tableFile" value="#{dataTypeManager.simpleTableDialog.exportedTable}" />
         </ui:include>
     </ui:define>
 </ui:composition>

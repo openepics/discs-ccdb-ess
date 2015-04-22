@@ -39,6 +39,9 @@ import org.openepics.discs.conf.ent.DataType;
 import org.openepics.discs.conf.export.CSVExportTable;
 import org.openepics.discs.conf.export.ExcelExportTable;
 import org.openepics.discs.conf.export.ExportTable;
+import org.openepics.discs.conf.ui.common.UIException;
+import org.openepics.discs.conf.ui.export.ExportSimpleTableDialog;
+import org.openepics.discs.conf.ui.export.SimpleTableExporter;
 import org.openepics.discs.conf.util.BuiltInDataType;
 import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.views.UserEnumerationView;
@@ -62,7 +65,7 @@ import com.google.common.collect.Lists;
  */
 @Named
 @ViewScoped
-public class DataTypeManager implements Serializable {
+public class DataTypeManager implements Serializable, SimpleTableExporter {
     private static final long serialVersionUID = -7538356350403365152L;
 
     @Inject private transient  DataTypeEJB dataTypeEJB;
@@ -79,9 +82,41 @@ public class DataTypeManager implements Serializable {
     private String definition;
     private boolean isEnumerationBeingAdded;
 
-    // ---- table download properties
-    private String fileFormat;
-    private boolean includeHeaderRow;
+    private ExportSimpleTableDialog simpleTableExporterDialog;
+
+    private class ExportSimpleEnumTableDialog extends ExportSimpleTableDialog {
+        @Override
+        public StreamedContent getExportedTable() {
+            final List<UserEnumerationView> exportData = filteredDataTypesViews == null
+                                                                || filteredDataTypesViews.isEmpty()
+                                                                            ? dataTypeViews
+                                                                            : filteredDataTypesViews;
+            final ExportTable exportTable;
+            final String mimeType;
+            final String fileName;
+
+            if (getFileFormat().equals(ExportTable.FILE_FORMAT_EXCEL)) {
+                exportTable = new ExcelExportTable();
+                mimeType = ExportTable.MIME_TYPE_EXCEL;
+                fileName = "enums.xlsx";
+            } else {
+                exportTable = new CSVExportTable();
+                mimeType = ExportTable.MIME_TYPE_CSV;
+                fileName = "enums.csv";
+            }
+
+            exportTable.createTable("Enumerations");
+            if (isIncludeHeaderRow()) {
+                exportTable.addHeaderRow("Name", "Description", "Definition");
+            }
+
+            for (final UserEnumerationView enumeration : exportData) {
+                exportTable.addDataRow(enumeration.getName(), enumeration.getDescription(),
+                        enumeration.getDefinitionAsString());
+            }
+            return new DefaultStreamedContent(exportTable.exportTable(), mimeType, fileName);
+        }
+    }
 
     /** Creates a new instance of DataTypeManager */
     public DataTypeManager() {
@@ -90,13 +125,19 @@ public class DataTypeManager implements Serializable {
     /** Java EE post construct life-cycle method */
     @PostConstruct
     public void init() {
-        Builder<String> builtInDataTypeBuilder = ImmutableList.builder();
-        for (BuiltInDataType type : BuiltInDataType.values()) {
-            builtInDataTypeBuilder.add(type.toString());
-        }
-        builtInDataTypeNames = builtInDataTypeBuilder.build();
+        try {
+            simpleTableExporterDialog = new ExportSimpleEnumTableDialog();
 
-        refreshUserDataTypes();
+            Builder<String> builtInDataTypeBuilder = ImmutableList.builder();
+            for (BuiltInDataType type : BuiltInDataType.values()) {
+                builtInDataTypeBuilder.add(type.toString());
+            }
+            builtInDataTypeNames = builtInDataTypeBuilder.build();
+
+            refreshUserDataTypes();
+        } catch(Exception e) {
+            throw new UIException("Device type display initialization fialed: " + e.getMessage(), e);
+        }
     }
 
     /**
@@ -355,59 +396,8 @@ public class DataTypeManager implements Serializable {
         this.definition = definition;
     }
 
-    /** @return the fileFormat */
-    public String getFileFormat() {
-        return fileFormat;
-    }
-    /** @param fileFormat the fileFormat to set */
-    public void setFileFormat(String fileFormat) {
-        this.fileFormat = fileFormat;
-    }
-
-    /** @return the includeHeaderRow */
-    public boolean isIncludeHeaderRow() {
-        return includeHeaderRow;
-    }
-    /** @param includeHeaderRow the includeHeaderRow to set */
-    public void setIncludeHeaderRow(boolean includeHeaderRow) {
-        this.includeHeaderRow = includeHeaderRow;
-    }
-
-    /** Prepares the default values of the Export data dialog: file format and header row */
-    public void prepareTableExportPopup() {
-        fileFormat = ExportTable.FILE_FORMAT_EXCEL;
-        includeHeaderRow = true;
-    }
-
-    /** @return The data from the table exported into the PrimeFaces file download stream */
-    public StreamedContent getExportedTable() {
-        final List<UserEnumerationView> exportData = filteredDataTypesViews == null
-                                                        || filteredDataTypesViews.isEmpty()
-                                                            ? dataTypeViews
-                                                            : filteredDataTypesViews;
-        final ExportTable exportTable;
-        final String mimeType;
-        final String fileName;
-
-        if (fileFormat.equals(ExportTable.FILE_FORMAT_EXCEL)) {
-            exportTable = new ExcelExportTable();
-            mimeType = ExportTable.MIME_TYPE_EXCEL;
-            fileName = "enums.xlsx";
-        } else {
-            exportTable = new CSVExportTable();
-            mimeType = ExportTable.MIME_TYPE_CSV;
-            fileName = "enums.csv";
-        }
-
-        exportTable.createTable("Enumerations");
-        if (includeHeaderRow) {
-            exportTable.addHeaderRow("Name", "Description", "Definition");
-        }
-
-        for (final UserEnumerationView enumeration : exportData) {
-            exportTable.addDataRow(enumeration.getName(), enumeration.getDescription(), enumeration.getDefinitionAsString());
-        }
-
-        return new DefaultStreamedContent(exportTable.exportTable(), mimeType, fileName);
+    @Override
+    public ExportSimpleTableDialog getSimpleTableDialog() {
+        return simpleTableExporterDialog;
     }
 }

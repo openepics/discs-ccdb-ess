@@ -96,7 +96,7 @@
                             <p:commandButton id="exportButton" icon="ui-icon-disk" value="Export" title="Export" 
                                 style="float: right;" oncomplete="PF('exportDevTypes').show();" 
                                 disabled="#{empty componentTypeManager.deviceTypes}" update=":exportDevTypesForm:exportDevTypes" 
-                                actionListener="#{componentTypeManager.prepareTableExportPopup}" />
+                                actionListener="#{componentTypeManager.simpleTableDialog.prepareTableExportPopup}" />
                             <p:commandButton id="deleteButton" ajax="true" style="float: right; margin-right: 1ex;" 
                                 value="Delete" icon="ui-icon-trash" oncomplete="PF('deleteDeviceType').show();" 
                                 disabled="#{empty componentTypeManager.selectedDeviceType}" />
@@ -290,9 +290,9 @@
             <ui:param name="formId" value="exportDevTypesForm" />
             <ui:param name="widgetName" value="exportDevTypes" />
             <ui:param name="dialogTitle" value="Export device types table" />
-            <ui:param name="fileFormatSelection" value="#{componentTypeManager.fileFormat}" />
-            <ui:param name="includeHeader" value="#{componentTypeManager.includeHeaderRow}" />
-            <ui:param name="tableFile" value="#{componentTypeManager.exportedTable}" />
+            <ui:param name="fileFormatSelection" value="#{componentTypeManager.simpleTableDialog.fileFormat}" />
+            <ui:param name="includeHeader" value="#{componentTypeManager.simpleTableDialog.includeHeaderRow}" />
+            <ui:param name="tableFile" value="#{componentTypeManager.simpleTableDialog.exportedTable}" />
         </ui:include>
     </ui:define>
 </ui:composition>

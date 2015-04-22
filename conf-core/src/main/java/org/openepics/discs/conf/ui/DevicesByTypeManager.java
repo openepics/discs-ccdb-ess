@@ -44,6 +44,9 @@ import org.openepics.discs.conf.ent.InstallationRecord;
 import org.openepics.discs.conf.export.CSVExportTable;
 import org.openepics.discs.conf.export.ExcelExportTable;
 import org.openepics.discs.conf.export.ExportTable;
+import org.openepics.discs.conf.ui.common.UIException;
+import org.openepics.discs.conf.ui.export.ExportSimpleTableDialog;
+import org.openepics.discs.conf.ui.export.SimpleTableExporter;
 import org.openepics.discs.conf.util.BatchIterator;
 import org.openepics.discs.conf.util.BatchSaveStage;
 import org.openepics.discs.conf.util.Utility;
@@ -53,6 +56,7 @@ import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
 import com.google.common.collect.Lists;
@@ -63,7 +67,7 @@ import com.google.common.collect.Lists;
  */
 @Named
 @ViewScoped
-public class DevicesByTypeManager implements Serializable {
+public class DevicesByTypeManager implements Serializable, SimpleTableExporter {
     private static final long serialVersionUID = 3236468538191653638L;
     private static final Logger LOGGER = Logger.getLogger(DevicesByTypeManager.class.getCanonicalName());
     private static final String CRLF = "\r\n";
@@ -94,9 +98,41 @@ public class DevicesByTypeManager implements Serializable {
     private boolean batchSkipExisting;
     private int selectedIndex = -1;
 
-    // ---- table download properties
-    private String fileFormat;
-    private boolean includeHeaderRow;
+    private ExportSimpleTableDialog simpleTableExporterDialog;
+
+    private class ExportSimpleDeviceTableDialog extends ExportSimpleTableDialog {
+        @Override
+        public StreamedContent getExportedTable() {
+            final List<DeviceView> exportData = filteredDevices == null || filteredDevices.isEmpty() ? devices
+                                                                                        : filteredDevices;
+            final ExportTable exportTable;
+            final String mimeType;
+            final String fileName;
+
+            if (getFileFormat().equals(ExportTable.FILE_FORMAT_EXCEL)) {
+                exportTable = new ExcelExportTable();
+                mimeType = ExportTable.MIME_TYPE_EXCEL;
+                fileName = "devices.xlsx";
+            } else {
+                exportTable = new CSVExportTable();
+                mimeType = ExportTable.MIME_TYPE_CSV;
+                fileName = "devices.csv";
+            }
+
+            exportTable.createTable("Device instances");
+            if (isIncludeHeaderRow()) {
+                exportTable.addHeaderRow("Type", "Inventory ID", "Status", "Installed in", "Installation timestamp");
+            }
+
+            for (final DeviceView deviceInstance : exportData) {
+                exportTable.addDataRow(deviceInstance.getDevice().getComponentType().getName(),
+                        deviceInstance.getInventoryId(), deviceInstance.getStatusLabel(),
+                        deviceInstance.getInstalledIn().equals("-") ? null : deviceInstance.getInstalledIn(),
+                        deviceInstance.getInstallationTimestamp());
+            }
+            return new DefaultStreamedContent(exportTable.exportTable(), mimeType, fileName);
+        }
+    }
 
     public DevicesByTypeManager() {
     }
@@ -104,19 +140,30 @@ public class DevicesByTypeManager implements Serializable {
     /** Java EE post construct life-cycle method */
     @PostConstruct
     public void init() {
-        availableDeviceTypes = componentTypesEJB.findAll();
-
-        Long selectedDeviceId = null;
         final String deviceId = ((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().
                 getRequest()).getParameter("id");
-        if (deviceId != null) {
-            selectedDeviceId = Long.valueOf(deviceId);
-        }
+        try {
+            simpleTableExporterDialog = new ExportSimpleDeviceTableDialog();
+            availableDeviceTypes = componentTypesEJB.findAll();
 
-        prepareDevicesForDisplay(selectedDeviceId);
-        prepareStatusLabels();
-        if (selectedIndex > -1) {
-            RequestContext.getCurrentInstance().execute("selectDeviceInTable(" + selectedIndex + ");");
+            Long selectedDeviceId = null;
+            if (!Strings.isNullOrEmpty(deviceId)) {
+                try {
+                    selectedDeviceId = Long.valueOf(deviceId);
+                } catch (NumberFormatException e) {
+                    // just log
+                    LOGGER.log(Level.WARNING, "URL contained strange unit ID: " + deviceId );
+                    selectedDeviceId = null;
+                }
+            }
+
+            prepareDevicesForDisplay(selectedDeviceId);
+            prepareStatusLabels();
+            if (selectedIndex > -1) {
+                RequestContext.getCurrentInstance().execute("selectDeviceInTable(" + selectedIndex + ");");
+            }
+        } catch(Exception e) {
+            throw new UIException("Device type display initialization fialed: " + e.getMessage(), e);
         }
     }
 
@@ -459,60 +506,8 @@ public class DevicesByTypeManager implements Serializable {
         return batchSerialConflicts;
     }
 
-    /** @return the fileFormat */
-    public String getFileFormat() {
-        return fileFormat;
-    }
-    /** @param fileFormat the fileFormat to set */
-    public void setFileFormat(String fileFormat) {
-        this.fileFormat = fileFormat;
-    }
-
-    /** @return the includeHeaderRow */
-    public boolean isIncludeHeaderRow() {
-        return includeHeaderRow;
-    }
-    /** @param includeHeaderRow the includeHeaderRow to set */
-    public void setIncludeHeaderRow(boolean includeHeaderRow) {
-        this.includeHeaderRow = includeHeaderRow;
-    }
-
-    /** Prepares the default values of the Export data dialog: file format and header row */
-    public void prepareTableExportPopup() {
-        fileFormat = ExportTable.FILE_FORMAT_EXCEL;
-        includeHeaderRow = true;
-    }
-
-    /** @return The data from the table exported into the PrimeFaces file download stream */
-    public StreamedContent getExportedTable() {
-        final List<DeviceView> exportData = filteredDevices == null || filteredDevices.isEmpty() ? devices
-                : filteredDevices;
-        final ExportTable exportTable;
-        final String mimeType;
-        final String fileName;
-
-        if (fileFormat.equals(ExportTable.FILE_FORMAT_EXCEL)) {
-            exportTable = new ExcelExportTable();
-            mimeType = ExportTable.MIME_TYPE_EXCEL;
-            fileName = "devices.xlsx";
-        } else {
-            exportTable = new CSVExportTable();
-            mimeType = ExportTable.MIME_TYPE_CSV;
-            fileName = "devices.csv";
-        }
-
-        exportTable.createTable("Device instances");
-        if (includeHeaderRow) {
-            exportTable.addHeaderRow("Type", "Inventory ID", "Status", "Installed in", "Installation timestamp");
-        }
-
-        for (final DeviceView deviceInstance : exportData) {
-            exportTable.addDataRow(deviceInstance.getDevice().getComponentType().getName(),
-                    deviceInstance.getInventoryId(), deviceInstance.getStatusLabel(),
-                    deviceInstance.getInstalledIn().equals("-") ? null : deviceInstance.getInstalledIn(),
-                    deviceInstance.getInstallationTimestamp());
-        }
-
-        return new DefaultStreamedContent(exportTable.exportTable(), mimeType, fileName);
+    @Override
+    public ExportSimpleTableDialog getSimpleTableDialog() {
+        return simpleTableExporterDialog;
     }
 }

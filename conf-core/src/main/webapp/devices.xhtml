@@ -114,7 +114,7 @@
                             <p:commandButton id="exportButton" icon="ui-icon-disk" value="Export" title="Export" 
                                 style="float: right;" oncomplete="PF('exportDevices').show();" 
                                 disabled="#{empty devicesByTypeManager.devices}" update=":exportDevForm:exportDevices" 
-                                actionListener="#{devicesByTypeManager.prepareTableExportPopup}" />
+                                actionListener="#{devicesByTypeManager.simpleTableDialog.prepareTableExportPopup}" />
                             <p:commandButton id="deleteButton" ajax="true" style="float: right; margin-right: 1ex;" value="Delete" 
                                 icon="ui-icon-trash" title="Delete selected device instance" oncomplete="PF('deleteDevice').show();" 
                                 disabled="#{empty devicesByTypeManager.selectedDevice || not empty devicesByTypeManager.selectedDevice.installedSlotId}" />
@@ -282,9 +282,9 @@
             <ui:param name="formId" value="exportDevForm" />
             <ui:param name="widgetName" value="exportDevices" />
             <ui:param name="dialogTitle" value="Export device instances table" />
-            <ui:param name="fileFormatSelection" value="#{devicesByTypeManager.fileFormat}" />
-            <ui:param name="includeHeader" value="#{devicesByTypeManager.includeHeaderRow}" />
-            <ui:param name="tableFile" value="#{devicesByTypeManager.exportedTable}" />
+            <ui:param name="fileFormatSelection" value="#{devicesByTypeManager.simpleTableDialog.fileFormat}" />
+            <ui:param name="includeHeader" value="#{devicesByTypeManager.simpleTableDialog.includeHeaderRow}" />
+            <ui:param name="tableFile" value="#{devicesByTypeManager.simpleTableDialog.exportedTable}" />
         </ui:include>
     </ui:define>
 </ui:composition>
