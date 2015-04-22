@@ -84,8 +84,11 @@
                         onclick="PrimeFaces.monitorDownload(templateDownloadStart, templateDownloadStop);">
                     <p:fileDownload value="#{templateDownloadManager.unitsTemplate}" />
                 </p:menuitem>
+                <p:menuitem value="Properties" title="Download properties import excel template" ajax="false" 
+                        onclick="PrimeFaces.monitorDownload(templateDownloadStart, templateDownloadStop);">
+                    <p:fileDownload value="#{templateDownloadManager.propertiesTemplate}" />
+                </p:menuitem>
             </p:submenu>
-
 
             <p:menuitem value="Help" icon="ui-icon-help" title="Help" url="/" disabled="true" />
 

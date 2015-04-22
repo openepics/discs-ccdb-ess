@@ -24,9 +24,15 @@ public class TemplateDownloadManager implements Serializable {
     private static final String MIME_TYPE_EXCEL = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
     private static final String UNITS_TEMPLATE = "ccdb_units.xlsx";
+    private static final String PROPERTIES_TEMPLATE = "ccdb_properties.xlsx";
 
     public StreamedContent getUnitsTemplate() {
         InputStream is = getClass().getClassLoader().getResourceAsStream(RESOURCE_FOLDER_PATH + UNITS_TEMPLATE);
         return new DefaultStreamedContent(is, MIME_TYPE_EXCEL, UNITS_TEMPLATE);
+    }
+
+    public StreamedContent getPropertiesTemplate() {
+        InputStream is = getClass().getClassLoader().getResourceAsStream(RESOURCE_FOLDER_PATH + PROPERTIES_TEMPLATE);
+        return new DefaultStreamedContent(is, MIME_TYPE_EXCEL, PROPERTIES_TEMPLATE);
     }
 }
