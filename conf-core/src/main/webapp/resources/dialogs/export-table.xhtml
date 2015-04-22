@@ -1,0 +1,43 @@
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets" 
+    xmlns:p="http://primefaces.org/ui" 
+    xmlns:f="http://java.sun.com/jsf/core" 
+    xmlns:h="http://java.sun.com/jsf/html">
+
+    <h:form id="#{formId}">
+        <script type="text/javascript">
+            //<![CDATA[
+            // startDownload() is a global function 
+            function #{widgetName}_stopDownload() {
+                PF('statusDialog').hide();
+                PF('#{widgetName}').hide();
+            }
+            //]]>
+        </script>
+        <p:dialog widgetVar="#{widgetName}" id="#{widgetName}" modal="true" resizable="false" closable="false" 
+                width="35em">
+            <f:facet name="header">
+                <h:outputText value="#{dialogTitle}" />
+            </f:facet>
+            <p:panelGrid id="grp" styleClass="dialog-grid-panel noBorders" columns="2" style="margin-bottom: 1ex;" 
+                    columnClasses="alignRight dialog-labels-width-1">
+
+                <p:outputLabel for="fileFormat" value="File format:" />
+                <p:selectOneRadio id="fileFormat" value="#{fileFormatSelection}">
+                    <f:selectItem itemLabel="CSV File" itemValue="CSV" />
+                    <f:selectItem itemLabel="Excel File" itemValue="XLSX" />
+                </p:selectOneRadio>
+
+                <p:outputLabel for="includeHeader" value="Include header row:" />
+                <p:selectBooleanCheckbox id="includeHeader" value="#{includeHeader}" />
+            </p:panelGrid>
+
+            <p:commandButton value="Close" styleClass="dialogButton" onclick="PF('#{widgetName}').hide();" update="grp" 
+                    resetValues="true" />
+            <p:commandButton value="Download" styleClass="dialogButton" update="grp" ajax="false" 
+                        onclick="PrimeFaces.monitorDownload(startDownload, #{widgetName}_stopDownload);">
+                <p:fileDownload value="#{tableFile}" />
+            </p:commandButton>
+
+        </p:dialog>    
+    </h:form>
+</ui:composition>

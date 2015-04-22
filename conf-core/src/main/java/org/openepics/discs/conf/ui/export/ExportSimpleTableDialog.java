@@ -1,0 +1,55 @@
+/*
+ * Copyright (c) 2014 European Spallation Source
+ * Copyright (c) 2014 Cosylab d.d.
+ *
+ * This file is part of Controls Configuration Database.
+ *
+ * Controls Configuration Database is free software: you can redistribute it
+ * and/or modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 2 of the License,
+ * or any newer version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
+ */
+package org.openepics.discs.conf.ui.export;
+
+import org.openepics.discs.conf.export.ExportTable;
+import org.primefaces.model.StreamedContent;
+
+public abstract class ExportSimpleTableDialog {
+    private String fileFormat;
+    private boolean includeHeaderRow;
+
+    /** Prepares the default values of the Export data dialog: file format and header row */
+    public void prepareTableExportPopup() {
+        fileFormat = ExportTable.FILE_FORMAT_EXCEL;
+        includeHeaderRow = true;
+    }
+
+    /** @return the fileFormat */
+    public String getFileFormat() {
+        return fileFormat;
+    }
+    /** @param fileFormat the fileFormat to set */
+    public void setFileFormat(String fileFormat) {
+        this.fileFormat = fileFormat;
+    }
+
+    /** @return the includeHeaderRow */
+    public boolean isIncludeHeaderRow() {
+        return includeHeaderRow;
+    }
+    /** @param includeHeaderRow the includeHeaderRow to set */
+    public void setIncludeHeaderRow(boolean includeHeaderRow) {
+        this.includeHeaderRow = includeHeaderRow;
+    }
+
+    /** @return The data from the table exported into the PrimeFaces file download stream */
+    public abstract StreamedContent getExportedTable();
+}

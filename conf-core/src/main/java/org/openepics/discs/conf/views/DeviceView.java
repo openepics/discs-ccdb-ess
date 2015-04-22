@@ -39,6 +39,7 @@ public class DeviceView {
     private final String installedIn;
     private final String installedSlotId;
     private final String installationDate;
+    private final Date installationTimestamp;
 
     private Device device;
 
@@ -56,6 +57,7 @@ public class DeviceView {
         statusLabel = device.getStatus().getLabel();
         this.installedIn = installedIn;
         this.installedSlotId = installedSlotId;
+        installationTimestamp = installationDate;
         if (installationDate == null) {
             this.installationDate = "-";
         } else {
@@ -104,4 +106,8 @@ public class DeviceView {
         statusLabel = device.getStatus().getLabel();
     }
 
+    /** @return the installationTimestamp */
+    public Date getInstallationTimestamp() {
+        return installationTimestamp;
+    }
 }

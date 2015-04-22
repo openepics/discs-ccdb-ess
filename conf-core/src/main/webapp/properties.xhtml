@@ -41,14 +41,18 @@
                 </p:column>
             </p:dataTable>
 
+            <p:commandButton id="exportButton" icon="ui-icon-disk" value="Export" title="Export" 
+                style="float: right; margin-top: 1em;" oncomplete="PF('exportProperties').show();" 
+                disabled="#{empty propertyManager.properties}" update=":exportPropForm:exportProperties" 
+                actionListener="#{propertyManager.simpleTableDialog.prepareTableExportPopup}" />
             <p:commandButton id="deleteButton" icon="ui-icon-trash" value="Delete" title="Delete" 
-                style="float: right; margin-top: 1em;" oncomplete="PF('deleteProperty').show();" 
+                style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('deleteProperty').show();" 
                 disabled="#{not propertyManager.canDeleteProperty()}" />
             <p:commandButton id="editButton" icon="ui-icon-pencil" value="Edit" title="Edit" 
                 style="float: right; margin: 1em 1ex 0 0;" update=":modifyPropertyForm:modifyProperty" 
                 disabled="#{empty propertyManager.selectedProperty}" oncomplete="PF('modifyProperty').show();" 
                 actionListener="#{propertyManager.prepareModifyPopup}" />
-            <p:commandButton ajax="true" actionListener="#{propertyManager.prepareAddPopup()}" value="Add" 
+            <p:commandButton ajax="true" actionListener="#{propertyManager.prepareAddPopup}" value="Add" 
                 style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('addProperty').show()" 
                 update=":addPropertyForm:addProperty" title="Add new properties" icon="ui-icon-plus" />
         </h:form>
@@ -60,8 +64,8 @@
             <ui:param name="controller" value="#{propertyManager}" />
             <ui:param name="submitHandler" value="onDelete" />
             <ui:param name="entityType" value="this property" />
-            <ui:param name="formToUpdate" 
-                value=":propertiesForm:propertiesTable :propertiesForm:deleteButton :propertiesForm:editButton" />
+            <ui:param name="formToUpdate" value=":propertiesForm:propertiesTable :propertiesForm:deleteButton 
+                                                :propertiesForm:editButton :propertiesForm:exportButton" />
             <ui:param name="resetFilter" value="PF('propertiesTableVar').filter();" />               
         </ui:include>
 
@@ -78,8 +82,8 @@
         <ui:include src="/resources/dialogs/property.xhtml">
             <ui:param name="formId" value="addPropertyForm" />
             <ui:param name="dialogTitle" value="Add Property" />
-            <ui:param name="updateComponents" 
-                value=":propertiesForm:propertiesTable :propertiesForm:deleteButton :propertiesForm:editButton" />
+            <ui:param name="updateComponents" value=":propertiesForm:propertiesTable :propertiesForm:deleteButton 
+                                                :propertiesForm:editButton :propertiesForm:exportButton" />
             <ui:param name="widgetName" value="addProperty" />
             <ui:param name="batchCreation" value="true" />
             <ui:param name="submitHandler" value="onAdd" />
@@ -98,6 +102,15 @@
             <ui:param name="formToUpdate" 
                 value=":propertiesForm:propertiesTable :propertiesForm:deleteButton :propertiesForm:editButton" />
             <ui:param name="saveActions" value="PF('propertiesTableVar').filter();" />
+        </ui:include>
+
+        <ui:include src="/resources/dialogs/export-table.xhtml">
+            <ui:param name="formId" value="exportPropForm" />
+            <ui:param name="widgetName" value="exportProperties" />
+            <ui:param name="dialogTitle" value="Export property table" />
+            <ui:param name="fileFormatSelection" value="#{propertyManager.simpleTableDialog.fileFormat}" />
+            <ui:param name="includeHeader" value="#{propertyManager.simpleTableDialog.includeHeaderRow}" />
+            <ui:param name="tableFile" value="#{propertyManager.simpleTableDialog.exportedTable}" />
         </ui:include>
     </ui:define>
 </ui:composition>

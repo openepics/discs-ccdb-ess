@@ -43,13 +43,21 @@ import joptsimple.internal.Strings;
 import org.openepics.discs.conf.dl.UnitsLoaderQualifier;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.ejb.UnitEJB;
+import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.Unit;
+import org.openepics.discs.conf.export.CSVExportTable;
+import org.openepics.discs.conf.export.ExcelExportTable;
+import org.openepics.discs.conf.export.ExportTable;
 import org.openepics.discs.conf.ui.common.AbstractExcelSingleFileImportUI;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
 import org.openepics.discs.conf.ui.common.UIException;
+import org.openepics.discs.conf.ui.export.ExportSimpleTableDialog;
+import org.openepics.discs.conf.ui.export.SimpleTableExporter;
 import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.views.UnitView;
 import org.primefaces.context.RequestContext;
+import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.StreamedContent;
 
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
@@ -65,7 +73,7 @@ import com.google.common.collect.Lists;
 @Named
 @ManagedBean
 @ViewScoped
-public class UnitManager extends AbstractExcelSingleFileImportUI implements Serializable {
+public class UnitManager extends AbstractExcelSingleFileImportUI implements Serializable, SimpleTableExporter {
     private static final long serialVersionUID = 5504821804362597703L;
     private static final Logger LOGGER = Logger.getLogger(UnitManager.class.getCanonicalName());
 
@@ -86,6 +94,39 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
     private String quantity;
     private boolean unitAdd;
 
+    private ExportSimpleTableDialog simpleTableExporterDialog;
+
+    private class ExportSimpleUnitTableDialog extends ExportSimpleTableDialog {
+        @Override
+        public StreamedContent getExportedTable() {
+            final List<UnitView> exportData = filteredUnits == null || filteredUnits.isEmpty() ? unitViews
+                    : filteredUnits;
+            final ExportTable exportTable;
+            final String mimeType;
+            final String fileName;
+
+            if (getFileFormat().equals(ExportTable.FILE_FORMAT_EXCEL)) {
+                exportTable = new ExcelExportTable();
+                mimeType = ExportTable.MIME_TYPE_EXCEL;
+                fileName = "units.xlsx";
+            } else {
+                exportTable = new CSVExportTable();
+                mimeType = ExportTable.MIME_TYPE_CSV;
+                fileName = "units.csv";
+            }
+
+            exportTable.createTable("Units");
+            if (isIncludeHeaderRow()) {
+                exportTable.addHeaderRow("Name", "Description", "Symbol", "Quantity");
+            }
+
+            for (final UnitView unit : exportData) {
+                exportTable.addDataRow(unit.getName(), unit.getDescription(), unit.getSymbol(), unit.getQuantity());
+            }
+            return new DefaultStreamedContent(exportTable.exportTable(), mimeType, fileName);
+        }
+    }
+
     /** Creates a new instance of UnitManager */
     public UnitManager() {
     }
@@ -96,6 +137,7 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
         final String unitIdStr = ((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().
                                     getRequest()).getParameter("id");
         try {
+            simpleTableExporterDialog = new ExportSimpleUnitTableDialog();
             refreshUnits();
             if (!Strings.isNullOrEmpty(unitIdStr)) {
                 final long unitId = Long.parseLong(unitIdStr);
@@ -301,4 +343,8 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
         return unitAdd;
     }
 
+    @Override
+    public ExportSimpleTableDialog getSimpleTableDialog() {
+        return simpleTableExporterDialog;
+    }
 }

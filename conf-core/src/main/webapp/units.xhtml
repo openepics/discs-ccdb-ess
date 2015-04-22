@@ -69,8 +69,12 @@
                 </p:column>
             </p:dataTable>
 
+            <p:commandButton id="exportButton" icon="ui-icon-disk" value="Export" title="Export" 
+                style="float: right; margin-top: 1em;" oncomplete="PF('exportUnits').show();" 
+                disabled="#{empty unitManager.unitViews}" update=":exportUnitsForm:exportUnits" 
+                actionListener="#{unitManager.simpleTableDialog.prepareTableExportPopup}" />
             <p:commandButton id="deleteButton" icon="ui-icon-trash" value="Delete" title="Delete" 
-                style="float: right; margin-top: 1em;" oncomplete="PF('deleteUnit').show();" 
+                style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('deleteUnit').show();" 
                 disabled="#{empty unitManager.selectedUnit or unitManager.selectedUnitInUse}" />
             <p:commandButton id="editButton" icon="ui-icon-pencil" value="Edit" title="Edit" 
                 style="float: right; margin: 1em 1ex 0 0;" update=":modifyUnitForm:modifyUnit" 
@@ -87,7 +91,8 @@
             <ui:param name="widgetName" value="deleteUnit" />
             <ui:param name="controller" value="#{unitManager}" />
             <ui:param name="submitHandler" value="onDelete" />
-            <ui:param name="formToUpdate" value=":unitsForm:unitsTable :unitsForm:deleteButton :unitsForm:editButton" />
+            <ui:param name="formToUpdate" value=":unitsForm:unitsTable :unitsForm:deleteButton :unitsForm:editButton 
+                                                :unitsForm:exportButton" />
             <ui:param name="resetFilter" value="PF('unitsTableVar').filter();" />               
             <ui:param name="entityType" value="this unit" />
         </ui:include>
@@ -104,6 +109,15 @@
             <ui:param name="dialogTitle" value="Add unit" />
             <ui:param name="widgetName" value="addUnit" />
             <ui:param name="submitHandler" value="onAdd" />
+        </ui:include>
+
+        <ui:include src="/resources/dialogs/export-table.xhtml">
+            <ui:param name="formId" value="exportUnitsForm" />
+            <ui:param name="widgetName" value="exportUnits" />
+            <ui:param name="dialogTitle" value="Export units table" />
+            <ui:param name="fileFormatSelection" value="#{unitManager.simpleTableDialog.fileFormat}" />
+            <ui:param name="includeHeader" value="#{unitManager.simpleTableDialog.includeHeaderRow}" />
+            <ui:param name="tableFile" value="#{unitManager.simpleTableDialog.exportedTable}" />
         </ui:include>
     </ui:define>
 </ui:composition>
