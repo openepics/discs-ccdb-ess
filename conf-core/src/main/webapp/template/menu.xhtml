@@ -7,6 +7,17 @@
     xmlns:fn="http://java.sun.com/jsp/jstl/functions">
 
     <h:form id="menuform">
+        <script type="text/javascript">
+        // <![CDATA[
+        function templateDownloadStart() {
+            PF('statusDialog').show();
+        }
+        function templateDownloadStop() {
+            PF('statusDialog').hide();
+        }
+        // ]]>
+        </script>
+    
         <p:growl id="menumsgs" showDetail="true" />
 
         <p:menubar id="mainMenu" styleClass="menubar">
@@ -67,6 +78,14 @@
 
             <p:menuitem value="Log" icon="ui-icon-script" title="View Audit Log" url="/log.xhtml" 
                 styleClass="#{fn:endsWith(request.requestURL,'log.xhtml') ? 'menu-selected' : ''}" />
+
+            <p:submenu label="Templates" icon="ui-icon-calculator">
+                <p:menuitem value="Units" title="Download units import excel template" ajax="false" 
+                        onclick="PrimeFaces.monitorDownload(templateDownloadStart, templateDownloadStop);">
+                    <p:fileDownload value="#{templateDownloadManager.unitsTemplate}" />
+                </p:menuitem>
+            </p:submenu>
+
 
             <p:menuitem value="Help" icon="ui-icon-help" title="Help" url="/" disabled="true" />
 
