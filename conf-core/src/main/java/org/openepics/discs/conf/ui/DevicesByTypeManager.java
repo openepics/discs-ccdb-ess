@@ -41,8 +41,6 @@ import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.DeviceStatus;
 import org.openepics.discs.conf.ent.InstallationRecord;
-import org.openepics.discs.conf.export.CSVExportTable;
-import org.openepics.discs.conf.export.ExcelExportTable;
 import org.openepics.discs.conf.export.ExportTable;
 import org.openepics.discs.conf.ui.common.UIException;
 import org.openepics.discs.conf.ui.export.ExportSimpleTableDialog;
@@ -52,8 +50,6 @@ import org.openepics.discs.conf.util.BatchSaveStage;
 import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.views.DeviceView;
 import org.primefaces.context.RequestContext;
-import org.primefaces.model.DefaultStreamedContent;
-import org.primefaces.model.StreamedContent;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
@@ -102,35 +98,30 @@ public class DevicesByTypeManager implements Serializable, SimpleTableExporter {
 
     private class ExportSimpleDeviceTableDialog extends ExportSimpleTableDialog {
         @Override
-        public StreamedContent getExportedTable() {
+        protected String getTableName() {
+            return "Device instances";
+        }
+
+        @Override
+        protected String getFileName() {
+            return "devices";
+        }
+
+        @Override
+        protected void addHeaderRow(ExportTable exportTable) {
+            exportTable.addHeaderRow("Type", "Inventory ID", "Status", "Installed in", "Installation timestamp");
+        }
+
+        @Override
+        protected void addData(ExportTable exportTable) {
             final List<DeviceView> exportData = filteredDevices == null || filteredDevices.isEmpty() ? devices
-                                                                                        : filteredDevices;
-            final ExportTable exportTable;
-            final String mimeType;
-            final String fileName;
-
-            if (getFileFormat().equals(ExportTable.FILE_FORMAT_EXCEL)) {
-                exportTable = new ExcelExportTable();
-                mimeType = ExportTable.MIME_TYPE_EXCEL;
-                fileName = "devices.xlsx";
-            } else {
-                exportTable = new CSVExportTable();
-                mimeType = ExportTable.MIME_TYPE_CSV;
-                fileName = "devices.csv";
-            }
-
-            exportTable.createTable("Device instances");
-            if (isIncludeHeaderRow()) {
-                exportTable.addHeaderRow("Type", "Inventory ID", "Status", "Installed in", "Installation timestamp");
-            }
-
+                    : filteredDevices;
             for (final DeviceView deviceInstance : exportData) {
                 exportTable.addDataRow(deviceInstance.getDevice().getComponentType().getName(),
                         deviceInstance.getInventoryId(), deviceInstance.getStatusLabel(),
                         deviceInstance.getInstalledIn().equals("-") ? null : deviceInstance.getInstalledIn(),
                         deviceInstance.getInstallationTimestamp());
             }
-            return new DefaultStreamedContent(exportTable.exportTable(), mimeType, fileName);
         }
     }
 

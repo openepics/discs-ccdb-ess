@@ -36,8 +36,6 @@ import javax.json.JsonObject;
 
 import org.openepics.discs.conf.ejb.DataTypeEJB;
 import org.openepics.discs.conf.ent.DataType;
-import org.openepics.discs.conf.export.CSVExportTable;
-import org.openepics.discs.conf.export.ExcelExportTable;
 import org.openepics.discs.conf.export.ExportTable;
 import org.openepics.discs.conf.ui.common.UIException;
 import org.openepics.discs.conf.ui.export.ExportSimpleTableDialog;
@@ -47,8 +45,6 @@ import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.views.UserEnumerationView;
 import org.openepics.seds.api.datatypes.SedsEnum;
 import org.openepics.seds.core.Seds;
-import org.primefaces.model.DefaultStreamedContent;
-import org.primefaces.model.StreamedContent;
 
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
@@ -86,35 +82,30 @@ public class DataTypeManager implements Serializable, SimpleTableExporter {
 
     private class ExportSimpleEnumTableDialog extends ExportSimpleTableDialog {
         @Override
-        public StreamedContent getExportedTable() {
+        protected String getTableName() {
+            return "Enumerations";
+        }
+
+        @Override
+        protected String getFileName() {
+            return "enums";
+        }
+
+        @Override
+        protected void addHeaderRow(ExportTable exportTable) {
+            exportTable.addHeaderRow("Name", "Description", "Definition");
+        }
+
+        @Override
+        protected void addData(ExportTable exportTable) {
             final List<UserEnumerationView> exportData = filteredDataTypesViews == null
-                                                                || filteredDataTypesViews.isEmpty()
-                                                                            ? dataTypeViews
-                                                                            : filteredDataTypesViews;
-            final ExportTable exportTable;
-            final String mimeType;
-            final String fileName;
-
-            if (getFileFormat().equals(ExportTable.FILE_FORMAT_EXCEL)) {
-                exportTable = new ExcelExportTable();
-                mimeType = ExportTable.MIME_TYPE_EXCEL;
-                fileName = "enums.xlsx";
-            } else {
-                exportTable = new CSVExportTable();
-                mimeType = ExportTable.MIME_TYPE_CSV;
-                fileName = "enums.csv";
-            }
-
-            exportTable.createTable("Enumerations");
-            if (isIncludeHeaderRow()) {
-                exportTable.addHeaderRow("Name", "Description", "Definition");
-            }
-
+                    || filteredDataTypesViews.isEmpty()
+                                ? dataTypeViews
+                                : filteredDataTypesViews;
             for (final UserEnumerationView enumeration : exportData) {
                 exportTable.addDataRow(enumeration.getName(), enumeration.getDescription(),
                         enumeration.getDefinitionAsString());
             }
-            return new DefaultStreamedContent(exportTable.exportTable(), mimeType, fileName);
         }
     }
 

@@ -45,8 +45,6 @@ import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyValue;
 import org.openepics.discs.conf.ent.PropertyValueUniqueness;
 import org.openepics.discs.conf.ent.Unit;
-import org.openepics.discs.conf.export.CSVExportTable;
-import org.openepics.discs.conf.export.ExcelExportTable;
 import org.openepics.discs.conf.export.ExportTable;
 import org.openepics.discs.conf.ui.common.AbstractExcelSingleFileImportUI;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
@@ -58,8 +56,6 @@ import org.openepics.discs.conf.util.BatchSaveStage;
 import org.openepics.discs.conf.util.BuiltInDataType;
 import org.openepics.discs.conf.util.Utility;
 import org.primefaces.context.RequestContext;
-import org.primefaces.model.DefaultStreamedContent;
-import org.primefaces.model.StreamedContent;
 
 import com.google.common.collect.ImmutableList;
 
@@ -108,33 +104,28 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
 
     private class ExportSimplePropertyTableDialog extends ExportSimpleTableDialog {
         @Override
-        public StreamedContent getExportedTable() {
+        protected String getTableName() {
+            return "Properties";
+        }
+
+        @Override
+        protected String getFileName() {
+            return "properties";
+        }
+
+        @Override
+        protected void addHeaderRow(ExportTable exportTable) {
+            exportTable.addHeaderRow("Name", "Description", "Unit", "Data Type");
+        }
+
+        @Override
+        protected void addData(ExportTable exportTable) {
             final List<Property> exportData = filteredProperties == null || filteredProperties.isEmpty() ? properties
                     : filteredProperties;
-            final ExportTable exportTable;
-            final String mimeType;
-            final String fileName;
-
-            if (getFileFormat().equals(ExportTable.FILE_FORMAT_EXCEL)) {
-                exportTable = new ExcelExportTable();
-                mimeType = ExportTable.MIME_TYPE_EXCEL;
-                fileName = "properties.xlsx";
-            } else {
-                exportTable = new CSVExportTable();
-                mimeType = ExportTable.MIME_TYPE_CSV;
-                fileName = "properties.csv";
-            }
-
-            exportTable.createTable("Properties");
-            if (isIncludeHeaderRow()) {
-                exportTable.addHeaderRow("Name", "Description", "Unit", "Data Type");
-            }
-
             for (final Property prop : exportData) {
-                final String unitName = prop.getUnit() != null ? prop.getUnit().getName() : "";
+                final String unitName = prop.getUnit() != null ? prop.getUnit().getName() : null;
                 exportTable.addDataRow(prop.getName(), prop.getDescription(), unitName, prop.getDataType().getName());
             }
-            return new DefaultStreamedContent(exportTable.exportTable(), mimeType, fileName);
         }
     }
 

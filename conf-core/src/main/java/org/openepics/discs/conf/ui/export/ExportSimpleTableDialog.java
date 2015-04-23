@@ -19,7 +19,10 @@
  */
 package org.openepics.discs.conf.ui.export;
 
+import org.openepics.discs.conf.export.CSVExportTable;
+import org.openepics.discs.conf.export.ExcelExportTable;
 import org.openepics.discs.conf.export.ExportTable;
+import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 
 public abstract class ExportSimpleTableDialog {
@@ -51,5 +54,45 @@ public abstract class ExportSimpleTableDialog {
     }
 
     /** @return The data from the table exported into the PrimeFaces file download stream */
-    public abstract StreamedContent getExportedTable();
+    public StreamedContent getExportedTable() {
+        final ExportTable exportTable;
+        final String mimeType;
+        final String fileName;
+
+        if (fileFormat.equals(ExportTable.FILE_FORMAT_EXCEL)) {
+            exportTable = new ExcelExportTable();
+            mimeType = ExportTable.MIME_TYPE_EXCEL;
+            fileName = getFileName() + ".xlsx";
+        } else {
+            exportTable = new CSVExportTable();
+            mimeType = ExportTable.MIME_TYPE_CSV;
+            fileName = getFileName() + ".csv";
+        }
+
+        exportTable.createTable(getTableName());
+        if (includeHeaderRow) {
+            addHeaderRow(exportTable);
+        }
+
+        addData(exportTable);
+
+        return new DefaultStreamedContent(exportTable.exportTable(), mimeType, fileName);
+    }
+
+    /** @return the name of the table to be used when creating. This name may be used by the {@link ExportTable}
+     * implementation. */
+    protected abstract String getTableName();
+
+    /** @return the name of the file to use WITHOUT extension */
+    protected abstract String getFileName();
+
+    /** The method that adds a header row to the export data.
+     * @param exportTable the table to add header row to
+     */
+    protected abstract void addHeaderRow(ExportTable exportTable);
+
+    /** The method that fills the table with the exported data.
+     * @param exportTable the table to add the data rows to
+     */
+    protected abstract void addData(ExportTable exportTable);
 }
