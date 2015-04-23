@@ -45,8 +45,6 @@ import org.openepics.discs.conf.ejb.ComptypeEJB;
 import org.openepics.discs.conf.ent.AuditRecord;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.EntityType;
-import org.openepics.discs.conf.export.CSVExportTable;
-import org.openepics.discs.conf.export.ExcelExportTable;
 import org.openepics.discs.conf.export.ExportTable;
 import org.openepics.discs.conf.ui.common.AbstractExcelSingleFileImportUI;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
@@ -55,8 +53,6 @@ import org.openepics.discs.conf.ui.export.ExportSimpleTableDialog;
 import org.openepics.discs.conf.ui.export.SimpleTableExporter;
 import org.openepics.discs.conf.util.Utility;
 import org.primefaces.context.RequestContext;
-import org.primefaces.model.DefaultStreamedContent;
-import org.primefaces.model.StreamedContent;
 
 /**
  *
@@ -88,33 +84,28 @@ public class ComponentTypeManager extends AbstractExcelSingleFileImportUI
 
     private class ExportSimpleDevTypeTableDialog extends ExportSimpleTableDialog {
         @Override
-        public StreamedContent getExportedTable() {
+        protected String getTableName() {
+            return "Device types";
+        }
+
+        @Override
+        protected String getFileName() {
+            return "device-types";
+        }
+
+        @Override
+        protected void addHeaderRow(ExportTable exportTable) {
+            exportTable.addHeaderRow("Name", "Description");
+        }
+
+        @Override
+        protected void addData(ExportTable exportTable) {
             final List<ComponentType> exportData = filteredDeviceTypes == null || filteredDeviceTypes.isEmpty()
-                                                            ? deviceTypes
-                                                            : filteredDeviceTypes;
-            final ExportTable exportTable;
-            final String mimeType;
-            final String fileName;
-
-            if (getFileFormat().equals(ExportTable.FILE_FORMAT_EXCEL)) {
-                exportTable = new ExcelExportTable();
-                mimeType = ExportTable.MIME_TYPE_EXCEL;
-                fileName = "device-types.xlsx";
-            } else {
-                exportTable = new CSVExportTable();
-                mimeType = ExportTable.MIME_TYPE_CSV;
-                fileName = "device-types.csv";
-            }
-
-            exportTable.createTable("Device types");
-            if (isIncludeHeaderRow()) {
-                exportTable.addHeaderRow("Name", "Description");
-            }
-
+                    ? deviceTypes
+                    : filteredDeviceTypes;
             for (final ComponentType devType : exportData) {
                 exportTable.addDataRow(devType.getName(), devType.getDescription());
             }
-            return new DefaultStreamedContent(exportTable.exportTable(), mimeType, fileName);
         }
     }
 

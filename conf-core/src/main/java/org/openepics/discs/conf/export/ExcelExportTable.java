@@ -46,7 +46,7 @@ public class ExcelExportTable implements ExportTable {
     private int rowNumber;
 
     public ExcelExportTable() {
-        rowNumber = 1;
+        rowNumber = 0;
     }
 
     @Override
@@ -55,12 +55,16 @@ public class ExcelExportTable implements ExportTable {
         sheet = wb.createSheet(title);
         initHeaderStyle();
         initTimestampStyle();
-        rowNumber = 1;
+        rowNumber = 0;
     }
 
     @Override
     public void addHeaderRow(String... titles) {
-        final Row headerRow = sheet.createRow(0);
+        if (rowNumber != 0) {
+            throw new CannotAddHeaderRowException("addHeaderRow must be called before data is added to the table.");
+        }
+        final Row headerRow = sheet.createRow(rowNumber);
+        ++rowNumber;
         int column = 0;
         for (final String title : titles) {
             final Cell cell = headerRow.createCell(column, Cell.CELL_TYPE_STRING);

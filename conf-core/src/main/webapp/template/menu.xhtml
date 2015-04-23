@@ -80,14 +80,10 @@
                 styleClass="#{fn:endsWith(request.requestURL,'log.xhtml') ? 'menu-selected' : ''}" />
 
             <p:submenu label="Templates" icon="ui-icon-calculator">
-                <p:menuitem value="Units" title="Download units import excel template" ajax="false" 
-                        onclick="PrimeFaces.monitorDownload(templateDownloadStart, templateDownloadStop);">
-                    <p:fileDownload value="#{templateDownloadManager.unitsTemplate}" />
-                </p:menuitem>
-                <p:menuitem value="Properties" title="Download properties import excel template" ajax="false" 
-                        onclick="PrimeFaces.monitorDownload(templateDownloadStart, templateDownloadStop);">
-                    <p:fileDownload value="#{templateDownloadManager.propertiesTemplate}" />
-                </p:menuitem>
+                <p:menuitem value="Units" title="Download units import excel template" 
+                    url="/resources/import-templates/ccdb_units.xlsx" />
+                <p:menuitem value="Properties" title="Download properties import excel template"  
+                    url="/resources/import-templates/ccdb_properties.xlsx" />
             </p:submenu>
 
             <p:menuitem value="Help" icon="ui-icon-help" title="Help" url="/" disabled="true" />

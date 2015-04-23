@@ -45,8 +45,6 @@ import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.ejb.UnitEJB;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.Unit;
-import org.openepics.discs.conf.export.CSVExportTable;
-import org.openepics.discs.conf.export.ExcelExportTable;
 import org.openepics.discs.conf.export.ExportTable;
 import org.openepics.discs.conf.ui.common.AbstractExcelSingleFileImportUI;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
@@ -56,8 +54,6 @@ import org.openepics.discs.conf.ui.export.SimpleTableExporter;
 import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.views.UnitView;
 import org.primefaces.context.RequestContext;
-import org.primefaces.model.DefaultStreamedContent;
-import org.primefaces.model.StreamedContent;
 
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
@@ -98,32 +94,27 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
 
     private class ExportSimpleUnitTableDialog extends ExportSimpleTableDialog {
         @Override
-        public StreamedContent getExportedTable() {
+        protected String getTableName() {
+            return "Units";
+        }
+
+        @Override
+        protected String getFileName() {
+            return "units";
+        }
+
+        @Override
+        protected void addHeaderRow(ExportTable exportTable) {
+            exportTable.addHeaderRow("Name", "Description", "Symbol", "Quantity");
+        }
+
+        @Override
+        protected void addData(ExportTable exportTable) {
             final List<UnitView> exportData = filteredUnits == null || filteredUnits.isEmpty() ? unitViews
                     : filteredUnits;
-            final ExportTable exportTable;
-            final String mimeType;
-            final String fileName;
-
-            if (getFileFormat().equals(ExportTable.FILE_FORMAT_EXCEL)) {
-                exportTable = new ExcelExportTable();
-                mimeType = ExportTable.MIME_TYPE_EXCEL;
-                fileName = "units.xlsx";
-            } else {
-                exportTable = new CSVExportTable();
-                mimeType = ExportTable.MIME_TYPE_CSV;
-                fileName = "units.csv";
-            }
-
-            exportTable.createTable("Units");
-            if (isIncludeHeaderRow()) {
-                exportTable.addHeaderRow("Name", "Description", "Symbol", "Quantity");
-            }
-
             for (final UnitView unit : exportData) {
                 exportTable.addDataRow(unit.getName(), unit.getDescription(), unit.getSymbol(), unit.getQuantity());
             }
-            return new DefaultStreamedContent(exportTable.exportTable(), mimeType, fileName);
         }
     }
 
