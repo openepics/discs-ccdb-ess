@@ -12,9 +12,10 @@
         </f:facet> 
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />      
         <h:outputStylesheet name="./css/layout.css"/>
-        <link rel="shortcut icon" href="resources/images/proteus.ico" />
+        <link rel="shortcut icon" href="resources/images/CCDB.ico" />
         <title>#{msgs.webTitle}</title>
         <script type="text/javascript">
+            //<![CDATA[
             function resizeHierarchiesTree() {
                 var menusHeight = $('#top').outerHeight(true);
                 var headerHeight = $('#hierarchies\\:tree\\:name').outerHeight(true) + $('#hierarchies\\:treeFieldSet legend').outerHeight(true);
@@ -76,6 +77,11 @@
                 var totalMenusHeight = menusHeight + 4*em;
                 $(selector).css({"height":window.innerHeight-totalMenusHeight});                
             }
+            
+            function startDownload() {
+                PF('statusDialog').show();
+            }            
+            //]]>
         </script>
     </h:head>
 

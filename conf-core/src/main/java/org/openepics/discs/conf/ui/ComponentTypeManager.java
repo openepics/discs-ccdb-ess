@@ -45,11 +45,18 @@ import org.openepics.discs.conf.ejb.ComptypeEJB;
 import org.openepics.discs.conf.ent.AuditRecord;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.EntityType;
+import org.openepics.discs.conf.export.CSVExportTable;
+import org.openepics.discs.conf.export.ExcelExportTable;
+import org.openepics.discs.conf.export.ExportTable;
 import org.openepics.discs.conf.ui.common.AbstractExcelSingleFileImportUI;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
 import org.openepics.discs.conf.ui.common.UIException;
+import org.openepics.discs.conf.ui.export.ExportSimpleTableDialog;
+import org.openepics.discs.conf.ui.export.SimpleTableExporter;
 import org.openepics.discs.conf.util.Utility;
 import org.primefaces.context.RequestContext;
+import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.StreamedContent;
 
 /**
  *
@@ -60,7 +67,8 @@ import org.primefaces.context.RequestContext;
  */
 @Named
 @ViewScoped
-public class ComponentTypeManager extends AbstractExcelSingleFileImportUI implements Serializable {
+public class ComponentTypeManager extends AbstractExcelSingleFileImportUI
+                implements Serializable, SimpleTableExporter {
     private static final long serialVersionUID = -9007187646811006328L;
     private static final Logger LOGGER = Logger.getLogger(ComponentTypeManager.class.getCanonicalName());
 
@@ -76,6 +84,40 @@ public class ComponentTypeManager extends AbstractExcelSingleFileImportUI implem
     private ComponentType selectedDeviceType;
     private List<AuditRecord> auditRecordsForEntity;
 
+    private ExportSimpleTableDialog simpleTableExporterDialog;
+
+    private class ExportSimpleDevTypeTableDialog extends ExportSimpleTableDialog {
+        @Override
+        public StreamedContent getExportedTable() {
+            final List<ComponentType> exportData = filteredDeviceTypes == null || filteredDeviceTypes.isEmpty()
+                                                            ? deviceTypes
+                                                            : filteredDeviceTypes;
+            final ExportTable exportTable;
+            final String mimeType;
+            final String fileName;
+
+            if (getFileFormat().equals(ExportTable.FILE_FORMAT_EXCEL)) {
+                exportTable = new ExcelExportTable();
+                mimeType = ExportTable.MIME_TYPE_EXCEL;
+                fileName = "device-types.xlsx";
+            } else {
+                exportTable = new CSVExportTable();
+                mimeType = ExportTable.MIME_TYPE_CSV;
+                fileName = "device-types.csv";
+            }
+
+            exportTable.createTable("Device types");
+            if (isIncludeHeaderRow()) {
+                exportTable.addHeaderRow("Name", "Description");
+            }
+
+            for (final ComponentType devType : exportData) {
+                exportTable.addDataRow(devType.getName(), devType.getDescription());
+            }
+            return new DefaultStreamedContent(exportTable.exportTable(), mimeType, fileName);
+        }
+    }
+
     /** Creates a new instance of ComponentTypeMananger */
     public ComponentTypeManager() {
     }
@@ -86,6 +128,7 @@ public class ComponentTypeManager extends AbstractExcelSingleFileImportUI implem
         final String deviceTypeIdStr = ((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().
                 getRequest()).getParameter("id");
         try {
+            simpleTableExporterDialog = new ExportSimpleDevTypeTableDialog();
             deviceTypes = comptypeEJB.findAll();
             resetFields();
 
@@ -93,7 +136,7 @@ public class ComponentTypeManager extends AbstractExcelSingleFileImportUI implem
                 final long deviceTypeId = Long.parseLong(deviceTypeIdStr);
                 int elementPosition = 0;
                 for (final ComponentType deviceType : deviceTypes) {
-                    if (deviceType.getId()== deviceTypeId) {
+                    if (deviceType.getId() == deviceTypeId) {
                         RequestContext.getCurrentInstance().execute("selectDeviceTypeInTable(" + elementPosition + ");");
                         return;
                     }
@@ -287,5 +330,10 @@ public class ComponentTypeManager extends AbstractExcelSingleFileImportUI implem
     /** @return The list of all device types in the database. */
     public List<ComponentType> getDeviceTypes() {
         return deviceTypes;
+    }
+
+    @Override
+    public ExportSimpleTableDialog getSimpleTableDialog() {
+        return simpleTableExporterDialog;
     }
 }
