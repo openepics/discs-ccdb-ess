@@ -60,4 +60,8 @@
         <description>WildFly default role</description>
         <role-name>user</role-name>
     </security-role>
+    <mime-mapping>
+        <extension>xlsx</extension>
+        <mime-type>application/vnd.openxmlformats-officedocument.spreadsheetml.sheet</mime-type>
+    </mime-mapping>
 </web-app>
