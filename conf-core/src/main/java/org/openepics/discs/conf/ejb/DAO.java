@@ -195,18 +195,18 @@ public abstract class DAO<T> extends ReadOnlyDAO<T> {
         }
     }
 
-    /**
+    /** <p>
      * Default implementation of the of the property value uniqueness check. This implementation only throws an
      * exception, since default functionality is only intended to provide implementation to entities without a
      * property value child.
-     * <br />
-     * <br />
+     * </p>
+     * <p>
      * Every EJB that supports property value children must override this method.
-     *
+     * </p>
      * @param child the child entity @link {@link PropertyValue}
      * @param parent the parent entity
      * @return <code>true</code> if the property values is unique or <code>null</code>, <code>false</code> otherwise.
-     * <br /><code>null</code> value can only be achieved through adding a property definition.
+     * <code>null</code> value can only be achieved through adding a property definition.
      */
     protected boolean isPropertyValueTypeUnique(PropertyValue child, T parent) {
         throw new UnhandledCaseException();

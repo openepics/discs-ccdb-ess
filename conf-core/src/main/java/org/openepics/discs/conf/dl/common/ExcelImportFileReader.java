@@ -52,7 +52,7 @@ public class ExcelImportFileReader {
      * Excel workbook file.
      *
      * @param inputStream
-     *            the Excel file to parse. Only Excel file version >=12.0
+     *            the Excel file to parse. Only Excel file version &gt;=12.0
      *            supported (.xslx).
      * @return Only the lines from the first worksheet that contain a string
      *         value. Lines with the empty first cell are not part of the return

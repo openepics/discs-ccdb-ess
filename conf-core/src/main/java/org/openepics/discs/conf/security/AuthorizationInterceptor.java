@@ -47,7 +47,7 @@ public class AuthorizationInterceptor {
      *
      * @param context {@link InvocationContext}
      * @return the return value from invoking {@link InvocationContext#proceed()}
-     * @throws Exception
+     * @throws Exception indicates that the authorization has failed
      */
     @AroundInvoke
     public Object authorizationCheck(InvocationContext context) throws Exception {

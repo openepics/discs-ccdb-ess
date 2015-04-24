@@ -84,8 +84,8 @@ public class Conversion {
 
     /**
      * Returns a built-in data type enumeration (description) based on the DataType entity.
-     * <br/>
-     * See: {@link BuiltInDataType}
+     *
+     * @see BuiltInDataType
      * @param dataType The property to check data type on.
      * @return The data type that has been selected for this property.
      */
@@ -126,8 +126,8 @@ public class Conversion {
 
     /**
      * Determines what UI control to use for editing a property value of a certain data type.
-     * <br/>
-     * See: {@link PropertyValueUIElement}
+     *
+     * @see PropertyValueUIElement
      *
      * @param dataType the data type
      * @return the UI element to use
@@ -153,8 +153,8 @@ public class Conversion {
 
     /**
      * Determines what UI control to use for editing a property value of a certain data type.
-     * <br/>
-     * See: {@link PropertyValueUIElement}
+     *
+     * @see PropertyValueUIElement
      *
      * @param property the property to check for data type
      * @return the UI element to use
@@ -166,8 +166,8 @@ public class Conversion {
     /**
      * This method takes a string containing a value (the string is returned by the UI elements) and converts it into a
      * property value of appropriate type.
-     * <br/>
-     * See: {@link Value}
+     *
+     * @see Value
      *
      * @param strValue the string containing a property value
      * @param dataType the {@link DataType} of the property for which to return a value

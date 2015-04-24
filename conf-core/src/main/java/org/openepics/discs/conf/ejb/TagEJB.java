@@ -34,7 +34,7 @@ import com.google.common.base.Preconditions;
 /**
  * Service that is used to query tags in the database
  *
- * @author Miha Vitorovic <miha.vitorovic@cosylab.com>
+ * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
  *
  */
 @Stateless

@@ -344,9 +344,11 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
         this.unit = unit;
     }
 
-    /**
+    /** <p>
      * Determines whether the {@link Unit} combo box in the property dialog should be enabled
-     * (the user can change the {@link Unit}, or not. <br />
+     * (the user can change the {@link Unit}, or not.
+     * </p>
+     * <p>
      * The {@link Unit} can be set only for some {@link DataType}s:
      * <ul>
      * <li>Integer</li>
@@ -355,6 +357,7 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
      * <li>Double vector</li>
      * <li>Double table</li>
      * </ul>
+     * </p>
      */
     public void setIsUnitComboEnabled() {
         final List<String> possibleTypes = Arrays.asList(new String[] {BuiltInDataType.INT_NAME,
@@ -485,10 +488,10 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
     }
 
     /** The validator for the end index field
-     * @param ctx
-     * @param component
-     * @param value
-     * @throws ValidatorException
+     * @param ctx {@link javax.faces.context.FacesContext}
+     * @param component {@link javax.faces.component.UIComponent}
+     * @param value The value
+     * @throws ValidatorException validation failed
      */
     public void batchEndValidator(FacesContext ctx, UIComponent component, Object value) throws ValidatorException {
         if (batchStartIndex >= (Integer)value) {

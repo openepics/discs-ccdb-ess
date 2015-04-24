@@ -61,8 +61,8 @@ public interface ExportTable {
     public void addDataRow(Object... data);
 
     /**
-     * This method puts the data into a stream that can be saved/set to the client.
-     * @return
+     * This method puts the data into a stream that can be saved/sent to the client.
+     * @return the {@link InputStream} that can be used for download.
      */
     public InputStream exportTable();
 }

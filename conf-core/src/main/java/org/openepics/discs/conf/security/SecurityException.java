@@ -23,7 +23,7 @@ import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
 
 /**
- * Exception class to be used for authentication & authorization purposes
+ * Exception class to be used for authentication &amp; authorization purposes
  *
  * @author Miroslav Pavleski &lt;miroslav.pavleski@cosylab.com&gt;
  */
@@ -52,7 +52,7 @@ public class SecurityException extends RuntimeException {
      *
      * @param entity Entity for which security check has failed
      * @param entityType {@link EntityType} for which the security check has failed
-     * @param operationType
+     * @param operationType {@link EntityTypeOperation} the type of operation
      * @return A constructed {@link SecurityException}
      */
     public static SecurityException generateExceptionMessage(Object entity,

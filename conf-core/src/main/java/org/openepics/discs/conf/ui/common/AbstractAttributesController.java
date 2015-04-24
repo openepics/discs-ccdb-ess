@@ -286,7 +286,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
     /**
      * Deletes attribute from parent {@link ConfigurationEntity}.
      * This attribute can be {@link Tag}, {@link PropertyValue} or {@link Artifact}
-     * @throws IOException
+     * @throws IOException attribute deletion failure
      */
     public void deleteAttribute() throws IOException {
         Preconditions.checkState(selectedAttribute != null);
@@ -704,7 +704,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
     }
 
     /** @see AbstractAttributesController#setSelectedAttribute(EntityAttributeView)
-     * @return
+     * @return the table row (UI view presentation) the user selected
      */
     public EntityAttributeView getSelectedAttribute() {
         return selectedAttribute;

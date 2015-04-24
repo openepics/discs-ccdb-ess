@@ -29,6 +29,9 @@ import java.util.List;
  */
 public interface EntityWithArtifacts {
 
-    /** @return a list of artifacts associated with a given entity */
+    /**
+     * @param <T> specific {@link Artifact} type
+     * @return a list of artifacts associated with a given entity
+     */
     <T extends Artifact> List<T> getEntityArtifactList();
 }
