@@ -61,7 +61,7 @@ public class DeviceView {
         if (installationDate == null) {
             this.installationDate = "-";
         } else {
-            final SimpleDateFormat timestampFormatter = new SimpleDateFormat(Conversion.TIMESTAMP_FORMAT);
+            final SimpleDateFormat timestampFormatter = new SimpleDateFormat(Conversion.DATE_TIME_FORMAT);
             this.installationDate = timestampFormatter.format(installationDate);
         }
     }
