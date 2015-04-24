@@ -22,7 +22,7 @@ package org.openepics.discs.conf.util;
 /**
  * Runtime exception for the conversion utility.
  *
- * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
+ * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
  *
  */
 public class ConversionException extends RuntimeException {

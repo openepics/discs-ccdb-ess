@@ -31,7 +31,7 @@ import org.openepics.discs.conf.ent.EntityTypeOperation;
  * Custom annotation that describes which of CRUD operations is being performed in the method
  * in service layer
  *
- * @author Andraz Pozar <andraz.pozar@cosylab.com>
+ * @author Andraž Požar &lt;andraz.pozar@cosylab.com&gt;
  *
  */
 @Target(METHOD)

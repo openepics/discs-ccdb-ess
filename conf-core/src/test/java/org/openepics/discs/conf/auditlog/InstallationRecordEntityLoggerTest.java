@@ -34,7 +34,7 @@ import org.openepics.discs.conf.ent.InstallationRecord;
 import org.openepics.discs.conf.ent.Slot;
 
 /**
- * @author Andraz Pozar <andraz.pozar@cosylab.com>
+ * @author Andraž Požar &lt;andraz.pozar@cosylab.com&gt;
  *
  */
 public class InstallationRecordEntityLoggerTest {

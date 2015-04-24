@@ -27,7 +27,7 @@ import org.openepics.discs.conf.ent.EntityTypeOperation;
 /**
  * This holds one piece of validation information tied to a location.
  *
- * @author Sunil Sah <sunil.sah@cosylab.com>
+ * @author Sunil Sah &lt;sunil.sah@cosylab.com&gt;
  */
 public class ValidationMessage {
     private ErrorMessage message;
@@ -50,8 +50,8 @@ public class ValidationMessage {
      * Construct the message with location information and information of {@link EntityType} and {@link EntityTypeOperation}
      *
      * @param message the message enumeration
-     * @param row
-     * @param column
+     * @param row the row
+     * @param column the column
      */
     public ValidationMessage(ErrorMessage message, Integer row,
                              String column) {

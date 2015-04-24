@@ -27,7 +27,7 @@ import org.openepics.discs.conf.util.Conversion;
 import com.google.common.base.Preconditions;
 
 /**
- * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
+ * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
  *
  */
 public class UserEnumerationView {

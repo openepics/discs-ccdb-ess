@@ -34,8 +34,8 @@ import com.google.common.base.Preconditions;
  * DAO Service for accessing Component Types ( {@link ComponentType} )
  *
  * @author vuppala
- * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
- * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
+ * @author Miroslav Pavleski &lt;miroslav.pavleski@cosylab.com&gt;
+ * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
  */
 
 @Stateless

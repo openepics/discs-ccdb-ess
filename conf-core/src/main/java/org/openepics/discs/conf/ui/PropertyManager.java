@@ -62,9 +62,9 @@ import com.google.common.collect.ImmutableList;
 /**
  *
  * @author vuppala
- * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
- * @author Andraz Pozar <andraz.pozar@cosylab.com>
- * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
+ * @author Miroslav Pavleski &lt;miroslav.pavleski@cosylab.com&gt;
+ * @author Andraž Požar &lt;andraz.pozar@cosylab.com&gt;
+ * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
  *
  */
 @Named
@@ -344,10 +344,13 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
         this.unit = unit;
     }
 
-    /**
+    /** <p>
      * Determines whether the {@link Unit} combo box in the property dialog should be enabled
-     * (the user can change the {@link Unit}, or not. <br />
+     * (the user can change the {@link Unit}, or not.
+     * </p>
+     * <p>
      * The {@link Unit} can be set only for some {@link DataType}s:
+     * </p>
      * <ul>
      * <li>Integer</li>
      * <li>Double</li>
@@ -417,10 +420,10 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
     }
 
     /** Validates the {@link Property} name for uniqueness.
-     * @param ctx
-     * @param component
-     * @param value
-     * @throws ValidatorException
+     * @param ctx {@link javax.faces.context.FacesContext}
+     * @param component {@link javax.faces.component.UIComponent}
+     * @param value The value
+     * @throws ValidatorException validation failed
      */
     public void nameValidator(FacesContext ctx, UIComponent component, Object value) throws ValidatorException {
         if (value == null) {
@@ -485,10 +488,10 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
     }
 
     /** The validator for the end index field
-     * @param ctx
-     * @param component
-     * @param value
-     * @throws ValidatorException
+     * @param ctx {@link javax.faces.context.FacesContext}
+     * @param component {@link javax.faces.component.UIComponent}
+     * @param value The value
+     * @throws ValidatorException validation failed
      */
     public void batchEndValidator(FacesContext ctx, UIComponent component, Object value) throws ValidatorException {
         if (batchStartIndex >= (Integer)value) {
@@ -498,10 +501,10 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
     }
 
     /** The validator for the start index field
-     * @param ctx
-     * @param component
-     * @param value
-     * @throws ValidatorException
+     * @param ctx {@link javax.faces.context.FacesContext}
+     * @param component {@link javax.faces.component.UIComponent}
+     * @param value The value
+     * @throws ValidatorException validation failed
      */
     public void batchStartValidator(FacesContext ctx, UIComponent component, Object value) throws ValidatorException {
         if ((Integer)value >= batchEndIndex) {

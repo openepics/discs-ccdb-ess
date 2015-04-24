@@ -30,7 +30,7 @@ import org.openepics.discs.conf.ent.EntityType;
 /**
  * DAO Service for accessing {@link AuditRecord}s
  * @author vuppala
- * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
+ * @author Miroslav Pavleski &lt;miroslav.pavleski@cosylab.com&gt;
  *
  */
 @Stateless

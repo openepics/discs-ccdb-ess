@@ -36,7 +36,7 @@ import com.google.common.base.Preconditions;
  * DAO service for accesing {@link DataType} entities
  *
  * @author vuppala
- * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
+ * @author Miroslav Pavleski &lt;miroslav.pavleski@cosylab.com&gt;
  *
  */
 @Stateless

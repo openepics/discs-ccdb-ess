@@ -57,9 +57,9 @@ import org.primefaces.context.RequestContext;
 /**
  *
  * @author vuppala
- * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
- * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
- * @author Andraz Pozar <andraz.pozar@cosylab.com>
+ * @author Miroslav Pavleski &lt;miroslav.pavleski@cosylab.com&gt;
+ * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
+ * @author Andraž Požar &lt;andraz.pozar@cosylab.com&gt;
  */
 @Named
 @ViewScoped

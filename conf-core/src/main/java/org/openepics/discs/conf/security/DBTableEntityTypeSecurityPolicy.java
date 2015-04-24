@@ -44,7 +44,7 @@ import com.google.common.base.Preconditions;
  *
  * Stateful EJB, caches all permissions from database on first access.
  *
- * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
+ * @author Miroslav Pavleski &lt;miroslav.pavleski@cosylab.com&gt;
  *
  */
 @SessionScoped

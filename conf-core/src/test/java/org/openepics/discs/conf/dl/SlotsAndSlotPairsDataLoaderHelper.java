@@ -33,7 +33,7 @@ import org.openepics.discs.conf.util.TestUtility;
 /**
  * Helper class for {@link SlotsDataLoaderIT} and {@link SlotsAndSlotPairsDataLoaderIT}
  *
- * @author Andraz Pozar <andraz.pozar@cosylab.com>
+ * @author Andraž Požar &lt;andraz.pozar@cosylab.com&gt;
  *
  */
 public class SlotsAndSlotPairsDataLoaderHelper {

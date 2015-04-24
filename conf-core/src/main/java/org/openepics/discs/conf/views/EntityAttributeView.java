@@ -39,8 +39,8 @@ import com.google.common.base.Preconditions;
  * to the user. The objects of this class also contain a reference to the actual database entity the data is coming
  * from.
  *
- * @author Andraz Pozar <andraz.pozar@cosylab.com>
- * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
+ * @author Andraž Požar &lt;andraz.pozar@cosylab.com&gt;
+ * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
  *
  */
 public class EntityAttributeView {

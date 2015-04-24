@@ -30,8 +30,8 @@ import org.openepics.discs.conf.util.CRUDOperation;
 /**
  * Interceptor, that where defined, intercepts method call to check for user authorization permissions.
  *
- * @author Andraz Pozar <andraz.pozar@cosylab.com>
- * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
+ * @author Andraž Požar &lt;andraz.pozar@cosylab.com&gt;
+ * @author Miroslav Pavleski &lt;miroslav.pavleski@cosylab.com&gt;
  *
  */
 @Authorized
@@ -47,7 +47,7 @@ public class AuthorizationInterceptor {
      *
      * @param context {@link InvocationContext}
      * @return the return value from invoking {@link InvocationContext#proceed()}
-     * @throws Exception
+     * @throws Exception indicates that the authorization has failed
      */
     @AroundInvoke
     public Object authorizationCheck(InvocationContext context) throws Exception {

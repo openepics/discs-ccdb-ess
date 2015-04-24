@@ -39,9 +39,9 @@ import org.openepics.discs.conf.ent.Slot;
 /**
  * Implementation of data loader for slots and slot pairs.
  *
- * @author Andraz Pozar <andraz.pozar@cosylab.com>
- * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
- * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
+ * @author Andraž Požar &lt;andraz.pozar@cosylab.com&gt;
+ * @author Miroslav Pavleski &lt;miroslav.pavleski@cosylab.com&gt;
+ * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
  */
 @Stateless
 public class SlotsAndSlotPairsDataLoader implements Serializable {

@@ -11,25 +11,25 @@ public class CannotAddHeaderRowException extends RuntimeException {
     }
 
     /**
+     * @param message the message
+     * @param cause the cause
      * @see RuntimeException#RuntimeException(String, Throwable)
-     * @param message
-     * @param cause
      */
     public CannotAddHeaderRowException(String message, Throwable cause) {
         super(message, cause);
     }
 
     /**
+     * @param message the message
      * @see RuntimeException#RuntimeException(String)
-     * @param message
      */
     public CannotAddHeaderRowException(String message) {
         super(message);
     }
 
     /**
+     * @param cause the cause
      * @see RuntimeException#RuntimeException(Throwable)
-     * @param cause
      */
     public CannotAddHeaderRowException(Throwable cause) {
         super(cause);

@@ -20,7 +20,7 @@
 package org.openepics.discs.conf.views;
 
 /**
- * @author Andraz Pozar <andraz.pozar@cosylab.com>
+ * @author Andraž Požar &lt;andraz.pozar@cosylab.com&gt;
  *
  */
 public enum ComptypeBuiltInPropertyName implements BuiltInPropertyName {

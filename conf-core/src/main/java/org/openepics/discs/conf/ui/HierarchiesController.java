@@ -117,7 +117,7 @@ import com.google.common.collect.Lists;
 import com.google.common.io.ByteStreams;
 
 /**
- * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
+ * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
  *
  */
 @Named
@@ -676,7 +676,7 @@ public class HierarchiesController implements Serializable {
     }
 
     /** This method is called when a user presses the "Uninstall" button in the hierarchies view.
-     * @param device
+     * @param device the device
      */
     public void uninstallDevice(Device device) {
         Preconditions.checkNotNull(device);
@@ -1151,9 +1151,10 @@ public class HierarchiesController implements Serializable {
      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
     /**
      * Throws a validation error exception if the installation slot name is not unique.
-     * @param ctx
-     * @param component
-     * @param value
+     * @param ctx {@link javax.faces.context.FacesContext}
+     * @param component {@link javax.faces.component.UIComponent}
+     * @param value The value
+     * @throws ValidatorException validation failed
      */
     public void validateInstallationSlot(FacesContext ctx, UIComponent component, Object value) {
         if (isInstallationSlot && !slotEJB.isInstallationSlotNameUnique(value.toString())) {
@@ -1624,7 +1625,7 @@ public class HierarchiesController implements Serializable {
         this.deviceType = deviceType;
     }
 
-    /** return the isNewInstallationSlot */
+    /** @return the isNewInstallationSlot */
     public boolean isNewInstallationSlot() {
         return isNewInstallationSlot;
     }

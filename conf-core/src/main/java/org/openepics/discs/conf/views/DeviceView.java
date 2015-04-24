@@ -30,7 +30,7 @@ import com.google.common.base.Preconditions;
 /**
  * An UI view object for showing {@link Device} entity in a table.
  *
- * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
+ * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
  *
  */
 public class DeviceView {
@@ -61,7 +61,7 @@ public class DeviceView {
         if (installationDate == null) {
             this.installationDate = "-";
         } else {
-            final SimpleDateFormat timestampFormatter = new SimpleDateFormat(Conversion.TIMESTAMP_FORMAT);
+            final SimpleDateFormat timestampFormatter = new SimpleDateFormat(Conversion.DATE_TIME_FORMAT);
             this.installationDate = timestampFormatter.format(installationDate);
         }
     }

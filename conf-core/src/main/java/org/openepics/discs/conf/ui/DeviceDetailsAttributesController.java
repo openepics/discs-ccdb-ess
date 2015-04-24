@@ -54,7 +54,7 @@ import org.openepics.seds.core.Seds;
 /**
  * Controller bean for manipulation of {@link Device} attributes
  *
- * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
+ * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
  *
  */
 @Named

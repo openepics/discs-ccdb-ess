@@ -33,7 +33,7 @@ import org.openepics.discs.conf.ent.SlotPropertyValue;
  * DAO Service for accesing {@link Property} entities
  *
  * @author vuppala
- * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
+ * @author Miroslav Pavleski &lt;miroslav.pavleski@cosylab.com&gt;
  *
  */
 @Stateless
@@ -45,9 +45,9 @@ public class PropertyEJB extends DAO<Property> {
     }
 
     /**
-     * @param property <code>true</code> if the property is used in some {@link PropertyValue} instance,
-     * <code>false</code> otherwise.
-     * @return
+     * @param property the property to perform test for
+     * @return <code>true</code> if the property is used in some {@link PropertyValue} instance,
+     * <code>false</code> otherwise
      */
     public boolean isPropertyUsed(Property property) {
         List<SlotPropertyValue> slotPropertyValues = em.createQuery("SELECT pv FROM SlotPropertyValue pv "

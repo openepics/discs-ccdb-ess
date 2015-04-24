@@ -30,7 +30,7 @@ import org.openepics.discs.conf.ent.SlotPropertyValue;
 /**
  * Helper class to retrieve owner of the relationship
  *
- * @author Andraz Pozar <andraz.pozar@cosylab.com>
+ * @author Andraž Požar &lt;andraz.pozar@cosylab.com&gt;
  *
  */
 public class ParentEntityResolver {

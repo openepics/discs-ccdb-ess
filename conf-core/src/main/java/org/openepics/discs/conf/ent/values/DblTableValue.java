@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
  * A table is a collection columns containing double precision values. All columns must contain the same number of
  * elements. This restriction is enforced implicitly by the SEDS serialization and is checked in the UI layer.
  *
- * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
+ * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
  *
  */
 public class DblTableValue implements Value {

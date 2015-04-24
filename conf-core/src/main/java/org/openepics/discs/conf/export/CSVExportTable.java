@@ -36,7 +36,7 @@ import com.google.common.collect.Lists;
 
 public class CSVExportTable implements ExportTable {
 
-    private static final String SEPARATOR = "\t";
+    private static final String SEPARATOR = ",";
     private static final String NEWLINE = "\r\n";
 
     private boolean headerAdded;

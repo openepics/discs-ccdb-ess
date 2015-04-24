@@ -52,7 +52,7 @@ import com.google.common.collect.Lists;
 /**
  *
  * @author vuppala
- * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
+ * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
  */
 public class Utility {
 
@@ -88,12 +88,13 @@ public class Utility {
         return causedBySpecifiedExceptionClass(t, PersistenceException.class);
     }
 
-    /** The method determines whether the cause of the exception is an exception of a specified class or not.
-     * <br />
-     * <br />
+    /** <p>
+     * The method determines whether the cause of the exception is an exception of a specified class or not.
+     * </p>
+     * <p>
      * <strong>Please note</strong> that the <code>cause</code> must explicitly be the exception class you are looking
      * for, the method will not work for descendants of that class.
-     *
+     * </p>
      * @param t the exception to inspect
      * @param cause the cause Exception type to test for
      * @return <code>true</code> if the cause of the exception is <code>cause</code> Class,

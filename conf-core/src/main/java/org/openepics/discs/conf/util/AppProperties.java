@@ -44,7 +44,7 @@ import javax.annotation.Resource;
  * Properties {@link Resource}
  *
  * @author vuppala
- * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
+ * @author Miroslav Pavleski &lt;miroslav.pavleski@cosylab.com&gt;
  *
  */
 public interface AppProperties {

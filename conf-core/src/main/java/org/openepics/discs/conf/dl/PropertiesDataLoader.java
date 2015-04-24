@@ -47,8 +47,8 @@ import org.openepics.discs.conf.ent.Unit;
 /**
  * Implementation of data loader for properties.
  *
- * @author Andraz Pozar <andraz.pozar@cosylab.com>
- * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
+ * @author Andraž Požar &lt;andraz.pozar@cosylab.com&gt;
+ * @author Miroslav Pavleski &lt;miroslav.pavleski@cosylab.com&gt;
  *
  */
 @Stateless

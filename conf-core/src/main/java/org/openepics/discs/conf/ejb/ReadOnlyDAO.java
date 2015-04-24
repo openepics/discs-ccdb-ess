@@ -32,7 +32,7 @@ import javax.persistence.criteria.CriteriaQuery;
  * Abstract generic DAO used for all entities.
  * This only provides querying (read-only) access. See {@link DAO} for full CRUD version.
  *
- * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
+ * @author Miroslav Pavleski &lt;miroslav.pavleski@cosylab.com&gt;
  *
  * @param <T> The entity type for which this DAO is defined.
  */
@@ -86,6 +86,7 @@ public abstract class ReadOnlyDAO<T> {
 
     /**
      * Implementation sub-classes should override this to return the encapsulated entity class.
+     * @return the {@link Class} of the entity this DAO is for
      */
     protected abstract Class<T> getEntityClass();
 }

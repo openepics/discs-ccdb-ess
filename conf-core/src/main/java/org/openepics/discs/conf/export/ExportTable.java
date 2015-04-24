@@ -24,7 +24,7 @@ import java.io.InputStream;
 /**
  * Defines methods for exporting the data in tabular form.
  *
- * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
+ * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
  *
  */
 public interface ExportTable {
@@ -61,8 +61,8 @@ public interface ExportTable {
     public void addDataRow(Object... data);
 
     /**
-     * This method puts the data into a stream that can be saved/set to the client.
-     * @return
+     * This method puts the data into a stream that can be saved/sent to the client.
+     * @return the {@link InputStream} that can be used for download.
      */
     public InputStream exportTable();
 }

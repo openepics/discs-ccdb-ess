@@ -29,7 +29,7 @@ import org.openepics.discs.conf.ent.InstallationRecord;
 /**
  * {@link AuditRecord} maker for {@link InstallationRecord}
  *
- * @author Andraz Pozar <andraz.pozar@cosylab.com>
+ * @author Andraž Požar &lt;andraz.pozar@cosylab.com&gt;
  *
  */
 public class InstallationRecordEntityLogger implements EntityLogger<InstallationRecord> {

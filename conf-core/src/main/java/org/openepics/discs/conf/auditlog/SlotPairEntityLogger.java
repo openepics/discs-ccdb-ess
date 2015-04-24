@@ -29,7 +29,7 @@ import org.openepics.discs.conf.ent.SlotPair;
 /**
  * {@link AuditRecord} maker for {@link SlotPair}
  *
- * @author Andraz Pozar <andraz.pozar@cosylab.com>
+ * @author Andraž Požar &lt;andraz.pozar@cosylab.com&gt;
  *
  */
 public class SlotPairEntityLogger implements EntityLogger<SlotPair> {

@@ -36,7 +36,7 @@ import com.google.common.base.Preconditions;
 /**
  * An entity that persist information about reports
  *
- * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
+ * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
  *
  */
 @Entity

@@ -30,14 +30,14 @@ import org.openepics.discs.conf.ent.Slot;
  * Interface for providing custom implementation to get names used
  * for auto complete when creating new installation {@link Slot}
  *
- * @author Andraz Pozar <andraz.pozar@cosylab.com>
+ * @author Andraž Požar &lt;andraz.pozar@cosylab.com&gt;
  */
 public interface Names extends Serializable {
 
     /**
      * Returns a set of all names that can be used for installation {@link Slot} name
      *
-     * @return {@link Set}<String> of names that can be used for installation {@link Slot} name
+     * @return {@link Set}&lt;{@link String}&gt; of names that can be used for installation {@link Slot} name
      */
     public Set<String> getAllNames();
 }

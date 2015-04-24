@@ -33,7 +33,7 @@ import com.google.common.collect.Lists;
 
 /**
  * The class stores view reprepsentarion of property values used in the device type add multiple property values dialog
- * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
+ * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
  */
 public class MultiPropertyValueView {
 
@@ -45,7 +45,7 @@ public class MultiPropertyValueView {
     private boolean selected;
 
     /** Constructs a view element based on the {@link Property}
-     * @param property
+     * @param property the property
      */
     public MultiPropertyValueView(Property property) {
         this.property = property;

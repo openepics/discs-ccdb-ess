@@ -41,8 +41,8 @@ import com.google.common.collect.ImmutableMap.Builder;
 /**
  * Skeleton for all data loaders.
  *
- * @author Andraz Pozar <andraz.pozar@cosylab.com>
- * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
+ * @author Andraž Požar &lt;andraz.pozar@cosylab.com&gt;
+ * @author Miroslav Pavleski &lt;miroslav.pavleski@cosylab.com&gt;
  *
  */
 public abstract class AbstractDataLoader implements DataLoader {
@@ -87,9 +87,9 @@ public abstract class AbstractDataLoader implements DataLoader {
      *
      * @param inputRows a {@link List} of {@link Pair}s consisting of an integer representing excel row number
      * in left-hand position and a list of strings representing the cells for each column in that row
-     * @param contextualData @see {@link DataLoader}{@link #loadDataToDatabase(List, Map)}
+     * @param contextualData optional map of objects passed with string keys
      *
-     * @return {@link DataLoaderResult} which represents error state & information (or lack of)
+     * @return {@link DataLoaderResult} which represents error state &amp; information (or lack of)
      */
     @Override
     public DataLoaderResult loadDataToDatabase(List<Pair<Integer, List<String>>> inputRows,
@@ -153,13 +153,14 @@ public abstract class AbstractDataLoader implements DataLoader {
     }
 
     /**
-     * An method invoked from {@link AbstractDataLoader}{@link #loadDataToDatabase(List)} prior data-loading
+     * <p>
+     * An method invoked from {@link #loadDataToDatabase(List, Map)} prior data-loading
      * is initiated.
-     *
-     * Should be used by sub-classes to initialize shared state.
-     *
-     * {@link AbstractDataLoader}{@link #getFromContext(String)} can be called to get context-specific objects passed in
-     * {@link AbstractDataLoader}{@link #loadDataToDatabase(List, Map)}
+     * </p>
+     * <p>
+     * Should be used by sub-classes to initialize shared state. In sub-classes {@link #getFromContext(String)} can
+     * be called to get context-specific objects passed in {@link #loadDataToDatabase(List, Map)}
+     * </p>
      */
     protected void init() {
         result.clear();
@@ -204,44 +205,49 @@ public abstract class AbstractDataLoader implements DataLoader {
     }
 
     /**
-     * Invoked by {@link AbstractDataLoader}{@link #loadDataToDatabase(List)} for sub-classes to initialize row-bound
+     * Invoked by {@link #loadDataToDatabase(List, Map)} for sub-classes to initialize row-bound
      * state (class fields) from row-data.
-     *
      */
     protected abstract void assignMembersForCurrentRow();
 
     /**
+     * <p>
      * Handle a row that contains an update command.
-     *
-     * Precondition: {@link AbstractDataLoader}{@link #assignMembers(List)} has been invoked. This gives chance
+     * </p>
+     * <p>
+     * <b>Precondition:</b> {@link #assignMembersForCurrentRow()} has been invoked. This gives chance
      * to the sub-class to extract row data for the call to this method.
-     *
+     * </p>
      */
     protected abstract void handleUpdate();
 
     /**
+     * <p>
      * Handle a row that contains a delete command.
-     *
-     * Precondition: {@link AbstractDataLoader}{@link #assignMembers(List)} has been invoked. This gives chance
+     * </p>
+     * <p>
+     * <b>Precondition:</b> {@link #assignMembersForCurrentRow()} has been invoked. This gives chance
      * to the sub-class to extract row data for the call to this method.
-     *
+     * </p>
      */
     protected abstract void handleDelete();
 
     /**
+     * <p>
      * Handle a row that contains a rename command.
-     *
-     * Precondition: {@link AbstractDataLoader}{@link #assignMembers(List)} has been invoked. This gives chance
+     * </p>
+     * <p>
+     * <b>Precondition:</b> {@link #assignMembersForCurrentRow()} has been invoked. This gives chance
      * to the sub-class to extract row data for the call to this method.
-     *
+     * </p>
      */
     protected abstract void handleRename();
 
     /**
      * Sub-classes should use this to get data from the context passed from caller.
      *
-     * @param key
-     * @return
+     * @param key the key
+     * @return contextual data
      */
     protected Object getFromContext(String key) {
         return contextualData.get(key);
@@ -429,10 +435,7 @@ public abstract class AbstractDataLoader implements DataLoader {
         return (index != null && index != -1) ? currentRowData.get(index) : null;
     }
 
-    /**
-     * Returns the column-names for the properties.
-     * @return
-     */
+    /** @return the column-names for the properties */
     protected Set<String> getProperties() {
         Preconditions.checkNotNull(propertyIndicies);
         return propertyIndicies.keySet();

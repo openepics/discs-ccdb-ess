@@ -38,7 +38,7 @@ import org.openepics.discs.conf.util.ParentEntityResolver;
 /**
  * An interceptor that creates an audit log
  *
- * @author Andraz Pozar <andraz.pozar@cosylab.com>
+ * @author Andraž Požar &lt;andraz.pozar@cosylab.com&gt;
  *
  */
 @Audit
@@ -51,9 +51,9 @@ public class AuditInterceptor {
     /**
      * Creates audit log after the method annotated with this interceptor has finished executing.
      *
-     * @param context
+     * @param context the context
      * @return the return value from invoking {@link InvocationContext#proceed()}
-     * @throws Exception
+     * @throws Exception many possible exceptions
      */
     @AroundInvoke
     public Object createAuditLog(InvocationContext context) throws Exception {

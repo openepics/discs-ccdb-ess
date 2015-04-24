@@ -57,14 +57,14 @@ import com.google.common.base.Strings;
 /**
  * A class holding utility methods for UI value conversion. All utility conversion methods are static.
  *
- * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
+ * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
  *
  */
 public class Conversion {
 
-    private Conversion() {
-        // utility class
-    }
+    private static final String NEW_LINE_REGEX = "(\\r\\n)|\\r|\\n";
+    private static final String UNICODE_NON_BREAKING_SPACE = "\\u00A0";
+    private static final String TIMESTAMP_PARSE_ERROR = "Cannot parse timestamp.";
 
     /** Format string for acceptable date format (ISO 8601: yyyy-MM-dd). */
     public static final String DATE_ONLY_FORMAT = "yyyy-MM-dd";
@@ -78,10 +78,14 @@ public class Conversion {
     /** Format string for displaying date time as a timestamp (yyyy-MM-dd HH:mm:ss.SSS). */
     public static final String TIMESTAMP_FORMAT = DATE_TIME_FORMAT + ".SSS";
 
+    private Conversion() {
+        // utility class
+    }
+
     /**
      * Returns a built-in data type enumeration (description) based on the DataType entity.
-     * <br/>
-     * See: {@link BuiltInDataType}
+     *
+     * @see BuiltInDataType
      * @param dataType The property to check data type on.
      * @return The data type that has been selected for this property.
      */
@@ -122,8 +126,8 @@ public class Conversion {
 
     /**
      * Determines what UI control to use for editing a property value of a certain data type.
-     * <br/>
-     * See: {@link PropertyValueUIElement}
+     *
+     * @see PropertyValueUIElement
      *
      * @param dataType the data type
      * @return the UI element to use
@@ -149,8 +153,8 @@ public class Conversion {
 
     /**
      * Determines what UI control to use for editing a property value of a certain data type.
-     * <br/>
-     * See: {@link PropertyValueUIElement}
+     *
+     * @see PropertyValueUIElement
      *
      * @param property the property to check for data type
      * @return the UI element to use
@@ -162,8 +166,8 @@ public class Conversion {
     /**
      * This method takes a string containing a value (the string is returned by the UI elements) and converts it into a
      * property value of appropriate type.
-     * <br/>
-     * See: {@link Value}
+     *
+     * @see Value
      *
      * @param strValue the string containing a property value
      * @param dataType the {@link DataType} of the property for which to return a value
@@ -275,7 +279,7 @@ public class Conversion {
         final List<String> list = new ArrayList<>();
 
         try (Scanner scanner = new Scanner(str)) {
-            scanner.useDelimiter(Pattern.compile("(\\r\\n)|\\r|\\n"));
+            scanner.useDelimiter(Pattern.compile(NEW_LINE_REGEX));
 
             // replace unicode no-break spaces with normal does not work as expected for string list
             while (scanner.hasNext()) {
@@ -289,11 +293,11 @@ public class Conversion {
         final List<Integer> list = new ArrayList<>();
 
         try (Scanner scanner = new Scanner(str)) {
-            scanner.useDelimiter(Pattern.compile("(\\r\\n)|\\r|\\n"));
+            scanner.useDelimiter(Pattern.compile(NEW_LINE_REGEX));
 
             // replace unicode no-break spaces with normal ones
             while (scanner.hasNext()) {
-                list.add(Integer.parseInt(scanner.next().replaceAll("\\u00A0", " ").trim()));
+                list.add(Integer.parseInt(scanner.next().replaceAll(UNICODE_NON_BREAKING_SPACE, " ").trim()));
             }
         }
         return list;
@@ -303,11 +307,11 @@ public class Conversion {
         final List<Double> list = new ArrayList<>();
 
         try (Scanner scanner = new Scanner(str)) {
-            scanner.useDelimiter(Pattern.compile("(\\r\\n)|\\r|\\n"));
+            scanner.useDelimiter(Pattern.compile(NEW_LINE_REGEX));
 
             // replace unicode no-break spaces with normal ones
             while (scanner.hasNext()) {
-                list.add(Double.parseDouble(scanner.next().replaceAll("\\u00A0", " ").trim()));
+                list.add(Double.parseDouble(scanner.next().replaceAll(UNICODE_NON_BREAKING_SPACE, " ").trim()));
             }
         }
         return list;
@@ -323,8 +327,8 @@ public class Conversion {
      * </ul>
      * In all cases the timestamp if without the time zone (or all timestamps are as UTC timestamps).
      *
-     * @param str
-     * @return The Timestamp to store in the database.
+     * @param str the timestamp in string format
+     * @return The Timestamp to store in the database
      */
     public static Timestamp toTimestamp(String str) {
         final String trimmedValue = str.trim();
@@ -342,7 +346,8 @@ public class Conversion {
         if (dotPos > -1) {
             dateStr = trimmedValue.substring(0, dotPos);
             if (trimmedValue.substring(dotPos + 1).length() < 9) {
-                nanosStr = (trimmedValue.substring(dotPos + 1) + "000000000").substring(0, 9); // .1 stands for 100000000 ns
+                // .1 stands for 100000000 ns
+                nanosStr = (trimmedValue.substring(dotPos + 1) + "000000000").substring(0, 9);
             } else {
                 nanosStr = trimmedValue.substring(dotPos + 1);
             }
@@ -365,31 +370,34 @@ public class Conversion {
             simpleDateFormat.applyPattern(DATE_TIME_FORMAT);
             parsedDate = simpleDateFormat.parse(dateStr, parsePos);
             if (parsePos.getErrorIndex() >= 0) {
-                parsePos.setErrorIndex(-1); // clear error for new parser
+                // clear error for new parser
+                parsePos.setErrorIndex(-1);
                 simpleDateFormat.applyPattern(DATE_ONLY_FORMAT);
                 parsedDate = simpleDateFormat.parse(dateStr, parsePos);
                 if (parsePos.getErrorIndex() >= 0) {
-                    parsePos.setErrorIndex(-1); // clear error for new parser
+                    // clear error for new parser
+                    parsePos.setErrorIndex(-1);
                     simpleDateFormat.applyPattern(TIME_ONLY_FORMAT);
                     parsedDate = simpleDateFormat.parse(dateStr, parsePos);
                     if (parsePos.getErrorIndex() >= 0) {
-                        throw new ConversionException("Cannot parse timestamp.");
+                        throw new ConversionException(TIMESTAMP_PARSE_ERROR);
                     } else {
                         if (parsePos.getIndex() < dateStr.length()) {
-                            throw new ConversionException("Cannot parse timestamp.");
+                            throw new ConversionException(TIMESTAMP_PARSE_ERROR);
                         }
-                        final long todayDate = ((new Date()).getTime() / dayMillis) * daySeconds; // in unix time
+                        // in unix time
+                        final long todayDate = ((new Date()).getTime() / dayMillis) * daySeconds;
                         unixtime = (parsedDate.getTime() / 1000) + todayDate;
                     }
                 } else {
                     if (parsePos.getIndex() < dateStr.length()) {
-                        throw new ConversionException("Cannot parse timestamp.");
+                        throw new ConversionException(TIMESTAMP_PARSE_ERROR);
                     }
                     unixtime = parsedDate.getTime() / 1000;
                 }
             } else {
                 if (parsePos.getIndex() < dateStr.length()) {
-                    throw new ConversionException("Cannot parse timestamp.");
+                    throw new ConversionException(TIMESTAMP_PARSE_ERROR);
                 }
                 unixtime = parsedDate.getTime() / 1000;
             }
@@ -400,7 +408,7 @@ public class Conversion {
                 unixtime = parsedDate.getTime() / 1000;
                 nanos = Integer.parseInt(nanosStr);
             } catch (ParseException e) {
-                throw new ConversionException("Cannot parse timestamp.", e);
+                throw new ConversionException(TIMESTAMP_PARSE_ERROR, e);
             } catch (NumberFormatException e1) {
                 throw new ConversionException("Cannot parse timestamp nanoseconds.", e1);
             }
@@ -413,13 +421,13 @@ public class Conversion {
         final List<List<Double>> table = new ArrayList<>();
 
         try (Scanner lineScanner = new Scanner(str)) {
-            lineScanner.useDelimiter(Pattern.compile("(\\r\\n)|\\r|\\n"));
+            lineScanner.useDelimiter(Pattern.compile(NEW_LINE_REGEX));
 
             int rowLength = -1;
 
             while (lineScanner.hasNext()) {
                 // replace unicode no-break spaces with normal ones
-                final String lineStr = lineScanner.next().replaceAll("\\u00A0", " ");
+                final String lineStr = lineScanner.next().replaceAll(UNICODE_NON_BREAKING_SPACE, " ");
                 final List<Double> tableRow = new ArrayList<>();
                 try (Scanner valueScanner = new Scanner(lineStr)) {
                     valueScanner.useDelimiter(Pattern.compile(",\\s*"));

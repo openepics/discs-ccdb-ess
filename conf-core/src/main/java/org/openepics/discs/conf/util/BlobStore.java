@@ -51,10 +51,7 @@ public class BlobStore {
 
     public BlobStore() { }
 
-    /**
-     * Initializes the {@link BlobStore} bean
-     *
-     */
+    /** Initializes the {@link BlobStore} bean */
     @PostConstruct
     public void init() {
         // Todo: either move it to AppProperties or inject it
@@ -116,7 +113,7 @@ public class BlobStore {
      *
      * @param istream A stream of data to be saved
      * @return an identifier for the stored file
-     * @throws IOException
+     * @throws IOException possible file operation failure
      */
     public String storeFile(InputStream istream) throws IOException {
         String fileId =  this.newBlobId();
@@ -143,7 +140,7 @@ public class BlobStore {
      *
      * @param fileId identifier of the file as returned by {@link BlobStore#storeFile(InputStream)}
      * @return an {@link InputStream} representing the file conents
-     * @throws IOException
+     * @throws IOException possible file operation failure
      */
     public InputStream retreiveFile(String fileId) throws IOException {
         InputStream istream;
@@ -157,7 +154,7 @@ public class BlobStore {
      * Deletes a file from the Blob Store
      *
      * @param fileId identifier of the file as returned by {@link BlobStore#storeFile(InputStream)}
-     * @throws IOException
+     * @throws IOException possible file operation failure
      */
     public void deleteFile(String fileId) throws IOException {
         final File fileToDelete = new File(blobStoreRoot + File.separator + fileId);
@@ -173,7 +170,7 @@ public class BlobStore {
     }
 
     /**
-     * Checks whether the Blob Store is valid (path is accessable)
+     * Checks whether the Blob Store is valid (path is accessible)
      * @return <code>true</code> if the path is accessable / blob store is valid
      */
     public boolean isValidStore() {

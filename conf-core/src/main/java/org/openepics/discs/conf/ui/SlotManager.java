@@ -42,7 +42,7 @@ import com.google.common.io.ByteStreams;
 /**
  *
  * @author vuppala
- * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
+ * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
  */
 @Named
 @ViewScoped

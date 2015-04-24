@@ -36,7 +36,7 @@ import com.google.common.base.Preconditions;
 /**
  * DAO Service for accessing slots in a relation {@link SlotPair}
  *
- * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
+ * @author Miroslav Pavleski &lt;miroslav.pavleski@cosylab.com&gt;
  *
  */
 @Stateless
@@ -119,7 +119,7 @@ public class SlotPairEJB extends DAO<SlotPair> {
      * Adds new slot pair but bypasses interceptors that create audit log and check
      * if user is authorized.
      *
-     * @param entity
+     * @param entity the entity
      */
     public void addWithoutInterceptors(SlotPair entity) {
         add(entity);

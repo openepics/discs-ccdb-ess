@@ -42,7 +42,7 @@ import com.google.common.base.Preconditions;
  * It uses the concept of Parent and optional Child entities in {@link List} collections.
  * This one extends the read-only {@link ReadOnlyDAO}.
  *
- * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
+ * @author Miroslav Pavleski &lt;miroslav.pavleski@cosylab.com&gt;
  *
  * @param <T> The entity type for which this DAO is defined.
  */
@@ -94,6 +94,7 @@ public abstract class DAO<T> extends ReadOnlyDAO<T> {
     /**
      * Adds a child entity to a parent and the database
      *
+     * @param <S> the child entity type
      * @param child the child entity to be added
      */
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
@@ -114,6 +115,7 @@ public abstract class DAO<T> extends ReadOnlyDAO<T> {
     /**
      * Updates a child entity of a parent and in the database
      *
+     * @param <S> the child entity type
      * @param child the child entity to be updated
      */
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
@@ -153,6 +155,7 @@ public abstract class DAO<T> extends ReadOnlyDAO<T> {
     /**
      * Deletes a child entity from parent collection and removes from the database
      *
+     * @param <S> the child entity type
      * @param child the child entity to be removed
      */
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
@@ -192,18 +195,18 @@ public abstract class DAO<T> extends ReadOnlyDAO<T> {
         }
     }
 
-    /**
+    /** <p>
      * Default implementation of the of the property value uniqueness check. This implementation only throws an
      * exception, since default functionality is only intended to provide implementation to entities without a
      * property value child.
-     * <br />
-     * <br />
+     * </p>
+     * <p>
      * Every EJB that supports property value children must override this method.
-     *
-     * @param child
-     * @param parent
+     * </p>
+     * @param child the child entity @link {@link PropertyValue}
+     * @param parent the parent entity
      * @return <code>true</code> if the property values is unique or <code>null</code>, <code>false</code> otherwise.
-     * <br /><code>null</code> value can only be achieved through adding a property definition.
+     * <code>null</code> value can only be achieved through adding a property definition.
      */
     protected boolean isPropertyValueTypeUnique(PropertyValue child, T parent) {
         throw new UnhandledCaseException();

@@ -59,7 +59,7 @@ import com.google.common.collect.Lists;
 
 
 /**
- * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
+ * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
  */
 @Named
 @ViewScoped
@@ -467,10 +467,10 @@ public class DevicesByTypeManager implements Serializable, SimpleTableExporter {
     }
 
     /** The validator for the end index field
-     * @param ctx
-     * @param component
-     * @param value
-     * @throws ValidatorException
+     * @param ctx the context
+     * @param component the component
+     * @param value the value
+     * @throws ValidatorException validation failed
      */
     public void batchEndValidator(FacesContext ctx, UIComponent component, Object value) throws ValidatorException {
         if (batchStartIndex >= (Integer)value) {
@@ -480,10 +480,10 @@ public class DevicesByTypeManager implements Serializable, SimpleTableExporter {
     }
 
     /** The validator for the start index field
-     * @param ctx
-     * @param component
-     * @param value
-     * @throws ValidatorException
+     * @param ctx the context
+     * @param component the component
+     * @param value the value
+     * @throws ValidatorException validation failed
      */
     public void batchStartValidator(FacesContext ctx, UIComponent component, Object value) throws ValidatorException {
         if ((Integer)value >= batchEndIndex) {

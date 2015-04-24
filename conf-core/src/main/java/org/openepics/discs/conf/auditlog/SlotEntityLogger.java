@@ -41,7 +41,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
 
 /**
- * @author Andraz Pozar <andraz.pozar@cosylab.com>
+ * @author Andraž Požar &lt;andraz.pozar@cosylab.com&gt;
  *
  */
 public class SlotEntityLogger implements EntityLogger<Slot> {

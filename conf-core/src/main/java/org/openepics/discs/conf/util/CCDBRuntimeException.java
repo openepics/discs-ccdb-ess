@@ -22,31 +22,31 @@ package org.openepics.discs.conf.util;
 /**
  * Generic unchecked exception used throughout the application.
  *
- * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
+ * @author Miroslav Pavleski &lt;miroslav.pavleski@cosylab.com&gt;
  */
 public class CCDBRuntimeException extends RuntimeException {
     private static final long serialVersionUID = 8030438256996686732L;
 
     /**
+     * @param message the message
+     * @param cause the cause
      * @see RuntimeException#RuntimeException(String, Throwable)
-     * @param message
-     * @param cause
      */
     public CCDBRuntimeException(String message, Throwable cause) {
         super(message, cause);
     }
 
     /**
+     * @param message the message
      * @see RuntimeException#RuntimeException(String)
-     * @param message
      */
     public CCDBRuntimeException(String message) {
         super(message);
     }
 
     /**
+     * @param cause the cause
      * @see RuntimeException#RuntimeException(Throwable)
-     * @param cause
      */
     public CCDBRuntimeException(Throwable cause) {
         super(cause);

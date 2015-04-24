@@ -28,7 +28,7 @@ import org.openepics.discs.conf.ent.EntityType;
  *
  * Helper class used to resolve the {@link EntityType} of configuration entities, relevant to audit logging and security
  *
- * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
+ * @author Miroslav Pavleski &lt;miroslav.pavleski@cosylab.com&gt;
  *
  */
 public class EntityTypeResolver {
@@ -83,7 +83,7 @@ public class EntityTypeResolver {
      * Child entities such as CompoenentTypePropertyValues are resolved as the security-relevant parent
      * (such as COMPONENT_TYPE)
      *
-     * @param entity
+     * @param entity the entity
      * @return the {@link EntityType}
      */
     public static EntityType resolveEntityType(Object entity) {

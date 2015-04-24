@@ -23,29 +23,28 @@ import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
 
 /**
- * Exception class to be used for authentication & authorization purposes
+ * Exception class to be used for authentication &amp; authorization purposes
  *
- * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
- *
+ * @author Miroslav Pavleski &lt;miroslav.pavleski@cosylab.com&gt;
  */
 public class SecurityException extends RuntimeException {
     private static final long serialVersionUID = 7871852787337165333L;
 
     /**
+     * @param message the message
+     * @param cause the cause
      * @see RuntimeException#RuntimeException(String, Throwable)
-     * @param arg0
-     * @param arg1
      */
-    public SecurityException(String arg0, Throwable arg1) {
-        super(arg0, arg1);
+    public SecurityException(String message, Throwable cause) {
+        super(message, cause);
     }
 
     /**
+     * @param message the message
      * @see RuntimeException#RuntimeException(String)
-     * @param arg0
      */
-    public SecurityException(String arg0) {
-        super(arg0);
+    public SecurityException(String message) {
+        super(message);
     }
 
     /**
@@ -53,7 +52,7 @@ public class SecurityException extends RuntimeException {
      *
      * @param entity Entity for which security check has failed
      * @param entityType {@link EntityType} for which the security check has failed
-     * @param operationType
+     * @param operationType {@link EntityTypeOperation} the type of operation
      * @return A constructed {@link SecurityException}
      */
     public static SecurityException generateExceptionMessage(Object entity,
@@ -63,7 +62,6 @@ public class SecurityException extends RuntimeException {
         sb.append(operationType.toString());
         sb.append(" on entity ");
         sb.append(entityType.toString());
-
 
         return new SecurityException(sb.toString());
     }
