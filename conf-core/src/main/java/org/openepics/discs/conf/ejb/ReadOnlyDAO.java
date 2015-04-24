@@ -86,6 +86,7 @@ public abstract class ReadOnlyDAO<T> {
 
     /**
      * Implementation sub-classes should override this to return the encapsulated entity class.
+     * @return the {@link Class} of the entity this DAO is for
      */
     protected abstract Class<T> getEntityClass();
 }

@@ -350,6 +350,7 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
      * </p>
      * <p>
      * The {@link Unit} can be set only for some {@link DataType}s:
+     * </p>
      * <ul>
      * <li>Integer</li>
      * <li>Double</li>
@@ -357,7 +358,6 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
      * <li>Double vector</li>
      * <li>Double table</li>
      * </ul>
-     * </p>
      */
     public void setIsUnitComboEnabled() {
         final List<String> possibleTypes = Arrays.asList(new String[] {BuiltInDataType.INT_NAME,
