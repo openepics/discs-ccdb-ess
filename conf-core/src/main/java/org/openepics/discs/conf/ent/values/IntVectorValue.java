@@ -20,7 +20,7 @@ import com.google.common.base.Preconditions;
 /**
  * 1-D vector if integer numbers.
  *
- * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
+ * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
  *
  */
 public class IntVectorValue implements Value {

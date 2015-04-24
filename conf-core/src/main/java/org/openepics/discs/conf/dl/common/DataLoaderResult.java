@@ -33,8 +33,8 @@ import com.google.common.base.Preconditions;
  * This represents a result of load operation, consisting of the error status,
  * load {@link ValidationMessage}s, and the list of objects affected by the load.
  *
- * @author Sunil Sah <sunil.sah@cosylab.com>
- * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
+ * @author Sunil Sah &lt;sunil.sah@cosylab.com&gt;
+ * @author Miroslav Pavleski &lt;miroslav.pavleski@cosylab.com&gt;
  */
 public class DataLoaderResult {
 
@@ -84,7 +84,7 @@ public class DataLoaderResult {
     /**
      * Adds new message to the messages list
      *
-     * @param fileName
+     * @param fileName the file name
      */
     public void setFileName(String fileName) {
         messages.add(new ValidationMessage(fileName));
@@ -93,11 +93,11 @@ public class DataLoaderResult {
     /**
      * Adds new message to the messages list
      *
-     * @param message
-     * @param row
-     * @param column
-     * @param operation
-     * @param entity
+     * @param message the message
+     * @param row the row
+     * @param column the column
+     * @param operation the operation
+     * @param entity the entity
      */
     private void addMessageInternal(ErrorMessage message, Integer row, String column) {
         error = true;

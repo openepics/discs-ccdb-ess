@@ -40,7 +40,7 @@ import com.google.common.collect.ImmutableList.Builder;
 /**
  * Tree builder for tree presentation of {@link Slot}s when installing device
  *
- * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
+ * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
  *
  */
 @Named

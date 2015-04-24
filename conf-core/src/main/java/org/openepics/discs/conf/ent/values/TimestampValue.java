@@ -24,7 +24,7 @@ import com.google.common.base.Preconditions;
 /**
  * A value representing time and date.
  *
- * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
+ * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
  *
  */
 public class TimestampValue implements Value {

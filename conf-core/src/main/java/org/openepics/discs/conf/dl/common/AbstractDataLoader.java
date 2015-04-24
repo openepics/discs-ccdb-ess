@@ -41,8 +41,8 @@ import com.google.common.collect.ImmutableMap.Builder;
 /**
  * Skeleton for all data loaders.
  *
- * @author Andraz Pozar <andraz.pozar@cosylab.com>
- * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
+ * @author Andraž Požar &lt;andraz.pozar@cosylab.com&gt;
+ * @author Miroslav Pavleski &lt;miroslav.pavleski@cosylab.com&gt;
  *
  */
 public abstract class AbstractDataLoader implements DataLoader {
@@ -87,7 +87,7 @@ public abstract class AbstractDataLoader implements DataLoader {
      *
      * @param inputRows a {@link List} of {@link Pair}s consisting of an integer representing excel row number
      * in left-hand position and a list of strings representing the cells for each column in that row
-     * @param contextualData @see {@link DataLoader}{@link #loadDataToDatabase(List, Map)}
+     * @param contextualData optional map of objects passed with string keys
      *
      * @return {@link DataLoaderResult} which represents error state & information (or lack of)
      */
@@ -240,8 +240,8 @@ public abstract class AbstractDataLoader implements DataLoader {
     /**
      * Sub-classes should use this to get data from the context passed from caller.
      *
-     * @param key
-     * @return
+     * @param key the key
+     * @return contextual data
      */
     protected Object getFromContext(String key) {
         return contextualData.get(key);

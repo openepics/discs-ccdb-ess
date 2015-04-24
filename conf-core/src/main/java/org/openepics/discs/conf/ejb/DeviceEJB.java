@@ -42,8 +42,8 @@ import com.google.common.base.Preconditions;
  * DAO service for accessing device instances.
  *
  * @author vuppala
- * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
- * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
+ * @author Miroslav Pavleski &lt;miroslav.pavleski@cosylab.com&gt;
+ * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
  */
 @Stateless
 public class DeviceEJB extends DAO<Device> {

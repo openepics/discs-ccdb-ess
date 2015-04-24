@@ -50,8 +50,8 @@ import com.google.common.collect.ImmutableList.Builder;
 /**
  * Tree builder for tree presentation of {@link Slot}s
  *
- * @author Andraz Pozar <andraz.pozar@cosylab.com>
- * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
+ * @author Andraž Požar &lt;andraz.pozar@cosylab.com&gt;
+ * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
  *
  */
 @Named

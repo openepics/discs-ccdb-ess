@@ -32,7 +32,7 @@ import com.google.common.collect.ImmutableList;
 /**
  * {@link AuditRecord} maker for {@link Property}
  *
- * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
+ * @author Miroslav Pavleski &lt;miroslav.pavleski@cosylab.com&gt;
  *
  */
 public class PropertyEntityLogger implements EntityLogger<Property> {

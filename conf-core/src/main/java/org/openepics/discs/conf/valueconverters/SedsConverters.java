@@ -37,7 +37,7 @@ import org.openepics.discs.conf.util.BuiltInDataType;
  * This class initializes a mapping between various Value classes and the implementation of the converter. The class is a
  * singleton so that the converters are converter mapping is initialized at application startup and only once.
  *
- * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
+ * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
  *
  */
 @Singleton
@@ -73,6 +73,7 @@ public class SedsConverters {
 
     /** The method converts a {@link Value} instance into a serialized string representation which can be stored
      * into the database.
+     * @param <T> specific {@link Value} type
      * @param attribute a {@link Value} instance
      * @return a String containing a serialized {@link Value}
      */
@@ -88,7 +89,7 @@ public class SedsConverters {
 
     /**
      * A method for initializing the <code>converters</code> static variable to be used from unit tests only.
-     * @param converters
+     * @param converters the converters
      */
     protected static void setConverters(Map<Class<? extends Value>, ValueConverter<? extends Value>> converters) {
         SedsConverters.CONVERTERS.putAll(converters);

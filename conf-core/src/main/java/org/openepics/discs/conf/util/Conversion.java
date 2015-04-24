@@ -57,7 +57,7 @@ import com.google.common.base.Strings;
 /**
  * A class holding utility methods for UI value conversion. All utility conversion methods are static.
  *
- * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
+ * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
  *
  */
 public class Conversion {
@@ -327,8 +327,8 @@ public class Conversion {
      * </ul>
      * In all cases the timestamp if without the time zone (or all timestamps are as UTC timestamps).
      *
-     * @param str
-     * @return The Timestamp to store in the database.
+     * @param str the timestamp in string format
+     * @return The Timestamp to store in the database
      */
     public static Timestamp toTimestamp(String str) {
         final String trimmedValue = str.trim();

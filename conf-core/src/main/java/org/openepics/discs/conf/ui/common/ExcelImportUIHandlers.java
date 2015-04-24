@@ -24,7 +24,7 @@ import org.openepics.discs.conf.dl.common.DataLoaderResult;
 /**
  * The interface contains all the methods that the UI control handling the import of any number of excel files must implement.
  *
- * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
+ * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
  *
  */
 public interface ExcelImportUIHandlers {

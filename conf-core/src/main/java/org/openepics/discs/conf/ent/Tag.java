@@ -29,7 +29,7 @@ import javax.persistence.Table;
 import javax.persistence.Version;
 
 /**
- * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
+ * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
  *
  */
 @Entity

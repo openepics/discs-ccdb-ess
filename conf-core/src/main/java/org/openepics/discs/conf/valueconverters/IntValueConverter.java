@@ -23,7 +23,7 @@ import org.openepics.discs.conf.ent.values.IntValue;
 import org.openepics.seds.api.datatypes.SedsScalar;
 
 /**
- * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
+ * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
  *
  */
 public class IntValueConverter extends ValueConverter<IntValue> {

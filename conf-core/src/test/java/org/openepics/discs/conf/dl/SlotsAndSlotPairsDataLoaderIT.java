@@ -46,7 +46,7 @@ import org.openepics.discs.conf.util.TestUtility;
 /**
  * Integration tests for {@link SlotsDataLoader} and {@link SlotPairDataLoader}
  *
- * @author Andraz Pozar <andraz.pozar@cosylab.com>
+ * @author Andraž Požar &lt;andraz.pozar@cosylab.com&gt;
  *
  */
 @RunWith(Arquillian.class)

@@ -30,7 +30,7 @@ import com.google.common.base.Preconditions;
 /**
  * An UI view object for showing {@link Device} entity in a table.
  *
- * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
+ * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
  *
  */
 public class DeviceView {

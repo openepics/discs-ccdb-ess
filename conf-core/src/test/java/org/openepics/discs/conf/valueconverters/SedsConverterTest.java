@@ -42,7 +42,7 @@ import org.openepics.discs.conf.ent.values.TimestampValue;
 import org.openepics.discs.conf.ent.values.Value;
 
 /**
- * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
+ * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
  *
  */
 public class SedsConverterTest {

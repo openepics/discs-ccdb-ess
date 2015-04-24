@@ -25,7 +25,7 @@ import org.openepics.discs.conf.ent.EntityTypeOperation;
 /**
  * Abstract SecurityPolicy interface. Implementations should contain all needed a&a functionality.
  *
- * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
+ * @author Miroslav Pavleski &lt;miroslav.pavleski@cosylab.com&gt;
  *
  */
 public interface SecurityPolicy {
@@ -63,7 +63,7 @@ public interface SecurityPolicy {
     /**
      * Returns UI hints for the JSF/ManagedBeans layer
      *
-     * @param param
+     * @param param the parameter
      * @return a {@link Boolean} value for the hint
      */
     public boolean getUIHint(String param);

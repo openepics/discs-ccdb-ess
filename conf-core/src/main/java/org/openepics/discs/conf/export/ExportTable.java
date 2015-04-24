@@ -24,7 +24,7 @@ import java.io.InputStream;
 /**
  * Defines methods for exporting the data in tabular form.
  *
- * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
+ * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
  *
  */
 public interface ExportTable {

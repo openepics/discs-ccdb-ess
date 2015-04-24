@@ -57,7 +57,7 @@ import com.google.common.collect.Lists;
 /**
  * The Java EE managed bean for supporting UI actions for data types an user defined enumeration manipulation.
  * @author vuppala
- * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
+ * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
  */
 @Named
 @ViewScoped
@@ -243,6 +243,8 @@ public class DataTypeManager implements Serializable, SimpleTableExporter {
         modifiedEnum.setDescription(description);
         modifiedEnum.setDefinition(jsonDefinitionFromList(enumValues));
         dataTypeEJB.save(modifiedEnum);
+        selectedEnum = null;
+        refreshUserDataTypes();
     }
 
     /**
@@ -266,10 +268,10 @@ public class DataTypeManager implements Serializable, SimpleTableExporter {
      * characters. For modified enumerations it additional checks whether the enumeration is already used somewhere. If
      * not it can be redefined freely. If it is used, then the user can only add a new enumeration value to the
      * definition - he cannot remove an existing one.
-     * @param ctx
-     * @param component
-     * @param value
-     * @throws ValidatorException
+     * @param ctx the context
+     * @param component the component
+     * @param value the value
+     * @throws ValidatorException validation failed
      */
     public void enumValidator(FacesContext ctx, UIComponent component, Object value) throws ValidatorException {
         if (value == null) {

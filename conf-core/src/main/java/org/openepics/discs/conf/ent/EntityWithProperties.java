@@ -24,11 +24,14 @@ import java.util.List;
 /**
  * An interface for accessing a list of property values associated with a given entity.
  *
- * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
+ * @author Miroslav Pavleski &lt;miroslav.pavleski@cosylab.com&gt;
  *
  */
 public interface EntityWithProperties {
 
-    /** @return a list of property values associated with a given entity */
+    /**
+     * @param <T> entity extending {@link PropertyValue}
+     * @return a list of property values associated with a given entity
+     * */
     <T extends PropertyValue> List<T> getEntityPropertyList();
 }

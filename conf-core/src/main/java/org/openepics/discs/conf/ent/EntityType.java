@@ -22,7 +22,7 @@ package org.openepics.discs.conf.ent;
 /**
  * An enum used to represent different entity types supported by the database
  *
- * @author Andraz Pozar <andraz.pozar@cosylab.com>
+ * @author Andraž Požar &lt;andraz.pozar@cosylab.com&gt;
  *
  */
 public enum EntityType {

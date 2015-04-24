@@ -88,8 +88,8 @@ import com.google.common.io.ByteStreams;
  * @param <T> There are 4 property value tables in the database, but all have the same columns and interface.
  * @param <S> There are 4 artifact tables in the database, but all have the same columns and interface.
  *
- * @author Andraz Pozar <andraz.pozar@cosylab.com>
- * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
+ * @author Andraž Požar &lt;andraz.pozar@cosylab.com&gt;
+ * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
  */
 public abstract class AbstractAttributesController<T extends PropertyValue, S extends Artifact> implements Serializable {
     private static final long serialVersionUID = 523935015308933240L;
@@ -728,7 +728,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
     /** Equal to {@link AbstractAttributesController#setSelectedAttribute(EntityAttributeView)}, but when modifying
      * an attribute some additional actions need to be performed.
      *
-     * @param selectedAttribute
+     * @param selectedAttribute the selected attribute
      */
     public void setSelectedAttributeToModify(EntityAttributeView selectedAttribute) {
         this.selectedAttribute = selectedAttribute;

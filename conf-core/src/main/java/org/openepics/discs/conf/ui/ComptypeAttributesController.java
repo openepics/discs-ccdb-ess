@@ -70,8 +70,8 @@ import com.google.common.collect.Lists;
 /**
  * Controller bean for manipulation of {@link ComponentType} attributes
  *
- * @author Andraz Pozar <andraz.pozar@cosylab.com>
- * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
+ * @author Andraž Požar &lt;andraz.pozar@cosylab.com&gt;
+ * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
  *
  */
 @Named
@@ -386,7 +386,7 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
 
     /** This method handled the value once the users is done putting it in. This method actually performs the
      * input validation.
-     * @param event
+     * @param event the event
      */
     public void onEditCell(CellEditEvent event) {
         final Object newValue = event.getNewValue();
@@ -483,7 +483,7 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
         return filteredPropertyValues;
     }
 
-    /** @param the filteredPropertyValues the filteredPropertyValues to set */
+    /** @param filteredPropertyValues the filteredPropertyValues to set */
     public void setFilteredPropertyValues(List<MultiPropertyValueView> filteredPropertyValues) {
         this.filteredPropertyValues = filteredPropertyValues;
     }

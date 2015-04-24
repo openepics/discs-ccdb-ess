@@ -26,7 +26,7 @@ import java.util.List;
  * Interface for file readers. This is implemented so that functionality can be
  * easily expanded to other import formats.
  *
- * @author Andraz Pozar <andraz.pozar@cosylab.com>
+ * @author Andraž Požar &lt;andraz.pozar@cosylab.com&gt;
  */
 public interface ImportFileReader {
 

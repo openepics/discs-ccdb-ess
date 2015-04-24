@@ -72,7 +72,7 @@ public class ComptypeAsm extends ConfigurationEntity {
     /**
      * A new device type assembly
      *
-     * @param childPosition
+     * @param childPosition the child position
      */
     public ComptypeAsm(String childPosition) {
         this.childPosition = childPosition;

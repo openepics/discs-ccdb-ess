@@ -30,7 +30,7 @@ import org.openepics.discs.conf.ent.SlotRelationName;
 /**
  * View of container used to compose and manipulate with container presentation in tree view
  *
- * @author Andraz Pozar <andraz.pozar@cosylab.com>
+ * @author Andraž Požar &lt;andraz.pozar@cosylab.com&gt;
  *
  */
 public class SlotView {

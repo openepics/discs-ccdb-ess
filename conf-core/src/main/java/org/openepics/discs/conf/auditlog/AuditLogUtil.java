@@ -38,7 +38,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 /**
  * Helper class that is used to serialize to JSON removing unnecessary properties dynamically
  *
- * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
+ * @author Miroslav Pavleski &lt;miroslav.pavleski@cosylab.com&gt;
  *
  */
 public class AuditLogUtil {
@@ -66,7 +66,7 @@ public class AuditLogUtil {
     /**
      * Given a set of property names, those will be removed from the serialized output
      *
-     * @param fieldNames
+     * @param fieldNames field names
      * @return This class, with updated state (removed properties)
      */
     public AuditLogUtil removeTopProperties(final Collection<String> fieldNames) {

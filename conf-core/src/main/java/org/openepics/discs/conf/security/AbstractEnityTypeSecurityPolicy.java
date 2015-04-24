@@ -47,7 +47,7 @@ import org.openepics.discs.conf.ent.EntityTypeOperation;
  *
  * Stateful EJB, caches all permissions from database on first access.
  *
- * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
+ * @author Miroslav Pavleski &lt;miroslav.pavleski@cosylab.com&gt;
  *
  */
 
@@ -120,8 +120,8 @@ public abstract class AbstractEnityTypeSecurityPolicy implements SecurityPolicy,
     /**
      * Will allow UI element to be shown for given entity type
      *
-     * @param entityType
-     * @return
+     * @param entityType the {@link EntityType} for which to check for
+     * @return <code>true</code> if has any modify permissions, <code>false</code> otherwise
      */
     protected boolean hasAnyModifyPermission(EntityType entityType) {
         return hasPermission(entityType, EntityTypeOperation.CREATE) ||

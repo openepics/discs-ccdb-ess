@@ -18,14 +18,14 @@ import com.google.common.base.Preconditions;
 /**
  * A single string value.
  *
- * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
+ * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
  *
  */
 public class StrValue implements Value {
     private final String strValue;
 
     /** Constructs a new {@link String} value
-     * @param strValue
+     * @param strValue the value
      */
     public StrValue(String strValue) {
         this.strValue = Preconditions.checkNotNull(strValue);

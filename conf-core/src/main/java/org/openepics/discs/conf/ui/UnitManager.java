@@ -64,7 +64,7 @@ import com.google.common.collect.Lists;
  * The Java EE managed bean for supporting UI actions for Unit manipulation.
  *
  * @author vuppala
- * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
+ * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
  */
 @Named
 @ManagedBean
@@ -264,10 +264,10 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
 
     /**
      * A validator to check whether the unit name is unique.
-     * @param ctx
-     * @param component
-     * @param value
-     * @throws ValidatorException
+     * @param ctx {@link javax.faces.context.FacesContext}
+     * @param component {@link javax.faces.component.UIComponent}
+     * @param value The value
+     * @throws ValidatorException validation failed
      */
     public void nameValidator(FacesContext ctx, UIComponent component, Object value) throws ValidatorException {
         if (value == null) {

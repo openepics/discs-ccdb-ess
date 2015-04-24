@@ -32,7 +32,7 @@ import com.google.common.collect.ImmutableList;
 /**
  * Serializes DataType contents for auditing.
  *
- * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
+ * @author Miroslav Pavleski &lt;miroslav.pavleski@cosylab.com&gt;
  *
  */
 public class DataTypeEntityLogger implements EntityLogger<DataType> {

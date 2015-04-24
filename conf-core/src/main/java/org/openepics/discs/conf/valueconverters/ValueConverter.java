@@ -27,7 +27,7 @@ import org.openepics.seds.core.datatypes.SimpleSedsFactory;
 /**
  * @param <T> the actual Value type this converter is for.
  *
- * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
+ * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
  *
  */
 public abstract class ValueConverter<T extends Value> {

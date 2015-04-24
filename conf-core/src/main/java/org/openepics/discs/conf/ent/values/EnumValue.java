@@ -19,7 +19,7 @@ import com.google.common.base.Preconditions;
 /**
  * This class hold the selected value out of a predefined set of possible values (enumeration).
  *
- * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
+ * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
  *
  */
 public class EnumValue implements Value {

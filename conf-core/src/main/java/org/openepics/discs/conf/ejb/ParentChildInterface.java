@@ -25,14 +25,14 @@ import java.util.List;
  * Classes implementing this interface are used to map between parent adnd child entities, where the relationship
  * exists.
  *
- * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
+ * @author Miroslav Pavleski &lt;miroslav.pavleski@cosylab.com&gt;
  *
- * @param <T>
- * @param <S>
+ * @param <T> the parent class
+ * @param <S> the child class
  */
 public interface ParentChildInterface<T, S> {
     /**
-     * This method resolves the colleciton ( {@link List} ) of children from the parent entity.
+     * This method resolves the collection ( {@link List} ) of children from the parent entity.
      *
      * @param parent the parent entity
      * @return the {@link List} of children of the parent entity

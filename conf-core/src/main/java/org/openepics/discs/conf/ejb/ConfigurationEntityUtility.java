@@ -30,7 +30,7 @@ import org.openepics.discs.conf.security.SecurityPolicy;
 /**
  * Helper class used to update modifedBy and modifiedAt of {@link ConfigurationEntity}-s
  *
- * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
+ * @author Miroslav Pavleski &lt;miroslav.pavleski@cosylab.com&gt;
  *
  */
 @Dependent
@@ -40,7 +40,8 @@ public class ConfigurationEntityUtility {
     /**
      * Updates modifiedBy and modifiedAt for one entity
      *
-     * @param entity
+     * @param <T> the entity type
+     * @param entity the entity
      */
     public <T> void setModified(T entity) {
         if (entity instanceof ConfigurationEntity) {
@@ -54,8 +55,10 @@ public class ConfigurationEntityUtility {
     /**
      * Updates modifiedBy and modifiedAt of two entities
      *
-     * @param parent
-     * @param child
+     * @param <T> the parent entity type
+     * @param <S> the child entity type
+     * @param parent the parent
+     * @param child the child
      */
     public <T,S> void setModified(T parent, S child) {
         final Date now = new Date();
@@ -75,10 +78,10 @@ public class ConfigurationEntityUtility {
     }
 
     /**
-     * Resolves the user-id in case the securitypolicy returns <code>null</code> (meaningful for system
-     * updates such as the initial db population)
+     * Resolves the user-id in case the security policy returns <code>null</code> (meaningful for system
+     * updates such as the initial DB population)
      *
-     * @return resolved username from the {@link SecurityPolicy} implementation or "system" if none found
+     * @return resolved user name from the {@link SecurityPolicy} implementation or "system" if none found
      */
     private String getUserId() {
         final String username = securityPolicy.getUserId();

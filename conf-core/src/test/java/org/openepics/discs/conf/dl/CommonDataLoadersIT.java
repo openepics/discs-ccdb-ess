@@ -45,7 +45,7 @@ import org.openepics.discs.conf.util.TestUtility;
 /**
  * Integration tests for failures common to all data loaders
  *
- * @author Andraz Pozar <andraz.pozar@cosylab.com>
+ * @author Andraž Požar &lt;andraz.pozar@cosylab.com&gt;
  *
  */
 @RunWith(Arquillian.class)

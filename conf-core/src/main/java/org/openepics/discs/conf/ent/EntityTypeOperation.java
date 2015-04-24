@@ -23,7 +23,7 @@ package org.openepics.discs.conf.ent;
  * Enum representing on entities C(R)UD operations + rename
  * Reading is allowed for logged in users by design.
  *
- * @author Andraz Pozar <andraz.pozar@cosylab.com>
+ * @author Andraž Požar &lt;andraz.pozar@cosylab.com&gt;
  *
  */
 public enum EntityTypeOperation {

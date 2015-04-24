@@ -26,7 +26,7 @@ import org.openepics.discs.conf.util.UnhandledCaseException;
 import com.google.common.base.Objects;
 
 /**
- * @author Andraz Pozar <andraz.pozar@cosylab.com>
+ * @author Andraž Požar &lt;andraz.pozar@cosylab.com&gt;
  *
  */
 public class SlotRelationshipView {

@@ -26,7 +26,7 @@ import org.openepics.discs.conf.ent.values.DblVectorValue;
 import org.openepics.seds.api.datatypes.SedsScalarArray;
 
 /**
- * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
+ * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
  *
  */
 public class DblVectorValueConverter extends ValueConverter<DblVectorValue> {

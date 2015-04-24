@@ -31,8 +31,8 @@ import org.openepics.discs.conf.security.SecurityPolicy;
 /**
  * A collection of helper methods for running integration tests.
  *
- * @author Andraz Pozar <andraz.pozar@cosylab.com>
- * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
+ * @author Andraž Požar &lt;andraz.pozar@cosylab.com&gt;
+ * @author Miroslav Pavleski &lt;miroslav.pavleski@cosylab.com&gt;
  */
 public class TestUtility {
 

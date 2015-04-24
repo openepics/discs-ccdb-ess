@@ -37,7 +37,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * Properties are given to Devices, Device Types and INstallation Slots
  *
  * @author vuppala
- * @author Miha Vitorovič <miha.vitorovic@cosylab.com>
+ * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
  */
 @Entity
 @Table(name = "property")

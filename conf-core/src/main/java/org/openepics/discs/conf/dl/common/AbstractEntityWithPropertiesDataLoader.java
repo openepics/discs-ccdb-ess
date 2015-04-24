@@ -39,7 +39,7 @@ import org.openepics.discs.conf.util.Conversion;
  *
  * @param <S> The abstract data loader is used for all possible {@link PropertyValue} implementations.
  *
- * @author Miroslav Pavleski <miroslav.pavleski@cosylab.com>
+ * @author Miroslav Pavleski &lt;miroslav.pavleski@cosylab.com&gt;
  *
  */
 public abstract class AbstractEntityWithPropertiesDataLoader<S extends PropertyValue> extends AbstractDataLoader
@@ -110,7 +110,7 @@ public abstract class AbstractEntityWithPropertiesDataLoader<S extends PropertyV
      * Sets the class of a {@link PropertyValue} sub-class from which new instance of
      * that class can be created
      *
-     * @param propertyValueClass
+     * @param propertyValueClass the @link {@link PropertyValue} class
      */
     protected void setPropertyValueClass(Class<S> propertyValueClass) {
         this.propertyValueClass = propertyValueClass;
@@ -118,7 +118,8 @@ public abstract class AbstractEntityWithPropertiesDataLoader<S extends PropertyV
 
     /**
      * To be implemented by sub-classes. Returns a DAO EJB for accessing properties
-     * @return
+     * @param <T> configuration entity class
+     * @return the DAO EJB
      */
     protected abstract <T> DAO<T> getDAO();
 }

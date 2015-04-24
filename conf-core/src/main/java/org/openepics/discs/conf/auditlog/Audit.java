@@ -31,7 +31,7 @@ import javax.interceptor.InterceptorBinding;
 /**
  * Annotation used to define the use of interceptor for audit logging.
  *
- * @author Andraz Pozar <andraz.pozar@cosylab.com>
+ * @author Andraž Požar &lt;andraz.pozar@cosylab.com&gt;
  *
  */
 @InterceptorBinding

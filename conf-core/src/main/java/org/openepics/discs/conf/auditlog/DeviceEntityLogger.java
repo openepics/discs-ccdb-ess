@@ -41,7 +41,7 @@ import com.google.common.collect.ImmutableList;
 /**
  * {@link AuditRecord} maker for {@link Device}
  *
- * @author Andraz Pozar <andraz.pozar@cosylab.com>
+ * @author Andraž Požar &lt;andraz.pozar@cosylab.com&gt;
  *
  */
 @Stateless
