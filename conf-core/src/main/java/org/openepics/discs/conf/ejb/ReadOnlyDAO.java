@@ -32,7 +32,7 @@ import javax.persistence.criteria.CriteriaQuery;
  * Abstract generic DAO used for all entities.
  * This only provides querying (read-only) access. See {@link DAO} for full CRUD version.
  *
- * @author Miroslav Pavleski &lt;miroslav.pavleski@cosylab.com&gt;
+ * @author <a href="mailto:miroslav.pavleski@cosylab.com">Miroslav Pavleski</a>
  *
  * @param <T> The entity type for which this DAO is defined.
  */

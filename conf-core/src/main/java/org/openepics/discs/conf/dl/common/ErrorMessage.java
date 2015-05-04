@@ -22,7 +22,7 @@ package org.openepics.discs.conf.dl.common;
 /**
  * This enumeration contains all possible error messages for data loaders.
  *
- * @author Andraž Požar &lt;andraz.pozar@cosylab.com&gt;
+ * @author <a href="mailto:andraz.pozar@cosylab.com">Andraž Požar</a>
  */
 public enum ErrorMessage {
     NAME_ALREADY_EXISTS("Entity with this name already exists"),

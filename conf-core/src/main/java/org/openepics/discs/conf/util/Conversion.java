@@ -57,7 +57,7 @@ import com.google.common.base.Strings;
 /**
  * A class holding utility methods for UI value conversion. All utility conversion methods are static.
  *
- * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
+ * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  *
  */
 public class Conversion {

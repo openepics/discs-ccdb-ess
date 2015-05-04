@@ -29,7 +29,7 @@ import org.openepics.discs.conf.ent.Unit;
 /**
  *
  * @author vuppala
- * @author Miroslav Pavleski &lt;miroslav.pavleski@cosylab.com&gt;
+ * @author <a href="mailto:miroslav.pavleski@cosylab.com">Miroslav Pavleski</a>
  *
  */
 @Stateless

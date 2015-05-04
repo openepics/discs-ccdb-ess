@@ -23,7 +23,7 @@ import org.openepics.discs.conf.ent.values.TimestampValue;
 import org.openepics.seds.api.datatypes.SedsTime;
 
 /**
- * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
+ * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  *
  */
 public class TimestampValueConverter extends ValueConverter<TimestampValue> {

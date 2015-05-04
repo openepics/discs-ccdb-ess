@@ -27,7 +27,7 @@ import org.openepics.discs.conf.ent.EntityTypeOperation;
 /**
  * This holds one piece of validation information tied to a location.
  *
- * @author Sunil Sah &lt;sunil.sah@cosylab.com&gt;
+ * @author <a href="mailto:sunil.sah@cosylab.com">Sunil Sah</a>
  */
 public class ValidationMessage {
     private ErrorMessage message;

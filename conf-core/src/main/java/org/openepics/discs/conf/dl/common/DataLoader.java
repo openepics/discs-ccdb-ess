@@ -27,7 +27,7 @@ import org.apache.commons.lang3.tuple.Pair;
 /**
  * Interface for all data loaders
  *
- * @author Andraž Požar &lt;andraz.pozar@cosylab.com&gt;
+ * @author <a href="mailto:andraz.pozar@cosylab.com">Andraž Požar</a>
  *
  */
 public interface DataLoader {

@@ -26,9 +26,9 @@ import java.util.Set;
 import org.openepics.discs.conf.ent.Tag;
 
 /**
- * @author apozar
- *
  * Class with static methods that are used in many entity loggers
+ *
+ * @author <a href="mailto:andraz.pozar@cosylab.com">Andraž Požar</a>
  */
 public class EntityLoggerUtil {
 

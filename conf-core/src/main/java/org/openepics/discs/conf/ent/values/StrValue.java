@@ -18,7 +18,7 @@ import com.google.common.base.Preconditions;
 /**
  * A single string value.
  *
- * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
+ * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  *
  */
 public class StrValue implements Value {

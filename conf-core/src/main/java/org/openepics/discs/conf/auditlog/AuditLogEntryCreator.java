@@ -37,7 +37,7 @@ import org.openepics.discs.conf.ent.EntityTypeOperation;
  * Use this class to serialize Object contents to JSON for the Entry string in the AuditRecord
  * The class is EJB Singleton, initialized at startup and reused at Injection points.
  *
- * @author Miroslav Pavleski &lt;miroslav.pavleski@cosylab.com&gt;
+ * @author <a href="mailto:miroslav.pavleski@cosylab.com">Miroslav Pavleski</a>
  *
  */
 @Singleton

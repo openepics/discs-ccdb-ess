@@ -25,7 +25,7 @@ import org.openepics.discs.conf.ent.EntityTypeOperation;
 /**
  * Exception class to be used for authentication &amp; authorization purposes
  *
- * @author Miroslav Pavleski &lt;miroslav.pavleski@cosylab.com&gt;
+ * @author <a href="mailto:miroslav.pavleski@cosylab.com">Miroslav Pavleski</a>
  */
 public class SecurityException extends RuntimeException {
     private static final long serialVersionUID = 7871852787337165333L;

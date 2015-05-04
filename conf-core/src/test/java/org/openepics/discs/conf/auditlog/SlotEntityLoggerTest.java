@@ -36,7 +36,7 @@ import org.openepics.discs.conf.ent.SlotRelationName;
 import org.openepics.discs.conf.ent.values.IntValue;
 
 /**
- * @author Andraž Požar &lt;andraz.pozar@cosylab.com&gt;
+ * @author <a href="mailto:andraz.pozar@cosylab.com">Andraž Požar</a>
  *
  */
 public class SlotEntityLoggerTest {

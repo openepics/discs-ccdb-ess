@@ -70,8 +70,8 @@ import com.google.common.collect.Lists;
 /**
  * Controller bean for manipulation of {@link ComponentType} attributes
  *
- * @author Andraž Požar &lt;andraz.pozar@cosylab.com&gt;
- * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
+ * @author <a href="mailto:andraz.pozar@cosylab.com">Andraž Požar</a>
+ * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  *
  */
 @Named

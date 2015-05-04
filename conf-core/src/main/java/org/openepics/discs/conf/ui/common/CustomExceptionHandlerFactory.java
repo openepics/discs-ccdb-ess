@@ -23,7 +23,7 @@ import javax.faces.context.ExceptionHandlerFactory;
 /**
  * A factory for the CustomExceptionHandler. Used to define a global JSF exception handler through faces-config.xml.
  *
- * @author Marko Kolar &lt;marko.kolar@cosylab.com&gt;
+ * @author <a href="mailto:marko.kolar@cosylab.com">Marko Kolar</a>
  */
 public class CustomExceptionHandlerFactory extends ExceptionHandlerFactory {
 

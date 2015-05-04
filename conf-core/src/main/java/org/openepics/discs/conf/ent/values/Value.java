@@ -16,7 +16,7 @@ package org.openepics.discs.conf.ent.values;
 /**
  * An property value base interface.
  *
- * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
+ * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  *
  */
 public interface Value {

@@ -24,7 +24,7 @@ package org.openepics.discs.conf.util;
  * An enumeration of built-in data types in the CCDB application. The list has been predefined in the design phase
  * and all property values can only contain a value of one of these types.
  *
- * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
+ * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  *
  */
 public enum BuiltInDataType {

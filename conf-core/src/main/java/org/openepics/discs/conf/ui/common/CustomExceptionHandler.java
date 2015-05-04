@@ -36,8 +36,8 @@ import javax.faces.event.ExceptionQueuedEventContext;
 /**
  * A global JSF exception handler that displays caught exceptions in the UI as popup messages.
  *
- * @author Marko Kolar &lt;marko.kolar@cosylab.com&gt;
- * @author Sunil Sah &lt;sunil.sah@cosylab.com&gt;
+ * @author <a href="mailto:marko.kolar@cosylab.com">Marko Kolar</a>
+ * @author <a href="mailto:sunil.sah@cosylab.com">Sunil Sah</a>
  *
  */
 public class CustomExceptionHandler extends ExceptionHandlerWrapper {

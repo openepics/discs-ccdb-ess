@@ -48,7 +48,7 @@ import org.openepics.discs.conf.util.TestUtility;
 /**
  * Integration tests for {@link DevicesDataLoader}
  *
- * @author Andraž Požar &lt;andraz.pozar@cosylab.com&gt;
+ * @author <a href="mailto:andraz.pozar@cosylab.com">Andraž Požar</a>
  *
  */
 @RunWith(Arquillian.class)

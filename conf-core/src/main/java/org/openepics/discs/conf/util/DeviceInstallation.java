@@ -32,7 +32,7 @@ import java.lang.annotation.Target;
 import javax.inject.Qualifier;
 
 /**
- * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
+ * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  *
  */
 @Qualifier

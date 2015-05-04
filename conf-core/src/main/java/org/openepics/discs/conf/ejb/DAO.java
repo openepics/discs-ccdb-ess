@@ -42,7 +42,7 @@ import com.google.common.base.Preconditions;
  * It uses the concept of Parent and optional Child entities in {@link List} collections.
  * This one extends the read-only {@link ReadOnlyDAO}.
  *
- * @author Miroslav Pavleski &lt;miroslav.pavleski@cosylab.com&gt;
+ * @author <a href="mailto:miroslav.pavleski@cosylab.com">Miroslav Pavleski</a>
  *
  * @param <T> The entity type for which this DAO is defined.
  */

@@ -22,7 +22,7 @@ package org.openepics.discs.conf.ent;
 /**
  * Enumerator that marks current status of the {@link Device}
  *
- * @author Andraž Požar &lt;andraz.pozar@cosylab.com&gt;
+ * @author <a href="mailto:andraz.pozar@cosylab.com">Andraž Požar</a>
  *
  */
 public enum DeviceStatus {

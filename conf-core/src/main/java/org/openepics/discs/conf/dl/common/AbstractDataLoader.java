@@ -41,8 +41,8 @@ import com.google.common.collect.ImmutableMap.Builder;
 /**
  * Skeleton for all data loaders.
  *
- * @author Andraž Požar &lt;andraz.pozar@cosylab.com&gt;
- * @author Miroslav Pavleski &lt;miroslav.pavleski@cosylab.com&gt;
+ * @author <a href="mailto:andraz.pozar@cosylab.com">Andraž Požar</a>
+ * @author <a href="mailto:miroslav.pavleski@cosylab.com">Miroslav Pavleski</a>
  *
  */
 public abstract class AbstractDataLoader implements DataLoader {

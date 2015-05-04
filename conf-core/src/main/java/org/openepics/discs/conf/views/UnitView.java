@@ -24,7 +24,7 @@ import org.openepics.discs.conf.ent.Unit;
 /**
  * An UI view object for showing {@link Unit} entity in a table.
  *
- * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
+ * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  *
  */
 public class UnitView {

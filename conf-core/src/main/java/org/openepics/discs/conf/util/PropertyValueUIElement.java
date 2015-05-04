@@ -27,7 +27,7 @@ package org.openepics.discs.conf.util;
  * <li>a drop down for selecting a single element (enumeration)</li>
  * </ul>
  *
- * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
+ * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  *
  */
 public enum PropertyValueUIElement {

@@ -27,7 +27,7 @@ import com.google.common.base.Preconditions;
  * Iterates over a set of indexes starting at startIndex, finishing at endIndex and prepending leading zeroes if
  * required.
  *
- * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
+ * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  */
 public class BatchIterator implements Iterator<String> {
     private int index;

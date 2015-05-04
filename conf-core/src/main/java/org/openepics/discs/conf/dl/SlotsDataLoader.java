@@ -46,9 +46,9 @@ import org.openepics.discs.conf.ent.SlotPropertyValue;
 /**
  * Implementation of data loader for slots.
  *
- * @author Andraž Požar &lt;andraz.pozar@cosylab.com&gt;
- * @author Miroslav Pavleski &lt;miroslav.pavleski@cosylab.com&gt;
- * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
+ * @author <a href="mailto:andraz.pozar@cosylab.com">Andraž Požar</a>
+ * @author <a href="mailto:miroslav.pavleski@cosylab.com">Miroslav Pavleski</a>
+ * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  */
 @Stateless
 @SlotsDataLoaderQualifier

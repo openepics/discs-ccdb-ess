@@ -34,8 +34,8 @@ import org.openepics.discs.conf.security.SecurityPolicy;
 import org.openepics.discs.conf.util.Utility;
 
 /**
- * @author Vasu V &lt;vuppala@frib.msu.org&gt;
- * @author Miroslav Pavleski &lt;miroslav.pavleski@cosylab.com&gt;
+ * @author <a href="mailto:vuppala@frib.msu.org">Vasu V</a>
+ * @author <a href="mailto:miroslav.pavleski@cosylab.com">Miroslav Pavleski</a>
  *
  */
 @Named

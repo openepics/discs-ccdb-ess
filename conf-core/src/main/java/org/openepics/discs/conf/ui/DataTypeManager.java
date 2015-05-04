@@ -57,7 +57,7 @@ import com.google.common.collect.Lists;
 /**
  * The Java EE managed bean for supporting UI actions for data types an user defined enumeration manipulation.
  * @author vuppala
- * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
+ * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  */
 @Named
 @ViewScoped

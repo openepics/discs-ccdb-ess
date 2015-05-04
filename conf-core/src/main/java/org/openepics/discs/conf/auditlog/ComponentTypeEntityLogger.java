@@ -36,7 +36,7 @@ import com.google.common.collect.ImmutableList;
 /**
  * {@link AuditRecord} maker for {@link ComponentType}
  *
- * @author Andraž Požar &lt;andraz.pozar@cosylab.com&gt;
+ * @author <a href="mailto:andraz.pozar@cosylab.com">Andraž Požar</a>
  *
  */
 public class ComponentTypeEntityLogger implements EntityLogger<ComponentType> {

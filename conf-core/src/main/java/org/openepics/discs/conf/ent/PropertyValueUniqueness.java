@@ -31,7 +31,7 @@ package org.openepics.discs.conf.ent;
  * Universally unique value must be unique in the entire database, e.g. IP address
  * Type unique value must be unique only for the property values of the same type.
  *
- * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
+ * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  *
  */
 public enum PropertyValueUniqueness {

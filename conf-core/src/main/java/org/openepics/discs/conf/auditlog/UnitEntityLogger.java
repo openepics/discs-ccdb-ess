@@ -32,7 +32,7 @@ import com.google.common.collect.ImmutableList;
 /**
  * {@link AuditRecord} maker for {@link Unit}
  *
- * @author mpavleski
+ * @author <a href="mailto:miroslav.pavleski@cosylab.com">Miroslav Pavleski</a>
  *
  */
 public class UnitEntityLogger implements EntityLogger<Unit> {

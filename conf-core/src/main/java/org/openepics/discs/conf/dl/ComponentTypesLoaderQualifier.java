@@ -35,7 +35,7 @@ import org.openepics.discs.conf.dl.common.DataLoader;
 /**
  * Annotation to specify which implementation of {@link DataLoader} should be injected
  *
- * @author Andraž Požar &lt;andraz.pozar@cosylab.com&gt;
+ * @author <a href="mailto:andraz.pozar@cosylab.com">Andraž Požar</a>
  *
  */
 @Qualifier

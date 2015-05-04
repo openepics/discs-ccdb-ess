@@ -37,7 +37,7 @@ import org.openepics.discs.conf.util.BuiltInDataType;
  * This class initializes a mapping between various Value classes and the implementation of the converter. The class is a
  * singleton so that the converters are converter mapping is initialized at application startup and only once.
  *
- * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
+ * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  *
  */
 @Singleton
