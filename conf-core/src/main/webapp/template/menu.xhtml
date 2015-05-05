@@ -29,7 +29,7 @@
                 <p:menuitem value="Import" update=":importSlotsForm" styleClass="noClickEvent" 
                     oncomplete="PF('importSlots').show();" title="Import Slots and Slot Pairs" 
                     actionListener="#{slotManager.prepareImportPopup()}" 
-                    disabled="#{!securityPolicy.getUIHint('SLOT')}"/>
+                    disabled="#{true or         !securityPolicy.getUIHint('SLOT')}" />
             </p:submenu>
 
             <p:submenu label="Devices" icon="ui-icon-gear" 
@@ -39,7 +39,7 @@
                 <p:menuitem value="Import" update=":importDevicesForm" styleClass="noClickEvent" 
                     oncomplete="PF('importDevices').show();" title="Import Device Instances" 
                     actionListener="#{deviceManager.prepareImportPopup()}" 
-                    disabled="#{!securityPolicy.getUIHint('DEVICE')}"/>
+                    disabled="#{true or        !securityPolicy.getUIHint('DEVICE')}" />
             </p:submenu>
 
             <p:submenu label="Device Types" icon="ui-icon-wrench" 
@@ -49,7 +49,7 @@
                 <p:menuitem value="Import" update=":importCompTypesForm" styleClass="noClickEvent" 
                     oncomplete="PF('importCompTypes').show();" title="Import Device Types" 
                     actionListener="#{componentTypeManager.prepareImportPopup()}" 
-                    disabled="#{! securityPolicy.getUIHint('COMPONENT_TYPE')}" />
+                    disabled="#{true or       !securityPolicy.getUIHint('COMPONENT_TYPE')}" />
             </p:submenu>
             
             <p:submenu label="Properties" icon="ui-icon-contact" 

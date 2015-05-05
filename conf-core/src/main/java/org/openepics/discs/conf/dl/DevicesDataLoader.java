@@ -21,7 +21,6 @@ package org.openepics.discs.conf.dl;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -30,6 +29,7 @@ import javax.ejb.EJBTransactionRolledbackException;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.openepics.discs.conf.dl.common.AbstractEntityWithPropertiesDataLoader;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.ErrorMessage;
@@ -68,9 +68,19 @@ public class DevicesDataLoader extends AbstractEntityWithPropertiesDataLoader<De
     private static final String HDR_MANUFACTURER = "MANUFACTURER";
     private static final String HDR_MANUF_MODEL = "MANUF-MODEL";
 
-    private static final List<String> KNOWN_COLUMNS = Arrays.asList(HDR_SERIAL, HDR_CTYPE, HDR_DESC, HDR_STATUS,
-            HDR_MANUF_SERIAL, HDR_LOCATION, HDR_PURCHASE_ORDER, HDR_ASM_POSITION, HDR_ASM_DESC,
-            HDR_MANUFACTURER, HDR_MANUF_MODEL);
+    private static final int COL_INDEX_SERIAL = -1; // TODO fix
+    private static final int COL_INDEX_CTYPE = -1; // TODO fix
+    private static final int COL_INDEX_DESC = -1; // TODO fix
+    private static final int COL_INDEX_STATUS = -1; // TODO fix
+    private static final int COL_INDEX_MANUF_SERIAL = -1; // TODO fix
+    private static final int COL_INDEX_LOCATION = -1; // TODO fix
+    private static final int COL_INDEX_PURCHASE_ORDER = -1; // TODO fix
+    private static final int COL_INDEX_ASM_POSITION = -1; // TODO fix
+    private static final int COL_INDEX_ASM_DESC = -1; // TODO fix
+    private static final int COL_INDEX_MANUFACTURER = -1; // TODO fix
+    private static final int COL_INDEX_MANUF_MODEL = -1; // TODO fix
+
+
     private static final Set<String> REQUIRED_COLUMNS = new HashSet<>(Arrays.asList(HDR_CTYPE));
 
     private String serial, componentType, description, manufSerial, location, purchaseOrder, asmPosition;
@@ -87,33 +97,28 @@ public class DevicesDataLoader extends AbstractEntityWithPropertiesDataLoader<De
     }
 
     @Override
-    protected List<String> getKnownColumnNames() {
-        return KNOWN_COLUMNS;
-    }
-
-    @Override
     protected Set<String> getRequiredColumnNames() {
         return REQUIRED_COLUMNS;
     }
 
     @Override
-    protected String getUniqueColumnName() {
-        return HDR_SERIAL;
+    protected @Nullable Integer getUniqueColumnIndex() {
+        return new Integer(COL_INDEX_SERIAL);
     }
 
     @Override
     protected void assignMembersForCurrentRow() {
-        serial = readCurrentRowCellForHeader(HDR_SERIAL);
-        componentType = readCurrentRowCellForHeader(HDR_CTYPE);
-        description = readCurrentRowCellForHeader(HDR_DESC);
-        status = setDeviceStatus(readCurrentRowCellForHeader(HDR_STATUS));
-        manufSerial = readCurrentRowCellForHeader(HDR_MANUF_SERIAL);
-        location = readCurrentRowCellForHeader(HDR_LOCATION);
-        purchaseOrder = readCurrentRowCellForHeader(HDR_PURCHASE_ORDER);
-        asmPosition = readCurrentRowCellForHeader(HDR_ASM_POSITION);
-        asmDescription = readCurrentRowCellForHeader(HDR_ASM_DESC);
-        manufacturer = readCurrentRowCellForHeader(HDR_MANUFACTURER);
-        manufModel = readCurrentRowCellForHeader(HDR_MANUF_MODEL);
+        serial = readCurrentRowCellForHeader(COL_INDEX_SERIAL);
+        componentType = readCurrentRowCellForHeader(COL_INDEX_CTYPE);
+        description = readCurrentRowCellForHeader(COL_INDEX_DESC);
+        status = setDeviceStatus(readCurrentRowCellForHeader(COL_INDEX_STATUS));
+        manufSerial = readCurrentRowCellForHeader(COL_INDEX_MANUF_SERIAL);
+        location = readCurrentRowCellForHeader(COL_INDEX_LOCATION);
+        purchaseOrder = readCurrentRowCellForHeader(COL_INDEX_PURCHASE_ORDER);
+        asmPosition = readCurrentRowCellForHeader(COL_INDEX_ASM_POSITION);
+        asmDescription = readCurrentRowCellForHeader(COL_INDEX_ASM_DESC);
+        manufacturer = readCurrentRowCellForHeader(COL_INDEX_MANUFACTURER);
+        manufModel = readCurrentRowCellForHeader(COL_INDEX_MANUF_MODEL);
     }
 
     @Override
@@ -209,5 +214,17 @@ public class DevicesDataLoader extends AbstractEntityWithPropertiesDataLoader<De
             return null;
         }
         return deviceStatus;
+    }
+
+    @Override
+    public int getDataWidth() {
+        // TODO set the data width
+        throw new NotImplementedException();
+    }
+
+    @Override
+    protected void setUpIndexesForFields() {
+        // TODO implement
+        throw new NotImplementedException();
     }
 }

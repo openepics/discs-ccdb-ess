@@ -63,7 +63,8 @@ public class DataLoaderHandler {
      * @return a {@link DataLoaderResult} containing information about the operation completion status
      */
     public DataLoaderResult loadData(InputStream inputStream, DataLoader dataLoader) {
-        final List<Pair<Integer, List<String>>> inputRows = ExcelImportFileReader.importExcelFile(inputStream);
+        final List<Pair<Integer, List<String>>> inputRows = ExcelImportFileReader.importExcelFile(inputStream,
+                                            dataLoader.getImportDataStartIndex(), dataLoader.getDataWidth());
 
         if (inputRows != null && !inputRows.isEmpty()) {
             loaderResult = dataLoader.loadDataToDatabase(inputRows, null);

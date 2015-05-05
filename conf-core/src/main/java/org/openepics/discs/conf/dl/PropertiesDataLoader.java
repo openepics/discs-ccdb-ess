@@ -22,7 +22,6 @@ package org.openepics.discs.conf.dl;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -44,6 +43,9 @@ import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyValueUniqueness;
 import org.openepics.discs.conf.ent.Unit;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap.Builder;
+
 /**
  * Implementation of data loader for properties.
  *
@@ -63,8 +65,12 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
     private static final String HDR_DESC = "DESCRIPTION";
     private static final String HDR_UNIQUE = "UNIQUE";
 
-    private static final List<String> KNOWN_COLUMNS = Arrays.asList(HDR_NAME, HDR_UNIT, HDR_DATATYPE, HDR_DESC,
-            HDR_UNIQUE);
+    private static final int COL_INDEX_NAME = 1;
+    private static final int COL_INDEX_DESC = 2;
+    private static final int COL_INDEX_UNIT = 3;
+    private static final int COL_INDEX_DATATYPE = 4;
+    private static final int COL_INDEX_UNIQUE = 5;
+
     private static final Set<String> REQUIRED_COLUMNS = new HashSet<>(Arrays.asList(HDR_DATATYPE, HDR_DESC));
 
     @Inject private PropertyEJB propertyEJB;
@@ -94,27 +100,22 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
     }
 
     @Override
-    protected List<String> getKnownColumnNames() {
-        return KNOWN_COLUMNS;
-    }
-
-    @Override
     protected Set<String> getRequiredColumnNames() {
         return REQUIRED_COLUMNS;
     }
 
     @Override
-    protected String getUniqueColumnName() {
-        return HDR_NAME;
+    protected @Nullable Integer getUniqueColumnIndex() {
+        return new Integer(COL_INDEX_NAME);
     }
 
     @Override
     protected void assignMembersForCurrentRow() {
-        nameFld = readCurrentRowCellForHeader(HDR_NAME);
-        unitFld = readCurrentRowCellForHeader(HDR_UNIT);
-        dataTypeFld = readCurrentRowCellForHeader(HDR_DATATYPE);
-        descFld = readCurrentRowCellForHeader(HDR_DESC);
-        uniqueFld = uniquenessAsValue(readCurrentRowCellForHeader(HDR_UNIQUE));
+        nameFld = readCurrentRowCellForHeader(COL_INDEX_NAME);
+        unitFld = readCurrentRowCellForHeader(COL_INDEX_UNIT);
+        dataTypeFld = readCurrentRowCellForHeader(COL_INDEX_DATATYPE);
+        descFld = readCurrentRowCellForHeader(COL_INDEX_DESC);
+        uniqueFld = uniquenessAsValue(readCurrentRowCellForHeader(COL_INDEX_UNIQUE));
     }
 
     @Override
@@ -250,5 +251,23 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
             }
         }
         return uniquenessValue;
+    }
+
+    @Override
+    public int getDataWidth() {
+        return 6;
+    }
+
+    @Override
+    protected void setUpIndexesForFields() {
+        final Builder<String, Integer> mapBuilder = ImmutableMap.builder();
+
+        mapBuilder.put(HDR_NAME, COL_INDEX_NAME);
+        mapBuilder.put(HDR_DESC, COL_INDEX_DESC);
+        mapBuilder.put(HDR_UNIT, COL_INDEX_UNIT);
+        mapBuilder.put(HDR_DATATYPE, COL_INDEX_DATATYPE);
+        mapBuilder.put(HDR_UNIQUE, COL_INDEX_UNIQUE);
+
+        indicies = mapBuilder.build();
     }
 }

@@ -31,7 +31,10 @@ import javax.inject.Named;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.openepics.discs.conf.dl.SlotPairDataLoader;
 import org.openepics.discs.conf.dl.SlotsAndSlotPairsDataLoader;
+import org.openepics.discs.conf.dl.SlotsDataLoader;
+import org.openepics.discs.conf.dl.common.AbstractDataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.dl.common.ExcelImportFileReader;
 import org.openepics.discs.conf.ui.common.ExcelImportUIHandlers;
@@ -143,13 +146,15 @@ public class SlotManager implements Serializable, ExcelImportUIHandlers {
         List<Pair<Integer, List<String>>> slotPairsFileInputRows = null;
 
         if (slotsInputStream != null) {
-            slotsFileInputRows = ExcelImportFileReader.importExcelFile(slotsInputStream);
+            slotsFileInputRows = ExcelImportFileReader.importExcelFile(slotsInputStream,
+                    AbstractDataLoader.DEFAULT_EXCEL_TAMPLATE_DATA_START_ROW, SlotsDataLoader.DATA_WIDTH);
         } else {
             slotsFileInputRows = null;
         }
 
         if (slotPairsInputStream != null) {
-            slotPairsFileInputRows = ExcelImportFileReader.importExcelFile(slotPairsInputStream);
+            slotPairsFileInputRows = ExcelImportFileReader.importExcelFile(slotPairsInputStream,
+                    AbstractDataLoader.DEFAULT_EXCEL_TAMPLATE_DATA_START_ROW, SlotPairDataLoader.DATA_WIDTH);
         } else {
             slotPairsFileInputRows = null;
         }

@@ -19,16 +19,16 @@
  */
 package org.openepics.discs.conf.dl;
 
-import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import javax.annotation.Nullable;
 import javax.ejb.EJBTransactionRolledbackException;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.openepics.discs.conf.dl.common.AbstractEntityWithPropertiesDataLoader;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.ErrorMessage;
@@ -55,7 +55,10 @@ public class ComponentTypesDataLoader extends AbstractEntityWithPropertiesDataLo
     private static final String HDR_NAME = "NAME";
     private static final String HDR_DESC = "DESCRIPTION";
 
-    private static final List<String> KNOWN_COLUMNS = Arrays.asList(HDR_NAME, HDR_DESC);
+    private static final int COL_INDEX_NAME = 1;  // TODO fix
+    private static final int COL_INDEX_DESC = 2;  // TODO fix
+
+
     private static final Set<String> REQUIRED_COLUMNS = new HashSet<>();
 
     // Fields for row cells
@@ -70,18 +73,13 @@ public class ComponentTypesDataLoader extends AbstractEntityWithPropertiesDataLo
     }
 
     @Override
-    protected List<String> getKnownColumnNames() {
-        return KNOWN_COLUMNS;
-    }
-
-    @Override
     protected Set<String> getRequiredColumnNames() {
         return REQUIRED_COLUMNS;
     }
 
     @Override
-    protected String getUniqueColumnName() {
-        return HDR_NAME;
+    protected @Nullable Integer getUniqueColumnIndex() {
+        return new Integer(COL_INDEX_NAME);
     }
 
     @SuppressWarnings("unchecked")
@@ -92,8 +90,8 @@ public class ComponentTypesDataLoader extends AbstractEntityWithPropertiesDataLo
 
     @Override
     protected void assignMembersForCurrentRow() {
-        nameFld = readCurrentRowCellForHeader(HDR_NAME);
-        descriptionFld = readCurrentRowCellForHeader(HDR_DESC);
+        nameFld = readCurrentRowCellForHeader(COL_INDEX_NAME);
+        descriptionFld = readCurrentRowCellForHeader(COL_INDEX_DESC);
     }
 
     @Override
@@ -169,5 +167,17 @@ public class ComponentTypesDataLoader extends AbstractEntityWithPropertiesDataLo
         } catch (EJBTransactionRolledbackException e) {
             handleLoadingError(LOGGER, e);
         }
+    }
+
+    @Override
+    public int getDataWidth() {
+        // TODO set the data width
+        throw new NotImplementedException();
+    }
+
+    @Override
+    protected void setUpIndexesForFields() {
+        // TODO implement
+        throw new NotImplementedException();
     }
 }

@@ -31,6 +31,7 @@ import javax.ejb.EJBTransactionRolledbackException;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.openepics.discs.conf.dl.common.AbstractEntityWithPropertiesDataLoader;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
@@ -56,6 +57,8 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
 
     private static final Logger LOGGER = Logger.getLogger(SlotsDataLoader.class.getCanonicalName());
 
+    public static final int DATA_WIDTH = 14;  // TODO write proper value
+
     private static final String HDR_NAME = "NAME";
     private static final String HDR_CTYPE = "CTYPE";
     private static final String HDR_DESCRIPTION = "DESCRIPTION";
@@ -71,9 +74,20 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
     private static final String HDR_ASM_POSITION = "ASM-POSITION";
     private static final String HDR_COMMENT = "COMMENT";
 
-    private static final List<String> KNOWN_COLUMNS = Arrays.asList(HDR_NAME, HDR_CTYPE, HDR_DESCRIPTION,
-            HDR_IS_HOSTING_SLOT, HDR_BLP, HDR_GCX, HDR_GCY, HDR_GCZ, HDR_GL_ROLL, HDR_GL_YAW,
-            HDR_GL_PITCH, HDR_ASM_COMMENT, HDR_ASM_POSITION, HDR_COMMENT);
+    private static final int COL_INDEX_NAME = -1; // TODO fix
+    private static final int COL_INDEX_CTYPE = -1; // TODO fix
+    private static final int COL_INDEX_DESCRIPTION = -1; // TODO fix
+    private static final int COL_INDEX_IS_HOSTING_SLOT = -1; // TODO fix
+    private static final int COL_INDEX_BLP = -1; // TODO fix
+    private static final int COL_INDEX_GCX = -1; // TODO fix
+    private static final int COL_INDEX_GCY = -1; // TODO fix
+    private static final int COL_INDEX_GCZ = -1; // TODO fix
+    private static final int COL_INDEX_GL_ROLL = -1; // TODO fix
+    private static final int COL_INDEX_GL_YAW = -1; // TODO fix
+    private static final int COL_INDEX_GL_PITCH = -1; // TODO fix
+    private static final int COL_INDEX_ASM_COMMENT = -1; // TODO fix
+    private static final int COL_INDEX_ASM_POSITION = -1; // TODO fix
+    private static final int COL_INDEX_COMMENT = -1; // TODO fix
 
     private static final Set<String> REQUIRED_COLUMNS = new HashSet<>(Arrays.asList(HDR_IS_HOSTING_SLOT, HDR_CTYPE));
 
@@ -96,30 +110,25 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
     }
 
     @Override
-    protected List<String> getKnownColumnNames() {
-        return KNOWN_COLUMNS;
-    }
-
-    @Override
     protected Set<String> getRequiredColumnNames() {
         return REQUIRED_COLUMNS;
     }
 
     @Override
-    protected String getUniqueColumnName() {
-        return HDR_NAME;
+    protected @Nullable Integer getUniqueColumnIndex() {
+        return new Integer(COL_INDEX_NAME);
     }
 
     @Override
     protected void assignMembersForCurrentRow() {
-        name               = readCurrentRowCellForHeader(HDR_NAME);
-        description        = readCurrentRowCellForHeader(HDR_DESCRIPTION);
-        componentTypeString= readCurrentRowCellForHeader(HDR_CTYPE);
-        asmComment         = readCurrentRowCellForHeader(HDR_ASM_COMMENT);
-        asmPosition        = readCurrentRowCellForHeader(HDR_ASM_POSITION);
-        comment            = readCurrentRowCellForHeader(HDR_COMMENT);
+        name               = readCurrentRowCellForHeader(COL_INDEX_NAME);
+        description        = readCurrentRowCellForHeader(COL_INDEX_DESCRIPTION);
+        componentTypeString= readCurrentRowCellForHeader(COL_INDEX_CTYPE);
+        asmComment         = readCurrentRowCellForHeader(COL_INDEX_ASM_COMMENT);
+        asmPosition        = readCurrentRowCellForHeader(COL_INDEX_ASM_POSITION);
+        comment            = readCurrentRowCellForHeader(COL_INDEX_COMMENT);
 
-        @Nullable String isHostingString = readCurrentRowCellForHeader(HDR_IS_HOSTING_SLOT);
+        @Nullable String isHostingString = readCurrentRowCellForHeader(COL_INDEX_IS_HOSTING_SLOT);
         isHosting = null;
         if (isHostingString != null && !isHostingString.equalsIgnoreCase(Boolean.FALSE.toString())
                 && !isHostingString.equalsIgnoreCase(Boolean.TRUE.toString())) {
@@ -231,7 +240,7 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
     }
 
     private Double readCurrentRowCellForHeaderAsDouble(String columnName) {
-        @Nullable String stringValue = readCurrentRowCellForHeader(columnName);
+        @Nullable String stringValue = readCurrentRowCellForHeader(indicies.get(columnName));
 
         if (stringValue == null)
             return null;
@@ -259,5 +268,16 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
         positionInfo.setGlobalRoll(globalRoll);
         positionInfo.setGlobalPitch(globalPitch);
         positionInfo.setGlobalYaw(globalYaw);
+    }
+
+    @Override
+    public int getDataWidth() {
+       return DATA_WIDTH;
+    }
+
+    @Override
+    protected void setUpIndexesForFields() {
+        // TODO implement
+        throw new NotImplementedException();
     }
 }

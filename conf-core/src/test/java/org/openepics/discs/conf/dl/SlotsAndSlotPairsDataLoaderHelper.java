@@ -26,6 +26,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.openepics.discs.conf.dl.common.AbstractDataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.dl.common.ExcelImportFileReader;
 import org.openepics.discs.conf.util.TestUtility;
@@ -51,7 +52,8 @@ public class SlotsAndSlotPairsDataLoaderHelper {
 
         if (slotsImportFileName != null) {
             final InputStream slotDataStream = this.getClass().getResourceAsStream(TestUtility.DATALOADERS_PATH + slotsImportFileName);
-            slotsFileInputRows = ExcelImportFileReader.importExcelFile(slotDataStream);
+            slotsFileInputRows = ExcelImportFileReader.importExcelFile(slotDataStream,
+                    AbstractDataLoader.DEFAULT_EXCEL_TAMPLATE_DATA_START_ROW, SlotsDataLoader.DATA_WIDTH);
             slotDataStream.close();
         } else {
             slotsFileInputRows = null;
@@ -59,7 +61,8 @@ public class SlotsAndSlotPairsDataLoaderHelper {
 
         if (slotPairsImportFileName != null) {
             final InputStream slotPairDataStream = this.getClass().getResourceAsStream(TestUtility.DATALOADERS_PATH + slotPairsImportFileName);
-            slotPairsFileInputRows = ExcelImportFileReader.importExcelFile(slotPairDataStream);
+            slotPairsFileInputRows = ExcelImportFileReader.importExcelFile(slotPairDataStream,
+                    AbstractDataLoader.DEFAULT_EXCEL_TAMPLATE_DATA_START_ROW, SlotPairDataLoader.DATA_WIDTH);
             slotPairDataStream.close();
         } else {
             slotPairsFileInputRows = null;

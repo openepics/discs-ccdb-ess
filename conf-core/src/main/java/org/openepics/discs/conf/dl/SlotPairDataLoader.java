@@ -25,10 +25,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import javax.annotation.Nullable;
 import javax.ejb.EJBTransactionRolledbackException;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.openepics.discs.conf.dl.common.AbstractDataLoader;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
@@ -54,12 +56,18 @@ public class SlotPairDataLoader extends AbstractDataLoader implements DataLoader
 
     private static final Logger LOGGER = Logger.getLogger(SlotPairDataLoader.class.getCanonicalName());
 
+    public static final int DATA_WIDTH = 3; // TODO check this
+
     private static final String HDR_RELATION = "RELATION";
     private static final String HDR_PARENT = "PARENT";
     private static final String HDR_CHILD= "CHILD";
 
-    private static final List<String> KNOWN_COLUMNS = Arrays.asList(HDR_RELATION, HDR_PARENT, HDR_CHILD);
-    private static final Set<String> REQUIRED_COLUMNS = new HashSet<>(KNOWN_COLUMNS);
+    private static final int COL_INDEX_RELATION = 1; // TODO check this
+    private static final int COL_INDEX_PARENT = 2; // TODO check this
+    private static final int COL_INDEX_CHILD= 3; // TODO check this
+
+    private static final Set<String> REQUIRED_COLUMNS = new HashSet<>(Arrays.asList(
+            HDR_RELATION, HDR_PARENT, HDR_CHILD));
 
     private String relationString, parentString, childString;
     private List<Slot> childrenSlots;
@@ -84,26 +92,21 @@ public class SlotPairDataLoader extends AbstractDataLoader implements DataLoader
     }
 
     @Override
-    protected List<String> getKnownColumnNames() {
-        return KNOWN_COLUMNS;
-    }
-
-    @Override
     protected Set<String> getRequiredColumnNames() {
         return REQUIRED_COLUMNS;
     }
 
     @Override
-    protected String getUniqueColumnName() {
+    protected @Nullable Integer getUniqueColumnIndex() {
         // No unique column name
         return null;
     }
 
     @Override
     protected void assignMembersForCurrentRow() {
-        relationString = readCurrentRowCellForHeader(HDR_RELATION);
-        parentString = readCurrentRowCellForHeader(HDR_PARENT);
-        childString = readCurrentRowCellForHeader(HDR_CHILD);
+        relationString = readCurrentRowCellForHeader(COL_INDEX_RELATION);
+        parentString = readCurrentRowCellForHeader(COL_INDEX_PARENT);
+        childString = readCurrentRowCellForHeader(COL_INDEX_CHILD);
 
         childrenSlots = slotEJB.findSlotByNameContainingString(childString);
         parentSlot = slotEJB.findByName(parentString);
@@ -200,5 +203,16 @@ public class SlotPairDataLoader extends AbstractDataLoader implements DataLoader
     @Override
     protected void handleRename() {
         result.addRowMessage(ErrorMessage.COMMAND_NOT_VALID, CMD_HEADER);
+    }
+
+    @Override
+    public int getDataWidth() {
+        return DATA_WIDTH;
+    }
+
+    @Override
+    protected void setUpIndexesForFields() {
+        // TODO implement
+        throw new NotImplementedException();
     }
 }

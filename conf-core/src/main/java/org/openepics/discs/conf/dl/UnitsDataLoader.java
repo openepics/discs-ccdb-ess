@@ -22,7 +22,6 @@ package org.openepics.discs.conf.dl;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -36,6 +35,9 @@ import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.ErrorMessage;
 import org.openepics.discs.conf.ejb.UnitEJB;
 import org.openepics.discs.conf.ent.Unit;
+
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap.Builder;
 
 /**
  * Implementation of loader for units.
@@ -56,7 +58,11 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
     private static final String HDR_SYMBOL = "SYMBOL";
     private static final String HDR_DESC = "DESCRIPTION";
 
-    private static final List<String> KNOWN_COLUMNS = Arrays.asList(HDR_NAME, HDR_QUANTITY, HDR_SYMBOL, HDR_DESC);
+    private static final int COL_INDEX_NAME = 1;
+    private static final int COL_INDEX_QUANTITY = 2;
+    private static final int COL_INDEX_SYMBOL = 3;
+    private static final int COL_INDEX_DESC = 4;
+
     private static final Set<String> REQUIRED_COLUMNS = new HashSet<>(Arrays.asList(HDR_QUANTITY,
             HDR_SYMBOL, HDR_DESC));
 
@@ -81,26 +87,33 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
     }
 
     @Override
-    protected List<String> getKnownColumnNames() {
-        return KNOWN_COLUMNS;
-    }
-
-    @Override
     protected Set<String> getRequiredColumnNames() {
         return REQUIRED_COLUMNS;
     }
 
     @Override
-    protected String getUniqueColumnName() {
-        return HDR_NAME;
+    protected Integer getUniqueColumnIndex() {
+        return new Integer(COL_INDEX_NAME);
     }
 
     @Override
     protected void assignMembersForCurrentRow() {
-        nameFld = readCurrentRowCellForHeader(HDR_NAME);
-        quantityFld = readCurrentRowCellForHeader(HDR_QUANTITY);
-        symbolFld = readCurrentRowCellForHeader(HDR_SYMBOL);
-        descriptionFld = readCurrentRowCellForHeader(HDR_DESC);
+        nameFld = readCurrentRowCellForHeader(COL_INDEX_NAME);
+        quantityFld = readCurrentRowCellForHeader(COL_INDEX_QUANTITY);
+        symbolFld = readCurrentRowCellForHeader(COL_INDEX_SYMBOL);
+        descriptionFld = readCurrentRowCellForHeader(COL_INDEX_DESC);
+    }
+
+    @Override
+    protected void setUpIndexesForFields() {
+        final Builder<String, Integer> mapBuilder = ImmutableMap.builder();
+
+        mapBuilder.put(HDR_NAME, COL_INDEX_NAME);
+        mapBuilder.put(HDR_QUANTITY, COL_INDEX_QUANTITY);
+        mapBuilder.put(HDR_SYMBOL, COL_INDEX_SYMBOL);
+        mapBuilder.put(HDR_DESC, COL_INDEX_DESC);
+
+        indicies = mapBuilder.build();
     }
 
     @Override
@@ -153,7 +166,7 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
         try {
             final int startOldNameMarkerIndex = nameFld.indexOf("[");
             final int endOldNameMarkerIndex = nameFld.indexOf("]");
-            if (startOldNameMarkerIndex == -1 || endOldNameMarkerIndex == -1) {
+            if ((startOldNameMarkerIndex == -1) || (endOldNameMarkerIndex == -1)) {
                 result.addRowMessage(ErrorMessage.RENAME_MISFORMAT, HDR_NAME);
                 return;
             }
@@ -182,6 +195,11 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
         } catch (EJBTransactionRolledbackException e) {
             handleLoadingError(LOGGER, e);
         }
+    }
+
+    @Override
+    public int getDataWidth() {
+        return 5;
     }
 }
 

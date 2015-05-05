@@ -35,10 +35,23 @@ public interface DataLoader {
      * Saves data read from input file to the database
      *
      * @param inputRows {@link List} of all rows containing data from input file
-     * @param contextualData optional map of objects passed with string keys 
-     * 
+     * @param contextualData optional map of objects passed with string keys
+     *
      * @return {@link DataLoaderResult} describing the outcome of the data loading
      */
-    public DataLoaderResult loadDataToDatabase(List<Pair<Integer, List<String>>> inputRows,  
+    public DataLoaderResult loadDataToDatabase(List<Pair<Integer, List<String>>> inputRows,
             Map<String, Object> contextualData);
+
+    /**
+     * The index is defined by the import data template and is returned by the method because different data types
+     * could have a different template and the data could start at a different index.
+     * @return The '0 based' index of row at which the loader should expect data.
+     */
+    public int getImportDataStartIndex();
+
+    /**
+     * This number is data specific.
+     * @return the maximum number of columns containing data.
+     */
+    public int getDataWidth();
 }

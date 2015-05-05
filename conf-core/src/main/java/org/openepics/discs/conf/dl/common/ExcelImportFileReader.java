@@ -31,7 +31,6 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.openepics.discs.conf.util.ExcelCell;
 
-import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 
 /**
@@ -52,42 +51,35 @@ public class ExcelImportFileReader {
      * Excel workbook file.
      *
      * @param inputStream
-     *            the Excel file to parse. Only Excel file version &gt;=12.0
-     *            supported (.xslx).
+     *              the Excel file to parse. Only Excel file version &gt;=12.0
+     *              supported (.xslx).
+     * @param dataStartIndex
+     *              the index of the row where to start parsing the import data.
      * @return Only the lines from the first worksheet that contain a string
      *         value. Lines with the empty first cell are not part of the return
      *         set. Each row is represented as a pair of the row number and a list of columns.
      */
-    public static List<Pair<Integer, List<String>>> importExcelFile(InputStream inputStream) {
-        boolean headerRowFound = false;
+    public static List<Pair<Integer, List<String>>> importExcelFile(InputStream inputStream, int dataStartIndex, final int dataRowLength) {
         final List<Pair<Integer, List<String>>> result= new ArrayList<>();
 
         try {
             final XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
             final XSSFSheet sheet = workbook.getSheetAt(0);
 
-            int headerRowLength = 0;
-
             for (Row excelRow : sheet) {
-                if (Objects.equal(ExcelCell.asStringOrNull(excelRow.getCell(0), workbook), AbstractDataLoader.CMD_HEADER)) {
-                    headerRowFound = true;
-                    headerRowLength = excelRow.getLastCellNum();
+                if (excelRow.getRowNum() < dataStartIndex) {
+                    continue;
                 }
-
                 final String firstColumnValue = Strings.emptyToNull(ExcelCell.asStringOrNull(excelRow.getCell(0), workbook));
-                if (headerRowFound && firstColumnValue != null && !firstColumnValue.trim().isEmpty()) {
+                if (firstColumnValue != null && !firstColumnValue.trim().isEmpty()) {
                     final List<String> row = new ArrayList<>();
                     final int rowNumber = excelRow.getRowNum() + 1;
-                    final int lastCellIndex = headerRowLength > excelRow.getLastCellNum() ? headerRowLength : excelRow.getLastCellNum();
+                    final int lastCellIndex = dataRowLength > excelRow.getLastCellNum() ? dataRowLength : excelRow.getLastCellNum();
                     for (int i = 0; i < lastCellIndex; i++) {
                         row.add(ExcelCell.asStringOrNull(excelRow.getCell(i), workbook));
                     }
                     result.add(new ImmutablePair<Integer, List<String>>(rowNumber, row));
                 }
-            }
-
-            if (!headerRowFound) {
-                return null;
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
