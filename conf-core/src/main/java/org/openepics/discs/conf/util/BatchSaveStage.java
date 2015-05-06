@@ -17,7 +17,7 @@
 package org.openepics.discs.conf.util;
 
 /**
- * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
+ * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  *
  */
 public enum BatchSaveStage {

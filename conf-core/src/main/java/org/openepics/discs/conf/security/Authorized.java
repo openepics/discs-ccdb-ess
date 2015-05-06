@@ -31,7 +31,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 /**
  * Annotation used to define the use of interceptor for authorization checking.
  *
- * @author Andraž Požar &lt;andraz.pozar@cosylab.com&gt;
+ * @author <a href="mailto:andraz.pozar@cosylab.com">Andraž Požar</a>
  *
  */
 @InterceptorBinding

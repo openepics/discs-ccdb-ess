@@ -24,7 +24,7 @@ import org.openepics.discs.conf.util.UnhandledCaseException;
 /**
  * System defined slot relation types
  *
- * @author Miroslav Pavleski &lt;miroslav.pavleski@cosylab.com&gt;
+ * @author <a href="mailto:miroslav.pavleski@cosylab.com">Miroslav Pavleski</a>
  *
  */
 public enum SlotRelationName {

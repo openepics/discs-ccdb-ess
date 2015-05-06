@@ -38,7 +38,7 @@ import javax.validation.constraints.Size;
 * A super-class used for most of the Configuration Database entities.
 * Used as a {@link MappedSuperclass}.
 *
-* @author Miha Vitorovic
+* @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
 */
 @MappedSuperclass
 public class ConfigurationEntity implements Serializable {

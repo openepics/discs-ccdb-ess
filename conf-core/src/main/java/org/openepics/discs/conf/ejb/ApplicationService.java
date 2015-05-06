@@ -34,7 +34,7 @@ import org.openepics.discs.conf.ent.Config;
 /**
  * A service bean managing global application settings and database initialization.
  *
- * @author Andraž Požar &lt;andraz.pozar@cosylab.com&gt;
+ * @author <a href="mailto:andraz.pozar@cosylab.com">Andraž Požar</a>
  *
  */
 @Singleton

@@ -25,7 +25,7 @@ import java.util.List;
  * Classes implementing this interface are used to map between parent adnd child entities, where the relationship
  * exists.
  *
- * @author Miroslav Pavleski &lt;miroslav.pavleski@cosylab.com&gt;
+ * @author <a href="mailto:miroslav.pavleski@cosylab.com">Miroslav Pavleski</a>
  *
  * @param <T> the parent class
  * @param <S> the child class

@@ -28,7 +28,7 @@ import org.openepics.discs.conf.ent.EntityType;
  *
  * Helper class used to resolve the {@link EntityType} of configuration entities, relevant to audit logging and security
  *
- * @author Miroslav Pavleski &lt;miroslav.pavleski@cosylab.com&gt;
+ * @author <a href="mailto:miroslav.pavleski@cosylab.com">Miroslav Pavleski</a>
  *
  */
 public class EntityTypeResolver {

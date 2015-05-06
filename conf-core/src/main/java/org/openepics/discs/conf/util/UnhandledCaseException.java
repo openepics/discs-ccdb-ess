@@ -23,7 +23,7 @@ package org.openepics.discs.conf.util;
  * An exception signaling that an if/else-if/else or case branch that should be exhaustive encountered an unexpected
  * possibility.
  *
- * @author Marko Kolar &lt;marko.kolar@cosylab.com&gt;
+ * @author <a href="mailto:marko.kolar@cosylab.com">Marko Kolar</a>
  */
 public class UnhandledCaseException extends RuntimeException {
     private static final long serialVersionUID = -5102250300643496913L;

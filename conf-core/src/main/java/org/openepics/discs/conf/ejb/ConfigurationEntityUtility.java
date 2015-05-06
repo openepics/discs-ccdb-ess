@@ -30,7 +30,7 @@ import org.openepics.discs.conf.security.SecurityPolicy;
 /**
  * Helper class used to update modifedBy and modifiedAt of {@link ConfigurationEntity}-s
  *
- * @author Miroslav Pavleski &lt;miroslav.pavleski@cosylab.com&gt;
+ * @author <a href="mailto:miroslav.pavleski@cosylab.com">Miroslav Pavleski</a>
  *
  */
 @Dependent

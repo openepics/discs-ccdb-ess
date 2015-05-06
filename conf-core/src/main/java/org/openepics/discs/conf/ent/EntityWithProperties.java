@@ -24,7 +24,7 @@ import java.util.List;
 /**
  * An interface for accessing a list of property values associated with a given entity.
  *
- * @author Miroslav Pavleski &lt;miroslav.pavleski@cosylab.com&gt;
+ * @author <a href="mailto:miroslav.pavleski@cosylab.com">Miroslav Pavleski</a>
  *
  */
 public interface EntityWithProperties {

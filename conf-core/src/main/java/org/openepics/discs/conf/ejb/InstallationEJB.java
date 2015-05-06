@@ -40,7 +40,7 @@ import com.google.common.base.Preconditions;
 /**
  *
  * @author vuppala
- * @author Miroslav Pavleski &lt;miroslav.pavleski@cosylab.com&gt;
+ * @author <a href="mailto:miroslav.pavleski@cosylab.com">Miroslav Pavleski</a>
  */
 @Stateless
 public class InstallationEJB extends DAO<InstallationRecord> {

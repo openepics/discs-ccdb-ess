@@ -23,7 +23,7 @@ import org.openepics.discs.conf.ent.values.StrValue;
 import org.openepics.seds.api.datatypes.SedsScalar;
 
 /**
- * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
+ * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  *
  */
 public class StrValueConverter extends ValueConverter<StrValue> {

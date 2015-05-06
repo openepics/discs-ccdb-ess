@@ -46,9 +46,9 @@ import org.openepics.discs.conf.ent.SlotRelationName;
 /**
  * Implementation of data loader for slot pairs.
  *
- * @author Andraž Požar &lt;andraz.pozar@cosylab.com&gt;
- * @author Miroslav Pavleski &lt;miroslav.pavleski@cosylab.com&gt;
- * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
+ * @author <a href="mailto:andraz.pozar@cosylab.com">Andraž Požar</a>
+ * @author <a href="mailto:miroslav.pavleski@cosylab.com">Miroslav Pavleski</a>
+ * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  */
 @Stateless
 @SlotPairDataLoaderQualifier

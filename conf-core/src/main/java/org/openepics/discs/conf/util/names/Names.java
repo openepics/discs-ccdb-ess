@@ -30,7 +30,7 @@ import org.openepics.discs.conf.ent.Slot;
  * Interface for providing custom implementation to get names used
  * for auto complete when creating new installation {@link Slot}
  *
- * @author Andraž Požar &lt;andraz.pozar@cosylab.com&gt;
+ * @author <a href="mailto:andraz.pozar@cosylab.com">Andraž Požar</a>
  */
 public interface Names extends Serializable {
 

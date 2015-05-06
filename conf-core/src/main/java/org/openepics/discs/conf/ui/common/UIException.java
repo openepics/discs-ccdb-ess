@@ -23,7 +23,7 @@ package org.openepics.discs.conf.ui.common;
  * A checked exception class to declare UI methods that throw.
  * Needed to have JSF properly handle exceptional situations.
  *
- * @author Miroslav Pavleski &lt;miroslav.pavleski@cosylab.com&gt;
+ * @author <a href="mailto:miroslav.pavleski@cosylab.com">Miroslav Pavleski</a>
  *
  */
 public class UIException extends RuntimeException {

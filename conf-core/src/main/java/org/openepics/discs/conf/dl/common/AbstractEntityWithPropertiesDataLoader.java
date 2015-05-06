@@ -39,7 +39,7 @@ import org.openepics.discs.conf.util.Conversion;
  *
  * @param <S> The abstract data loader is used for all possible {@link PropertyValue} implementations.
  *
- * @author Miroslav Pavleski &lt;miroslav.pavleski@cosylab.com&gt;
+ * @author <a href="mailto:miroslav.pavleski@cosylab.com">Miroslav Pavleski</a>
  *
  */
 public abstract class AbstractEntityWithPropertiesDataLoader<S extends PropertyValue> extends AbstractDataLoader

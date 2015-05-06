@@ -25,7 +25,7 @@ import org.openepics.discs.conf.ent.EntityTypeOperation;
 /**
  * Abstract SecurityPolicy interface. Implementations should contain all needed A&amp;A functionality.
  *
- * @author Miroslav Pavleski &lt;miroslav.pavleski@cosylab.com&gt;
+ * @author <a href="mailto:miroslav.pavleski@cosylab.com">Miroslav Pavleski</a>
  *
  */
 public interface SecurityPolicy {

@@ -24,7 +24,7 @@ import org.primefaces.event.FileUploadEvent;
 /**
  * The interface contains all the methods that the UI control handling the import of a single Excel file must implement.
  *
- * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
+ * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  *
  */
 public interface ExcelSingleFileImportUIHandlers extends ExcelImportUIHandlers {

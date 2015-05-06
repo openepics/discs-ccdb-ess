@@ -29,7 +29,7 @@ import javax.persistence.Embeddable;
  *
  * ToDo: Maybe rename to more appropriate name PositionInformation
  *
- * @author Miroslav Pavleski &lt;miroslav.pavleski@cosylab.com&gt;
+ * @author <a href="mailto:miroslav.pavleski@cosylab.com">Miroslav Pavleski</a>
  *
  */
 @Embeddable

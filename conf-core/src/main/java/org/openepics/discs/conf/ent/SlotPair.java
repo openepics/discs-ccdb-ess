@@ -40,7 +40,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 /**
  *
  * @author vuppala
- * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
+ * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  */
 @Entity
 // does combined index make sense at all? We're searching for name anyhow...

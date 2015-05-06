@@ -33,8 +33,8 @@ import com.google.common.base.Preconditions;
  * This represents a result of load operation, consisting of the error status,
  * load {@link ValidationMessage}s, and the list of objects affected by the load.
  *
- * @author Sunil Sah &lt;sunil.sah@cosylab.com&gt;
- * @author Miroslav Pavleski &lt;miroslav.pavleski@cosylab.com&gt;
+ * @author <a href="mailto:sunil.sah@cosylab.com">Sunil Sah</a>
+ * @author <a href="mailto:miroslav.pavleski@cosylab.com">Miroslav Pavleski</a>
  */
 public class DataLoaderResult {
 

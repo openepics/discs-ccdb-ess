@@ -29,7 +29,7 @@ import org.openepics.names.client.NamesClient;
 import org.openepics.names.jaxb.DeviceNameElement;
 
 /**
- * @author Andraž Požar &lt;andraz.pozar@cosylab.com&gt;
+ * @author <a href="mailto:andraz.pozar@cosylab.com">Andraž Požar</a>
  *
  */
 @Alternative

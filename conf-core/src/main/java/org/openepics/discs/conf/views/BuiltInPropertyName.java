@@ -20,7 +20,7 @@
 package org.openepics.discs.conf.views;
 
 /**
- * @author Andraž Požar &lt;andraz.pozar@cosylab.com&gt;
+ * @author <a href="mailto:andraz.pozar@cosylab.com">Andraž Požar</a>
  * 
  * A common public interface for built in property name enumerators for device, component type and installation slot
  *

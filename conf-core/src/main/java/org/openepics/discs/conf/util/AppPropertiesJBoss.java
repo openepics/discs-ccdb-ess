@@ -25,7 +25,7 @@ import javax.enterprise.inject.Alternative;
 /**
  * Implementation of {@link AppProperties} that is suitable for non-Glassfish App. Servers (JBoss, Wildfly...)
  *
- * @author Miroslav Pavleski
+ * @author <a href="mailto:miroslav.pavleski@cosylab.com">Miroslav Pavleski</a>
  */
 @Alternative
 @ApplicationScoped

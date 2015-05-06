@@ -35,7 +35,7 @@ import org.openepics.discs.conf.dl.common.ExcelImportFileReader;
 /**
  * Common data loader handler for loading of all data.
  *
- * @author Andraž Požar &lt;andraz.pozar@cosylab.com&gt;
+ * @author <a href="mailto:andraz.pozar@cosylab.com">Andraž Požar</a>
  *
  */
 @Stateless

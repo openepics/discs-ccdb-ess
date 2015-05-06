@@ -24,7 +24,7 @@ import org.openepics.discs.conf.ent.values.EnumValue;
 import org.openepics.seds.api.datatypes.SedsEnum;
 
 /**
- * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
+ * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  *
  */
 public class EnumValueConverter extends ValueConverter<EnumValue> {

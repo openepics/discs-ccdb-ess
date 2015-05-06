@@ -30,7 +30,7 @@ import org.openepics.discs.conf.ent.EntityTypeOperation;
  *
  * @param <T> {@link Class} of the entity for which the logger is implemented
  *
- * @author Miroslav Pavleski &lt;miroslav.pavleski@cosylab.com&gt;
+ * @author <a href="mailto:miroslav.pavleski@cosylab.com">Miroslav Pavleski</a>
  */
 public interface EntityLogger<T> {
 

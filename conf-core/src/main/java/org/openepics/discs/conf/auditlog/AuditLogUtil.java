@@ -38,7 +38,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 /**
  * Helper class that is used to serialize to JSON removing unnecessary properties dynamically
  *
- * @author Miroslav Pavleski &lt;miroslav.pavleski@cosylab.com&gt;
+ * @author <a href="mailto:miroslav.pavleski@cosylab.com">Miroslav Pavleski</a>
  *
  */
 public class AuditLogUtil {

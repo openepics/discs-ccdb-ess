@@ -29,7 +29,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 /**
  * A static utility class for reading single Excel file cell
  *
- * @author Andraž Požar &lt;andraz.pozar@cosylab.com&gt;
+ * @author <a href="mailto:andraz.pozar@cosylab.com">Andraž Požar</a>
  */
 public class ExcelCell {
     private ExcelCell() {}

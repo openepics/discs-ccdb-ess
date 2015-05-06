@@ -20,7 +20,7 @@ import com.google.common.base.Preconditions;
 /**
  * An integer value.
  *
- * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
+ * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  *
  */
 public class IntValue implements Value {

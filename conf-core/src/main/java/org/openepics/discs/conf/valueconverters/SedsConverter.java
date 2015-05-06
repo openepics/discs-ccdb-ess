@@ -52,7 +52,7 @@ import org.openepics.seds.util.ScalarType;
 /**
  * A JPA converter to convert between the Value object and the data serialized in the database.
  *
- * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
+ * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  *
  */
 @Converter(autoApply=true)

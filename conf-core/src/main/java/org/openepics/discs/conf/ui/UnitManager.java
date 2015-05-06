@@ -64,7 +64,7 @@ import com.google.common.collect.Lists;
  * The Java EE managed bean for supporting UI actions for Unit manipulation.
  *
  * @author vuppala
- * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
+ * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  */
 @Named
 @ManagedBean

@@ -26,7 +26,7 @@ import org.openepics.seds.api.datatypes.SedsScalarArray;
 import org.openepics.seds.api.datatypes.SedsTable;
 
 /**
- * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
+ * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  *
  */
 public class DblTableValueConverter extends ValueConverter<DblTableValue> {

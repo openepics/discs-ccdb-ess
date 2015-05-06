@@ -42,7 +42,7 @@ import com.google.common.collect.Lists;
 
 /**
  * @author vuppala
- * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
+ * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  */
 @Named(value = "auditManager")
 @ViewScoped

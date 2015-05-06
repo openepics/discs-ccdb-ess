@@ -32,7 +32,7 @@ import com.google.common.base.Preconditions;
  * to the user. The objects of this class also contain a reference to the actual database entity the data is coming
  * from.
  *
- * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
+ * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  *
  */
 public class BuiltInProperty {

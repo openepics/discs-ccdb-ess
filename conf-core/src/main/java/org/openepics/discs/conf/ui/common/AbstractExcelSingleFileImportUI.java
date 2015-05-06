@@ -31,7 +31,7 @@ import com.google.common.io.ByteStreams;
 /**
  * A class to implement common code for all single file importers.
  *
- * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
+ * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  *
  */
 public abstract class AbstractExcelSingleFileImportUI implements ExcelSingleFileImportUIHandlers {

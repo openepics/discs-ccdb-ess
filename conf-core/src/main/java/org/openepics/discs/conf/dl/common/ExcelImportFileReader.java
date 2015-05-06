@@ -37,7 +37,7 @@ import com.google.common.base.Strings;
  * This class returns the excel spreadsheet as a list of rows. The first
  * element in each row is a row number, followed by the values of all columns.
  *
- * @author Andraž Požar &lt;andraz.pozar@cosylab.com&gt;
+ * @author <a href="mailto:andraz.pozar@cosylab.com">Andraž Požar</a>
  *
  */
 public class ExcelImportFileReader {

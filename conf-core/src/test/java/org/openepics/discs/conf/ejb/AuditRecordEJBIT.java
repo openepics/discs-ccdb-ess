@@ -43,7 +43,7 @@ import org.openepics.discs.conf.util.TestUtility;
 
 /**
  *
- * @author Miroslav Pavleski &lt;miroslav.pavleski@cosylab.com&gt;
+ * @author <a href="mailto:miroslav.pavleski@cosylab.com">Miroslav Pavleski</a>
  *
  */
 @RunWith(Arquillian.class)

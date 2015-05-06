@@ -42,7 +42,7 @@ import org.openepics.discs.conf.util.BuiltInDataType;
  * This EJB populates an empty database with mandatory data (data-types etc) and optional
  * (default login for DB security).
  *
- * @author Miroslav Pavleski &lt;miroslav.pavleski@cosylab.com&gt;
+ * @author <a href="mailto:miroslav.pavleski@cosylab.com">Miroslav Pavleski</a>
  */
 @Stateless
 public class InitialDBPopulation {

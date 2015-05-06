@@ -33,7 +33,7 @@ import com.google.common.collect.Lists;
 
 /**
  * The class stores view reprepsentarion of property values used in the device type add multiple property values dialog
- * @author Miha Vitorovič &lt;miha.vitorovic@cosylab.com&gt;
+ * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  */
 public class MultiPropertyValueView {
 
