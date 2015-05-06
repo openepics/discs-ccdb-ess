@@ -46,11 +46,14 @@ import com.google.common.collect.ImmutableMap.Builder;
  */
 public abstract class AbstractDataLoader implements DataLoader {
     // Command string constants
-    public static final String CMD_HEADER = "HEADER";
+    public static final String CMD_CREATE = "CREATE";
     public static final String CMD_UPDATE = "UPDATE";
     public static final String CMD_DELETE = "DELETE";
     public static final String CMD_RENAME = "RENAME";
     public static final String CMD_END = "END";
+
+    protected static final String HDR_OPERATION = "OPERATION";
+    protected static final int COL_INDEX_OPERATION = 0;
 
     public static final int DEFAULT_EXCEL_TAMPLATE_DATA_START_ROW = 5;
 
@@ -141,8 +144,11 @@ public abstract class AbstractDataLoader implements DataLoader {
                     case CMD_RENAME:
                         handleRename();
                         break;
+                    case CMD_CREATE:
+                        handleCreate();
+                        break;
                     default:
-                        result.addRowMessage(ErrorMessage.COMMAND_NOT_VALID, CMD_HEADER);
+                        result.addRowMessage(ErrorMessage.COMMAND_NOT_VALID, HDR_OPERATION);
                 }
             }
         }
@@ -204,7 +210,7 @@ public abstract class AbstractDataLoader implements DataLoader {
 
     /**
      * <p>
-     * Handle a row that contains an update command.
+     * Handle a row that contains an <code>UPDATE</code> command.
      * </p>
      * <p>
      * <b>Precondition:</b> {@link #assignMembersForCurrentRow()} has been invoked. This gives chance
@@ -215,7 +221,7 @@ public abstract class AbstractDataLoader implements DataLoader {
 
     /**
      * <p>
-     * Handle a row that contains a delete command.
+     * Handle a row that contains a <code>DELETE</code> command.
      * </p>
      * <p>
      * <b>Precondition:</b> {@link #assignMembersForCurrentRow()} has been invoked. This gives chance
@@ -226,7 +232,7 @@ public abstract class AbstractDataLoader implements DataLoader {
 
     /**
      * <p>
-     * Handle a row that contains a rename command.
+     * Handle a row that contains a <code>RENAME</code> command.
      * </p>
      * <p>
      * <b>Precondition:</b> {@link #assignMembersForCurrentRow()} has been invoked. This gives chance
@@ -234,6 +240,18 @@ public abstract class AbstractDataLoader implements DataLoader {
      * </p>
      */
     protected abstract void handleRename();
+
+    /**
+     * <p>
+     * Handle a row that contains a <code>CREATE</code> command.
+     * </p>
+     * <p>
+     * <b>Precondition:</b> {@link #assignMembersForCurrentRow()} has been invoked. This gives chance
+     * to the sub-class to extract row data for the call to this method.
+     * </p>
+     */
+    protected abstract void handleCreate();
+
 
     /**
      * Sub-classes should use this to get data from the context passed from caller.
@@ -255,7 +273,7 @@ public abstract class AbstractDataLoader implements DataLoader {
 
         final String command = currentRowData.get(COMMAND_INDEX);
         if (StringUtils.isEmpty(command)) {
-            result.addRowMessage(ErrorMessage.COMMAND_IS_MISSING, CMD_HEADER);
+            result.addRowMessage(ErrorMessage.COMMAND_IS_MISSING, HDR_OPERATION);
             return null;
         }
 
@@ -305,7 +323,7 @@ public abstract class AbstractDataLoader implements DataLoader {
 
         for (int i = 0; i < headerRow.size(); i++) {
             final String columnName = headerRow.get(i);
-            if (!Objects.equals(null, columnName) && !Objects.equals(CMD_HEADER, columnName)
+            if (!Objects.equals(null, columnName) && !Objects.equals(HDR_OPERATION, columnName)
                     && !knownColumns.containsKey(columnName)) {
                 // This method could affect the global error result
                 if (checkPropertyHeader(columnName)) {
@@ -367,7 +385,7 @@ public abstract class AbstractDataLoader implements DataLoader {
     protected void handleLoadingError(Logger logger, Exception e) { // NOSONAR
         logger.log(Level.FINE, e.getMessage(), e);
         if (e.getCause() instanceof org.openepics.discs.conf.security.SecurityException) {
-            result.addRowMessage(ErrorMessage.NOT_AUTHORIZED, CMD_HEADER);
+            result.addRowMessage(ErrorMessage.NOT_AUTHORIZED, HDR_OPERATION);
         } else {
             result.addRowMessage(ErrorMessage.SYSTEM_EXCEPTION);
         }

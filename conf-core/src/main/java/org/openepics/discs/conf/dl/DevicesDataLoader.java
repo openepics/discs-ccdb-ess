@@ -123,13 +123,13 @@ public class DevicesDataLoader extends AbstractEntityWithPropertiesDataLoader<De
 
     @Override
     protected void handleUpdate() {
-        if (deviceEJB.findDeviceBySerialNumber(serial) != null) {
+        final Device deviceToUpdate = deviceEJB.findDeviceBySerialNumber(serial);
+        if (deviceToUpdate != null) {
             final @Nullable ComponentType compType = comptypeEJB.findByName(componentType);
             if (compType == null) {
                 result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_CTYPE);
             } else {
                 try {
-                    final Device deviceToUpdate = deviceEJB.findDeviceBySerialNumber(serial);
                     addOrUpdateDevice(deviceToUpdate, compType, description, status, manufSerial, location,
                             purchaseOrder, asmPosition, asmDescription, manufacturer, manufModel);
                     addOrUpdateProperties(deviceToUpdate);
@@ -138,6 +138,14 @@ public class DevicesDataLoader extends AbstractEntityWithPropertiesDataLoader<De
                 }
             }
         } else {
+            result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_SERIAL);
+        }
+    }
+
+    @Override
+    protected void handleCreate() {
+        final Device deviceToUpdate = deviceEJB.findDeviceBySerialNumber(serial);
+        if (deviceToUpdate == null) {
             final @Nullable ComponentType compType = comptypeEJB.findByName(componentType);
             if (compType == null) {
                 result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_CTYPE);
@@ -152,6 +160,8 @@ public class DevicesDataLoader extends AbstractEntityWithPropertiesDataLoader<De
                     handleLoadingError(LOGGER, e);
                 }
             }
+        } else {
+            result.addRowMessage(ErrorMessage.NAME_ALREADY_EXISTS, HDR_SERIAL);
         }
     }
 

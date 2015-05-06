@@ -29,6 +29,7 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 
 import org.apache.commons.lang.NotImplementedException;
+import org.openepics.discs.conf.dl.common.AbstractDataLoader;
 import org.openepics.discs.conf.dl.common.AbstractEntityWithPropertiesDataLoader;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.ErrorMessage;
@@ -99,7 +100,7 @@ public class ComponentTypesDataLoader extends AbstractEntityWithPropertiesDataLo
         final ComponentType componentTypeToUpdate = comptypeEJB.findByName(nameFld);
         if (componentTypeToUpdate != null) {
             if (componentTypeToUpdate.getName().equals(SlotEJB.ROOT_COMPONENT_TYPE)) {
-                result.addRowMessage(ErrorMessage.NOT_AUTHORIZED, CMD_HEADER);
+                result.addRowMessage(ErrorMessage.NOT_AUTHORIZED, AbstractDataLoader.HDR_OPERATION);
             }
             try {
                 componentTypeToUpdate.setDescription(descriptionFld);
@@ -108,6 +109,14 @@ public class ComponentTypesDataLoader extends AbstractEntityWithPropertiesDataLo
                 handleLoadingError(LOGGER, e);
             }
         } else {
+            result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_NAME);
+        }
+    }
+
+    @Override
+    protected void handleCreate() {
+        final ComponentType componentTypeToUpdate = comptypeEJB.findByName(nameFld);
+        if (componentTypeToUpdate == null) {
             try {
                 final ComponentType compTypeToAdd = new ComponentType(nameFld);
                 compTypeToAdd.setDescription(descriptionFld);
@@ -116,6 +125,8 @@ public class ComponentTypesDataLoader extends AbstractEntityWithPropertiesDataLo
             } catch (EJBTransactionRolledbackException e) {
                 handleLoadingError(LOGGER, e);
             }
+        } else {
+            result.addRowMessage(ErrorMessage.NAME_ALREADY_EXISTS, HDR_NAME);
         }
     }
 
@@ -127,7 +138,7 @@ public class ComponentTypesDataLoader extends AbstractEntityWithPropertiesDataLo
                 result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_NAME);
             } else {
                 if (SlotEJB.ROOT_COMPONENT_TYPE.equals(componentTypeToDelete.getName())) {
-                    result.addRowMessage(ErrorMessage.NOT_AUTHORIZED, CMD_HEADER);
+                    result.addRowMessage(ErrorMessage.NOT_AUTHORIZED, AbstractDataLoader.HDR_OPERATION);
                 }
                 comptypeEJB.delete(componentTypeToDelete);
             }
@@ -152,7 +163,7 @@ public class ComponentTypesDataLoader extends AbstractEntityWithPropertiesDataLo
             final ComponentType componentTypeToRename = comptypeEJB.findByName(oldName);
             if (componentTypeToRename != null) {
                 if (SlotEJB.ROOT_COMPONENT_TYPE.equals(componentTypeToRename.getName())) {
-                    result.addRowMessage(ErrorMessage.NOT_AUTHORIZED, CMD_HEADER);
+                    result.addRowMessage(ErrorMessage.NOT_AUTHORIZED, AbstractDataLoader.HDR_OPERATION);
                     return;
                 }
                 if (comptypeEJB.findByName(newName) != null) {

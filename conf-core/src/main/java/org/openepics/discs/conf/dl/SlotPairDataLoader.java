@@ -184,6 +184,12 @@ public class SlotPairDataLoader extends AbstractDataLoader implements DataLoader
     }
 
     @Override
+    protected void handleCreate() {
+        // TODO implement
+        throw new NotImplementedException();
+    }
+
+    @Override
     protected void handleDelete() {
         final List<SlotPair> slotPairs = slotPairEJB.findSlotPairsByParentChildRelation(childString, parentString,
                 slotRelationName);
@@ -202,7 +208,7 @@ public class SlotPairDataLoader extends AbstractDataLoader implements DataLoader
 
     @Override
     protected void handleRename() {
-        result.addRowMessage(ErrorMessage.COMMAND_NOT_VALID, CMD_HEADER);
+        result.addRowMessage(ErrorMessage.COMMAND_NOT_VALID, AbstractDataLoader.HDR_OPERATION);
     }
 
     @Override

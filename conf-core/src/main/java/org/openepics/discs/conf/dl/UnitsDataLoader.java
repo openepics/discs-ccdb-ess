@@ -134,6 +134,13 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
                 handleLoadingError(LOGGER, e);
             }
         } else {
+            result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_NAME);
+        }
+    }
+
+    @Override
+    protected void handleCreate() {
+        if (!unitByName.containsKey(nameFld)) {
             try {
                 final Unit unitToAdd = new Unit(nameFld, quantityFld, symbolFld, descriptionFld);
                 unitEJB.add(unitToAdd);
@@ -141,6 +148,8 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
             } catch (EJBTransactionRolledbackException e) {
                 handleLoadingError(LOGGER, e);
             }
+        } else {
+            result.addRowMessage(ErrorMessage.NAME_ALREADY_EXISTS, HDR_NAME);
         }
     }
 

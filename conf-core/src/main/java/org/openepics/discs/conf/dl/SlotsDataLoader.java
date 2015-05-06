@@ -32,6 +32,7 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 
 import org.apache.commons.lang.NotImplementedException;
+import org.openepics.discs.conf.dl.common.AbstractDataLoader;
 import org.openepics.discs.conf.dl.common.AbstractEntityWithPropertiesDataLoader;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
@@ -148,34 +149,61 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
 
     @Override
     protected void handleUpdate() {
-        @Nullable Slot slot = slotEJB.findByName(name);
-        @Nullable final ComponentType compType = comptypeEJB.findByName(componentTypeString);
+        @Nullable final ComponentType compType = checkSlotType();
         if (compType == null) {
-            result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_CTYPE);
             return;
         }
 
-        if (SlotEJB.ROOT_COMPONENT_TYPE.equals(compType.getName())) {
-            result.addRowMessage(ErrorMessage.NOT_AUTHORIZED, CMD_HEADER);
+        @Nullable Slot slot = slotEJB.findByName(name);
+        if (slot != null) {
+            try {
+                addOrUpdateSlot(slot, compType);
+                addOrUpdateProperties(slot);
+            } catch (EJBTransactionRolledbackException e) {
+                handleLoadingError(LOGGER, e);
+            }
+        } else {
+            result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_NAME);
+        }
+    }
+
+    @Override
+    protected void handleCreate() {
+        @Nullable final ComponentType compType = checkSlotType();
+        if (compType == null) {
             return;
         }
 
-        try {
-            // Handle insertion
-            if (slot == null) {
+        @Nullable Slot slot = slotEJB.findByName(name);
+        if (slot == null) {
+            try {
                 slot = new Slot(name, isHosting);
                 addOrUpdateSlot(slot, compType);
                 newSlots.add(slot);
 
                 slotEJB.addSlotToParentWithPropertyDefs(slot, null, true);
-            } else {
-                addOrUpdateSlot(slot, compType);
+                addOrUpdateProperties(slot);
+            } catch (EJBTransactionRolledbackException e) {
+                handleLoadingError(LOGGER, e);
             }
-            addOrUpdateProperties(slot);
-
-        } catch (EJBTransactionRolledbackException e) {
-            handleLoadingError(LOGGER, e);
+        } else {
+            result.addRowMessage(ErrorMessage.NAME_ALREADY_EXISTS, HDR_NAME);
         }
+    }
+
+    private ComponentType checkSlotType() {
+        @Nullable final ComponentType compType = comptypeEJB.findByName(componentTypeString);
+        if (compType == null) {
+            result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_CTYPE);
+            return null;
+        }
+
+        if (SlotEJB.ROOT_COMPONENT_TYPE.equals(compType.getName())) {
+            result.addRowMessage(ErrorMessage.NOT_AUTHORIZED, AbstractDataLoader.HDR_OPERATION);
+            return null;
+        }
+
+        return compType;
     }
 
     @Override
@@ -189,7 +217,7 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
 
             final ComponentType compType = slotToDelete.getComponentType();
             if (SlotEJB.ROOT_COMPONENT_TYPE.equals(compType.getName())) {
-                result.addRowMessage(ErrorMessage.NOT_AUTHORIZED, CMD_HEADER);
+                result.addRowMessage(ErrorMessage.NOT_AUTHORIZED, AbstractDataLoader.HDR_OPERATION);
                 return;
             }
             slotEJB.delete(slotToDelete);
@@ -223,7 +251,7 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
 
             final ComponentType compType = slotToRename.getComponentType();
             if (compType.getName().equals(SlotEJB.ROOT_COMPONENT_TYPE)) {
-                result.addRowMessage(ErrorMessage.NOT_AUTHORIZED, CMD_HEADER);
+                result.addRowMessage(ErrorMessage.NOT_AUTHORIZED, AbstractDataLoader.HDR_OPERATION);
                 return;
             }
             slotToRename.setName(newName);

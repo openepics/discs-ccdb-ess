@@ -135,6 +135,13 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
                 handleLoadingError(LOGGER, e);
             }
         } else {
+            result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_NAME);
+        }
+    }
+
+    @Override
+    protected void handleCreate() {
+        if (!propertyByName.containsKey(nameFld)) {
             try {
                 final Property propertyToAdd = new Property(nameFld, descFld);
                 setPropertyUnit(propertyToAdd, unitFld, false);
@@ -148,8 +155,11 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
             } catch (EJBTransactionRolledbackException e) {
                 handleLoadingError(LOGGER, e);
             }
+        } else {
+            result.addRowMessage(ErrorMessage.NAME_ALREADY_EXISTS, HDR_NAME);
         }
     }
+
 
     @Override
     protected void handleDelete() {
