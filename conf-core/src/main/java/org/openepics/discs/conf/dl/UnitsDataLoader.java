@@ -44,6 +44,7 @@ import com.google.common.collect.ImmutableMap.Builder;
  *
  * @author <a href="mailto:andraz.pozar@cosylab.com">Andraž Požar</a>
  * @author <a href="mailto:miroslav.pavleski@cosylab.com">Miroslav Pavleski</a>
+ * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  *
  */
 @Stateless
@@ -54,17 +55,17 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
 
     // Header column name constants
     private static final String HDR_NAME = "NAME";
-    private static final String HDR_QUANTITY = "QUANTITY";
-    private static final String HDR_SYMBOL = "SYMBOL";
     private static final String HDR_DESC = "DESCRIPTION";
+    private static final String HDR_SYMBOL = "SYMBOL";
 
     private static final int COL_INDEX_NAME = 1;
-    private static final int COL_INDEX_QUANTITY = 2;
+    private static final int COL_INDEX_DESC = 2;
     private static final int COL_INDEX_SYMBOL = 3;
-    private static final int COL_INDEX_DESC = 4;
 
-    private static final Set<String> REQUIRED_COLUMNS = new HashSet<>(Arrays.asList(HDR_QUANTITY,
-            HDR_SYMBOL, HDR_DESC));
+    // TODO remove after DB model change.
+    private static final String QUANTITY_UNUSED = "<unused>";
+
+    private static final Set<String> REQUIRED_COLUMNS = new HashSet<>(Arrays.asList(HDR_SYMBOL, HDR_DESC));
 
     @Inject private UnitEJB unitEJB;
 
@@ -74,7 +75,7 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
     private Map<String, Unit> unitByName;
 
     // Row data for individual cells within a row
-    private String nameFld, quantityFld, symbolFld, descriptionFld;
+    private String nameFld, symbolFld, descriptionFld;
 
     @Override
     protected void init() {
@@ -99,7 +100,6 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
     @Override
     protected void assignMembersForCurrentRow() {
         nameFld = readCurrentRowCellForHeader(COL_INDEX_NAME);
-        quantityFld = readCurrentRowCellForHeader(COL_INDEX_QUANTITY);
         symbolFld = readCurrentRowCellForHeader(COL_INDEX_SYMBOL);
         descriptionFld = readCurrentRowCellForHeader(COL_INDEX_DESC);
     }
@@ -109,7 +109,6 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
         final Builder<String, Integer> mapBuilder = ImmutableMap.builder();
 
         mapBuilder.put(HDR_NAME, COL_INDEX_NAME);
-        mapBuilder.put(HDR_QUANTITY, COL_INDEX_QUANTITY);
         mapBuilder.put(HDR_SYMBOL, COL_INDEX_SYMBOL);
         mapBuilder.put(HDR_DESC, COL_INDEX_DESC);
 
@@ -126,7 +125,7 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
                     result.addRowMessage(ErrorMessage.MODIFY_IN_USE, HDR_SYMBOL);
                 } else {
                     unitToUpdate.setDescription(descriptionFld);
-                    unitToUpdate.setQuantity(quantityFld);
+                    unitToUpdate.setQuantity(QUANTITY_UNUSED);
                     unitToUpdate.setSymbol(symbolFld);
                     unitEJB.save(unitToUpdate);
                 }
@@ -142,7 +141,7 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
     protected void handleCreate() {
         if (!unitByName.containsKey(nameFld)) {
             try {
-                final Unit unitToAdd = new Unit(nameFld, quantityFld, symbolFld, descriptionFld);
+                final Unit unitToAdd = new Unit(nameFld, QUANTITY_UNUSED, symbolFld, descriptionFld);
                 unitEJB.add(unitToAdd);
                 unitByName.put(unitToAdd.getName(), unitToAdd);
             } catch (EJBTransactionRolledbackException e) {
@@ -209,6 +208,12 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
     @Override
     public int getDataWidth() {
         return 5;
+    }
+
+    @Override
+    public int getImportDataStartIndex() {
+        // the new template starts with data in row 9 (0 based == 8)
+        return 8;
     }
 }
 
