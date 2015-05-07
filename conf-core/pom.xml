@@ -341,9 +341,9 @@
 
             <dependencies>
                 <dependency>
-                    <groupId>se.lu.esss.ics.rbac</groupId>
+                    <groupId>se.esss.ics.rbac</groupId>
                     <artifactId>loginmodules</artifactId>
-                    <version>1.2.0</version>
+                    <version>2.0.0</version>
                 </dependency>
                 <dependency>
                     <groupId>org.openepics</groupId>
