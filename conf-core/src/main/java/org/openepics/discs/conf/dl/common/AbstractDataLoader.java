@@ -67,9 +67,7 @@ public abstract class AbstractDataLoader implements DataLoader {
     private Map<String, Object> contextualData;
 
     /**
-     * Indexes of all relevant fields within a row, stateful, always should be refreshed from within
-     * {@link #updateHeaderRowAndIndexes(Pair)}. Changes when new headers are present
-     * ("HEADER" command appears)
+     * Indexes of all relevant fields within a row, stateful.
      */
     protected Map<String, Integer> indicies = null;
 
@@ -80,7 +78,7 @@ public abstract class AbstractDataLoader implements DataLoader {
     private Map<String, Integer> propertyIndicies = null;
 
     /** For stateful row processing, represents the data for the current row, private, exposed to sub-classes by
-     * {@link AbstractDataLoader}{@link #readCurrentRowCellForHeader(String)}
+     * {@link #readCurrentRowCellForHeader(String)}
      */
     private List<String> currentRowData = null;
 
@@ -305,12 +303,8 @@ public abstract class AbstractDataLoader implements DataLoader {
     }
 
     /**
-     * Returns a map of row data indices given a hether row data AND checks whether required columns are missing from
-     * the header
-     *
-     * @param headerRow a heather row data
-     *
-     * @return the requested map or <code>null</code> in case of missing fields
+     * Sets up a map of row data indices based on the template header row data. This method is implemented in the
+     * actual data loader implementation.
      */
     protected abstract void setUpIndexesForFields();
 
@@ -350,7 +344,7 @@ public abstract class AbstractDataLoader implements DataLoader {
     /**
      * During row processing, returns a {@link String} cell within the row that belongs to given column
      *
-     * @param columnName the header column name
+     * @param index The index of the column to read
      * @return the contents of the appropriate column cell within the current row
      */
     protected String readCurrentRowCellForHeader(int index) {

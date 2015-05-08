@@ -55,11 +55,15 @@ public class ExcelImportFileReader {
      *              supported (.xslx).
      * @param dataStartIndex
      *              the index of the row where to start parsing the import data.
+     * @param dataRowLength
+     *              the length of each row if it contains all the data. This length is usually defined by the Excel
+     *              template.
      * @return Only the lines from the first worksheet that contain a string
      *         value. Lines with the empty first cell are not part of the return
      *         set. Each row is represented as a pair of the row number and a list of columns.
      */
-    public static List<Pair<Integer, List<String>>> importExcelFile(InputStream inputStream, int dataStartIndex, final int dataRowLength) {
+    public static List<Pair<Integer, List<String>>> importExcelFile(InputStream inputStream, int dataStartIndex,
+                                                                                        final int dataRowLength) {
         final List<Pair<Integer, List<String>>> result= new ArrayList<>();
 
         try {
