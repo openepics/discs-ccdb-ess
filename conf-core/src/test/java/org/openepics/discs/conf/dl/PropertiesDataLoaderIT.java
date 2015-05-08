@@ -86,11 +86,12 @@ public class PropertiesDataLoaderIT {
     @Transactional(TransactionMode.DISABLED)
     public void propertiesImportRequiredFieldsFailureTest() throws IOException {
         final List<ValidationMessage> expectedValidationMessages = new ArrayList<>();
-        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 4, HDR_NAME));
-        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 5, HDR_DESC));
-        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 8, HDR_DATATYPE));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 6, HDR_NAME));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 7, HDR_DESC));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 10, HDR_DATATYPE));
 
-        final InputStream testDataStream = this.getClass().getResourceAsStream(TestUtility.DATALOADERS_PATH + "properties-required-fields-failure-test.xlsx");
+        final InputStream testDataStream = this.getClass().getResourceAsStream(TestUtility.DATALOADERS_PATH
+                                                                    + "properties-required-fields-failure-test.xlsx");
         final DataLoaderResult loaderResult = dataLoaderHandler.loadData(testDataStream, propertiesDataLoader);
         testDataStream.close();
 
@@ -102,10 +103,12 @@ public class PropertiesDataLoaderIT {
     @Transactional(TransactionMode.DISABLED)
     public void propertiesImportEntityNotFoundFailureTest() throws IOException {
         final List<ValidationMessage> expectedValidationMessages = new ArrayList<>();
-        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, 3, HDR_UNIT));
-        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, 4, HDR_DATATYPE));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, 6, HDR_UNIT));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, 7, HDR_DATATYPE));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, 8, HDR_NAME));
 
-        final InputStream testDataStream = this.getClass().getResourceAsStream(TestUtility.DATALOADERS_PATH + "properties-entity-not-found-failure-test.xlsx");
+        final InputStream testDataStream = this.getClass().getResourceAsStream(TestUtility.DATALOADERS_PATH
+                                                                    + "properties-entity-not-found-failure-test.xlsx");
         final DataLoaderResult loaderResult = dataLoaderHandler.loadData(testDataStream, propertiesDataLoader);
         testDataStream.close();
 
@@ -117,7 +120,8 @@ public class PropertiesDataLoaderIT {
     @ApplyScriptAfter(value = "truncate_database.sql")
     @Transactional(TransactionMode.DISABLED)
     public void propertiesImportTest() throws IOException {
-        final InputStream testDataStream = this.getClass().getResourceAsStream(TestUtility.DATALOADERS_PATH + "properties-test.xlsx");
+        final InputStream testDataStream = this.getClass().getResourceAsStream(TestUtility.DATALOADERS_PATH
+                                                                                        + "properties-test.xlsx");
         final DataLoaderResult loaderResult = dataLoaderHandler.loadData(testDataStream, propertiesDataLoader);
         testDataStream.close();
 

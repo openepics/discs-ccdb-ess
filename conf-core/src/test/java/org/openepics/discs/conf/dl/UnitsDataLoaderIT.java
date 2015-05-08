@@ -58,7 +58,6 @@ public class UnitsDataLoaderIT {
     @Inject private UnitEJB unitEJB;
 
     final static private String HDR_NAME = "NAME";
-    final static private String HDR_QUANTITY = "QUANTITY";
     final static private String HDR_SYMBOL = "SYMBOL";
     final static private String HDR_DESC = "DESCRIPTION";
 
@@ -79,12 +78,12 @@ public class UnitsDataLoaderIT {
     @Transactional(TransactionMode.DISABLED)
     public void unitsImportRequiredFieldsFailure() throws IOException {
         final List<ValidationMessage> expectedValidationMessages = new ArrayList<>();
-        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 4, HDR_NAME));
-        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 5, HDR_QUANTITY));
-        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 6, HDR_SYMBOL));
-        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 7, HDR_DESC));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 10, HDR_NAME));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 12, HDR_SYMBOL));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 13, HDR_DESC));
 
-        final InputStream testDataStream = this.getClass().getResourceAsStream(TestUtility.DATALOADERS_PATH + "units-required-fields-failure-test.xlsx");
+        final InputStream testDataStream = this.getClass().getResourceAsStream(TestUtility.DATALOADERS_PATH
+                                                                        + "units-required-fields-failure-test.xlsx");
         final DataLoaderResult loaderResult = dataLoaderHandler.loadData(testDataStream, unitsDataLoader);
         testDataStream.close();
 
@@ -95,7 +94,8 @@ public class UnitsDataLoaderIT {
     @Test
     @Transactional(TransactionMode.DISABLED)
     public void unitsImportTest() throws IOException {
-        final InputStream testDataStream = this.getClass().getResourceAsStream(TestUtility.DATALOADERS_PATH + "units-test.xlsx");
+        final InputStream testDataStream = this.getClass().getResourceAsStream(TestUtility.DATALOADERS_PATH
+                                                                        + "units-test.xlsx");
         final DataLoaderResult loaderResult = dataLoaderHandler.loadData(testDataStream, unitsDataLoader);
         testDataStream.close();
 
