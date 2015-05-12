@@ -98,7 +98,7 @@
             </p:panel>
 
             <p:dataTable value="#{controller.loaderResult.messages}" var="errorRow" scrollable="true" scrollHeight="180" 
-                    style="max-width: 100%; margin-bottom: 1em; width: 58em; ">
+                    style="max-width: 100%; margin-bottom: 1em; width: 58em;" rendered="#{controller.loaderResult.error}">
                 <p:column headerText="Row" width="15%">
                     <h:outputText value="#{errorRow.row}" />
                 </p:column>
