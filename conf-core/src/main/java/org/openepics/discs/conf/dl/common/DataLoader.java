@@ -31,6 +31,14 @@ import org.apache.commons.lang3.tuple.Pair;
  *
  */
 public interface DataLoader {
+
+    // Command string constants
+    public static final String CMD_CREATE = "CREATE";
+    public static final String CMD_UPDATE = "UPDATE";
+    public static final String CMD_DELETE = "DELETE";
+    public static final String CMD_RENAME = "RENAME";
+    public static final String CMD_END = "END";
+
     /**
      * Saves data read from input file to the database
      *

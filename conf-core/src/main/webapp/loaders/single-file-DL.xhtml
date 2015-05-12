@@ -24,6 +24,61 @@
             </h:panelGroup>
         </p:dialog>
 
+        <p:dialog id="importStatsDialog" widgetVar="importStatsDialog" modal="true" resizable="false">
+            <f:facet name="header">
+                <h:outputText value="File uploaded" />
+            </f:facet>
+            <p:panelGrid style="margin-bottom: 1em;" styleClass="noBorders">
+                <p:row>
+                    <p:column styleClass="alignRight">
+                        <h:outputText value="Data rows:" />
+                    </p:column>
+                    <p:column style="width: 5em;">
+                        <h:outputText value="#{controller.importFileStatistics.dataRows}" />
+                    </p:column>
+                </p:row>
+
+                <p:row>
+                    <p:column styleClass="alignRight">
+                        <h:outputText value="Create rows:" />
+                    </p:column>
+                    <p:column style="width: 5em;">
+                        <h:outputText value="#{controller.importFileStatistics.createRows}" />
+                    </p:column>
+                </p:row>
+
+                <p:row>
+                    <p:column styleClass="alignRight">
+                        <h:outputText value="Update rows:" />
+                    </p:column>
+                    <p:column style="width: 5em;">
+                        <h:outputText value="#{controller.importFileStatistics.updateRows}" />
+                    </p:column>
+                </p:row>
+
+                <p:row>
+                    <p:column styleClass="alignRight">
+                        <h:outputText value="Delete rows:" />
+                    </p:column>
+                    <p:column style="width: 5em;">
+                        <h:outputText value="#{controller.importFileStatistics.deleteRows}" />
+                    </p:column>
+                </p:row>
+
+                <p:row>
+                    <p:column styleClass="alignRight">
+                        <h:outputText value="Skipped rows:" />
+                    </p:column>
+                    <p:column style="width: 5em;">
+                        <h:outputText 
+                            value="#{controller.importFileStatistics.dataRows - controller.importFileStatistics.importRows}" />
+                    </p:column>
+                </p:row>
+            </p:panelGrid>
+            <p:commandButton value="Close" type="button" styleClass="dialogButton" 
+                    onclick="PF('importStatsDialog').hide();" />
+        </p:dialog>
+
         <p:dialog id="resultDialog" widgetVar="resultDialog" modal="true" style="max-width: 90%; max-height: 600px;" 
                 visible="#{controller.importFileName != null and controller.loaderResult != null}" resizable="false" 
                 closable="false">  
@@ -32,7 +87,7 @@
                     value="#{!controller.loaderResult.error ? 'Import Successful' : 'Error in Import Spreadsheet'}" />
             </f:facet>
 
-            <p:panel styleClass="para" >
+            <p:panel styleClass="noBorders para">
                 <h:panelGroup rendered="#{controller.loaderResult.error}" layout="block">
                     Data cannot be imported since there are some errors in the spreadsheet. 
                     Please correct the errors and try the import again.
@@ -42,17 +97,70 @@
                 </h:panelGroup>
             </p:panel>
 
-            <p:panel rendered="#{controller.loaderResult.error}" style="max-width: 100%; max-height: 400px; overflow: auto">
-                <pre>
-                    <h:outputText value="#{controller.loaderResult.toString()}" />
-                </pre>
-            </p:panel>
+            <p:dataTable value="#{controller.loaderResult.messages}" var="errorRow" scrollable="true" scrollHeight="180" 
+                    style="max-width: 100%; margin-bottom: 1em; width: 58em; ">
+                <p:column headerText="Row" width="15%">
+                    <h:outputText value="#{errorRow.row}" />
+                </p:column>
+                <p:column headerText="Column" width="15%">
+                    <h:outputText value="#{errorRow.column}" />
+                </p:column>
+                <p:column headerText="Column" width="70%">
+                    <h:outputText value="#{errorRow.message.toString()}" />
+                </p:column>
+            </p:dataTable>
 
-            <p:spacer height="16"/>
-            <h:form id="resultDialogForm">
-                <p:commandButton value="Close" styleClass="dialogButton" onclick="PF('resultDialog').hide();" 
-                    style="margin-top: 1ex;" />
-            </h:form>
+            <p:panelGrid style="margin-bottom: 1em;" styleClass="noBorders" 
+                    rendered="#{!controller.loaderResult.error}">
+                <p:row>
+                    <p:column styleClass="alignRight">
+                        <h:outputText value="Data rows:" />
+                    </p:column>
+                    <p:column style="width: 5em;">
+                        <h:outputText value="#{controller.importFileStatistics.dataRows}" />
+                    </p:column>
+                </p:row>
+
+                <p:row>
+                    <p:column styleClass="alignRight">
+                        <h:outputText value="Create rows:" />
+                    </p:column>
+                    <p:column style="width: 5em;">
+                        <h:outputText value="#{controller.importFileStatistics.createRows}" />
+                    </p:column>
+                </p:row>
+
+                <p:row>
+                    <p:column styleClass="alignRight">
+                        <h:outputText value="Update rows:" />
+                    </p:column>
+                    <p:column style="width: 5em;">
+                        <h:outputText value="#{controller.importFileStatistics.updateRows}" />
+                    </p:column>
+                </p:row>
+
+                <p:row>
+                    <p:column styleClass="alignRight">
+                        <h:outputText value="Delete rows:" />
+                    </p:column>
+                    <p:column style="width: 5em;">
+                        <h:outputText value="#{controller.importFileStatistics.deleteRows}" />
+                    </p:column>
+                </p:row>
+
+                <p:row>
+                    <p:column styleClass="alignRight">
+                        <h:outputText value="Skipped rows:" />
+                    </p:column>
+                    <p:column style="width: 5em;">
+                        <h:outputText 
+                            value="#{controller.importFileStatistics.dataRows - controller.importFileStatistics.importRows}" />
+                    </p:column>
+                </p:row>
+            </p:panelGrid>
+
+            <p:commandButton value="Close" type="button" styleClass="dialogButton" onclick="PF('resultDialog').hide();" 
+                style="margin-top: 1ex;" />
         </p:dialog>
     </h:form>
 </ui:composition>

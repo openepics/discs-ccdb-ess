@@ -54,6 +54,7 @@ import org.openepics.discs.conf.ui.export.SimpleTableExporter;
 import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.views.UnitView;
 import org.primefaces.context.RequestContext;
+import org.primefaces.event.FileUploadEvent;
 
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
@@ -337,5 +338,14 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
     @Override
     public ExportSimpleTableDialog getSimpleTableDialog() {
         return simpleTableExporterDialog;
+    }
+
+    @Override
+    public void handleImportFileUpload(FileUploadEvent event) {
+        super.handleImportFileUpload(event);
+        importFileStatistics = getImportedFileStatistics(unitsDataLoader);
+        // TODO once all import handling is the same, handled by single-file-DL.xhtml / fileUpload / oncomplete
+        RequestContext.getCurrentInstance().update("importUnitsForm:importStatsDialog");
+        RequestContext.getCurrentInstance().execute("PF('importStatsDialog').show();");
     }
 }

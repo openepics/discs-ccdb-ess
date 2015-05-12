@@ -56,6 +56,7 @@ import org.openepics.discs.conf.util.BatchSaveStage;
 import org.openepics.discs.conf.util.BuiltInDataType;
 import org.openepics.discs.conf.util.Utility;
 import org.primefaces.context.RequestContext;
+import org.primefaces.event.FileUploadEvent;
 
 import com.google.common.collect.ImmutableList;
 
@@ -522,4 +523,14 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements 
     public ExportSimpleTableDialog getSimpleTableDialog() {
         return simpleTableExporterDialog;
     }
+
+    @Override
+    public void handleImportFileUpload(FileUploadEvent event) {
+        super.handleImportFileUpload(event);
+        importFileStatistics = getImportedFileStatistics(propertiesDataLoader);
+        // TODO once all import handling is the same, handled by single-file-DL.xhtml / fileUpload / oncomplete
+        RequestContext.getCurrentInstance().update("importPropertiesForm:importStatsDialog");
+        RequestContext.getCurrentInstance().execute("PF('importStatsDialog').show();");
+    }
+
 }

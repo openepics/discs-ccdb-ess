@@ -32,6 +32,7 @@ import javax.annotation.Nullable;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.openepics.discs.conf.ui.common.ExcelImportUIHandlers.ImportFileStatistics;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
@@ -42,15 +43,9 @@ import com.google.common.collect.ImmutableMap.Builder;
  *
  * @author <a href="mailto:andraz.pozar@cosylab.com">Andraž Požar</a>
  * @author <a href="mailto:miroslav.pavleski@cosylab.com">Miroslav Pavleski</a>
- *
+ * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  */
 public abstract class AbstractDataLoader implements DataLoader {
-    // Command string constants
-    public static final String CMD_CREATE = "CREATE";
-    public static final String CMD_UPDATE = "UPDATE";
-    public static final String CMD_DELETE = "DELETE";
-    public static final String CMD_RENAME = "RENAME";
-    public static final String CMD_END = "END";
 
     protected static final String HDR_OPERATION = "OPERATION";
     protected static final int COL_INDEX_OPERATION = 0;
@@ -112,6 +107,12 @@ public abstract class AbstractDataLoader implements DataLoader {
 
         init();
 
+        int dataRows = 0;
+        int createRows = 0;
+        int updateRows = 0;
+        int deleteRows = 0;
+        int renameRows = 0;
+
         currentRowData = null;
         for (Pair<Integer, List<String>> row : inputRows) {
             result.resetRowError();
@@ -119,9 +120,11 @@ public abstract class AbstractDataLoader implements DataLoader {
             result.setCurrentRowNumber(row.getLeft());
             currentRowData = row.getRight();
 
-            if (CMD_END.equals(currentRowData.get(COMMAND_INDEX))) {
+            if (DataLoader.CMD_END.equals(currentRowData.get(COMMAND_INDEX))) {
                 break;
             } else {
+                ++dataRows;
+
                 final String command = checkCommandAndRequiredFields();
                 if (command == null) {
                     continue;
@@ -133,24 +136,29 @@ public abstract class AbstractDataLoader implements DataLoader {
                 }
 
                 switch (command) {
-                    case CMD_UPDATE:
+                    case DataLoader.CMD_UPDATE:
                         handleUpdate();
+                        ++updateRows;
                         break;
-                    case CMD_DELETE:
+                    case DataLoader.CMD_DELETE:
                         handleDelete();
+                        ++deleteRows;
                         break;
-                    case CMD_RENAME:
+                    case DataLoader.CMD_RENAME:
                         handleRename();
+                        ++renameRows;
                         break;
-                    case CMD_CREATE:
+                    case DataLoader.CMD_CREATE:
                         handleCreate();
+                        ++createRows;
                         break;
                     default:
                         result.addRowMessage(ErrorMessage.COMMAND_NOT_VALID, HDR_OPERATION);
                 }
             }
         }
-
+        result.setImportFileStatistics(new
+                            ImportFileStatistics(dataRows, createRows, updateRows, deleteRows, renameRows));
         return result;
     }
 
@@ -290,7 +298,7 @@ public abstract class AbstractDataLoader implements DataLoader {
                 }
             } else {
                 if (requiredColumns.contains(columnName) && currentRowData.get(index) == null
-                        && !CMD_RENAME.equals(command) && !CMD_DELETE.equals(command)) {
+                        && !DataLoader.CMD_RENAME.equals(command) && !DataLoader.CMD_DELETE.equals(command)) {
                     result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, columnName);
                 }
             }

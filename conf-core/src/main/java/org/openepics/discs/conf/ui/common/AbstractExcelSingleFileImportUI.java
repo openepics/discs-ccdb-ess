@@ -19,13 +19,19 @@
  */
 package org.openepics.discs.conf.ui.common;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
+import org.openepics.discs.conf.dl.common.ExcelImportFileReader;
 import org.primefaces.event.FileUploadEvent;
 
+import com.google.common.base.Preconditions;
 import com.google.common.io.ByteStreams;
 
 /**
@@ -38,6 +44,7 @@ public abstract class AbstractExcelSingleFileImportUI implements ExcelSingleFile
     protected byte[] importData;
     protected transient DataLoaderResult loaderResult;
     private String importFileName;
+    protected ImportFileStatistics importFileStatistics;
 
     @Override
     public abstract void doImport();
@@ -67,5 +74,49 @@ public abstract class AbstractExcelSingleFileImportUI implements ExcelSingleFile
     @Override
     public String getImportFileName() {
         return importFileName;
+    }
+
+    @Override
+    public ImportFileStatistics getImportedFileStatistics(DataLoader dataLoader) {
+        Preconditions.checkNotNull(importData);
+        try (InputStream inputStream = new ByteArrayInputStream(importData)) {
+            final List<Pair<Integer, List<String>>> inputRows = ExcelImportFileReader.importExcelFile(inputStream,
+                    dataLoader.getImportDataStartIndex(), dataLoader.getDataWidth());
+
+            int dataRows = 0;
+            int createRows = 0;
+            int updateRows = 0;
+            int deleteRows = 0;
+            int renameRows = 0;
+
+            for (Pair<Integer, List<String>> row : inputRows) {
+                switch(row.getRight().get(0)) {
+                    case DataLoader.CMD_CREATE:
+                        ++createRows;
+                        break;
+                    case DataLoader.CMD_UPDATE:
+                        ++updateRows;
+                        break;
+                    case DataLoader.CMD_DELETE:
+                        ++deleteRows;
+                        break;
+                    case DataLoader.CMD_RENAME:
+                        ++renameRows;
+                        break;
+                }
+                if (row.getRight().get(0).equals(DataLoader.CMD_END)) {
+                    break;
+                }
+                ++dataRows;
+            }
+            return new ImportFileStatistics(dataRows, createRows, updateRows, deleteRows, renameRows);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /** @return the importFileStatistics */
+    public ImportFileStatistics getImportFileStatistics() {
+        return importFileStatistics;
     }
 }

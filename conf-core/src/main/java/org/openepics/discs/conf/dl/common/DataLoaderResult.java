@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.openepics.discs.conf.ent.Slot;
+import org.openepics.discs.conf.ui.common.ExcelImportUIHandlers.ImportFileStatistics;
 
 import com.google.common.base.Preconditions;
 
@@ -35,6 +36,7 @@ import com.google.common.base.Preconditions;
  *
  * @author <a href="mailto:sunil.sah@cosylab.com">Sunil Sah</a>
  * @author <a href="mailto:miroslav.pavleski@cosylab.com">Miroslav Pavleski</a>
+ * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  */
 public class DataLoaderResult {
 
@@ -59,6 +61,8 @@ public class DataLoaderResult {
 
     /** Current row tracking */
     private int currentRowNumber;
+
+    private ImportFileStatistics importFileStatistics;
 
     /** clears the state of the data result */
     public void clear() {
@@ -197,5 +201,18 @@ public class DataLoaderResult {
             builder.append("There were some errors.\n");
         }
         return builder.toString();
+    }
+
+    public void setImportFileStatistics(ImportFileStatistics importFileStatistics) {
+        this.importFileStatistics = importFileStatistics;
+    }
+
+    /** @return the statistics of the import, or <code>0</code> statistics in case of an error */
+    public ImportFileStatistics getImportFileStatistics() {
+        if (error || importFileStatistics == null) {
+            return new ImportFileStatistics();
+        }
+        return importFileStatistics;
+
     }
 }
