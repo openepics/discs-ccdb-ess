@@ -1,0 +1,23 @@
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html">
+
+
+    <h:form id="uninstallationForm">
+        <p:dialog widgetVar="uninstallConfirm" id="uninstallConfirm" modal="true" resizable="false" dynamic="true" 
+            closable="false">
+            <f:facet name="header">
+                <h:outputText value="Uninstall device" />
+            </f:facet>
+            <h:outputText value="Are you sure you want to uninstall this device?" style="margin-botton: 1ex;"/>
+            <br />
+            <br />
+
+            <p:commandButton value="No" styleClass="dialogButton" onclick="PF('uninstallConfirm').hide();" />
+            <p:commandButton value="Yes" styleClass="dialogButton" ajax="true" update=":hierarchies:installationDetails" 
+                    oncomplete="PF('uninstallConfirm').hide(); resizeEmptyColumnInHierarchies();" 
+                    action="#{hierarchiesController.uninstallDevice(hierarchiesController.installationRecord.device)}" />
+        </p:dialog>
+    </h:form>
+</ui:composition>

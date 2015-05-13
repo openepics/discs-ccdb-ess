@@ -169,7 +169,6 @@
                                         actionListener="#{hierarchiesController.prepareForArtifactAdd}" 
                                         update=":addArtifactForm:addArtifact" />
                             </p:menuButton>
-
                         </p:fieldset>
 
                     </p:column>
@@ -191,7 +190,7 @@
                                         filterBy="#{relationship.relationshipName}" filterMatchMode="exact">
                                     <h:outputText value="#{relationship.relationshipName}" />
                                 </p:column>
-    
+
                                 <p:column headerText="Target" sortBy="#{relationship.targetSlotName}" 
                                         filterBy="#{relationship.targetSlotName}" filterMatchMode="contains">
                                     <p:commandLink action="#{hierarchiesController.selectNode(relationship.slot.id)}" 
@@ -230,9 +229,7 @@
                                     </p:column>
                                     <p:column headerText="Uninstall" style="text-align: center;">
                                         <p:commandButton title="Uninstall" label="Uninstall" value="Uninstall" 
-                                                action="#{hierarchiesController.uninstallDevice(installationRecord.device)}" 
-                                                update=":hierarchies:installationDetails" ajax="true" 
-                                                oncomplete="resizeEmptyColumnInHierarchies();" />
+                                            type="button" onclick="PF('uninstallConfirm').show();" />
                                     </p:column>
                                 </p:dataTable>
                             </p:fieldset>
@@ -355,7 +352,6 @@
             <ui:param name="resetFilter" value="hierarchiesResizeAll();" />
         </ui:include>
 
-
         <ui:include src="/resources/dialogs/delete-confirmation.xhtml">
             <ui:param name="formId" value="deleteRelationshipForm" />
             <ui:param name="dialogTitle" value="Delete relationship" />
@@ -369,6 +365,7 @@
         <ui:include src="/resources/dialogs/cannot-delete-relationship.xhtml" />
         <ui:include src="/resources/dialogs/slot-pair-loop-notification.xhtml" />
         <ui:include src="/resources/dialogs/add-relationship.xhtml" />
+        <ui:include src="/resources/dialogs/uninstall-confirm.xhtml" />
 
         <script type="text/javascript">
             jQuery(window).resize(function() {
