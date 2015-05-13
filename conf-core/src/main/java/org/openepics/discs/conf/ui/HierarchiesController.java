@@ -1362,6 +1362,7 @@ public class HierarchiesController implements Serializable {
     public void onRelationshipDelete() {
         if (canRelationshipBeDeleted()) {
             slotPairEJB.delete(selectedRelationship.getSlotPair());
+            selectedRelationship = null;
         } else {
             RequestContext.getCurrentInstance().execute("PF('cantDeleteRelation').show();");
         }

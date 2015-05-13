@@ -204,7 +204,7 @@
 
                             <p:commandButton id="deleteRelationship" value="Delete" icon="ui-icon-trash" 
                                 style="margin-top: 1em; float: right;" disabled="#{empty hierarchiesController.selectedRelationship}" 
-                                action="#{hierarchiesController.onRelationshipDelete}" update=":hierarchies:relationshipTable"/>
+                                oncomplete="PF('deleteRelationship').show();" />
                             <p:commandButton value="Add" oncomplete="PF('addSlotRelationship').show()" id="addRelationship" 
                                 icon="ui-icon-plus" disabled="#{empty hierarchiesController.selectedNode}"
                                 style="margin: 1em 1ex 0 0; float: right;" update=":addSlotRelationshipForm" 
@@ -353,6 +353,17 @@
             <ui:param name="submitHandler" value="modifyBuiltInProperty" />
             <ui:param name="componentToUpdate" value=":hierarchies:slotAttributes :hierarchies:tree" />
             <ui:param name="resetFilter" value="hierarchiesResizeAll();" />
+        </ui:include>
+
+
+        <ui:include src="/resources/dialogs/delete-confirmation.xhtml">
+            <ui:param name="formId" value="deleteRelationshipForm" />
+            <ui:param name="dialogTitle" value="Delete relationship" />
+            <ui:param name="widgetName" value="deleteRelationship" />
+            <ui:param name="controller" value="#{hierarchiesController}" />
+            <ui:param name="submitHandler" value="onRelationshipDelete" />
+            <ui:param name="formToUpdate" value=":hierarchies:relationshipTable :hierarchies:deleteRelationship" />
+            <ui:param name="entityType" value="selected relationship" />
         </ui:include>
 
         <ui:include src="/resources/dialogs/cannot-delete-relationship.xhtml" />
