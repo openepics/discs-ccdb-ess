@@ -52,14 +52,13 @@
                     </p:column>
                 </p:row>
             </p:panelGrid>
-            <p:separator />
 
             <p:commandButton value="Cancel" styleClass="dialogButton" onclick="PF('addSlotRelationship').hide();" 
-                    resetValues="true" />
-            <p:commandButton value="Add" styleClass="dialogButton" id="addButton" 
+                    resetValues="true" style="margin-top: 1em;"/>
+            <p:commandButton value="Add" styleClass="dialogButton" id="addButton" style="margin-top: 1em;" 
                     disabled="#{empty hierarchiesController.selectedTreeNodeForRelationshipAdd}" 
                     action="#{hierarchiesController.onRelationshipAdd}" oncomplete="PF('addSlotRelationship').hide();" 
-                    update=":slotRelationshipsForm:relationshipTable" />
+                    update=":hierarchies:relationshipTable" />
         </p:dialog>
     </h:form>
 </ui:composition>

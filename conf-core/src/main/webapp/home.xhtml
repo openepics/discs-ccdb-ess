@@ -44,12 +44,14 @@
                                 <p:ajax event="select" listener="#{hierarchiesController.initSelectedItemLists()}" 
                                     update=":hierarchies:relationsTable :hierarchies:deleteButton :hierarchies:downButton 
                                             :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton 
-                                            :hierarchies:installationDetails :hierarchies:slotAttributes" 
+                                            :hierarchies:installationDetails :hierarchies:slotAttributes 
+                                            :hierarchies:addRelationship" 
                                     oncomplete="resizeEmptyColumnInHierarchies();hierarchiesResizeAttributes();" />
                                 <p:ajax event="unselect" listener="#{hierarchiesController.clearAttributeList()}" 
                                     update=":hierarchies:relationsTable :hierarchies:deleteButton :hierarchies:downButton 
                                             :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton 
-                                            :hierarchies:installationDetails :hierarchies:slotAttributes" 
+                                            :hierarchies:installationDetails :hierarchies:slotAttributes 
+                                            :hierarchies:addRelationship" 
                                     oncomplete="resizeEmptyColumnInHierarchies();" />
                                 <p:ajax event="collapse" listener="#{hierarchiesController.onNodeCollapse}" />
                                 <p:ajax event="expand" listener="#{hierarchiesController.onNodeExpand}" />
@@ -175,10 +177,15 @@
                 <p:row>
                     <p:column id="relationsColumn" styleClass="alignTop">
                         <p:fieldset id="relationsTable" legend="Slot relationships">
-                            <p:dataTable value="#{hierarchiesController.relationships}" 
+                            <p:dataTable value="#{hierarchiesController.relationships}" id="relationshipTable"
                                     style="width: 100%; overflow-y: hidden; max-height: 324px;" var="relationship" 
                                     emptyMessage="No element selected." scrollable="true" class="hierarchies-attributes-cell" 
-                                    filteredValue="#{hierarchiesController.filteredRelationships}">
+                                    filteredValue="#{hierarchiesController.filteredRelationships}"
+                                    selectionMode="single" rowKey="#{relationship.slotPair.id}" 
+                                    selection="#{hierarchiesController.selectedRelationship}">
+                                <p:ajax event="rowSelect" update=":hierarchies:deleteRelationship" />
+                                <p:ajax event="rowUnselect" update=":hierarchies:deleteRelationship" />
+
                                 <p:column headerText="Relationship" sortBy="#{relationship.relationshipName}" 
                                         filterOptions="#{hierarchiesController.relationshipTypes}" 
                                         filterBy="#{relationship.relationshipName}" filterMatchMode="exact">
@@ -195,11 +202,13 @@
                                 </p:column>
                             </p:dataTable>
 
-                            <p:commandButton value="Relationships" title="Relationships" icon="ui-icon-link"
-                                    style="margin-top: 1em; float: right;"
-                                    disabled="#{empty hierarchiesController.selectedNode or not hierarchiesController.selectedNodeSlot.hostingSlot}" 
-                                    oncomplete="PF('slotRelationships').show()" update=":slotRelationshipsForm">
-                            </p:commandButton>
+                            <p:commandButton id="deleteRelationship" value="Delete" icon="ui-icon-trash" 
+                                style="margin-top: 1em; float: right;" disabled="#{empty hierarchiesController.selectedRelationship}" 
+                                action="#{hierarchiesController.onRelationshipDelete}" update=":hierarchies:relationshipTable"/>
+                            <p:commandButton value="Add" oncomplete="PF('addSlotRelationship').show()" id="addRelationship" 
+                                icon="ui-icon-plus" disabled="#{empty hierarchiesController.selectedNode}"
+                                style="margin: 1em 1ex 0 0; float: right;" update=":addSlotRelationshipForm" 
+                                actionListener="#{hierarchiesController.prepareAddRelationshipPopup}" />
                         </p:fieldset>
                     </p:column>
                 </p:row>
@@ -346,10 +355,9 @@
             <ui:param name="resetFilter" value="hierarchiesResizeAll();" />
         </ui:include>
 
-        <ui:include src="/resources/dialogs/slot-relationships.xhtml">
-            <ui:param name="formId" value="slotRelationshipsForm" />
-            <ui:param name="widgetName" value="slotRelationships" />
-        </ui:include>
+        <ui:include src="/resources/dialogs/cannot-delete-relationship.xhtml" />
+        <ui:include src="/resources/dialogs/slot-pair-loop-notification.xhtml" />
+        <ui:include src="/resources/dialogs/add-relationship.xhtml" />
 
         <script type="text/javascript">
             jQuery(window).resize(function() {
