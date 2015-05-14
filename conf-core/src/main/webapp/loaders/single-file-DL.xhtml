@@ -98,14 +98,18 @@
             </p:panel>
 
             <p:dataTable value="#{controller.loaderResult.messages}" var="errorRow" scrollable="true" scrollHeight="180" 
+                    filteredValue="#{controller.loaderResult.filteredMessages}"
                     style="max-width: 100%; margin-bottom: 1em; width: 58em;" rendered="#{controller.loaderResult.error}">
-                <p:column headerText="Row" width="15%">
+                <p:column headerText="Row" width="15%" filterBy="#{errorRow.row}" filterMatchMode="contains" 
+                        sortBy="#{errorRow.row}" filterStyle="width: 90%;">
                     <h:outputText value="#{errorRow.row}" />
                 </p:column>
-                <p:column headerText="Column" width="15%">
+                <p:column headerText="Column" width="15%" filterBy="#{errorRow.column}" filterMatchMode="contains" 
+                        sortBy="#{errorRow.column}" filterStyle="width: 90%;">
                     <h:outputText value="#{errorRow.column}" />
                 </p:column>
-                <p:column headerText="Column" width="70%">
+                <p:column headerText="Error" width="70%" filterBy="#{errorRow.message.toString()}" 
+                        filterMatchMode="contains" sortBy="#{errorRow.message.toString()}">
                     <h:outputText value="#{errorRow.message.toString()}" />
                 </p:column>
             </p:dataTable>
@@ -161,6 +165,20 @@
 
             <p:commandButton value="Close" type="button" styleClass="dialogButton" onclick="PF('resultDialog').hide();" 
                 style="margin-top: 1ex;" />
+            <p:commandButton id="exportButton" icon="ui-icon-disk" value="Export" title="Export" 
+                styleClass="dialogButton" style="margin-top: 1ex;" oncomplete="PF('#{formId}_exportErrors').show();" 
+                rendered="#{controller.loaderResult.error}" update=":#{formId}_exportErrorsForm:#{formId}_exportErrors" 
+                actionListener="#{controller.loaderResult.simpleTableDialog.prepareTableExportPopup}" />
         </p:dialog>
     </h:form>
+
+    <ui:include src="/resources/dialogs/export-table.xhtml">
+        <!-- the order has to be "widgetName" before "formId" -->
+        <ui:param name="widgetName" value="#{formId}_exportErrors" />
+        <ui:param name="formId" value="#{formId}_exportErrorsForm" />
+        <ui:param name="dialogTitle" value="Export errors table" />
+        <ui:param name="fileFormatSelection" value="#{controller.loaderResult.simpleTableDialog.fileFormat}" />
+        <ui:param name="includeHeader" value="#{controller.loaderResult.simpleTableDialog.includeHeaderRow}" />
+        <ui:param name="tableFile" value="#{controller.loaderResult.simpleTableDialog.exportedTable}" />
+    </ui:include>
 </ui:composition>
