@@ -26,10 +26,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.openepics.discs.conf.ent.Slot;
-import org.openepics.discs.conf.export.ExportTable;
 import org.openepics.discs.conf.ui.common.ExcelImportUIHandlers.ImportFileStatistics;
-import org.openepics.discs.conf.ui.export.ExportSimpleTableDialog;
-import org.openepics.discs.conf.ui.export.SimpleTableExporter;
 
 import com.google.common.base.Preconditions;
 
@@ -41,7 +38,7 @@ import com.google.common.base.Preconditions;
  * @author <a href="mailto:miroslav.pavleski@cosylab.com">Miroslav Pavleski</a>
  * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  */
-public class DataLoaderResult implements SimpleTableExporter {
+public class DataLoaderResult {
 
     /**
      * A key for {@link DataLoaderResult#getContextualData()} that will hold a {@link Set} of {@link Slot}s
@@ -68,38 +65,9 @@ public class DataLoaderResult implements SimpleTableExporter {
 
     private ImportFileStatistics importFileStatistics;
 
-    private class ExportSimpleErrorsTableDialog extends ExportSimpleTableDialog {
-        @Override
-        protected String getTableName() {
-            return "Errors";
-        }
-
-        @Override
-        protected String getFileName() {
-            return "errors";
-        }
-
-        @Override
-        protected void addHeaderRow(ExportTable exportTable) {
-            exportTable.addHeaderRow("Row", "Column", "Error");
-        }
-
-        @Override
-        protected void addData(ExportTable exportTable) {
-            final List<ValidationMessage> exportData = filteredMessages == null || filteredMessages.isEmpty()
-                    ? messages : filteredMessages;
-            for (final ValidationMessage message : exportData) {
-                exportTable.addDataRow(message.getRow(), message.getColumn(), message.getMessage().toString());
-            }
-        }
-    }
-
-    private ExportSimpleErrorsTableDialog errorsTableDialog;
-
     /** clears the state of the data result */
     public void clear() {
         rowError = error = false;
-        errorsTableDialog = new ExportSimpleErrorsTableDialog();
         messages = new ArrayList<ValidationMessage>();
     }
 
@@ -257,10 +225,5 @@ public class DataLoaderResult implements SimpleTableExporter {
     /** @param filteredMessages the filteredMessages to set */
     public void setFilteredMessages(List<ValidationMessage> filteredMessages) {
         this.filteredMessages = filteredMessages;
-    }
-
-    @Override
-    public ExportSimpleTableDialog getSimpleTableDialog() {
-        return errorsTableDialog;
     }
 }

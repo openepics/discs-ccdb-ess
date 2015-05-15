@@ -30,6 +30,8 @@ import org.openepics.discs.conf.dl.DevicesLoaderQualifier;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.ui.common.AbstractExcelSingleFileImportUI;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
+import org.openepics.discs.conf.ui.export.ExportSimpleTableDialog;
+import org.openepics.discs.conf.ui.export.SimpleImportErrorReportExporter;
 
 /**
  *
@@ -40,7 +42,8 @@ import org.openepics.discs.conf.ui.common.DataLoaderHandler;
  */
 @Named
 @ViewScoped
-public class DeviceManager extends AbstractExcelSingleFileImportUI implements Serializable {
+public class DeviceManager extends AbstractExcelSingleFileImportUI implements
+        Serializable, SimpleImportErrorReportExporter {
     private static final long serialVersionUID = -931725234946680611L;
 
     @Inject private transient DataLoaderHandler dataLoaderHandler;
@@ -59,5 +62,11 @@ public class DeviceManager extends AbstractExcelSingleFileImportUI implements Se
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public ExportSimpleTableDialog getSimpleErrorTableExportDialog() {
+        // TODO Implement with the data importer
+        return null;
     }
 }

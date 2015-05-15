@@ -42,6 +42,7 @@ import joptsimple.internal.Strings;
 
 import org.openepics.discs.conf.dl.UnitsLoaderQualifier;
 import org.openepics.discs.conf.dl.common.DataLoader;
+import org.openepics.discs.conf.dl.common.ValidationMessage;
 import org.openepics.discs.conf.ejb.UnitEJB;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.Unit;
@@ -50,6 +51,7 @@ import org.openepics.discs.conf.ui.common.AbstractExcelSingleFileImportUI;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
 import org.openepics.discs.conf.ui.common.UIException;
 import org.openepics.discs.conf.ui.export.ExportSimpleTableDialog;
+import org.openepics.discs.conf.ui.export.SimpleImportErrorReportExporter;
 import org.openepics.discs.conf.ui.export.SimpleTableExporter;
 import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.views.UnitView;
@@ -70,7 +72,8 @@ import com.google.common.collect.Lists;
 @Named
 @ManagedBean
 @ViewScoped
-public class UnitManager extends AbstractExcelSingleFileImportUI implements Serializable, SimpleTableExporter {
+public class UnitManager extends AbstractExcelSingleFileImportUI implements
+                                Serializable, SimpleTableExporter, SimpleImportErrorReportExporter {
     private static final long serialVersionUID = 5504821804362597703L;
     private static final Logger LOGGER = Logger.getLogger(UnitManager.class.getCanonicalName());
 
@@ -118,6 +121,38 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
             }
         }
     }
+
+    private class ExportSimpleErrorsTableDialog extends ExportSimpleTableDialog {
+        public ExportSimpleErrorsTableDialog() {
+        }
+
+        @Override
+        protected String getTableName() {
+            return "Errors";
+        }
+
+        @Override
+        protected String getFileName() {
+            return "errors";
+        }
+
+        @Override
+        protected void addHeaderRow(ExportTable exportTable) {
+            exportTable.addHeaderRow("Row", "Column", "Error");
+        }
+
+        @Override
+        protected void addData(ExportTable exportTable) {
+            final List<ValidationMessage> filteredMessages = loaderResult.getFilteredMessages();
+            final List<ValidationMessage> exportData = filteredMessages == null || filteredMessages.isEmpty()
+                    ? loaderResult.getMessages() : filteredMessages;
+            for (final ValidationMessage message : exportData) {
+                exportTable.addDataRow(message.getRow(), message.getColumn(), message.getMessage().toString());
+            }
+        }
+    }
+
+    private ExportSimpleErrorsTableDialog errorsTableDialog;
 
     /** Creates a new instance of UnitManager */
     public UnitManager() {
@@ -173,6 +208,7 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
     public void doImport() {
         try (InputStream inputStream = new ByteArrayInputStream(importData)) {
             loaderResult = dataLoaderHandler.loadData(inputStream, unitsDataLoader);
+            errorsTableDialog = new ExportSimpleErrorsTableDialog();
             refreshUnits();
             RequestContext.getCurrentInstance().update("unitsForm");
         } catch (IOException e) {
@@ -338,6 +374,11 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
     @Override
     public ExportSimpleTableDialog getSimpleTableDialog() {
         return simpleTableExporterDialog;
+    }
+
+    @Override
+    public ExportSimpleTableDialog getSimpleErrorTableExportDialog() {
+        return errorsTableDialog;
     }
 
     @Override

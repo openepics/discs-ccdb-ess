@@ -168,7 +168,7 @@
             <p:commandButton id="exportButton" icon="ui-icon-disk" value="Export" title="Export" 
                 styleClass="dialogButton" style="margin-top: 1ex;" oncomplete="PF('#{formId}_exportErrors').show();" 
                 rendered="#{controller.loaderResult.error}" update=":#{formId}_exportErrorsForm:#{formId}_exportErrors" 
-                actionListener="#{controller.loaderResult.simpleTableDialog.prepareTableExportPopup}" />
+                actionListener="#{controller.simpleErrorTableExportDialog.prepareTableExportPopup}" />
         </p:dialog>
     </h:form>
 
@@ -177,8 +177,8 @@
         <ui:param name="widgetName" value="#{formId}_exportErrors" />
         <ui:param name="formId" value="#{formId}_exportErrorsForm" />
         <ui:param name="dialogTitle" value="Export errors table" />
-        <ui:param name="fileFormatSelection" value="#{controller.loaderResult.simpleTableDialog.fileFormat}" />
-        <ui:param name="includeHeader" value="#{controller.loaderResult.simpleTableDialog.includeHeaderRow}" />
-        <ui:param name="tableFile" value="#{controller.loaderResult.simpleTableDialog.exportedTable}" />
+        <ui:param name="fileFormatSelection" value="#{controller.simpleErrorTableExportDialog.fileFormat}" />
+        <ui:param name="includeHeader" value="#{controller.simpleErrorTableExportDialog.includeHeaderRow}" />
+        <ui:param name="tableFile" value="#{controller.simpleErrorTableExportDialog.exportedTable}" />
     </ui:include>
 </ui:composition>

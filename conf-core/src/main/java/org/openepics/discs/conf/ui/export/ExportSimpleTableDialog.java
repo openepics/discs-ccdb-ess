@@ -29,6 +29,9 @@ public abstract class ExportSimpleTableDialog {
     private String fileFormat;
     private boolean includeHeaderRow;
 
+    public ExportSimpleTableDialog() {
+    }
+
     /** Prepares the default values of the Export data dialog: file format and header row */
     public void prepareTableExportPopup() {
         fileFormat = ExportTable.FILE_FORMAT_EXCEL;
