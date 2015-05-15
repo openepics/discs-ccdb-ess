@@ -50,7 +50,6 @@ import org.openepics.discs.conf.ui.common.AbstractExcelSingleFileImportUI;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
 import org.openepics.discs.conf.ui.common.UIException;
 import org.openepics.discs.conf.ui.export.ExportSimpleTableDialog;
-import org.openepics.discs.conf.ui.export.SimpleImportErrorReportExporter;
 import org.openepics.discs.conf.ui.export.SimpleTableExporter;
 import org.openepics.discs.conf.util.Utility;
 import org.primefaces.context.RequestContext;
@@ -65,7 +64,7 @@ import org.primefaces.context.RequestContext;
 @Named
 @ViewScoped
 public class ComponentTypeManager extends AbstractExcelSingleFileImportUI
-                implements Serializable, SimpleTableExporter, SimpleImportErrorReportExporter {
+                implements Serializable, SimpleTableExporter {
     private static final long serialVersionUID = -9007187646811006328L;
     private static final Logger LOGGER = Logger.getLogger(ComponentTypeManager.class.getCanonicalName());
 
@@ -238,7 +237,7 @@ public class ComponentTypeManager extends AbstractExcelSingleFileImportUI
     @Override
     public void doImport() {
         try (InputStream inputStream = new ByteArrayInputStream(importData)) {
-            loaderResult = dataLoaderHandler.loadData(inputStream, compTypesDataLoader);
+            setLoaderResult(dataLoaderHandler.loadData(inputStream, compTypesDataLoader));
             deviceTypes = comptypeEJB.findAll();
             RequestContext.getCurrentInstance().update("deviceTypesForm");
         } catch (IOException e) {
@@ -327,11 +326,5 @@ public class ComponentTypeManager extends AbstractExcelSingleFileImportUI
     @Override
     public ExportSimpleTableDialog getSimpleTableDialog() {
         return simpleTableExporterDialog;
-    }
-
-    @Override
-    public ExportSimpleTableDialog getSimpleErrorTableExportDialog() {
-        // TODO Implement with the data importer
-        return null;
     }
 }

@@ -29,6 +29,9 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.dl.common.ExcelImportFileReader;
+import org.openepics.discs.conf.dl.common.ValidationMessage;
+import org.openepics.discs.conf.export.ExportTable;
+import org.openepics.discs.conf.ui.export.ExportSimpleTableDialog;
 import org.primefaces.event.FileUploadEvent;
 
 import com.google.common.base.Preconditions;
@@ -42,9 +45,40 @@ import com.google.common.io.ByteStreams;
  */
 public abstract class AbstractExcelSingleFileImportUI implements ExcelSingleFileImportUIHandlers {
     protected byte[] importData;
-    protected transient DataLoaderResult loaderResult;
+    private transient DataLoaderResult loaderResult;
     private String importFileName;
     protected ImportFileStatistics importFileStatistics;
+
+    private ExportSimpleErrorsTableDialog errorsTableDialog;
+    private class ExportSimpleErrorsTableDialog extends ExportSimpleTableDialog {
+        public ExportSimpleErrorsTableDialog() {
+        }
+
+        @Override
+        protected String getTableName() {
+            return "Errors";
+        }
+
+        @Override
+        protected String getFileName() {
+            return "errors";
+        }
+
+        @Override
+        protected void addHeaderRow(ExportTable exportTable) {
+            exportTable.addHeaderRow("Row", "Column", "Error");
+        }
+
+        @Override
+        protected void addData(ExportTable exportTable) {
+            final List<ValidationMessage> filteredMessages = loaderResult.getFilteredMessages();
+            final List<ValidationMessage> exportData = filteredMessages == null || filteredMessages.isEmpty()
+                    ? loaderResult.getMessages() : filteredMessages;
+            for (final ValidationMessage message : exportData) {
+                exportTable.addDataRow(message.getRow(), message.getColumn(), message.getMessage().toString());
+            }
+        }
+    }
 
     @Override
     public abstract void doImport();
@@ -59,6 +93,11 @@ public abstract class AbstractExcelSingleFileImportUI implements ExcelSingleFile
     @Override
     public DataLoaderResult getLoaderResult() {
         return loaderResult;
+    }
+
+    public void setLoaderResult(DataLoaderResult loaderResult) {
+        this.loaderResult = loaderResult;
+        errorsTableDialog = new ExportSimpleErrorsTableDialog();
     }
 
     @Override
@@ -118,5 +157,9 @@ public abstract class AbstractExcelSingleFileImportUI implements ExcelSingleFile
     /** @return the importFileStatistics */
     public ImportFileStatistics getImportFileStatistics() {
         return importFileStatistics;
+    }
+
+    public ExportSimpleTableDialog getSimpleErrorTableExportDialog() {
+        return errorsTableDialog;
     }
 }
