@@ -6,55 +6,78 @@
     xmlns:p="http://primefaces.org/ui">
 
     <ui:define name="content">
+    
+        <script type="text/javascript">
+            //<![CDATA[
+            function removePropColWidth() {
+                $('#propertiesForm\\:propertiesTable table thead th').css('width', '');
+            }
+            
+            function adjustTableHeight() {
+                var fieldsetHeight = $('#propertiesForm\\:propertiesFieldset').outerHeight(true);
+                var fieldsetLegendHeight = $('#propertiesForm\\:propertiesFieldset legend').outerHeight(true);
+                var em = emHeight();
+                
+                var entireTableHeight = fieldsetHeight - fieldsetLegendHeight - 5*em;
+                $('#propertiesForm\\:propertiesTable').css({"height":entireTableHeight});
+                
+                var tableHeaderHeight = $('#propertiesForm\\:propertiesTable .ui-datatable-scrollable-header').outerHeight(true);
+                $('#propertiesForm\\:propertiesTable .ui-datatable-scrollable-body').css({"height":entireTableHeight - tableHeaderHeight});
+            }
+            // ]]>
+        </script>
+    
         <h:form id="propertiesForm">
-            <p:dataTable widgetVar="propertiesTableVar" var="property" id="propertiesTable" 
-                    selection="#{propertyManager.selectedProperty}" selectionMode="single" rowKey="#{property.id}" 
-                    value="#{propertyManager.properties}" rows="15" paginator="true" 
-                    resizableColumns="true" style="table-layout: fixed; word-wrap: break-word;" 
-                    filteredValue="#{propertyManager.filteredProperties}" paginatorPosition="bottom">
-                <p:ajax event="filter" ignoreAutoUpdate="true" />
-                <p:ajax event="rowSelect" update=":propertiesForm:deleteButton :propertiesForm:editButton" />
-                <p:ajax event="rowUnselect" update=":propertiesForm:deleteButton :propertiesForm:editButton" />
-
-                <p:column headerText="Name" sortBy="#{property.name.toUpperCase()}" filterBy="#{property.name}" 
-                        width="20%" filterMatchMode="contains">
-                    <h:outputText value="#{property.name}" />
-                </p:column>
-
-                <p:column headerText="Description" sortBy="#{property.description}" filterBy="#{property.description}" 
-                        width="50%" filterStyle="width: 20em;" filterMatchMode="contains">
-                    <h:outputText value="#{property.description}" />
-                </p:column>
-
-                <p:column headerText="Unit" sortBy="#{property.unit.name}" filterBy="#{property.unit.name}" 
-                        width="10%" filterStyle="width: 90%;">
-                    <h:outputLink rendered="#{!empty property.unit}" 
-                            value="#{request.contextPath}/units.xhtml?id=#{property.unit.id}">
-                        <h:outputText value="#{property.unit.name}" style="text-decoration: underline;" />
-                    </h:outputLink>
-                    <h:outputText value="-" rendered="#{empty property.unit}" />
-                </p:column>
-
-                <p:column headerText="Data Type" sortBy="#{property.dataType.name}" filterBy="#{property.dataType.name}" 
-                        width="10%" filterStyle="width: 90%;">
-                    <h:outputText value="#{property.dataType.name}" />
-                </p:column>
-            </p:dataTable>
-
-            <p:commandButton id="exportButton" icon="ui-icon-disk" value="Export" title="Export" 
-                style="float: right; margin-top: 1em;" oncomplete="PF('exportProperties').show();" 
-                disabled="#{empty propertyManager.properties}" update=":exportPropForm:exportProperties" 
-                actionListener="#{propertyManager.simpleTableDialog.prepareTableExportPopup}" />
-            <p:commandButton id="deleteButton" icon="ui-icon-trash" value="Delete" title="Delete" 
-                style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('deleteProperty').show();" 
-                disabled="#{not propertyManager.canDeleteProperty()}" />
-            <p:commandButton id="editButton" icon="ui-icon-pencil" value="Edit" title="Edit" 
-                style="float: right; margin: 1em 1ex 0 0;" update=":modifyPropertyForm:modifyProperty" 
-                disabled="#{empty propertyManager.selectedProperty}" oncomplete="PF('modifyProperty').show();" 
-                actionListener="#{propertyManager.prepareModifyPopup}" />
-            <p:commandButton ajax="true" actionListener="#{propertyManager.prepareAddPopup}" value="Add" 
-                style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('addProperty').show()" 
-                update=":addPropertyForm:addProperty" title="Add new properties" icon="ui-icon-plus" />
+            <p:fieldset id="propertiesFieldset" legend="Properties">
+                <p:dataTable widgetVar="propertiesTableVar" var="property" id="propertiesTable" styleClass="scroll-table"
+                        selection="#{propertyManager.selectedProperty}" selectionMode="single" rowKey="#{property.id}" 
+                        value="#{propertyManager.properties}" tableStyle="table-layout: fixed; word-wrap: break-word; width: 100%;"
+                        resizableColumns="true" style="width: inherit; overflow-y: hidden;" scrollable="true"
+                        filteredValue="#{propertyManager.filteredProperties}">
+                    <p:ajax event="filter" ignoreAutoUpdate="true" />
+                    <p:ajax event="rowSelect" update=":propertiesForm:deleteButton :propertiesForm:editButton" />
+                    <p:ajax event="rowUnselect" update=":propertiesForm:deleteButton :propertiesForm:editButton" />
+    
+                    <p:column headerText="Name" sortBy="#{property.name.toUpperCase()}" filterBy="#{property.name}" 
+                            filterMatchMode="contains" styleClass="tableColWidth20">
+                        <h:outputText value="#{property.name}" />
+                    </p:column>
+    
+                    <p:column id="descCol" headerText="Description" sortBy="#{property.description}" filterBy="#{property.description}" 
+                            filterStyle="max-width: 20em; width: 90%;" filterMatchMode="contains" styleClass="tableColWidth60">
+                        <h:outputText value="#{property.description}" />
+                    </p:column>
+    
+                    <p:column id="uniCol" headerText="Unit" sortBy="#{property.unit.name}" filterBy="#{property.unit.name}" 
+                            filterStyle="width: 90%;" styleClass="tableColWidth10">
+                        <h:outputLink rendered="#{!empty property.unit}" 
+                                value="#{request.contextPath}/units.xhtml?id=#{property.unit.id}">
+                            <h:outputText value="#{property.unit.name}" style="text-decoration: underline;" />
+                        </h:outputLink>
+                        <h:outputText value="-" rendered="#{empty property.unit}" />
+                    </p:column>
+    
+                    <p:column headerText="Data Type" sortBy="#{property.dataType.name}" filterBy="#{property.dataType.name}" 
+                            filterStyle="width: 90%;" styleClass="tableColWidth10">
+                        <h:outputText value="#{property.dataType.name}" />
+                    </p:column>
+                </p:dataTable>
+    
+                <p:commandButton id="exportButton" icon="ui-icon-disk" value="Export" title="Export" 
+                    style="float: right; margin-top: 1em;" oncomplete="PF('exportProperties').show();" 
+                    disabled="#{empty propertyManager.properties}" update=":exportPropForm:exportProperties" 
+                    actionListener="#{propertyManager.simpleTableDialog.prepareTableExportPopup}" />
+                <p:commandButton id="deleteButton" icon="ui-icon-trash" value="Delete" title="Delete" 
+                    style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('deleteProperty').show();" 
+                    disabled="#{not propertyManager.canDeleteProperty()}" />
+                <p:commandButton id="editButton" icon="ui-icon-pencil" value="Edit" title="Edit" 
+                    style="float: right; margin: 1em 1ex 0 0;" update=":modifyPropertyForm:modifyProperty" 
+                    disabled="#{empty propertyManager.selectedProperty}" oncomplete="PF('modifyProperty').show();" 
+                    actionListener="#{propertyManager.prepareModifyPopup}" />
+                <p:commandButton ajax="true" actionListener="#{propertyManager.prepareAddPopup}" value="Add" 
+                    style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('addProperty').show()" 
+                    update=":addPropertyForm:addProperty" title="Add new properties" icon="ui-icon-plus" />
+            </p:fieldset>
         </h:form>
 
         <ui:include src="/resources/dialogs/delete-confirmation.xhtml" >
@@ -112,5 +135,16 @@
             <ui:param name="includeHeader" value="#{propertyManager.simpleTableDialog.includeHeaderRow}" />
             <ui:param name="tableFile" value="#{propertyManager.simpleTableDialog.exportedTable}" />
         </ui:include>
+        <script type="text/javascript">
+            jQuery(document).ready(function() {
+                removePropColWidth();
+                adjustFieldsetHeight('#propertiesForm\\:propertiesFieldset');
+                adjustTableHeight();
+            });
+            jQuery(window).resize(function() {
+                adjustFieldsetHeight('#propertiesForm\\:propertiesFieldset');
+                adjustTableHeight();
+            });
+        </script>
     </ui:define>
 </ui:composition>

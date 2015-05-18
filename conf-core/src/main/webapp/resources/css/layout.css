@@ -146,6 +146,10 @@ body {
 	overflow-x: hidden;
 }
 
+.scroll-table .ui-datatable-scrollable-body {
+    overflow-y: scroll;
+}
+
 .installation-details .ui-widget-content {
 	padding: 0 !important;
 }
@@ -280,4 +284,17 @@ a {
 .logPanelHeader {
     border: 0 !important;
     padding: 0 0 2px 0 !important;
+}
+
+
+.tableColWidth60 {
+    width: 60%;
+}
+
+.tableColWidth20 {
+    width: 20%;
+}
+
+.tableColWidth10 {
+	width: 10%;
 }
