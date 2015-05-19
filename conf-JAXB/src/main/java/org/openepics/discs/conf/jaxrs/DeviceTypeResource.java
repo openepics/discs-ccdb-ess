@@ -38,7 +38,7 @@ public interface DeviceTypeResource {
     /** @return returns all device types in the database. */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public List<DeviceType> getAllCables();
+    public List<DeviceType> getAllDeviceTypes();
 
     /**
      * Returns a specific device type.
@@ -49,5 +49,5 @@ public interface DeviceTypeResource {
     @GET
     @Path("{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public DeviceType getCable(@PathParam("id") String number);
+    public DeviceType getDeviceType(@PathParam("id") String number);
 }
