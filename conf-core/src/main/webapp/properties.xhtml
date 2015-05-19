@@ -24,6 +24,14 @@
                 var tableHeaderHeight = $('#propertiesForm\\:propertiesTable .ui-datatable-scrollable-header').outerHeight(true);
                 $('#propertiesForm\\:propertiesTable .ui-datatable-scrollable-body').css({"height":entireTableHeight - tableHeaderHeight});
             }
+            
+            function closeDialogActions(widgetVar) {
+                if (widgetVar != null) PF(widgetVar).hide();
+                PF('propertiesTableVar').filter();
+                removePropColWidth();
+                adjustFieldsetHeight('#propertiesForm\\:propertiesFieldset');
+                adjustTableHeight();
+            }
             // ]]>
         </script>
     
@@ -33,7 +41,7 @@
                         selection="#{propertyManager.selectedProperty}" selectionMode="single" rowKey="#{property.id}" 
                         value="#{propertyManager.properties}" tableStyle="table-layout: fixed; word-wrap: break-word; width: 100%;"
                         resizableColumns="true" style="width: inherit; overflow-y: hidden;" scrollable="true"
-                        filteredValue="#{propertyManager.filteredProperties}">
+                        filteredValue="#{propertyManager.filteredProperties}" liveScroll="true" scrollRows="50">
                     <p:ajax event="filter" ignoreAutoUpdate="true" />
                     <p:ajax event="rowSelect" update=":propertiesForm:deleteButton :propertiesForm:editButton" />
                     <p:ajax event="rowUnselect" update=":propertiesForm:deleteButton :propertiesForm:editButton" />
@@ -89,7 +97,7 @@
             <ui:param name="entityType" value="this property" />
             <ui:param name="formToUpdate" value=":propertiesForm:propertiesTable :propertiesForm:deleteButton 
                                                 :propertiesForm:editButton :propertiesForm:exportButton" />
-            <ui:param name="resetFilter" value="PF('propertiesTableVar').filter();" />               
+            <ui:param name="resetFilter" value="closeDialogActions(null);" />
         </ui:include>
 
         <ui:include src="/resources/dialogs/property.xhtml">
@@ -99,7 +107,7 @@
                 value=":propertiesForm:propertiesTable :propertiesForm:deleteButton :propertiesForm:editButton" />
             <ui:param name="widgetName" value="modifyProperty" />
             <ui:param name="submitHandler" value="onModify" />
-            <ui:param name="saveAction" value="PF('modifyProperty').hide(); PF('propertiesTableVar').filter();" />
+            <ui:param name="saveAction" value="closeDialogActions('modifyProperty');" />
         </ui:include>
 
         <ui:include src="/resources/dialogs/property.xhtml">
@@ -110,7 +118,7 @@
             <ui:param name="widgetName" value="addProperty" />
             <ui:param name="batchCreation" value="true" />
             <ui:param name="submitHandler" value="onAdd" />
-            <ui:param name="saveAction" value="PF('modifyProperty').hide(); PF('propertiesTableVar').filter();" />
+            <ui:param name="saveAction" value="closeDialogActions('addProperty');" />
         </ui:include>
 
         <ui:include src="/resources/dialogs/batch-creation-conflict.xhtml">
@@ -124,7 +132,7 @@
             <ui:param name="submitHandler" value="creationProceed" />
             <ui:param name="formToUpdate" 
                 value=":propertiesForm:propertiesTable :propertiesForm:deleteButton :propertiesForm:editButton" />
-            <ui:param name="saveActions" value="PF('propertiesTableVar').filter();" />
+            <ui:param name="saveActions" value="closeDialogActions(null);" />
         </ui:include>
 
         <ui:include src="/resources/dialogs/export-table.xhtml">
