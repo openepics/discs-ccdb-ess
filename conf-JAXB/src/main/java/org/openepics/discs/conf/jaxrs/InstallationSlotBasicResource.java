@@ -15,29 +15,31 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.webservice;
+package org.openepics.discs.conf.jaxrs;
 
-import java.util.Arrays;
-import java.util.Set;
+import java.util.List;
 
-import javax.ws.rs.ApplicationPath;
-import javax.ws.rs.core.Application;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+
+import org.openepics.discs.conf.jaxb.InstallationSlotBasic;
 
 /**
- * This represents the JAX-RS application which hosts all REST resources of the CCDB.
+ * This resource provides bulk and specific installation slot data.
  *
  * @author <a href="mailto:sunil.sah@cosylab.com">Sunil Sah</a>
  */
-@ApplicationPath("/rest")
-public class CcdbRestService extends Application {
-    @Override
-    public Set<Class<?>> getClasses() { // NOSONAR generic wildcard types part of the framework
-        return getRestResourceClasses();
-    }
+@Path("slotBasic")
+public interface InstallationSlotBasicResource {
 
-    private Set<Class<?>> getRestResourceClasses() {  // NOSONAR generic wildcard types part of the framework
-        return new java.util.HashSet<Class<?>>(Arrays.asList(DeviceTypeResourceImpl.class,
-                InstallationSlotBasicResourceImpl.class));
-    }
-
+    /**
+     * @param deviceTypeName the name of the device type to return information for.
+     * @return a list of installation slot names that correspond to a requested type.
+     */
+    @GET
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public List<InstallationSlotBasic> getNamesList(@QueryParam("type") String deviceTypeName);
 }

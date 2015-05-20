@@ -15,29 +15,30 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.webservice;
+package org.openepics.discs.conf.jaxb;
 
-import java.util.Arrays;
-import java.util.Set;
-
-import javax.ws.rs.ApplicationPath;
-import javax.ws.rs.core.Application;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * This represents the JAX-RS application which hosts all REST resources of the CCDB.
+ * This is data transfer object representing a CCDB installation slot for JSON and XML serialization. This object only carries
+ * basic information, like slot name.
  *
  * @author <a href="mailto:sunil.sah@cosylab.com">Sunil Sah</a>
  */
-@ApplicationPath("/rest")
-public class CcdbRestService extends Application {
-    @Override
-    public Set<Class<?>> getClasses() { // NOSONAR generic wildcard types part of the framework
-        return getRestResourceClasses();
+@XmlRootElement(name = "installationSlotBasic")
+@XmlAccessorType(XmlAccessType.FIELD)
+public class InstallationSlotBasic {
+    private String name;
+
+    public InstallationSlotBasic() {
     }
 
-    private Set<Class<?>> getRestResourceClasses() {  // NOSONAR generic wildcard types part of the framework
-        return new java.util.HashSet<Class<?>>(Arrays.asList(DeviceTypeResourceImpl.class,
-                InstallationSlotBasicResourceImpl.class));
+    public String getName() {
+        return name;
     }
-
+    public void setName(String name) {
+        this.name = name;
+    }
 }
