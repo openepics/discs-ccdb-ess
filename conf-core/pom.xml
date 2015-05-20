@@ -46,6 +46,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.openepics.discs</groupId>
+            <artifactId>ccdb-jaxb</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
             <groupId>org.primefaces</groupId>
             <artifactId>primefaces</artifactId>
             <version>5.2</version>

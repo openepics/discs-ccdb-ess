@@ -43,11 +43,11 @@ public interface DeviceTypeResource {
     /**
      * Returns a specific device type.
      *
-     * @param number the id of the cable to retrieve
+     * @param id the id of the cable to retrieve
      * @return the cable instance data
      */
     @GET
     @Path("{id}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public DeviceType getDeviceType(@PathParam("id") String number);
+    public DeviceType getDeviceType(@PathParam("id") Long id);
 }
