@@ -33,7 +33,7 @@ import com.google.common.base.Preconditions;
  * from.
  *
  * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
- *
+ * TODO REMOVE!!!!
  */
 public class BuiltInProperty {
 

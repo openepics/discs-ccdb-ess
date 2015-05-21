@@ -91,12 +91,6 @@
                                     <h:outputText value="#{device.inventoryId}" />
                                 </p:column>
 
-                                <p:column headerText="Status" sortBy="#{device.statusLabel}" 
-                                        filterBy="#{device.statusLabel}" filterStyle="width: 90%;" 
-                                        filterMatchMode="exact" filterOptions="#{devicesByTypeManager.statusLabels}">
-                                    <h:outputText value="#{device.statusLabel}" />
-                                </p:column>
-
                                 <p:column headerText="Installed in" sortBy="#{device.installedIn}" filterStyle="width: 90%;" 
                                         filterBy="#{device.installedIn}" filterMatchMode="contains">
                                     <h:outputLink rendered="#{!empty device.installedSlotId}" 
@@ -228,16 +222,6 @@
             <ui:param name="resetFilter" value="PF('attributesDataTable').filter();" />
             <ui:param name="controller" value="#{deviceDetailsAttributesController}" />
             <ui:param name="submitHandler" value="modifyArtifact" />
-            <ui:param name="componentToUpdate" value=":devicesForm:attributesDataTable:attributesDataTable" />
-        </ui:include>
-
-        <ui:include src="/resources/dialogs/builtin-property-value.xhtml">
-            <ui:param name="formId" value="modifyBuiltInPropertyForm" />
-            <ui:param name="dialogTitle" value="Modify device instance property" />
-            <ui:param name="widgetName" value="modifyBuiltInProperty" />
-            <ui:param name="resetFilter" value="PF('attributesDataTable').filter();" />
-            <ui:param name="controller" value="#{deviceDetailsAttributesController}" />
-            <ui:param name="submitHandler" value="modifyBuiltInProperty" />
             <ui:param name="componentToUpdate" value=":devicesForm:attributesDataTable:attributesDataTable" />
         </ui:include>
 

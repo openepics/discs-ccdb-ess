@@ -63,10 +63,8 @@ import org.openepics.discs.conf.util.PropertyValueNotUniqueException;
 import org.openepics.discs.conf.util.PropertyValueUIElement;
 import org.openepics.discs.conf.util.UnhandledCaseException;
 import org.openepics.discs.conf.util.Utility;
-import org.openepics.discs.conf.views.BuiltInProperty;
 import org.openepics.discs.conf.views.BuiltInPropertyName;
 import org.openepics.discs.conf.views.ComptypeBuiltInPropertyName;
-import org.openepics.discs.conf.views.DeviceBuiltInPropertyName;
 import org.openepics.discs.conf.views.EntityAttributeView;
 import org.openepics.discs.conf.views.EntityAttributeViewKind;
 import org.openepics.discs.conf.views.SlotBuiltInPropertyName;
@@ -149,7 +147,6 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
 
     protected DataType strDataType;
     protected DataType dblDataType;
-    protected DataType enumDataType;
     protected String entityName;
 
     protected void init() {
@@ -346,8 +343,6 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
             prepareModifyPropertyValuePopUp();
         } else if (selectedAttribute.getEntity().getClass().equals(artifactClass)) {
             prepareModifyArtifactPopUp();
-        } else if (selectedAttribute.getEntity().getClass().equals(BuiltInProperty.class)) {
-            prepareModifyBuiltInPropertyPopUp();
         } else {
             throw new UnhandledCaseException();
         }
@@ -402,28 +397,6 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
         RequestContext.getCurrentInstance().execute("PF('modifyArtifact').show();");
     }
 
-    private void prepareModifyBuiltInPropertyPopUp() {
-        property = null;
-        final BuiltInProperty builtInProperty = (BuiltInProperty) selectedAttribute.getEntity();
-        builtInProperteryName = builtInProperty.getName();
-        builtInPropertyDataType = builtInProperty.getDataType().getName();
-
-        final BuiltInDataType propertyDataType = Conversion.getBuiltInDataType(builtInProperty.getDataType());
-        propertyValueUIElement = Conversion.getUIElementFromBuiltInDataType(propertyDataType);
-
-        propertyValue = builtInProperty.getValue();
-        propertyNameChangeDisabled = true;
-
-        if ((enumDataType != null) && (propertyDataType == BuiltInDataType.USER_DEFINED_ENUM)) {
-            enumSelections = Conversion.prepareEnumSelections(enumDataType);
-        } else {
-            enumSelections = null;
-        }
-
-        RequestContext.getCurrentInstance().update("modifyBuiltInPropertyForm:modifyBuiltInProperty");
-        RequestContext.getCurrentInstance().execute("PF('modifyBuiltInProperty').show();");
-    }
-
     /** Modifies {@link PropertyValue} */
     @SuppressWarnings("unchecked")
     public void modifyPropertyValue() {
@@ -449,7 +422,9 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
         }
     }
 
-    /** This method is called by the built-in property dialog "Save" button to save the new built-in property value. */
+    /** This method is called by the built-in property dialog "Save" button to save the new built-in property value.
+     * TODO REMOVE!!!!
+     * */
     public abstract void modifyBuiltInProperty();
 
     /** Modifies {@link Artifact} */
@@ -492,8 +467,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
      */
     public boolean canEdit(EntityAttributeView attributeView) {
         final Object attribute = attributeView.getEntity();
-        return attribute instanceof BuiltInProperty
-                    || (attribute instanceof PropertyValue && !(attribute instanceof ComptypePropertyValue))
+        return (attribute instanceof PropertyValue && !(attribute instanceof ComptypePropertyValue))
                     || (attribute instanceof Artifact && !(attribute instanceof ComptypeArtifact));
     }
 

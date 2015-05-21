@@ -20,7 +20,6 @@
 package org.openepics.discs.conf.ui;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -28,28 +27,18 @@ import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.json.JsonObject;
 
 import org.openepics.discs.conf.ejb.DeviceEJB;
 import org.openepics.discs.conf.ent.ComptypeArtifact;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
-import org.openepics.discs.conf.ent.DataType;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.DeviceArtifact;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
-import org.openepics.discs.conf.ent.DeviceStatus;
 import org.openepics.discs.conf.ent.Tag;
-import org.openepics.discs.conf.ent.values.EnumValue;
-import org.openepics.discs.conf.ent.values.StrValue;
 import org.openepics.discs.conf.ui.common.AbstractAttributesController;
 import org.openepics.discs.conf.ui.common.UIException;
-import org.openepics.discs.conf.util.UnhandledCaseException;
-import org.openepics.discs.conf.views.BuiltInProperty;
-import org.openepics.discs.conf.views.DeviceBuiltInPropertyName;
 import org.openepics.discs.conf.views.EntityAttributeView;
 import org.openepics.discs.conf.views.EntityAttributeViewKind;
-import org.openepics.seds.api.datatypes.SedsEnum;
-import org.openepics.seds.core.Seds;
 
 /**
  * Controller bean for manipulation of {@link Device} attributes
@@ -75,7 +64,6 @@ public class DeviceDetailsAttributesController extends
             setArtifactClass(DeviceArtifact.class);
             setPropertyValueClass(DevicePropertyValue.class);
             setDao(deviceEJB);
-            constructDeviceStatusEnum();
         } catch(Exception e) {
             throw new UIException("Device details display initialization fialed: " + e.getMessage(), e);
         }
@@ -147,22 +135,6 @@ public class DeviceDetailsAttributesController extends
         // refresh the device from database. This refreshes all related collections as well.
         device = deviceEJB.findById(device.getId());
 
-        attributes.add(new EntityAttributeView(new BuiltInProperty(DeviceBuiltInPropertyName.BIP_DESCRIPTION,
-                                                            device.getDescription(), strDataType)));
-        attributes.add(new EntityAttributeView(new BuiltInProperty(DeviceBuiltInPropertyName.BIP_LOCATION,
-                                                            device.getLocation(), strDataType)));
-        attributes.add(new EntityAttributeView(new BuiltInProperty(DeviceBuiltInPropertyName.BIP_P_O_REFERENCE,
-                                                            device.getPurchaseOrder(), strDataType)));
-        attributes.add(new EntityAttributeView(new BuiltInProperty(DeviceBuiltInPropertyName.BIP_STATUS,
-                                                            new EnumValue(device.getStatus().name()), enumDataType)));
-        attributes.add(new EntityAttributeView(new BuiltInProperty(DeviceBuiltInPropertyName.BIP_MANUFACTURER,
-                                                            device.getManufacturer(), strDataType)));
-        attributes.add(new EntityAttributeView(new BuiltInProperty(DeviceBuiltInPropertyName.BIP_MANUFACTURER_MODEL,
-                                                            device.getManufacturerModel(), strDataType)));
-        attributes.add(new EntityAttributeView(new BuiltInProperty(
-                                                            DeviceBuiltInPropertyName.BIP_MANUFACTURER_SERIAL_NO,
-                                                            device.getManufacturerSerialNumber(), strDataType)));
-
         for (final ComptypePropertyValue parentProp : parentProperties) {
             if (parentProp.getPropValue() != null) {
                 attributes.add(new EntityAttributeView(parentProp, EntityAttributeViewKind.DEVICE_TYPE_PROPERTY));
@@ -202,77 +174,6 @@ public class DeviceDetailsAttributesController extends
 
     @Override
     public void modifyBuiltInProperty() {
-        final BuiltInProperty builtInProperty = (BuiltInProperty) selectedAttribute.getEntity();
-        final DeviceBuiltInPropertyName builtInPropertyName = (DeviceBuiltInPropertyName)builtInProperty.getName();
-
-        final String userValueStr = propertyValue == null ? null
-                : (propertyValue instanceof StrValue ? ((StrValue)propertyValue).getStrValue() : null);
-
-        switch (builtInPropertyName) {
-            case BIP_DESCRIPTION:
-                    if ((userValueStr == null) || !userValueStr.equals(device.getDescription())) {
-                        device.setDescription(userValueStr);
-                        deviceEJB.save(device);
-                    }
-                    break;
-            case BIP_LOCATION:
-                if ((userValueStr == null) || !userValueStr.equals(device.getLocation())) {
-                    device.setLocation(userValueStr);
-                    deviceEJB.save(device);
-                }
-                break;
-            case BIP_P_O_REFERENCE:
-                if ((userValueStr == null) || !userValueStr.equals(device.getPurchaseOrder())) {
-                    device.setPurchaseOrder(userValueStr);
-                    deviceEJB.save(device);
-                }
-                break;
-            case BIP_MANUFACTURER:
-                if ((userValueStr == null) || !userValueStr.equals(device.getManufacturer())) {
-                    device.setManufacturer(userValueStr);
-                    deviceEJB.save(device);
-                }
-                break;
-            case BIP_MANUFACTURER_MODEL:
-                if ((userValueStr == null) || !userValueStr.equals(device.getManufacturerModel())) {
-                    device.setManufacturerModel(userValueStr);
-                    deviceEJB.save(device);
-                }
-                break;
-            case BIP_MANUFACTURER_SERIAL_NO:
-                if ((userValueStr == null) || !userValueStr.equals(device.getManufacturerSerialNumber())) {
-                    device.setManufacturerSerialNumber(userValueStr);
-                    deviceEJB.save(device);
-                }
-                break;
-            case BIP_STATUS:
-                final String userValueEnum = propertyValue == null ? null
-                        : (propertyValue instanceof EnumValue ? ((EnumValue)propertyValue).getEnumValue() : null);
-                if ((userValueEnum == null) || !userValueEnum.equals(device.getStatus().name())) {
-                    device.setStatus(Enum.valueOf(DeviceStatus.class, userValueEnum));
-                    deviceEJB.save(device);
-                }
-                break;
-            default:
-                throw new UnhandledCaseException();
-        }
         populateAttributesList();
-    }
-
-    private void constructDeviceStatusEnum() {
-        final DeviceStatus[] devStatusEnumValues = DeviceStatus.values();
-        final String[] devStatusEnumStrs = new String[devStatusEnumValues.length];
-        int i = 0;
-        for (final DeviceStatus status : devStatusEnumValues) {
-            devStatusEnumStrs[i] = status.name();
-            i++;
-        }
-        final SedsEnum devStatusEnum = Seds.newFactory().newEnum(devStatusEnumStrs[0], devStatusEnumStrs);
-        final JsonObject jsonEnum = Seds.newDBConverter().serialize(devStatusEnum);
-
-        enumDataType = new DataType("Built-in status", "Built in device status temporary data type", false,
-                                        jsonEnum.toString());
-        enumDataType.setModifiedBy("system");
-        enumDataType.setModifiedAt(new Date());
     }
 }

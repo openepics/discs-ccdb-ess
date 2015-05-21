@@ -28,8 +28,6 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -75,26 +73,6 @@ public class Device extends ConfigurationEntity
     @Column(name = "serial_number")
     private String serialNumber;
 
-    @Size(max = 255)
-    @Column(name = "description")
-    private String description;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status")
-    private DeviceStatus status = DeviceStatus.DEFINED;
-
-    @Size(max = 64)
-    @Column(name = "manuf_serial_number")
-    private String manufSerialNumber;
-
-    @Size(max = 64)
-    @Column(name = "location")
-    private String location;
-
-    @Size(max = 64)
-    @Column(name = "purchase_order")
-    private String purchaseOrder;
-
     @Size(max = 16)
     @Column(name = "asm_position")
     private String asmPosition;
@@ -102,12 +80,6 @@ public class Device extends ConfigurationEntity
     @Size(max = 255)
     @Column(name = "asm_description")
     private String asmDescription;
-
-    @Column(name = "manufacturer")
-    private String manufacturer;
-
-    @Column(name = "manuf_model")
-    private String manufModel;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "device")
     private List<DevicePropertyValue> devicePropertyList = new ArrayList<>();
@@ -132,7 +104,7 @@ public class Device extends ConfigurationEntity
     @ManyToOne
     private Device asmParent;
 
-    @ManyToMany(cascade=CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "device_tag",
                joinColumns = { @JoinColumn(name = "device_id") }, inverseJoinColumns = { @JoinColumn(name = "tag_id") })
     private Set<Tag> tags = new HashSet<>();
@@ -156,41 +128,6 @@ public class Device extends ConfigurationEntity
         this.serialNumber = serialNumber;
     }
 
-    public String getDescription() {
-        return description;
-    }
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public DeviceStatus getStatus() {
-        return status;
-    }
-    public void setStatus(DeviceStatus status) {
-        this.status = status;
-    }
-
-    public String getManufacturerSerialNumber() {
-        return manufSerialNumber;
-    }
-    public void setManufacturerSerialNumber(String manufSerialNumber) {
-        this.manufSerialNumber = manufSerialNumber;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
-    public String getPurchaseOrder() {
-        return purchaseOrder;
-    }
-    public void setPurchaseOrder(String purchaseOrder) {
-        this.purchaseOrder = purchaseOrder;
-    }
-
     public String getAssemblyPosition() {
         return asmPosition;
     }
@@ -203,20 +140,6 @@ public class Device extends ConfigurationEntity
     }
     public void setAssemblyDescription(String asmDescription) {
         this.asmDescription = asmDescription;
-    }
-
-    public String getManufacturer() {
-        return manufacturer;
-    }
-    public void setManufacturer(String manufacturer) {
-        this.manufacturer = manufacturer;
-    }
-
-    public String getManufacturerModel() {
-        return manufModel;
-    }
-    public void setManufacturerModel(String manufModel) {
-        this.manufModel = manufModel;
     }
 
     @XmlTransient
