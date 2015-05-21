@@ -12,77 +12,105 @@
                 function selectUnitInTable(globalIndex) {
                     // selectUnitInTable() only works on page load, so it can be used for navigating to 
                     //     an unit form another screen. 
-                    var devicesTable = PF('unitsTableVar');
-                    if (devicesTable.getPaginator().cfg.rowCount < 1) return;
-                    
-                    var rowsPerPage = devicesTable.getPaginator().cfg.rows;
-                    var pageNumber = Math.trunc(globalIndex / rowsPerPage);
-                    ccdb_tableSelectedIndex = globalIndex % rowsPerPage;
-                    if (pageNumber >= 0) {
-                        devicesTable.unselectAllRows();
-                        if (pageNumber == devicesTable.getPaginator().getCurrentPage()) {
-                            devicesTable.selectRow(ccdb_tableSelectedIndex);
-                            ccdb_tableSelectedIndex = -1;
-                        } else {
-                            // after page change 'onTablePageSwitchAction()' will be called by the framework
-                            devicesTable.getPaginator().setPage(pageNumber);
-                        }
+                    var unitsTable = PF('unitsTableVar');
+
+                    if (unitsTable.cfg.scrollLimit < 1 || unitsTable.cfg.scrollLimit < globalIndex) return;
+
+                    return;  // TODO remove
+                    while (unitsTable.scrollOffset < globalIndex) {
+                        unitsTable.loadLiveRows();
                     }
+                    unitsTable.selectRow(globalIndex);
+                    scrollSelectedIntoView();
                 }
-                var ccdb_tableSelectedIndex = -1;
-                function onTablePageSwitchAction() {
-                    if (ccdb_tableSelectedIndex > -1) {
-                        PF('unitsTableVar').selectRow(ccdb_tableSelectedIndex);
-                        ccdb_tableSelectedIndex = -1;
+
+                function removePropColWidth() {
+                    $('#unitsForm\\:unitsTable table thead th').css('width', '');
+                }
+
+                function adjustTableHeight() {
+                    var fieldsetHeight = $('#unitsForm\\:unitsFieldset').outerHeight(true);
+                    var fieldsetLegendHeight = $('#unitsForm\\:unitsFieldset legend').outerHeight(true);
+                    var em = emHeight();
+                    
+                    var entireTableHeight = fieldsetHeight - fieldsetLegendHeight - 5*em;
+                    $('#unitsForm\\:unitsTable').css({"height":entireTableHeight});
+                    
+                    var tableHeaderHeight = $('#unitsForm\\:unitsTable .ui-datatable-scrollable-header').outerHeight(true);
+                    $('#unitsForm\\:unitsTable .ui-datatable-scrollable-body').css({"height":entireTableHeight - tableHeaderHeight});
+                }
+
+                function closeDialogActions(widgetVar) {
+                    if (widgetVar != null) PF(widgetVar).hide();
+                    PF('unitsTableVar').filter();
+                    removePropColWidth();
+                    adjustFieldsetHeight('#unitsForm\\:unitsFieldset');
+                    adjustTableHeight();
+                }
+
+                function scrollSelectedIntoView() {
+                    var tableWidget = PF('unitsTableVar');
+                    if (tableWidget.selection.length > 0) {
+                        var scrollableBodyHeight = tableWidget.scrollBody[0].clientHeight
+                        var selectedNodeSelector = "tr[data-rk='" + tableWidget.selection[0] + "']";
+                        var selectedNode = $(selectedNodeSelector);
+                        var selectedNodePosition = selectedNode[0].offsetTop;
+                        var lowerLimit = Math.max(0, selectedNodePosition - scrollableBodyHeight + selectedNode.outerHeight());
+                        if (tableWidget.scrollBody.scrollTop() < lowerLimit || tableWidget.scrollBody.scrollTop() > selectedNodePosition) {
+                            tableWidget.scrollBody.scrollTop(Math.max(0,selectedNodePosition-scrollableBodyHeight/2));
+                        }
                     }
                 }
                 // ]]>
             </script>
-            <p:dataTable widgetVar="unitsTableVar" var="unit" id="unitsTable" value="#{unitManager.unitViews}" 
-                    selection="#{unitManager.selectedUnit}" selectionMode="single" rowKey="#{unit.unit.id}" 
-                    resizableColumns="true" style="table-layout: fixed; word-wrap: break-word;" 
-                    filteredValue="#{unitManager.filteredUnits}" rows="15" paginator="true" 
-                    paginatorPosition="bottom">
-                <p:ajax event="filter" ignoreAutoUpdate="true" />
-                <p:ajax event="rowSelect" update=":unitsForm:deleteButton :unitsForm:editButton" />
-                <p:ajax event="rowUnselect" update=":unitsForm:deleteButton :unitsForm:editButton" />
-                <p:ajax event="page" oncomplete="onTablePageSwitchAction();" />
 
-                <p:column headerText="Name" sortBy="#{unit.name.toUpperCase()}" filterBy="#{unit.name}" width="20%" 
-                        filterMatchMode="contains">
-                    <h:outputText value="#{unit.name}" />
-                </p:column>
+            <p:fieldset id="unitsFieldset" legend="Units">
+                <p:dataTable widgetVar="unitsTableVar" var="unit" id="unitsTable" value="#{unitManager.unitViews}" 
+                        styleClass="scroll-table" style="width: inherit; overflow-y: hidden;" scrollable="true" 
+                        selection="#{unitManager.selectedUnit}" selectionMode="single" rowKey="#{unit.unit.id}" 
+                        resizableColumns="true" tableStyle="table-layout: fixed; word-wrap: break-word; width: 100%;" 
+                        filteredValue="#{unitManager.filteredUnits}" liveScroll="true" scrollRows="50">
+                    <p:ajax event="filter" ignoreAutoUpdate="true" />
+                    <p:ajax event="rowSelect" update=":unitsForm:deleteButton :unitsForm:editButton" />
+                    <p:ajax event="rowUnselect" update=":unitsForm:deleteButton :unitsForm:editButton" />
+                    <p:ajax event="page" oncomplete="onTablePageSwitchAction();" />
 
-                <p:column headerText="Description" sortBy="#{unit.description}" filterBy="#{unit.description}" 
-                        width="50%" filterStyle="width: 20em;" filterMatchMode="contains">
-                    <h:outputText value="#{unit.description}" />
-                </p:column>
+                    <p:column headerText="Name" sortBy="#{unit.name.toUpperCase()}" filterBy="#{unit.name}"
+                            filterMatchMode="contains" styleClass="tableColWidth20">
+                        <h:outputText value="#{unit.name}" />
+                    </p:column>
+   
+                    <p:column headerText="Description" sortBy="#{unit.description}" filterBy="#{unit.description}" 
+                            filterStyle="max-width: 20em; width: 90%;" filterMatchMode="contains" styleClass="tableColWidth60">
+                        <h:outputText value="#{unit.description}" />
+                    </p:column>
 
-                <p:column headerText="Symbol" sortBy="#{unit.symbol}" width="10%" filterBy="#{unit.symbol}" 
-                        filterStyle="width: 90%;">
-                    <h:outputText value="#{unit.symbol}" />
-                </p:column>
+                    <p:column headerText="Symbol" sortBy="#{unit.symbol}" filterBy="#{unit.symbol}" 
+                            styleClass="tableColWidth10" filterStyle="width: 90%;">
+                        <h:outputText value="#{unit.symbol}" />
+                    </p:column>
 
-                <p:column headerText="Quantity" filterBy="#{unit.quantity}" sortBy="#{unit.quantity}" width="10%" 
-                        filterStyle="width: 90%;">
-                    <h:outputText value="#{unit.quantity}" />
-                </p:column>
-            </p:dataTable>
+                    <p:column headerText="Quantity" filterBy="#{unit.quantity}" sortBy="#{unit.quantity}" 
+                            styleClass="tableColWidth10" filterStyle="width: 90%;">
+                        <h:outputText value="#{unit.quantity}" />
+                    </p:column>
+                </p:dataTable>
 
-            <p:commandButton id="exportButton" icon="ui-icon-disk" value="Export" title="Export" 
-                style="float: right; margin-top: 1em;" oncomplete="PF('exportUnits').show();" 
-                disabled="#{empty unitManager.unitViews}" update=":exportUnitsForm:exportUnits" 
-                actionListener="#{unitManager.simpleTableDialog.prepareTableExportPopup}" />
-            <p:commandButton id="deleteButton" icon="ui-icon-trash" value="Delete" title="Delete" 
-                style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('deleteUnit').show();" 
-                disabled="#{empty unitManager.selectedUnit or unitManager.selectedUnitInUse}" />
-            <p:commandButton id="editButton" icon="ui-icon-pencil" value="Edit" title="Edit" 
-                style="float: right; margin: 1em 1ex 0 0;" update=":modifyUnitForm:modifyUnit" 
-                disabled="#{empty unitManager.selectedUnit}" oncomplete="PF('modifyUnit').show();" 
-                actionListener="#{unitManager.prepareModifyPopup}" />
-            <p:commandButton ajax="true" actionListener="#{unitManager.prepareAddPopup}" value="Add" 
-                update=":addUnitForm" title="Add unit" icon="ui-icon-plus"
-                oncomplete="PF('addUnit').show()" style="float: right; margin: 1em 1ex 0 0;" />
+                <p:commandButton id="exportButton" icon="ui-icon-disk" value="Export" title="Export" 
+                    style="float: right; margin-top: 1em;" oncomplete="PF('exportUnits').show();" 
+                    disabled="#{empty unitManager.unitViews}" update=":exportUnitsForm:exportUnits" 
+                    actionListener="#{unitManager.simpleTableDialog.prepareTableExportPopup}" />
+                <p:commandButton id="deleteButton" icon="ui-icon-trash" value="Delete" title="Delete" 
+                    style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('deleteUnit').show();" 
+                    disabled="#{empty unitManager.selectedUnit or unitManager.selectedUnitInUse}" />
+                <p:commandButton id="editButton" icon="ui-icon-pencil" value="Edit" title="Edit" 
+                    style="float: right; margin: 1em 1ex 0 0;" update=":modifyUnitForm:modifyUnit" 
+                    disabled="#{empty unitManager.selectedUnit}" oncomplete="PF('modifyUnit').show();" 
+                    actionListener="#{unitManager.prepareModifyPopup}" />
+                <p:commandButton ajax="true" actionListener="#{unitManager.prepareAddPopup}" value="Add" 
+                    update=":addUnitForm" title="Add unit" icon="ui-icon-plus"
+                    oncomplete="PF('addUnit').show()" style="float: right; margin: 1em 1ex 0 0;" />
+             </p:fieldset>
         </h:form>
 
         <ui:include src="/resources/dialogs/delete-confirmation.xhtml" >
@@ -93,7 +121,7 @@
             <ui:param name="submitHandler" value="onDelete" />
             <ui:param name="formToUpdate" value=":unitsForm:unitsTable :unitsForm:deleteButton :unitsForm:editButton 
                                                 :unitsForm:exportButton" />
-            <ui:param name="resetFilter" value="PF('unitsTableVar').filter();" />               
+            <ui:param name="resetFilter" value="closeDialogActions(null);" />               
             <ui:param name="entityType" value="this unit" />
         </ui:include>
 
@@ -119,5 +147,16 @@
             <ui:param name="includeHeader" value="#{unitManager.simpleTableDialog.includeHeaderRow}" />
             <ui:param name="tableFile" value="#{unitManager.simpleTableDialog.exportedTable}" />
         </ui:include>
+        <script type="text/javascript">
+            jQuery(document).ready(function() {
+                removePropColWidth();
+                adjustFieldsetHeight('#unitsForm\\:unitsFieldset');
+                adjustTableHeight();
+            });
+            jQuery(window).resize(function() {
+                adjustFieldsetHeight('#unitsForm\\:unitsFieldset');
+                adjustTableHeight();
+            });
+        </script>
     </ui:define>
 </ui:composition>
