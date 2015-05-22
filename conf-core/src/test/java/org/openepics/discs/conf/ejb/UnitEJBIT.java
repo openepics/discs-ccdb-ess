@@ -93,7 +93,7 @@ public class UnitEJBIT {
     @UsingDataSet(value= {"unit.xml"})
     @ApplyScriptBefore(value= {"update_sequences.sql"})
     public void testAdd() {
-        final Unit unit = new Unit("foot", "length2", "ft", "length in feet");
+        final Unit unit = new Unit("foot", "ft", "length in feet");
         unitService.add(unit);
 
         final Unit newUnit = unitService.findByName("foot");
@@ -101,7 +101,6 @@ public class UnitEJBIT {
         assertEquals("foot", newUnit.getName());
         assertEquals("length in feet", newUnit.getDescription());
         assertEquals("ft", newUnit.getSymbol());
-        assertEquals("length2", newUnit.getQuantity());
     }
 
     @Test
@@ -112,7 +111,6 @@ public class UnitEJBIT {
         unit.setName("foot");
         unit.setDescription("length in feet");
         unit.setSymbol("ft");
-        unit.setQuantity("length2");
         Long id = unit.getId();
         unitService.save(unit);
 
@@ -122,7 +120,6 @@ public class UnitEJBIT {
         assertEquals("foot", newUnit.getName());
         assertEquals("length in feet", newUnit.getDescription());
         assertEquals("ft", newUnit.getSymbol());
-        assertEquals("length2", newUnit.getQuantity());
     }
 
     @Test

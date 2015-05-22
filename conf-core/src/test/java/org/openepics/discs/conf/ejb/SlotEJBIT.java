@@ -116,16 +116,9 @@ public class SlotEJBIT {
         final Slot slot = new Slot("ABrandNewSlot", true);
 
         slot.setDescription("some Description");
-        slot.setBeamlinePosition(553.5);
         slot.setComment("comment");
         slot.setComponentType( compTypeService.findByName("QM1") );
         slot.setDescription("A description");
-        slot.getPositionInformation().setGlobalPitch(90.0);
-        slot.getPositionInformation().setGlobalRoll(180.0);
-        slot.getPositionInformation().setGlobalYaw(0.0);
-        slot.getPositionInformation().setGlobalX(1.0);
-        slot.getPositionInformation().setGlobalY(2.0);
-        slot.getPositionInformation().setGlobalZ(3.0);
         final Tag NEW_TAG = new Tag(UUID.randomUUID().toString());
         slot.getTags().add(NEW_TAG);
 
@@ -137,14 +130,7 @@ public class SlotEJBIT {
         assertEquals("A description", newSlot.getDescription());
         assertEquals("comment", newSlot.getComment());
         assertEquals("QM1", newSlot.getComponentType().getName());
-        assertEquals((Double)553.5, newSlot.getBeamlinePosition());
         assertTrue(newSlot.getTags().contains(NEW_TAG));
-        assertEquals((Double)90.0, newSlot.getPositionInformation().getGlobalPitch());
-        assertEquals((Double)180.0, newSlot.getPositionInformation().getGlobalRoll());
-        assertEquals((Double)0.0, newSlot.getPositionInformation().getGlobalYaw());
-        assertEquals((Double)1.0, newSlot.getPositionInformation().getGlobalX());
-        assertEquals((Double)2.0, newSlot.getPositionInformation().getGlobalY());
-        assertEquals((Double)3.0, newSlot.getPositionInformation().getGlobalZ());
     }
 
     @Test
@@ -155,16 +141,9 @@ public class SlotEJBIT {
         final Slot slot = slotService.findByName("FS1_CSS");
 
         slot.setDescription("some Description");
-        slot.setBeamlinePosition(553.5);
         slot.setComment("comment");
         slot.setComponentType( compTypeService.findByName("QM1") );
         slot.setDescription("A description");
-        slot.getPositionInformation().setGlobalPitch(90.0);
-        slot.getPositionInformation().setGlobalRoll(180.0);
-        slot.getPositionInformation().setGlobalYaw(0.0);
-        slot.getPositionInformation().setGlobalX(1.0);
-        slot.getPositionInformation().setGlobalY(2.0);
-        slot.getPositionInformation().setGlobalZ(3.0);
         final Tag NEW_TAG = new Tag(UUID.randomUUID().toString());
         slot.getTags().add(NEW_TAG);
         slotService.save(slot);
@@ -175,14 +154,7 @@ public class SlotEJBIT {
         assertEquals("A description", newSlot.getDescription());
         assertEquals("comment", newSlot.getComment());
         assertEquals("QM1", newSlot.getComponentType().getName());
-        assertEquals((Double)553.5, newSlot.getBeamlinePosition());
         assertTrue(newSlot.getTags().contains(NEW_TAG));
-        assertEquals((Double)90.0, newSlot.getPositionInformation().getGlobalPitch());
-        assertEquals((Double)180.0, newSlot.getPositionInformation().getGlobalRoll());
-        assertEquals((Double)0.0, newSlot.getPositionInformation().getGlobalYaw());
-        assertEquals((Double)1.0, newSlot.getPositionInformation().getGlobalX());
-        assertEquals((Double)2.0, newSlot.getPositionInformation().getGlobalY());
-        assertEquals((Double)3.0, newSlot.getPositionInformation().getGlobalZ());
     }
 
     @Test

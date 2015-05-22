@@ -20,6 +20,8 @@
 package org.openepics.discs.conf.ejb;
 
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
@@ -40,6 +42,7 @@ import org.openepics.discs.conf.ent.Config;
 @Singleton
 @Startup
 public class ApplicationService {
+    private static final Logger LOGGER = Logger.getLogger(ApplicationService.class.getCanonicalName());
 
     @PersistenceContext private EntityManager em;
     @Inject private InitialDBPopulation initDB;
@@ -54,6 +57,53 @@ public class ApplicationService {
         if (CollectionUtils.isEmpty(confList)) {
             initDB.initialPopulation();
             em.persist(new Config("schema_version", "1"));
+        }
+        checkDevicesTable();
+        checkSlotsTable();
+        checkUnitsTable();
+    }
+
+    private void checkDevicesTable() {
+        final Number oldSchemaColumns = (Number)em.createNativeQuery("SELECT COUNT(*) "
+                + "FROM information_schema.columns "
+                + "WHERE table_schema = 'public' "
+                + "AND table_name = 'device' "
+                + "AND column_name IN "
+                + "('description', 'location', 'manuf_model', 'manuf_serial_number', "
+                + "'manufacturer', 'purchase_order', 'status')").getSingleResult();
+        if (oldSchemaColumns.longValue() > 0) {
+            LOGGER.log(Level.WARNING, "Database table 'device' contains columns which are no longer needed. "
+                    + "Execute 'postgres-db-schemas/device_update1.sql' SQL queries to remove them.");
+            LOGGER.log(Level.WARNING, "* * * THIS IS A POSTGRESQL SCRIPT. TRANSLATE IF USING ANOTHER BACKEND! * * *");
+        }
+    }
+
+    private void checkSlotsTable() {
+        final Number oldSchemaColumns = (Number)em.createNativeQuery("SELECT COUNT(*) "
+                + "FROM information_schema.columns "
+                + "WHERE table_schema = 'public' "
+                + "AND table_name = 'slot' "
+                + "AND column_name IN "
+                + "('beamline_position', 'global_x', 'global_y', 'global_z', "
+                + "'global_pitch', 'global_roll', 'global_yaw')").getSingleResult();
+        if (oldSchemaColumns.longValue() > 0) {
+            LOGGER.log(Level.WARNING, "Database table 'slot' contains columns which are no longer needed. "
+                    + "Execute 'postgres-db-schemas/slot_update1.sql' SQL queries to remove them.");
+            LOGGER.log(Level.WARNING, "* * * THIS IS A POSTGRESQL SCRIPT. TRANSLATE IF USING ANOTHER BACKEND! * * *");
+        }
+    }
+
+    private void checkUnitsTable() {
+        final Number oldSchemaColumns = (Number)em.createNativeQuery("SELECT COUNT(*) "
+                + "FROM information_schema.columns "
+                + "WHERE table_schema = 'public' "
+                + "AND table_name = 'unit' "
+                + "AND column_name IN "
+                + "('quantity')").getSingleResult();
+        if (oldSchemaColumns.longValue() > 0) {
+            LOGGER.log(Level.WARNING, "Database table 'unit' contains columns which are no longer needed. "
+                    + "Execute 'postgres-db-schemas/unit_update1.sql' SQL queries to remove them.");
+            LOGGER.log(Level.WARNING, "* * * THIS IS A POSTGRESQL SCRIPT. TRANSLATE IF USING ANOTHER BACKEND! * * *");
         }
     }
 }

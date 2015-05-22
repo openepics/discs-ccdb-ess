@@ -76,7 +76,7 @@
                     <p:ajax event="page" oncomplete="onTablePageSwitchAction();" />
 
                     <p:column headerText="Name" sortBy="#{unit.name.toUpperCase()}" filterBy="#{unit.name}"
-                            filterMatchMode="contains" styleClass="tableColWidth20">
+                            filterMatchMode="contains" styleClass="tableColWidth30">
                         <h:outputText value="#{unit.name}" />
                     </p:column>
    
@@ -88,11 +88,6 @@
                     <p:column headerText="Symbol" sortBy="#{unit.symbol}" filterBy="#{unit.symbol}" 
                             styleClass="tableColWidth10" filterStyle="width: 90%;">
                         <h:outputText value="#{unit.symbol}" />
-                    </p:column>
-
-                    <p:column headerText="Quantity" filterBy="#{unit.quantity}" sortBy="#{unit.quantity}" 
-                            styleClass="tableColWidth10" filterStyle="width: 90%;">
-                        <h:outputText value="#{unit.quantity}" />
                     </p:column>
                 </p:dataTable>
 

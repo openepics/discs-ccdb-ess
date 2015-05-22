@@ -45,7 +45,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @NamedQueries({
     @NamedQuery(name = "Unit.findAllOrdered", query = "SELECT u FROM Unit u ORDER BY u.name"),
     @NamedQuery(name = "Unit.findByName", query = "SELECT u FROM Unit u WHERE u.name = :name"),
-    @NamedQuery(name = "Unit.findByQuantity", query = "SELECT u FROM Unit u WHERE u.quantity = :quantity"),
     @NamedQuery(name = "Unit.findBySymbol", query = "SELECT u FROM Unit u WHERE u.symbol = :symbol"),
     @NamedQuery(name = "Unit.findByModifiedBy", query = "SELECT u FROM Unit u WHERE u.modifiedBy = :modifiedBy")
 })
@@ -57,12 +56,6 @@ public class Unit extends ConfigurationEntity {
     @Size(min = 1, max = 32)
     @Column(name = "unit_name", unique=true)
     private String name;
-
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 64)
-    @Column(name = "quantity")
-    private String quantity;
 
     @Basic(optional = false)
     @NotNull
@@ -86,13 +79,11 @@ public class Unit extends ConfigurationEntity {
      * Constructs a new unit.
      *
      * @param unitName the unique unit name
-     * @param quantity the quantity this unit is used for (e.g.: time, length, weight, angle, etc.)
      * @param symbol the symbol to be used for this unit
      * @param description the user specified description
      */
-    public Unit(String unitName, String quantity, String symbol, String description) {
+    public Unit(String unitName, String symbol, String description) {
         this.name = unitName;
-        this.quantity = quantity;
         this.symbol = symbol;
         this.description = description;
     }
@@ -103,13 +94,6 @@ public class Unit extends ConfigurationEntity {
     }
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getQuantity() {
-        return quantity;
-    }
-    public void setQuantity(String quantity) {
-        this.quantity = quantity;
     }
 
     public String getSymbol() {

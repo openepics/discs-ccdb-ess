@@ -35,7 +35,6 @@ import com.google.common.base.Preconditions;
  */
 public class DeviceView {
     private String inventoryId;
-    private String statusLabel;
     private final String installedIn;
     private final String installedSlotId;
     private final String installationDate;
@@ -54,7 +53,6 @@ public class DeviceView {
         Preconditions.checkNotNull(installedIn);
         this.device = device;
         inventoryId = device.getSerialNumber();
-        statusLabel = device.getStatus().getLabel();
         this.installedIn = installedIn;
         this.installedSlotId = installedSlotId;
         installationTimestamp = installationDate;
@@ -69,11 +67,6 @@ public class DeviceView {
     /** @return the inventoryId  */
     public String getInventoryId() {
         return inventoryId;
-    }
-
-    /** @return the statusLabel */
-    public String getStatusLabel() {
-        return statusLabel;
     }
 
     /** @return the installedIn */
@@ -103,7 +96,6 @@ public class DeviceView {
         Preconditions.checkArgument(this.device.getId().equals(device.getId()));
         this.device = device;
         inventoryId = device.getSerialNumber();
-        statusLabel = device.getStatus().getLabel();
     }
 
     /** @return the installationTimestamp */

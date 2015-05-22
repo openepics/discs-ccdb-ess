@@ -342,16 +342,6 @@
             <ui:param name="componentToUpdate" value=":hierarchies:slotAttributes" />
         </ui:include>
 
-        <ui:include src="/resources/dialogs/builtin-property-value.xhtml">
-            <ui:param name="formId" value="modifyBuiltInPropertyForm" />
-            <ui:param name="dialogTitle" value="Modify #{hierarchiesController.selectedNodeSlot.hostingSlot ? 'installation slot' : 'container'} property" />
-            <ui:param name="widgetName" value="modifyBuiltInProperty" />
-            <ui:param name="controller" value="#{hierarchiesController}" />
-            <ui:param name="submitHandler" value="modifyBuiltInProperty" />
-            <ui:param name="componentToUpdate" value=":hierarchies:slotAttributes :hierarchies:tree" />
-            <ui:param name="resetFilter" value="hierarchiesResizeAll();" />
-        </ui:include>
-
         <ui:include src="/resources/dialogs/delete-confirmation.xhtml">
             <ui:param name="formId" value="deleteRelationshipForm" />
             <ui:param name="dialogTitle" value="Delete relationship" />

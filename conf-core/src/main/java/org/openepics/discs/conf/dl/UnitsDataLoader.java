@@ -62,9 +62,6 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
     private static final int COL_INDEX_DESC = 2;
     private static final int COL_INDEX_SYMBOL = 3;
 
-    // TODO remove after DB model change.
-    private static final String QUANTITY_UNUSED = "<unused>";
-
     private static final Set<String> REQUIRED_COLUMNS = new HashSet<>(Arrays.asList(HDR_SYMBOL, HDR_DESC));
 
     @Inject private UnitEJB unitEJB;
@@ -125,7 +122,6 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
                     result.addRowMessage(ErrorMessage.MODIFY_IN_USE, HDR_SYMBOL);
                 } else {
                     unitToUpdate.setDescription(descriptionFld);
-                    unitToUpdate.setQuantity(QUANTITY_UNUSED);
                     unitToUpdate.setSymbol(symbolFld);
                     unitEJB.save(unitToUpdate);
                 }
@@ -141,7 +137,7 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
     protected void handleCreate() {
         if (!unitByName.containsKey(nameFld)) {
             try {
-                final Unit unitToAdd = new Unit(nameFld, QUANTITY_UNUSED, symbolFld, descriptionFld);
+                final Unit unitToAdd = new Unit(nameFld, symbolFld, descriptionFld);
                 unitEJB.add(unitToAdd);
                 unitByName.put(unitToAdd.getName(), unitToAdd);
             } catch (EJBTransactionRolledbackException e) {

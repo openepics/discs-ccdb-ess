@@ -92,11 +92,9 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
     private transient List<MultiPropertyValueView> selectionPropertyValuesFiltered;
     private boolean selectAllRows;
 
-    @Override
     @PostConstruct
     public void init() {
         try {
-            super.init();
             setArtifactClass(ComptypeArtifact.class);
             setPropertyValueClass(ComptypePropertyValue.class);
             setDao(comptypeEJB);
@@ -294,11 +292,6 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
     @Override
     protected void populateParentTags() {
         // Nothing to do since component types don't inherit anything
-    }
-
-    @Override
-    public void modifyBuiltInProperty() {
-        // no built in property to modify
     }
 
     /** Prepares the data for slot property (definition) creation */

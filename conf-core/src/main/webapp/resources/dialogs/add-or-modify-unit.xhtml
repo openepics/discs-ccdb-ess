@@ -36,7 +36,6 @@
                             maxlength="254" required="true" requiredMessage="Please enter a description" 
                             value="#{unitManager.description}" />
                         <br/>
-                        <h:outputText id="icounter" />
                         <p:message for="unitDesc" />
                     </p:column>
                 </p:row>
@@ -50,17 +49,6 @@
                             requiredMessage="Please enter a symbol" 
                             disabled="#{unitManager.selectedUnitInUse and not unitManager.unitAdd}" />
                         <p:message for="unitSymbol" />
-                    </p:column>
-                </p:row>
-
-                <p:row>
-                    <p:column styleClass="alignRight alignMiddle dialog-labels-width-2">
-                        <p:outputLabel for="unitQuantity" value="Quantity:" />
-                    </p:column>
-                    <p:column>
-                        <p:inputText id="unitQuantity" value="#{unitManager.quantity}" required="true" 
-                            requiredMessage="Please enter a quantity" />
-                        <p:message for="unitQuantity" />
                     </p:column>
                 </p:row>
             </p:panelGrid>

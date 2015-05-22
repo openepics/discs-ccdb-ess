@@ -31,7 +31,7 @@ import org.openepics.discs.conf.ent.Unit;
 
 public class UnitEntityLoggerTest {
 
-    private final Unit unit = new Unit("Ampre", "Current", "A", "BlahBlha");
+    private final Unit unit = new Unit("Ampre", "A", "BlahBlha");
     private final UnitEntityLogger entLogger = new UnitEntityLogger();
 
     @Before
@@ -46,7 +46,7 @@ public class UnitEntityLoggerTest {
 
     @Test
     public void testSerializeEntity() {
-        final String RESULT = "{\"quantity\":\"Current\",\"symbol\":\"A\",\"description\":\"BlahBlha\"}";
+        final String RESULT = "{\"symbol\":\"A\",\"description\":\"BlahBlha\"}";
 
         assertEquals(RESULT, entLogger.auditEntries(unit, EntityTypeOperation.CREATE).get(0).getEntry());
     }

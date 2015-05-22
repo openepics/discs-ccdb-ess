@@ -27,7 +27,6 @@ import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
-import javax.faces.model.SelectItem;
 import javax.faces.validator.ValidatorException;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -39,7 +38,6 @@ import org.openepics.discs.conf.ejb.DeviceEJB;
 import org.openepics.discs.conf.ejb.InstallationEJB;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.Device;
-import org.openepics.discs.conf.ent.DeviceStatus;
 import org.openepics.discs.conf.ent.InstallationRecord;
 import org.openepics.discs.conf.export.ExportTable;
 import org.openepics.discs.conf.ui.common.UIException;
@@ -55,7 +53,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
-import com.google.common.collect.Lists;
 
 
 /**
@@ -78,8 +75,6 @@ public class DevicesByTypeManager implements Serializable, SimpleTableExporter {
     private List<DeviceView> devices;
     private transient List<DeviceView> filteredDevices;
     private transient DeviceView selectedDevice;
-
-    private List<SelectItem> statusLabels;
 
     private String serialNumber;
     private boolean isDeviceBeingEdited;
@@ -109,7 +104,7 @@ public class DevicesByTypeManager implements Serializable, SimpleTableExporter {
 
         @Override
         protected void addHeaderRow(ExportTable exportTable) {
-            exportTable.addHeaderRow("Type", "Inventory ID", "Status", "Installed in", "Installation timestamp");
+            exportTable.addHeaderRow("Type", "Inventory ID", "Installed in", "Installation timestamp");
         }
 
         @Override
@@ -118,7 +113,7 @@ public class DevicesByTypeManager implements Serializable, SimpleTableExporter {
                     : filteredDevices;
             for (final DeviceView deviceInstance : exportData) {
                 exportTable.addDataRow(deviceInstance.getDevice().getComponentType().getName(),
-                        deviceInstance.getInventoryId(), deviceInstance.getStatusLabel(),
+                        deviceInstance.getInventoryId(),
                         deviceInstance.getInstalledIn().equals("-") ? null : deviceInstance.getInstalledIn(),
                         deviceInstance.getInstallationTimestamp());
             }
@@ -149,7 +144,6 @@ public class DevicesByTypeManager implements Serializable, SimpleTableExporter {
             }
 
             prepareDevicesForDisplay(selectedDeviceId);
-            prepareStatusLabels();
             if (selectedIndex > -1) {
                 RequestContext.getCurrentInstance().execute("selectDeviceInTable(" + selectedIndex + ");");
             }
@@ -340,19 +334,6 @@ public class DevicesByTypeManager implements Serializable, SimpleTableExporter {
             listBuilder.add(devView);
         }
         devices = listBuilder.build();
-    }
-
-    private void prepareStatusLabels() {
-        statusLabels = Lists.newArrayList();
-        statusLabels.add(new SelectItem("", "Select one"));
-        for (final DeviceStatus status : DeviceStatus.values()) {
-            statusLabels.add(new SelectItem(status.getLabel(), status.getLabel()));
-        }
-    }
-
-    /** @return the list of labels for the filter */
-    public List<SelectItem> getStatusLabels() {
-        return statusLabels;
     }
 
     /** @return The list of all {@link Device} instances to display to the the user */

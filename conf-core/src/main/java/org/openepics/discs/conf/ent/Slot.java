@@ -27,7 +27,6 @@ import java.util.Set;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
@@ -62,8 +61,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
     @NamedQuery(name = "Slot.findByNameContaining", query = "SELECT s FROM Slot s WHERE s.name LIKE :name"),
     @NamedQuery(name = "Slot.findByIsHostingSlot", query = "SELECT s FROM Slot s "
             + "WHERE s.isHostingSlot = :isHostingSlot"),
-    @NamedQuery(name = "Slot.findByBeamlinePosition", query = "SELECT s FROM Slot s "
-            + "WHERE s.beamlinePosition = :beamlinePosition"),
     @NamedQuery(name = "Slot.findByModifiedBy", query = "SELECT s FROM Slot s WHERE s.modifiedBy = :modifiedBy"),
     @NamedQuery(name = "Slot.findByComponentType", query = "SELECT s FROM Slot s "
             + "WHERE s.componentType = :componentType")
@@ -84,12 +81,6 @@ public class Slot extends ConfigurationEntity implements EntityWithProperties, E
     @NotNull
     @Column(name = "is_hosting_slot")
     private boolean isHostingSlot;
-
-    @Column(name = "beamline_position")
-    private Double beamlinePosition;
-
-    @Embedded
-    private PositionInformation positionInfo = new PositionInformation();
 
     @Size(max = 255)
     @Column(name = "asm_comment")
@@ -166,26 +157,6 @@ public class Slot extends ConfigurationEntity implements EntityWithProperties, E
     }
     public void setHostingSlot(boolean isHostingSlot) {
         this.isHostingSlot = isHostingSlot;
-    }
-
-    public Double getBeamlinePosition() {
-        return beamlinePosition;
-    }
-    public void setBeamlinePosition(Double beamlinePosition) {
-        this.beamlinePosition = beamlinePosition;
-    }
-
-    /**
-     * @return The {@link PositionInformation} associated with the instalaltion slot.
-     */
-    public PositionInformation getPositionInformation()
-    {
-        // Due to some weirdness Hibernate clears the initialized field when loading data
-        // Added this lazy initialization as convenience
-        if (positionInfo==null) {
-            positionInfo = new PositionInformation();
-        }
-        return positionInfo;
     }
 
     public String getAssemblyComment() {

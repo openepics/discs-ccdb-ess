@@ -76,9 +76,7 @@ public class EntityAttributeView {
     }
 
     private void setParameters() {
-        if (entity instanceof BuiltInProperty) {
-            setBuiltInProperty();
-        } else  if (entity instanceof ComptypePropertyValue) {
+        if (entity instanceof ComptypePropertyValue) {
             setComponentTypeParameters();
         } else if (entity instanceof PropertyValue) {
             setPropValueParameters();
@@ -133,16 +131,6 @@ public class EntityAttributeView {
         kind =  EntityAttributeViewKind.TAG;
         value = null;
         id = "TAG_" + name;
-    }
-
-    private void setBuiltInProperty() {
-        final BuiltInProperty builtInProperty = (BuiltInProperty) entity;
-        name = builtInProperty.getName().toString();
-        value = builtInProperty.getValue();
-        type = builtInProperty.getDataType();
-        kind = EntityAttributeViewKind.BUILT_IN_PROPERTY;
-        isBuiltIn = true;
-        id = "BIP_" + name;
     }
 
     public String getName() {

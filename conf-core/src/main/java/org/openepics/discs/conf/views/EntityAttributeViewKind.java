@@ -25,7 +25,6 @@ package org.openepics.discs.conf.views;
  */
 public enum EntityAttributeViewKind {
 
-    BUILT_IN_PROPERTY("Built-in property"),
     DEVICE_TYPE_PROPERTY("Device type property"),
     DEVICE_TYPE_ARTIFACT("Device type artifact"),
     DEVICE_TYPE_TAG("Device type tag"),

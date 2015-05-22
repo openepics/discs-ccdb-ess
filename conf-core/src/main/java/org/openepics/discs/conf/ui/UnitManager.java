@@ -88,7 +88,6 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
     private String name;
     private String description;
     private String symbol;
-    private String quantity;
     private boolean unitAdd;
 
     private ExportSimpleTableDialog simpleTableExporterDialog;
@@ -106,7 +105,7 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
 
         @Override
         protected void addHeaderRow(ExportTable exportTable) {
-            exportTable.addHeaderRow("Name", "Description", "Symbol", "Quantity");
+            exportTable.addHeaderRow("Name", "Description", "Symbol");
         }
 
         @Override
@@ -114,7 +113,7 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
             final List<UnitView> exportData = filteredUnits == null || filteredUnits.isEmpty() ? unitViews
                     : filteredUnits;
             for (final UnitView unit : exportData) {
-                exportTable.addDataRow(unit.getName(), unit.getDescription(), unit.getSymbol(), unit.getQuantity());
+                exportTable.addDataRow(unit.getName(), unit.getDescription(), unit.getSymbol());
             }
         }
     }
@@ -196,7 +195,6 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
         name = null;
         description = null;
         symbol = null;
-        quantity = null;
         unitAdd = true;
     }
 
@@ -205,7 +203,6 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
         name = selectedUnit.getName();
         description = selectedUnit.getDescription();
         symbol = selectedUnit.getSymbol();
-        quantity = selectedUnit.getQuantity();
         unitAdd = false;
     }
 
@@ -214,9 +211,8 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
         Preconditions.checkNotNull(name);
         Preconditions.checkNotNull(description);
         Preconditions.checkNotNull(symbol);
-        Preconditions.checkNotNull(quantity);
         selectedUnit = null;
-        final Unit unitToAdd = new Unit(name, quantity, symbol, description);
+        final Unit unitToAdd = new Unit(name, symbol, description);
         unitEJB.add(unitToAdd);
         refreshUnits();
     }
@@ -230,7 +226,6 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
         unitToSave.setName(name);
         unitToSave.setDescription(description);
         unitToSave.setSymbol(symbol);
-        unitToSave.setQuantity(quantity);
         unitEJB.save(unitToSave);
 
         // reset the input fields
@@ -319,15 +314,6 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
     /** @param symbol the symbol to set */
     public void setSymbol(String symbol) {
         this.symbol = symbol;
-    }
-
-    /** @return the quantity */
-    public String getQuantity() {
-        return quantity;
-    }
-    /** @param quantity the quantity to set */
-    public void setQuantity(String quantity) {
-        this.quantity = quantity;
     }
 
     /** @return the unitAdd */

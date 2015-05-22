@@ -41,7 +41,6 @@ import org.openepics.discs.conf.ejb.ComptypeEJB;
 import org.openepics.discs.conf.ejb.DAO;
 import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.ComponentType;
-import org.openepics.discs.conf.ent.PositionInformation;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
 
@@ -64,13 +63,6 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
     private static final String HDR_CTYPE = "CTYPE";
     private static final String HDR_DESCRIPTION = "DESCRIPTION";
     private static final String HDR_IS_HOSTING_SLOT = "IS-HOSTING-SLOT";
-    private static final String HDR_BLP = "BLP";
-    private static final String HDR_GCX = "GCX";
-    private static final String HDR_GCY = "GCY";
-    private static final String HDR_GCZ = "GCZ";
-    private static final String HDR_GL_ROLL = "GL-ROLL";
-    private static final String HDR_GL_YAW = "GL-YAW";
-    private static final String HDR_GL_PITCH = "GL-PITCH";
     private static final String HDR_ASM_COMMENT = "ASM-COMMENT";
     private static final String HDR_ASM_POSITION = "ASM-POSITION";
     private static final String HDR_COMMENT = "COMMENT";
@@ -79,13 +71,6 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
     private static final int COL_INDEX_CTYPE = -1; // TODO fix
     private static final int COL_INDEX_DESCRIPTION = -1; // TODO fix
     private static final int COL_INDEX_IS_HOSTING_SLOT = -1; // TODO fix
-    private static final int COL_INDEX_BLP = -1; // TODO fix
-    private static final int COL_INDEX_GCX = -1; // TODO fix
-    private static final int COL_INDEX_GCY = -1; // TODO fix
-    private static final int COL_INDEX_GCZ = -1; // TODO fix
-    private static final int COL_INDEX_GL_ROLL = -1; // TODO fix
-    private static final int COL_INDEX_GL_YAW = -1; // TODO fix
-    private static final int COL_INDEX_GL_PITCH = -1; // TODO fix
     private static final int COL_INDEX_ASM_COMMENT = -1; // TODO fix
     private static final int COL_INDEX_ASM_POSITION = -1; // TODO fix
     private static final int COL_INDEX_COMMENT = -1; // TODO fix
@@ -93,7 +78,6 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
     private static final Set<String> REQUIRED_COLUMNS = new HashSet<>(Arrays.asList(HDR_IS_HOSTING_SLOT, HDR_CTYPE));
 
     private String name, description, componentTypeString, asmComment, asmPosition, comment;
-    private Double blp, globalX, globalY, globalZ, globalRoll, globalPitch, globalYaw;
     private Boolean isHosting;
 
     private List<Slot> newSlots;
@@ -137,14 +121,6 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
         } else {
             isHosting = isHostingString != null ? Boolean.parseBoolean(isHostingString) : null;
         }
-
-        blp                = readCurrentRowCellForHeaderAsDouble(HDR_BLP);
-        globalX            = readCurrentRowCellForHeaderAsDouble(HDR_GCX);
-        globalY            = readCurrentRowCellForHeaderAsDouble(HDR_GCY);
-        globalZ            = readCurrentRowCellForHeaderAsDouble(HDR_GCZ);
-        globalRoll         = readCurrentRowCellForHeaderAsDouble(HDR_GL_ROLL);
-        globalPitch        = readCurrentRowCellForHeaderAsDouble(HDR_GL_PITCH);
-        globalYaw          = readCurrentRowCellForHeaderAsDouble(HDR_GL_YAW);
     }
 
     @Override
@@ -285,17 +261,9 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
         slotToAddOrUpdate.setComponentType(compType);
         slotToAddOrUpdate.setDescription(description);
         slotToAddOrUpdate.setHostingSlot(isHosting);
-        slotToAddOrUpdate.setBeamlinePosition(blp);
         slotToAddOrUpdate.setAssemblyComment(asmComment);
         slotToAddOrUpdate.setAssemblyPosition(asmPosition);
         slotToAddOrUpdate.setComment(comment);
-        final PositionInformation positionInfo = slotToAddOrUpdate.getPositionInformation();
-        positionInfo.setGlobalX(globalX);
-        positionInfo.setGlobalY(globalY);
-        positionInfo.setGlobalZ(globalZ);
-        positionInfo.setGlobalRoll(globalRoll);
-        positionInfo.setGlobalPitch(globalPitch);
-        positionInfo.setGlobalYaw(globalYaw);
     }
 
     @Override
