@@ -67,7 +67,6 @@ import org.openepics.discs.conf.views.BuiltInPropertyName;
 import org.openepics.discs.conf.views.ComptypeBuiltInPropertyName;
 import org.openepics.discs.conf.views.EntityAttributeView;
 import org.openepics.discs.conf.views.EntityAttributeViewKind;
-import org.openepics.discs.conf.views.SlotBuiltInPropertyName;
 import org.primefaces.component.datatable.DataTable;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
@@ -145,14 +144,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
     protected Set<Tag> parentTags;
     protected T propertyValueInstance;
 
-    protected DataType strDataType;
-    protected DataType dblDataType;
     protected String entityName;
-
-    protected void init() {
-        strDataType = dataTypeEJB.findByName(BuiltInDataType.STR_NAME);
-        dblDataType = dataTypeEJB.findByName(BuiltInDataType.DBL_NAME);
-    }
 
     protected void resetFields() {
         property = null;
@@ -421,11 +413,6 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
             internalPopulateAttributesList();
         }
     }
-
-    /** This method is called by the built-in property dialog "Save" button to save the new built-in property value.
-     * TODO REMOVE!!!!
-     * */
-    public abstract void modifyBuiltInProperty();
 
     /** Modifies {@link Artifact} */
     @SuppressWarnings("unchecked")

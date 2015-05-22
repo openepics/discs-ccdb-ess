@@ -59,6 +59,7 @@ public class ApplicationService {
             em.persist(new Config("schema_version", "1"));
         }
         checkDevicesTable();
+        checkSlotsTable();
     }
 
     private void checkDevicesTable() {
@@ -75,4 +76,20 @@ public class ApplicationService {
             LOGGER.log(Level.WARNING, "* * * THIS IS A POSTGRESQL SCRIPT. TRANSLATE IF USING ANOTHER BACKEND! * * *");
         }
     }
+
+    private void checkSlotsTable() {
+        final Number oldSchemaColumns = (Number)em.createNativeQuery("SELECT COUNT(*) "
+                + "FROM information_schema.columns "
+                + "WHERE table_schema = 'public' "
+                + "AND table_name = 'slot' "
+                + "AND column_name IN "
+                + "('beamline_position', 'global_x', 'global_y', 'global_z', "
+                + "'global_pitch', 'global_roll', 'global_yaw')").getSingleResult();
+        if (oldSchemaColumns.longValue() > 0) {
+            LOGGER.log(Level.WARNING, "Database table 'slot' contains columns which are no longer needed. "
+                    + "Execute 'postgres-db-schemas/slot_update1.sql' SQL queries to remove them.");
+            LOGGER.log(Level.WARNING, "* * * THIS IS A POSTGRESQL SCRIPT. TRANSLATE IF USING ANOTHER BACKEND! * * *");
+        }
+    }
+
 }

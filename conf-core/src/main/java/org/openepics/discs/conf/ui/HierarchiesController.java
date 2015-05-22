@@ -71,7 +71,6 @@ import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.DeviceArtifact;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ent.InstallationRecord;
-import org.openepics.discs.conf.ent.PositionInformation;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyValue;
 import org.openepics.discs.conf.ent.Slot;
@@ -81,8 +80,6 @@ import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.ent.SlotRelation;
 import org.openepics.discs.conf.ent.SlotRelationName;
 import org.openepics.discs.conf.ent.Tag;
-import org.openepics.discs.conf.ent.values.DblValue;
-import org.openepics.discs.conf.ent.values.StrValue;
 import org.openepics.discs.conf.ent.values.Value;
 import org.openepics.discs.conf.ui.common.AbstractAttributesController;
 import org.openepics.discs.conf.ui.common.UIException;
@@ -94,11 +91,9 @@ import org.openepics.discs.conf.util.PropertyValueUIElement;
 import org.openepics.discs.conf.util.UnhandledCaseException;
 import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.util.names.Names;
-import org.openepics.discs.conf.views.BuiltInProperty;
 import org.openepics.discs.conf.views.BuiltInPropertyName;
 import org.openepics.discs.conf.views.EntityAttributeView;
 import org.openepics.discs.conf.views.EntityAttributeViewKind;
-import org.openepics.discs.conf.views.SlotBuiltInPropertyName;
 import org.openepics.discs.conf.views.SlotRelationshipView;
 import org.openepics.discs.conf.views.SlotView;
 import org.primefaces.context.RequestContext;
@@ -153,8 +148,6 @@ public class HierarchiesController implements Serializable {
     private InstallationRecord installationRecord;
     private Device deviceToInstall;
     private Slot selectedSlot;
-    private DataType strDataType;
-    private DataType dblDataType;
 
     // variables from the installation slot / containers editing merger.
     private transient Set<Long> collapsedNodes;
@@ -199,8 +192,6 @@ public class HierarchiesController implements Serializable {
         try {
             updateRootNode();
             fillNamesAutocomplete();
-            strDataType = dataTypeEJB.findByName(BuiltInDataType.STR_NAME);
-            dblDataType = dataTypeEJB.findByName(BuiltInDataType.DBL_NAME);
             attributeKinds = Utility.buildAttributeKinds();
             relationshipTypes = buildRelationshipTypeList();
 
@@ -255,39 +246,11 @@ public class HierarchiesController implements Serializable {
         final List<EntityAttributeView> attributesList = new ArrayList<>();
 
         if (selectedNode != null) {
-            addBuiltInProperties(attributesList);
             addPropertyValues(attributesList);
             addArtifacts(attributesList);
             addTags(attributesList);
         }
         this.attributes = attributesList;
-    }
-
-    private void addBuiltInProperties(List<EntityAttributeView> attributesList) {
-        final boolean isHostingSlot = selectedSlot.isHostingSlot();
-
-        attributesList.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_DESCRIPTION,
-                                        selectedSlot.getDescription(), strDataType)));
-        if (isHostingSlot) {
-            attributesList.add(new EntityAttributeView(
-                                        new BuiltInProperty(SlotBuiltInPropertyName.BIP_BEAMLINE_POS,
-                                                selectedSlot.getBeamlinePosition(), dblDataType)));
-            final PositionInformation slotPosition = selectedSlot.getPositionInformation();
-            attributesList.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_GLOBAL_X,
-                                                                slotPosition.getGlobalX(), dblDataType)));
-            attributesList.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_GLOBAL_Y,
-                                                                slotPosition.getGlobalY(), dblDataType)));
-            attributesList.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_GLOBAL_Z,
-                                                                slotPosition.getGlobalZ(), dblDataType)));
-            attributesList.add(new EntityAttributeView(
-                                        new BuiltInProperty(SlotBuiltInPropertyName.BIP_GLOBAL_PITCH,
-                                                slotPosition.getGlobalPitch(), dblDataType)));
-            attributesList.add(new EntityAttributeView(
-                                        new BuiltInProperty(SlotBuiltInPropertyName.BIP_GLOBAL_ROLL,
-                                                slotPosition.getGlobalRoll(), dblDataType)));
-            attributesList.add(new EntityAttributeView(new BuiltInProperty(SlotBuiltInPropertyName.BIP_GLOBAL_YAW,
-                                                                slotPosition.getGlobalYaw(), dblDataType)));
-        }
     }
 
     private void addPropertyValues(List<EntityAttributeView> attributesList) {
@@ -741,7 +704,6 @@ public class HierarchiesController implements Serializable {
             return false;
         }
         switch (selectedAttribute.getKind()) {
-            case BUILT_IN_PROPERTY:
             case CONTAINER_SLOT_ARTIFACT:
             case CONTAINER_SLOT_PROPERTY:
             case INSTALL_SLOT_ARTIFACT:
@@ -759,8 +721,6 @@ public class HierarchiesController implements Serializable {
             prepareModifyPropertyValuePopup();
         } else if (selectedAttribute.getEntity() instanceof SlotArtifact) {
             prepareModifyArtifactPopup();
-        } else if (selectedAttribute.getEntity() instanceof BuiltInProperty) {
-            prepareModifyBuiltInPropertyPopup();
         } else {
             throw new UnhandledCaseException();
         }
@@ -1057,95 +1017,6 @@ public class HierarchiesController implements Serializable {
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      * Above: Methods for adding, deleting and modifying artifacts.
-     *
-     * Below: Methods for modifying built-in properties.
-     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-    private void prepareModifyBuiltInPropertyPopup() {
-        property = null;
-        enumSelections = null;
-        final BuiltInProperty builtInProperty = (BuiltInProperty) selectedAttribute.getEntity();
-        builtInProperteryName = builtInProperty.getName();
-        builtInPropertyDataType = builtInProperty.getDataType().getName();
-
-        final BuiltInDataType propertyDataType = Conversion.getBuiltInDataType(builtInProperty.getDataType());
-        propertyValueUIElement = Conversion.getUIElementFromBuiltInDataType(propertyDataType);
-
-        propertyValue = builtInProperty.getValue();
-        propertyNameChangeDisabled = true;
-
-        RequestContext.getCurrentInstance().update("modifyBuiltInPropertyForm:modifyBuiltInProperty");
-        RequestContext.getCurrentInstance().execute("PF('modifyBuiltInProperty').show();");
-    }
-
-    /** The handler called to save the new value of the built-in property */
-    public void modifyBuiltInProperty() {
-        Preconditions.checkNotNull(selectedAttribute);
-        Preconditions.checkNotNull(selectedSlot);
-
-        final BuiltInProperty builtInProperty = (BuiltInProperty) selectedAttribute.getEntity();
-        final SlotBuiltInPropertyName builtInPropertyName = (SlotBuiltInPropertyName)builtInProperty.getName();
-
-        final String userValueStr = propertyValue == null ? null
-                        : (propertyValue instanceof StrValue ? ((StrValue)propertyValue).getStrValue() : null);
-        final Double userValueDbl = propertyValue == null ? null
-                        : (propertyValue instanceof DblValue ? ((DblValue)propertyValue).getDblValue() : null);
-        switch (builtInPropertyName) {
-            case BIP_DESCRIPTION:
-                if ((userValueStr == null) || !userValueStr.equals(selectedSlot.getDescription())) {
-                    selectedSlot.setDescription(userValueStr);
-                    saveSlotAndRefresh();
-                }
-                break;
-            case BIP_BEAMLINE_POS:
-                if ((userValueDbl == null) || !userValueDbl.equals(selectedSlot.getBeamlinePosition())) {
-                    selectedSlot.setBeamlinePosition(userValueDbl);
-                    saveSlotAndRefresh();
-                }
-                break;
-            case BIP_GLOBAL_X:
-                if ((userValueDbl == null) || !userValueDbl.equals(selectedSlot.getPositionInformation().getGlobalX())) {
-                    selectedSlot.getPositionInformation().setGlobalX(userValueDbl);
-                    saveSlotAndRefresh();
-                }
-                break;
-            case BIP_GLOBAL_Y:
-                if ((userValueDbl == null) || !userValueDbl.equals(selectedSlot.getPositionInformation().getGlobalY())) {
-                    selectedSlot.getPositionInformation().setGlobalY(userValueDbl);
-                    saveSlotAndRefresh();
-                }
-                break;
-            case BIP_GLOBAL_Z:
-                if ((userValueDbl != null) && !userValueDbl.equals(selectedSlot.getPositionInformation().getGlobalZ())) {
-                    selectedSlot.getPositionInformation().setGlobalZ(userValueDbl);
-                    saveSlotAndRefresh();
-                }
-                break;
-            case BIP_GLOBAL_PITCH:
-                if ((userValueDbl != null) && !userValueDbl.equals(selectedSlot.getPositionInformation().getGlobalPitch())) {
-                    selectedSlot.getPositionInformation().setGlobalPitch(userValueDbl);
-                    saveSlotAndRefresh();
-                }
-                break;
-            case BIP_GLOBAL_ROLL:
-                if ((userValueDbl != null) && !userValueDbl.equals(selectedSlot.getPositionInformation().getGlobalRoll())) {
-                    selectedSlot.getPositionInformation().setGlobalRoll(userValueDbl);
-                    saveSlotAndRefresh();
-                }
-                break;
-            case BIP_GLOBAL_YAW:
-                if ((userValueDbl != null) && !userValueDbl.equals(selectedSlot.getPositionInformation().getGlobalYaw())) {
-                    selectedSlot.getPositionInformation().setGlobalYaw(userValueDbl);
-                    saveSlotAndRefresh();
-                }
-                break;
-            default:
-                throw new UnhandledCaseException();
-        }
-        initAttributeList();
-    }
-
-    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     * Above: Methods for modifying built-in properties.
      *
      * Below: Input field validators regardless of the dialog they are used in.
      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

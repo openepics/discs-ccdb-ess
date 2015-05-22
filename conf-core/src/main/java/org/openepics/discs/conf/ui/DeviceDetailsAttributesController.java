@@ -56,11 +56,9 @@ public class DeviceDetailsAttributesController extends
 
     private Device device;
 
-    @Override
     @PostConstruct
     public void init() {
         try {
-            super.init();
             setArtifactClass(DeviceArtifact.class);
             setPropertyValueClass(DevicePropertyValue.class);
             setDao(deviceEJB);
@@ -170,10 +168,5 @@ public class DeviceDetailsAttributesController extends
                 parentTags.add(parentTag);
             }
         }
-    }
-
-    @Override
-    public void modifyBuiltInProperty() {
-        populateAttributesList();
     }
 }

@@ -134,11 +134,6 @@ public class SlotEntityLogger implements EntityLogger<Slot> {
                         .addArrayOfMappedProperties("installation", installationDeviceMap)
                         .addArrayOfProperties("tagsList", EntityLoggerUtil.getTagNamesFromTagsSet(slot.getTags()));
 
-        // If positionInformation is empty do not add it
-        if (slot.getPositionInformation().isEmpty()) {
-            logUtil.removeTopProperties(Arrays.asList("positionInformation"));
-        }
-
         return ImmutableList.of(logUtil.auditEntry(operation, EntityType.SLOT, slot.getName(), slot.getId()));
     }
 }
