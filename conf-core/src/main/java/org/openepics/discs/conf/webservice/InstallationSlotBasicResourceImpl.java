@@ -29,6 +29,13 @@ import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.jaxb.InstallationSlotBasic;
 import org.openepics.discs.conf.jaxrs.InstallationSlotBasicResource;
 
+import com.google.common.base.Strings;
+
+/**
+ * An implementation of the InstallationSlotBasicResource interface.
+ *
+ * @author <a href="mailto:sunil.sah@cosylab.com">Sunil Sah</a>
+ */
 public class InstallationSlotBasicResourceImpl implements InstallationSlotBasicResource {
 
     @Inject private SlotEJB slotEJB;
@@ -36,19 +43,29 @@ public class InstallationSlotBasicResourceImpl implements InstallationSlotBasicR
 
     @Override
     public List<InstallationSlotBasic> getNamesList(String deviceTypeName) {
-        final ComponentType componentType = comptypeEJB.findByName(deviceTypeName);
-
         final List<InstallationSlotBasic> installationSlots = new ArrayList<InstallationSlotBasic>();
-        if (componentType != null) {
-            for (Slot installationSlot : slotEJB.findByComponentType(componentType)) {
-                installationSlots.add(getInstallationSlotBasic(installationSlot));
+        if (Strings.isNullOrEmpty(deviceTypeName)) {
+            for (final Slot installationSlot : slotEJB.findAll()) {
+                if (installationSlot.isHostingSlot()) {
+                    installationSlots.add(getInstallationSlotBasic(installationSlot));
+                }
+            }
+        } else {
+            final ComponentType componentType = comptypeEJB.findByName(deviceTypeName);
+            if (componentType != null) {
+                for (final Slot installationSlot : slotEJB.findByComponentType(componentType)) {
+                    installationSlots.add(getInstallationSlotBasic(installationSlot));
+                }
             }
         }
-
         return installationSlots;
     }
 
-    private InstallationSlotBasic getInstallationSlotBasic(Slot slot) {
+    /** Transforms a CCDB database entity into a REST DTO object. Called from other web service classes as well.
+     * @param slot the CCDB database entity to wrap
+     * @return REST DTO object
+     */
+    protected static InstallationSlotBasic getInstallationSlotBasic(Slot slot) {
         final InstallationSlotBasic installationSlotBasic = new InstallationSlotBasic();
         installationSlotBasic.setName(slot.getName());
         return installationSlotBasic;
