@@ -31,7 +31,6 @@ public class UnitView {
     private final String name;
     private final String description;
     private final String symbol;
-    private final String quantity;
 
     private final Unit unit;
 
@@ -42,7 +41,6 @@ public class UnitView {
         name = unit.getName();
         description = unit.getDescription();
         symbol = unit.getSymbol();
-        quantity = unit.getQuantity();
 
         this.unit = unit;
     }
@@ -60,11 +58,6 @@ public class UnitView {
     /** @return the symbol */
     public String getSymbol() {
         return symbol;
-    }
-
-    /** @return the quantity */
-    public String getQuantity() {
-        return quantity;
     }
 
     /** @return the unit */

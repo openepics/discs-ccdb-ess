@@ -63,8 +63,6 @@ import org.openepics.discs.conf.util.PropertyValueNotUniqueException;
 import org.openepics.discs.conf.util.PropertyValueUIElement;
 import org.openepics.discs.conf.util.UnhandledCaseException;
 import org.openepics.discs.conf.util.Utility;
-import org.openepics.discs.conf.views.BuiltInPropertyName;
-import org.openepics.discs.conf.views.ComptypeBuiltInPropertyName;
 import org.openepics.discs.conf.views.EntityAttributeView;
 import org.openepics.discs.conf.views.EntityAttributeViewKind;
 import org.primefaces.component.datatable.DataTable;
@@ -112,8 +110,6 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
     protected List<String> enumSelections;
     protected List<Property> filteredProperties;
     private boolean propertyNameChangeDisabled;
-    protected BuiltInPropertyName builtInProperteryName;
-    protected String builtInPropertyDataType;
     protected PropertyValueUIElement propertyValueUIElement;
     protected boolean isPropertyDefinition;
     protected DefinitionTarget definitionTarget;
@@ -324,7 +320,6 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
      * <ul>
      * <li>the dialog to modify a property value</li>
      * <li>the dialog to modify an artifact data</li>
-     * <li>the dialog to modify entity built-in properties</li>
      *</ul>
      */
     public void prepareModifyPropertyPopUp() {
@@ -342,7 +337,6 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
 
     @SuppressWarnings("unchecked")
     private void prepareModifyPropertyValuePopUp() {
-        builtInProperteryName = null;
         final T selectedPropertyValue = (T) selectedAttribute.getEntity();
         property = selectedPropertyValue.getProperty();
         propertyValue = selectedPropertyValue.getPropValue();
@@ -370,7 +364,6 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
 
     @SuppressWarnings("unchecked")
     private void prepareModifyArtifactPopUp() {
-        builtInProperteryName = null;
         final S selectedArtifact = (S) selectedAttribute.getEntity();
         if (selectedArtifact.isInternal()) {
             importFileName = selectedArtifact.getName();
@@ -785,7 +778,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
             throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
                     Utility.MESSAGE_SUMMARY_ERROR, "No value to parse."));
         }
-        if (property == null && builtInProperteryName == null) {
+        if (property == null) {
             throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
                     Utility.MESSAGE_SUMMARY_ERROR, "You must select a property first."));
         }
@@ -896,7 +889,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
                     Utility.MESSAGE_SUMMARY_ERROR, "No value to parse."));
         }
 
-        if (property == null && builtInProperteryName == null) {
+        if (property == null) {
             throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
                     Utility.MESSAGE_SUMMARY_ERROR, "You must select a property first."));
         }
@@ -938,21 +931,6 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
                 throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
                         Utility.MESSAGE_SUMMARY_ERROR, "Incorrect property data type."));
         }
-    }
-
-    /**
-     * @see ComptypeBuiltInPropertyName
-     * @see DeviceBuiltInPropertyName
-     * @see SlotBuiltInPropertyName
-     * @return The name of the built-in property. The list of built-in properties contains 14 possible names.
-     */
-    public BuiltInPropertyName getBuiltInProperteryName() {
-        return builtInProperteryName;
-    }
-
-    /** @return The string describing the data type of the built-in property. */
-    public String getBuiltInPropertyDataType() {
-        return builtInPropertyDataType;
     }
 
     /**  @return The name of the entity displayed in the header */

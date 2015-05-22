@@ -1,21 +1,21 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
-  <unit id="49" modified_at="2014-11-14 10:18:24.639" modified_by="admin" version="0" description="Length in meters" unit_name="meter" quantity="length" symbol="m"/>
-  <unit id="51" modified_at="2014-11-14 10:18:24.858" modified_by="admin" version="0" description="Length in inches" unit_name="inch" quantity="length" symbol="in"/>
-  <unit id="53" modified_at="2014-11-14 10:18:24.873" modified_by="admin" version="0" description="Volume" unit_name="cubic-meter" quantity="volume" symbol="m3"/>
-  <unit id="55" modified_at="2014-11-14 10:18:24.873" modified_by="admin" version="0" description="Area" unit_name="square-meter" quantity="area" symbol="m2"/>
-  <unit id="57" modified_at="2014-11-14 10:18:24.873" modified_by="admin" version="0" description="Temperature" unit_name="kelvin" quantity="temperature" symbol="K"/>
-  <unit id="59" modified_at="2014-11-14 10:18:24.873" modified_by="admin" version="0" description="Time" unit_name="second" quantity="time" symbol="s"/>
-  <unit id="61" modified_at="2014-11-14 10:18:24.889" modified_by="admin" version="0" description="Weight" unit_name="kilogram" quantity="weight" symbol="kg"/>
-  <unit id="63" modified_at="2014-11-14 10:18:24.889" modified_by="admin" version="0" description="Power" unit_name="watt" quantity="power" symbol="W"/>
-  <unit id="65" modified_at="2014-11-14 10:18:24.889" modified_by="admin" version="0" description="Energy" unit_name="electronvolt" quantity="energy" symbol="eV"/>
-  <unit id="67" modified_at="2014-11-14 10:18:24.889" modified_by="admin" version="0" description="Magnetic flux density" unit_name="tesla" quantity="magnetic flux density" symbol="T"/>
-  <unit id="69" modified_at="2014-11-14 10:18:24.905" modified_by="admin" version="0" description="Electric current" unit_name="ampere" quantity="electric current" symbol="A"/>
-  <unit id="71" modified_at="2014-11-14 10:18:24.905" modified_by="admin" version="0" description="Electric potential difference" unit_name="volt" quantity="electric potential difference" symbol="V"/>
-  <unit id="73" modified_at="2014-11-14 10:18:24.905" modified_by="admin" version="0" description="Pressure" unit_name="pascal" quantity="pressure" symbol="Pa"/>
-  <unit id="75" modified_at="2014-11-14 10:18:24.905" modified_by="admin" version="0" description="Electric resistance" unit_name="ohm" quantity="electric resistance" symbol="Ohm"/>
-  <unit id="77" modified_at="2014-11-14 10:18:24.905" modified_by="admin" version="0" description="Angle in degrees" unit_name="degree" quantity="angle" symbol="&#176;"/>
-  <unit id="79" modified_at="2014-11-14 10:18:24.92" modified_by="admin" version="0" description="Magnetic field strength" unit_name="ampere-per-meter" quantity="magnetic field strength" symbol="A/m"/>
-  <unit id="81" modified_at="2014-11-14 10:18:24.92" modified_by="admin" version="0" description="Quadrupole gradient" unit_name="tesla-per-meter" quantity="gradient" symbol="T/m"/>
-  <unit id="83" modified_at="2014-11-14 10:18:24.92" modified_by="admin" version="0" description="Sextupole gradient" unit_name="tesla-per-square-meter" quantity="gradiant" symbol="T/m2"/>
+  <unit id="49" modified_at="2014-11-14 10:18:24.639" modified_by="admin" version="0" description="Length in meters" unit_name="meter" symbol="m"/>
+  <unit id="51" modified_at="2014-11-14 10:18:24.858" modified_by="admin" version="0" description="Length in inches" unit_name="inch" symbol="in"/>
+  <unit id="53" modified_at="2014-11-14 10:18:24.873" modified_by="admin" version="0" description="Volume" unit_name="cubic-meter" symbol="m3"/>
+  <unit id="55" modified_at="2014-11-14 10:18:24.873" modified_by="admin" version="0" description="Area" unit_name="square-meter" symbol="m2"/>
+  <unit id="57" modified_at="2014-11-14 10:18:24.873" modified_by="admin" version="0" description="Temperature" unit_name="kelvin" symbol="K"/>
+  <unit id="59" modified_at="2014-11-14 10:18:24.873" modified_by="admin" version="0" description="Time" unit_name="second" symbol="s"/>
+  <unit id="61" modified_at="2014-11-14 10:18:24.889" modified_by="admin" version="0" description="Weight" unit_name="kilogram" symbol="kg"/>
+  <unit id="63" modified_at="2014-11-14 10:18:24.889" modified_by="admin" version="0" description="Power" unit_name="watt" symbol="W"/>
+  <unit id="65" modified_at="2014-11-14 10:18:24.889" modified_by="admin" version="0" description="Energy" unit_name="electronvolt" symbol="eV"/>
+  <unit id="67" modified_at="2014-11-14 10:18:24.889" modified_by="admin" version="0" description="Magnetic flux density" unit_name="tesla" symbol="T"/>
+  <unit id="69" modified_at="2014-11-14 10:18:24.905" modified_by="admin" version="0" description="Electric current" unit_name="ampere" symbol="A"/>
+  <unit id="71" modified_at="2014-11-14 10:18:24.905" modified_by="admin" version="0" description="Electric potential difference" unit_name="volt" symbol="V"/>
+  <unit id="73" modified_at="2014-11-14 10:18:24.905" modified_by="admin" version="0" description="Pressure" unit_name="pascal" symbol="Pa"/>
+  <unit id="75" modified_at="2014-11-14 10:18:24.905" modified_by="admin" version="0" description="Electric resistance" unit_name="ohm" symbol="Ohm"/>
+  <unit id="77" modified_at="2014-11-14 10:18:24.905" modified_by="admin" version="0" description="Angle in degrees" unit_name="degree" symbol="&#176;"/>
+  <unit id="79" modified_at="2014-11-14 10:18:24.92" modified_by="admin" version="0" description="Magnetic field strength" unit_name="ampere-per-meter" symbol="A/m"/>
+  <unit id="81" modified_at="2014-11-14 10:18:24.92" modified_by="admin" version="0" description="Quadrupole gradient" unit_name="tesla-per-meter" symbol="T/m"/>
+  <unit id="83" modified_at="2014-11-14 10:18:24.92" modified_by="admin" version="0" description="Sextupole gradient" unit_name="tesla-per-square-meter" symbol="T/m2"/>
 </dataset>

@@ -60,6 +60,7 @@ public class ApplicationService {
         }
         checkDevicesTable();
         checkSlotsTable();
+        checkUnitsTable();
     }
 
     private void checkDevicesTable() {
@@ -92,4 +93,17 @@ public class ApplicationService {
         }
     }
 
+    private void checkUnitsTable() {
+        final Number oldSchemaColumns = (Number)em.createNativeQuery("SELECT COUNT(*) "
+                + "FROM information_schema.columns "
+                + "WHERE table_schema = 'public' "
+                + "AND table_name = 'unit' "
+                + "AND column_name IN "
+                + "('quantity')").getSingleResult();
+        if (oldSchemaColumns.longValue() > 0) {
+            LOGGER.log(Level.WARNING, "Database table 'unit' contains columns which are no longer needed. "
+                    + "Execute 'postgres-db-schemas/unit_update1.sql' SQL queries to remove them.");
+            LOGGER.log(Level.WARNING, "* * * THIS IS A POSTGRESQL SCRIPT. TRANSLATE IF USING ANOTHER BACKEND! * * *");
+        }
+    }
 }

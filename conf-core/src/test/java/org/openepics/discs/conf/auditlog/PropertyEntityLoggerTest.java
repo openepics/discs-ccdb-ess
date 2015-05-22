@@ -35,7 +35,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class PropertyEntityLoggerTest {
-    private final Unit unit = new Unit("Ampere", "Current", "A", "BlahBlha");
+    private final Unit unit = new Unit("Ampere", "A", "BlahBlha");
     private final DataType dt = new DataType("Float", "Float", true, "Well.. a scalar float");
     private final Property prop = new Property("TestProperty", "Description of test Property");
 

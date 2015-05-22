@@ -91,7 +91,6 @@ import org.openepics.discs.conf.util.PropertyValueUIElement;
 import org.openepics.discs.conf.util.UnhandledCaseException;
 import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.util.names.Names;
-import org.openepics.discs.conf.views.BuiltInPropertyName;
 import org.openepics.discs.conf.views.EntityAttributeView;
 import org.openepics.discs.conf.views.EntityAttributeViewKind;
 import org.openepics.discs.conf.views.SlotRelationshipView;
@@ -171,8 +170,6 @@ public class HierarchiesController implements Serializable {
     private Value propertyValue;
     private transient List<String> enumSelections;
     private transient List<Property> filteredProperties;
-    private BuiltInPropertyName builtInProperteryName;
-    private String builtInPropertyDataType;
     private PropertyValueUIElement propertyValueUIElement;
     private boolean propertyNameChangeDisabled;
     private byte[] importData;
@@ -802,7 +799,6 @@ public class HierarchiesController implements Serializable {
     }
 
     private void prepareModifyPropertyValuePopup() {
-        builtInProperteryName = null;
         final SlotPropertyValue selectedPropertyValue = (SlotPropertyValue) selectedAttribute.getEntity();
         property = selectedPropertyValue.getProperty();
         propertyValue = selectedPropertyValue.getPropValue();
@@ -947,7 +943,6 @@ public class HierarchiesController implements Serializable {
     }
 
     private void prepareModifyArtifactPopup() {
-        builtInProperteryName = null;
         final SlotArtifact selectedArtifact = (SlotArtifact) selectedAttribute.getEntity();
         if (selectedArtifact.isInternal()) {
             importFileName = selectedArtifact.getName();
@@ -1048,7 +1043,7 @@ public class HierarchiesController implements Serializable {
                     Utility.MESSAGE_SUMMARY_ERROR, "No value to parse."));
         }
 
-        if (property == null && builtInProperteryName == null) {
+        if (property == null) {
             throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
                     Utility.MESSAGE_SUMMARY_ERROR, "You must select a property first."));
         }
@@ -1104,7 +1099,7 @@ public class HierarchiesController implements Serializable {
             throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
                     Utility.MESSAGE_SUMMARY_ERROR, "No value to parse."));
         }
-        if (property == null && builtInProperteryName == null) {
+        if (property == null) {
             throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
                     Utility.MESSAGE_SUMMARY_ERROR, "You must select a property first."));
         }
@@ -1503,13 +1498,8 @@ public class HierarchiesController implements Serializable {
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Built-in and normal property values
+    //Property values
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /** @return the builtInProperteryName */
-    public BuiltInPropertyName getBuiltInProperteryName() {
-        return builtInProperteryName;
-    }
-
     /** @return the propertyValueUIElement */
     public PropertyValueUIElement getPropertyValueUIElement() {
         return propertyValueUIElement;
@@ -1523,11 +1513,6 @@ public class HierarchiesController implements Serializable {
     public void setPropertyValue(String propertyValue) {
         final DataType dataType = selectedAttribute != null ? selectedAttribute.getType() : property.getDataType();
         this.propertyValue = Conversion.stringToValue(propertyValue, dataType);
-    }
-
-    /** @return the builtInPropertyDataType */
-    public String getBuiltInPropertyDataType() {
-        return builtInPropertyDataType;
     }
 
     /** @return the enumSelections */
