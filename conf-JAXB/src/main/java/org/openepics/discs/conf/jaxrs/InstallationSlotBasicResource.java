@@ -37,7 +37,7 @@ public interface InstallationSlotBasicResource {
 
     /**
      * @param deviceTypeName the name of the device type to return information for.
-     * @return a list of installation slot names that correspond to a requested type.
+     * @return a list of installation slot names that correspond to a requested type, or all if omitted.
      */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
