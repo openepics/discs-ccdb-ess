@@ -25,29 +25,29 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import org.openepics.discs.conf.jaxb.DeviceType;
+import org.openepics.discs.conf.jaxb.InstallationSlot;
 
 /**
- * This resource provides bulk and specific device type data.
+ * This resource provides bulk and specific installation slot data.
  *
  * @author <a href="mailto:sunil.sah@cosylab.com">Sunil Sah</a>
  */
-@Path("deviceType")
-public interface DeviceTypeResource {
+@Path("installationSlot")
+public interface InstallationSlotResource {
 
-    /** @return returns all device types in the database. */
+    /** @return returns all installation slots in the database. */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public List<DeviceType> getAllDeviceTypes();
+    public List<InstallationSlot> getAllSlots();
 
     /**
      * Returns a specific device type.
      *
-     * @param id the id of the device type to retrieve
-     * @return the device type instance data
+     * @param name the name of the installation slot to retrieve
+     * @return the installation slot instance data
      */
     @GET
-    @Path("{id}")
+    @Path("{name}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public DeviceType getDeviceType(@PathParam("id") Long id);
+    public InstallationSlot getInstallationSlot(@PathParam("name") String name);
 }

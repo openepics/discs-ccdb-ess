@@ -27,6 +27,11 @@ import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.jaxb.DeviceType;
 import org.openepics.discs.conf.jaxrs.DeviceTypeResource;
 
+/**
+ * An implementation of the DeviceTypeResource interface.
+ *
+ * @author <a href="mailto:sunil.sah@cosylab.com">Sunil Sah</a>
+ */
 public class DeviceTypeResourceImpl implements DeviceTypeResource {
 
     @Inject private ComptypeEJB comptypeEJB;
@@ -47,7 +52,11 @@ public class DeviceTypeResourceImpl implements DeviceTypeResource {
         return getDeviceType(comptypeEJB.findById(id));
     }
 
-    private DeviceType getDeviceType(ComponentType componentType) {
+    /** Transforms a CCDB database entity into a REST DTO object. Called from other web service classes as well.
+     * @param componentType the CCDB database entity to wrap
+     * @return REST DTO object
+     */
+    protected static DeviceType getDeviceType(ComponentType componentType) {
         final DeviceType deviceType = new DeviceType();
         deviceType.setId(componentType.getId());
         deviceType.setName(componentType.getName());
