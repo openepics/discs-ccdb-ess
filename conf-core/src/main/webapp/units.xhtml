@@ -16,9 +16,10 @@
 
                     if (unitsTable.cfg.scrollLimit < 1 || unitsTable.cfg.scrollLimit < globalIndex) return;
 
-                    return;  // TODO remove
-                    while (unitsTable.scrollOffset < globalIndex) {
+                    if (unitsTable.scrollOffset < globalIndex) {
                         unitsTable.loadLiveRows();
+                        setTimeout(function(){ selectUnitInTable(globalIndex); }, 50);
+                        return;
                     }
                     unitsTable.selectRow(globalIndex);
                     scrollSelectedIntoView();
