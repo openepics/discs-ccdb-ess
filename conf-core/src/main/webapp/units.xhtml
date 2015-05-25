@@ -22,7 +22,7 @@
                         return;
                     }
                     unitsTable.selectRow(globalIndex);
-                    scrollSelectedIntoView();
+                    scrollSelectedIntoView('unitsTableVar');
                 }
 
                 function removePropColWidth() {
@@ -48,24 +48,10 @@
                     adjustFieldsetHeight('#unitsForm\\:unitsFieldset');
                     adjustTableHeight();
                 }
-
-                function scrollSelectedIntoView() {
-                    var tableWidget = PF('unitsTableVar');
-                    if (tableWidget.selection.length > 0) {
-                        var scrollableBodyHeight = tableWidget.scrollBody[0].clientHeight
-                        var selectedNodeSelector = "tr[data-rk='" + tableWidget.selection[0] + "']";
-                        var selectedNode = $(selectedNodeSelector);
-                        var selectedNodePosition = selectedNode[0].offsetTop;
-                        var lowerLimit = Math.max(0, selectedNodePosition - scrollableBodyHeight + selectedNode.outerHeight());
-                        if (tableWidget.scrollBody.scrollTop() < lowerLimit || tableWidget.scrollBody.scrollTop() > selectedNodePosition) {
-                            tableWidget.scrollBody.scrollTop(Math.max(0,selectedNodePosition-scrollableBodyHeight/2));
-                        }
-                    }
-                }
                 // ]]>
             </script>
 
-            <p:fieldset id="unitsFieldset" legend="Units">
+            <p:fieldset id="unitsFieldset" legend="Enumerations">
                 <p:dataTable widgetVar="unitsTableVar" var="unit" id="unitsTable" value="#{unitManager.unitViews}" 
                         styleClass="scroll-table" style="width: inherit; overflow-y: hidden;" scrollable="true" 
                         selection="#{unitManager.selectedUnit}" selectionMode="single" rowKey="#{unit.unit.id}" 

@@ -16,46 +16,43 @@
                 function enableAddButton() {
                     $('#devicesForm\\:addButton').prop('disabled',false).removeClass('ui-state-disabled');
                 }
+                function removePropColWidth() {
+                    $('#devicesForm\\:devicesTable table thead th').css('width', '');
+                    $('#devicesForm\\:attributesDataTable\\:attributesDataTable table thead th').css('width', '');
+                }
                 function adjustTableHights() {
-                    var menusHeight = $('#top').outerHeight(true);
+                    var fieldsetHeight = $('#devicesForm\\:deviceFieldset').outerHeight(true);
                     var fieldsetLegendHeight = $('#devicesForm\\:deviceFieldset legend').outerHeight(true);
                     var em = emHeight();
+
+                    var entireTableHeight = fieldsetHeight - fieldsetLegendHeight - 5*em;
+                    $('#devicesForm\\:devicesTable').css({"height":entireTableHeight});
+                    var tableHeaderHeight = $('#devicesForm\\:devicesTable .ui-datatable-scrollable-header').outerHeight(true);
+                    $('#devicesForm\\:devicesTable .ui-datatable-scrollable-body').css({"height":entireTableHeight - tableHeaderHeight});
                     
-                    var totalOtherHeight = menusHeight + fieldsetLegendHeight + 2*em + 7*em;
-                    var tableHeight = window.innerHeight - totalOtherHeight;
-                    $('#devicesForm\\:devicesTable').css({"height":tableHeight});
-                    $('#devicesForm\\:attributesDataTable\\:attributesDataTable').css({"height":tableHeight});
+                    
+                    $('#devicesForm\\:attributesDataTable\\:attributesDataTable').css({"height":entireTableHeight});
+                    tableHeaderHeight = $('#devicesForm\\:attributesDataTable\\:attributesDataTable .ui-datatable-scrollable-header').outerHeight(true);
+                    $('#devicesForm\\:attributesDataTable\\:attributesDataTable .ui-datatable-scrollable-body').css({"height":entireTableHeight - tableHeaderHeight});
                 }
                 function selectDeviceInTable(globalIndex) {
                     // selectDeviceInTable() only works on page load, so it can be used for navigating to 
                     //     a device form another screen. 
                     var devicesTable = PF('devicesTableVar');
-                    if (devicesTable.getPaginator().cfg.rowCount < 1) return;
-                    
-                    var rowsPerPage = devicesTable.getPaginator().cfg.rows;
-                    var pageNumber = Math.trunc(globalIndex / rowsPerPage);
-                    ccdb_tableSelectedIndex = globalIndex % rowsPerPage;
-                    if (pageNumber >= 0) {
-                        devicesTable.unselectAllRows();
-                        if (pageNumber == devicesTable.getPaginator().getCurrentPage()) {
-                            devicesTable.selectRow(ccdb_tableSelectedIndex);
-                            ccdb_tableSelectedIndex = -1;
-                        } else {
-                            // after page change 'onTablePageSwitchAction()' will be called by the framework
-                            devicesTable.getPaginator().setPage(pageNumber);
-                        }
+
+                    if (devicesTable.cfg.scrollLimit < 1 || devicesTable.cfg.scrollLimit < globalIndex) return;
+
+                    if (devicesTable.scrollOffset < globalIndex) {
+                        devicesTable.loadLiveRows();
+                        setTimeout(function(){ selectDeviceInTable(globalIndex); }, 50);
+                        return;
                     }
-                }
-                var ccdb_tableSelectedIndex = -1;
-                function onTablePageSwitchAction() {
-                    if (ccdb_tableSelectedIndex > -1) {
-                        PF('devicesTableVar').selectRow(ccdb_tableSelectedIndex);
-                        ccdb_tableSelectedIndex = -1;
-                    }
+                    devicesTable.selectRow(globalIndex);
+                    scrollSelectedIntoView('devicesTableVar');
                 }
                 // ]]>
             </script>
-            <p:remoteCommand name="clearDeviceInstance" oncomplete="disableAddButton();"
+            <p:remoteCommand name="clearDeviceInstance" oncomplete="disableAddButton(); adjustTableHights();"
                 actionListener="#{deviceDetailsAttributesController.clearDeviceInstance()}" 
                 update=":devicesForm:attributesDataTable:attributesDataTable :devicesForm:deleteAttrButton 
                         :devicesForm:editAttrButton" />
@@ -64,10 +61,11 @@
                     <p:column style="width: 50%; vertical-align: top;">
                         <p:fieldset id="deviceFieldset" legend="Devices">
                             <p:dataTable id="devicesTable" var="device" widgetVar="devicesTableVar" 
-                                    value="#{devicesByTypeManager.devices}" resizableColumns="true"
-                                    style="table-layout: fixed; word-wrap: break-word; margin: 1em 0 1em 0;" 
-                                    filteredValue="#{devicesByTypeManager.filteredDevices}" rows="15" paginator="true" 
-                                    paginatorPosition="bottom" selection="#{devicesByTypeManager.selectedDevice}"
+                                    value="#{devicesByTypeManager.devices}" resizableColumns="true" 
+                                    style="width: inherit; overflow-y: hidden;" scrollable="true" scrollRows="50" 
+                                    filteredValue="#{devicesByTypeManager.filteredDevices}" styleClass="scroll-table" 
+                                    tableStyle="table-layout: fixed; word-wrap: break-word; width: 100%;" 
+                                    selection="#{devicesByTypeManager.selectedDevice}" liveScroll="true" 
                                     selectionMode="single" rowKey="#{device.device.id}" emptyMessage="No devices found.">
                                 <p:ajax event="rowSelect" oncomplete="enableAddButton();adjustTableHights();"
                                         update=":deviceAddForm:addDeviceDialog :devicesForm:deleteButton :devicesForm:editButton 
@@ -106,17 +104,17 @@
                                 </p:column>
                             </p:dataTable>
                             <p:commandButton id="exportButton" icon="ui-icon-disk" value="Export" title="Export" 
-                                style="float: right;" oncomplete="PF('exportDevices').show();" 
+                                style="float: right; margin-top: 1em;" oncomplete="PF('exportDevices').show();" 
                                 disabled="#{empty devicesByTypeManager.devices}" update=":exportDevForm:exportDevices" 
                                 actionListener="#{devicesByTypeManager.simpleTableDialog.prepareTableExportPopup}" />
-                            <p:commandButton id="deleteButton" ajax="true" style="float: right; margin-right: 1ex;" value="Delete" 
+                            <p:commandButton id="deleteButton" ajax="true" style="float: right; margin: 1em 1ex 0 0;" value="Delete" 
                                 icon="ui-icon-trash" title="Delete selected device instance" oncomplete="PF('deleteDevice').show();" 
                                 disabled="#{empty devicesByTypeManager.selectedDevice || not empty devicesByTypeManager.selectedDevice.installedSlotId}" />
-                            <p:commandButton id="editButton" ajax="true" style="float: right; margin-right: 1ex;" value="Edit" 
+                            <p:commandButton id="editButton" ajax="true" style="float: right; margin: 1em 1ex 0 0;" value="Edit" 
                                 title="Edit selected device instance" action="#{devicesByTypeManager.prepareEditPopup()}" 
                                 update=":deviceEditForm" icon="ui-icon-pencil" oncomplete="PF('editDeviceDialog').show()" 
                                 disabled="#{empty devicesByTypeManager.selectedDevice}" />
-                            <p:commandButton ajax="true" style="float: right; margin-right: 1ex;" icon="ui-icon-plus" 
+                            <p:commandButton ajax="true" style="float: right; margin: 1em 1ex 0 0;" icon="ui-icon-plus" 
                                 actionListener="#{devicesByTypeManager.clearDeviceDialogFields()}" value="Add" 
                                 oncomplete="PF('addDeviceDialog').show()" update=":deviceAddForm:addDeviceDialog" />
                         </p:fieldset>
@@ -128,16 +126,16 @@
                                 updateButtons=":devicesForm:editAttrButton :devicesForm:deleteAttrButton" />
 
                             <p:commandButton id="deleteAttrButton" value="Delete" icon="ui-icon-trash" 
-                                style="float: right;" oncomplete="PF('deleteAttribute').show()"
+                                style="float: right; margin-top: 1em;" oncomplete="PF('deleteAttribute').show()"
                                 disabled="#{empty deviceDetailsAttributesController.selectedAttribute ? true : not deviceDetailsAttributesController.canDelete(deviceDetailsAttributesController.selectedAttribute)}"/>
                                 
                             <p:commandButton id="editAttrButton" value="Edit" icon="ui-icon-pencil" 
                                 action="#{deviceDetailsAttributesController.prepareModifyPropertyPopUp()}" 
-                                style="float: right; margin-right: 1ex;" update=":modifyPropertyValueForm :modifyArtifactForm" 
+                                style="float: right; margin: 1em 1ex 0 0;" update=":modifyPropertyValueForm :modifyArtifactForm" 
                                 disabled="#{empty deviceDetailsAttributesController.selectedAttribute ? true : not deviceDetailsAttributesController.canEdit(deviceDetailsAttributesController.selectedAttribute)}"/>
 
                             <p:commandButton id="addButton" value="Add" type="button" icon="ui-icon-plus" 
-                                    style="float: right; margin-right: 1ex;" disabled="true" />
+                                    style="float: right; margin: 1em 1ex 0 0;" disabled="true" />
                             <p:menu overlay="true" trigger="addButton" my="left bottom" at="left top">
                                 <p:menuitem value="Tag" oncomplete="PF('addDeviceTag').show()" update=":addDeviceTagForm:addDeviceTag" 
                                         actionListener="#{deviceDetailsAttributesController.prepareForTagAdd}" />
@@ -154,14 +152,15 @@
         
         <script type="text/javascript">
             jQuery(window).resize(function() {
-                adjustTableHights();
                 adjustFieldsetHeight('#devicesForm\\:deviceFieldset');
                 adjustFieldsetHeight('#devicesForm\\:propFieldset');
+                adjustTableHights();
             });
             jQuery(document).ready(function() {
-                adjustTableHights();
                 adjustFieldsetHeight('#devicesForm\\:deviceFieldset');
                 adjustFieldsetHeight('#devicesForm\\:propFieldset');
+                removePropColWidth();
+                adjustTableHights();
             });
         </script>
 

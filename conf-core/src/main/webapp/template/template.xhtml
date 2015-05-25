@@ -77,10 +77,30 @@
                 var totalMenusHeight = menusHeight + 4*em;
                 $(selector).css({"height":window.innerHeight-totalMenusHeight});                
             }
-            
+
             function startDownload() {
                 PF('statusDialog').show();
-            }            
+            }
+
+            function scrollSelectedIntoView(tableVarName) {
+                var tableWidget = PF(tableVarName);
+                var selectionTable;
+                if (tableWidget.selection === undefined) {
+                    selectionTable = tableWidget.selections;
+                } else {
+                    selectionTable = tableWidget.selection;
+                }
+                if (selectionTable.length > 0) {
+                    var scrollableBodyHeight = tableWidget.scrollBody[0].clientHeight
+                    var selectedNodeSelector = "tr[data-rk='" + selectionTable[0] + "']";
+                    var selectedNode = $(selectedNodeSelector);
+                    var selectedNodePosition = selectedNode[0].offsetTop;
+                    var lowerLimit = Math.max(0, selectedNodePosition - scrollableBodyHeight + selectedNode.outerHeight());
+                    if (tableWidget.scrollBody.scrollTop() < lowerLimit || tableWidget.scrollBody.scrollTop() > selectedNodePosition) {
+                        tableWidget.scrollBody.scrollTop(Math.max(0,selectedNodePosition-scrollableBodyHeight/2));
+                    }
+                }
+            }
             //]]>
         </script>
     </h:head>

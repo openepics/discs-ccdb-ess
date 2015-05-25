@@ -7,44 +7,72 @@
 
     <ui:define name="content">
         <h:form id="enumsForm">
-            <p:dataTable widgetVar="enumsTableVar" var="enum" id="enumsTable" value="#{dataTypeManager.dataTypeViews}" 
-                    selection="#{dataTypeManager.selectedEnum}" selectionMode="single" rowKey="#{enum.enumeration.id}" 
-                    resizableColumns="true" style="table-layout: fixed; word-wrap: break-word;" 
-                    filteredValue="#{dataTypeManager.filteredDataTypeViews}" rows="15" paginator="true" 
-                    paginatorPosition="bottom">
-                <p:ajax event="filter" ignoreAutoUpdate="true"/>
-                <p:ajax event="rowSelect" update=":enumsForm:deleteButton :enumsForm:editButton" />
-                <p:ajax event="rowUnselect" update=":enumsForm:deleteButton :enumsForm:editButton" />
+            <script type="text/javascript">
+                // <![CDATA[
+                function removePropColWidth() {
+                    $('#enumsForm\\:enumsTable table thead th').css('width', '');
+                }
 
-                <p:column headerText="Name" sortBy="#{enum.name}" filterBy="#{enum.name}" width="10%" 
-                        filterMatchMode="contains" filterStyle="width: 90%;">
-                    <h:outputText value="#{enum.name}" />
-                </p:column>
+                function adjustTableHeight() {
+                    var fieldsetHeight = $('#enumsForm\\:enumsFieldset').outerHeight(true);
+                    var fieldsetLegendHeight = $('#enumsForm\\:enumsFieldset legend').outerHeight(true);
+                    var em = emHeight();
+                    
+                    var entireTableHeight = fieldsetHeight - fieldsetLegendHeight - 5*em;
+                    $('#enumsForm\\:enumsTable').css({"height":entireTableHeight});
+                    
+                    var tableHeaderHeight = $('#enumsForm\\:enumsTable .ui-datatable-scrollable-header').outerHeight(true);
+                    $('#enumsForm\\:enumsTable .ui-datatable-scrollable-body').css({"height":entireTableHeight - tableHeaderHeight});
+                }
+                function closeDialogActions(widgetVar) {
+                    if (widgetVar != null) PF(widgetVar).hide();
+                    PF('enumsTableVar').filter();
+                    removePropColWidth();
+                    adjustFieldsetHeight('#enumsForm\\:enumsFieldset');
+                    adjustTableHeight();
+                }
+                // ]]>
+            </script>
+            <p:fieldset id="enumsFieldset" legend="Units">
+                <p:dataTable widgetVar="enumsTableVar" var="enum" id="enumsTable" value="#{dataTypeManager.dataTypeViews}" 
+                        styleClass="scroll-table" style="width: inherit; overflow-y: hidden;" scrollable="true" 
+                        selection="#{dataTypeManager.selectedEnum}" selectionMode="single" rowKey="#{enum.enumeration.id}" 
+                        resizableColumns="true" tableStyle="table-layout: fixed; word-wrap: break-word; width: 100%;" 
+                        filteredValue="#{dataTypeManager.filteredDataTypeViews}" liveScroll="true" scrollRows="50">
+                    <p:ajax event="filter" ignoreAutoUpdate="true"/>
+                    <p:ajax event="rowSelect" update=":enumsForm:deleteButton :enumsForm:editButton" />
+                    <p:ajax event="rowUnselect" update=":enumsForm:deleteButton :enumsForm:editButton" />
 
-                <p:column headerText="Description" sortBy="#{enum.description}" filterBy="#{enum.description}" 
-                        width="30%" filterStyle="width: 20em;" filterMatchMode="contains">
-                    <h:outputText value="#{enum.description}" />
-                </p:column>
+                    <p:column headerText="Name" sortBy="#{enum.name}" filterBy="#{enum.name}" width="10%" 
+                            filterMatchMode="contains" filterStyle="width: 90%;">
+                        <h:outputText value="#{enum.name}" />
+                    </p:column>
 
-                <p:column headerText="Definition" sortBy="#{enum.definitionAsString}" 
-                        filterBy="#{enum.definitionAsString}" filterMatchMode="contains">
-                    <h:outputText value="#{enum.definitionAsString}" width="50%"/>
-                </p:column>
-            </p:dataTable>
-            <p:commandButton id="exportButton" icon="ui-icon-disk" value="Export" title="Export" 
-                style="float: right; margin-top: 1em;" oncomplete="PF('exportEnums').show();" 
-                disabled="#{empty dataTypeManager.dataTypeViews}" update=":exportEnumsForm:exportEnums" 
-                actionListener="#{dataTypeManager.simpleTableDialog.prepareTableExportPopup}" />
-            <p:commandButton id="deleteButton" icon="ui-icon-trash" value="Delete" title="Delete" 
-                style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('deleteEnum').show();" 
-                disabled="#{empty dataTypeManager.selectedEnum or dataTypeManager.selectedEnumUsed}" />
-            <p:commandButton id="editButton" icon="ui-icon-pencil" value="Edit" title="Edit" 
-                style="float: right; margin: 1em 1ex 0 0;" update=":modifyEnumForm:modifyEnum" 
-                disabled="#{empty dataTypeManager.selectedEnum}" oncomplete="PF('modifyEnum').show();" 
-                actionListener="#{dataTypeManager.prepareModifyPopup}" />
-            <p:commandButton ajax="true" actionListener="#{dataTypeManager.prepareAddPopup}" value="Add"
-                    title="Add new enumeration" icon="ui-icon-plus" style="float: right; margin: 1em 1ex 0 0;" 
-                    oncomplete="PF('addEnum').show();" update=":addEnumForm:addEnum" />
+                    <p:column headerText="Description" sortBy="#{enum.description}" filterBy="#{enum.description}" 
+                            width="30%" filterStyle="width: 20em;" filterMatchMode="contains">
+                        <h:outputText value="#{enum.description}" />
+                    </p:column>
+
+                    <p:column headerText="Definition" sortBy="#{enum.definitionAsString}" 
+                            filterBy="#{enum.definitionAsString}" filterMatchMode="contains">
+                        <h:outputText value="#{enum.definitionAsString}" width="50%"/>
+                    </p:column>
+                </p:dataTable>
+                <p:commandButton id="exportButton" icon="ui-icon-disk" value="Export" title="Export" 
+                    style="float: right; margin-top: 1em;" oncomplete="PF('exportEnums').show();" 
+                    disabled="#{empty dataTypeManager.dataTypeViews}" update=":exportEnumsForm:exportEnums" 
+                    actionListener="#{dataTypeManager.simpleTableDialog.prepareTableExportPopup}" />
+                <p:commandButton id="deleteButton" icon="ui-icon-trash" value="Delete" title="Delete" 
+                    style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('deleteEnum').show();" 
+                    disabled="#{empty dataTypeManager.selectedEnum or dataTypeManager.selectedEnumUsed}" />
+                <p:commandButton id="editButton" icon="ui-icon-pencil" value="Edit" title="Edit" 
+                    style="float: right; margin: 1em 1ex 0 0;" update=":modifyEnumForm:modifyEnum" 
+                    disabled="#{empty dataTypeManager.selectedEnum}" oncomplete="PF('modifyEnum').show();" 
+                    actionListener="#{dataTypeManager.prepareModifyPopup}" />
+                <p:commandButton ajax="true" actionListener="#{dataTypeManager.prepareAddPopup}" value="Add"
+                        title="Add new enumeration" icon="ui-icon-plus" style="float: right; margin: 1em 1ex 0 0;" 
+                        oncomplete="PF('addEnum').show();" update=":addEnumForm:addEnum" />
+            </p:fieldset>
         </h:form>
 
         <ui:include src="/resources/dialogs/delete-confirmation.xhtml" >
@@ -55,7 +83,7 @@
             <ui:param name="submitHandler" value="onDelete" />
             <ui:param name="formToUpdate" value=":enumsForm:enumsTable :enumsForm:deleteButton 
                                                 :enumsForm:editButton :enumsForm:exportButton" />
-            <ui:param name="resetFilter" value="PF('enumsTableVar').filter();" />
+            <ui:param name="resetFilter" value="closeDialogActions(null);" />
             <ui:param name="entityType" value="this enumeration" />
         </ui:include>
 
@@ -65,6 +93,7 @@
             <ui:param name="widgetName" value="modifyEnum" />
             <ui:param name="submitHandler" value="onModify" />
             <ui:param name="componentToUpdate" value=":enumsForm:enumsTable :enumsForm:deleteButton :enumsForm:editButton" />
+            <ui:param name="closeDialogActions" value="closeDialogActions('modifyEnum');" />
         </ui:include>
 
         <ui:include src="/resources/dialogs/add-or-modify-enum.xhtml">
@@ -74,6 +103,7 @@
             <ui:param name="submitHandler" value="onAdd" />
             <ui:param name="componentToUpdate" value=":enumsForm:enumsTable :enumsForm:deleteButton 
                                                 :enumsForm:editButton :enumsForm:exportButton" />
+            <ui:param name="closeDialogActions" value="closeDialogActions('addEnum');" />
         </ui:include>
 
         <ui:include src="/resources/dialogs/export-table.xhtml">
@@ -84,5 +114,17 @@
             <ui:param name="includeHeader" value="#{dataTypeManager.simpleTableDialog.includeHeaderRow}" />
             <ui:param name="tableFile" value="#{dataTypeManager.simpleTableDialog.exportedTable}" />
         </ui:include>
+
+        <script type="text/javascript">
+            jQuery(document).ready(function() {
+                removePropColWidth();
+                adjustFieldsetHeight('#enumsForm\\:enumsFieldset');
+                adjustTableHeight();
+            });
+            jQuery(window).resize(function() {
+                adjustFieldsetHeight('#enumsForm\\:enumsFieldset');
+                adjustTableHeight();
+            });
+        </script>
     </ui:define>
 </ui:composition>
