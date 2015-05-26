@@ -18,15 +18,31 @@
                         $('#logsForm\\:contentPanel').css({"max-height":contentHeight});
                     }
                 }
+
+                function removeLogColWidth() {
+                    $('#logsForm\\:logTable table thead th').css('width', '');
+                }
+
+                function adjustTableHeight() {
+                    var fieldsetHeight = $('#logsForm\\:logFieldset').outerHeight(true);
+                    var fieldsetLegendHeight = $('#logsForm\\:logFieldset legend').outerHeight(true);
+                    var em = emHeight();
+
+                    var entireTableHeight = fieldsetHeight - fieldsetLegendHeight - 3*em;
+                    $('#logsForm\\:logTable').css({"height":entireTableHeight});
+
+                    var tableHeaderHeight = $('#logsForm\\:logTable .ui-datatable-scrollable-header').outerHeight(true);
+                    $('#logsForm\\:logTable .ui-datatable-scrollable-body').css({"height":entireTableHeight - tableHeaderHeight});
+                }
                 // ]]>
             </script>
-        
-            <p:fieldset legend="Log" style="padding-bottom: 1em;">
+
+            <p:fieldset legend="Log" style="padding-bottom: 1em;" id="logFieldset">
 
                 <p:dataTable widgetVar="logTableVar" var="auditRecord" id="logTable" value="#{auditManager.auditRecords}" 
-                        resizableColumns="true" style="table-layout: fixed; word-wrap: break-word;" 
-                        filteredValue="#{auditManager.filteredAuditRecords}" rows="15" paginator="true" 
-                        paginatorPosition="bottom">
+                        styleClass="scroll-table" style="width: inherit; overflow-y: hidden;" scrollable="true" 
+                        resizableColumns="true" tableStyle="table-layout: fixed; word-wrap: break-word; width: 100%;" 
+                        filteredValue="#{auditManager.filteredAuditRecords}" liveScroll="true" scrollRows="50">
                     <p:ajax event="filter" ignoreAutoUpdate="true"/>
 
                     <p:column headerText="Timestamp" filterBy="#{auditRecord.logTimeFormatted}" 
@@ -85,6 +101,17 @@
                 </p:outputPanel>
             </p:overlayPanel>
 
+            <script type="text/javascript">
+                jQuery(document).ready(function() {
+                    removeLogColWidth();
+                    adjustFieldsetHeight('#logsForm\\:logFieldset');
+                    adjustTableHeight();
+                });
+                jQuery(window).resize(function() {
+                    adjustFieldsetHeight('#logsForm\\:logFieldset');
+                    adjustTableHeight();
+                });
+            </script>
         </h:form>
     </ui:define>
 </ui:composition>
