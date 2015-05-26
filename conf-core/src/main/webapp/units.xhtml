@@ -9,22 +9,6 @@
         <h:form id="unitsForm">
             <script type="text/javascript">
                 // <![CDATA[
-                function selectUnitInTable(globalIndex) {
-                    // selectUnitInTable() only works on page load, so it can be used for navigating to 
-                    //     an unit form another screen. 
-                    var unitsTable = PF('unitsTableVar');
-
-                    if (unitsTable.cfg.scrollLimit < 1 || unitsTable.cfg.scrollLimit < globalIndex) return;
-
-                    if (unitsTable.scrollOffset < globalIndex) {
-                        unitsTable.loadLiveRows();
-                        setTimeout(function(){ selectUnitInTable(globalIndex); }, 50);
-                        return;
-                    }
-                    unitsTable.selectRow(globalIndex);
-                    scrollSelectedIntoView('unitsTableVar');
-                }
-
                 function removePropColWidth() {
                     $('#unitsForm\\:unitsTable table thead th').css('width', '');
                 }

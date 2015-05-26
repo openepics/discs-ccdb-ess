@@ -128,7 +128,8 @@ public class ComponentTypeManager extends AbstractExcelSingleFileImportUI
                 int elementPosition = 0;
                 for (final ComponentType deviceType : deviceTypes) {
                     if (deviceType.getId() == deviceTypeId) {
-                        RequestContext.getCurrentInstance().execute("selectDeviceTypeInTable(" + elementPosition + ");");
+                        RequestContext.getCurrentInstance().execute("selectEntityInTable(" + elementPosition
+                                + ", 'deviceTypeTableVar');");
                         return;
                     }
                     ++elementPosition;

@@ -34,21 +34,6 @@
                     $('#deviceTypesForm\\:deviceTypeTable table thead th').css('width', '');
                     $('#deviceTypesForm\\:attributesDataTable\\:attributesDataTable table thead th').css('width', '');
                 }
-                function selectDeviceTypeInTable(globalIndex) {
-                    // selectDeviceTypeInTable() only works on page load, so it can be used for navigating to 
-                    //     a device type form another screen. 
-                    var deviceTypeTable = PF('deviceTypeTableVar');
-                    
-                    if (deviceTypeTable.cfg.scrollLimit < 1 || deviceTypeTable.cfg.scrollLimit < globalIndex) return;
-
-                    if (deviceTypeTable.scrollOffset < globalIndex) {
-                        deviceTypeTable.loadLiveRows();
-                        setTimeout(function(){ selectDeviceTypeInTable(globalIndex); }, 50);
-                        return;
-                    }
-                    deviceTypeTable.selectRow(globalIndex);
-                    scrollSelectedIntoView('deviceTypeTableVar');
-                }
                 // ]]>
             </script>
             <p:remoteCommand name="clearDeviceType" actionListener="#{componentTypeManager.clearSelectedDeviceType()}" 

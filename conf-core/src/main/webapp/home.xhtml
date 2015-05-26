@@ -16,6 +16,41 @@
                     $('#hierarchies\\:installationColumn').css({"max-width":rightColumnsWidth});
                     $('#hierarchies\\:hierarchiesEmptyColumn').css({"max-width":rightColumnsWidth});
                 }
+                function resizeHierarchiesTree() {
+                    var menusHeight = $('#top').outerHeight(true);
+                    var headerHeight = $('#hierarchies\\:tree\\:name').outerHeight(true) + $('#hierarchies\\:treeFieldSet legend').outerHeight(true);
+                    if (headerHeight != null) {
+                        var em = emHeight();
+                        var totalMenusHeight = menusHeight + headerHeight + 7*em;
+                        $('#hierarchies\\:tree .ui-treetable-scrollable-body').css({"height":window.innerHeight-totalMenusHeight});
+                    }
+                }
+                function resizeEmptyColumnInHierarchies() {
+                    var menusHeight = $('#top').outerHeight(true);
+                    var em = emHeight();
+                    var slotAttributesFieldSet = $('#hierarchies\\:slotAttributes').outerHeight(true);
+                    var slotRelationsFieldSet = $('#hierarchies\\:relationsTable').outerHeight(true);
+                    var installationDetailsFieldSet = $('#hierarchies\\:installationDetails').parent().outerHeight(true);
+
+                    if (installationDetailsFieldSet == null) { 
+                        installationDetails = 0;
+                    }
+
+                    var totalHeight = menusHeight + slotAttributesFieldSet + slotRelationsFieldSet + installationDetailsFieldSet + 4*em;
+
+                    $('#hierarchies\\:hierarchiesEmptyColumn').css({"height":window.innerHeight-totalHeight});
+                }
+                function hierarchiesResizeAttributes() {
+                    var attrbiutesTableHeight = $("#attributesTable .hierarchies-attributes-cell").outerHeight(true);
+                    var attrbiutesTableHeaderHeight = $("#attributesTable .hierarchies-attributes-cell .ui-datatable-scrollable-header").outerHeight(true);
+                    var attrbiutesTableBodyHeight = attrbiutesTableHeight - attrbiutesTableHeaderHeight;
+                    $('#attributesTable .hierarchies-attributes-cell .ui-datatable-scrollable-body').css({"max-height":attrbiutesTableBodyHeight});
+                }
+                function hierarchiesResizeAll() {
+                    resizeHierarchiesTree();
+                    resizeEmptyColumnInHierarchies();
+                    hierarchiesResizeAttributes();
+                }
             // ]]>
             </script>
             <p:growl showDetail="true" globalOnly="true" autoUpdate="true" />
@@ -62,12 +97,12 @@
                                                         and not empty hierarchiesController.installationRecord)}" 
                                 actionListener="#{hierarchiesController.prepareDeletePopup()}" />
                             <p:commandButton id="downButton" icon="ui-icon-arrowthick-1-s" value="Down" title="Move down" 
-                                style="float: right; margin: 1em 1ex 0 0;" oncomplete="hierarchiesResizeAll();scrollSelectedIntoView('hierarchyWidget');" 
+                                style="float: right; margin: 1em 1ex 0 0;" oncomplete="hierarchiesResizeAll();scrollSelectedIntoView(PF('hierarchyWidget'));" 
                                 update=":hierarchies:tree :hierarchies:downButton :hierarchies:upButton" 
                                 disabled="#{empty hierarchiesController.selectedNode || hierarchiesController.selectedNode.data.last}" 
                                 actionListener="#{hierarchiesController.moveSlotDown()}" />
                             <p:commandButton id="upButton" icon="ui-icon-arrowthick-1-n" value="Up" title="Move up" 
-                                style="float: right; margin: 1em 1ex 0 0;" oncomplete="hierarchiesResizeAll();scrollSelectedIntoView('hierarchyWidget');" 
+                                style="float: right; margin: 1em 1ex 0 0;" oncomplete="hierarchiesResizeAll();scrollSelectedIntoView(PF('hierarchyWidget'));" 
                                 update=":hierarchies:tree :hierarchies:upButton :hierarchies:downButton" 
                                 disabled="#{empty hierarchiesController.selectedNode || hierarchiesController.selectedNode.data.first}" 
                                 actionListener="#{hierarchiesController.moveSlotUp()}" />
@@ -181,7 +216,7 @@
                                 <p:column headerText="Target" sortBy="#{relationship.targetSlotName}" 
                                         filterBy="#{relationship.targetSlotName}" filterMatchMode="contains">
                                     <p:commandLink action="#{hierarchiesController.selectNode(relationship.slot.id)}" 
-                                            update=":hierarchies" oncomplete="hierarchiesResizeAll();scrollSelectedIntoView('hierarchyWidget');">
+                                            update=":hierarchies" oncomplete="hierarchiesResizeAll();scrollSelectedIntoView(PF('hierarchyWidget'));">
                                         <h:outputText value="#{relationship.targetSlotName}" 
                                             style="text-decoration: underline;" />
                                     </p:commandLink>
@@ -347,13 +382,13 @@
         <script type="text/javascript">
             jQuery(window).resize(function() {
                 hierarchiesResizeAll();
-                scrollSelectedIntoView('hierarchyWidget');
+                scrollSelectedIntoView(PF('hierarchyWidget'));
                 setRightColumnWidths();
             });
 
             jQuery(document).ready(function() {
                 hierarchiesResizeAll();
-                scrollSelectedIntoView('hierarchyWidget');
+                scrollSelectedIntoView(PF('hierarchyWidget'));
                 setRightColumnWidths();
             });
         </script>

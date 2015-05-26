@@ -35,21 +35,6 @@
                     tableHeaderHeight = $('#devicesForm\\:attributesDataTable\\:attributesDataTable .ui-datatable-scrollable-header').outerHeight(true);
                     $('#devicesForm\\:attributesDataTable\\:attributesDataTable .ui-datatable-scrollable-body').css({"height":entireTableHeight - tableHeaderHeight});
                 }
-                function selectDeviceInTable(globalIndex) {
-                    // selectDeviceInTable() only works on page load, so it can be used for navigating to 
-                    //     a device form another screen. 
-                    var devicesTable = PF('devicesTableVar');
-
-                    if (devicesTable.cfg.scrollLimit < 1 || devicesTable.cfg.scrollLimit < globalIndex) return;
-
-                    if (devicesTable.scrollOffset < globalIndex) {
-                        devicesTable.loadLiveRows();
-                        setTimeout(function(){ selectDeviceInTable(globalIndex); }, 50);
-                        return;
-                    }
-                    devicesTable.selectRow(globalIndex);
-                    scrollSelectedIntoView('devicesTableVar');
-                }
                 // ]]>
             </script>
             <p:remoteCommand name="clearDeviceInstance" oncomplete="disableAddButton(); adjustTableHights();"

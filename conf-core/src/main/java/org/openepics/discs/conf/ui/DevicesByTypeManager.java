@@ -145,7 +145,8 @@ public class DevicesByTypeManager implements Serializable, SimpleTableExporter {
 
             prepareDevicesForDisplay(selectedDeviceId);
             if (selectedIndex > -1) {
-                RequestContext.getCurrentInstance().execute("selectDeviceInTable(" + selectedIndex + ");");
+                RequestContext.getCurrentInstance().execute("selectEntityInTable(" + selectedIndex
+                        + ", 'devicesTableVar');");
             }
         } catch(Exception e) {
             throw new UIException("Device type display initialization fialed: " + e.getMessage(), e);
