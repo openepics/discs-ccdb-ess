@@ -67,11 +67,12 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
 
     private static final int COL_INDEX_NAME = 1;
     private static final int COL_INDEX_DESC = 2;
-    private static final int COL_INDEX_UNIT = 3;
-    private static final int COL_INDEX_DATATYPE = 4;
+    private static final int COL_INDEX_DATATYPE = 3;
+    private static final int COL_INDEX_UNIT = 4;
     private static final int COL_INDEX_UNIQUE = 5;
 
-    private static final Set<String> REQUIRED_COLUMNS = new HashSet<>(Arrays.asList(HDR_DATATYPE, HDR_DESC));
+    private static final Set<String> REQUIRED_COLUMNS = new HashSet<>(
+                                                Arrays.asList(HDR_DATATYPE, HDR_DESC, HDR_DATATYPE, HDR_UNIQUE));
 
     @Inject private PropertyEJB propertyEJB;
     @Inject private DataTypeEJB dataTypeEJB;
@@ -279,5 +280,11 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
         mapBuilder.put(HDR_UNIQUE, COL_INDEX_UNIQUE);
 
         indicies = mapBuilder.build();
+    }
+
+    @Override
+    public int getImportDataStartIndex() {
+        // index of the first import data Excel row is 9 (0 based 8)
+        return 8;
     }
 }
