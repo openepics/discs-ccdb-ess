@@ -138,7 +138,7 @@ public class SlotPairDataLoader extends AbstractDataLoader implements DataLoader
     }
 
     @Override
-    protected void handleUpdate() {
+    protected void handleUpdate(String actualCommand) {
         if (newSlots == null) {
             return;
         }
@@ -190,7 +190,7 @@ public class SlotPairDataLoader extends AbstractDataLoader implements DataLoader
     }
 
     @Override
-    protected void handleDelete() {
+    protected void handleDelete(String actualCommand) {
         final List<SlotPair> slotPairs = slotPairEJB.findSlotPairsByParentChildRelation(childString, parentString,
                 slotRelationName);
         if (!slotPairs.isEmpty()) {

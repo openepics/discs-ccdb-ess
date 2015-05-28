@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -35,8 +34,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.openepics.discs.conf.ui.common.ExcelImportUIHandlers.ImportFileStatistics;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
 
 /**
  * Skeleton for all data loaders.
@@ -137,11 +134,15 @@ public abstract class AbstractDataLoader implements DataLoader {
 
                 switch (command) {
                     case DataLoader.CMD_UPDATE:
-                        handleUpdate();
+                    case DataLoader.CMD_UPDATE_DEVICE:
+                    case DataLoader.CMD_UPDATE_PROPERTY:
+                        handleUpdate(command);
                         ++updateRows;
                         break;
                     case DataLoader.CMD_DELETE:
-                        handleDelete();
+                    case DataLoader.CMD_DELETE_DEVICE:
+                    case DataLoader.CMD_DELETE_PROPERTY:
+                        handleDelete(command);
                         ++deleteRows;
                         break;
                     case DataLoader.CMD_RENAME:
@@ -149,6 +150,7 @@ public abstract class AbstractDataLoader implements DataLoader {
                         ++renameRows;
                         break;
                     case DataLoader.CMD_CREATE:
+                    case DataLoader.CMD_CREATE_DEVICE:
                         handleCreate();
                         ++createRows;
                         break;
@@ -199,16 +201,6 @@ public abstract class AbstractDataLoader implements DataLoader {
 
 
     /**
-     * A boolean method specifying whether to index unknown column names (which might be property names for example)
-     * Sub-classes should override the method to change the default behavior which is, not to build this map.
-     *
-     * @return whether the data-loader should build a Map containing indexes of unknown (probably property) columns
-     */
-    protected boolean indexPropertyColumns() {
-        return false;
-    }
-
-    /**
      * Invoked by {@link #loadDataToDatabase(List, Map)} for sub-classes to initialize row-bound
      * state (class fields) from row-data.
      */
@@ -222,8 +214,9 @@ public abstract class AbstractDataLoader implements DataLoader {
      * <b>Precondition:</b> {@link #assignMembersForCurrentRow()} has been invoked. This gives chance
      * to the sub-class to extract row data for the call to this method.
      * </p>
+     * @param actualCommand the actual command used in update (update entity itself or its property)
      */
-    protected abstract void handleUpdate();
+    protected abstract void handleUpdate(String actualCommand);
 
     /**
      * <p>
@@ -233,8 +226,9 @@ public abstract class AbstractDataLoader implements DataLoader {
      * <b>Precondition:</b> {@link #assignMembersForCurrentRow()} has been invoked. This gives chance
      * to the sub-class to extract row data for the call to this method.
      * </p>
+     * @param actualCommand the actual command used in delete (delete entity itself or its property)
      */
-    protected abstract void handleDelete();
+    protected abstract void handleDelete(String actualCommand);
 
     /**
      * <p>
@@ -315,39 +309,6 @@ public abstract class AbstractDataLoader implements DataLoader {
      * actual data loader implementation.
      */
     protected abstract void setUpIndexesForFields();
-
-    private Map<String, Integer> setUpIndexesForProperties(List<String> headerRow, Map<String, Integer> knownColumns) {
-        Preconditions.checkNotNull(headerRow);
-        Preconditions.checkNotNull(knownColumns);
-        Preconditions.checkArgument(!headerRow.isEmpty());
-
-        final Builder<String, Integer> mapBuilder = ImmutableMap.builder();
-
-        for (int i = 0; i < headerRow.size(); i++) {
-            final String columnName = headerRow.get(i);
-            if (!Objects.equals(null, columnName) && !Objects.equals(HDR_OPERATION, columnName)
-                    && !knownColumns.containsKey(columnName)) {
-                // This method could affect the global error result
-                if (checkPropertyHeader(columnName)) {
-                    mapBuilder.put(columnName, i);
-                } else {
-                    return null;
-                }
-            }
-        }
-        return mapBuilder.build();
-    }
-
-    /** A hook that sub-classes could use to check whether a property column (non field column) is valid,
-     * or to do any processing during header processing.
-     *
-     * @param propertyColumnName the name of the column, as specified in its header. Should correspond to the
-     * property name
-     * @return <code>false</code> if there was an error during the check
-     */
-    protected boolean checkPropertyHeader(String propertyColumnName) {
-        return true;
-    }
 
     /**
      * During row processing, returns a {@link String} cell within the row that belongs to given column

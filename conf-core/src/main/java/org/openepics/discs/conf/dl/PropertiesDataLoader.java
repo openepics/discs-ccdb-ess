@@ -119,7 +119,7 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
     }
 
     @Override
-    protected void handleUpdate() {
+    protected void handleUpdate(String actualCommand) {
         if (propertyByName.containsKey(nameFld)) {
             try {
                 final Property propertyToUpdate = propertyByName.get(nameFld);
@@ -162,7 +162,7 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
 
 
     @Override
-    protected void handleDelete() {
+    protected void handleDelete(String actualCommand) {
         try {
             final Property propertyToDelete = propertyByName.get(nameFld);
             if (propertyToDelete == null) {

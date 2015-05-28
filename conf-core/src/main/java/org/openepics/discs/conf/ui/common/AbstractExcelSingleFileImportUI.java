@@ -130,13 +130,19 @@ public abstract class AbstractExcelSingleFileImportUI implements ExcelSingleFile
 
             for (Pair<Integer, List<String>> row : inputRows) {
                 switch(row.getRight().get(0)) {
+                    // TODO add all commands to statistics
                     case DataLoader.CMD_CREATE:
+                    case DataLoader.CMD_CREATE_DEVICE:
                         ++createRows;
                         break;
                     case DataLoader.CMD_UPDATE:
+                    case DataLoader.CMD_UPDATE_DEVICE:
+                    case DataLoader.CMD_UPDATE_PROPERTY:
                         ++updateRows;
                         break;
                     case DataLoader.CMD_DELETE:
+                    case DataLoader.CMD_DELETE_DEVICE:
+                    case DataLoader.CMD_DELETE_PROPERTY:
                         ++deleteRows;
                         break;
                     case DataLoader.CMD_RENAME:
@@ -159,6 +165,7 @@ public abstract class AbstractExcelSingleFileImportUI implements ExcelSingleFile
         return importFileStatistics;
     }
 
+    /** @return the errorsTableDialog */
     public ExportSimpleTableDialog getSimpleErrorTableExportDialog() {
         return errorsTableDialog;
     }

@@ -39,6 +39,14 @@ public interface DataLoader {
     public static final String CMD_RENAME = "RENAME";
     public static final String CMD_END = "END";
 
+    public static final String CMD_CREATE_DEVICE = "CREATE DEVICE";
+
+    public static final String CMD_UPDATE_DEVICE = "UPDATE DEVICE";
+    public static final String CMD_UPDATE_PROPERTY = "UPDATE PROPERTY";
+
+    public static final String CMD_DELETE_DEVICE = "DELETE DEVICE";
+    public static final String CMD_DELETE_PROPERTY = "DELETE PROPERTY";
+
     /**
      * Saves data read from input file to the database
      *

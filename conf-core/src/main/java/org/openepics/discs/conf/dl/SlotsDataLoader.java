@@ -88,7 +88,6 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
     @Override
     protected void init() {
         super.init();
-        setPropertyValueClass(SlotPropertyValue.class);
         newSlots = new ArrayList<>();
 
         result.getContextualData().put(DataLoaderResult.CTX_NEW_SLOTS, newSlots);
@@ -124,7 +123,7 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
     }
 
     @Override
-    protected void handleUpdate() {
+    protected void handleUpdate(String actualCommand) {
         @Nullable final ComponentType compType = checkSlotType();
         if (compType == null) {
             return;
@@ -134,7 +133,7 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
         if (slot != null) {
             try {
                 addOrUpdateSlot(slot, compType);
-                addOrUpdateProperties(slot);
+                // addOrUpdateProperties(slot); TODO handle
             } catch (EJBTransactionRolledbackException e) {
                 handleLoadingError(LOGGER, e);
             }
@@ -158,7 +157,7 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
                 newSlots.add(slot);
 
                 slotEJB.addSlotToParentWithPropertyDefs(slot, null, true);
-                addOrUpdateProperties(slot);
+                // addOrUpdateProperties(slot); TODO handle
             } catch (EJBTransactionRolledbackException e) {
                 handleLoadingError(LOGGER, e);
             }
@@ -183,7 +182,7 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
     }
 
     @Override
-    protected void handleDelete() {
+    protected void handleDelete(String actualCommand) {
         final @Nullable Slot slotToDelete = slotEJB.findByName(name);
         try {
             if (slotToDelete == null) {

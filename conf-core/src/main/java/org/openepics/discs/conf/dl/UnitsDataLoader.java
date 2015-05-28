@@ -113,7 +113,7 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
     }
 
     @Override
-    protected void handleUpdate() {
+    protected void handleUpdate(String actualCommand) {
         if (unitByName.containsKey(nameFld)) {
             try {
                 final Unit unitToUpdate = unitByName.get(nameFld);
@@ -149,7 +149,7 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
     }
 
     @Override
-    protected void handleDelete() {
+    protected void handleDelete(String actualCommand) {
         try {
             final Unit unitToDelete = unitByName.get(nameFld);
             if (unitToDelete == null) {
@@ -203,7 +203,7 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
 
     @Override
     public int getDataWidth() {
-        return 5;
+        return 4;
     }
 
     @Override

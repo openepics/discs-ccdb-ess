@@ -303,6 +303,7 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
     public void doImport() {
         try (InputStream inputStream = new ByteArrayInputStream(importData)) {
             setLoaderResult(dataLoaderHandler.loadData(inputStream, propertiesDataLoader));
+            // TODO solve the imported data update and UI refresh more generically
             init();
             RequestContext.getCurrentInstance().update("propertiesForm");
         } catch (IOException e) {
@@ -528,6 +529,7 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
     @Override
     public void handleImportFileUpload(FileUploadEvent event) {
         super.handleImportFileUpload(event);
+        // TODO once all import handling is the same put this into parent and add "setDataLoader()" used at init
         importFileStatistics = getImportedFileStatistics(propertiesDataLoader);
         // TODO once all import handling is the same, handled by single-file-DL.xhtml / fileUpload / oncomplete
         RequestContext.getCurrentInstance().update("importPropertiesForm:importStatsDialog");

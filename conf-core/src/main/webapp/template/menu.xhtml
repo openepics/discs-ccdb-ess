@@ -38,8 +38,8 @@
             
                 <p:menuitem value="Import" update=":importDevicesForm" styleClass="noClickEvent" 
                     oncomplete="PF('importDevices').show();" title="Import Device Instances" 
-                    actionListener="#{deviceManager.prepareImportPopup()}" 
-                    disabled="#{true or        !securityPolicy.getUIHint('DEVICE')}" />
+                    actionListener="#{devicesByTypeManager.prepareImportPopup()}" 
+                    disabled="#{!securityPolicy.getUIHint('DEVICE')}" />
             </p:submenu>
 
             <p:submenu label="Device Types" icon="ui-icon-wrench" 
@@ -82,8 +82,10 @@
             <p:submenu label="Templates" icon="ui-icon-calculator">
                 <p:menuitem value="Units" title="Download units import excel template" 
                     url="/resources/import-templates/ccdb_units.xlsx" />
-                <p:menuitem value="Properties" title="Download properties import excel template"  
+                <p:menuitem value="Properties" title="Download properties import excel template" 
                     url="/resources/import-templates/ccdb_properties.xlsx" />
+                <p:menuitem value="Devices" title="Download device instances import excel template" 
+                    url="/resources/import-templates/ccdb_devices.xlsx" />
             </p:submenu>
 
             <p:menuitem value="Help" icon="ui-icon-help" title="Help" url="/" disabled="true" />
@@ -128,7 +130,7 @@
         <ui:param name="formId" value="importDevicesForm" />
         <ui:param name="dialogTitle" value="Devices import" />
         <ui:param name="widgetName" value="importDevices" />
-        <ui:param name="controller" value="#{deviceManager}" />
+        <ui:param name="controller" value="#{devicesByTypeManager}" />
     </ui:include>
 
     <script type="text/javascript">

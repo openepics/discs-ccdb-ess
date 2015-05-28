@@ -29,7 +29,6 @@ import javax.ejb.EJBTransactionRolledbackException;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.openepics.discs.conf.dl.common.AbstractEntityWithPropertiesDataLoader;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.ErrorMessage;
@@ -39,6 +38,10 @@ import org.openepics.discs.conf.ejb.DeviceEJB;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
+import org.openepics.discs.conf.util.UnhandledCaseException;
+
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap.Builder;
 
 /**
  * Data loader for loading device instances.
@@ -55,29 +58,23 @@ public class DevicesDataLoader extends AbstractEntityWithPropertiesDataLoader<De
     private static final Logger LOGGER = Logger.getLogger(DevicesDataLoader.class.getCanonicalName());
 
     // Header column name constants
-    private static final String HDR_SERIAL = "SERIAL";
-    private static final String HDR_CTYPE = "CTYPE";
-    private static final String HDR_ASM_POSITION = "ASM-POSITION";
-    private static final String HDR_ASM_DESC = "ASM-DESCRIPTION";
+    private static final String HDR_SERIAL = "INVENTORY ID";
+    private static final String HDR_CTYPE = "TYPE";
+    private static final String HDR_PROP_NAME = "PROPERTY NAME";
+    private static final String HDR_PROP_VALUE = "PROPERTY VALUE";
 
-    private static final int COL_INDEX_SERIAL = -1; // TODO fix
-    private static final int COL_INDEX_CTYPE = -1; // TODO fix
-    private static final int COL_INDEX_ASM_POSITION = -1; // TODO fix
-    private static final int COL_INDEX_ASM_DESC = -1; // TODO fix
+    private static final int COL_INDEX_CTYPE = 1;
+    private static final int COL_INDEX_SERIAL = 2;
+    private static final int COL_INDEX_PROP_NAME = 3;
+    private static final int COL_INDEX_PROP_VALUE = 4;
 
 
     private static final Set<String> REQUIRED_COLUMNS = new HashSet<>(Arrays.asList(HDR_CTYPE));
 
-    private String serial, componentType, asmPosition, asmDescription;
+    private String serialFld, componentTypeFld, propNameFld, propValueFld;
 
     @Inject private ComptypeEJB comptypeEJB;
     @Inject private DeviceEJB deviceEJB;
-
-    @Override
-    protected void init() {
-        super.init();
-        setPropertyValueClass(DevicePropertyValue.class);
-    }
 
     @Override
     protected Set<String> getRequiredColumnNames() {
@@ -91,23 +88,38 @@ public class DevicesDataLoader extends AbstractEntityWithPropertiesDataLoader<De
 
     @Override
     protected void assignMembersForCurrentRow() {
-        serial = readCurrentRowCellForHeader(COL_INDEX_SERIAL);
-        componentType = readCurrentRowCellForHeader(COL_INDEX_CTYPE);
-        asmPosition = readCurrentRowCellForHeader(COL_INDEX_ASM_POSITION);
-        asmDescription = readCurrentRowCellForHeader(COL_INDEX_ASM_DESC);
+        serialFld = readCurrentRowCellForHeader(COL_INDEX_SERIAL);
+        componentTypeFld = readCurrentRowCellForHeader(COL_INDEX_CTYPE);
+        propNameFld = readCurrentRowCellForHeader(COL_INDEX_PROP_NAME);
+        propValueFld = readCurrentRowCellForHeader(COL_INDEX_PROP_VALUE);
     }
 
     @Override
-    protected void handleUpdate() {
-        final Device deviceToUpdate = deviceEJB.findDeviceBySerialNumber(serial);
+    protected void handleUpdate(String actualCommand) {
+        final Device deviceToUpdate = deviceEJB.findDeviceBySerialNumber(serialFld);
         if (deviceToUpdate != null) {
-            final @Nullable ComponentType compType = comptypeEJB.findByName(componentType);
+            final @Nullable ComponentType compType = comptypeEJB.findByName(componentTypeFld);
             if (compType == null) {
                 result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_CTYPE);
             } else {
                 try {
-                    addOrUpdateDevice(deviceToUpdate, compType, asmPosition, asmDescription);
-                    addOrUpdateProperties(deviceToUpdate);
+                    if (DataLoader.CMD_UPDATE_DEVICE.equals(actualCommand)) {
+                        addOrUpdateDevice(deviceToUpdate, compType);
+                    } else {
+                        final ErrorMessage propError = addOrUpdateProperty(deviceToUpdate, propNameFld, propValueFld);
+                        if (propError != null) {
+                            switch (propError) {
+                                case PROPERTY_NOT_FOUND:
+                                    result.addRowMessage(propError, HDR_PROP_NAME);
+                                    break;
+                                case ENTITY_NOT_FOUND:
+                                    result.addRowMessage(propError, HDR_PROP_NAME);
+                                    break;
+                                default:
+                                        throw new UnhandledCaseException();
+                            }
+                        }
+                    }
                 } catch (EJBTransactionRolledbackException e) {
                     handleLoadingError(LOGGER, e);
                 }
@@ -119,17 +131,16 @@ public class DevicesDataLoader extends AbstractEntityWithPropertiesDataLoader<De
 
     @Override
     protected void handleCreate() {
-        final Device deviceToUpdate = deviceEJB.findDeviceBySerialNumber(serial);
+        final Device deviceToUpdate = deviceEJB.findDeviceBySerialNumber(serialFld);
         if (deviceToUpdate == null) {
-            final @Nullable ComponentType compType = comptypeEJB.findByName(componentType);
+            final @Nullable ComponentType compType = comptypeEJB.findByName(componentTypeFld);
             if (compType == null) {
                 result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_CTYPE);
             } else {
                 try {
-                    final Device newDevice = new Device(serial);
-                    addOrUpdateDevice(newDevice, compType, asmPosition, asmDescription);
-                    deviceEJB.add(newDevice);
-                    addOrUpdateProperties(newDevice);
+                    final Device newDevice = new Device(serialFld);
+                    addOrUpdateDevice(newDevice, compType);
+                    deviceEJB.addDeviceAndPropertyDefs(newDevice);
                 } catch (EJBTransactionRolledbackException e) {
                     handleLoadingError(LOGGER, e);
                 }
@@ -140,13 +151,29 @@ public class DevicesDataLoader extends AbstractEntityWithPropertiesDataLoader<De
     }
 
     @Override
-    protected void handleDelete() {
-        final @Nullable Device deviceToDelete = deviceEJB.findDeviceBySerialNumber(serial);
+    protected void handleDelete(String actualCommand) {
+        final @Nullable Device deviceToDelete = deviceEJB.findDeviceBySerialNumber(serialFld);
         if (deviceToDelete == null) {
             result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_SERIAL);
         } else {
             try {
-                deviceEJB.delete(deviceToDelete);
+                if (DataLoader.CMD_DELETE_DEVICE.equals(actualCommand)) {
+                    deviceEJB.delete(deviceToDelete);
+                } else {
+                    final ErrorMessage propError = addOrUpdateProperty(deviceToDelete, propNameFld, null);
+                    if (propError != null) {
+                        switch (propError) {
+                            case PROPERTY_NOT_FOUND:
+                                result.addRowMessage(propError, HDR_PROP_NAME);
+                                break;
+                            case ENTITY_NOT_FOUND:
+                                result.addRowMessage(propError, HDR_PROP_NAME);
+                                break;
+                            default:
+                                throw new UnhandledCaseException();
+                        }
+                    }
+                }
             } catch (EJBTransactionRolledbackException e) {
                 handleLoadingError(LOGGER, e);
             }
@@ -164,22 +191,31 @@ public class DevicesDataLoader extends AbstractEntityWithPropertiesDataLoader<De
         return deviceEJB;
     }
 
-    private void addOrUpdateDevice(Device device, ComponentType compType, String asmPosition,
-                                            String asmDescription) {
+    private void addOrUpdateDevice(Device device, ComponentType compType) {
         device.setComponentType(compType);
-        device.setAssemblyPosition(asmPosition);
-        device.setAssemblyDescription(asmDescription);
     }
 
     @Override
     public int getDataWidth() {
-        // TODO set the data width
-        throw new NotImplementedException();
+        return 5;
     }
 
     @Override
     protected void setUpIndexesForFields() {
-        // TODO implement
-        throw new NotImplementedException();
+        final Builder<String, Integer> mapBuilder = ImmutableMap.builder();
+
+        mapBuilder.put(HDR_SERIAL, COL_INDEX_SERIAL);
+        mapBuilder.put(HDR_CTYPE, COL_INDEX_CTYPE);
+        mapBuilder.put(HDR_PROP_NAME, COL_INDEX_PROP_NAME);
+        mapBuilder.put(HDR_PROP_VALUE, COL_INDEX_PROP_VALUE);
+
+        indicies = mapBuilder.build();
     }
+
+    @Override
+    public int getImportDataStartIndex() {
+        // the devices template starts with data in row 10 (0 based == 9)
+        return 9;
+    }
+
 }

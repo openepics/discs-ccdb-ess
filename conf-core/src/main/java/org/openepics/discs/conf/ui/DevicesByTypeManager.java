@@ -17,6 +17,9 @@
 
 package org.openepics.discs.conf.ui;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -33,6 +36,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
+import org.openepics.discs.conf.dl.DevicesLoaderQualifier;
+import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.ejb.ComptypeEJB;
 import org.openepics.discs.conf.ejb.DeviceEJB;
 import org.openepics.discs.conf.ejb.InstallationEJB;
@@ -40,6 +45,8 @@ import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.InstallationRecord;
 import org.openepics.discs.conf.export.ExportTable;
+import org.openepics.discs.conf.ui.common.AbstractExcelSingleFileImportUI;
+import org.openepics.discs.conf.ui.common.DataLoaderHandler;
 import org.openepics.discs.conf.ui.common.UIException;
 import org.openepics.discs.conf.ui.export.ExportSimpleTableDialog;
 import org.openepics.discs.conf.ui.export.SimpleTableExporter;
@@ -48,6 +55,7 @@ import org.openepics.discs.conf.util.BatchSaveStage;
 import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.views.DeviceView;
 import org.primefaces.context.RequestContext;
+import org.primefaces.event.FileUploadEvent;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
@@ -60,7 +68,7 @@ import com.google.common.collect.ImmutableList.Builder;
  */
 @Named
 @ViewScoped
-public class DevicesByTypeManager implements Serializable, SimpleTableExporter {
+public class DevicesByTypeManager extends AbstractExcelSingleFileImportUI implements Serializable, SimpleTableExporter {
     private static final long serialVersionUID = 3236468538191653638L;
     private static final Logger LOGGER = Logger.getLogger(DevicesByTypeManager.class.getCanonicalName());
     private static final String CRLF = "\r\n";
@@ -68,6 +76,8 @@ public class DevicesByTypeManager implements Serializable, SimpleTableExporter {
     @Inject private transient ComptypeEJB componentTypesEJB;
     @Inject private transient DeviceEJB deviceEJB;
     @Inject private transient InstallationEJB installationEJB;
+    @Inject private transient DataLoaderHandler dataLoaderHandler;
+    @Inject @DevicesLoaderQualifier private transient DataLoader devicesDataLoader;
 
     private ComponentType selectedComponentType;
     private List<ComponentType> availableDeviceTypes;
@@ -482,5 +492,27 @@ public class DevicesByTypeManager implements Serializable, SimpleTableExporter {
     @Override
     public ExportSimpleTableDialog getSimpleTableDialog() {
         return simpleTableExporterDialog;
+    }
+
+    @Override
+    public void doImport() {
+        try (InputStream inputStream = new ByteArrayInputStream(importData)) {
+            setLoaderResult(dataLoaderHandler.loadData(inputStream, devicesDataLoader));
+            // TODO solve the imported data update and UI refresh more generically
+            prepareDevicesForDisplay(null);
+            RequestContext.getCurrentInstance().update("devicesForm");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void handleImportFileUpload(FileUploadEvent event) {
+        super.handleImportFileUpload(event);
+        // TODO once all import handling is the same put this into parent and add "setDataLoader()" used at init
+        importFileStatistics = getImportedFileStatistics(devicesDataLoader);
+        // TODO once all import handling is the same, handled by single-file-DL.xhtml / fileUpload / oncomplete
+        RequestContext.getCurrentInstance().update("importDevicesForm:importStatsDialog");
+        RequestContext.getCurrentInstance().execute("PF('importStatsDialog').show();");
     }
 }

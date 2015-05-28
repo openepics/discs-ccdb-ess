@@ -68,12 +68,6 @@ public class ComponentTypesDataLoader extends AbstractEntityWithPropertiesDataLo
     @Inject private ComptypeEJB comptypeEJB;
 
     @Override
-    protected void init() {
-        super.init();
-        setPropertyValueClass(ComptypePropertyValue.class);
-    }
-
-    @Override
     protected Set<String> getRequiredColumnNames() {
         return REQUIRED_COLUMNS;
     }
@@ -96,7 +90,7 @@ public class ComponentTypesDataLoader extends AbstractEntityWithPropertiesDataLo
     }
 
     @Override
-    protected void handleUpdate() {
+    protected void handleUpdate(String actualCommand) {
         final ComponentType componentTypeToUpdate = comptypeEJB.findByName(nameFld);
         if (componentTypeToUpdate != null) {
             if (componentTypeToUpdate.getName().equals(SlotEJB.ROOT_COMPONENT_TYPE)) {
@@ -104,7 +98,7 @@ public class ComponentTypesDataLoader extends AbstractEntityWithPropertiesDataLo
             }
             try {
                 componentTypeToUpdate.setDescription(descriptionFld);
-                addOrUpdateProperties(componentTypeToUpdate);
+                // addOrUpdateProperties(componentTypeToUpdate);  TODO handle
             } catch (EJBTransactionRolledbackException e) {
                 handleLoadingError(LOGGER, e);
             }
@@ -121,7 +115,7 @@ public class ComponentTypesDataLoader extends AbstractEntityWithPropertiesDataLo
                 final ComponentType compTypeToAdd = new ComponentType(nameFld);
                 compTypeToAdd.setDescription(descriptionFld);
                 comptypeEJB.add(compTypeToAdd);
-                addOrUpdateProperties(compTypeToAdd);
+                // addOrUpdateProperties(compTypeToAdd); TODO handle
             } catch (EJBTransactionRolledbackException e) {
                 handleLoadingError(LOGGER, e);
             }
@@ -131,7 +125,7 @@ public class ComponentTypesDataLoader extends AbstractEntityWithPropertiesDataLo
     }
 
     @Override
-    protected void handleDelete() {
+    protected void handleDelete(String actualCommand) {
         final ComponentType componentTypeToDelete = comptypeEJB.findByName(nameFld);
         try {
             if (componentTypeToDelete == null) {
