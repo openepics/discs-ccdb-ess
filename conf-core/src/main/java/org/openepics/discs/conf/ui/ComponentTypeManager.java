@@ -36,8 +36,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
-import joptsimple.internal.Strings;
-
 import org.openepics.discs.conf.dl.ComponentTypesLoaderQualifier;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.ejb.AuditRecordEJB;
@@ -53,6 +51,9 @@ import org.openepics.discs.conf.ui.export.ExportSimpleTableDialog;
 import org.openepics.discs.conf.ui.export.SimpleTableExporter;
 import org.openepics.discs.conf.util.Utility;
 import org.primefaces.context.RequestContext;
+import org.primefaces.event.FileUploadEvent;
+
+import com.google.common.base.Strings;
 
 /**
  *
@@ -239,6 +240,7 @@ public class ComponentTypeManager extends AbstractExcelSingleFileImportUI
     public void doImport() {
         try (InputStream inputStream = new ByteArrayInputStream(importData)) {
             setLoaderResult(dataLoaderHandler.loadData(inputStream, compTypesDataLoader));
+            // TODO solve the imported data update and UI refresh more generically
             deviceTypes = comptypeEJB.findAll();
             RequestContext.getCurrentInstance().update("deviceTypesForm");
         } catch (IOException e) {
@@ -328,4 +330,15 @@ public class ComponentTypeManager extends AbstractExcelSingleFileImportUI
     public ExportSimpleTableDialog getSimpleTableDialog() {
         return simpleTableExporterDialog;
     }
+
+    @Override
+    public void handleImportFileUpload(FileUploadEvent event) {
+        super.handleImportFileUpload(event);
+        // TODO once all import handling is the same put this into parent and add "setDataLoader()" used at init
+        importFileStatistics = getImportedFileStatistics(compTypesDataLoader);
+        // TODO once all import handling is the same, handled by single-file-DL.xhtml / fileUpload / oncomplete
+        RequestContext.getCurrentInstance().update("importCompTypesForm:importStatsDialog");
+        RequestContext.getCurrentInstance().execute("PF('importStatsDialog').show();");
+    }
+
 }

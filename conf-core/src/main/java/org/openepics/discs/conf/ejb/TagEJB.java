@@ -25,11 +25,10 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import joptsimple.internal.Strings;
-
 import org.openepics.discs.conf.ent.Tag;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 
 /**
  * Service that is used to query tags in the database

@@ -133,16 +133,20 @@ public abstract class AbstractExcelSingleFileImportUI implements ExcelSingleFile
                     // TODO add all commands to statistics
                     case DataLoader.CMD_CREATE:
                     case DataLoader.CMD_CREATE_DEVICE:
+                    case DataLoader.CMD_CREATE_PROPERTY:
+                    case DataLoader.CMD_CREATE_DEVICE_TYPE:
                         ++createRows;
                         break;
                     case DataLoader.CMD_UPDATE:
                     case DataLoader.CMD_UPDATE_DEVICE:
                     case DataLoader.CMD_UPDATE_PROPERTY:
+                    case DataLoader.CMD_UPDATE_DEVICE_TYPE:
                         ++updateRows;
                         break;
                     case DataLoader.CMD_DELETE:
                     case DataLoader.CMD_DELETE_DEVICE:
                     case DataLoader.CMD_DELETE_PROPERTY:
+                    case DataLoader.CMD_DELETE_DEVICE_TYPE:
                         ++deleteRows;
                         break;
                     case DataLoader.CMD_RENAME:

@@ -47,7 +47,12 @@ public class ExcelCell {
         final String stringValue;
         if (cell != null) {
             if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
-                stringValue = String.valueOf(cell.getNumericCellValue());
+                final double numericCellValue = cell.getNumericCellValue();
+                if (numericCellValue == (int)numericCellValue) {
+                    stringValue = String.valueOf((int)numericCellValue);
+                } else {
+                    stringValue = String.valueOf(numericCellValue);
+                }
             } else if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
                 stringValue = cell.getStringCellValue() != null ? cell.getStringCellValue() : null;
             } else if (cell.getCellType() == Cell.CELL_TYPE_BLANK) {

@@ -140,7 +140,7 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
     }
 
     @Override
-    protected void handleCreate() {
+    protected void handleCreate(String actualCommand) {
         if (!propertyByName.containsKey(nameFld)) {
             try {
                 final Property propertyToAdd = new Property(nameFld, descFld);

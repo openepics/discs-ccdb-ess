@@ -49,7 +49,7 @@
                 <p:menuitem value="Import" update=":importCompTypesForm" styleClass="noClickEvent" 
                     oncomplete="PF('importCompTypes').show();" title="Import Device Types" 
                     actionListener="#{componentTypeManager.prepareImportPopup()}" 
-                    disabled="#{true or       !securityPolicy.getUIHint('COMPONENT_TYPE')}" />
+                    disabled="#{!securityPolicy.getUIHint('COMPONENT_TYPE')}" />
             </p:submenu>
             
             <p:submenu label="Properties" icon="ui-icon-contact" 
@@ -84,6 +84,8 @@
                     url="/resources/import-templates/ccdb_units.xlsx" />
                 <p:menuitem value="Properties" title="Download properties import excel template" 
                     url="/resources/import-templates/ccdb_properties.xlsx" />
+                <p:menuitem value="Device types" title="Download device types import excel template" 
+                    url="/resources/import-templates/ccdb_device_types.xlsx" />
                 <p:menuitem value="Devices" title="Download device instances import excel template" 
                     url="/resources/import-templates/ccdb_devices.xlsx" />
             </p:submenu>

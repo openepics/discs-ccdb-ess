@@ -38,7 +38,6 @@ import org.openepics.discs.conf.ejb.DeviceEJB;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
-import org.openepics.discs.conf.util.UnhandledCaseException;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
@@ -106,19 +105,7 @@ public class DevicesDataLoader extends AbstractEntityWithPropertiesDataLoader<De
                     if (DataLoader.CMD_UPDATE_DEVICE.equals(actualCommand)) {
                         addOrUpdateDevice(deviceToUpdate, compType);
                     } else {
-                        final ErrorMessage propError = addOrUpdateProperty(deviceToUpdate, propNameFld, propValueFld);
-                        if (propError != null) {
-                            switch (propError) {
-                                case PROPERTY_NOT_FOUND:
-                                    result.addRowMessage(propError, HDR_PROP_NAME);
-                                    break;
-                                case ENTITY_NOT_FOUND:
-                                    result.addRowMessage(propError, HDR_PROP_NAME);
-                                    break;
-                                default:
-                                        throw new UnhandledCaseException();
-                            }
-                        }
+                        addOrUpdateProperty(deviceToUpdate, propNameFld, propValueFld, HDR_PROP_NAME);
                     }
                 } catch (EJBTransactionRolledbackException e) {
                     handleLoadingError(LOGGER, e);
@@ -130,7 +117,7 @@ public class DevicesDataLoader extends AbstractEntityWithPropertiesDataLoader<De
     }
 
     @Override
-    protected void handleCreate() {
+    protected void handleCreate(String actualCommand) {
         final Device deviceToUpdate = deviceEJB.findDeviceBySerialNumber(serialFld);
         if (deviceToUpdate == null) {
             final @Nullable ComponentType compType = comptypeEJB.findByName(componentTypeFld);
@@ -160,19 +147,7 @@ public class DevicesDataLoader extends AbstractEntityWithPropertiesDataLoader<De
                 if (DataLoader.CMD_DELETE_DEVICE.equals(actualCommand)) {
                     deviceEJB.delete(deviceToDelete);
                 } else {
-                    final ErrorMessage propError = addOrUpdateProperty(deviceToDelete, propNameFld, null);
-                    if (propError != null) {
-                        switch (propError) {
-                            case PROPERTY_NOT_FOUND:
-                                result.addRowMessage(propError, HDR_PROP_NAME);
-                                break;
-                            case ENTITY_NOT_FOUND:
-                                result.addRowMessage(propError, HDR_PROP_NAME);
-                                break;
-                            default:
-                                throw new UnhandledCaseException();
-                        }
-                    }
+                    addOrUpdateProperty(deviceToDelete, propNameFld, null, HDR_PROP_NAME);
                 }
             } catch (EJBTransactionRolledbackException e) {
                 handleLoadingError(LOGGER, e);

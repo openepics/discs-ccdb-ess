@@ -136,12 +136,14 @@ public abstract class AbstractDataLoader implements DataLoader {
                     case DataLoader.CMD_UPDATE:
                     case DataLoader.CMD_UPDATE_DEVICE:
                     case DataLoader.CMD_UPDATE_PROPERTY:
+                    case DataLoader.CMD_UPDATE_DEVICE_TYPE:
                         handleUpdate(command);
                         ++updateRows;
                         break;
                     case DataLoader.CMD_DELETE:
                     case DataLoader.CMD_DELETE_DEVICE:
                     case DataLoader.CMD_DELETE_PROPERTY:
+                    case DataLoader.CMD_DELETE_DEVICE_TYPE:
                         handleDelete(command);
                         ++deleteRows;
                         break;
@@ -151,7 +153,9 @@ public abstract class AbstractDataLoader implements DataLoader {
                         break;
                     case DataLoader.CMD_CREATE:
                     case DataLoader.CMD_CREATE_DEVICE:
-                        handleCreate();
+                    case DataLoader.CMD_CREATE_DEVICE_TYPE:
+                    case DataLoader.CMD_CREATE_PROPERTY:
+                        handleCreate(command);
                         ++createRows;
                         break;
                     default:
@@ -249,8 +253,9 @@ public abstract class AbstractDataLoader implements DataLoader {
      * <b>Precondition:</b> {@link #assignMembersForCurrentRow()} has been invoked. This gives chance
      * to the sub-class to extract row data for the call to this method.
      * </p>
+     * @param actualCommand the actual command used in create (create entity itself or its property)
      */
-    protected abstract void handleCreate();
+    protected abstract void handleCreate(String actualCommand);
 
 
     /**

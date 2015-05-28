@@ -28,7 +28,6 @@ import javax.ejb.EJBTransactionRolledbackException;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.openepics.discs.conf.dl.common.AbstractDataLoader;
 import org.openepics.discs.conf.dl.common.AbstractEntityWithPropertiesDataLoader;
 import org.openepics.discs.conf.dl.common.DataLoader;
@@ -38,6 +37,12 @@ import org.openepics.discs.conf.ejb.DAO;
 import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
+import org.openepics.discs.conf.ent.Property;
+import org.openepics.discs.conf.util.Conversion;
+
+import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap.Builder;
 
 /**
  * Implementation of data loader for device types.
@@ -55,15 +60,20 @@ public class ComponentTypesDataLoader extends AbstractEntityWithPropertiesDataLo
     // Header column name constants
     private static final String HDR_NAME = "NAME";
     private static final String HDR_DESC = "DESCRIPTION";
+    private static final String HDR_PROP_TYPE = "PROPERTY TYPE";
+    private static final String HDR_PROP_NAME = "PROPERTY NAME";
+    private static final String HDR_PROP_VALUE = "PROPERTY VALUE";
 
-    private static final int COL_INDEX_NAME = 1;  // TODO fix
-    private static final int COL_INDEX_DESC = 2;  // TODO fix
-
+    private static final int COL_INDEX_NAME = 1;
+    private static final int COL_INDEX_DESC = 2;
+    private static final int COL_INDEX_PROP_TYPE = 3;
+    private static final int COL_INDEX_PROP_NAME = 4;
+    private static final int COL_INDEX_PROP_VALUE = 5;
 
     private static final Set<String> REQUIRED_COLUMNS = new HashSet<>();
 
     // Fields for row cells
-    private String nameFld, descriptionFld;
+    private String nameFld, descriptionFld, propTypeFld, propNameFld, propValueFld;;
 
     @Inject private ComptypeEJB comptypeEJB;
 
@@ -87,6 +97,9 @@ public class ComponentTypesDataLoader extends AbstractEntityWithPropertiesDataLo
     protected void assignMembersForCurrentRow() {
         nameFld = readCurrentRowCellForHeader(COL_INDEX_NAME);
         descriptionFld = readCurrentRowCellForHeader(COL_INDEX_DESC);
+        propTypeFld = readCurrentRowCellForHeader(COL_INDEX_PROP_TYPE);
+        propNameFld = readCurrentRowCellForHeader(COL_INDEX_PROP_NAME);
+        propValueFld = readCurrentRowCellForHeader(COL_INDEX_PROP_VALUE);
     }
 
     @Override
@@ -95,10 +108,21 @@ public class ComponentTypesDataLoader extends AbstractEntityWithPropertiesDataLo
         if (componentTypeToUpdate != null) {
             if (componentTypeToUpdate.getName().equals(SlotEJB.ROOT_COMPONENT_TYPE)) {
                 result.addRowMessage(ErrorMessage.NOT_AUTHORIZED, AbstractDataLoader.HDR_OPERATION);
+                return;
             }
             try {
-                componentTypeToUpdate.setDescription(descriptionFld);
-                // addOrUpdateProperties(componentTypeToUpdate);  TODO handle
+                if (DataLoader.CMD_UPDATE_DEVICE_TYPE.equals(actualCommand)) {
+                    componentTypeToUpdate.setDescription(descriptionFld);
+                } else {
+                    final ComptypePropertyValue comptypePropertyValue =
+                            (ComptypePropertyValue) getPropertyValue(componentTypeToUpdate, propNameFld,
+                                                                        HDR_PROP_NAME);
+                    if (!comptypePropertyValue.isPropertyDefinition()) {
+                        addOrUpdateProperty(componentTypeToUpdate, propNameFld, propValueFld, HDR_PROP_NAME);
+                    } else {
+                        result.addRowMessage(ErrorMessage.PROPERTY_TYPE_INCORRECT, HDR_PROP_TYPE);
+                    }
+                }
             } catch (EJBTransactionRolledbackException e) {
                 handleLoadingError(LOGGER, e);
             }
@@ -108,19 +132,26 @@ public class ComponentTypesDataLoader extends AbstractEntityWithPropertiesDataLo
     }
 
     @Override
-    protected void handleCreate() {
+    protected void handleCreate(String actualCommand) {
         final ComponentType componentTypeToUpdate = comptypeEJB.findByName(nameFld);
-        if (componentTypeToUpdate == null) {
-            try {
-                final ComponentType compTypeToAdd = new ComponentType(nameFld);
-                compTypeToAdd.setDescription(descriptionFld);
-                comptypeEJB.add(compTypeToAdd);
-                // addOrUpdateProperties(compTypeToAdd); TODO handle
-            } catch (EJBTransactionRolledbackException e) {
-                handleLoadingError(LOGGER, e);
+        if (DataLoader.CMD_CREATE_DEVICE_TYPE.equals(actualCommand)) {
+            if (componentTypeToUpdate == null) {
+                try {
+                    final ComponentType compTypeToAdd = new ComponentType(nameFld);
+                    compTypeToAdd.setDescription(descriptionFld);
+                    comptypeEJB.add(compTypeToAdd);
+                } catch (EJBTransactionRolledbackException e) {
+                    handleLoadingError(LOGGER, e);
+                }
+            } else {
+                result.addRowMessage(ErrorMessage.NAME_ALREADY_EXISTS, HDR_NAME);
             }
         } else {
-            result.addRowMessage(ErrorMessage.NAME_ALREADY_EXISTS, HDR_NAME);
+            if (componentTypeToUpdate != null) {
+                addPropertyValue(componentTypeToUpdate);
+            } else {
+                result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_NAME);
+            }
         }
     }
 
@@ -133,8 +164,22 @@ public class ComponentTypesDataLoader extends AbstractEntityWithPropertiesDataLo
             } else {
                 if (SlotEJB.ROOT_COMPONENT_TYPE.equals(componentTypeToDelete.getName())) {
                     result.addRowMessage(ErrorMessage.NOT_AUTHORIZED, AbstractDataLoader.HDR_OPERATION);
+                    return;
                 }
-                comptypeEJB.delete(componentTypeToDelete);
+
+                if (DataLoader.CMD_DELETE_DEVICE_TYPE.equals(actualCommand)) {
+                    comptypeEJB.delete(componentTypeToDelete);
+                } else {
+                    final ComptypePropertyValue comptypePropertyValue =
+                            (ComptypePropertyValue) getPropertyValue(componentTypeToDelete, propNameFld,
+                                                                        HDR_PROP_NAME);
+                    // Property defs can only be deleted through UI to properly handle already assigned prop values
+                    if (!comptypePropertyValue.isPropertyDefinition()) {
+                        comptypeEJB.deleteChild(comptypePropertyValue);
+                    } else {
+                        result.addRowMessage(ErrorMessage.PROPERTY_TYPE_INCORRECT, HDR_PROP_TYPE);
+                    }
+                }
             }
         } catch (EJBTransactionRolledbackException e) {
             handleLoadingError(LOGGER, e);
@@ -176,13 +221,76 @@ public class ComponentTypesDataLoader extends AbstractEntityWithPropertiesDataLo
 
     @Override
     public int getDataWidth() {
-        // TODO set the data width
-        throw new NotImplementedException();
+        return 6;
     }
 
     @Override
     protected void setUpIndexesForFields() {
-        // TODO implement
-        throw new NotImplementedException();
+        final Builder<String, Integer> mapBuilder = ImmutableMap.builder();
+
+        mapBuilder.put(HDR_NAME, COL_INDEX_NAME);
+        mapBuilder.put(HDR_DESC, COL_INDEX_DESC);
+        mapBuilder.put(HDR_PROP_TYPE, COL_INDEX_PROP_TYPE);
+        mapBuilder.put(HDR_PROP_NAME, COL_INDEX_PROP_NAME);
+        mapBuilder.put(HDR_PROP_VALUE, COL_INDEX_PROP_VALUE);
+
+        indicies = mapBuilder.build();
+    }
+
+    @Override
+    public int getImportDataStartIndex() {
+        // the new template starts with data in row 10 (0 based == 9)
+        return 9;
+    }
+
+    private void addPropertyValue(ComponentType comptypeToUpdate) {
+        if (Strings.isNullOrEmpty(propNameFld)) {
+            result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, HDR_PROP_NAME);
+            return;
+        }
+
+        if (Strings.isNullOrEmpty(propTypeFld)) {
+            result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, HDR_PROP_TYPE);
+            return;
+        }
+
+        // does property exist
+        final @Nullable Property property = propertyEJB.findByName(propNameFld);
+        if (property == null) {
+            result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_PROP_NAME);
+            return;
+        }
+
+        // is this property value already added
+        for (final ComptypePropertyValue value : comptypeToUpdate.getComptypePropertyList()) {
+            if (value.getProperty().equals(property)) {
+                result.addRowMessage(ErrorMessage.NAME_ALREADY_EXISTS, HDR_PROP_NAME);
+                return;
+            }
+        }
+
+        final ComptypePropertyValue propertyValue = new ComptypePropertyValue(false);
+        propertyValue.setProperty(property);
+        propertyValue.setComponentType(comptypeToUpdate);
+        switch (propTypeFld) {
+            case DataLoader.PROP_TYPE_DEV_TYPE:
+                if (Strings.isNullOrEmpty(propValueFld)) {
+                    result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, HDR_PROP_VALUE);
+                    return;
+                }
+                propertyValue.setPropValue(Conversion.stringToValue(propValueFld, property.getDataType()));
+                break;
+            case DataLoader.PROP_TYPE_SLOT:
+                propertyValue.setPropertyDefinition(true);
+                propertyValue.setDefinitionTargetSlot(true);
+                break;
+            case DataLoader.PROP_TYPE_DEV_INSTANCE:
+                propertyValue.setPropertyDefinition(true);
+                propertyValue.setDefinitionTargetDevice(true);
+                break;
+            default:
+                result.addRowMessage(ErrorMessage.COMMAND_NOT_VALID, HDR_PROP_TYPE);
+        }
+        comptypeEJB.addChild(propertyValue);
     }
 }

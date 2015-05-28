@@ -184,7 +184,7 @@ public class SlotPairDataLoader extends AbstractDataLoader implements DataLoader
     }
 
     @Override
-    protected void handleCreate() {
+    protected void handleCreate(String actualCommand) {
         // TODO implement
         throw new NotImplementedException();
     }

@@ -143,7 +143,7 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
     }
 
     @Override
-    protected void handleCreate() {
+    protected void handleCreate(String actualCommand) {
         @Nullable final ComponentType compType = checkSlotType();
         if (compType == null) {
             return;
