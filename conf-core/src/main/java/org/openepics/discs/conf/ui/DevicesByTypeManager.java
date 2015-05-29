@@ -36,7 +36,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
-import org.openepics.discs.conf.dl.DevicesLoaderQualifier;
+import org.openepics.discs.conf.dl.annotations.DevicesLoader;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.ejb.ComptypeEJB;
 import org.openepics.discs.conf.ejb.DeviceEJB;
@@ -77,7 +77,7 @@ public class DevicesByTypeManager extends AbstractExcelSingleFileImportUI implem
     @Inject private transient DeviceEJB deviceEJB;
     @Inject private transient InstallationEJB installationEJB;
     @Inject private transient DataLoaderHandler dataLoaderHandler;
-    @Inject @DevicesLoaderQualifier private transient DataLoader devicesDataLoader;
+    @Inject @DevicesLoader private transient DataLoader devicesDataLoader;
 
     private ComponentType selectedComponentType;
     private List<ComponentType> availableDeviceTypes;

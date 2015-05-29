@@ -35,6 +35,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.openepics.discs.conf.dl.annotations.UnitsLoader;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.dl.common.ErrorMessage;
@@ -52,7 +53,7 @@ import org.openepics.discs.conf.util.TestUtility;
 @RunWith(Arquillian.class)
 public class UnitsDataLoaderIT {
 
-    @Inject @UnitsLoaderQualifier private DataLoader unitsDataLoader;
+    @Inject @UnitsLoader private DataLoader unitsDataLoader;
     @Inject private DataLoaderHandler dataLoaderHandler;
     @Inject private TestUtility testUtility;
     @Inject private UnitEJB unitEJB;

@@ -38,6 +38,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.openepics.discs.conf.dl.annotations.PropertiesLoader;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.dl.common.ErrorMessage;
@@ -59,7 +60,7 @@ import org.openepics.discs.conf.util.TestUtility;
 @ApplyScriptBefore(value= "update_sequences.sql")
 public class PropertiesDataLoaderIT {
 
-    @Inject @PropertiesLoaderQualifier private DataLoader propertiesDataLoader;
+    @Inject @PropertiesLoader private DataLoader propertiesDataLoader;
     @Inject private DataLoaderHandler dataLoaderHandler;
     @Inject private TestUtility testUtility;
     @Inject private PropertyEJB propertyEJB;

@@ -19,6 +19,9 @@
  */
 package org.openepics.discs.conf.ui;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,9 +37,13 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.json.JsonObject;
 
+import org.openepics.discs.conf.dl.annotations.DataTypeLoader;
+import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.ejb.DataTypeEJB;
 import org.openepics.discs.conf.ent.DataType;
 import org.openepics.discs.conf.export.ExportTable;
+import org.openepics.discs.conf.ui.common.AbstractExcelSingleFileImportUI;
+import org.openepics.discs.conf.ui.common.DataLoaderHandler;
 import org.openepics.discs.conf.ui.common.UIException;
 import org.openepics.discs.conf.ui.export.ExportSimpleTableDialog;
 import org.openepics.discs.conf.ui.export.SimpleTableExporter;
@@ -45,6 +52,8 @@ import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.views.UserEnumerationView;
 import org.openepics.seds.api.datatypes.SedsEnum;
 import org.openepics.seds.core.Seds;
+import org.primefaces.context.RequestContext;
+import org.primefaces.event.FileUploadEvent;
 
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
@@ -61,10 +70,13 @@ import com.google.common.collect.Lists;
  */
 @Named
 @ViewScoped
-public class DataTypeManager implements Serializable, SimpleTableExporter {
+public class DataTypeManager extends AbstractExcelSingleFileImportUI implements Serializable, SimpleTableExporter {
     private static final long serialVersionUID = -7538356350403365152L;
 
     @Inject private transient  DataTypeEJB dataTypeEJB;
+    @Inject private transient DataLoaderHandler dataLoaderHandler;
+    @Inject @DataTypeLoader private transient DataLoader enumsDataLoader;
+
 
     private List<UserEnumerationView> dataTypeViews;
     private transient List<UserEnumerationView> filteredDataTypesViews;
@@ -392,5 +404,27 @@ public class DataTypeManager implements Serializable, SimpleTableExporter {
     @Override
     public ExportSimpleTableDialog getSimpleTableDialog() {
         return simpleTableExporterDialog;
+    }
+
+    @Override
+    public void doImport() {
+        try (InputStream inputStream = new ByteArrayInputStream(importData)) {
+            setLoaderResult(dataLoaderHandler.loadData(inputStream, enumsDataLoader));
+            // TODO solve the imported data update and UI refresh more generically
+            refreshUserDataTypes();
+            RequestContext.getCurrentInstance().update("enumsForm");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void handleImportFileUpload(FileUploadEvent event) {
+        super.handleImportFileUpload(event);
+        // TODO once all import handling is the same put this into parent and add "setDataLoader()" used at init
+        importFileStatistics = getImportedFileStatistics(enumsDataLoader);
+        // TODO once all import handling is the same, handled by single-file-DL.xhtml / fileUpload / oncomplete
+        RequestContext.getCurrentInstance().update("importEnumsForm:importStatsDialog");
+        RequestContext.getCurrentInstance().execute("PF('importStatsDialog').show();");
     }
 }

@@ -30,6 +30,7 @@ import javax.ejb.EJBTransactionRolledbackException;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
+import org.openepics.discs.conf.dl.annotations.UnitsLoader;
 import org.openepics.discs.conf.dl.common.AbstractDataLoader;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.ErrorMessage;
@@ -48,7 +49,7 @@ import com.google.common.collect.ImmutableMap.Builder;
  *
  */
 @Stateless
-@UnitsLoaderQualifier
+@UnitsLoader
 public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
 
     private static final Logger LOGGER = Logger.getLogger(UnitsDataLoader.class.getCanonicalName());

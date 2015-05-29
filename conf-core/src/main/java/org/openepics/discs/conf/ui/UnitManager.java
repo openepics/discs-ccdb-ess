@@ -38,7 +38,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
-import org.openepics.discs.conf.dl.UnitsLoaderQualifier;
+import org.openepics.discs.conf.dl.annotations.UnitsLoader;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.ejb.UnitEJB;
 import org.openepics.discs.conf.ent.Property;
@@ -75,7 +75,7 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
 
     @Inject private transient  UnitEJB unitEJB;
     @Inject private transient DataLoaderHandler dataLoaderHandler;
-    @Inject @UnitsLoaderQualifier private transient DataLoader unitsDataLoader;
+    @Inject @UnitsLoader private transient DataLoader unitsDataLoader;
 
     private List<Unit> units;
     private List<UnitView> unitViews;

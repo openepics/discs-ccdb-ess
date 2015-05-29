@@ -29,6 +29,7 @@ import javax.ejb.EJBTransactionRolledbackException;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
+import org.openepics.discs.conf.dl.annotations.DevicesLoader;
 import org.openepics.discs.conf.dl.common.AbstractEntityWithPropertiesDataLoader;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.ErrorMessage;
@@ -50,7 +51,7 @@ import com.google.common.collect.ImmutableMap.Builder;
  *
  */
 @Stateless
-@DevicesLoaderQualifier
+@DevicesLoader
 public class DevicesDataLoader extends AbstractEntityWithPropertiesDataLoader<DevicePropertyValue>
                                                                                         implements DataLoader {
 

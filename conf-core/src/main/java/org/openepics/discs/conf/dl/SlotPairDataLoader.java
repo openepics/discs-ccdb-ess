@@ -31,6 +31,7 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 
 import org.apache.commons.lang.NotImplementedException;
+import org.openepics.discs.conf.dl.annotations.SlotPairLoader;
 import org.openepics.discs.conf.dl.common.AbstractDataLoader;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
@@ -51,7 +52,7 @@ import org.openepics.discs.conf.ent.SlotRelationName;
  * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  */
 @Stateless
-@SlotPairDataLoaderQualifier
+@SlotPairLoader
 public class SlotPairDataLoader extends AbstractDataLoader implements DataLoader {
 
     private static final Logger LOGGER = Logger.getLogger(SlotPairDataLoader.class.getCanonicalName());

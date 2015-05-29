@@ -35,6 +35,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.openepics.discs.conf.dl.annotations.PropertiesLoader;
+import org.openepics.discs.conf.dl.annotations.UnitsLoader;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.dl.common.ErrorMessage;
@@ -52,8 +54,8 @@ import org.openepics.discs.conf.util.TestUtility;
 @ApplyScriptAfter(value= "truncate_database.sql")
 public class CommonDataLoadersIT {
 
-    @Inject @UnitsLoaderQualifier private DataLoader unitsDataLoader;
-    @Inject @PropertiesLoaderQualifier private DataLoader propertiesDataLoader;
+    @Inject @UnitsLoader private DataLoader unitsDataLoader;
+    @Inject @PropertiesLoader private DataLoader propertiesDataLoader;
     @Inject private SlotsAndSlotPairsDataLoaderHelper dataLoaderHelper;
     @Inject private DataLoaderHandler dataLoaderHandler;
     @Inject private TestUtility testUtility;

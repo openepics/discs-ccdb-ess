@@ -39,6 +39,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.openepics.discs.conf.dl.annotations.ComponentTypesLoader;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.dl.common.ErrorMessage;
@@ -48,7 +49,7 @@ import org.openepics.discs.conf.ui.common.DataLoaderHandler;
 import org.openepics.discs.conf.util.TestUtility;
 
 /**
- * Integration tests for {@link ComponentTypesDataLoader}
+ * Integration tests for {@link ComponentTypesLoader}
  *
  * @author <a href="mailto:andraz.pozar@cosylab.com">Andraž Požar</a>
  *
@@ -60,7 +61,7 @@ import org.openepics.discs.conf.util.TestUtility;
 @ApplyScriptBefore(value= "update_sequences.sql")
 public class DeviceTypesDataLoaderIT {
 
-    @Inject @ComponentTypesLoaderQualifier private DataLoader compTypesDataLoader;
+    @Inject @ComponentTypesLoader private DataLoader compTypesDataLoader;
     @Inject private DataLoaderHandler dataLoaderHandler;
     @Inject private TestUtility testUtility;
     @Inject private ComptypeEJB compTypeEJB;

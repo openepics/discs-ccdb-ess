@@ -36,7 +36,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
-import org.openepics.discs.conf.dl.ComponentTypesLoaderQualifier;
+import org.openepics.discs.conf.dl.annotations.ComponentTypesLoader;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.ejb.AuditRecordEJB;
 import org.openepics.discs.conf.ejb.ComptypeEJB;
@@ -72,7 +72,7 @@ public class ComponentTypeManager extends AbstractExcelSingleFileImportUI
     @Inject private transient ComptypeEJB comptypeEJB;
     @Inject private transient AuditRecordEJB auditRecordEJB;
     @Inject private transient DataLoaderHandler dataLoaderHandler;
-    @Inject @ComponentTypesLoaderQualifier private transient DataLoader compTypesDataLoader;
+    @Inject @ComponentTypesLoader private transient DataLoader compTypesDataLoader;
 
     private List<ComponentType> deviceTypes;
     private List<ComponentType> filteredDeviceTypes;

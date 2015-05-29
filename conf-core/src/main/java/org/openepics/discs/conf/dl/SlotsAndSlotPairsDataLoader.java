@@ -30,6 +30,8 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.openepics.discs.conf.dl.annotations.SlotPairLoader;
+import org.openepics.discs.conf.dl.annotations.SlotsLoader;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.ejb.SlotEJB;
@@ -48,8 +50,8 @@ public class SlotsAndSlotPairsDataLoader implements Serializable {
     private static final long serialVersionUID = 6772985623823412436L;
 
     @Resource private EJBContext context;
-    @Inject @SlotPairDataLoaderQualifier transient private DataLoader slotPairDataLoader;
-    @Inject @SlotsDataLoaderQualifier transient private DataLoader slotsDataLoader;
+    @Inject @SlotPairLoader transient private DataLoader slotPairDataLoader;
+    @Inject @SlotsLoader transient private DataLoader slotsDataLoader;
 
     /**
      * Saves data read from two input files to the database

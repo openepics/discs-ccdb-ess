@@ -28,6 +28,7 @@ import javax.ejb.EJBTransactionRolledbackException;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
+import org.openepics.discs.conf.dl.annotations.ComponentTypesLoader;
 import org.openepics.discs.conf.dl.common.AbstractDataLoader;
 import org.openepics.discs.conf.dl.common.AbstractEntityWithPropertiesDataLoader;
 import org.openepics.discs.conf.dl.common.DataLoader;
@@ -51,7 +52,7 @@ import com.google.common.collect.ImmutableMap.Builder;
  * @author <a href="mailto:miroslav.pavleski@cosylab.com">Miroslav Pavleski</a>
  */
 @Stateless
-@ComponentTypesLoaderQualifier
+@ComponentTypesLoader
 public class ComponentTypesDataLoader extends AbstractEntityWithPropertiesDataLoader<ComptypePropertyValue>
     implements DataLoader {
 
@@ -290,6 +291,7 @@ public class ComponentTypesDataLoader extends AbstractEntityWithPropertiesDataLo
                 break;
             default:
                 result.addRowMessage(ErrorMessage.COMMAND_NOT_VALID, HDR_PROP_TYPE);
+                return;
         }
         comptypeEJB.addChild(propertyValue);
     }

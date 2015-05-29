@@ -47,7 +47,9 @@ public enum ErrorMessage {
     SYSTEM_EXCEPTION("Internal error occured"),
     MODIFY_IN_USE("Cannot modify entity field because it is in use."),
     DELETE_IN_USE("Cannot delete entity because it is in use."),
-    UNIQUE_INCORRECT("The value of the uniquness is incorrect.");
+    UNIQUE_INCORRECT("The value of the uniquness is incorrect."),
+    ENUM_NOT_ENOUGH_ELEMENTS("The enumeration needs at least two elements."),
+    ENUM_INVALID_CHARACTERS("Enumeration value can only contain alphanumerical characters.");
 
     private final String text;
 

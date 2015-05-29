@@ -62,9 +62,17 @@
                     disabled="#{!securityPolicy.getUIHint('PROPERTY')}" />
             </p:submenu>
 
-            <p:menuitem value="Enumerations" icon="ui-icon-radio-off" title="User Defined Enumerations" 
-                url="/enums.xhtml" 
-                styleClass="#{fn:endsWith(request.requestURL,'enums.xhtml') ? 'menu-selected' : ''}" />
+
+            <p:submenu label="Enumerations" icon="ui-icon-radio-off" 
+                    styleClass="#{fn:endsWith(request.requestURL,'enums.xhtml') ? 'menu-selected' : ''} enumsMenu">
+                <p:menuitem value="View" title="View User Defined Enumerations" styleClass="noClickEvent" 
+                        url="/enums.xhtml" />
+
+                <p:menuitem value="Import" update=":importEnumsForm" 
+                    oncomplete="PF('importEnums').show();" title="Import Enumerations" styleClass="noClickEvent" 
+                    actionListener="#{dataTypeManager.prepareImportPopup()}" 
+                    disabled="#{!securityPolicy.getUIHint('DATA_TYPE')}" />
+            </p:submenu>
 
             <p:submenu label="Units" icon="ui-icon-folder-open"
                     styleClass="#{fn:endsWith(request.requestURL,'units.xhtml') ? 'menu-selected' : ''} unitsMenu">
@@ -135,6 +143,13 @@
         <ui:param name="controller" value="#{devicesByTypeManager}" />
     </ui:include>
 
+    <ui:include src="../loaders/single-file-DL.xhtml">
+        <ui:param name="formId" value="importEnumsForm" />
+        <ui:param name="dialogTitle" value="Enumerations import" />
+        <ui:param name="widgetName" value="importEnums" />
+        <ui:param name="controller" value="#{dataTypeManager}" />
+    </ui:include>
+
     <script type="text/javascript">
         //<![CDATA[
         function noClickTarget(target) {
@@ -166,6 +181,11 @@
         jQuery(".unitsMenu").click(function(event) {
             if (noClickTarget(event.target) == false) {
                 window.location.replace("#{request.contextPath}/units.xhtml");
+            }
+        });
+        jQuery(".enumsMenu").click(function(event) {
+            if (noClickTarget(event.target) == false) {
+                window.location.replace("#{request.contextPath}/enums.xhtml");
             }
         });
         // ]]>

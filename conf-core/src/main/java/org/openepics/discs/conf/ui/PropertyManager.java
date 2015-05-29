@@ -37,7 +37,7 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.openepics.discs.conf.dl.PropertiesLoaderQualifier;
+import org.openepics.discs.conf.dl.annotations.PropertiesLoader;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.ejb.PropertyEJB;
 import org.openepics.discs.conf.ent.DataType;
@@ -79,7 +79,7 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
     @Inject private transient PropertyEJB propertyEJB;
 
     @Inject private transient DataLoaderHandler dataLoaderHandler;
-    @Inject @PropertiesLoaderQualifier private transient DataLoader propertiesDataLoader;
+    @Inject @PropertiesLoader private transient DataLoader propertiesDataLoader;
 
     private List<Property> properties;
     private List<Property> filteredProperties;

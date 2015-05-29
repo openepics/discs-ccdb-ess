@@ -38,6 +38,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.openepics.discs.conf.dl.annotations.DevicesLoader;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.dl.common.ErrorMessage;
@@ -59,7 +60,7 @@ import org.openepics.discs.conf.util.TestUtility;
 @ApplyScriptAfter(value= "truncate_database.sql")
 public class DevicesDataLoaderIT {
 
-    @Inject @DevicesLoaderQualifier private DataLoader devicesDataLoader;
+    @Inject @DevicesLoader private DataLoader devicesDataLoader;
     @Inject private DataLoaderHandler dataLoaderHandler;
     @Inject private TestUtility testUtility;
     @Inject private DeviceEJB deviceEJB;

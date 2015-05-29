@@ -32,6 +32,7 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 
 import org.apache.commons.lang.NotImplementedException;
+import org.openepics.discs.conf.dl.annotations.SlotsLoader;
 import org.openepics.discs.conf.dl.common.AbstractDataLoader;
 import org.openepics.discs.conf.dl.common.AbstractEntityWithPropertiesDataLoader;
 import org.openepics.discs.conf.dl.common.DataLoader;
@@ -52,7 +53,7 @@ import org.openepics.discs.conf.ent.SlotPropertyValue;
  * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  */
 @Stateless
-@SlotsDataLoaderQualifier
+@SlotsLoader
 public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<SlotPropertyValue> implements DataLoader {
 
     private static final Logger LOGGER = Logger.getLogger(SlotsDataLoader.class.getCanonicalName());
