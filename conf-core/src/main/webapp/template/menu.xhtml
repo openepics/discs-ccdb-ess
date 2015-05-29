@@ -88,14 +88,16 @@
                 styleClass="#{fn:endsWith(request.requestURL,'log.xhtml') ? 'menu-selected' : ''}" />
 
             <p:submenu label="Templates" icon="ui-icon-calculator">
-                <p:menuitem value="Units" title="Download units import excel template" 
-                    url="/resources/import-templates/ccdb_units.xlsx" />
-                <p:menuitem value="Properties" title="Download properties import excel template" 
-                    url="/resources/import-templates/ccdb_properties.xlsx" />
-                <p:menuitem value="Device types" title="Download device types import excel template" 
-                    url="/resources/import-templates/ccdb_device_types.xlsx" />
-                <p:menuitem value="Devices" title="Download device instances import excel template" 
+                <p:menuitem value="Devices" title="Download device instances import Excel template" 
                     url="/resources/import-templates/ccdb_devices.xlsx" />
+                <p:menuitem value="Device types" title="Download device types import Excel template" 
+                    url="/resources/import-templates/ccdb_device_types.xlsx" />
+                <p:menuitem value="Properties" title="Download properties import Excel template" 
+                    url="/resources/import-templates/ccdb_properties.xlsx" />
+                <p:menuitem value="Enumerations" title="Download enumerations import Excel template" 
+                    url="/resources/import-templates/ccdb_enumerations.xlsx" />
+                <p:menuitem value="Units" title="Download units import Excel template" 
+                    url="/resources/import-templates/ccdb_units.xlsx" />
             </p:submenu>
 
             <p:menuitem value="Help" icon="ui-icon-help" title="Help" url="/" disabled="true" />
