@@ -52,7 +52,6 @@ import org.openepics.discs.conf.ui.export.SimpleTableExporter;
 import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.views.UnitView;
 import org.primefaces.context.RequestContext;
-import org.primefaces.event.FileUploadEvent;
 
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
@@ -122,8 +121,10 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
     }
 
     /** Java EE post-construct life-cycle callback */
+    @Override
     @PostConstruct
     public void init() {
+        super.init();
         final String unitIdStr = ((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().
                                     getRequest()).getParameter("id");
         try {
@@ -149,6 +150,11 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
         }
     }
 
+    @Override
+    public void setDataLoader() {
+        dataLoader = unitsDataLoader;
+    }
+
     /** @return The list of all user defined physics units in the database */
     public List<Unit> getUnits() {
         return units;
@@ -172,9 +178,7 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
     public void doImport() {
         try (InputStream inputStream = new ByteArrayInputStream(importData)) {
             setLoaderResult(dataLoaderHandler.loadData(inputStream, unitsDataLoader));
-            // TODO solve the imported data update and UI refresh more generically
             refreshUnits();
-            RequestContext.getCurrentInstance().update("unitsForm");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -325,15 +329,5 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
     @Override
     public ExportSimpleTableDialog getSimpleTableDialog() {
         return simpleTableExporterDialog;
-    }
-
-    @Override
-    public void handleImportFileUpload(FileUploadEvent event) {
-        super.handleImportFileUpload(event);
-        // TODO once all import handling is the same put this into parent and add "setDataLoader()" used at init
-        importFileStatistics = getImportedFileStatistics(unitsDataLoader);
-        // TODO once all import handling is the same, handled by single-file-DL.xhtml / fileUpload / oncomplete
-        RequestContext.getCurrentInstance().update("importUnitsForm:importStatsDialog");
-        RequestContext.getCurrentInstance().execute("PF('importStatsDialog').show();");
     }
 }

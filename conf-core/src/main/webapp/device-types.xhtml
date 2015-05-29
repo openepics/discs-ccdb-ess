@@ -15,7 +15,7 @@
                 function enableAddButton() {
                     $('#deviceTypesForm\\:addButton').prop('disabled',false).removeClass('ui-state-disabled');
                 }
-                function adjustTableHights() {
+                function adjustTableHeights() {
                     var fieldsetHeight = $('#deviceTypesForm\\:devTypeFieldset').outerHeight(true);
                     var fieldsetLegendHeight = $('#deviceTypesForm\\:devTypeFieldset legend').outerHeight(true);
                     var em = emHeight();
@@ -38,7 +38,7 @@
             </script>
             <p:remoteCommand name="clearDeviceType" actionListener="#{componentTypeManager.clearSelectedDeviceType()}" 
                 update=":deviceTypesForm:deviceTypeTable :deviceTypesForm:deleteButton :deviceTypesForm:editButton" 
-                oncomplete="clearDeviceTypeAttributes();removePropColWidth();adjustTableHights();" />
+                oncomplete="clearDeviceTypeAttributes();removePropColWidth();adjustTableHeights();" />
             <p:remoteCommand name="clearDeviceTypeAttributes" actionListener="#{comptypeAttributesController.clearDeviceType()}" 
                 update=":deviceTypesForm:attributesDataTable:attributesDataTable :deviceTypesForm:editAttrButton :deviceTypesForm:deleteAttrButton" 
                 oncomplete="disableAddButton();" />
@@ -54,7 +54,7 @@
                                     selection="#{componentTypeManager.selectedDeviceType}" liveScroll="true"
                                     selectionMode="single" rowKey="#{deviceType.id}" scrollRows="50">
                                 <p:ajax event="filter" ignoreAutoUpdate="true" />
-                                <p:ajax event="rowSelect" oncomplete="enableAddButton();adjustTableHights();"
+                                <p:ajax event="rowSelect" oncomplete="enableAddButton();adjustTableHeights();"
                                     listener="#{comptypeAttributesController.prepareDeviceType(componentTypeManager.selectedDeviceType)}" 
                                     update=":deviceTypesForm:deleteButton :deviceTypesForm:editButton  
                                         :deviceTypesForm:attributesDataTable:attributesDataTable :deviceTypesForm:editAttrButton 
@@ -136,14 +136,14 @@
             jQuery(window).resize(function() {
                 adjustFieldsetHeight('#deviceTypesForm\\:devTypeFieldset');
                 adjustFieldsetHeight('#deviceTypesForm\\:propFieldset');
-                adjustTableHights();
+                adjustTableHeights();
             });
 
             jQuery(document).ready(function() {
                 adjustFieldsetHeight('#deviceTypesForm\\:devTypeFieldset');
                 adjustFieldsetHeight('#deviceTypesForm\\:propFieldset');
                 removePropColWidth();
-                adjustTableHights();
+                adjustTableHeights();
             });
             
             <!-- 

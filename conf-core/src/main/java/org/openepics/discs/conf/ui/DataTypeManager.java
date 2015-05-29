@@ -52,8 +52,6 @@ import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.views.UserEnumerationView;
 import org.openepics.seds.api.datatypes.SedsEnum;
 import org.openepics.seds.core.Seds;
-import org.primefaces.context.RequestContext;
-import org.primefaces.event.FileUploadEvent;
 
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
@@ -126,8 +124,10 @@ public class DataTypeManager extends AbstractExcelSingleFileImportUI implements 
     }
 
     /** Java EE post construct life-cycle method */
+    @Override
     @PostConstruct
     public void init() {
+        super.init();
         try {
             simpleTableExporterDialog = new ExportSimpleEnumTableDialog();
 
@@ -141,6 +141,11 @@ public class DataTypeManager extends AbstractExcelSingleFileImportUI implements 
         } catch(Exception e) {
             throw new UIException("Device type display initialization fialed: " + e.getMessage(), e);
         }
+    }
+
+    @Override
+    public void setDataLoader() {
+        dataLoader = enumsDataLoader;
     }
 
     /**
@@ -410,21 +415,9 @@ public class DataTypeManager extends AbstractExcelSingleFileImportUI implements 
     public void doImport() {
         try (InputStream inputStream = new ByteArrayInputStream(importData)) {
             setLoaderResult(dataLoaderHandler.loadData(inputStream, enumsDataLoader));
-            // TODO solve the imported data update and UI refresh more generically
             refreshUserDataTypes();
-            RequestContext.getCurrentInstance().update("enumsForm");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @Override
-    public void handleImportFileUpload(FileUploadEvent event) {
-        super.handleImportFileUpload(event);
-        // TODO once all import handling is the same put this into parent and add "setDataLoader()" used at init
-        importFileStatistics = getImportedFileStatistics(enumsDataLoader);
-        // TODO once all import handling is the same, handled by single-file-DL.xhtml / fileUpload / oncomplete
-        RequestContext.getCurrentInstance().update("importEnumsForm:importStatsDialog");
-        RequestContext.getCurrentInstance().execute("PF('importStatsDialog').show();");
     }
 }

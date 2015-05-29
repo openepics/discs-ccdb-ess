@@ -35,7 +35,6 @@ import org.openepics.discs.conf.dl.SlotPairDataLoader;
 import org.openepics.discs.conf.dl.SlotsAndSlotPairsDataLoader;
 import org.openepics.discs.conf.dl.SlotsDataLoader;
 import org.openepics.discs.conf.dl.common.AbstractDataLoader;
-import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.dl.common.ExcelImportFileReader;
 import org.openepics.discs.conf.ui.common.ExcelImportUIHandlers;
@@ -164,8 +163,13 @@ public class SlotManager implements Serializable, ExcelImportUIHandlers {
     }
 
     @Override
-    public ImportFileStatistics getImportedFileStatistics(DataLoader dataLoader) {
+    public ImportFileStatistics getImportedFileStatistics() {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    public void setDataLoader() {
+        // TODO Auto-generated method stub
     }
 }

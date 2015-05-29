@@ -12,8 +12,8 @@
                 <h:panelGroup rendered="#{controller.importFileName == null}" layout="block" 
                     style="padding: 0 0 7px 0">Please choose an Excel file (*.xlsx) to import data from.</h:panelGroup>
                 <p:fileUpload fileUploadListener="#{controller.handleImportFileUpload}" 
-                    update="grp" mode="advanced" auto="true" fileLimit="1" 
-                    dragDropSupport="true" allowTypes="/(\.|\/)(xlsx)$/" 
+                    update="grp importStatsDialog" mode="advanced" auto="true" fileLimit="1" 
+                    dragDropSupport="true" allowTypes="/(\.|\/)(xlsx)$/" oncomplete="PF('importStatsDialog').show();"
                     rendered="#{controller.importFileName == null}" />
                 <h:outputText value="#{controller.importFileName}" />
                 <p:separator />
@@ -164,7 +164,20 @@
             </p:panelGrid>
 
             <p:commandButton value="Close" type="button" styleClass="dialogButton" onclick="PF('resultDialog').hide();" 
-                style="margin-top: 1ex;" />
+                    style="margin-top: 1ex;">
+                <p:ajax disabled="#{not fn:endsWith(request.requestURL,'devices.xhtml')}" update=":devicesForm:devicesTable :devicesForm:attributesDataTable" 
+                    oncomplete="adjustFieldsetHeight('#devicesForm\\:deviceFieldset');adjustFieldsetHeight('#devicesForm\\:propFieldset');removePropColWidth();adjustTableHeights();" />
+                <p:ajax disabled="#{not fn:endsWith(request.requestURL,'device-types.xhtml')}" 
+                    update=":deviceTypesForm:deviceTypeTable" 
+                    oncomplete="adjustFieldsetHeight('#deviceTypesForm\\:devTypeFieldset');adjustFieldsetHeight('#deviceTypesForm\\:propFieldset');removePropColWidth();adjustTableHeights();" />
+                <p:ajax disabled="#{not fn:endsWith(request.requestURL,'properties.xhtml')}" 
+                    update=":propertiesForm:propertiesTable" 
+                    oncomplete="adjustFieldsetHeight('#propertiesForm\\:propertiesFieldset');removePropColWidth();adjustTableHeight();" />
+                <p:ajax disabled="#{not fn:endsWith(request.requestURL,'enums.xhtml')}" update=":enumsForm:enumsTable"
+                    oncomplete="adjustFieldsetHeight('#enumsForm\\:enumsFieldset');removePropColWidth();adjustTableHeight();" />
+                <p:ajax disabled="#{not fn:endsWith(request.requestURL,'units.xhtml')}" update=":unitsForm:unitsTable" 
+                    oncomplete="adjustFieldsetHeight('#unitsForm\\:unitsFieldset');removePropColWidth();adjustTableHeight();" />
+            </p:commandButton>
             <p:commandButton id="exportButton" icon="ui-icon-disk" value="Export" title="Export" 
                 styleClass="dialogButton" style="margin-top: 1ex;" oncomplete="PF('#{formId}_exportErrors').show();" 
                 rendered="#{controller.loaderResult.error}" update=":#{formId}_exportErrorsForm:#{formId}_exportErrors" 

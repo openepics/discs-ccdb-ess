@@ -55,7 +55,6 @@ import org.openepics.discs.conf.util.BatchSaveStage;
 import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.views.DeviceView;
 import org.primefaces.context.RequestContext;
-import org.primefaces.event.FileUploadEvent;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
@@ -134,8 +133,10 @@ public class DevicesByTypeManager extends AbstractExcelSingleFileImportUI implem
     }
 
     /** Java EE post construct life-cycle method */
+    @Override
     @PostConstruct
     public void init() {
+        super.init();
         final String deviceId = ((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().
                 getRequest()).getParameter("id");
         try {
@@ -161,6 +162,11 @@ public class DevicesByTypeManager extends AbstractExcelSingleFileImportUI implem
         } catch(Exception e) {
             throw new UIException("Device type display initialization fialed: " + e.getMessage(), e);
         }
+    }
+
+    @Override
+    public void setDataLoader() {
+        dataLoader = devicesDataLoader;
     }
 
     /** Creates a new device instance and adds all properties to it which are defined by device type */
@@ -498,21 +504,9 @@ public class DevicesByTypeManager extends AbstractExcelSingleFileImportUI implem
     public void doImport() {
         try (InputStream inputStream = new ByteArrayInputStream(importData)) {
             setLoaderResult(dataLoaderHandler.loadData(inputStream, devicesDataLoader));
-            // TODO solve the imported data update and UI refresh more generically
             prepareDevicesForDisplay(null);
-            RequestContext.getCurrentInstance().update("devicesForm");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @Override
-    public void handleImportFileUpload(FileUploadEvent event) {
-        super.handleImportFileUpload(event);
-        // TODO once all import handling is the same put this into parent and add "setDataLoader()" used at init
-        importFileStatistics = getImportedFileStatistics(devicesDataLoader);
-        // TODO once all import handling is the same, handled by single-file-DL.xhtml / fileUpload / oncomplete
-        RequestContext.getCurrentInstance().update("importDevicesForm:importStatsDialog");
-        RequestContext.getCurrentInstance().execute("PF('importStatsDialog').show();");
     }
 }

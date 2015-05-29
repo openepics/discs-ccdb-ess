@@ -20,7 +20,7 @@
                     $('#devicesForm\\:devicesTable table thead th').css('width', '');
                     $('#devicesForm\\:attributesDataTable\\:attributesDataTable table thead th').css('width', '');
                 }
-                function adjustTableHights() {
+                function adjustTableHeights() {
                     var fieldsetHeight = $('#devicesForm\\:deviceFieldset').outerHeight(true);
                     var fieldsetLegendHeight = $('#devicesForm\\:deviceFieldset legend').outerHeight(true);
                     var em = emHeight();
@@ -37,7 +37,7 @@
                 }
                 // ]]>
             </script>
-            <p:remoteCommand name="clearDeviceInstance" oncomplete="disableAddButton(); adjustTableHights();"
+            <p:remoteCommand name="clearDeviceInstance" oncomplete="disableAddButton(); adjustTableHeights();"
                 actionListener="#{deviceDetailsAttributesController.clearDeviceInstance()}" 
                 update=":devicesForm:attributesDataTable:attributesDataTable :devicesForm:deleteAttrButton 
                         :devicesForm:editAttrButton" />
@@ -52,7 +52,7 @@
                                     tableStyle="table-layout: fixed; word-wrap: break-word; width: 100%;" 
                                     selection="#{devicesByTypeManager.selectedDevice}" liveScroll="true" 
                                     selectionMode="single" rowKey="#{device.device.id}" emptyMessage="No devices found.">
-                                <p:ajax event="rowSelect" oncomplete="enableAddButton();adjustTableHights();"
+                                <p:ajax event="rowSelect" oncomplete="enableAddButton();adjustTableHeights();"
                                         update=":deviceAddForm:addDeviceDialog :devicesForm:deleteButton :devicesForm:editButton 
                                                 :devicesForm:attributesDataTable:attributesDataTable" 
                                         listener="#{deviceDetailsAttributesController.prepareDeviceInstance(devicesByTypeManager.selectedDevice.device)}" />
@@ -139,13 +139,13 @@
             jQuery(window).resize(function() {
                 adjustFieldsetHeight('#devicesForm\\:deviceFieldset');
                 adjustFieldsetHeight('#devicesForm\\:propFieldset');
-                adjustTableHights();
+                adjustTableHeights();
             });
             jQuery(document).ready(function() {
                 adjustFieldsetHeight('#devicesForm\\:deviceFieldset');
                 adjustFieldsetHeight('#devicesForm\\:propFieldset');
                 removePropColWidth();
-                adjustTableHights();
+                adjustTableHeights();
             });
         </script>
 
@@ -157,14 +157,14 @@
                                                     :devicesForm:editButton :devicesForm:exportButton" />
             <ui:param name="submitHandler" value="onDeviceAdd" />
             <ui:param name="batchCreation" value="true" />
-            <ui:param name="saveAction" value="adjustTableHights();" />
+            <ui:param name="saveAction" value="adjustTableHeights();" />
         </ui:include>
 
         <ui:include src="/resources/dialogs/device-add-or-modify-dialog.xhtml">
             <ui:param name="formId" value="deviceEditForm" />
             <ui:param name="widgetName" value="editDeviceDialog" />
             <ui:param name="dialogTitle" value="Edit device" />
-            <ui:param name="saveAction" value="PF('editDeviceDialog').hide();PF('devicesTableVar').filter();adjustTableHights();" />
+            <ui:param name="saveAction" value="PF('editDeviceDialog').hide();PF('devicesTableVar').filter();adjustTableHeights();" />
             <ui:param name="updateComponents" value=":devicesForm:devicesTable" />
             <ui:param name="submitHandler" value="onDeviceEdit" />
         </ui:include>
@@ -214,7 +214,7 @@
             <ui:param name="dialogTitle" value="Delete device" />
             <ui:param name="widgetName" value="deleteDevice" />
             <ui:param name="resetFilter" value="PF('devicesTableVar').filter();clearDeviceInstance();" />
-            <ui:param name="resizeContent" value="adjustTableHights();" />
+            <ui:param name="resizeContent" value="adjustTableHeights();" />
             <ui:param name="controller" value="#{devicesByTypeManager}" />
             <ui:param name="submitHandler" value="onDeviceDelete" />
             <ui:param name="formToUpdate" value=":devicesForm:devicesTable :devicesForm:deleteButton 
@@ -243,7 +243,7 @@
             <ui:param name="controller" value="#{devicesByTypeManager}" />
             <ui:param name="submitHandler" value="creationProceed" />
             <ui:param name="formToUpdate" value=":devicesForm:devicesTable :devicesForm:deleteButton :devicesForm:editButton" />
-            <ui:param name="saveActions" value="adjustTableHights();" />
+            <ui:param name="saveActions" value="adjustTableHeights();" />
         </ui:include>
 
         <ui:include src="/resources/dialogs/export-table.xhtml">

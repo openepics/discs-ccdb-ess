@@ -19,7 +19,6 @@
  */
 package org.openepics.discs.conf.ui.common;
 
-import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
 
 /**
@@ -106,5 +105,8 @@ public interface ExcelImportUIHandlers {
 
     /** @param dataLoader the data loader to use
      * @return the import statistics for the imported file */
-    public ImportFileStatistics getImportedFileStatistics(DataLoader dataLoader);
+    public ImportFileStatistics getImportedFileStatistics();
+
+    /** The method must set the data loader that will be used in the file import. */
+    public void setDataLoader();
 }

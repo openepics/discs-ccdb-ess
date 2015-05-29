@@ -51,7 +51,6 @@ import org.openepics.discs.conf.ui.export.ExportSimpleTableDialog;
 import org.openepics.discs.conf.ui.export.SimpleTableExporter;
 import org.openepics.discs.conf.util.Utility;
 import org.primefaces.context.RequestContext;
-import org.primefaces.event.FileUploadEvent;
 
 import com.google.common.base.Strings;
 
@@ -61,8 +60,7 @@ import com.google.common.base.Strings;
  * @author <a href="mailto:miroslav.pavleski@cosylab.com">Miroslav Pavleski</a>
  * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  * @author <a href="mailto:andraz.pozar@cosylab.com">Andraž Požar</a>
- */
-@Named
+ */@Named
 @ViewScoped
 public class ComponentTypeManager extends AbstractExcelSingleFileImportUI
                 implements Serializable, SimpleTableExporter {
@@ -115,8 +113,10 @@ public class ComponentTypeManager extends AbstractExcelSingleFileImportUI
     }
 
     /** Java EE post construct life-cycle method. */
+    @Override
     @PostConstruct
     public void init() {
+        super.init();
         final String deviceTypeIdStr = ((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().
                 getRequest()).getParameter("id");
         try {
@@ -142,6 +142,11 @@ public class ComponentTypeManager extends AbstractExcelSingleFileImportUI
         } catch(Exception e) {
             throw new UIException("Device type display initialization fialed: " + e.getMessage(), e);
         }
+    }
+
+    @Override
+    public void setDataLoader() {
+        dataLoader = compTypesDataLoader;
     }
 
     /** Called when the user clicks the "pencil" icon in the table listing the device types. The user is redirected
@@ -240,9 +245,7 @@ public class ComponentTypeManager extends AbstractExcelSingleFileImportUI
     public void doImport() {
         try (InputStream inputStream = new ByteArrayInputStream(importData)) {
             setLoaderResult(dataLoaderHandler.loadData(inputStream, compTypesDataLoader));
-            // TODO solve the imported data update and UI refresh more generically
             deviceTypes = comptypeEJB.findAll();
-            RequestContext.getCurrentInstance().update("deviceTypesForm");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -330,15 +333,4 @@ public class ComponentTypeManager extends AbstractExcelSingleFileImportUI
     public ExportSimpleTableDialog getSimpleTableDialog() {
         return simpleTableExporterDialog;
     }
-
-    @Override
-    public void handleImportFileUpload(FileUploadEvent event) {
-        super.handleImportFileUpload(event);
-        // TODO once all import handling is the same put this into parent and add "setDataLoader()" used at init
-        importFileStatistics = getImportedFileStatistics(compTypesDataLoader);
-        // TODO once all import handling is the same, handled by single-file-DL.xhtml / fileUpload / oncomplete
-        RequestContext.getCurrentInstance().update("importCompTypesForm:importStatsDialog");
-        RequestContext.getCurrentInstance().execute("PF('importStatsDialog').show();");
-    }
-
 }

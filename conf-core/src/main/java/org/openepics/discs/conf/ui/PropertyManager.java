@@ -56,7 +56,6 @@ import org.openepics.discs.conf.util.BatchSaveStage;
 import org.openepics.discs.conf.util.BuiltInDataType;
 import org.openepics.discs.conf.util.Utility;
 import org.primefaces.context.RequestContext;
-import org.primefaces.event.FileUploadEvent;
 
 import com.google.common.collect.ImmutableList;
 
@@ -136,8 +135,10 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
     }
 
     /** Java EE post-construct life-cycle callback */
+    @Override
     @PostConstruct
     public void init() {
+        super.init();
         try {
             simpleTableExporterDialog = new ExportSimplePropertyTableDialog();
             properties = propertyEJB.findAllOrderedByName();
@@ -146,6 +147,11 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
         } catch(Exception e) {
             throw new UIException("Device type display initialization fialed: " + e.getMessage(), e);
         }
+    }
+
+    @Override
+    public void setDataLoader() {
+        dataLoader = propertiesDataLoader;
     }
 
     /** Called when the user presses the "Save" button in the "Add new property" dialog */
@@ -303,9 +309,7 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
     public void doImport() {
         try (InputStream inputStream = new ByteArrayInputStream(importData)) {
             setLoaderResult(dataLoaderHandler.loadData(inputStream, propertiesDataLoader));
-            // TODO solve the imported data update and UI refresh more generically
             init();
-            RequestContext.getCurrentInstance().update("propertiesForm");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -524,15 +528,5 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
     @Override
     public ExportSimpleTableDialog getSimpleTableDialog() {
         return simpleTableExporterDialog;
-    }
-
-    @Override
-    public void handleImportFileUpload(FileUploadEvent event) {
-        super.handleImportFileUpload(event);
-        // TODO once all import handling is the same put this into parent and add "setDataLoader()" used at init
-        importFileStatistics = getImportedFileStatistics(propertiesDataLoader);
-        // TODO once all import handling is the same, handled by single-file-DL.xhtml / fileUpload / oncomplete
-        RequestContext.getCurrentInstance().update("importPropertiesForm:importStatsDialog");
-        RequestContext.getCurrentInstance().execute("PF('importStatsDialog').show();");
     }
 }

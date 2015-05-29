@@ -155,7 +155,7 @@ public class DataTypeDataLoader extends AbstractDataLoader implements DataLoader
         }
 
         if (!result.isRowError()) {
-            final DataType newEnum = new DataType(nameFld, definitionFld, false, jsonDefinitionFromList(newDefs));
+            final DataType newEnum = new DataType(nameFld, descriptionFld, false, jsonDefinitionFromList(newDefs));
             dataTypeEJB.add(newEnum);
         }
     }

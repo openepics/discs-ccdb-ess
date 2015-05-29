@@ -44,10 +44,11 @@ import com.google.common.io.ByteStreams;
  *
  */
 public abstract class AbstractExcelSingleFileImportUI implements ExcelSingleFileImportUIHandlers {
-    protected byte[] importData;
+    protected transient byte[] importData;
     private transient DataLoaderResult loaderResult;
     private String importFileName;
-    protected ImportFileStatistics importFileStatistics;
+    protected transient ImportFileStatistics importFileStatistics;
+    protected transient DataLoader dataLoader;
 
     private ExportSimpleErrorsTableDialog errorsTableDialog;
     private class ExportSimpleErrorsTableDialog extends ExportSimpleTableDialog {
@@ -80,6 +81,13 @@ public abstract class AbstractExcelSingleFileImportUI implements ExcelSingleFile
         }
     }
 
+    public void init() {
+        setDataLoader();
+    }
+
+    @Override
+    public abstract void setDataLoader();
+
     @Override
     public abstract void doImport();
 
@@ -105,6 +113,7 @@ public abstract class AbstractExcelSingleFileImportUI implements ExcelSingleFile
         try (InputStream inputStream = event.getFile().getInputstream()) {
             this.importData = ByteStreams.toByteArray(inputStream);
             this.importFileName = FilenameUtils.getName(event.getFile().getFileName());
+            importFileStatistics = getImportedFileStatistics();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -116,7 +125,7 @@ public abstract class AbstractExcelSingleFileImportUI implements ExcelSingleFile
     }
 
     @Override
-    public ImportFileStatistics getImportedFileStatistics(DataLoader dataLoader) {
+    public ImportFileStatistics getImportedFileStatistics() {
         Preconditions.checkNotNull(importData);
         try (InputStream inputStream = new ByteArrayInputStream(importData)) {
             final List<Pair<Integer, List<String>>> inputRows = ExcelImportFileReader.importExcelFile(inputStream,
