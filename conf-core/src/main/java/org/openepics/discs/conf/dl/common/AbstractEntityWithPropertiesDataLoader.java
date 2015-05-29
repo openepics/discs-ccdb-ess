@@ -69,11 +69,12 @@ public abstract class AbstractEntityWithPropertiesDataLoader<S extends PropertyV
     }
 
     /**
+     * Updates the {@link DataLoaderResult} in case of {@link ErrorMessage#ENTITY_NOT_FOUND} error
+     * (if there is no property of this name in the database), or {@link ErrorMessage#PROPERTY_NOT_FOUND} error
+     * (if the entity does not have such property value)
+     *
      * @param entity the database entity for which to update or insert the property.
      * @param propertyName the name of the property which value to update or add.
-     * @param dlr the {@link DataLoaderResult} to add the error to in case of {@link ErrorMessage#ENTITY_NOT_FOUND}
-     * (if there is no property of this name in the database), or {@link ErrorMessage#PROPERTY_NOT_FOUND}
-     * (if the entity does not have such property value)
      * @param propNameHeader the name of the column producing the error. This is added to the error message.
      * @return the {@link PropertyValue} if found, <code>null</code> otherwise.
      */

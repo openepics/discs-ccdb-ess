@@ -103,8 +103,7 @@ public interface ExcelImportUIHandlers {
     /** @return The results of the "excel import" operation to display to the user. */
     public DataLoaderResult getLoaderResult();
 
-    /** @param dataLoader the data loader to use
-     * @return the import statistics for the imported file */
+    /** @return the import statistics for the imported file */
     public ImportFileStatistics getImportedFileStatistics();
 
     /** The method must set the data loader that will be used in the file import. */
