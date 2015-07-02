@@ -112,6 +112,8 @@ public abstract class AbstractEnityTypeSecurityPolicy implements SecurityPolicy,
             case "MOVE_SLOT" :
                 return hasPermission(EntityType.SLOT, EntityTypeOperation.CREATE)
                         || hasPermission(EntityType.SLOT, EntityTypeOperation.UPDATE);
+            case "SIGNALS" :
+                return hasPermission(EntityType.SLOT, EntityTypeOperation.UPDATE);
             default:
                 return hasAnyModifyPermission( EntityType.valueOf(param) );
         }

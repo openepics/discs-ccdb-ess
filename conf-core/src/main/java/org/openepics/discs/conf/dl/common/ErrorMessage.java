@@ -45,11 +45,14 @@ public enum ErrorMessage {
     PROPERTY_NOT_FOUND("Property with this name was not found"),
     PROPERTY_TYPE_INCORRECT("The command is incorrect for this type of property"),
     SYSTEM_EXCEPTION("Internal error occured"),
+    CREATE_VALUE_EXISTS("Cannot create a property value, because it already exists."),
+    MODIFY_VALUE_MISSING("Cannot modify a property value, because it was not defined."),
     MODIFY_IN_USE("Cannot modify entity field because it is in use."),
     DELETE_IN_USE("Cannot delete entity because it is in use."),
     UNIQUE_INCORRECT("The value of the uniquness is incorrect."),
     ENUM_NOT_ENOUGH_ELEMENTS("The enumeration needs at least two elements."),
-    ENUM_INVALID_CHARACTERS("Enumeration value can only contain alphanumerical characters.");
+    ENUM_INVALID_CHARACTERS("Enumeration value can only contain alphanumerical characters."),
+    INSTALLATION_SLOT_REQUIRED("This operaton is only valid for an installation slot.");
 
     private final String text;
 

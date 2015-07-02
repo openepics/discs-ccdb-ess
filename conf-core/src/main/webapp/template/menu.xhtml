@@ -30,6 +30,11 @@
                     oncomplete="PF('importSlots').show();" title="Import Slots and Slot Pairs" 
                     actionListener="#{slotManager.prepareImportPopup()}" 
                     disabled="#{true or         !securityPolicy.getUIHint('SLOT')}" />
+
+                <p:menuitem value="Import signals" update=":importSignalsForm" styleClass="noClickEvent" 
+                    oncomplete="PF('importSignals').show();" title="Import signals" 
+                    actionListener="#{hierarchiesController.prepareImportPopup()}" 
+                    disabled="#{!securityPolicy.getUIHint('SIGNALS')}" />
             </p:submenu>
 
             <p:submenu label="Devices" icon="ui-icon-gear" 
@@ -98,6 +103,8 @@
                     url="/resources/import-templates/ccdb_enumerations.xlsx" />
                 <p:menuitem value="Units" title="Download units import Excel template" 
                     url="/resources/import-templates/ccdb_units.xlsx" />
+                <p:menuitem value="Signals list" title="Download signals list import Excel template" 
+                    url="/resources/import-templates/ccdb_signals_list.xlsx" />
             </p:submenu>
 
             <p:menuitem value="Help" icon="ui-icon-help" title="Help" url="/" disabled="true" />
@@ -152,6 +159,13 @@
         <ui:param name="controller" value="#{dataTypeManager}" />
     </ui:include>
 
+    <ui:include src="../loaders/single-file-DL.xhtml">
+        <ui:param name="formId" value="importSignalsForm" />
+        <ui:param name="dialogTitle" value="Signals import" />
+        <ui:param name="widgetName" value="importSignals" />
+        <ui:param name="controller" value="#{hierarchiesController}" />
+    </ui:include>
+
     <script type="text/javascript">
         //<![CDATA[
         function noClickTarget(target) {
@@ -160,32 +174,32 @@
             if ((target.nodeName == null) || (target.nodeName == "LI") || (target.nodeName == "UL")) return false;
             return noClickTarget(target.parentNode);
         }
-        jQuery(".homeMenu").click(function(event) {
+        jQuery(".homeMenu").on("click", function(event) {
             if (noClickTarget(event.target) == false) {
                 window.location.replace("#{request.contextPath}/");
             }
         });
-        jQuery(".devicesMenu").click(function(event) {
+        jQuery(".devicesMenu").on("click", function(event) {
             if (noClickTarget(event.target) == false) {
                 window.location.replace("#{request.contextPath}/devices.xhtml");
             }
         });
-        jQuery(".devTypesMenu").click(function(event) {
+        jQuery(".devTypesMenu").on("click", function(event) {
             if (noClickTarget(event.target) == false) {
                 window.location.replace("#{request.contextPath}/device-types.xhtml");
             }
         });
-        jQuery(".propertiesMenu").click(function(event) {
+        jQuery(".propertiesMenu").on("click", function(event) {
             if (noClickTarget(event.target) == false) {
                 window.location.replace("#{request.contextPath}/properties.xhtml");
             }
         });
-        jQuery(".unitsMenu").click(function(event) {
+        jQuery(".unitsMenu").on("click", function(event) {
             if (noClickTarget(event.target) == false) {
                 window.location.replace("#{request.contextPath}/units.xhtml");
             }
         });
-        jQuery(".enumsMenu").click(function(event) {
+        jQuery(".enumsMenu").on("click", function(event) {
             if (noClickTarget(event.target) == false) {
                 window.location.replace("#{request.contextPath}/enums.xhtml");
             }

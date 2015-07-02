@@ -46,7 +46,7 @@ import com.google.common.io.ByteStreams;
 public abstract class AbstractExcelSingleFileImportUI implements ExcelSingleFileImportUIHandlers {
     protected transient byte[] importData;
     private transient DataLoaderResult loaderResult;
-    private String importFileName;
+    protected String importFileName;
     protected transient ImportFileStatistics importFileStatistics;
     protected transient DataLoader dataLoader;
 

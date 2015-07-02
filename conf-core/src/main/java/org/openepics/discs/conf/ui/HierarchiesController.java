@@ -53,6 +53,8 @@ import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.FilenameUtils;
+import org.openepics.discs.conf.dl.annotations.SignalsLoader;
+import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.ejb.ComptypeEJB;
 import org.openepics.discs.conf.ejb.DataTypeEJB;
 import org.openepics.discs.conf.ejb.InstallationEJB;
@@ -82,6 +84,8 @@ import org.openepics.discs.conf.ent.SlotRelationName;
 import org.openepics.discs.conf.ent.Tag;
 import org.openepics.discs.conf.ent.values.Value;
 import org.openepics.discs.conf.ui.common.AbstractAttributesController;
+import org.openepics.discs.conf.ui.common.AbstractExcelSingleFileImportUI;
+import org.openepics.discs.conf.ui.common.DataLoaderHandler;
 import org.openepics.discs.conf.ui.common.UIException;
 import org.openepics.discs.conf.util.BlobStore;
 import org.openepics.discs.conf.util.BuiltInDataType;
@@ -116,7 +120,7 @@ import com.google.common.io.ByteStreams;
  */
 @Named
 @ViewScoped
-public class HierarchiesController implements Serializable {
+public class HierarchiesController extends AbstractExcelSingleFileImportUI implements Serializable {
     private static final long serialVersionUID = 2743408661782529373L;
 
     private static final Logger LOGGER = Logger.getLogger(HierarchiesController.class.getCanonicalName());
@@ -134,6 +138,9 @@ public class HierarchiesController implements Serializable {
     @Inject private BlobStore blobStore;
     @Inject private Names names;
 
+    @Inject private transient DataLoaderHandler dataLoaderHandler;
+    @Inject @SignalsLoader private transient DataLoader signalsDataLoader;
+    
     private transient List<EntityAttributeView> attributes;
     private transient List<EntityAttributeView> filteredAttributes;
     private transient List<SelectItem> attributeKinds;
@@ -172,8 +179,6 @@ public class HierarchiesController implements Serializable {
     private transient List<Property> filteredProperties;
     private PropertyValueUIElement propertyValueUIElement;
     private boolean propertyNameChangeDisabled;
-    private byte[] importData;
-    private String importFileName;
     private String tag;
     private transient List<String> tagsForAutocomplete;
 
@@ -184,9 +189,11 @@ public class HierarchiesController implements Serializable {
     private Map<String, SlotRelation> slotRelationBySlotRelationStringName;
 
     /** Java EE post construct life-cycle method. */
+    @Override
     @PostConstruct
     public void init() {
         try {
+            super.init();
             updateRootNode();
             fillNamesAutocomplete();
             attributeKinds = Utility.buildAttributeKinds();
@@ -438,6 +445,24 @@ public class HierarchiesController implements Serializable {
         }
     }
 
+    @Override
+    public void setDataLoader() {
+        dataLoader = signalsDataLoader;
+    }
+
+    @Override
+    public void doImport() {
+        try (InputStream inputStream = new ByteArrayInputStream(importData)) {
+            setLoaderResult(dataLoaderHandler.loadData(inputStream, signalsDataLoader));
+            if (selectedSlot != null) {
+                refreshSlot();
+                initAttributeList();
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      * Above: Callback methods called from the main UI screen. E.g.: methods that are called when user user selects
      *        a line in a table.
@@ -982,11 +1007,16 @@ public class HierarchiesController implements Serializable {
      * @param event the {@link FileUploadEvent}
      */
     public void handleImportFileUpload(FileUploadEvent event) {
-        try (InputStream inputStream = event.getFile().getInputstream()) {
-            this.importData = ByteStreams.toByteArray(inputStream);
-            this.importFileName = FilenameUtils.getName(event.getFile().getFileName());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        if (event.getComponent().getClientId().equals("importSignalsForm:singleFileDLUploadCtl")) {
+            // this handler is shared between AbstractExcelSingleFileImportUI and Artifact loading
+            super.handleImportFileUpload(event);
+        } else {
+            try (InputStream inputStream = event.getFile().getInputstream()) {
+                importData = ByteStreams.toByteArray(inputStream);
+                importFileName = FilenameUtils.getName(event.getFile().getFileName());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -1555,11 +1585,6 @@ public class HierarchiesController implements Serializable {
     /** @return the isArtifactBeingModified */
     public boolean isArtifactBeingModified() {
         return isArtifactBeingModified;
-    }
-
-    /** @return the importFileName */
-    public String getImportFileName() {
-        return importFileName;
     }
 
     /** @return the artifactName */
