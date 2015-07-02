@@ -105,6 +105,9 @@ public class SignalsDataLoader extends AbstractDataLoader implements DataLoader 
 	protected void handleUpdate(String actualCommand) {
 	    try {
             Slot installationSlot = slotEJB.findByName(deviceFld);
+            if (!isSlotOK(installationSlot)) {
+                return;
+            }
             // If both values are defined update is possible
             if (!isPropertyValueDefined(installationSlot, PROPERTY_NAME_PREFIX + numberFld)) {
                 result.addRowMessage(ErrorMessage.MODIFY_VALUE_MISSING, PROPERTY_NAME_PREFIX + numberFld);
@@ -125,14 +128,7 @@ public class SignalsDataLoader extends AbstractDataLoader implements DataLoader 
 	@Override
 	protected void handleDelete(String actualCommand) {
         Slot installationSlot = slotEJB.findByName(deviceFld);
-        if (installationSlot == null) {
-            LOGGER.log(Level.FINE, "Signals import - installation slot not found: " + deviceFld);
-            result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_DEVICE);
-            return;
-        }
-        if (!installationSlot.isHostingSlot()) {
-            LOGGER.log(Level.FINE, "Signal import - trying to add a signal to container: " + deviceFld);
-            result.addRowMessage(ErrorMessage.INSTALLATION_SLOT_REQUIRED, HDR_DEVICE);
+        if (!isSlotOK(installationSlot)) {
             return;
         }
         
@@ -156,6 +152,9 @@ public class SignalsDataLoader extends AbstractDataLoader implements DataLoader 
 	protected void handleCreate(String actualCommand) {
 	    try {
             Slot installationSlot = slotEJB.findByName(deviceFld);
+            if (!isSlotOK(installationSlot)) {
+                return;
+            }
             // If both values are undefined creation is possible
             if (isPropertyValueDefined(installationSlot, PROPERTY_NAME_PREFIX + numberFld)) {
                 result.addRowMessage(ErrorMessage.CREATE_VALUE_EXISTS, PROPERTY_NAME_PREFIX + numberFld);
@@ -192,17 +191,6 @@ public class SignalsDataLoader extends AbstractDataLoader implements DataLoader 
     }
     
     private void handleCreateUpdate(final Slot installationSlot) {
-        if (installationSlot == null) {
-            LOGGER.log(Level.FINE, "Signals import - installation slot not found: " + deviceFld);
-            result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_DEVICE);
-            return;
-        }
-        if (!installationSlot.isHostingSlot()) {
-            LOGGER.log(Level.FINE, "Signal import - trying to add a signal to container: " + deviceFld);
-            result.addRowMessage(ErrorMessage.INSTALLATION_SLOT_REQUIRED, HDR_DEVICE);
-            return;
-        }
-        
         try {
             setPropertyValue(installationSlot, PROPERTY_NAME_PREFIX + numberFld, nameFld);
             setPropertyValue(installationSlot, PROPERTY_DESC_PREFIX + numberFld, descFld);
@@ -236,5 +224,19 @@ public class SignalsDataLoader extends AbstractDataLoader implements DataLoader 
         // property not found
         LOGGER.log(Level.FINE, "Signals import - property not found: " + propertyValueName);
         result.addRowMessage(ErrorMessage.PROPERTY_NOT_FOUND, propertyValueName);
+    }
+    
+    private boolean isSlotOK(Slot installationSlot) {
+        if (installationSlot == null) {
+            LOGGER.log(Level.FINE, "Signals import - installation slot not found: " + deviceFld);
+            result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_DEVICE);
+            return false;
+        }
+        if (!installationSlot.isHostingSlot()) {
+            LOGGER.log(Level.FINE, "Signal import - trying to add a signal to container: " + deviceFld);
+            result.addRowMessage(ErrorMessage.INSTALLATION_SLOT_REQUIRED, HDR_DEVICE);
+            return false;
+        }
+        return true;
     }
 }
