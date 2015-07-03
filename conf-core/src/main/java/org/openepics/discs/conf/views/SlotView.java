@@ -37,20 +37,23 @@ public class SlotView {
     private final Long id;
     private String name;
     private String description;
-    private boolean canDelete;
+    private boolean isDeletable;
     private final SlotView parentNode;
     private Slot slot;
     private final boolean isHostingSlot;
     private final ComponentType deviceType;
-    private final Device installedDevice;
+    private Device installedDevice;
     private final int order;
     private boolean isFirst;
     private boolean isLast;
+    private boolean isInitialzed;
+    private int level;
 
     /** Constructs a new SlotView object.
+     * TODO remove after the hierarchy builder is totally replaced.
      * @param slot the {@link Slot} to create the UI view object for
      * @param parentNode a reference to the SlotView object of a parent in the hierarchy tree
-     * @param children a reference to the SlotView objects of all children in the hierarchy tree
+     * @param children a reference to the Slot objects of all children in the hierarchy tree
      * @param installedDevice a reference to the {@link Device} if one is installed in the installation slot
      * @param order the ordinal number of the SlotView object - defines the order in the hierarchy tree
      */
@@ -65,13 +68,29 @@ public class SlotView {
         this.installedDevice = installedDevice;
         this.order = order;
 
-        canDelete = true;
+        isDeletable = true;
         for (SlotPair child : children) {
             if (child.getSlotRelation().getName() == SlotRelationName.CONTAINS) {
-                canDelete = false;
+                isDeletable = false;
                 break;
             }
         }
+    }
+
+    /** Simpler constructor, used in the new Hierarchy builder.
+     * @param slot the {@link Slot} to create the UI view object for
+     * @param parentNode a reference to the SlotView object of a parent in the hierarchy tree
+     * @param order the ordinal number of the SlotView object - defines the order in the hierarchy tree
+     */
+    public SlotView(Slot slot, SlotView parentNode, int order) {
+        this.slot = slot;
+        this.name = slot.getName();
+        this.description = slot.getDescription();
+        this.id = slot.getId();
+        this.parentNode = parentNode;
+        this.isHostingSlot = slot.isHostingSlot();
+        this.deviceType = slot.getComponentType();
+        this.order = order;
     }
 
     public Long getId() {
@@ -86,8 +105,12 @@ public class SlotView {
         return description;
     }
 
-    public boolean getCanDelete() {
-        return canDelete;
+    public boolean isDeletable() {
+        return isDeletable;
+    }
+
+    public void setDeletable(boolean isDeletable) {
+        this.isDeletable = isDeletable;
     }
 
     public SlotView getParentNode() {
@@ -107,7 +130,7 @@ public class SlotView {
         description = slot.getDescription();
     }
 
-    public boolean getIsHostingSlot() {
+    public boolean isHostingSlot() {
         return isHostingSlot;
     }
 
@@ -117,6 +140,10 @@ public class SlotView {
 
     public Device getInstalledDevice() {
         return installedDevice;
+    }
+
+    public void setInstalledDevice(Device device) {
+        this.installedDevice = device;
     }
 
     public int getOrder() {
@@ -135,5 +162,21 @@ public class SlotView {
     }
     public void setLast(boolean isLast) {
         this.isLast = isLast;
+    }
+
+    public boolean isInitialzed() {
+        return isInitialzed;
+    }
+
+    public void setInitialzed(boolean isInitialzed) {
+        this.isInitialzed = isInitialzed;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
     }
 }

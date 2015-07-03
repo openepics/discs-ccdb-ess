@@ -75,14 +75,14 @@
                                             :hierarchies:installationDetails :hierarchies:slotAttributes 
                                             :hierarchies:addRelationship" 
                                     oncomplete="resizeEmptyColumnInHierarchies();" />
-                                <p:ajax event="collapse" listener="#{hierarchiesController.onNodeCollapse}" />
-                                <p:ajax event="expand" listener="#{hierarchiesController.onNodeExpand}" />
+                                <p:ajax event="collapse" listener="#{hierarchiesController.onContainsCollapse}" />
+                                <p:ajax event="expand" listener="#{hierarchiesController.onContainsExpand}" />
 
                                 <p:column id="name" headerText="Name">
-                                    <h:outputText value="" rendered="#{installationSlot.isHostingSlot}" 
+                                    <h:outputText value="" rendered="#{installationSlot.hostingSlot}" 
                                         style="display:inline-block; vertical-align:bottom !important" 
                                         styleClass="ui-icon ui-icon-wrench" />
-                                    <h:outputText value="" rendered="#{!installationSlot.isHostingSlot}" 
+                                    <h:outputText value="" rendered="#{!installationSlot.hostingSlot}" 
                                         style="display:inline-block; vertical-align:bottom !important" 
                                         styleClass="ui-icon ui-icon-folder-collapsed" />
                                     <h:outputText value="#{installationSlot.name}" title="#{installationSlot.description}" />
@@ -92,8 +92,8 @@
                             <p:commandButton id="deleteButton" icon="ui-icon-trash" value="Delete" title="Delete" 
                                 style="float: right; margin-top: 1em;" oncomplete="PF('deleteSlot').show();" 
                                 disabled="#{empty hierarchiesController.selectedNode 
-                                                or not hierarchiesController.selectedNode.data.canDelete 
-                                                or (hierarchiesController.selectedNode.data.isHostingSlot 
+                                                or not hierarchiesController.selectedNode.data.deletable 
+                                                or (hierarchiesController.selectedNode.data.hostingSlot 
                                                         and not empty hierarchiesController.installationRecord)}" 
                                 actionListener="#{hierarchiesController.prepareDeletePopup()}" />
                             <p:commandButton id="downButton" icon="ui-icon-arrowthick-1-s" value="Down" title="Move down" 

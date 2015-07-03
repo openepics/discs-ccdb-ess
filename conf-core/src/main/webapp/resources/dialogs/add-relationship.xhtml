@@ -41,11 +41,11 @@
                                 <h:outputText value="" 
 			                        style="display:inline-block; vertical-align:bottom !important" 
 			                        styleClass="ui-icon ui-icon-wrench" 
-			                        rendered="#{slotView.isHostingSlot}" />
+			                        rendered="#{slotView.hostingSlot}" />
 			                    <h:outputText value="" 
 			                        style="display:inline-block; vertical-align:bottom !important" 
 			                        styleClass="ui-icon ui-icon-folder-collapsed" 
-			                        rendered="#{!slotView.isHostingSlot}" />
+			                        rendered="#{!slotView.hostingSlot}" />
                                 <h:outputText value="#{slotView.name}" />
                             </p:treeNode>
                         </p:tree>

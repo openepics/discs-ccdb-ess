@@ -86,6 +86,7 @@ import org.openepics.discs.conf.ent.values.Value;
 import org.openepics.discs.conf.ui.common.AbstractAttributesController;
 import org.openepics.discs.conf.ui.common.AbstractExcelSingleFileImportUI;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
+import org.openepics.discs.conf.ui.common.HierarchyBuilder;
 import org.openepics.discs.conf.ui.common.UIException;
 import org.openepics.discs.conf.util.BlobStore;
 import org.openepics.discs.conf.util.BuiltInDataType;
@@ -104,6 +105,7 @@ import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.NodeCollapseEvent;
 import org.primefaces.event.NodeExpandEvent;
 import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.StreamedContent;
 import org.primefaces.model.TreeNode;
 
@@ -140,7 +142,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
     @Inject private transient DataLoaderHandler dataLoaderHandler;
     @Inject @SignalsLoader private transient DataLoader signalsDataLoader;
-    
+
     private transient List<EntityAttributeView> attributes;
     private transient List<EntityAttributeView> filteredAttributes;
     private transient List<SelectItem> attributeKinds;
@@ -149,6 +151,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     private transient List<SelectItem> relationshipTypes;
     private List<Device> uninstalledDevices;
     private List<Device> filteredUninstalledDevices;
+    private HierarchyBuilder hierarchBuilder;
     private TreeNode rootNode;
     private TreeNode selectedNode;
     private InstallationRecord installationRecord;
@@ -156,7 +159,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     private Slot selectedSlot;
 
     // variables from the installation slot / containers editing merger.
-    private transient Set<Long> collapsedNodes;
+    private transient Set<Long> collapsedNodes;  // TODO remove
     private SlotView selectedSlotView;
     private String name;
     private String description;
@@ -194,7 +197,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     public void init() {
         try {
             super.init();
-            updateRootNode();
+            initIncludeHierarchy();
             fillNamesAutocomplete();
             attributeKinds = Utility.buildAttributeKinds();
             relationshipTypes = buildRelationshipTypeList();
@@ -423,7 +426,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      *
      * @param event Event triggered on node collapse action
      */
-    public void onNodeCollapse(NodeCollapseEvent event) {
+    public void onContainsCollapse(NodeCollapseEvent event) {
+        // TODO remove??
         if (event != null && event.getTreeNode() != null) {
             if (collapsedNodes == null) {
                 collapsedNodes = new HashSet<>();
@@ -439,7 +443,12 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      *
      * @param event Event triggered on node expand action
      */
-    public void onNodeExpand(NodeExpandEvent event) {
+    public void onContainsExpand(NodeExpandEvent event) {
+        if (event != null && event.getTreeNode() != null) {
+            hierarchBuilder.expandNode(event.getTreeNode());
+        }
+
+        // TODO remove??
         if (event != null && event.getTreeNode() != null && collapsedNodes != null) {
             collapsedNodes.remove(((SlotView)event.getTreeNode().getData()).getId());
         }
@@ -462,7 +471,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             throw new RuntimeException(e);
         }
     }
-    
+
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      * Above: Callback methods called from the main UI screen. E.g.: methods that are called when user user selects
      *        a line in a table.
@@ -477,13 +486,17 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
     /** Deletes selected container */
     public void onSlotDelete() {
-        if (!selectedSlotView.getIsHostingSlot()
+        if (!selectedSlotView.isHostingSlot()
                     || installationEJB.getActiveInstallationRecordForSlot(selectedSlotView.getSlot()) == null) {
+            final TreeNode parentTreeNode = selectedNode.getParent();
             slotEJB.delete(selectedSlotView.getSlot());
             selectedSlotView = null;
             selectedNode = null;
             clearAttributeList();
-            updateRootNode();
+            // node removed. Refresh the parent
+            final SlotView parentSlotView = (SlotView) parentTreeNode.getData();
+            parentSlotView.setSlot(slotEJB.findById(parentSlotView.getSlot().getId()));
+            hierarchBuilder.rebuildSubTree(parentTreeNode);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "Slot deleted", "Slot has been successfully deleted");
         } else {
             Utility.showMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_DELETE_FAIL,
@@ -491,16 +504,11 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         }
     }
 
-    private void updateRootNode() {
-        if (selectedSlotView != null) {
-            selectedSlot = selectedSlotView.getSlot();
-        } else {
-            selectedSlot = null;
-        }
+    private void initIncludeHierarchy() {
+        hierarchBuilder = new HierarchyBuilder(2, installationEJB);
+        rootNode = new DefaultTreeNode(new SlotView(slotEJB.getRootNode(), null, 1), null);
 
-        rootNode = slotsTreeBuilder.newSlotsTree(slotEJB.findAll(), selectedSlot, collapsedNodes, true);
-        selectedNode = slotsTreeBuilder.getInitiallySelectedTreeNode();
-        selectedSlotView = slotsTreeBuilder.getInitiallySelectedSlotView();
+        hierarchBuilder.rebuildSubTree(rootNode);
     }
 
     /** The action event to be called when the user presses the "move up" action button. This action moves the current
@@ -560,7 +568,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         Preconditions.checkNotNull(selectedNode);
         isNewInstallationSlot = false;
         selectedSlotView = (SlotView) selectedNode.getData();
-        isInstallationSlot = selectedSlotView.getIsHostingSlot();
+        isInstallationSlot = selectedSlotView.isHostingSlot();
         name = selectedSlotView.getName();
         description = selectedSlotView.getDescription();
         deviceType = selectedSlotView.getDeviceType();
@@ -610,7 +618,14 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         final Slot parentSlot = selectedNode != null ? ((SlotView) selectedNode.getData()).getSlot() : null;
         slotEJB.addSlotToParentWithPropertyDefs(newSlot, parentSlot, false);
 
-        updateRootNode();
+        final TreeNode nodeToUpdate = selectedNode != null ? selectedNode : rootNode;
+        final SlotView slotViewToUpdate = (SlotView) nodeToUpdate.getData();
+        slotViewToUpdate.setSlot(slotEJB.findById(slotViewToUpdate.getSlot().getId()));
+        if (selectedSlotView != null) {
+            selectedSlotView = slotViewToUpdate;
+        }
+
+        hierarchBuilder.rebuildSubTree(nodeToUpdate);
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Slot created", "Slot has been successfully created");
     }
 
@@ -1006,6 +1021,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      * Uploads file to be saved in the {@link Artifact}
      * @param event the {@link FileUploadEvent}
      */
+    @Override
     public void handleImportFileUpload(FileUploadEvent event) {
         if (event.getComponent().getClientId().equals("importSignalsForm:singleFileDLUploadCtl")) {
             // this handler is shared between AbstractExcelSingleFileImportUI and Artifact loading
@@ -1249,7 +1265,6 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         if (selectedNode != null) {
             selectedNode.setSelected(true);
         }
-        updateRootNode();
     }
 
     /**
@@ -1292,7 +1307,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      * container slot the only relationship that can be created is "contained in".
      */
     public void slotForRelationshipChanged() {
-        if (((SlotView)selectedTreeNodeForRelationshipAdd.getData()).getIsHostingSlot()) {
+        if (((SlotView)selectedTreeNodeForRelationshipAdd.getData()).isHostingSlot()) {
             relationshipTypesForDialog = ImmutableList.copyOf(slotRelationBySlotRelationStringName.keySet().iterator());
             if (selectedRelationshipType == null) {
                 selectedRelationshipType = SlotRelationName.CONTAINS.toString();
