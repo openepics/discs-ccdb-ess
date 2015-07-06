@@ -50,6 +50,8 @@ import com.google.common.collect.ImmutableList.Builder;
 /**
  * Tree builder for tree presentation of {@link Slot}s
  *
+ * TODO remove
+ *
  * @author <a href="mailto:andraz.pozar@cosylab.com">Andraž Požar</a>
  * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  *

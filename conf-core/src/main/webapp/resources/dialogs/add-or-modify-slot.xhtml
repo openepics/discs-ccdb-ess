@@ -74,7 +74,7 @@
             <p:commandButton value="Save" styleClass="dialogButton" 
                     oncomplete="if (args &amp;&amp; !args.validationFailed) { PF('#{widgetName}').hide();hierarchiesResizeAll();}" 
                     action="#{hierarchiesController[submitHandler]}" 
-                    update=":hierarchies:tree :hierarchies:slotAttributes grp" />
+                    update=":hierarchies:tree :hierarchies:slotAttributes grp :hierarchies:deleteButton" />
                     <!-- TODO: update the add button after this -->
         </p:dialog>
     </h:form>

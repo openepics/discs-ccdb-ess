@@ -156,7 +156,7 @@ public class HierarchyBuilder {
      * @param slotView The {@link SlotView}
      * @return <code>true</code> if the slot (or it's children) is accepted by filtering, <code>false</code> otherwise
      */
-    private boolean addChildToParent(final TreeNode parent, final SlotView slotView) {
+    public boolean addChildToParent(final TreeNode parent, final SlotView slotView) {
         final ListIterator<TreeNode> treeNodeChildren = parent.getChildren().listIterator();
         final SlotView parentData = (SlotView) parent.getData();
 
