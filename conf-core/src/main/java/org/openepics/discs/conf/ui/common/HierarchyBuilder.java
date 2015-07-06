@@ -46,7 +46,8 @@ public class HierarchyBuilder {
     private String filterValue;
     private SlotRelationName relationship;
     private ComponentType desiredDeviceType;
-    final private InstallationEJB installationEJB;
+    private final SlotView fakeSlotView;
+    private final InstallationEJB installationEJB;
 
     private TreeFilterMethod filterMethod;
 
@@ -58,6 +59,9 @@ public class HierarchyBuilder {
         this.relationship = SlotRelationName.CONTAINS;
         this.preloadLimit = preloadLimit;
         this.installationEJB = installationEJB;
+        final Slot fakeSlot = new Slot("Fake slot", false);
+        fakeSlot.setDescription("Fake slot");
+        this.fakeSlotView = new SlotView(fakeSlot, null, 1);
     }
 
     public void setFilterMethod(@Nullable TreeFilterMethod filterMethod) {
@@ -231,7 +235,7 @@ public class HierarchyBuilder {
                         } else {
                             // the preload limit still not reached. Just add one fake node.
                             slotView.setInitialzed(false);
-                            new DefaultTreeNode("Fake node", node);
+                            new DefaultTreeNode(fakeSlotView, node);
                             break;
                         }
                     } else {

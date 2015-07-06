@@ -491,7 +491,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     }
 
     private void initIncludeHierarchy() {
-        hierarchyBuilder = new HierarchyBuilder(2, installationEJB);
+        hierarchyBuilder = new HierarchyBuilder(3, installationEJB);
         rootNode = new DefaultTreeNode(new SlotView(slotEJB.getRootNode(), null, 1), null);
 
         hierarchyBuilder.rebuildSubTree(rootNode);
@@ -1246,15 +1246,6 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      * Below: Relationships related methods
      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
     /**
-     * Prepares a list of relationships to display to the user.
-     */
-    public void prepareRelationshipsPopup() {
-        Preconditions.checkNotNull(selectedSlot);
-        selectedRelationship = null;
-        initRelationshipList();
-    }
-
-    /**
      * This method rebuilds the tree so that all displayed slots are refreshed. This is important for refreshing the
      * relationship status of all displayed slots. Otherwise the information can get out of synch with the database.
      */
@@ -1275,7 +1266,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         } else {
             RequestContext.getCurrentInstance().execute("PF('cantDeleteRelation').show();");
         }
-        prepareRelationshipsPopup();
+        prepareAddRelationshipPopup();
     }
 
     private boolean canRelationshipBeDeleted() {
@@ -1287,6 +1278,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      * Prepares data for adding new relationship
      */
     public void prepareAddRelationshipPopup() {
+        Preconditions.checkNotNull(selectedSlot);
+        initRelationshipList();
         // hide the current main selection, since the same data can be used to add new relationships.
         // Will be restored when the user finishes relationship manipulation.
         if (selectedNode != null) {
@@ -1296,6 +1289,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             selectedTreeNodeForRelationshipAdd.setSelected(false);
         }
         selectedTreeNodeForRelationshipAdd = null;
+        selectedRelationship = null;
         selectedRelationshipType = SlotRelationName.CONTAINS.toString();
     }
 
@@ -1336,6 +1330,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         if (childSlot.equals(parentSlot)) {
             Utility.showMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
                     "The installation slot cannot be in relationship with itself.");
+            onRelationshipPopupClose();
             return;
         }
 
@@ -1346,11 +1341,12 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             } else {
                 RequestContext.getCurrentInstance().execute("PF('slotPairLoopNotification').show();");
             }
-            prepareRelationshipsPopup();
+            prepareAddRelationshipPopup();
         } else {
             Utility.showMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
                     "This relationship already exists.");
         }
+        onRelationshipPopupClose();
     }
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
