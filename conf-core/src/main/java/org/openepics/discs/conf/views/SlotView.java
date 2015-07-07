@@ -19,13 +19,9 @@
  */
 package org.openepics.discs.conf.views;
 
-import java.util.List;
-
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.Slot;
-import org.openepics.discs.conf.ent.SlotPair;
-import org.openepics.discs.conf.ent.SlotRelationName;
 
 /**
  * View of container used to compose and manipulate with container presentation in tree view
@@ -48,34 +44,6 @@ public class SlotView {
     private boolean isLast;
     private boolean isInitialzed;
     private int level;
-
-    /** Constructs a new SlotView object.
-     * TODO remove after the hierarchy builder is totally replaced.
-     * @param slot the {@link Slot} to create the UI view object for
-     * @param parentNode a reference to the SlotView object of a parent in the hierarchy tree
-     * @param children a reference to the Slot objects of all children in the hierarchy tree
-     * @param installedDevice a reference to the {@link Device} if one is installed in the installation slot
-     * @param order the ordinal number of the SlotView object - defines the order in the hierarchy tree
-     */
-    public SlotView(Slot slot, SlotView parentNode, List<SlotPair> children, Device installedDevice, int order) {
-        this.slot = slot;
-        this.name = slot.getName();
-        this.description = slot.getDescription();
-        this.id = slot.getId();
-        this.parentNode = parentNode;
-        this.isHostingSlot = slot.isHostingSlot();
-        this.deviceType = slot.getComponentType();
-        this.installedDevice = installedDevice;
-        this.order = order;
-
-        isDeletable = true;
-        for (SlotPair child : children) {
-            if (child.getSlotRelation().getName() == SlotRelationName.CONTAINS) {
-                isDeletable = false;
-                break;
-            }
-        }
-    }
 
     /** Simpler constructor, used in the new Hierarchy builder.
      * @param slot the {@link Slot} to create the UI view object for

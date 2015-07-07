@@ -99,8 +99,8 @@ import org.openepics.discs.conf.views.SlotRelationshipView;
 import org.openepics.discs.conf.views.SlotView;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
-import org.primefaces.event.NodeCollapseEvent;
 import org.primefaces.event.NodeExpandEvent;
+import org.primefaces.event.TabChangeEvent;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.StreamedContent;
@@ -146,12 +146,17 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     private transient List<SelectItem> relationshipTypes;
     private List<Device> uninstalledDevices;
     private List<Device> filteredUninstalledDevices;
-    private HierarchyBuilder hierarchyBuilder;
-    private TreeNode rootNode;
-    private TreeNode selectedNode;
     private InstallationRecord installationRecord;
     private Device deviceToInstall;
+
+    // ---- variables for hierarchies and tabs --------
+    private HierarchyBuilder hierarchyBuilder;
+    private HierarchyBuilder powersHierarchyBuilder;
+    private TreeNode rootNode;
+    private TreeNode powersRootNode;
+    private TreeNode selectedNode;
     private Slot selectedSlot;
+    private boolean isIncludesActive;
 
     // variables from the installation slot / containers editing merger.
     private SlotView selectedSlotView;
@@ -191,7 +196,9 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     public void init() {
         try {
             super.init();
+            isIncludesActive = true;
             initIncludeHierarchy();
+            initPowersHierarchy();
             fillNamesAutocomplete();
             attributeKinds = Utility.buildAttributeKinds();
             relationshipTypes = buildRelationshipTypeList();
@@ -342,7 +349,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      * Below: Callback methods called from the main UI screen. E.g.: methods that are called when user user selects
      *        a line in a table.
      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-    /** Clears the attribute list for display when user deselects the slot in the hierarchy. */
+    /** Clears all slot related information when user deselects the slot in the hierarchy. */
     public void clearAttributeList() {
         attributes = null;
         filteredAttributes = null;
@@ -415,25 +422,35 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     }
 
     /**
-     * Adds collapsed node to the set of collapsed nodes which is used to preserve the state of tree
-     * throughout the nodes manipulation.
-     *
-     * @param event Event triggered on node collapse action
-     */
-    public void onContainsCollapse(NodeCollapseEvent event) {
-        // nothing to do
-    }
-
-    /**
-     * Removes expanded node from list of collapsed nodes which is used to preserve the state of tree
-     * throughout the nodes manipulation.
+     * Builds the part of the tree under the expanded node if that is necessary.
      *
      * @param event Event triggered on node expand action
      */
     public void onContainsExpand(NodeExpandEvent event) {
-        if (event != null && event.getTreeNode() != null) {
-            hierarchyBuilder.expandNode(event.getTreeNode());
+        final TreeNode expandedNode = event.getTreeNode();
+        if (expandedNode != null) {
+            hierarchyBuilder.expandNode(expandedNode);
         }
+    }
+
+    /**
+     * Builds the part of the tree under the expanded node if that is necessary.
+     *
+     * @param event Event triggered on node expand action
+     */
+    public void onPowersExpand(NodeExpandEvent event) {
+        final TreeNode expandedNode = event.getTreeNode();
+        if (expandedNode != null) {
+            powersHierarchyBuilder.expandNode(expandedNode);
+        }
+    }
+
+    public void onTabChange(TabChangeEvent event) {
+        isIncludesActive = event.getTab().getId().equals("includesTab");
+        if (selectedNode != null) {
+            selectedNode.setSelected(false);
+        }
+        clearAttributeList();
     }
 
     @Override
@@ -495,6 +512,14 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         rootNode = new DefaultTreeNode(new SlotView(slotEJB.getRootNode(), null, 1), null);
 
         hierarchyBuilder.rebuildSubTree(rootNode);
+    }
+
+    private void initPowersHierarchy() {
+        powersHierarchyBuilder = new HierarchyBuilder(3, installationEJB);
+        powersHierarchyBuilder.setRelationship(SlotRelationName.POWERS);
+
+        powersRootNode = new DefaultTreeNode(new SlotView(slotEJB.getRootNode(), null, 1), null);
+        powersHierarchyBuilder.rebuildSubTree(powersRootNode);
     }
 
     /** The action event to be called when the user presses the "move up" action button. This action moves the current
@@ -1386,14 +1411,24 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         this.relationships = relationships;
     }
 
-    /** @return The root node of (and consequently the entire) hierarchy tree. */
+    /** @return The root node of the <code>CONTAINS</code> hierarchy tree. */
     public TreeNode getRootNode() {
         return rootNode;
+    }
+
+    /** @return The root node of the <code>POWERS</code> hierarchy tree. */
+    public TreeNode getPowersRoot() {
+        return powersRootNode;
     }
 
     /** @return Getter for the currently selected node in a tree (required by PrimeFaces). */
     public TreeNode getSelectedNode() {
         return selectedNode;
+    }
+
+    /** @return <code>true</code> if the UI is currently showing the <code>INCLUDES</code> hierarchy */
+    public boolean isIncludesActive() {
+        return isIncludesActive;
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////

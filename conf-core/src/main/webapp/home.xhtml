@@ -16,15 +16,19 @@
                     $('#hierarchies\\:installationColumn').css({"max-width":rightColumnsWidth});
                     $('#hierarchies\\:hierarchiesEmptyColumn').css({"max-width":rightColumnsWidth});
                 }
-                function resizeHierarchiesTree() {
+                function resizeHierarchyTrees() {
                     var menusHeight = $('#top').outerHeight(true);
-                    var headerHeight = $('#hierarchies\\:hierarchyTabs\\:tree\\:name').outerHeight(true) 
+                    var columnNameHeight = $('#hierarchies\\:hierarchyTabs\\:tree\\:name').outerHeight(true);
+                    columnNameHeight = Math.max(columnNameHeight, 
+                                $('#hierarchies\\:hierarchyTabs\\:powersTree\\:powersName').outerHeight(true));
+                    var headerHeight = columnNameHeight
                                         + $('#hierarchies\\:treeFieldSet legend').outerHeight(true)
                                         + $('#hierarchies\\:hierarchyTabs div.ui-tabs-navscroller').outerHeight(true);
                     if (headerHeight != null) {
                         var em = emHeight();
                         var totalMenusHeight = menusHeight + headerHeight + 7.5*em;
                         $('#hierarchies\\:hierarchyTabs\\:tree .ui-treetable-scrollable-body').css({"height":window.innerHeight-totalMenusHeight});
+                        $('#hierarchies\\:hierarchyTabs\\:powersTree .ui-treetable-scrollable-body').css({"height":window.innerHeight-totalMenusHeight});
                     }
                 }
                 function resizeEmptyColumnInHierarchies() {
@@ -49,7 +53,7 @@
                     $('#attributesTable .hierarchies-attributes-cell .ui-datatable-scrollable-body').css({"max-height":attrbiutesTableBodyHeight});
                 }
                 function hierarchiesResizeAll() {
-                    resizeHierarchiesTree();
+                    resizeHierarchyTrees();
                     resizeEmptyColumnInHierarchies();
                     hierarchiesResizeAttributes();
                 }
@@ -61,7 +65,14 @@
                     <p:column rowspan="4" id="treeColumn">
                         <p:fieldset id="treeFieldSet" legend="Slots">
                             <p:tabView scrollable="true" id="hierarchyTabs" style="width: 30em;">
-                                <p:tab title="Includes">
+                                <p:ajax event="tabChange" listener="#{hierarchiesController.onTabChange}" 
+                                    update=":hierarchies:relationsTable :hierarchies:deleteButton :hierarchies:downButton 
+                                        :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton 
+                                        :hierarchies:installationDetails :hierarchies:slotAttributes 
+                                        :hierarchies:addRelationship :hierarchies:hierarchyTabs:tree 
+                                        :hierarchies:hierarchyTabs:powersTree" oncomplete="resizeHierarchyTrees();" />
+
+                                <p:tab id="includesTab" title="Includes">
                                     <p:treeTable id="tree" value="#{hierarchiesController.rootNode}" var="installationSlot" 
                                              selectionMode="single" selection="#{hierarchiesController.selectedNode}" 
                                              scrollable="true" scrollWidth="auto" rowStyleClass="treeRows" 
@@ -91,17 +102,41 @@
                                          </p:column>
                                      </p:treeTable>                                
                                 </p:tab>
-                                <p:tab title="Controls">
+                                <p:tab id="controlsTab" title="Controls">
                                     <h:outputText value="Controls" />
                                 </p:tab>
-                                <p:tab title="Powers">
-                                    <h:outputText value="Powers" />
+                                <p:tab id="powersTab" title="Powers">
+                                    <p:treeTable id="powersTree" value="#{hierarchiesController.powersRoot}" var="powerSlot" 
+                                             selectionMode="single" selection="#{hierarchiesController.selectedNode}" 
+                                             scrollable="true" scrollWidth="auto" rowStyleClass="treeRows" 
+                                             style="width: 30em;">
+                                         <p:ajax event="select" listener="#{hierarchiesController.initSelectedItemLists()}" 
+                                             update=":hierarchies:relationsTable :hierarchies:installationDetails 
+                                                     :hierarchies:slotAttributes :hierarchies:addRelationship" 
+                                             oncomplete="resizeEmptyColumnInHierarchies();hierarchiesResizeAttributes();" />
+                                         <p:ajax event="unselect" listener="#{hierarchiesController.clearAttributeList()}" 
+                                             update=":hierarchies:relationsTable :hierarchies:installationDetails 
+                                                     :hierarchies:slotAttributes :hierarchies:addRelationship" 
+                                             oncomplete="resizeEmptyColumnInHierarchies();" />
+                                         <p:ajax event="expand" listener="#{hierarchiesController.onPowersExpand}" />
+                
+                                         <p:column id="powersName" headerText="Name">
+                                             <h:outputText value="" rendered="#{powerSlot.hostingSlot}" 
+                                                 style="display:inline-block; vertical-align:bottom !important" 
+                                                 styleClass="ui-icon ui-icon-wrench" />
+                                             <h:outputText value="" rendered="#{!powerSlot.hostingSlot}" 
+                                                 style="display:inline-block; vertical-align:bottom !important" 
+                                                 styleClass="ui-icon ui-icon-folder-collapsed" />
+                                             <h:outputText value="#{powerSlot.name}" title="#{powerSlot.description}" />
+                                         </p:column>
+                                     </p:treeTable>                                
                                 </p:tab>
                             </p:tabView>
 
                             <p:commandButton id="deleteButton" icon="ui-icon-trash" value="Delete" title="Delete" 
                                 style="float: right; margin-top: 1em;" oncomplete="PF('deleteSlot').show();" 
                                 disabled="#{empty hierarchiesController.selectedNode 
+                                                or not hierarchiesController.includesActive 
                                                 or not hierarchiesController.selectedNode.data.deletable 
                                                 or (hierarchiesController.selectedNode.data.hostingSlot 
                                                         and not empty hierarchiesController.installationRecord)}" 
@@ -109,19 +144,25 @@
                             <p:commandButton id="downButton" icon="ui-icon-arrowthick-1-s" value="Down" title="Move down" 
                                 style="float: right; margin: 1em 1ex 0 0;" oncomplete="hierarchiesResizeAll();scrollSelectedIntoView(PF('hierarchyWidget'));" 
                                 update=":hierarchies:hierarchyTabs:tree :hierarchies:downButton :hierarchies:upButton" 
-                                disabled="#{empty hierarchiesController.selectedNode || hierarchiesController.selectedNode.data.last}" 
+                                disabled="#{empty hierarchiesController.selectedNode 
+                                                or not hierarchiesController.includesActive 
+                                                or hierarchiesController.selectedNode.data.last}" 
                                 actionListener="#{hierarchiesController.moveSlotDown()}" />
                             <p:commandButton id="upButton" icon="ui-icon-arrowthick-1-n" value="Up" title="Move up" 
                                 style="float: right; margin: 1em 1ex 0 0;" oncomplete="hierarchiesResizeAll();scrollSelectedIntoView(PF('hierarchyWidget'));" 
                                 update=":hierarchies:hierarchyTabs:tree :hierarchies:upButton :hierarchies:downButton" 
-                                disabled="#{empty hierarchiesController.selectedNode || hierarchiesController.selectedNode.data.first}" 
+                                disabled="#{empty hierarchiesController.selectedNode 
+                                                or not hierarchiesController.includesActive 
+                                                or hierarchiesController.selectedNode.data.first}" 
                                 actionListener="#{hierarchiesController.moveSlotUp()}" />
                             <p:commandButton id="editButton" icon="ui-icon-pencil" value="Edit" title="Edit" 
                                 style="float: right; margin: 1em 1ex 0 0;" update=":editSlotForm:editSlotDialog" 
-                                disabled="#{empty hierarchiesController.selectedNode}" oncomplete="PF('editSlotDialog').show();" 
+                                disabled="#{empty hierarchiesController.selectedNode or not hierarchiesController.includesActive}" 
+                                oncomplete="PF('editSlotDialog').show();" 
                                 actionListener="#{hierarchiesController.prepareEditPopup()}" />
 
-                            <p:menuButton id="addButton" value="Add" style="float: right; margin: 1em 1ex 0 0;">
+                            <p:menuButton id="addButton" value="Add" style="float: right; margin: 1em 1ex 0 0;" 
+                                    disabled="#{not hierarchiesController.includesActive}">
                                 <p:menuitem value="Container" oncomplete="PF('addSlotDialog').show();" 
                                         actionListener="#{hierarchiesController.prepareContainerAddPopup}" 
                                         update=":addSlotForm" 

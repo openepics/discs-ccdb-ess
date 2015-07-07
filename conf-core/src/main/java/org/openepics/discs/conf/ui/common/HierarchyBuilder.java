@@ -131,9 +131,9 @@ public class HierarchyBuilder {
         for (SlotPair pair : parentSlot.getPairsInWhichThisSlotIsAParentList()) {
             final Slot child = pair.getChildSlot();
             final SlotRelationName pairRelationName = pair.getSlotRelation().getName();
-            // 4. If relation ship type is what is defined in builder or CONTAINS (but only for children of containers)
-            // 4.a   If child is a container or child matches the filter
-            if ((!child.isHostingSlot() && (pairRelationName == SlotRelationName.CONTAINS))
+            // 4. If relationship type is what is defined in builder or CONTAINS (but only for children of containers)
+            // 4.a   If parent is a container or child matches the filter
+            if ((!parentSlot.isHostingSlot() && (pairRelationName == SlotRelationName.CONTAINS))
                     || ((child.isHostingSlot() && (pairRelationName == relationship))
                         && isSlotAcceptedByFilter(child))) {
                 // 4.b   Add the child

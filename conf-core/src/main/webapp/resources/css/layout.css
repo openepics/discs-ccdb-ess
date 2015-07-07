@@ -114,7 +114,8 @@ body {
     padding-left: 0 !important;
 }
 
-#hierarchies\:hierarchyTabs\:tree .ui-treetable-scrollable-body {
+#hierarchies\:hierarchyTabs\:tree .ui-treetable-scrollable-body,
+#hierarchies\:hierarchyTabs\:powersTree .ui-treetable-scrollable-body {
     overflow-y: auto;
     overflow-x: hidden;
 }
