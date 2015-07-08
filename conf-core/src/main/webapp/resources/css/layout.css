@@ -114,9 +114,14 @@ body {
     padding-left: 0 !important;
 }
 
-#hierarchies\:tree .ui-treetable-scrollable-body {
+#hierarchies\:hierarchyTabs\:tree .ui-treetable-scrollable-body,
+#hierarchies\:hierarchyTabs\:powersTree .ui-treetable-scrollable-body {
     overflow-y: auto;
     overflow-x: hidden;
+}
+
+#hierarchies\:hierarchyTabs .ui-tabs-panel {
+    padding: 0 !important;
 }
 
 .menu {
@@ -135,7 +140,7 @@ body {
 	width: 100%;
 }
 
-.export-grid  img {
+.export-grid img {
     border: none;
 }
 

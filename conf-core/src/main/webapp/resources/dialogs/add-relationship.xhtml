@@ -30,22 +30,23 @@
                 </p:row>
                 <p:row>
                     <p:column>
-                        <p:tree value="#{hierarchiesController.rootNode}" id="relationshipTree" 
+                        <p:tree value="#{hierarchiesController.rootNode}" id="relationshipTree" dynamic="true" 
                                 selectionMode="single" var="slotView" style="width: 100%; max-height: 200px; overflow: auto;"
                                 selection="#{hierarchiesController.selectedTreeNodeForRelationshipAdd}">
                             <p:ajax event="select" update=":addSlotRelationshipForm:relationshipTypeSelect :addSlotRelationshipForm:addButton" 
-                                listener="#{hierarchiesController.slotForRelationshipChanged}"/>
+                                listener="#{hierarchiesController.slotForRelationshipChanged}" />
                             <p:ajax event="unselect" update=":addSlotRelationshipForm:relationshipTypeSelect :addSlotRelationshipForm:addButton" />
+                            <p:ajax event="expand" listener="#{hierarchiesController.onContainsExpand}" />
 
                             <p:treeNode>
                                 <h:outputText value="" 
 			                        style="display:inline-block; vertical-align:bottom !important" 
 			                        styleClass="ui-icon ui-icon-wrench" 
-			                        rendered="#{slotView.isHostingSlot}" />
+			                        rendered="#{slotView.hostingSlot}" />
 			                    <h:outputText value="" 
 			                        style="display:inline-block; vertical-align:bottom !important" 
 			                        styleClass="ui-icon ui-icon-folder-collapsed" 
-			                        rendered="#{!slotView.isHostingSlot}" />
+			                        rendered="#{!slotView.hostingSlot}" />
                                 <h:outputText value="#{slotView.name}" />
                             </p:treeNode>
                         </p:tree>
@@ -54,11 +55,12 @@
             </p:panelGrid>
 
             <p:commandButton value="Cancel" styleClass="dialogButton" onclick="PF('addSlotRelationship').hide();" 
-                    resetValues="true" style="margin-top: 1em;"/>
+                    actionListener="#{hierarchiesController.onRelationshipPopupClose}" 
+                    resetValues="true" style="margin-top: 1em;" update=":hierarchies:hierarchyTabs:tree" />
             <p:commandButton value="Add" styleClass="dialogButton" id="addButton" style="margin-top: 1em;" 
                     disabled="#{empty hierarchiesController.selectedTreeNodeForRelationshipAdd}" 
                     action="#{hierarchiesController.onRelationshipAdd}" oncomplete="PF('addSlotRelationship').hide();" 
-                    update=":hierarchies:relationshipTable" />
+                    update=":hierarchies:relationshipTable :hierarchies:hierarchyTabs:tree" />
         </p:dialog>
     </h:form>
 </ui:composition>

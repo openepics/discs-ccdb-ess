@@ -17,27 +17,21 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
+package org.openepics.discs.conf.ui.common;
 
-package org.openepics.discs.conf.util;
+import javax.annotation.Nullable;
 
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.ElementType.PARAMETER;
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import org.openepics.discs.conf.ent.ComponentType;
+import org.openepics.discs.conf.ent.Slot;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import javax.inject.Qualifier;
-
-/**
- * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
- *
- */
-@Qualifier
-@Retention(RUNTIME)
-@Target({METHOD, FIELD, PARAMETER, TYPE})
-public @interface DeviceInstallation {
-
+public interface TreeFilterMethod {
+    /**  
+     * @param filterValue the valuer to check against
+     * @param installationSlotType the type of the installation the candidate must match
+     * @param candidate the candidate to check for match (the match is in the name)
+     * @return <code>true</code>, if the <code>candidate</code> matches the <code>filterValue</code>, or if either 
+     * <code>candidate</code> or <code>filterValue</code> are <code>null</code>.
+     */
+    public boolean matches(@Nullable String filterValue, @Nullable ComponentType installationSlotType, 
+            @Nullable Slot candidate);
 }
