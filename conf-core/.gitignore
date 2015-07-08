@@ -8,6 +8,7 @@ sonar-project.properties
 .settings
 .metadata
 *.jsfdia
+.tern-project
 
 # Eclipse EE specific
 src/main/java/resources
