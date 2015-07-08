@@ -57,6 +57,13 @@
                     resizeEmptyColumnInHierarchies();
                     hierarchiesResizeAttributes();
                 }
+                function getVisibleTree() {
+                    var visibleTreeTable = PF('hierarchyWidget');
+                    if (PF('powersWidget').jq.is(':visible')) {
+                    	visibleTreeTable = PF('powersWidget');
+                    }
+                    return visibleTreeTable;
+                }
             // ]]>
             </script>
             <p:growl showDetail="true" globalOnly="true" autoUpdate="true" />
@@ -109,7 +116,7 @@
                                     <p:treeTable id="powersTree" value="#{hierarchiesController.powersRoot}" var="powerSlot" 
                                              selectionMode="single" selection="#{hierarchiesController.selectedNode}" 
                                              scrollable="true" scrollWidth="auto" rowStyleClass="treeRows" 
-                                             style="width: 30em;">
+                                             style="width: 30em;"  widgetVar="powersWidget">
                                          <p:ajax event="select" listener="#{hierarchiesController.initSelectedItemLists()}" 
                                              update=":hierarchies:relationsTable :hierarchies:installationDetails 
                                                      :hierarchies:slotAttributes :hierarchies:addRelationship" 
@@ -267,7 +274,8 @@
                                 <p:column headerText="Target" sortBy="#{relationship.targetSlotName}" 
                                         filterBy="#{relationship.targetSlotName}" filterMatchMode="contains">
                                     <p:commandLink action="#{hierarchiesController.selectNode(relationship.slot.id)}" 
-                                            update=":hierarchies" oncomplete="hierarchiesResizeAll();scrollSelectedIntoView(PF('hierarchyWidget'));">
+                                            update=":hierarchies" 
+                                            oncomplete="hierarchiesResizeAll();scrollSelectedIntoView(getVisibleTree());">
                                         <h:outputText value="#{relationship.targetSlotName}" 
                                             style="text-decoration: underline;" />
                                     </p:commandLink>
