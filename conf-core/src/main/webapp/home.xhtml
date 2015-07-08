@@ -21,6 +21,8 @@
                     var columnNameHeight = $('#hierarchies\\:hierarchyTabs\\:tree\\:name').outerHeight(true);
                     columnNameHeight = Math.max(columnNameHeight, 
                                 $('#hierarchies\\:hierarchyTabs\\:powersTree\\:powersName').outerHeight(true));
+                    columnNameHeight = Math.max(columnNameHeight, 
+                            $('#hierarchies\\:hierarchyTabs\\:controlsTree\\:ctrlName').outerHeight(true));
                     var headerHeight = columnNameHeight
                                         + $('#hierarchies\\:treeFieldSet legend').outerHeight(true)
                                         + $('#hierarchies\\:hierarchyTabs div.ui-tabs-navscroller').outerHeight(true);
@@ -29,6 +31,7 @@
                         var totalMenusHeight = menusHeight + headerHeight + 7.5*em;
                         $('#hierarchies\\:hierarchyTabs\\:tree .ui-treetable-scrollable-body').css({"height":window.innerHeight-totalMenusHeight});
                         $('#hierarchies\\:hierarchyTabs\\:powersTree .ui-treetable-scrollable-body').css({"height":window.innerHeight-totalMenusHeight});
+                        $('#hierarchies\\:hierarchyTabs\\:controlsTree .ui-treetable-scrollable-body').css({"height":window.innerHeight-totalMenusHeight});
                     }
                 }
                 function resizeEmptyColumnInHierarchies() {
@@ -62,6 +65,9 @@
                     if (PF('powersWidget').jq.is(':visible')) {
                     	visibleTreeTable = PF('powersWidget');
                     }
+                    if (PF('ctrlWidget').jq.is(':visible')) {
+                        visibleTreeTable = PF('ctrlWidget');
+                    }
                     return visibleTreeTable;
                 }
             // ]]>
@@ -77,7 +83,8 @@
                                         :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton 
                                         :hierarchies:installationDetails :hierarchies:slotAttributes 
                                         :hierarchies:addRelationship :hierarchies:hierarchyTabs:tree 
-                                        :hierarchies:hierarchyTabs:powersTree" oncomplete="resizeHierarchyTrees();" />
+                                        :hierarchies:hierarchyTabs:powersTree :hierarchies:hierarchyTabs:controlsTree" 
+                                    oncomplete="resizeHierarchyTrees();" />
 
                                 <p:tab id="includesTab" title="Includes">
                                     <p:treeTable id="tree" value="#{hierarchiesController.rootNode}" var="installationSlot" 
@@ -110,7 +117,30 @@
                                      </p:treeTable>                                
                                 </p:tab>
                                 <p:tab id="controlsTab" title="Controls">
-                                    <h:outputText value="Controls" />
+                                    <p:treeTable id="controlsTree" value="#{hierarchiesController.controlsRoot}" var="ctrlSlot" 
+                                             selectionMode="single" selection="#{hierarchiesController.selectedNode}" 
+                                             scrollable="true" scrollWidth="auto" rowStyleClass="treeRows" 
+                                             style="width: 30em;"  widgetVar="ctrlWidget">
+                                         <p:ajax event="select" listener="#{hierarchiesController.initSelectedItemLists()}" 
+                                             update=":hierarchies:relationsTable :hierarchies:installationDetails 
+                                                     :hierarchies:slotAttributes :hierarchies:addRelationship" 
+                                             oncomplete="resizeEmptyColumnInHierarchies();hierarchiesResizeAttributes();" />
+                                         <p:ajax event="unselect" listener="#{hierarchiesController.clearAttributeList()}" 
+                                             update=":hierarchies:relationsTable :hierarchies:installationDetails 
+                                                     :hierarchies:slotAttributes :hierarchies:addRelationship" 
+                                             oncomplete="resizeEmptyColumnInHierarchies();" />
+                                         <p:ajax event="expand" listener="#{hierarchiesController.onControlsExpand}" />
+                
+                                         <p:column id="ctrlName" headerText="Name">
+                                             <h:outputText value="" rendered="#{ctrlSlot.hostingSlot}" 
+                                                 style="display:inline-block; vertical-align:bottom !important" 
+                                                 styleClass="ui-icon ui-icon-wrench" />
+                                             <h:outputText value="" rendered="#{!ctrlSlot.hostingSlot}" 
+                                                 style="display:inline-block; vertical-align:bottom !important" 
+                                                 styleClass="ui-icon ui-icon-folder-collapsed" />
+                                             <h:outputText value="#{ctrlSlot.name}" title="#{ctrlSlot.description}" />
+                                         </p:column>
+                                     </p:treeTable>                                
                                 </p:tab>
                                 <p:tab id="powersTab" title="Powers">
                                     <p:treeTable id="powersTree" value="#{hierarchiesController.powersRoot}" var="powerSlot" 
