@@ -152,8 +152,10 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     // ---- variables for hierarchies and tabs --------
     private HierarchyBuilder hierarchyBuilder;
     private HierarchyBuilder powersHierarchyBuilder;
+    private HierarchyBuilder controlsHierarchyBuilder;
     private TreeNode rootNode;
     private TreeNode powersRootNode;
+    private TreeNode controlsRootNode;
     private TreeNode selectedNode;
     private Slot selectedSlot;
     private boolean isIncludesActive;
@@ -199,6 +201,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             isIncludesActive = true;
             initIncludeHierarchy();
             initPowersHierarchy();
+            initControlsHierarchy();
             fillNamesAutocomplete();
             attributeKinds = Utility.buildAttributeKinds();
             relationshipTypes = buildRelationshipTypeList();
@@ -369,11 +372,13 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      * @param selectedNode The PrimeFaces tree node to that is selected.
      */
     public void setSelectedNode(TreeNode selectedNode) {
-        this.selectedNode = selectedNode;
-        selectedSlotView = selectedNode == null ? null : (SlotView)selectedNode.getData();
-        selectedSlot = selectedNode == null ? null : this.selectedSlotView.getSlot();
-        installationRecord = selectedNode == null || !selectedSlot.isHostingSlot() ? null
+        if (selectedNode != null) {
+            this.selectedNode = selectedNode;
+            selectedSlotView = selectedNode == null ? null : (SlotView)selectedNode.getData();
+            selectedSlot = selectedNode == null ? null : this.selectedSlotView.getSlot();
+            installationRecord = selectedNode == null || !selectedSlot.isHostingSlot() ? null
                                                     : installationEJB.getActiveInstallationRecordForSlot(selectedSlot);
+        }
     }
 
     /** The function to select a different node in the TreeTable by clicking on the link in the relationship table.
@@ -442,6 +447,18 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         final TreeNode expandedNode = event.getTreeNode();
         if (expandedNode != null) {
             powersHierarchyBuilder.expandNode(expandedNode);
+        }
+    }
+
+    /**
+     * Builds the part of the tree under the expanded node if that is necessary.
+     *
+     * @param event Event triggered on node expand action
+     */
+    public void onControlsExpand(NodeExpandEvent event) {
+        final TreeNode expandedNode = event.getTreeNode();
+        if (expandedNode != null) {
+            controlsHierarchyBuilder.expandNode(expandedNode);
         }
     }
 
@@ -521,6 +538,15 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         powersRootNode = new DefaultTreeNode(new SlotView(slotEJB.getRootNode(), null, 1), null);
         powersHierarchyBuilder.rebuildSubTree(powersRootNode);
     }
+
+    private void initControlsHierarchy() {
+        controlsHierarchyBuilder = new HierarchyBuilder(3, installationEJB);
+        controlsHierarchyBuilder.setRelationship(SlotRelationName.CONTROLS);
+
+        controlsRootNode = new DefaultTreeNode(new SlotView(slotEJB.getRootNode(), null, 1), null);
+        controlsHierarchyBuilder.rebuildSubTree(controlsRootNode);
+    }
+
 
     /** The action event to be called when the user presses the "move up" action button. This action moves the current
      * container/installation slot up one space, if that is possible.
@@ -1419,6 +1445,11 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     /** @return The root node of the <code>POWERS</code> hierarchy tree. */
     public TreeNode getPowersRoot() {
         return powersRootNode;
+    }
+
+    /** @return The root node of the <code>CONTROLS</code> hierarchy tree. */
+    public TreeNode getControlsRoot() {
+        return controlsRootNode;
     }
 
     /** @return Getter for the currently selected node in a tree (required by PrimeFaces). */
