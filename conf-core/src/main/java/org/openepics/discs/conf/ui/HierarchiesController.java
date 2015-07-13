@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
@@ -100,6 +99,8 @@ import org.openepics.discs.conf.views.SlotView;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.NodeExpandEvent;
+import org.primefaces.event.NodeSelectEvent;
+import org.primefaces.event.NodeUnselectEvent;
 import org.primefaces.event.TabChangeEvent;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.DefaultTreeNode;
@@ -146,7 +147,9 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     private transient List<SelectItem> relationshipTypes;
     private List<Device> uninstalledDevices;
     private List<Device> filteredUninstalledDevices;
-    private InstallationRecord installationRecord;
+    private List<InstallationRecord> installationRecords;
+    /** <code>selectedInstallationRecord</code> is only initialized when there is only one node in the tree selected */
+    private InstallationRecord selectedInstallationRecord;
     private Device deviceToInstall;
 
     // ---- variables for hierarchies and tabs --------
@@ -156,12 +159,14 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     private TreeNode rootNode;
     private TreeNode powersRootNode;
     private TreeNode controlsRootNode;
-    private TreeNode selectedNode;
+    private List<TreeNode>selectedNodes;
+    /** <code>selectedSlot</code> is only initialized when there is only one node in the tree selected */
     private Slot selectedSlot;
+    /** <code>selectedSlotView</code> is only initialized when there is only one node in the tree selected */
+    private SlotView selectedSlotView;
     private boolean isIncludesActive;
 
     // variables from the installation slot / containers editing merger.
-    private SlotView selectedSlotView;
     private String name;
     private String description;
     /** Used in "add child to parent" operations. This usually reflects the <code>selectedNode</code>. */
@@ -237,15 +242,30 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         namesForAutoComplete = ImmutableList.copyOf(names.getAllNames());
     }
 
-    private void saveSlotAndRefresh() {
-        slotEJB.save(selectedSlot);
-        selectedSlot = slotEJB.findById(selectedSlot.getId());
-        selectedSlotView.setSlot(selectedSlot);
+    private void saveSlotAndRefresh(final Slot slot) {
+        slotEJB.save(slot);
+        refreshSlot(slot);
     }
 
-    private void refreshSlot() {
-        selectedSlot = slotEJB.findById(selectedSlot.getId());
-        selectedSlotView.setSlot(selectedSlot);
+    private void refreshSlot(final Slot slot) {
+        final Slot freshSlot = slotEJB.findById(slot.getId());
+        if (selectedSlot != null) {
+            selectedSlot = freshSlot;
+        }
+        if (selectedSlotView != null) {
+            selectedSlotView.setSlot(freshSlot);
+        }
+        updateTreesWithFreshSlot(freshSlot);
+    }
+
+    private void updateTreesWithFreshSlot(final Slot freshSlot) {
+        updateTreeWithFreshSlot(rootNode, freshSlot);
+        updateTreeWithFreshSlot(controlsRootNode, freshSlot);
+        updateTreeWithFreshSlot(powersRootNode, freshSlot);
+    }
+
+    private void updateTreeWithFreshSlot(final TreeNode node, final Slot freshSlot) {
+        // TODO implement
     }
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -253,95 +273,141 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      *
      * Below: Screen population methods. These methods prepare the data to be displayed on the main UI screen.
      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-    private void initAttributeList() {
-        final List<EntityAttributeView> attributesList = new ArrayList<>();
-
-        if (selectedNode != null) {
-            addPropertyValues(attributesList);
-            addArtifacts(attributesList);
-            addTags(attributesList);
-        }
-        this.attributes = attributesList;
+    private void initAttributeList(final Slot slot) {
+        attributes = new ArrayList<>();
+        addPropertyValues(slot);
+        addArtifacts(slot);
+        addTags(slot);
     }
 
-    private void addPropertyValues(List<EntityAttributeView> attributesList) {
-        final boolean isHostingSlot = selectedSlot.isHostingSlot();
+    private void refreshAttributeList(final Slot slot, final SlotPropertyValue pv) {
+        // TODO implement.
+        // Use iterator. If the property value is found, then update it.
+        // If not, add new property value to the already existing ones. Append to the end of the ones for the same slot.
+    }
+
+    private void refreshAttributeList(final Slot slot, final Tag tag) {
+        // TODO implement.
+        // Use iterator. Add new Tag to the already existing ones. Append to the end of the ones for the same slot.
+    }
+
+    private void refreshAttributeList(final Slot slot, final SlotArtifact tag) {
+        // TODO implement.
+        // Use iterator. If the artifact is found, then update it.
+        // If not, add new artifact to the already existing ones. Append to the end of the ones for the same slot.
+    }
+
+    private void removeRelatedAttributes(Slot slot) {
+        final ListIterator<EntityAttributeView> slotAttributes = attributes.listIterator();
+        while (slotAttributes.hasNext()) {
+            final EntityAttributeView attribute = slotAttributes.next();
+            if (slot.getName().equals(attribute.getParent())) {
+                slotAttributes.remove();
+            }
+        }
+    }
+
+    private void addPropertyValues(final Slot slot) {
+        final boolean isHostingSlot = slot.isHostingSlot();
         final Device installedDevice = getInstalledDevice();
 
-        for (final ComptypePropertyValue value : selectedSlot.getComponentType().getComptypePropertyList()) {
+        for (final ComptypePropertyValue value : slot.getComponentType().getComptypePropertyList()) {
             if (!value.isPropertyDefinition()) {
-                attributesList.add(new EntityAttributeView(value, EntityAttributeViewKind.DEVICE_TYPE_PROPERTY));
+                attributes.add(new EntityAttributeView(value, EntityAttributeViewKind.DEVICE_TYPE_PROPERTY,
+                                                            slot.getName()));
             }
         }
 
-        for (final SlotPropertyValue value : selectedSlot.getSlotPropertyList()) {
-            attributesList.add(new EntityAttributeView(value, isHostingSlot
+        for (final SlotPropertyValue value : slot.getSlotPropertyList()) {
+            attributes.add(new EntityAttributeView(value, isHostingSlot
                                                             ? EntityAttributeViewKind.INSTALL_SLOT_PROPERTY
-                                                            : EntityAttributeViewKind.CONTAINER_SLOT_PROPERTY));
+                                                            : EntityAttributeViewKind.CONTAINER_SLOT_PROPERTY,
+                                                            slot.getName()));
         }
 
         if (installedDevice != null) {
             for (final DevicePropertyValue devicePropertyValue : installedDevice.getDevicePropertyList()) {
-                attributesList.add(new EntityAttributeView(devicePropertyValue,
-                                                            EntityAttributeViewKind.DEVICE_PROPERTY));
+                attributes.add(new EntityAttributeView(devicePropertyValue,
+                                                            EntityAttributeViewKind.DEVICE_PROPERTY,
+                                                            slot.getName()));
             }
         }
     }
 
-    private void addArtifacts(List<EntityAttributeView> attributesList) {
-        final boolean isHostingSlot = selectedSlot.isHostingSlot();
+    private void addArtifacts(final Slot slot) {
+        final boolean isHostingSlot = slot.isHostingSlot();
         final Device installedDevice = getInstalledDevice();
 
-        for (final ComptypeArtifact artifact : selectedSlot.getComponentType().getComptypeArtifactList()) {
-            attributesList.add(new EntityAttributeView(artifact, EntityAttributeViewKind.DEVICE_TYPE_ARTIFACT));
+        for (final ComptypeArtifact artifact : slot.getComponentType().getComptypeArtifactList()) {
+            attributes.add(new EntityAttributeView(artifact, EntityAttributeViewKind.DEVICE_TYPE_ARTIFACT,
+                                                            slot.getName()));
         }
 
-        for (final SlotArtifact artifact : selectedSlot.getSlotArtifactList()) {
-            attributesList.add(new EntityAttributeView(artifact, isHostingSlot
+        for (final SlotArtifact artifact : slot.getSlotArtifactList()) {
+            attributes.add(new EntityAttributeView(artifact, isHostingSlot
                                                             ? EntityAttributeViewKind.INSTALL_SLOT_ARTIFACT
                                                             : EntityAttributeViewKind.CONTAINER_SLOT_ARTIFACT));
         }
 
         if (installedDevice != null) {
             for (final DeviceArtifact deviceArtifact : installedDevice.getDeviceArtifactList()) {
-                attributesList.add(new EntityAttributeView(deviceArtifact,
-                                                            EntityAttributeViewKind.DEVICE_ARTIFACT));
+                attributes.add(new EntityAttributeView(deviceArtifact,
+                                                            EntityAttributeViewKind.DEVICE_ARTIFACT,
+                                                            slot.getName()));
             }
         }
     }
 
-    private void addTags(List<EntityAttributeView> attributesList) {
-        final boolean isHostingSlot = selectedSlot.isHostingSlot();
+    private void addTags(final Slot slot) {
+        final boolean isHostingSlot = slot.isHostingSlot();
         final Device installedDevice = getInstalledDevice();
 
-        for (final Tag tagInstance : selectedSlot.getComponentType().getTags()) {
-            attributesList.add(new EntityAttributeView(tagInstance, EntityAttributeViewKind.DEVICE_TYPE_TAG));
+        for (final Tag tagInstance : slot.getComponentType().getTags()) {
+            attributes.add(new EntityAttributeView(tagInstance, EntityAttributeViewKind.DEVICE_TYPE_TAG,
+                                                            slot.getName()));
         }
 
-        for (final Tag tagInstance : selectedSlot.getTags()) {
-            attributesList.add(new EntityAttributeView(tagInstance, isHostingSlot
+        for (final Tag tagInstance : slot.getTags()) {
+            attributes.add(new EntityAttributeView(tagInstance, isHostingSlot
                                                             ? EntityAttributeViewKind.INSTALL_SLOT_TAG
-                                                            : EntityAttributeViewKind.CONTAINER_SLOT_TAG));
+                                                            : EntityAttributeViewKind.CONTAINER_SLOT_TAG,
+                                                            slot.getName()));
         }
 
         if (installedDevice != null) {
             for (final Tag tagInstance : installedDevice.getTags()) {
-                attributesList.add(new EntityAttributeView(tagInstance, EntityAttributeViewKind.DEVICE_TAG));
+                attributes.add(new EntityAttributeView(tagInstance, EntityAttributeViewKind.DEVICE_TAG,
+                                                            slot.getName()));
             }
         }
     }
 
-    private void initRelationshipList() {
+    private void initRelationshipList(final Slot slot) {
         relationships = Lists.newArrayList();
+        addToRelationshipList(slot);
+    }
 
-        if (selectedNode != null) {
-            final Slot rootSlot = slotEJB.getRootNode();
-            final List<SlotPair> slotPairs = slotPairEJB.getSlotRelations(selectedSlot);
+    private void addToRelationshipList(final Slot slot) {
+        final Slot rootSlot = slotEJB.getRootNode();
+        final List<SlotPair> slotPairs = slotPairEJB.getSlotRelations(slot);
 
-            for (final SlotPair slotPair : slotPairs) {
-                if (!slotPair.getParentSlot().equals(rootSlot)) {
-                    relationships.add(new SlotRelationshipView(slotPair, selectedSlot));
-                }
+        for (final SlotPair slotPair : slotPairs) {
+            if (!slotPair.getParentSlot().equals(rootSlot)) {
+                relationships.add(new SlotRelationshipView(slotPair, slot));
+            }
+        }
+    }
+
+    private void initInstallationRecordList(Slot slot) {
+        installationRecords = Lists.newArrayList();
+        addToInstalaltionRecordList(slot);
+    }
+
+    private void addToInstalaltionRecordList(Slot slot) {
+        if (slot.isHostingSlot()) {
+            final InstallationRecord record = installationEJB.getActiveInstallationRecordForSlot(slot);
+            if (record != null) {
+                installationRecords.add(record);
             }
         }
     }
@@ -353,32 +419,25 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      *        a line in a table.
      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
     /** Clears all slot related information when user deselects the slot in the hierarchy. */
-    public void clearAttributeList() {
+    private void clearAttributeList() {
         attributes = null;
         filteredAttributes = null;
         relationships = null;
         filteredRelationships = null;
-        installationRecord = null;
-        selectedSlotView = null;
-        selectedSlot = null;
-        selectedNode = null;
+        installationRecords = null;
+        deselectSingleNode();
     }
 
-    /** With this method PrimeFaces sets the currently selected node. The method has two side effects:
-     * <ul>
-     * <li>it also sets the container or installation slot associated with the currently selected tree node</li>
-     * <li>it also searches id there is an installation record associated with the currently selected tree node</li>
-     * </ul>
-     * @param selectedNode The PrimeFaces tree node to that is selected.
-     */
-    public void setSelectedNode(TreeNode selectedNode) {
-        if (selectedNode != null) {
-            this.selectedNode = selectedNode;
-            selectedSlotView = selectedNode == null ? null : (SlotView)selectedNode.getData();
-            selectedSlot = selectedNode == null ? null : this.selectedSlotView.getSlot();
-            installationRecord = selectedNode == null || !selectedSlot.isHostingSlot() ? null
-                                                    : installationEJB.getActiveInstallationRecordForSlot(selectedSlot);
-        }
+    private void selectSingleNode(final TreeNode selectedNode) {
+        selectedSlotView = (SlotView) selectedNode.getData();
+        selectedSlot = selectedSlotView.getSlot();
+        selectedInstallationRecord = installationEJB.getActiveInstallationRecordForSlot(selectedSlot);
+    }
+
+    private void deselectSingleNode() {
+        selectedSlotView = null;
+        selectedSlot = null;
+        selectedInstallationRecord = null;
     }
 
     /** The function to select a different node in the TreeTable by clicking on the link in the relationship table.
@@ -389,12 +448,10 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
         final TreeNode nodeToSelect = findNode(id, rootNode);
         if (nodeToSelect != null) {
-            if (selectedNode != null) {
-                selectedNode.setSelected(false);
-            }
+            // TODO deselect all nodes in the tree
             nodeToSelect.setSelected(true);
-            setSelectedNode(nodeToSelect);
-            initSelectedItemLists();
+            //setSelectedNode(nodeToSelect);
+            initSelectedItemLists(selectedSlotView.getSlot());
         }
     }
 
@@ -418,12 +475,49 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     }
 
     /** Prepares the attribute and relationship lists for display when user selects the slot in the hierarchy. */
-    public void initSelectedItemLists() {
-        initAttributeList();
-        initRelationshipList();
-        installationRecord = selectedNode == null || !selectedSlot.isHostingSlot() ? null
-                : installationEJB.getActiveInstallationRecordForSlot(selectedSlot);
+    private void initSelectedItemLists(final Slot slot) {
+        initAttributeList(slot);
+        initRelationshipList(slot);
+        initInstallationRecordList(slot);
         selectedAttribute = null;
+    }
+
+    /**
+     * Called when a user deselects a new node in one of the hierarchy trees.
+     *
+     * @param event Event triggered on node selection action
+     */
+    public void onNodeSelect(NodeSelectEvent event) {
+        final SlotView addedSlotView = (SlotView) event.getTreeNode().getData();
+        if (selectedNodes != null && selectedNodes.size() == 1) {
+            initSelectedItemLists(addedSlotView.getSlot());
+            selectSingleNode(event.getTreeNode());
+        } else {
+            final Slot slot = addedSlotView.getSlot();
+            addPropertyValues(slot);
+            addArtifacts(slot);
+            addTags(slot);
+            addToRelationshipList(slot);
+            addToInstalaltionRecordList(slot);
+        }
+    }
+
+    /**
+     * Called when a user deselects a new node in one of the hierarchy trees.
+     *
+     * @param event Event triggered on node selection action
+     */
+    public void onNodeUnselect(NodeUnselectEvent event) {
+        // in the callback, the selectedNodes no longer contains the unselected node
+        if (selectedNodes == null || selectedNodes.isEmpty()) {
+            clearAttributeList();
+            return;
+        }
+
+        removeRelatedAttributes(((SlotView) event.getTreeNode().getData()).getSlot());
+        if (selectedNodes.size() == 1) {
+            selectSingleNode(selectedNodes.get(0));
+        }
     }
 
     /**
@@ -464,9 +558,6 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
     public void onTabChange(TabChangeEvent event) {
         isIncludesActive = event.getTab().getId().equals("includesTab");
-        if (selectedNode != null) {
-            selectedNode.setSelected(false);
-        }
         clearAttributeList();
     }
 
@@ -480,8 +571,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         try (InputStream inputStream = new ByteArrayInputStream(importData)) {
             setLoaderResult(dataLoaderHandler.loadData(inputStream, signalsDataLoader));
             if (selectedSlot != null) {
-                refreshSlot();
-                initAttributeList();
+                refreshSlot(selectedSlot);
+                //initAttributeList(); // TODO deselect everything in all trees.
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -496,32 +587,40 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
     /** Prepares back-end data used for container deletion */
     public void prepareDeletePopup() {
-        Preconditions.checkNotNull(selectedNode);
-        selectedSlotView = (SlotView) selectedNode.getData();
+        Preconditions.checkNotNull(selectedSlotView);
     }
 
     /** Deletes selected container */
     public void onSlotDelete() {
-        if (!selectedSlotView.isHostingSlot()
-                    || installationEJB.getActiveInstallationRecordForSlot(selectedSlotView.getSlot()) == null) {
-            final TreeNode parentTreeNode = selectedNode.getParent();
-            slotEJB.delete(selectedSlotView.getSlot());
+        // check all selected nodes and delete them if they have no children.
+        Preconditions.checkState(isNodesDeletable());
+        final int numSlotstoDelete = selectedNodes.size();
+        for (final TreeNode nodeToRemove : selectedNodes) {
+            final TreeNode parentTreeNode = nodeToRemove.getParent();
+            final Slot slotToDelete = ((SlotView) nodeToRemove.getData()).getSlot();
+            slotEJB.delete(slotToDelete);
             // node removed. Refresh the parent
             final SlotView parentSlotView = (SlotView) parentTreeNode.getData();
             parentSlotView.setSlot(slotEJB.findById(parentSlotView.getSlot().getId()));
             // update UI data as well
-            parentTreeNode.getChildren().remove(selectedNode);
-            selectedSlotView = null;
-            selectedNode = null;
-            clearAttributeList();
+            parentTreeNode.getChildren().remove(nodeToRemove);
             if (parentTreeNode.getChildCount() == 0) {
                 parentSlotView.setDeletable(true);
             }
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Slot deleted", "Slot has been successfully deleted");
-        } else {
-            Utility.showMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_DELETE_FAIL,
-                                "Installation slot could not be deleted because it has a device installed on it.");
         }
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Slots deleted", Integer.toString(numSlotstoDelete)
+                                            + " slots have been successfully deleted");
+        clearAttributeList();
+    }
+
+    public boolean isNodesDeletable() {
+        for (final TreeNode node : selectedNodes) {
+            final SlotView nodeSlot = (SlotView) node.getData();
+            if ((node.getChildCount() > 0) || (nodeSlot.getInstalledDevice() == null)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private void initIncludeHierarchy() {
@@ -552,7 +651,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      * container/installation slot up one space, if that is possible.
      */
     public void moveSlotUp() {
-        final TreeNode currentNode = selectedNode;
+        Preconditions.checkState(isSingleNodeSelected());
+        final TreeNode currentNode = selectedNodes.get(0);
         final TreeNode parent = currentNode.getParent();
 
         final ListIterator<TreeNode> listIterator = parent.getChildren().listIterator();
@@ -578,7 +678,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      * container/installation slot down one space, if that is possible.
      */
     public void moveSlotDown() {
-        final TreeNode currentNode = selectedNode;
+        Preconditions.checkState(isSingleNodeSelected());
+        final TreeNode currentNode = selectedNodes.get(0);
         final TreeNode parent = currentNode.getParent();
 
         final ListIterator<TreeNode> listIterator = parent.getChildren().listIterator();
@@ -602,9 +703,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
     /** Prepares fields that are used in pop up for editing an existing container */
     public void prepareEditPopup() {
-        Preconditions.checkNotNull(selectedNode);
+        Preconditions.checkState(isSingleNodeSelected());
         isNewInstallationSlot = false;
-        selectedSlotView = (SlotView) selectedNode.getData();
         isInstallationSlot = selectedSlotView.isHostingSlot();
         name = selectedSlotView.getName();
         description = selectedSlotView.getDescription();
@@ -635,16 +735,16 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         final Slot modifiedSlot = selectedSlotView.getSlot();
         modifiedSlot.setName(name);
         modifiedSlot.setDescription(description);
-        if (modifiedSlot.isHostingSlot() && installationRecord == null) {
+        if (modifiedSlot.isHostingSlot() && installationRecords == null) {
             modifiedSlot.setComponentType(deviceType);
         }
         slotEJB.save(modifiedSlot);
         selectedSlotView.setSlot(slotEJB.findById(modifiedSlot.getId()));
-        initAttributeList();
     }
 
     /** Called to add a new installation slot / container to the database */
     public void onSlotAdd() {
+        Preconditions.checkState(selectedNodes == null || selectedNodes.size() == 1);
         final Slot newSlot = new Slot(name, isInstallationSlot);
         newSlot.setDescription(description);
         if (isInstallationSlot) {
@@ -652,12 +752,12 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         } else {
             newSlot.setComponentType(comptypeEJB.findByName(SlotEJB.GRP_COMPONENT_TYPE));
         }
-        final Slot parentSlot = selectedNode != null ? ((SlotView) selectedNode.getData()).getSlot() : null;
+        final TreeNode parentNode = selectedNodes != null ? selectedNodes.get(0) : rootNode;
+        final Slot parentSlot = selectedNodes != null ? ((SlotView) parentNode.getData()).getSlot() : null;
         slotEJB.addSlotToParentWithPropertyDefs(newSlot, parentSlot, false);
 
         // first update the back-end data
-        final TreeNode nodeToUpdate = selectedNode != null ? selectedNode : rootNode;
-        final SlotView slotViewToUpdate = (SlotView) nodeToUpdate.getData();
+        final SlotView slotViewToUpdate = (SlotView) parentNode.getData();
         slotViewToUpdate.setSlot(slotEJB.findById(slotViewToUpdate.getSlot().getId()));
         if (selectedSlotView != null) {
             selectedSlotView = slotViewToUpdate;
@@ -669,12 +769,12 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
                     slotViewToUpdate.getName(), SlotRelationName.CONTAINS);
             final SlotPair newRelation = containsRelation.get(0);
             final SlotView slotViewToAdd = new SlotView(newSlot, slotViewToUpdate, newRelation.getSlotOrder());
-            hierarchyBuilder.addChildToParent(nodeToUpdate, slotViewToAdd);
+            hierarchyBuilder.addChildToParent(parentNode, slotViewToAdd);
         } else {
-            hierarchyBuilder.rebuildSubTree(nodeToUpdate);
+            hierarchyBuilder.rebuildSubTree(parentNode);
         }
         slotViewToUpdate.setDeletable(false);
-        nodeToUpdate.setExpanded(true);
+        parentNode.setExpanded(true);
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Slot created", "Slot has been successfully created");
     }
 
@@ -721,26 +821,16 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         installationEJB.add(newRecord);
 
         deviceToInstall = null;
-        installationRecord = installationEJB.getActiveInstallationRecordForSlot(selectedSlot);
+        addToInstalaltionRecordList(selectedSlot);
     }
 
-    /** This method is called when a user presses the "Uninstall" button in the hierarchies view.
-     * @param device the device
-     */
-    public void uninstallDevice(Device device) {
-        Preconditions.checkNotNull(device);
-        final InstallationRecord deviceInstallationRecord =
-                                                    installationEJB.getActiveInstallationRecordForDevice(device);
-        if (deviceInstallationRecord == null) {
-            LOGGER.log(Level.WARNING, "The device appears installed, but no active installation record for "
-                    + "it could be retrieved. Device db ID: " + device.getId()
-                    + ", serial number: " + device.getSerialNumber());
-            throw new RuntimeException("No active installation record for the device exists.");
-        }
-        deviceInstallationRecord.setUninstallDate(new Date());
-        installationEJB.save(deviceInstallationRecord);
+    /** This method is called when a user presses the "Uninstall" button in the hierarchies view. */
+    public void uninstallDevice() {
+        Preconditions.checkNotNull(selectedInstallationRecord);
+        selectedInstallationRecord.setUninstallDate(new Date());
+        installationEJB.save(selectedInstallationRecord);
         // the device is not installed any more. Clear the installation state information.
-        this.installationRecord = null;
+        selectedInstallationRecord = null;
     }
 
     /** @return <code>true</code> if the attribute "Delete" button can be enabled, <code>false</code> otherwise */
@@ -764,24 +854,24 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     /** The handler called from the "Delete confirmation" dialog. This actually deletes an attribute */
     public void deleteAttribute() {
         Preconditions.checkNotNull(selectedAttribute);
-        Preconditions.checkNotNull(selectedSlot);
+        final Slot slot = slotEJB.findByName(selectedAttribute.getParent());
         switch (selectedAttribute.getKind()) {
             case INSTALL_SLOT_ARTIFACT:
             case CONTAINER_SLOT_ARTIFACT:
             case CONTAINER_SLOT_PROPERTY:
                 slotEJB.deleteChild(selectedAttribute.getEntity());
-                refreshSlot();
+                refreshSlot(slot);
                 break;
             case INSTALL_SLOT_TAG:
             case CONTAINER_SLOT_TAG:
-                selectedSlot.getTags().remove(selectedAttribute.getEntity());
-                saveSlotAndRefresh();
+                slot.getTags().remove(selectedAttribute.getEntity());
+                saveSlotAndRefresh(slot);
                 break;
             default:
                 throw new RuntimeException("Trying to delete an attribute that cannot be removed on home screen.");
         }
+        attributes.remove(selectedAttribute);
         selectedAttribute = null;
-        initAttributeList();
     }
 
     /** @return <code>true</code> if the attribute "Edit" button can be enables, <code>false</code> otherwise */
@@ -839,15 +929,15 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     public void addNewPropertyValue() {
         try {
             final SlotPropertyValue slotValueInstance = new SlotPropertyValue(false);
+            selectedAttribute = null;
             slotValueInstance.setProperty(property);
             slotValueInstance.setPropValue(propertyValue);
             slotValueInstance.setPropertiesParent(selectedSlot);
 
             slotEJB.addChild(slotValueInstance);
 
-            refreshSlot();
-            selectedAttribute = null;
-            initAttributeList();
+            refreshSlot(selectedSlot);
+            refreshAttributeList(selectedSlot, slotValueInstance);
 
             Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
                     "New property has been created");
@@ -873,8 +963,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             slotEJB.saveChild(selectedPropertyValue);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
                                                                         "Property value has been modified");
-            refreshSlot();
-            initAttributeList();
+            refreshSlot(selectedSlot);
+            refreshAttributeList(selectedSlot, selectedPropertyValue);
         } catch (EJBException e) {
             if (Utility.causedBySpecifiedExceptionClass(e, PropertyValueNotUniqueException.class)) {
                 FacesContext.getCurrentInstance().addMessage("uniqueMessage",
@@ -953,14 +1043,15 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
     /** Adds new {@link Tag} to parent {@link ConfigurationEntity} */
     public void addNewTag() {
+        selectedAttribute = null;
         final String normalizedTag = tag.trim();
         Tag existingTag = tagEJB.findById(normalizedTag);
         if (existingTag == null) {
             existingTag = new Tag(normalizedTag);
         }
         selectedSlot.getTags().add(existingTag);
-        saveSlotAndRefresh();
-        initAttributeList();
+        saveSlotAndRefresh(selectedSlot);
+        refreshAttributeList(selectedSlot, existingTag);
         fillTagsAutocomplete();
 
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Tag added", tag);
@@ -1015,6 +1106,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      */
     public void addNewArtifact() throws IOException {
         Preconditions.checkNotNull(selectedSlot);
+        selectedAttribute = null;
         if (importData != null) {
             artifactURI = blobStore.storeFile(new ByteArrayInputStream(importData));
         }
@@ -1024,9 +1116,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         slotArtifact.setSlot(selectedSlot);
 
         slotEJB.addChild(slotArtifact);
-        refreshSlot();
-        selectedAttribute = null;
-        initAttributeList();
+        refreshSlot(selectedSlot);
+        refreshAttributeList(selectedSlot, slotArtifact);
         Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
                                                                     "New artifact has been created");
     }
@@ -1060,10 +1151,10 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         }
 
         slotEJB.saveChild(selectedArtifact);
-        refreshSlot();
+        refreshSlot(selectedSlot);
+        refreshAttributeList(selectedSlot, selectedArtifact);
         Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
                                                                     "Artifact has been modified");
-        initAttributeList();
     }
 
     /**
@@ -1301,10 +1392,6 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      * relationship status of all displayed slots. Otherwise the information can get out of synch with the database.
      */
     public void onRelationshipPopupClose() {
-        // restore the selection state in the main hierarchy tree
-        if (selectedNode != null) {
-            selectedNode.setSelected(true);
-        }
     }
 
     /**
@@ -1330,12 +1417,9 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      */
     public void prepareAddRelationshipPopup() {
         Preconditions.checkNotNull(selectedSlot);
-        initRelationshipList();
+        //initRelationshipList();
         // hide the current main selection, since the same data can be used to add new relationships.
         // Will be restored when the user finishes relationship manipulation.
-        if (selectedNode != null) {
-            selectedNode.setSelected(false);
-        }
         if (selectedTreeNodeForRelationshipAdd != null) {
             selectedTreeNodeForRelationshipAdd.setSelected(false);
         }
@@ -1429,6 +1513,13 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         return selectedSlot;
     }
 
+    /** @return the {@link SlotView} of the slot, if there is only one node selected in the tree.
+     * <code>null</code> otherwise.
+     */
+    public SlotView getSingleSelectedSlotView() {
+        return selectedSlotView;
+    }
+
     /** @return The list of relationships for the currently selected slot. */
     public List<SlotRelationshipView> getRelationships() {
         return relationships;
@@ -1452,9 +1543,12 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         return controlsRootNode;
     }
 
-    /** @return Getter for the currently selected node in a tree (required by PrimeFaces). */
-    public TreeNode getSelectedNode() {
-        return selectedNode;
+    public void setSelectedNodes(TreeNode[] nodes) {
+        selectedNodes = nodes == null ? null : Lists.newArrayList(nodes);
+    }
+
+    public TreeNode[] getSelectedNodes() {
+        return selectedNodes == null ? null : selectedNodes.toArray(new TreeNode[] {});
     }
 
     /** @return <code>true</code> if the UI is currently showing the <code>INCLUDES</code> hierarchy */
@@ -1462,23 +1556,38 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         return isIncludesActive;
     }
 
+    public boolean isSingleNodeSelected() {
+        return (selectedNodes != null) && selectedNodes.size() == 1;
+    }
+
+    public boolean isMultipleNodesSelected() {
+        return (selectedNodes != null) && selectedNodes.size() > 1;
+    }
+
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Device instance installation
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /**
      * @return The device that is installed in the currently selected slot, <code>null</code> if no device is installed
-     * or this is a <i>container</i> or no node is selected.
+     * or this is a <i>container</i> or no node is selected or there are multiple nodes selected.
      */
     public Device getInstalledDevice() {
-        return installationRecord == null ? null : installationRecord.getDevice();
+        return selectedInstallationRecord == null ? null : selectedInstallationRecord.getDevice();
     }
 
     /**
-     * @return The latest installation record associated with the selected installation slot, <code>null</code> if a
-     * container is selected.
+     * @return The latest installation records associated with the selected installation slots, <code>null</code> if no
+     * slots are selected.
      */
-    public InstallationRecord getInstallationRecord() {
-        return installationRecord;
+    public List<InstallationRecord> getInstallationRecords() {
+        return installationRecords;
+    }
+
+    /** @return the installation record of the single selected installation {@link Slot}, <code>null</code> if
+     * nothing is installed, nothing is selected or multiple slots are selected.
+     */
+    public InstallationRecord getSelectedInstallationRecord() {
+        return selectedInstallationRecord;
     }
 
     /**

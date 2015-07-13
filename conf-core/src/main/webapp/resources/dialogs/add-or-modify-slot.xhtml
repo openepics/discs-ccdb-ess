@@ -20,7 +20,8 @@
                             <p:selectOneMenu id="compTypeSelect" value="#{hierarchiesController.deviceType}" 
                                     converter="#{componentTypeConverter}" rendered="true" required="true" 
                                     requiredMessage="Please select a device type" 
-                                    disabled="#{not hierarchiesController.newInstallationSlot and not empty hierarchiesController.installationRecord}">
+                                    disabled="#{not hierarchiesController.newInstallationSlot 
+                                            and not empty hierarchiesController.selectedInstallationRecord}">
                                 <f:selectItem itemLabel="Select One" itemValue="" noSelectionOption="true" />
                                 <f:selectItems value="#{componentTypeManager.deviceTypes}" var="deviceType" 
                                     itemLabel="#{deviceType.name}" itemValue="#{deviceType}" />
