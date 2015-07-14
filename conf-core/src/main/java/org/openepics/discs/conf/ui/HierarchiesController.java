@@ -139,6 +139,10 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     @Inject private transient DataLoaderHandler dataLoaderHandler;
     @Inject @SignalsLoader private transient DataLoader signalsDataLoader;
 
+    private enum ActiveTab {
+        INCLUDES, POWERS, CONTROLS
+    }
+
     private transient List<EntityAttributeView> attributes;
     private transient List<EntityAttributeView> filteredAttributes;
     private transient List<SelectItem> attributeKinds;
@@ -164,7 +168,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     private Slot selectedSlot;
     /** <code>selectedSlotView</code> is only initialized when there is only one node in the tree selected */
     private SlotView selectedSlotView;
-    private boolean isIncludesActive;
+    private ActiveTab activeTab;
 
     // variables from the installation slot / containers editing merger.
     private String name;
@@ -203,7 +207,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     public void init() {
         try {
             super.init();
-            isIncludesActive = true;
+            activeTab = ActiveTab.INCLUDES;
             initIncludeHierarchy();
             initPowersHierarchy();
             initControlsHierarchy();
@@ -557,7 +561,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     }
 
     public void onTabChange(TabChangeEvent event) {
-        isIncludesActive = event.getTab().getId().equals("includesTab");
+        activeTab = ActiveTab.valueOf(event.getTab().getId());
         clearAttributeList();
     }
 
@@ -591,7 +595,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     }
 
     /** Deletes selected container */
-    public void onSlotDelete() {
+    public void onSlotsDelete() {
         // check all selected nodes and delete them if they have no children.
         Preconditions.checkState(isNodesDeletable());
         final int numSlotstoDelete = selectedNodes.size();
@@ -610,13 +614,17 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         }
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Slots deleted", Integer.toString(numSlotstoDelete)
                                             + " slots have been successfully deleted");
+        selectedNodes = null;
         clearAttributeList();
     }
 
     public boolean isNodesDeletable() {
+        if (selectedNodes == null) {
+            return false;
+        }
         for (final TreeNode node : selectedNodes) {
             final SlotView nodeSlot = (SlotView) node.getData();
-            if ((node.getChildCount() > 0) || (nodeSlot.getInstalledDevice() == null)) {
+            if ((node.getChildCount() > 0) || (nodeSlot.getInstalledDevice() != null)) {
                 return false;
             }
         }
@@ -1209,7 +1217,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      * @throws ValidatorException validation failed
      */
     public void validateInstallationSlot(FacesContext ctx, UIComponent component, Object value) {
-        if (isInstallationSlot && !slotEJB.isInstallationSlotNameUnique(value.toString())) {
+        if (isInstallationSlot && isNewInstallationSlot && !slotEJB.isInstallationSlotNameUnique(value.toString())) {
             throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
                     "The installation slot name must be unique."));
         }
@@ -1543,17 +1551,43 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         return controlsRootNode;
     }
 
-    public void setSelectedNodes(TreeNode[] nodes) {
-        selectedNodes = nodes == null ? null : Lists.newArrayList(nodes);
+    public void setSelectedIncludesNodes(TreeNode[] nodes) {
+        if (activeTab == ActiveTab.INCLUDES) {
+            selectedNodes = nodes == null ? null : Lists.newArrayList(nodes);
+        }
     }
 
-    public TreeNode[] getSelectedNodes() {
-        return selectedNodes == null ? null : selectedNodes.toArray(new TreeNode[] {});
+    public TreeNode[] getSelectedIncludesNodes() {
+        return ((selectedNodes == null) || (activeTab != ActiveTab.INCLUDES))
+                ? null : selectedNodes.toArray(new TreeNode[] {});
     }
+
+    public void setSelectedControlsNodes(TreeNode[] nodes) {
+        if (activeTab == ActiveTab.CONTROLS) {
+            selectedNodes = nodes == null ? null : Lists.newArrayList(nodes);
+        }
+    }
+
+    public TreeNode[] getSelectedControlsNodes() {
+        return ((selectedNodes == null) || (activeTab != ActiveTab.CONTROLS))
+                ? null : selectedNodes.toArray(new TreeNode[] {});
+    }
+
+    public void setSelectedPowersNodes(TreeNode[] nodes) {
+        if (activeTab == ActiveTab.POWERS) {
+            selectedNodes = nodes == null ? null : Lists.newArrayList(nodes);
+        }
+    }
+
+    public TreeNode[] getSelectedPowersNodes() {
+        return ((selectedNodes == null) || (activeTab != ActiveTab.POWERS))
+                ? null : selectedNodes.toArray(new TreeNode[] {});
+    }
+
 
     /** @return <code>true</code> if the UI is currently showing the <code>INCLUDES</code> hierarchy */
     public boolean isIncludesActive() {
-        return isIncludesActive;
+        return activeTab == ActiveTab.INCLUDES;
     }
 
     public boolean isSingleNodeSelected() {

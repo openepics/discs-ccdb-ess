@@ -86,9 +86,9 @@
                                         :hierarchies:hierarchyTabs:powersTree :hierarchies:hierarchyTabs:controlsTree" 
                                     oncomplete="resizeHierarchyTrees();" />
 
-                                <p:tab id="includesTab" title="Includes">
+                                <p:tab id="INCLUDES" title="Includes">
                                     <p:treeTable id="tree" value="#{hierarchiesController.rootNode}" var="installationSlot" 
-                                             selectionMode="multiple" selection="#{hierarchiesController.selectedNodes}" 
+                                             selectionMode="multiple" selection="#{hierarchiesController.selectedIncludesNodes}" 
                                              scrollable="true" scrollWidth="auto" rowStyleClass="treeRows" 
                                              style="width: 30em;" widgetVar="hierarchyWidget">
                                          <p:ajax event="select" listener="#{hierarchiesController.onNodeSelect}" 
@@ -116,9 +116,9 @@
                                          </p:column>
                                      </p:treeTable>                                
                                 </p:tab>
-                                <p:tab id="controlsTab" title="Controls">
+                                <p:tab id="CONTROLS" title="Controls">
                                     <p:treeTable id="controlsTree" value="#{hierarchiesController.controlsRoot}" var="ctrlSlot" 
-                                             selectionMode="multiple" selection="#{hierarchiesController.selectedNodes}" 
+                                             selectionMode="multiple" selection="#{hierarchiesController.selectedControlsNodes}" 
                                              scrollable="true" scrollWidth="auto" rowStyleClass="treeRows" 
                                              style="width: 30em;"  widgetVar="ctrlWidget">
                                          <p:ajax event="select" listener="#{hierarchiesController.onNodeSelect}" 
@@ -142,9 +142,9 @@
                                          </p:column>
                                      </p:treeTable>                                
                                 </p:tab>
-                                <p:tab id="powersTab" title="Powers">
+                                <p:tab id="POWERS" title="Powers">
                                     <p:treeTable id="powersTree" value="#{hierarchiesController.powersRoot}" var="powerSlot" 
-                                             selectionMode="multiple" selection="#{hierarchiesController.selectedNodes}" 
+                                             selectionMode="multiple" selection="#{hierarchiesController.selectedPowersNodes}" 
                                              scrollable="true" scrollWidth="auto" rowStyleClass="treeRows" 
                                              style="width: 30em;"  widgetVar="powersWidget">
                                          <p:ajax event="select" listener="#{hierarchiesController.onNodeSelect}" 
@@ -171,9 +171,9 @@
                             </p:tabView>
 
                             <p:commandButton id="deleteButton" icon="ui-icon-trash" value="Delete" title="Delete" 
-                                style="float: right; margin-top: 1em;" oncomplete="PF('deleteSlot').show();" 
-                                disabled="#{empty hierarchiesController.selectedNodes
-                                                or not hierarchiesController.includesActive 
+                                style="float: right; margin-top: 1em;" oncomplete="PF('deleteSlots').show();" 
+                                disabled="#{not hierarchiesController.includesActive 
+                                                or empty hierarchiesController.selectedIncludesNodes 
                                                 or not hierarchiesController.nodesDeletable}" 
                                 actionListener="#{hierarchiesController.prepareDeletePopup()}" />
                             <p:commandButton id="downButton" icon="ui-icon-arrowthick-1-s" value="Down" title="Move down" 
@@ -197,11 +197,13 @@
                                 actionListener="#{hierarchiesController.prepareEditPopup()}" />
 
                             <p:menuButton id="addButton" value="Add" style="float: right; margin: 1em 1ex 0 0;" 
-                                    disabled="#{not hierarchiesController.includesActive}">
+                                    disabled="#{not hierarchiesController.includesActive 
+                                                    or hierarchiesController.multipleNodesSelected}">
                                 <p:menuitem value="Container" oncomplete="PF('addSlotDialog').show();" 
                                         actionListener="#{hierarchiesController.prepareContainerAddPopup}" 
                                         update=":addSlotForm" 
-                                        disabled="#{not hierarchiesController.singleNodeSelected and hierarchiesController.selectedNodeSlot.hostingSlot}" />
+                                        disabled="#{not hierarchiesController.singleNodeSelected 
+                                                        or hierarchiesController.selectedNodeSlot.hostingSlot}" />
                                 <p:menuitem value="Installation slot" oncomplete="PF('addSlotDialog').show();" 
                                         actionListener="#{hierarchiesController.prepareInstallationSlotPopup}" 
                                         update=":addSlotForm" disabled="#{not hierarchiesController.singleNodeSelected}" />
@@ -220,8 +222,7 @@
                                 <p:ajax event="rowSelect" update=":hierarchies:deleteAttrButton :hierarchies:editAttrButton" />
                                 <p:ajax event="rowUnselect" update=":hierarchies:deleteAttrButton :hierarchies:editAttrButton" />
 
-                                <p:column headerText="Entity" visible="#{hierarchiesController.multipleNodesSelected}" 
-                                        sortBy="#{attribute.parent}" filterBy="#{attribute.parent}" 
+                                <p:column headerText="Entity" sortBy="#{attribute.parent}" filterBy="#{attribute.parent}" 
                                         filterMatchMode="contains" >
                                     <h:outputText value="#{attribute.parent}" />
                                 </p:column>
@@ -301,8 +302,7 @@
                                 <p:ajax event="rowSelect" update=":hierarchies:deleteRelationship" />
                                 <p:ajax event="rowUnselect" update=":hierarchies:deleteRelationship" />
 
-                                <p:column headerText="Source" visible="#{hierarchiesController.multipleNodesSelected}" 
-                                        sortBy="#{relationship.sourceSlotName}">
+                                <p:column headerText="Source" sortBy="#{relationship.sourceSlotName}">
                                     <h:outputText value="#{relationship.sourceSlotName}" />
                                 </p:column>
 
@@ -339,8 +339,7 @@
                             <p:fieldset legend="Installation details" rendered="#{not empty hierarchiesController.installationRecords}">
                                 <p:dataTable id="installationTable" value="#{hierarchiesController.installationRecords}" 
                                         var="installationRecord" style="width: 100%;">
-                                    <p:column headerText="Installation slot" visible="#{hierarchiesController.multipleNodesSelected}"
-                                            sortBy="#{installationRecord.slot.name}">
+                                    <p:column headerText="Installation slot" sortBy="#{installationRecord.slot.name}">
                                         <h:outputText value="#{installationRecord.slot.name}" />
                                     </p:column>
                                     <p:column headerText="Installed device inventory ID">
@@ -390,16 +389,16 @@
         </ui:include>
 
         <ui:include src="/resources/dialogs/delete-confirmation.xhtml" >
-            <ui:param name="formId" value="deleteSlotForm" />
-            <ui:param name="dialogTitle" value="Delete slot" />
-            <ui:param name="widgetName" value="deleteSlot" />
+            <ui:param name="formId" value="deleteSlotsForm" />
+            <ui:param name="dialogTitle" value="#{hierarchiesController.multipleNodesSelected ? 'Delete slots' : 'Delete slot'}" />
+            <ui:param name="widgetName" value="deleteSlots" />
             <ui:param name="controller" value="#{hierarchiesController}" />
-            <ui:param name="submitHandler" value="onSlotDelete" />
+            <ui:param name="submitHandler" value="onSlotsDelete" />
             <ui:param name="formToUpdate" value=":hierarchies:hierarchyTabs:tree :hierarchies:deleteButton 
                     :hierarchies:slotAttributes :hierarchies:relationsTable :hierarchies:installationDetails 
                     :hierarchies:downButton :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton" />
             <ui:param name="resizeContent" value="hierarchiesResizeAll();" />
-            <ui:param name="entityType" value="this slot" />
+            <ui:param name="entityType" value="#{hierarchiesController.multipleNodesSelected ? 'selected slots' : 'this slot'}" />
         </ui:include>
 
         <ui:include src="/resources/dialogs/add-or-modify-slot.xhtml">

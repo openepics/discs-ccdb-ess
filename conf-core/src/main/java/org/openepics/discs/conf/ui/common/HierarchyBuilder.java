@@ -164,7 +164,7 @@ public class HierarchyBuilder {
         final ListIterator<TreeNode> treeNodeChildren = parent.getChildren().listIterator();
         final SlotView parentData = (SlotView) parent.getData();
 
-        // find correct position
+        // set basic slot information
         slotView.setLevel(parentData.getLevel() + 1);
         slotView.setInitialzed(false);
         slotView.setDeletable(true);
@@ -174,14 +174,33 @@ public class HierarchyBuilder {
                 slotView.setInstalledDevice(record.getDevice());
             }
         }
+        // find correct position
+        TreeNode manupulatedSibling = null;
         while (treeNodeChildren.hasNext()) {
             final TreeNode nextChild = treeNodeChildren.next();
+            manupulatedSibling = nextChild;
             final SlotView childData = (SlotView) nextChild.getData();
             if (childData.getOrder() > slotView.getOrder()) {
                 // move one back, because this slot needs to be after inserting slot
-                treeNodeChildren.previous();
+                manupulatedSibling = treeNodeChildren.previous();
                 break;
             }
+        }
+        if (manupulatedSibling != null) {
+            if (!treeNodeChildren.hasPrevious()) {
+                // we're inserting at the start of the collection
+                ((SlotView) manupulatedSibling.getData()).setFirst(false);
+                slotView.setFirst(true);
+            }
+            if (!treeNodeChildren.hasNext()) {
+                // we're appending to the end of the collection
+                ((SlotView) manupulatedSibling.getData()).setLast(false);
+                slotView.setLast(true);
+            }
+        } else {
+            // the children collection was empty. This is the only slot.
+            slotView.setFirst(true);
+            slotView.setLast(true);
         }
         // Correct position found. Add the node to parent.
         final TreeNode addedTreeNode = new DefaultTreeNode(slotView);
