@@ -498,16 +498,37 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         }
     }
 
-    private void initInstallationRecordList(Slot slot) {
-        installationRecords = Lists.newArrayList();
-        addToInstalaltionRecordList(slot);
+    private void removeRelatedRelationships(final Slot slot) {
+        final ListIterator<SlotRelationshipView> relationsList = relationships.listIterator();
+        while (relationsList.hasNext()) {
+            final SlotRelationshipView relationshipView = relationsList.next();
+            if (slot.getName().equals(relationshipView.getSourceSlotName())) {
+                relationsList.remove();
+            }
+        }
     }
 
-    private void addToInstalaltionRecordList(Slot slot) {
+    private void initInstallationRecordList(final Slot slot) {
+        installationRecords = Lists.newArrayList();
+        addToInstallationRecordList(slot);
+    }
+
+    private void addToInstallationRecordList(final Slot slot) {
         if (slot.isHostingSlot()) {
             final InstallationRecord record = installationEJB.getActiveInstallationRecordForSlot(slot);
             if (record != null) {
                 installationRecords.add(record);
+            }
+        }
+    }
+
+    private void removeRelatedInstallationRecord(final Slot slot) {
+        final ListIterator<InstallationRecord> recordsIterator = installationRecords.listIterator();
+        while (recordsIterator.hasNext()) {
+            final InstallationRecord record = recordsIterator.next();
+            if (slot.equals(record.getSlot())) {
+                recordsIterator.remove();
+                break;
             }
         }
     }
@@ -599,7 +620,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             addArtifacts(slot);
             addTags(slot);
             addToRelationshipList(slot);
-            addToInstalaltionRecordList(slot);
+            addToInstallationRecordList(slot);
         }
     }
 
@@ -615,7 +636,10 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             return;
         }
 
-        removeRelatedAttributes(((SlotView) event.getTreeNode().getData()).getSlot());
+        final Slot unselectedSlot = ((SlotView) event.getTreeNode().getData()).getSlot();
+        removeRelatedAttributes(unselectedSlot);
+        removeRelatedRelationships(unselectedSlot);
+        removeRelatedInstallationRecord(unselectedSlot);
         if (selectedNodes.size() == 1) {
             selectSingleNode(selectedNodes.get(0));
         }
@@ -926,7 +950,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         installationEJB.add(newRecord);
 
         deviceToInstall = null;
-        addToInstalaltionRecordList(selectedSlot);
+        addToInstallationRecordList(selectedSlot);
     }
 
     /** This method is called when a user presses the "Uninstall" button in the hierarchies view. */
