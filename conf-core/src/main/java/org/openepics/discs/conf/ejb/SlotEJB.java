@@ -27,18 +27,26 @@ import javax.inject.Inject;
 
 import org.openepics.discs.conf.auditlog.Audit;
 import org.openepics.discs.conf.dl.SlotsAndSlotPairsDataLoader;
+import org.openepics.discs.conf.ent.AlignmentArtifact;
+import org.openepics.discs.conf.ent.AlignmentPropertyValue;
+import org.openepics.discs.conf.ent.Artifact;
 import org.openepics.discs.conf.ent.ComponentType;
+import org.openepics.discs.conf.ent.ComptypeArtifact;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
+import org.openepics.discs.conf.ent.DeviceArtifact;
+import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyValue;
 import org.openepics.discs.conf.ent.Slot;
+import org.openepics.discs.conf.ent.SlotArtifact;
 import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.ent.SlotRelationName;
 import org.openepics.discs.conf.ent.values.Value;
 import org.openepics.discs.conf.security.Authorized;
 import org.openepics.discs.conf.util.CRUDOperation;
+import org.openepics.discs.conf.util.UnhandledCaseException;
 
 import com.google.common.base.Preconditions;
 
@@ -238,5 +246,53 @@ public class SlotEJB extends DAO<Slot> {
                     .setParameter("propValue", value).setMaxResults(2).getResultList();
         // value is unique if there is no property value with the same value, or the only one found us the entity itself
         return (results.size() < 2) && (results.isEmpty() || results.get(0).equals(child));
+    }
+
+    /** The method takes an instance of the property value ({@link SlotPropertyValue}, {@link ComptypePropertyValue},
+     * {@link DevicePropertyValue}, {@link AlignmentPropertyValue}) that has already been persisted (it has a valid ID),
+     * and returns a fresh instance of the entity from the database.
+     * @param propertyValue the {@link PropertyValue} to refresh. Must be already persisted.
+     * @return a fresh instance of the property value from the database
+     */
+    public <T extends PropertyValue> T refreshPropertyValue(T propertyValue) {
+        Preconditions.checkNotNull(propertyValue);
+        Preconditions.checkNotNull(propertyValue.getId());
+        final T returnPropertyValue;
+        if (propertyValue instanceof SlotPropertyValue) {
+            returnPropertyValue = (T) em.find(SlotPropertyValue.class, propertyValue.getId());
+        } else if (propertyValue instanceof ComptypePropertyValue) {
+            returnPropertyValue = (T) em.find(ComptypePropertyValue.class, propertyValue.getId());
+        } else if (propertyValue instanceof DevicePropertyValue) {
+            returnPropertyValue = (T) em.find(DevicePropertyValue.class, propertyValue.getId());
+        } else if (propertyValue instanceof AlignmentPropertyValue) {
+            returnPropertyValue = (T) em.find(AlignmentPropertyValue.class, propertyValue.getId());
+        } else {
+            throw new UnhandledCaseException();
+        }
+        return returnPropertyValue;
+    }
+
+    /** The method takes an instance of the artifact ({@link SlotArtifact}, {@link ComptypeArtifact},
+     * {@link DeviceArtifact}, {@link AlignmentArtifact}) that has already been persisted (it has a valid ID),
+     * and returns a fresh instance of the entity from the database.
+     * @param artifact the {@link Artifact} to refresh. Must be already persisted.
+     * @return a fresh instance of the artifact from the database
+     */
+    public <T extends Artifact> T refreshArtifact(T artifact) {
+        Preconditions.checkNotNull(artifact);
+        Preconditions.checkNotNull(artifact.getId());
+        final T returnPropertyValue;
+        if (artifact instanceof SlotArtifact) {
+            returnPropertyValue = (T) em.find(SlotArtifact.class, artifact.getId());
+        } else if (artifact instanceof ComptypeArtifact) {
+            returnPropertyValue = (T) em.find(ComptypeArtifact.class, artifact.getId());
+        } else if (artifact instanceof DeviceArtifact) {
+            returnPropertyValue = (T) em.find(DeviceArtifact.class, artifact.getId());
+        } else if (artifact instanceof AlignmentArtifact) {
+            returnPropertyValue = (T) em.find(AlignmentArtifact.class, artifact.getId());
+        } else {
+            throw new UnhandledCaseException();
+        }
+        return returnPropertyValue;
     }
 }

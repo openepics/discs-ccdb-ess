@@ -284,21 +284,109 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         addTags(slot);
     }
 
-    private void refreshAttributeList(final Slot slot, final SlotPropertyValue pv) {
-        // TODO implement.
+    private void refreshAttributeList(final Slot slot, final SlotPropertyValue propertyValue) {
         // Use iterator. If the property value is found, then update it.
         // If not, add new property value to the already existing ones. Append to the end of the ones for the same slot.
+        boolean encounteredParentSiblings = false;
+        ListIterator<EntityAttributeView> attributesIter = attributes.listIterator();
+        while (attributesIter.hasNext()) {
+            final EntityAttributeView tableAttribute = attributesIter.next();
+            if (tableAttribute.getParent().equals(slot.getName())) {
+                encounteredParentSiblings = true;
+                // the entity's real sibling
+
+                if (tableAttribute.getEntity().equals(propertyValue)) {
+                    // found the existing artifact, update it and exit!
+                    attributesIter.set(new EntityAttributeView(propertyValue, slot.isHostingSlot()
+                            ? EntityAttributeViewKind.INSTALL_SLOT_PROPERTY
+                                    : EntityAttributeViewKind.CONTAINER_SLOT_PROPERTY,
+                            slot.getName()));
+                    return;
+                }
+
+                if (tableAttribute.getKind() == EntityAttributeViewKind.DEVICE_TYPE_ARTIFACT
+                        || tableAttribute.getKind() == EntityAttributeViewKind.INSTALL_SLOT_ARTIFACT
+                        || tableAttribute.getKind() == EntityAttributeViewKind.DEVICE_ARTIFACT
+                        || tableAttribute.getKind() == EntityAttributeViewKind.CONTAINER_SLOT_ARTIFACT
+                        || tableAttribute.getKind() == EntityAttributeViewKind.ARTIFACT) {
+                    // we just encountered our sibling ARTIFACT. Insert before that.
+                    attributesIter.previous();
+                    break;
+                }
+            } else if (encounteredParentSiblings) {
+                // we just moved past all our siblings. Move one back and break;
+                attributesIter.previous();
+                break;
+            }
+        }
+        // the insertion pointer is at the right spot. This is either the last property value for this parent,
+        //   the last attribute for this parent (no artifacts and tags), or the very last attribute in the entire table
+        attributesIter.add(new EntityAttributeView(propertyValue, slot.isHostingSlot()
+                ? EntityAttributeViewKind.INSTALL_SLOT_PROPERTY : EntityAttributeViewKind.CONTAINER_SLOT_PROPERTY,
+                slot.getName()));
     }
 
     private void refreshAttributeList(final Slot slot, final Tag tag) {
-        // TODO implement.
         // Use iterator. Add new Tag to the already existing ones. Append to the end of the ones for the same slot.
+        boolean encounteredParentSiblings = false;
+        ListIterator<EntityAttributeView> attributesIter = attributes.listIterator();
+        while (attributesIter.hasNext()) {
+            final EntityAttributeView tableAttribute = attributesIter.next();
+            if (tableAttribute.getParent().equals(slot.getName())) {
+                encounteredParentSiblings = true;
+            } else if (encounteredParentSiblings) {
+                // we just moved past all our siblings. Move one back and break.
+                attributesIter.previous();
+                break;
+            }
+        }
+        // the insertion pointer is at the right spot. This is either the last attribute for this parent,
+        //     or the very last attribute in the entire table
+        attributesIter.add(new EntityAttributeView(tag,  slot.isHostingSlot()
+                ? EntityAttributeViewKind.INSTALL_SLOT_TAG : EntityAttributeViewKind.CONTAINER_SLOT_TAG,
+                slot.getName()));
     }
 
-    private void refreshAttributeList(final Slot slot, final SlotArtifact tag) {
-        // TODO implement.
+    private void refreshAttributeList(final Slot slot, final SlotArtifact artifact) {
         // Use iterator. If the artifact is found, then update it.
         // If not, add new artifact to the already existing ones. Append to the end of the ones for the same slot.
+        boolean encounteredParentSiblings = false;
+        ListIterator<EntityAttributeView> attributesIter = attributes.listIterator();
+        while (attributesIter.hasNext()) {
+            final EntityAttributeView tableAttribute = attributesIter.next();
+            if (tableAttribute.getParent().equals(slot.getName())) {
+                encounteredParentSiblings = true;
+                // the entity's real sibling
+
+                if (tableAttribute.getEntity().equals(artifact)) {
+                    // found the existing artifact, update it and exit!
+                    attributesIter.set(new EntityAttributeView(artifact, slot.isHostingSlot()
+                            ? EntityAttributeViewKind.INSTALL_SLOT_ARTIFACT
+                                    : EntityAttributeViewKind.CONTAINER_SLOT_ARTIFACT,
+                            slot.getName()));
+                    return;
+                }
+
+                if (tableAttribute.getKind() == EntityAttributeViewKind.DEVICE_TYPE_TAG
+                        || tableAttribute.getKind() == EntityAttributeViewKind.INSTALL_SLOT_TAG
+                        || tableAttribute.getKind() == EntityAttributeViewKind.DEVICE_TAG
+                        || tableAttribute.getKind() == EntityAttributeViewKind.CONTAINER_SLOT_TAG
+                        || tableAttribute.getKind() == EntityAttributeViewKind.TAG) {
+                    // we just encountered our sibling TAG. Insert before that.
+                    attributesIter.previous();
+                    break;
+                }
+            } else if (encounteredParentSiblings) {
+                // we just moved past all our siblings. Move one back and break;
+                attributesIter.previous();
+                break;
+            }
+        }
+        // the insertion pointer is at the right spot. This is either the last artifact for this parent,
+        //     the last attribute for this parent (no tags), or the very last attribute in the entire table
+        attributesIter.add(new EntityAttributeView(artifact, slot.isHostingSlot()
+                ? EntityAttributeViewKind.INSTALL_SLOT_ARTIFACT : EntityAttributeViewKind.CONTAINER_SLOT_ARTIFACT,
+                slot.getName()));
     }
 
     private void removeRelatedAttributes(Slot slot) {
@@ -350,7 +438,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         for (final SlotArtifact artifact : slot.getSlotArtifactList()) {
             attributes.add(new EntityAttributeView(artifact, isHostingSlot
                                                             ? EntityAttributeViewKind.INSTALL_SLOT_ARTIFACT
-                                                            : EntityAttributeViewKind.CONTAINER_SLOT_ARTIFACT));
+                                                            : EntityAttributeViewKind.CONTAINER_SLOT_ARTIFACT,
+                                                            slot.getName()));
         }
 
         if (installedDevice != null) {
@@ -448,6 +537,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      * @param id the ID of the slot we want to switch to.
      */
     public void selectNode(Long id) {
+        // TODO much more difficult, since not all nodes are already loaded at this point.
         Preconditions.checkNotNull(id);
 
         final TreeNode nodeToSelect = findNode(id, rootNode);
@@ -945,7 +1035,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             slotEJB.addChild(slotValueInstance);
 
             refreshSlot(selectedSlot);
-            refreshAttributeList(selectedSlot, slotValueInstance);
+            refreshAllPropertyValues();
 
             Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
                     "New property has been created");
@@ -961,6 +1051,13 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         }
     }
 
+    private void refreshAllPropertyValues() {
+        final List<SlotPropertyValue> propertyValues = selectedSlot.getSlotPropertyList();
+        for (SlotPropertyValue propertyValue : propertyValues) {
+            refreshAttributeList(selectedSlot, propertyValue);
+        }
+    }
+
     /** The handler called to save a new value of the {@link SlotPropertyValue} after modification */
     public void modifyPropertyValue() {
         final SlotPropertyValue selectedPropertyValue = (SlotPropertyValue) selectedAttribute.getEntity();
@@ -971,8 +1068,10 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             slotEJB.saveChild(selectedPropertyValue);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
                                                                         "Property value has been modified");
-            refreshSlot(selectedSlot);
-            refreshAttributeList(selectedSlot, selectedPropertyValue);
+            final Slot parentSlot = selectedPropertyValue.getSlot();
+            refreshSlot(parentSlot);
+            final SlotPropertyValue freshPropertyValue = slotEJB.refreshPropertyValue(selectedPropertyValue);
+            refreshAttributeList(parentSlot, freshPropertyValue);
         } catch (EJBException e) {
             if (Utility.causedBySpecifiedExceptionClass(e, PropertyValueNotUniqueException.class)) {
                 FacesContext.getCurrentInstance().addMessage("uniqueMessage",
@@ -1125,9 +1224,16 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
         slotEJB.addChild(slotArtifact);
         refreshSlot(selectedSlot);
-        refreshAttributeList(selectedSlot, slotArtifact);
+        refreshAllArtifacts();
         Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
                                                                     "New artifact has been created");
+    }
+
+    private void refreshAllArtifacts() {
+        final List<SlotArtifact> slotArtifacts = selectedSlot.getSlotArtifactList();
+        for (final SlotArtifact artifact : slotArtifacts) {
+            refreshAttributeList(selectedSlot, artifact);
+        }
     }
 
     private void prepareModifyArtifactPopup() {
@@ -1159,8 +1265,10 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         }
 
         slotEJB.saveChild(selectedArtifact);
-        refreshSlot(selectedSlot);
-        refreshAttributeList(selectedSlot, selectedArtifact);
+        final Slot parentSlot = selectedArtifact.getSlot();
+        refreshSlot(parentSlot);
+        final SlotArtifact freshArtifact = slotEJB.refreshArtifact(selectedArtifact);
+        refreshAttributeList(parentSlot, freshArtifact);
         Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
                                                                     "Artifact has been modified");
     }
