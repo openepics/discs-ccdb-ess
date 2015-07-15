@@ -269,7 +269,14 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     }
 
     private void updateTreeWithFreshSlot(final TreeNode node, final Slot freshSlot) {
-        // TODO implement
+        final SlotView nodeSlotView = (SlotView) node.getData();
+        if (freshSlot.getId().equals(nodeSlotView.getId())) {
+            nodeSlotView.setSlot(freshSlot);
+        } else {
+            for (final TreeNode nodeChild : node.getChildren()) {
+                updateTreeWithFreshSlot(nodeChild, freshSlot);
+            }
+        }
     }
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *

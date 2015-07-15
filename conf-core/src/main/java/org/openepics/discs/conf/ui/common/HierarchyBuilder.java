@@ -141,6 +141,7 @@ public class HierarchyBuilder {
                 addChildToParent(node, childSlotView);
             }
         }
+        parentSlotView.setInitialzed(true);
     }
 
     /**
