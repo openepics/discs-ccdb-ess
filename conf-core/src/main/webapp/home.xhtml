@@ -86,7 +86,7 @@
                                         :hierarchies:hierarchyTabs:powersTree :hierarchies:hierarchyTabs:controlsTree" 
                                     oncomplete="resizeHierarchyTrees();" />
 
-                                <p:tab id="INCLUDES" title="Includes">
+                                <p:tab id="INCLUDES" title="Contains">
                                     <p:treeTable id="tree" value="#{hierarchiesController.rootNode}" var="installationSlot" 
                                              selectionMode="multiple" selection="#{hierarchiesController.selectedIncludesNodes}" 
                                              scrollable="true" scrollWidth="auto" rowStyleClass="treeRows" 
@@ -202,7 +202,7 @@
                                 <p:menuitem value="Container" oncomplete="PF('addSlotDialog').show();" 
                                         actionListener="#{hierarchiesController.prepareContainerAddPopup}" 
                                         update=":addSlotForm" 
-                                        disabled="#{not hierarchiesController.singleNodeSelected 
+                                        disabled="#{hierarchiesController.multipleNodesSelected 
                                                         or hierarchiesController.selectedNodeSlot.hostingSlot}" />
                                 <p:menuitem value="Installation slot" oncomplete="PF('addSlotDialog').show();" 
                                         actionListener="#{hierarchiesController.prepareInstallationSlotPopup}" 
@@ -482,7 +482,8 @@
             <ui:param name="widgetName" value="deleteRelationship" />
             <ui:param name="controller" value="#{hierarchiesController}" />
             <ui:param name="submitHandler" value="onRelationshipDelete" />
-            <ui:param name="formToUpdate" value=":hierarchies:relationshipTable :hierarchies:deleteRelationship" />
+            <ui:param name="formToUpdate" value=":hierarchies:relationshipTable :hierarchies:deleteRelationship 
+                    :hierarchies:hierarchyTabs:tree" />
             <ui:param name="entityType" value="selected relationship" />
         </ui:include>
 

@@ -263,18 +263,23 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     }
 
     private void updateTreesWithFreshSlot(final Slot freshSlot) {
-        updateTreeWithFreshSlot(rootNode, freshSlot);
-        updateTreeWithFreshSlot(controlsRootNode, freshSlot);
-        updateTreeWithFreshSlot(powersRootNode, freshSlot);
+        updateTreesWithFreshSlot(freshSlot, false);
     }
 
-    private void updateTreeWithFreshSlot(final TreeNode node, final Slot freshSlot) {
+    private void updateTreesWithFreshSlot(final Slot freshSlot, boolean rebuildAffecteSlots) {
+        updateTreeWithFreshSlot(rootNode, freshSlot, rebuildAffecteSlots);
+        updateTreeWithFreshSlot(controlsRootNode, freshSlot, rebuildAffecteSlots);
+        updateTreeWithFreshSlot(powersRootNode, freshSlot, rebuildAffecteSlots);
+    }
+
+    private void updateTreeWithFreshSlot(final TreeNode node, final Slot freshSlot, boolean rebuildAffecteSlots) {
         final SlotView nodeSlotView = (SlotView) node.getData();
         if (freshSlot.getId().equals(nodeSlotView.getId())) {
             nodeSlotView.setSlot(freshSlot);
+            hierarchyBuilder.rebuildSubTree(node);
         } else {
             for (final TreeNode nodeChild : node.getChildren()) {
-                updateTreeWithFreshSlot(nodeChild, freshSlot);
+                updateTreeWithFreshSlot(nodeChild, freshSlot, rebuildAffecteSlots);
             }
         }
     }
@@ -1535,23 +1540,41 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      * Below: Relationships related methods
      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
     /**
-     * This method rebuilds the tree so that all displayed slots are refreshed. This is important for refreshing the
-     * relationship status of all displayed slots. Otherwise the information can get out of synch with the database.
+     * This method gets called when the relationship processing is complete or dialog is simply closed. It properly
+     * refreshes the selected node state so that the hierarchy behaves consistently.
+     * The currently selected slot is also refreshed, so that new realtionship data is displayed.
      */
     public void onRelationshipPopupClose() {
+        Preconditions.checkNotNull(selectedSlot);
+        Preconditions.checkState((selectedNodes != null) && (selectedNodes.size() == 1));
+        // restore the current main selection. The relationship manipulation is done.
+        selectedNodes.get(0).setSelected(true);
+        // clear the previous dialog selection for the next use
+        if (selectedTreeNodeForRelationshipAdd != null) {
+            selectedTreeNodeForRelationshipAdd.setSelected(false);
+        }
+        selectedTreeNodeForRelationshipAdd = null;
+        refreshSlot(selectedSlot);
     }
 
-    /**
-     * Called when button to delete relationship is clicked
-     */
+    /** Called when button to delete relationship is clicked */
     public void onRelationshipDelete() {
         if (canRelationshipBeDeleted()) {
-            slotPairEJB.delete(selectedRelationship.getSlotPair());
+            final SlotPair slotPairToBeRemoved = selectedRelationship.getSlotPair();
+            final boolean isContainsRemoved =
+                    (slotPairToBeRemoved.getSlotRelation().getName() == SlotRelationName.CONTAINS);
+            final Long parentSlotId = slotPairToBeRemoved.getParentSlot().getId();
+            final Long childSlotId = slotPairToBeRemoved.getChildSlot().getId();
+            relationships.remove(selectedRelationship);
+            slotPairEJB.delete(slotPairToBeRemoved);
             selectedRelationship = null;
+            updateTreesWithFreshSlot(slotEJB.findById(childSlotId), isContainsRemoved);
+            updateTreesWithFreshSlot(slotEJB.findById(parentSlotId), isContainsRemoved);
         } else {
             RequestContext.getCurrentInstance().execute("PF('cantDeleteRelation').show();");
         }
         prepareAddRelationshipPopup();
+        onRelationshipPopupClose();
     }
 
     private boolean canRelationshipBeDeleted() {
@@ -1559,14 +1582,14 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
                 && !slotPairEJB.slotHasMoreThanOneContainsRelation(selectedRelationship.getSlotPair().getChildSlot()));
     }
 
-    /**
-     * Prepares data for adding new relationship
-     */
+    /** Prepares data for adding new relationship */
     public void prepareAddRelationshipPopup() {
         Preconditions.checkNotNull(selectedSlot);
-        //initRelationshipList();
+        Preconditions.checkState((selectedNodes != null) && (selectedNodes.size() == 1));
         // hide the current main selection, since the same data can be used to add new relationships.
         // Will be restored when the user finishes relationship manipulation.
+        selectedNodes.get(0).setSelected(false);
+        // clear the previous dialog selection in case the dialog was already used before
         if (selectedTreeNodeForRelationshipAdd != null) {
             selectedTreeNodeForRelationshipAdd.setSelected(false);
         }
@@ -1616,10 +1639,18 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             return;
         }
 
-        if (slotPairEJB.findSlotPairsByParentChildRelation(childSlot.getName(), parentSlot.getName(), slotRelation.getName()).isEmpty()) {
+        if (slotPairEJB.findSlotPairsByParentChildRelation(childSlot.getName(), parentSlot.getName(),
+                                                                        slotRelation.getName()).isEmpty()) {
             final SlotPair newSlotPair = new SlotPair(childSlot, parentSlot, slotRelation);
             if (!slotPairEJB.slotPairCreatesLoop(newSlotPair, childSlot)) {
                 slotPairEJB.add(newSlotPair);
+                relationships.add(new SlotRelationshipView(newSlotPair, selectedSlot));
+                final boolean isContainsAdded = (slotRelation.getName() == SlotRelationName.CONTAINS);
+                updateTreesWithFreshSlot(slotEJB.findById(childSlot.getId()), isContainsAdded);
+                updateTreesWithFreshSlot(slotEJB.findById(parentSlot.getId()), isContainsAdded);
+                if (isContainsAdded && parentSlot == selectedSlot) {
+                    selectedNodes.get(0).setExpanded(true);
+                }
             } else {
                 RequestContext.getCurrentInstance().execute("PF('slotPairLoopNotification').show();");
             }
@@ -1722,7 +1753,6 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         return ((selectedNodes == null) || (activeTab != ActiveTab.POWERS))
                 ? null : selectedNodes.toArray(new TreeNode[] {});
     }
-
 
     /** @return <code>true</code> if the UI is currently showing the <code>INCLUDES</code> hierarchy */
     public boolean isIncludesActive() {
