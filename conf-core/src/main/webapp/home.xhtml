@@ -336,35 +336,47 @@
                 <p:row>
                     <p:column id="installationColumn">
                         <h:panelGroup id="installationDetails" layout="block">
-                            <p:fieldset legend="Installation details" rendered="#{not empty hierarchiesController.installationRecords}">
+                            <p:fieldset legend="Installation details">
                                 <p:dataTable id="installationTable" value="#{hierarchiesController.installationRecords}" 
-                                        var="installationRecord" style="width: 100%;">
-                                    <p:column headerText="Installation slot" sortBy="#{installationRecord.slot.name}">
-                                        <h:outputText value="#{installationRecord.slot.name}" />
+                                        var="installationRecord" style="width: 100%;" selectionMode="single" 
+                                        selection="#{hierarchiesController.selectedInstallationView}"
+                                        emptyMessage="No element selected." rowKey="#{installationRecord.slotName}">
+
+                                    <p:ajax event="rowSelect" update=":hierarchies:installDeviceBtn :hierarchies:uninstallDeviceBtn" />
+                                    <p:ajax event="rowUnselect" update=":hierarchies:installDeviceBtn :hierarchies:uninstallDeviceBtn" />
+
+                                    <p:column headerText="Installation slot" sortBy="#{installationRecord.slotName}">
+                                        <h:outputText value="#{installationRecord.slotName}" />
                                     </p:column>
                                     <p:column headerText="Installed device inventory ID">
-                                        <h:link outcome="deviceManager" value="#{installationRecord.device.serialNumber}" class="link">
-                                            <f:param name="id" value="#{installationRecord.device.id}" />
+                                        <h:link outcome="deviceManager" value="#{installationRecord.deviceInventoryId}" 
+                                                class="link" rendered="#{installationRecord.deviceInstalled}">
+                                            <f:param name="id" value="#{installationRecord.installationRecord.device.id}" />
                                         </h:link>                                    
+                                        <h:outputText value="-" rendered="#{not installationRecord.deviceInstalled}" />
                                     </p:column>
                                     <p:column headerText="Installation timestamp">
-                                        <h:outputText value="#{installationRecord.installDate}">
+                                        <h:outputText value="#{installationRecord.installDate}" 
+                                                rendered="#{installationRecord.deviceInstalled}">
                                             <f:convertDateTime pattern="#{msgs.timestampFormat}" />
                                         </h:outputText>
-                                    </p:column>
-                                    <p:column headerText="Uninstall" style="text-align: center;">
-                                        <p:commandButton title="Uninstall" label="Uninstall" value="Uninstall" 
-                                            type="button" onclick="PF('uninstallConfirm').show();" />
+                                        <h:outputText value="Not installed" 
+                                                rendered="#{not installationRecord.deviceInstalled}" />
                                     </p:column>
                                 </p:dataTable>
+                                <p:commandButton title="Install device to the selected slot" id="installDeviceBtn" 
+                                        value="Install" ajax="true" 
+                                        actionListener="#{hierarchiesController.prepareUninstalledDevices}" 
+                                        style="margin-top: 1em; float: right;" update=":hierarchies:installationDetails" 
+                                        disabled="#{empty hierarchiesController.selectedInstallationView or 
+                                                hierarchiesController.selectedInstallationView.deviceInstalled}"
+                                        oncomplete="PF('installDevice').show();" />
+                                <p:commandButton title="Uninstall selected device" label="Uninstall" value="Uninstall" 
+                                    type="button" onclick="PF('uninstallConfirm').show();" id="uninstallDeviceBtn" 
+                                    style="margin: 1em 1ex 0 0; float: right;" update=":hierarchies:installationDetails" 
+                                    disabled="#{empty hierarchiesController.selectedInstallationView or 
+                                                not hierarchiesController.selectedInstallationView.deviceInstalled}" />
                             </p:fieldset>
-                            <p:commandButton title="Install device to this slot" 
-                                    value="Install device to this slot" ajax="true" 
-                                    actionListener="#{hierarchiesController.prepareUninstalledDevices}" 
-                                    rendered="#{hierarchiesController.singleNodeSelected
-                                            and empty hierarchiesController.installedDevice 
-                                            and hierarchiesController.selectedNodeSlot.hostingSlot}" 
-                                    oncomplete="PF('installDevice').show();" update=":hierarchies:installationDetails" />
                         </h:panelGroup>
                     </p:column>
                 </p:row>

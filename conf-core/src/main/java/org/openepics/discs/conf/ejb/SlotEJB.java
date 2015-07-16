@@ -51,8 +51,8 @@ import org.openepics.discs.conf.util.UnhandledCaseException;
 import com.google.common.base.Preconditions;
 
 /**
- * DAO Service for accessing Installation Slot entities ( {@link Slot} )
- * .
+ * DAO Service for accessing Installation {@link Slot} entities.
+ *
  * @author vuppala
  * @author <a href="mailto:miroslav.pavleski@cosylab.com">Miroslav Pavleski</a>
  * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
@@ -252,6 +252,7 @@ public class SlotEJB extends DAO<Slot> {
      * {@link DevicePropertyValue}, {@link AlignmentPropertyValue}) that has already been persisted (it has a valid ID),
      * and returns a fresh instance of the entity from the database.
      * @param propertyValue the {@link PropertyValue} to refresh. Must be already persisted.
+     * @param <T> the actual instance type of the {@link PropertyValue}
      * @return a fresh instance of the property value from the database
      */
     public <T extends PropertyValue> T refreshPropertyValue(T propertyValue) {
@@ -276,6 +277,7 @@ public class SlotEJB extends DAO<Slot> {
      * {@link DeviceArtifact}, {@link AlignmentArtifact}) that has already been persisted (it has a valid ID),
      * and returns a fresh instance of the entity from the database.
      * @param artifact the {@link Artifact} to refresh. Must be already persisted.
+     * @param <T> the actual instance type of the {@link Artifact}
      * @return a fresh instance of the artifact from the database
      */
     public <T extends Artifact> T refreshArtifact(T artifact) {

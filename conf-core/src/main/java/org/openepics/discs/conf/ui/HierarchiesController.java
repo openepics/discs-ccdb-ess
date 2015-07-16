@@ -94,6 +94,7 @@ import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.util.names.Names;
 import org.openepics.discs.conf.views.EntityAttributeView;
 import org.openepics.discs.conf.views.EntityAttributeViewKind;
+import org.openepics.discs.conf.views.InstallationView;
 import org.openepics.discs.conf.views.SlotRelationshipView;
 import org.openepics.discs.conf.views.SlotView;
 import org.primefaces.context.RequestContext;
@@ -151,9 +152,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     private transient List<SelectItem> relationshipTypes;
     private List<Device> uninstalledDevices;
     private List<Device> filteredUninstalledDevices;
-    private List<InstallationRecord> installationRecords;
-    /** <code>selectedInstallationRecord</code> is only initialized when there is only one node in the tree selected */
-    private InstallationRecord selectedInstallationRecord;
+    private List<InstallationView> installationRecords;
+    private InstallationView selectedInstallationView;
     private Device deviceToInstall;
 
     // ---- variables for hierarchies and tabs --------
@@ -521,16 +521,14 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     private void addToInstallationRecordList(final Slot slot) {
         if (slot.isHostingSlot()) {
             final InstallationRecord record = installationEJB.getActiveInstallationRecordForSlot(slot);
-            if (record != null) {
-                installationRecords.add(record);
-            }
+            installationRecords.add(new InstallationView(slot, record));
         }
     }
 
     private void removeRelatedInstallationRecord(final Slot slot) {
-        final ListIterator<InstallationRecord> recordsIterator = installationRecords.listIterator();
+        final ListIterator<InstallationView> recordsIterator = installationRecords.listIterator();
         while (recordsIterator.hasNext()) {
-            final InstallationRecord record = recordsIterator.next();
+            final InstallationView record = recordsIterator.next();
             if (slot.equals(record.getSlot())) {
                 recordsIterator.remove();
                 break;
@@ -557,13 +555,11 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     private void selectSingleNode(final TreeNode selectedNode) {
         selectedSlotView = (SlotView) selectedNode.getData();
         selectedSlot = selectedSlotView.getSlot();
-        selectedInstallationRecord = installationEJB.getActiveInstallationRecordForSlot(selectedSlot);
     }
 
     private void deselectSingleNode() {
         selectedSlotView = null;
         selectedSlot = null;
-        selectedInstallationRecord = null;
     }
 
     /** The function to select a different node in the TreeTable by clicking on the link in the relationship table.
@@ -571,6 +567,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      */
     public void selectNode(Long id) {
         // TODO much more difficult, since not all nodes are already loaded at this point.
+        // what we can do is search from the node up towards the root, and then load/expand the first tree
+        // that contains this slot, and then select it.
         Preconditions.checkNotNull(id);
 
         final TreeNode nodeToSelect = findNode(id, rootNode);
@@ -627,6 +625,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             addToRelationshipList(slot);
             addToInstallationRecordList(slot);
         }
+        // TODO be more intelligent about this
+        selectedInstallationView = null;
     }
 
     /**
@@ -648,6 +648,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         if (selectedNodes.size() == 1) {
             selectSingleNode(selectedNodes.get(0));
         }
+        // TODO be more intelligent about this
+        selectedInstallationView = null;
     }
 
     /**
@@ -948,23 +950,26 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      * The uninstall date is left empty (NULL).
      */
     public void installDevice() {
+        Preconditions.checkNotNull(selectedInstallationView);
         final Date today = new Date();
         final InstallationRecord newRecord = new InstallationRecord(Long.toString(today.getTime()), today);
         newRecord.setDevice(deviceToInstall);
-        newRecord.setSlot(selectedSlot);
+        newRecord.setSlot(selectedInstallationView.getSlot());
         installationEJB.add(newRecord);
 
+        selectedInstallationView.setSlot(slotEJB.findById(selectedInstallationView.getSlot().getId()));
+        selectedInstallationView.setInstallationRecord(newRecord);
         deviceToInstall = null;
-        addToInstallationRecordList(selectedSlot);
     }
 
     /** This method is called when a user presses the "Uninstall" button in the hierarchies view. */
     public void uninstallDevice() {
+        final InstallationRecord selectedInstallationRecord = getSelectedInstallationRecord();
         Preconditions.checkNotNull(selectedInstallationRecord);
         selectedInstallationRecord.setUninstallDate(new Date());
         installationEJB.save(selectedInstallationRecord);
-        // the device is not installed any more. Clear the installation state information.
-        selectedInstallationRecord = null;
+        // signal that nothing is installed
+        selectedInstallationView.setInstallationRecord(null);
     }
 
     /** @return <code>true</code> if the attribute "Delete" button can be enabled, <code>false</code> otherwise */
@@ -1775,14 +1780,14 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      * or this is a <i>container</i> or no node is selected or there are multiple nodes selected.
      */
     public Device getInstalledDevice() {
-        return selectedInstallationRecord == null ? null : selectedInstallationRecord.getDevice();
+        return getSelectedInstallationRecord() == null ? null : getSelectedInstallationRecord().getDevice();
     }
 
     /**
      * @return The latest installation records associated with the selected installation slots, <code>null</code> if no
      * slots are selected.
      */
-    public List<InstallationRecord> getInstallationRecords() {
+    public List<InstallationView> getInstallationRecords() {
         return installationRecords;
     }
 
@@ -1790,7 +1795,17 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      * nothing is installed, nothing is selected or multiple slots are selected.
      */
     public InstallationRecord getSelectedInstallationRecord() {
-        return selectedInstallationRecord;
+        return selectedInstallationView == null ? null : selectedInstallationView.getInstallationRecord();
+    }
+
+    /** @return the selectedInstallationView */
+    public InstallationView getSelectedInstallationView() {
+        return selectedInstallationView;
+    }
+
+    /** @param selectedInstallationView the selectedInstallationView to set */
+    public void setSelectedInstallationView(InstallationView selectedInstallationView) {
+        this.selectedInstallationView = selectedInstallationView;
     }
 
     /**
