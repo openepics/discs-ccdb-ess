@@ -284,6 +284,30 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         }
     }
 
+    /**
+     * @param slot the {@link Slot} to check for
+     * @return <code>true</code> if the {@link Slot} belongs to one of the <code>selectedNodes</code>,
+     * <code>false</code> otherwise
+     */
+    private boolean isSlotNodeSelected(final Slot slot) {
+        if (selectedNodes != null && !selectedNodes.isEmpty()) {
+            for (final TreeNode node : selectedNodes) {
+                if (((SlotView) node.getData()).getSlot().equals(slot)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private void unselectAllTreeNodes() {
+        if (selectedNodes != null) {
+            for (final TreeNode node : selectedNodes) {
+                node.setSelected(false);
+            }
+        }
+    }
+
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      * Above : bean initialization section and global private utility methods.
      *
@@ -625,8 +649,9 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             addToRelationshipList(slot);
             addToInstallationRecordList(slot);
         }
-        // TODO be more intelligent about this
-        selectedInstallationView = null;
+        if (selectedInstallationView != null && !isSlotNodeSelected(selectedInstallationView.getSlot())) {
+            selectedInstallationView = null;
+        }
     }
 
     /**
@@ -648,8 +673,9 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         if (selectedNodes.size() == 1) {
             selectSingleNode(selectedNodes.get(0));
         }
-        // TODO be more intelligent about this
-        selectedInstallationView = null;
+        if (selectedInstallationView != null && !isSlotNodeSelected(selectedInstallationView.getSlot())) {
+            selectedInstallationView = null;
+        }
     }
 
     /**
@@ -702,9 +728,10 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     public void doImport() {
         try (InputStream inputStream = new ByteArrayInputStream(importData)) {
             setLoaderResult(dataLoaderHandler.loadData(inputStream, signalsDataLoader));
-            if (selectedSlot != null) {
-                refreshSlot(selectedSlot);
-                //initAttributeList(); // TODO deselect everything in all trees.
+            if (selectedNodes != null && !selectedNodes.isEmpty()) {
+                unselectAllTreeNodes();
+                selectedNodes = null;
+                clearAttributeList();
             }
         } catch (IOException e) {
             throw new RuntimeException(e);

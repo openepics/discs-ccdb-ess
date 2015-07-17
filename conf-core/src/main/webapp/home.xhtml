@@ -336,7 +336,7 @@
                 <p:row>
                     <p:column id="installationColumn">
                         <h:panelGroup id="installationDetails" layout="block">
-                            <p:fieldset legend="Installation details">
+                            <p:fieldset id="installFieldset" legend="Installation details">
                                 <p:dataTable id="installationTable" value="#{hierarchiesController.installationRecords}" 
                                         var="installationRecord" style="width: 100%;" selectionMode="single" 
                                         selection="#{hierarchiesController.selectedInstallationView}"

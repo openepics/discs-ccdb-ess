@@ -29,7 +29,7 @@ import org.openepics.discs.conf.ent.Slot;
 import com.google.common.base.Preconditions;
 
 /**
- * The calss contains installation data to be shown in the installation table on the main screen of the application.
+ * The class contains installation data to be shown in the installation table on the main screen of the application.
  *
  * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  */
@@ -38,6 +38,7 @@ public class InstallationView {
     private Slot slot;
 
     public InstallationView(final Slot slot, @Nullable final InstallationRecord installationRecord) {
+        Preconditions.checkNotNull(slot);
         this.slot = slot;
         this.record = installationRecord;
     }
