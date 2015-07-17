@@ -1799,6 +1799,19 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         return (selectedNodes != null) && selectedNodes.size() > 1;
     }
 
+    public List<SlotView> getSlotsToDelete() {
+        // TODO this will be a different list once the "Delete with children" will be implemented
+        return selectedNodes == null ? null : Lists.transform(selectedNodes, new Function<TreeNode, SlotView>() {
+                                                    @Override public SlotView apply(TreeNode node) {
+                                                        return (SlotView) node.getData();
+                                                    }});
+    }
+
+    public int getNumberOfSlotsToDelete() {
+        // TODO this will use a different list once the "Delete with children" will be implemented
+        return selectedNodes != null ? selectedNodes.size() : 0;
+    }
+
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Device instance installation
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////

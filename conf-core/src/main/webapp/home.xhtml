@@ -175,7 +175,7 @@
                                 disabled="#{not hierarchiesController.includesActive 
                                                 or empty hierarchiesController.selectedIncludesNodes 
                                                 or not hierarchiesController.nodesDeletable}" 
-                                actionListener="#{hierarchiesController.prepareDeletePopup()}" />
+                                update=":deleteSlotsForm" actionListener="#{hierarchiesController.prepareDeletePopup()}" />
                             <p:commandButton id="downButton" icon="ui-icon-arrowthick-1-s" value="Down" title="Move down" 
                                 style="float: right; margin: 1em 1ex 0 0;" oncomplete="hierarchiesResizeAll();scrollSelectedIntoView(PF('hierarchyWidget'));" 
                                 update=":hierarchies:hierarchyTabs:tree :hierarchies:downButton :hierarchies:upButton" 
@@ -400,9 +400,10 @@
                 value=":hierarchies:slotAttributes :hierarchies:relationsTable :hierarchies:installationDetails" />
         </ui:include>
 
-        <ui:include src="/resources/dialogs/delete-confirmation.xhtml" >
+        <ui:include src="/resources/dialogs/delete-slots-confirmation.xhtml" >
             <ui:param name="formId" value="deleteSlotsForm" />
-            <ui:param name="dialogTitle" value="#{hierarchiesController.multipleNodesSelected ? 'Delete slots' : 'Delete slot'}" />
+            <ui:param name="dialogTitle" value="#{hierarchiesController.numberOfSlotsToDelete gt 1 
+                                                        ? 'Delete slots' : 'Delete slot'}" />
             <ui:param name="widgetName" value="deleteSlots" />
             <ui:param name="controller" value="#{hierarchiesController}" />
             <ui:param name="submitHandler" value="onSlotsDelete" />
@@ -410,7 +411,10 @@
                     :hierarchies:slotAttributes :hierarchies:relationsTable :hierarchies:installationDetails 
                     :hierarchies:downButton :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton" />
             <ui:param name="resizeContent" value="hierarchiesResizeAll();" />
-            <ui:param name="entityType" value="#{hierarchiesController.multipleNodesSelected ? 'selected slots' : 'this slot'}" />
+            <ui:param name="entityType" value="#{hierarchiesController.numberOfSlotsToDelete gt 1 
+                                                        ? 'the following slots:' : 'selected slot?'}" />
+            <ui:param name="isTableDisplayed" value="#{(hierarchiesController.numberOfSlotsToDelete gt 1)}" />
+            <ui:param name="slotsToDelete" value="#{hierarchiesController.slotsToDelete}" />
         </ui:include>
 
         <ui:include src="/resources/dialogs/add-or-modify-slot.xhtml">
