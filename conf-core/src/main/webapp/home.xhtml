@@ -70,6 +70,10 @@
                     }
                     return visibleTreeTable;
                 }
+                function clearRelatedFilters() {
+                    PF('attributesWidget').clearFilters();
+                    PF('relationshipsWidget').clearFilters();
+                }
             // ]]>
             </script>
             <p:growl showDetail="true" globalOnly="true" autoUpdate="true" />
@@ -84,7 +88,7 @@
                                         :hierarchies:installationDetails :hierarchies:slotAttributes 
                                         :hierarchies:addRelationship :hierarchies:hierarchyTabs:tree 
                                         :hierarchies:hierarchyTabs:powersTree :hierarchies:hierarchyTabs:controlsTree" 
-                                    oncomplete="resizeHierarchyTrees();" />
+                                    oncomplete="resizeHierarchyTrees();clearRelatedFilters();" />
 
                                 <p:tab id="INCLUDES" title="Contains">
                                     <p:treeTable id="tree" value="#{hierarchiesController.rootNode}" var="installationSlot" 
@@ -96,13 +100,13 @@
                                                      :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton 
                                                      :hierarchies:installationDetails :hierarchies:slotAttributes 
                                                      :hierarchies:addRelationship" 
-                                             oncomplete="resizeEmptyColumnInHierarchies();hierarchiesResizeAttributes();" />
+                                             oncomplete="resizeEmptyColumnInHierarchies();hierarchiesResizeAttributes();clearRelatedFilters();" />
                                          <p:ajax event="unselect" listener="#{hierarchiesController.onNodeUnselect}" 
                                              update=":hierarchies:relationsTable :hierarchies:deleteButton :hierarchies:downButton 
                                                      :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton 
                                                      :hierarchies:installationDetails :hierarchies:slotAttributes 
                                                      :hierarchies:addRelationship" 
-                                             oncomplete="resizeEmptyColumnInHierarchies();" />
+                                             oncomplete="resizeEmptyColumnInHierarchies();clearRelatedFilters();" />
                                          <p:ajax event="expand" listener="#{hierarchiesController.onContainsExpand}" />
                 
                                          <p:column id="name" headerText="Name">
@@ -124,11 +128,11 @@
                                          <p:ajax event="select" listener="#{hierarchiesController.onNodeSelect}" 
                                              update=":hierarchies:relationsTable :hierarchies:installationDetails 
                                                      :hierarchies:slotAttributes :hierarchies:addRelationship" 
-                                             oncomplete="resizeEmptyColumnInHierarchies();hierarchiesResizeAttributes();" />
+                                             oncomplete="resizeEmptyColumnInHierarchies();hierarchiesResizeAttributes();clearRelatedFilters();" />
                                          <p:ajax event="unselect" listener="#{hierarchiesController.onNodeUnselect}" 
                                              update=":hierarchies:relationsTable :hierarchies:installationDetails 
                                                      :hierarchies:slotAttributes :hierarchies:addRelationship" 
-                                             oncomplete="resizeEmptyColumnInHierarchies();" />
+                                             oncomplete="resizeEmptyColumnInHierarchies();clearRelatedFilters();" />
                                          <p:ajax event="expand" listener="#{hierarchiesController.onControlsExpand}" />
                 
                                          <p:column id="ctrlName" headerText="Name">
@@ -150,11 +154,11 @@
                                          <p:ajax event="select" listener="#{hierarchiesController.onNodeSelect}" 
                                              update=":hierarchies:relationsTable :hierarchies:installationDetails 
                                                      :hierarchies:slotAttributes :hierarchies:addRelationship" 
-                                             oncomplete="resizeEmptyColumnInHierarchies();hierarchiesResizeAttributes();" />
+                                             oncomplete="resizeEmptyColumnInHierarchies();hierarchiesResizeAttributes();clearRelatedFilters();" />
                                          <p:ajax event="unselect" listener="#{hierarchiesController.onNodeUnselect}" 
                                              update=":hierarchies:relationsTable :hierarchies:installationDetails 
                                                      :hierarchies:slotAttributes :hierarchies:addRelationship" 
-                                             oncomplete="resizeEmptyColumnInHierarchies();" />
+                                             oncomplete="resizeEmptyColumnInHierarchies();clearRelatedFilters();" />
                                          <p:ajax event="expand" listener="#{hierarchiesController.onPowersExpand}" />
                 
                                          <p:column id="powersName" headerText="Name">
@@ -218,7 +222,8 @@
                                     value="#{hierarchiesController.attributes}" var="attribute" scrollable="true" 
                                     style="width: 100%; overflow-y: hidden; max-height: 30%;" resizableColumns="true" 
                                     selection="#{hierarchiesController.selectedAttribute}" selectionMode="single" 
-                                    filteredValue="#{hierarchiesController.filteredAttributes}" rowKey="#{attribute.id}">
+                                    filteredValue="#{hierarchiesController.filteredAttributes}" rowKey="#{attribute.id}"
+                                    widgetVar="attributesWidget">
                                 <p:ajax event="rowSelect" update=":hierarchies:deleteAttrButton :hierarchies:editAttrButton" />
                                 <p:ajax event="rowUnselect" update=":hierarchies:deleteAttrButton :hierarchies:editAttrButton" />
 
@@ -298,7 +303,8 @@
                                     emptyMessage="No element selected." scrollable="true" class="hierarchies-attributes-cell" 
                                     filteredValue="#{hierarchiesController.filteredRelationships}"
                                     selectionMode="single" rowKey="#{relationship.slotPair.id}" 
-                                    selection="#{hierarchiesController.selectedRelationship}">
+                                    selection="#{hierarchiesController.selectedRelationship}" 
+                                    widgetVar="relationshipsWidget">
                                 <p:ajax event="rowSelect" update=":hierarchies:deleteRelationship" />
                                 <p:ajax event="rowUnselect" update=":hierarchies:deleteRelationship" />
 
