@@ -35,7 +35,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import javax.annotation.PostConstruct;
@@ -126,7 +125,6 @@ import com.google.common.io.ByteStreams;
 public class HierarchiesController extends AbstractExcelSingleFileImportUI implements Serializable {
     private static final long serialVersionUID = 2743408661782529373L;
 
-    private static final Logger LOGGER = Logger.getLogger(HierarchiesController.class.getCanonicalName());
     private static final String MULTILINE_DELIMITER = "(\\r\\n)|\\r|\\n";
 
     @Inject private transient SlotEJB slotEJB;
@@ -270,20 +268,22 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         updateTreesWithFreshSlot(freshSlot, false);
     }
 
-    private void updateTreesWithFreshSlot(final Slot freshSlot, boolean rebuildAffecteSlots) {
-        updateTreeWithFreshSlot(rootNode, freshSlot, rebuildAffecteSlots);
-        updateTreeWithFreshSlot(controlsRootNode, freshSlot, rebuildAffecteSlots);
-        updateTreeWithFreshSlot(powersRootNode, freshSlot, rebuildAffecteSlots);
+    private void updateTreesWithFreshSlot(final Slot freshSlot, boolean rebuildAffectedSlots) {
+        updateTreeWithFreshSlot(rootNode, freshSlot, rebuildAffectedSlots);
+        updateTreeWithFreshSlot(controlsRootNode, freshSlot, rebuildAffectedSlots);
+        updateTreeWithFreshSlot(powersRootNode, freshSlot, rebuildAffectedSlots);
     }
 
-    private void updateTreeWithFreshSlot(final TreeNode node, final Slot freshSlot, boolean rebuildAffecteSlots) {
+    private void updateTreeWithFreshSlot(final TreeNode node, final Slot freshSlot, boolean rebuildAffectedSlots) {
         final SlotView nodeSlotView = (SlotView) node.getData();
         if (freshSlot.getId().equals(nodeSlotView.getId())) {
             nodeSlotView.setSlot(freshSlot);
-            hierarchyBuilder.rebuildSubTree(node);
+            if (rebuildAffectedSlots) {
+                hierarchyBuilder.rebuildSubTree(node);
+            }
         } else {
             for (final TreeNode nodeChild : node.getChildren()) {
-                updateTreeWithFreshSlot(nodeChild, freshSlot, rebuildAffecteSlots);
+                updateTreeWithFreshSlot(nodeChild, freshSlot, rebuildAffectedSlots);
             }
         }
     }
@@ -608,6 +608,16 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
                 removeRelatedRelationships(unselectedSlot);
                 removeRelatedInstallationRecord(unselectedSlot);
                 iter.remove();
+                if ((selectedAttribute != null) && selectedAttribute.getParent().equals(unselectedSlot.getName())) {
+                    selectedAttribute = null;
+                }
+                if ((selectedRelationship!= null)
+                        && selectedRelationship.getSourceSlotName().equals(unselectedSlot.getName())) {
+                    selectedRelationship = null;
+                }
+                if ((selectedInstallationView!= null) && selectedInstallationView.getSlot().getId().equals(id)) {
+                    selectedInstallationView = null;
+                }
             }
         }
     }
@@ -648,6 +658,9 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         installationRecords = null;
         selectedSlotView = null;
         selectedSlot = null;
+        selectedAttribute = null;
+        selectedRelationship = null;
+        selectedInstallationView = null;
         selectedNodeIds = null;
         displayedAttributeNodeIds = null;
     }
