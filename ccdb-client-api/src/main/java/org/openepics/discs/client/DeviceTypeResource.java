@@ -41,12 +41,12 @@ public class DeviceTypeResource {
     private static final Logger LOGGER = Logger.getLogger(DeviceTypeResource.class.getName());
 
     /**
-     * Requests a {@link List} of all {@link DevicType}s from the REST service.
+     * Requests a {@link List} of all {@link DeviceType}s from the REST service.
      *
      * @throws ResponseException
      *             if data couldn't be retrieved
      *
-     * @return {@link List} of all {@link DevicType}s
+     * @return {@link List} of all {@link DeviceType}s
      */
     public static List<DeviceType> getAllDeviceTypes() {
         final CCDBClient client = CCDBClient.getInstance();
@@ -62,7 +62,7 @@ public class DeviceTypeResource {
     }
 
     /**
-     * Requests particular {@link DevicType} from the REST service.
+     * Requests particular {@link DeviceType} from the REST service.
      *
      * @param id
      *            the id of desired DeviceType
@@ -70,7 +70,7 @@ public class DeviceTypeResource {
      * @throws ResponseException
      *             if data couldn't be retrieved
      *
-     * @return {@link DevicType}
+     * @return {@link DeviceType}
      */
     public static DeviceType getDeviceType(final int id) {
         LOGGER.fine("Invoking getDeviceType");
