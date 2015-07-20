@@ -29,6 +29,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -150,6 +152,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     private transient List<SlotRelationshipView> relationships;
     private transient List<SlotRelationshipView> filteredRelationships;
     private transient List<SelectItem> relationshipTypes;
+    private transient HashSet<Long> selectedNodeIds;
+    private transient HashSet<Long> displayedAttributeNodeIds;
     private List<Device> uninstalledDevices;
     private List<Device> filteredUninstalledDevices;
     private List<InstallationView> installationRecords;
@@ -313,8 +317,10 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      *
      * Below: Screen population methods. These methods prepare the data to be displayed on the main UI screen.
      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-    private void initAttributeList(final Slot slot) {
-        attributes = new ArrayList<>();
+    private void initAttributeList(final Slot slot, final boolean forceInit) {
+        if (forceInit || attributes == null) {
+            attributes = Lists.newArrayList();
+        }
         addPropertyValues(slot);
         addArtifacts(slot);
         addTags(slot);
@@ -511,8 +517,10 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         }
     }
 
-    private void initRelationshipList(final Slot slot) {
-        relationships = Lists.newArrayList();
+    private void initRelationshipList(final Slot slot, final boolean forceInit) {
+        if (forceInit || relationships == null) {
+            relationships = Lists.newArrayList();
+        }
         addToRelationshipList(slot);
     }
 
@@ -537,8 +545,10 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         }
     }
 
-    private void initInstallationRecordList(final Slot slot) {
-        installationRecords = Lists.newArrayList();
+    private void initInstallationRecordList(final Slot slot, final boolean forceInit) {
+        if (forceInit || installationRecords == null) {
+            installationRecords = Lists.newArrayList();
+        }
         addToInstallationRecordList(slot);
     }
 
@@ -560,30 +570,91 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         }
     }
 
+    private void updateDisplayedSlotInformation() {
+        if (selectedNodes == null || selectedNodes.isEmpty()) {
+            selectedNodeIds = null;
+            displayedAttributeNodeIds = null;
+            clearAttributeList();
+        } else {
+            initNodeIds();
+            if (displayedAttributeNodeIds != null && !displayedAttributeNodeIds.isEmpty()) {
+                // there are attributes displayed, remove the ones that are no longer selected
+                removeUnselectedRelatedInformation();
+            }
+            // initialize the list of node IDs that have the related information displayed (if not already)
+            if (displayedAttributeNodeIds == null) {
+                displayedAttributeNodeIds = new HashSet<Long>();
+            }
+            // the related tables are ready for new items
+            addRelatedInformationForNewSlots();
+
+            if (selectedNodes.size() == 1) {
+                selectSingleNode(selectedNodes.get(0));
+            }
+            // take care of selected installation slot back-end information, if it was just removed.
+            if (selectedInstallationView != null && !isSlotNodeSelected(selectedInstallationView.getSlot())) {
+                selectedInstallationView = null;
+            }
+        }
+    }
+
+    /** Remove attributes, relationships and installation information for slots no longer selected */
+    private void removeUnselectedRelatedInformation() {
+        for (final Iterator<Long> iter = displayedAttributeNodeIds.iterator(); iter.hasNext(); ) {
+            final Long id = iter.next();
+            if (!selectedNodeIds.contains(id)) {
+                final Slot unselectedSlot = slotEJB.findById(id);
+                removeRelatedAttributes(unselectedSlot);
+                removeRelatedRelationships(unselectedSlot);
+                removeRelatedInstallationRecord(unselectedSlot);
+                iter.remove();
+            }
+        }
+    }
+
+    /** Add attributes, relationships and installation information for slots that are missing */
+    private void addRelatedInformationForNewSlots() {
+        for (final Long selectedId : selectedNodeIds) {
+            if (!displayedAttributeNodeIds.contains(selectedId)) {
+                // this slot doesn't have information in the related tables yet
+                final Slot slotToAdd = slotEJB.findById(selectedId);
+                initAttributeList(slotToAdd, false);
+                initRelationshipList(slotToAdd, false);
+                initInstallationRecordList(slotToAdd, false);
+                displayedAttributeNodeIds.add(selectedId);
+            }
+        }
+    }
+
+    private void initNodeIds() {
+        selectedNodeIds = new HashSet<Long>();
+        for (final TreeNode node : selectedNodes) {
+            selectedNodeIds.add(((SlotView) node.getData()).getId());
+        }
+    }
+
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      * Above: Screen population methods. These methods prepare the data to be displayed on the main UI screen.
      *
      * Below: Callback methods called from the main UI screen. E.g.: methods that are called when user user selects
      *        a line in a table.
      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-    /** Clears all slot related information when user deselects the slot in the hierarchy. */
+    /** Clears all slot related information when user deselects the slots in the hierarchy. */
     private void clearAttributeList() {
         attributes = null;
         filteredAttributes = null;
         relationships = null;
         filteredRelationships = null;
         installationRecords = null;
-        deselectSingleNode();
+        selectedSlotView = null;
+        selectedSlot = null;
+        selectedNodeIds = null;
+        displayedAttributeNodeIds = null;
     }
 
     private void selectSingleNode(final TreeNode selectedNode) {
         selectedSlotView = (SlotView) selectedNode.getData();
         selectedSlot = selectedSlotView.getSlot();
-    }
-
-    private void deselectSingleNode() {
-        selectedSlotView = null;
-        selectedSlot = null;
     }
 
     /** The function to select a different node in the TreeTable by clicking on the link in the relationship table.
@@ -595,6 +666,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         // that contains this slot, and then select it.
         Preconditions.checkNotNull(id);
 
+        /*
         final TreeNode nodeToSelect = findNode(id, rootNode);
         if (nodeToSelect != null) {
             // TODO deselect all nodes in the tree
@@ -602,9 +674,10 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             //setSelectedNode(nodeToSelect);
             initSelectedItemLists(selectedSlotView.getSlot());
         }
+        */
     }
 
-    /* The recursive function to search for the node in the "depth first" order.
+    /** The recursive function to search for the node in the "depth first" order.
      *
      * @param id the database ID of the {@link Slot} we're searching for
      * @param parent the node we're searching at the moment
@@ -625,57 +698,30 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
     /** Prepares the attribute and relationship lists for display when user selects the slot in the hierarchy. */
     private void initSelectedItemLists(final Slot slot) {
-        initAttributeList(slot);
-        initRelationshipList(slot);
-        initInstallationRecordList(slot);
+        initAttributeList(slot, true);
+        initRelationshipList(slot, true);
+        initInstallationRecordList(slot, true);
         selectedAttribute = null;
     }
 
     /**
-     * Called when a user deselects a new node in one of the hierarchy trees.
+     * Called when a user selects a new node in one of the hierarchy trees. This event is also triggered once if a
+     * range of nodes is selected using the Shift+Click action.
      *
      * @param event Event triggered on node selection action
      */
     public void onNodeSelect(NodeSelectEvent event) {
-        final SlotView addedSlotView = (SlotView) event.getTreeNode().getData();
-        if (selectedNodes != null && selectedNodes.size() == 1) {
-            initSelectedItemLists(addedSlotView.getSlot());
-            selectSingleNode(event.getTreeNode());
-        } else {
-            final Slot slot = addedSlotView.getSlot();
-            addPropertyValues(slot);
-            addArtifacts(slot);
-            addTags(slot);
-            addToRelationshipList(slot);
-            addToInstallationRecordList(slot);
-        }
-        if (selectedInstallationView != null && !isSlotNodeSelected(selectedInstallationView.getSlot())) {
-            selectedInstallationView = null;
-        }
+        updateDisplayedSlotInformation();
     }
 
     /**
      * Called when a user deselects a new node in one of the hierarchy trees.
      *
-     * @param event Event triggered on node selection action
+     * @param event Event triggered on node deselection action
      */
     public void onNodeUnselect(NodeUnselectEvent event) {
         // in the callback, the selectedNodes no longer contains the unselected node
-        if (selectedNodes == null || selectedNodes.isEmpty()) {
-            clearAttributeList();
-            return;
-        }
-
-        final Slot unselectedSlot = ((SlotView) event.getTreeNode().getData()).getSlot();
-        removeRelatedAttributes(unselectedSlot);
-        removeRelatedRelationships(unselectedSlot);
-        removeRelatedInstallationRecord(unselectedSlot);
-        if (selectedNodes.size() == 1) {
-            selectSingleNode(selectedNodes.get(0));
-        }
-        if (selectedInstallationView != null && !isSlotNodeSelected(selectedInstallationView.getSlot())) {
-            selectedInstallationView = null;
-        }
+        updateDisplayedSlotInformation();
     }
 
     /**
@@ -716,6 +762,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
     public void onTabChange(TabChangeEvent event) {
         activeTab = ActiveTab.valueOf(event.getTab().getId());
+        unselectAllTreeNodes();
+        selectedNodes = null;
         clearAttributeList();
     }
 

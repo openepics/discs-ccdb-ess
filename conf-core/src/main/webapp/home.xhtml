@@ -509,6 +509,7 @@
         <ui:include src="/resources/dialogs/uninstall-confirm.xhtml" />
 
         <script type="text/javascript">
+            //<![CDATA[
             jQuery(window).resize(function() {
                 hierarchiesResizeAll();
                 scrollSelectedIntoView(PF('hierarchyWidget'));
@@ -520,6 +521,25 @@
                 scrollSelectedIntoView(PF('hierarchyWidget'));
                 setRightColumnWidths();
             });
+            // PrimeFaces Shift-select workaround. Event is triggered on the last node. This is not a propert solution!
+            PrimeFaces.widget.TreeTable.prototype.selectNodesInRange = function(node) {
+                if (this.cursorNode) {
+                    this.unselectAllNodes();
+
+                    var currentNodeIndex = node.index(),
+                    cursorNodeIndex = this.cursorNode.index(),
+                    startIndex = (currentNodeIndex > cursorNodeIndex) ? cursorNodeIndex : currentNodeIndex,
+                    endIndex = (currentNodeIndex > cursorNodeIndex) ? (currentNodeIndex + 1) : (cursorNodeIndex + 1),
+                    nodes = this.tbody.children();
+
+                    for (var i = startIndex ; i < endIndex; i++) {
+                        this.selectNode(nodes.eq(i), (i != (endIndex - 1))); // fire event for the last node
+                    }
+                } else {
+                    this.selectNode(node);
+                }
+            }; 
+            // ]]>
         </script>
     </ui:define>
 </ui:composition>
