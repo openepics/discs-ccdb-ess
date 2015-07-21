@@ -43,7 +43,7 @@ import org.openepics.discs.client.impl.ClosableResponse;
  * This is CCDB service client API that clients can use to access the service.
  *
  * @author <a href="mailto:sunil.sah@cosylab.com">Sunil Sah</a>
- * @author <a href="mailto:miroslav.pavleski@cosylab.com">Sunil Sah</a>
+ * @author <a href="mailto:miroslav.pavleski@cosylab.com">Miroslav Pavleski</a>
  */
 
 public class CCDBClient {

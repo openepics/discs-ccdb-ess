@@ -36,6 +36,7 @@ import org.openepics.discs.conf.jaxb.DeviceType;
  * </p>
  *
  * @author <a href="mailto:sunil.sah@cosylab.com">Sunil Sah</a>
+ * @author <a href="mailto:miroslav.pavleski@cosylab.com">Miroslav Pavleski</a>
  */
 
 public class DeviceTypeResource {
