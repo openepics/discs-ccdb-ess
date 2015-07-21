@@ -179,7 +179,7 @@
                     oncomplete="adjustFieldsetHeight('#unitsForm\\:unitsFieldset');removePropColWidth();adjustTableHeight();" />
                 <p:ajax disabled="#{not fn:endsWith(request.requestURL,'home.xhtml')}" 
                     update=":hierarchies:hierarchyTabs :hierarchies:slotAttributes :hierarchies:relationsTable 
-                            :hierarchies:installFieldset" oncomplete="hierarchiesResizeAll();setRightColumnWidths();" />
+                            :hierarchies:installationDetails" oncomplete="hierarchiesResizeAll();setRightColumnWidths();" />
             </p:commandButton>
             <p:commandButton id="exportButton" icon="ui-icon-disk" value="Export" title="Export" 
                 styleClass="dialogButton" style="margin-top: 1ex;" oncomplete="PF('#{formId}_exportErrors').show();" 

@@ -574,7 +574,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         if (selectedNodes == null || selectedNodes.isEmpty()) {
             selectedNodeIds = null;
             displayedAttributeNodeIds = null;
-            clearAttributeList();
+            clearRelatedInformation();
         } else {
             initNodeIds();
             if (displayedAttributeNodeIds != null && !displayedAttributeNodeIds.isEmpty()) {
@@ -650,7 +650,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      *        a line in a table.
      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
     /** Clears all slot related information when user deselects the slots in the hierarchy. */
-    private void clearAttributeList() {
+    private void clearRelatedInformation() {
         attributes = null;
         filteredAttributes = null;
         relationships = null;
@@ -673,48 +673,76 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     /** The function to select a different node in the TreeTable by clicking on the link in the relationship table.
      * @param id the ID of the slot we want to switch to.
      */
-    public void selectNode(Long id) {
-        // TODO much more difficult, since not all nodes are already loaded at this point.
-        // what we can do is search from the node up towards the root, and then load/expand the first tree
-        // that contains this slot, and then select it.
+    public void selectNode(final Long id) {
         Preconditions.checkNotNull(id);
 
-        /*
-        final TreeNode nodeToSelect = findNode(id, rootNode);
-        if (nodeToSelect != null) {
-            // TODO deselect all nodes in the tree
-            nodeToSelect.setSelected(true);
-            //setSelectedNode(nodeToSelect);
-            initSelectedItemLists(selectedSlotView.getSlot());
-        }
-        */
-    }
-
-    /** The recursive function to search for the node in the "depth first" order.
-     *
-     * @param id the database ID of the {@link Slot} we're searching for
-     * @param parent the node we're searching at the moment
-     * @return The TreeNode containing the {@link Slot} we're looking for or <code>null</code>, if it dies not exist.
-     */
-    private TreeNode findNode(Long id, TreeNode parent) {
-        if (id.equals(((SlotView)parent.getData()).getId())) {
-            return parent;
-        }
-        for (final TreeNode child : parent.getChildren()) {
-            final TreeNode foundNode = findNode(id, child);
-            if (foundNode != null) {
-                return foundNode;
+        TreeNode node = rootNode;
+        final List<Slot> pathToRoot = getPathToRoot(id);
+        final ListIterator<Slot> pathIterator = pathToRoot.listIterator(pathToRoot.size());
+        // we're not interested in the root node. Skip it.
+        pathIterator.previous();
+        while (pathIterator.hasPrevious()) {
+            final Slot soughtSlot = pathIterator.previous();
+            boolean soughtChildFound = false;
+            for (TreeNode child : node.getChildren()) {
+                final SlotView slotView = (SlotView) child.getData();
+                if (slotView.getSlot().equals(soughtSlot)) {
+                    // the sought TreeNode found. Process it.
+                    soughtChildFound = true;
+                    node = child;
+                    hierarchyBuilder.expandNode(node);
+                    if (!node.isLeaf()) {
+                        node.setExpanded(true);
+                    }
+                    break;
+                }
+            }
+            if (!soughtChildFound) {
+                // the tree does not contain a slot in the path
+                throw new IllegalStateException("Slot " + ((SlotView)node.getData()).getName() +
+                        " does not CONTAINS slot " + soughtSlot.getName());
             }
         }
-        return null;
+        // the final slot found
+        unselectAllTreeNodes();
+        clearRelatedInformation();
+        fakeUISelection(node);
     }
 
-    /** Prepares the attribute and relationship lists for display when user selects the slot in the hierarchy. */
-    private void initSelectedItemLists(final Slot slot) {
-        initAttributeList(slot, true);
-        initRelationshipList(slot, true);
-        initInstallationRecordList(slot, true);
-        selectedAttribute = null;
+    private void fakeUISelection(final TreeNode node) {
+        selectedNodes = Lists.newArrayList();
+        selectedNodes.add(node);
+        node.setSelected(true);
+        updateDisplayedSlotInformation();
+    }
+
+    /** The method generates the path from the requested node to the root of the contains hierarchy. If an element has
+     * multiple parents, this method always chooses the first parent it encounters.
+     * @param id the database ID of the slot to find the path for
+     * @return the path from requested node (first element) to the root of the hierarchy (last element).
+     */
+    private List<Slot> getPathToRoot(final Long id) {
+        final List<Slot> path = Lists.newArrayList();
+        final Slot rootNode = slotEJB.getRootNode();
+        Slot slot = slotEJB.findById(id);
+        path.add(slot);
+
+        while (!rootNode.equals(slot)) {
+            final List<SlotPair> parents = slot.getPairsInWhichThisSlotIsAChildList();
+            boolean containsParentFound = false;
+            for (final SlotPair pair : parents) {
+                if (pair.getSlotRelation().getName() == SlotRelationName.CONTAINS) {
+                    containsParentFound = true;
+                    slot = pair.getParentSlot();
+                    path.add(slot);
+                    break;
+                }
+            }
+            if (!containsParentFound) {
+                throw new IllegalStateException("Slot " + slot.getName() + " does not have a CONTAINS parent.");
+            }
+        }
+        return path;
     }
 
     /**
@@ -777,7 +805,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         activeTab = ActiveTab.valueOf(event.getTab().getId());
         unselectAllTreeNodes();
         selectedNodes = null;
-        clearAttributeList();
+        clearRelatedInformation();
     }
 
     @Override
@@ -792,7 +820,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             if (selectedNodes != null && !selectedNodes.isEmpty()) {
                 unselectAllTreeNodes();
                 selectedNodes = null;
-                clearAttributeList();
+                clearRelatedInformation();
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -831,7 +859,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Slots deleted", Integer.toString(numSlotstoDelete)
                                             + " slots have been successfully deleted");
         selectedNodes = null;
-        clearAttributeList();
+        clearRelatedInformation();
     }
 
     public boolean isNodesDeletable() {
@@ -1747,6 +1775,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             } else {
                 RequestContext.getCurrentInstance().execute("PF('slotPairLoopNotification').show();");
             }
+            // clear all dialog related data
             prepareAddRelationshipPopup();
         } else {
             Utility.showMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
