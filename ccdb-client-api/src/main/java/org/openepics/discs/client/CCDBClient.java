@@ -21,36 +21,32 @@ package org.openepics.discs.client;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 
-import org.jboss.resteasy.client.jaxrs.ResteasyClient;
-import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+import org.openepics.discs.client.impl.CCDBClientConfigException;
+import org.openepics.discs.client.impl.ClosableResponse;
 
 /**
  * This is CCDB service client API that clients can use to access the service.
  *
- * <p>
- * CCDBClient is implemented as a singleton; use {@link #getInstance()} to get an instance of the client.
- * </p>
- * <p>
- * CCDBCleint is thread-safe. The {@link #getResponse(String, MultivaluedMap)} creates new REST connections, all
- * other methods work with {@link Properties} which is thread-safe as well.
- * </p>
- *
  * @author <a href="mailto:sunil.sah@cosylab.com">Sunil Sah</a>
+ * @author <a href="mailto:miroslav.pavleski@cosylab.com">Sunil Sah</a>
  */
 
 public class CCDBClient {
-
     private static final Logger LOGGER = Logger.getLogger(CCDBClient.class.getName());
 
     /** Name of the Base REST service URL property */
@@ -61,48 +57,32 @@ public class CCDBClient {
     public static final String PROPERTY_NAME_PASSWORD = "CCDB.Password";
     /** Name of the properties file */
     public static final String PROPERTIES_FILENAME = "CCDB.properties";
+    /** Path separator */
+    private static final String PATH_SEPARATOR = "/";
 
-    private static final String PATH_DEVICE_TYPE = "deviceType";
-    private static final String PATH_SLOT_BASICS = "slotBasic";
-    private static final String PATH_INSTALLATION_SLOT = "installationSlot";
-    /** Path separator to avoid SonarQube complaints */
-    protected static final String PATH_SEPARATOR = "/";
+    @Nonnull private String baseUrl;
+    @Nonnull private String username;
+    @Nonnull private String password;
 
-    /** URL for getting installationSlots from the REST service */
-    protected final String URL_INSTALLATION_SLOT;
-    /** URL for getting slotBasics from the REST service */
-    protected final String URL_SLOT_BASICS;
-    /** URL for getting deviceType from the REST service */
-    protected final String URL_DEVICE_TYPE;
-
-    private static final String DEFAULT_BASE_URL = "http://localhost:8080/confmgr/rest";
-
-    private static final CCDBClient INSTANCE = new CCDBClient();
-    private Properties properties;
-
-    /** @return singleton instance of {@link CCDBClient} */
-    public static CCDBClient getInstance() {
-        return INSTANCE;
-    }
+    @Nonnull final Client client = ClientBuilder.newClient();
 
     /**
      * Constructs the instance of the client and loads properties from {@link #PROPERTIES_FILENAME} file found on class
      * path. All values can be overridden by setting the system properties, but that has to be done before this class is
      * loaded.
+     *
+     * Configurable properties are {@link CCDBClient#PROPERTY_NAME_BASE_URL}, {@link CCDBClient#PROPERTY_NAME_USERNAME},
+     * {@link CCDBClient#PROPERTY_NAME_PASSWORD}
+     *
+     * @param userProperties optional (can be null) properties file that contains configurable properties
+     *
      */
-    private CCDBClient() {
-        properties = new Properties();
-        try (final InputStream stream = CCDBClient.class.getClassLoader().getResourceAsStream(PROPERTIES_FILENAME)) {
-            properties.load(stream);
-        } catch (IOException e) {
-            LOGGER.log(Level.INFO, "Loading properties from file " + PROPERTIES_FILENAME
-                    + " failed. Loading default values.");
-            properties.setProperty(PROPERTY_NAME_BASE_URL, DEFAULT_BASE_URL);
-        }
-        properties.putAll(System.getProperties());
-        URL_DEVICE_TYPE = getBaseURL() + PATH_SEPARATOR + PATH_DEVICE_TYPE;
-        URL_INSTALLATION_SLOT = getBaseURL() + PATH_SEPARATOR + PATH_INSTALLATION_SLOT;
-        URL_SLOT_BASICS = getBaseURL() + PATH_SEPARATOR + PATH_SLOT_BASICS;
+    public CCDBClient(Properties userProperties) {
+        Properties properties = resolveProperties(userProperties);
+
+        baseUrl = getProperty(properties, PROPERTY_NAME_BASE_URL);
+        username = getProperty(properties, PROPERTY_NAME_USERNAME);
+        password = getProperty(properties, PROPERTY_NAME_PASSWORD);
     }
 
     /**
@@ -120,19 +100,15 @@ public class CCDBClient {
      *
      * @return received response
      */
-    public Response getResponse(final String url,
+    public ClosableResponse getResponse(final String url,
                                                 @Nullable MultivaluedMap<String, Object> queryParameters) {
-        final String userName = getUserName();
-        final String password = getPassword();
-        if (userName == null || password == null) {
-            throw new IllegalStateException("Username or password not set.");
-        }
-        final ResteasyClient client = new ResteasyClientBuilder().build();
-        final ResteasyWebTarget target = client.target(url);
+        final UriBuilder ub = UriBuilder.fromUri(url);
         if (queryParameters != null) {
-            target.queryParams(queryParameters);
+            for (Entry<String, List<Object>> entry : queryParameters.entrySet()) {
+                ub.queryParam(entry.getKey(), entry.getValue().toArray());
+            }
         }
-        return target.request(MediaType.APPLICATION_JSON_TYPE).get();
+        return new ClosableResponse(client.target(ub).request(MediaType.APPLICATION_JSON_TYPE).get());
     }
 
     /**
@@ -148,7 +124,7 @@ public class CCDBClient {
      *
      * @return received response
      */
-    public Response getResponse(final String url) {
+    public ClosableResponse getResponse(final String url) {
         return getResponse(url, null);
     }
 
@@ -171,7 +147,7 @@ public class CCDBClient {
      *
      * @return received response
      */
-    public Response getResponse(final String url, final String paramName, final Object paramValue) {
+    public ClosableResponse getResponse(final String url, final String paramName, final Object paramValue) {
         if (paramName == null) {
             throw new IllegalArgumentException("Parameter paramName must not be null.");
         }
@@ -183,27 +159,68 @@ public class CCDBClient {
         return getResponse(url, queryParameters);
     }
 
-    //------------------------------ GETTERS ------------------------------
-
-    public String getBaseURL() {
-        return properties.getProperty(PROPERTY_NAME_BASE_URL);
+    /**
+     * Builds a url with the base path and the path parameter specified as parameter
+     * @param path the sub-path of the base url
+     *
+     * @return URL path section sunder the base URL
+     */
+    public String buildUrl(String... path)
+    {
+        final StringBuilder builder = new StringBuilder(baseUrl);
+        for (String subPath : path) {
+            builder.append(PATH_SEPARATOR);
+            builder.append(subPath);
+        }
+        return builder.toString();
     }
 
-    public String getUserName() {
-        return properties.getProperty(PROPERTY_NAME_USERNAME);
+    public String getBaseURL() { return baseUrl; }
+    public String getUserName() { return username; }
+    public String getPassword() { return password; }
+
+    /**
+     * If user provided a {@link Properties} object, use that and return, otherwise try to load from
+     * classpath the {@link CCDBClient#PROPERTIES_FILENAME} file.
+     *
+     * Throws {@link CCDBClientConfigException} if fails to get properties
+     *
+     * @param userProperties
+     * @return
+     */
+    private Properties resolveProperties(Properties userProperties) {
+        Properties properties = null;
+        if (userProperties != null)
+        {
+            properties = userProperties;
+        } else {
+            properties = new Properties();
+            try (final InputStream stream = CCDBClient.class.getClassLoader().getResourceAsStream(PROPERTIES_FILENAME)) {
+                properties.load(stream);
+            } catch (IOException e) {
+                LOGGER.log(Level.SEVERE, "Loading properties from resource file " + PROPERTIES_FILENAME
+                        + " failed.");
+                throw new CCDBClientConfigException("Failed to load CCDB client configuration", e);
+            }
+        }
+        return properties;
     }
 
-    public String getPassword() {
-        return properties.getProperty(PROPERTY_NAME_PASSWORD);
-    }
+    /**
+     * Gets a property from a {@link Properties} or if not found, looks into system properties
+     *
+     * @param custom
+     * @param key
+     * @return
+     */
+    private static String getProperty(Properties custom, String key) {
+        final String customPropValue = custom.getProperty(key);
+        final String propValue = customPropValue != null ? customPropValue : System.getProperties().getProperty(key);
 
-    //------------------------------ SETTERS ------------------------------
+        if (propValue==null) {
+            throw new CCDBClientConfigException("CCDB Client property not found" + key);
+        }
 
-    public void setUserName(final String username) {
-        properties.setProperty(PROPERTY_NAME_USERNAME, username);
-    }
-
-    public void setPassword(final String password) {
-        properties.setProperty(PROPERTY_NAME_PASSWORD, password);
+        return propValue;
     }
 }

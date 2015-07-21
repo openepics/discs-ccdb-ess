@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.client;
+package org.openepics.discs.client.impl;
 
 /**
  * ResponseException is an exception thrown when response couldn't be retrieved from the REST service.
@@ -25,8 +25,6 @@ package org.openepics.discs.client;
  * @author <a href="mailto:sunil.sah@cosylab.com">Sunil Sah</a>
  */
 public class ResponseException extends RuntimeException {
-    private static final long serialVersionUID = 2777254167861307175L;
-
     /** Constructs a new exception. */
     public ResponseException() {
         super();

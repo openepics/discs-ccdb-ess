@@ -22,9 +22,11 @@ package org.openepics.discs.client;
 import java.util.List;
 import java.util.logging.Logger;
 
+import javax.annotation.Nonnull;
 import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.Response;
 
+import org.openepics.discs.client.impl.ClosableResponse;
+import org.openepics.discs.client.impl.ResponseException;
 import org.openepics.discs.conf.jaxb.DeviceType;
 import org.openepics.discs.conf.jaxb.InstallationSlot;
 import org.openepics.discs.conf.jaxb.InstallationSlotBasic;
@@ -33,12 +35,19 @@ import org.openepics.discs.conf.jaxb.InstallationSlotBasic;
  * This is CCDB service client installation slot parser that is used to get data from server.
  * <p>All class methods are static.</p>
  *
- * @author <a href="mailto:sunil.sah@cosylab.com">Sunil Sah</a>
+ * @author <a href="mailto:sunil.sah@cosylab.com">Sunil Sah</a>\
+ * @author <a href="mailto:miroslav.pavleski@cosylab.com">Miroslav Pavleski</a>
  */
 
 public class InstallationSlotResource {
-
     private static final Logger LOGGER = Logger.getLogger(InstallationSlot.class.getName());
+
+    private static final String PATH_INSTALLATION_SLOT = "installationSlot";
+    private static final String PATH_SLOT_BASICS = "slotBasic";
+
+    @Nonnull private final CCDBClient client;
+
+    public InstallationSlotResource(CCDBClient client) { this.client = client; }
 
     /**
      * Requests a {@link List} of all {@link InstallationSlot}s from the REST service.
@@ -48,17 +57,15 @@ public class InstallationSlotResource {
      *
      * @return {@link List} of all {@link InstallationSlot}s received from the REST service
      */
-    public static List<InstallationSlot> getAllSlots() {
+    public List<InstallationSlot> getAllSlots() {
         LOGGER.fine("Invoking getAllSlots");
 
-        final CCDBClient client = CCDBClient.getInstance();
-        try {
-            final Response response = client.getResponse(client.URL_INSTALLATION_SLOT);
+        final String url = client.buildUrl(PATH_INSTALLATION_SLOT);
+        try (final ClosableResponse response = client.getResponse(url)) {
             final List<InstallationSlot> list = response.readEntity(new GenericType<List<InstallationSlot>>() {});
             return list;
         } catch (Exception e) {
-            throw new ResponseException("Couldn't retrieve data from service at " + client.URL_INSTALLATION_SLOT + ".",
-                    e);
+            throw new ResponseException("Couldn't retrieve data from service at " + url + ".", e);
         }
     }
 
@@ -72,19 +79,15 @@ public class InstallationSlotResource {
      *
      * @return {@link InstallationSlot}
      */
-    public static InstallationSlot getInstallationSlot(final String name) {
+    public InstallationSlot getInstallationSlot(final String name) {
         LOGGER.fine("Invoking getInstallationSlot.");
 
-        final CCDBClient client = CCDBClient.getInstance();
-
-        try {
-            final Response response = client.getResponse(client.URL_INSTALLATION_SLOT + CCDBClient.PATH_SEPARATOR
-                    + name);
+        final String url = client.buildUrl(PATH_INSTALLATION_SLOT, name);
+        try (final ClosableResponse response = client.getResponse(url)) {
             final InstallationSlot slot = response.readEntity(InstallationSlot.class);
             return slot;
         } catch (Exception e) {
-            throw new ResponseException("Couldn't retrieve data from service at " + client.URL_INSTALLATION_SLOT
-                    + CCDBClient.PATH_SEPARATOR + name + ".", e);
+            throw new ResponseException("Couldn't retrieve data from service at " + url + ".", e);
         }
     }
 
@@ -96,18 +99,16 @@ public class InstallationSlotResource {
      *
      * @return {@link List} of {@link InstallationSlotBasic}
      */
-    public static List<InstallationSlotBasic> getNamesList() {
+    public List<InstallationSlotBasic> getNamesList() {
         LOGGER.fine("Invoking getNamesList.");
 
-        final CCDBClient client = CCDBClient.getInstance();
-
-        try {
-            final Response response = client.getResponse(client.URL_SLOT_BASICS);
+        final String url = client.buildUrl(PATH_SLOT_BASICS);
+        try (final ClosableResponse response = client.getResponse(url)) {
             final List<InstallationSlotBasic> list = response
                     .readEntity(new GenericType<List<InstallationSlotBasic>>() {});
             return list;
         } catch (Exception e) {
-            throw new ResponseException("Couldn't retrieve data from service at " + client.URL_SLOT_BASICS + ".", e);
+            throw new ResponseException("Couldn't retrieve data from service at " + url + ".", e);
         }
     }
 
@@ -123,17 +124,16 @@ public class InstallationSlotResource {
      *
      * @return {@link List} of all {@link InstallationSlotBasic} of particular {@link DeviceType}
      */
-    public static List<InstallationSlotBasic> getNamesList(final DeviceType type) {
+    public List<InstallationSlotBasic> getNamesList(final DeviceType type) {
         LOGGER.fine("Invoking getNamesList.");
-        final CCDBClient client = CCDBClient.getInstance();
 
-        try {
-            final Response response = client.getResponse(client.URL_SLOT_BASICS, "type", type.getName());
+        final String url = client.buildUrl(PATH_SLOT_BASICS);
+        try (final ClosableResponse response = client.getResponse(url, "type", type.getName())) {
             final List<InstallationSlotBasic> list = response
                     .readEntity(new GenericType<List<InstallationSlotBasic>>() {});
             return list;
         } catch (Exception e) {
-            throw new ResponseException("Couldn't retrieve data from service at " + client.URL_SLOT_BASICS + ".", e);
+            throw new ResponseException("Couldn't retrieve data from service at " + url + ".", e);
         }
     }
 }
