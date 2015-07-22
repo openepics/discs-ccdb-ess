@@ -32,7 +32,7 @@ import org.openepics.discs.conf.jaxb.InstallationSlot;
  *
  * @author <a href="mailto:sunil.sah@cosylab.com">Sunil Sah</a>
  */
-@Path("installationSlot")
+@Path("slot")
 public interface InstallationSlotResource {
 
     /** @return returns all installation slots in the database. */

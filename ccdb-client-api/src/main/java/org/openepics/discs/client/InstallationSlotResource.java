@@ -29,7 +29,7 @@ import org.openepics.discs.client.impl.ClosableResponse;
 import org.openepics.discs.client.impl.ResponseException;
 import org.openepics.discs.conf.jaxb.DeviceType;
 import org.openepics.discs.conf.jaxb.InstallationSlot;
-import org.openepics.discs.conf.jaxb.InstallationSlotBasic;
+import org.openepics.discs.conf.jaxb.InstallationSlotName;
 
 /**
  * This is CCDB service client installation slot parser that is used to get data from server.
@@ -97,15 +97,15 @@ public class InstallationSlotResource {
      * @throws ResponseException
      *             if data couldn't be retrieved
      *
-     * @return {@link List} of {@link InstallationSlotBasic}
+     * @return {@link List} of {@link InstallationSlotName}
      */
-    public List<InstallationSlotBasic> getNamesList() {
+    public List<InstallationSlotName> getNamesList() {
         LOGGER.fine("Invoking getNamesList.");
 
         final String url = client.buildUrl(PATH_SLOT_BASICS);
         try (final ClosableResponse response = client.getResponse(url)) {
-            final List<InstallationSlotBasic> list = response
-                    .readEntity(new GenericType<List<InstallationSlotBasic>>() {});
+            final List<InstallationSlotName> list = response
+                    .readEntity(new GenericType<List<InstallationSlotName>>() {});
             return list;
         } catch (Exception e) {
             throw new ResponseException("Couldn't retrieve data from service at " + url + ".", e);
@@ -122,15 +122,15 @@ public class InstallationSlotResource {
      * @throws ResponseException
      *             if data couldn't be retrieved.
      *
-     * @return {@link List} of all {@link InstallationSlotBasic} of particular {@link DeviceType}
+     * @return {@link List} of all {@link InstallationSlotName} of particular {@link DeviceType}
      */
-    public List<InstallationSlotBasic> getNamesList(final DeviceType type) {
+    public List<InstallationSlotName> getNamesList(final DeviceType type) {
         LOGGER.fine("Invoking getNamesList.");
 
         final String url = client.buildUrl(PATH_SLOT_BASICS);
         try (final ClosableResponse response = client.getResponse(url, "type", type.getName())) {
-            final List<InstallationSlotBasic> list = response
-                    .readEntity(new GenericType<List<InstallationSlotBasic>>() {});
+            final List<InstallationSlotName> list = response
+                    .readEntity(new GenericType<List<InstallationSlotName>>() {});
             return list;
         } catch (Exception e) {
             throw new ResponseException("Couldn't retrieve data from service at " + url + ".", e);

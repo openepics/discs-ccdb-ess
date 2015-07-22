@@ -19,6 +19,7 @@ package org.openepics.discs.conf.webservice;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -38,13 +39,9 @@ public class DeviceTypeResourceImpl implements DeviceTypeResource {
 
     @Override
     public List<DeviceType> getAllDeviceTypes() {
-        final List<DeviceType> allTypes = new ArrayList<DeviceType>();
-
-        for (final ComponentType componentType : comptypeEJB.findAll()) {
-            allTypes.add(getDeviceType(componentType));
-        }
-
-        return allTypes;
+        return comptypeEJB.findAll().stream().
+                map(compType -> getDeviceType(compType)).
+                collect(Collectors.toList());        
     }
 
     @Override
