@@ -27,6 +27,7 @@ import org.openepics.discs.conf.ent.AlignmentPropertyValue;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.DataType;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
+import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyValue;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
 
@@ -52,21 +53,46 @@ public class DataTypeEJB extends DAO<DataType> {
      * @param dataType the data type to check for
      * @return <code>true</code> if the data type is used in any property value, <code>false</code> otherwise.
      */
-    public boolean isDataTypeUsed(DataType dataType) {
+    public boolean isDataTypeUsed(final DataType dataType) {
+        return isDataTypeUsed(dataType, false);
+    }
+
+
+    /**
+     * The method checks whether a data type is used in any property value or {@link Property} in the database.
+     *
+     * @param dataType
+     *              the data type to check for
+     * @param checkProperties
+     *              if <code>true</code> the method also checks whether the data type is used in any {@link Property}.
+     *              <code>false</code> skips this check.
+     * @return <code>true</code> if the data type is used in any property value or property,
+     * <code>false</code> otherwise.
+     */
+    public boolean isDataTypeUsed(final DataType dataType, final boolean checkProperties) {
         Preconditions.checkNotNull(dataType);
         List<? extends PropertyValue> valuesWithDataType;
 
+        if (checkProperties) {
+            final List<Property> props = em.createNamedQuery("Property.findByDataType", Property.class)
+                    .setParameter("dataType", dataType).setMaxResults(1).getResultList();
+            if (!props.isEmpty()) {
+                return true;
+            }
+        }
+
         valuesWithDataType = em.createNamedQuery("ComptypePropertyValue.findByDataType", ComptypePropertyValue.class)
-                .setParameter("dataType", dataType).getResultList();
+                .setParameter("dataType", dataType).setMaxResults(1).getResultList();
         if (valuesWithDataType.isEmpty()) {
             valuesWithDataType = em.createNamedQuery("SlotPropertyValue.findByDataType", SlotPropertyValue.class)
-                    .setParameter("dataType", dataType).getResultList();
+                    .setParameter("dataType", dataType).setMaxResults(1).getResultList();
             if (valuesWithDataType.isEmpty()) {
                 valuesWithDataType = em.createNamedQuery("DevicePropertyValue.findByDataType",
-                                        DevicePropertyValue.class).setParameter("dataType", dataType).getResultList();
+                                        DevicePropertyValue.class).setParameter("dataType", dataType).setMaxResults(1)
+                                        .getResultList();
                 if (valuesWithDataType.isEmpty()) {
                     return !em.createNamedQuery("AlignmentPropertyValue.findByDataType", AlignmentPropertyValue.class)
-                            .setParameter("dataType", dataType).getResultList().isEmpty();
+                            .setParameter("dataType", dataType).setMaxResults(1).getResultList().isEmpty();
                 }
             }
         }

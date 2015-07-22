@@ -131,7 +131,7 @@ public class DataTypeDataLoader extends AbstractDataLoader implements DataLoader
         if (enumToDelete == null) {
             result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_NAME);
         } else {
-            if (dataTypeEJB.isDataTypeUsed(enumToDelete)) {
+            if (dataTypeEJB.isDataTypeUsed(enumToDelete, true)) {
                 result.addRowMessage(ErrorMessage.DELETE_IN_USE, HDR_NAME);
             } else {
                 dataTypeEJB.delete(enumToDelete);

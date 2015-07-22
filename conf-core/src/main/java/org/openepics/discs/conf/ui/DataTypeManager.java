@@ -75,10 +75,11 @@ public class DataTypeManager extends AbstractExcelSingleFileImportUI implements 
     @Inject private transient DataLoaderHandler dataLoaderHandler;
     @Inject @DataTypeLoader private transient DataLoader enumsDataLoader;
 
-
     private List<UserEnumerationView> dataTypeViews;
     private transient List<UserEnumerationView> filteredDataTypesViews;
-    private transient UserEnumerationView selectedEnum;
+    private transient List<UserEnumerationView> selectedEnums;
+    private transient List<UserEnumerationView> usedEnums;
+    private transient UserEnumerationView editedEnum;
     private List<DataType> dataTypes;
     private List<String> builtInDataTypeNames;
 
@@ -190,9 +191,9 @@ public class DataTypeManager extends AbstractExcelSingleFileImportUI implements 
 
         final String enumName = value.toString();
         final DataType existingDataType = dataTypeEJB.findByName(enumName);
-        if ((selectedEnum == null && existingDataType != null)
-                || (selectedEnum != null && existingDataType != null
-                        && !selectedEnum.getEnumeration().equals(existingDataType))) {
+        if ((editedEnum == null && existingDataType != null)
+                || (editedEnum != null && existingDataType != null
+                        && !editedEnum.getEnumeration().equals(existingDataType))) {
             throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
                                                                     "Enumeration with the same name already exists."));
         }
@@ -229,13 +230,16 @@ public class DataTypeManager extends AbstractExcelSingleFileImportUI implements 
         description = null;
         definition = null;
         isEnumerationBeingAdded = true;
+        editedEnum = null;
     }
 
     /** This method prepares the input fields used in the "Edit enumeration" dialog. */
     public void prepareModifyPopup() {
-        name = selectedEnum.getName();
-        description = selectedEnum.getDescription();
-        definition = definitionsToMultiline(selectedEnum.getDefinition());
+        Preconditions.checkState(isSingleEnumSelected());
+        editedEnum = selectedEnums.get(0);
+        name = editedEnum.getName();
+        description = editedEnum.getDescription();
+        definition = definitionsToMultiline(editedEnum.getDefinition());
         isEnumerationBeingAdded = false;
     }
 
@@ -244,7 +248,7 @@ public class DataTypeManager extends AbstractExcelSingleFileImportUI implements 
         final List<String> enumValues = multilineToDefinitions(definition);
         final DataType newEnum = new DataType(name, description, false, jsonDefinitionFromList(enumValues));
         dataTypeEJB.add(newEnum);
-        selectedEnum = null;
+        editedEnum = null;
         refreshUserDataTypes();
     }
 
@@ -253,15 +257,28 @@ public class DataTypeManager extends AbstractExcelSingleFileImportUI implements 
      * "Modify enumeration" dialog.
      */
     public void onModify() {
-        final DataType modifiedEnum = selectedEnum.getEnumeration();
+        Preconditions.checkNotNull(editedEnum);
+        final DataType modifiedEnum = editedEnum.getEnumeration();
         final List<String> enumValues = multilineToDefinitions(definition);
 
         modifiedEnum.setName(name);
         modifiedEnum.setDescription(description);
         modifiedEnum.setDefinition(jsonDefinitionFromList(enumValues));
         dataTypeEJB.save(modifiedEnum);
-        selectedEnum = null;
+        editedEnum = null;
         refreshUserDataTypes();
+    }
+
+    public void checkEnumsForDeletion() {
+        Preconditions.checkNotNull(selectedEnums);
+        Preconditions.checkState(!selectedEnums.isEmpty());
+
+        usedEnums = Lists.newArrayList();
+        for (final UserEnumerationView enumToDelete : selectedEnums) {
+            if (dataTypeEJB.isDataTypeUsed(enumToDelete.getEnumeration(), true)) {
+                usedEnums.add(enumToDelete);
+            }
+        }
     }
 
     /**
@@ -269,16 +286,16 @@ public class DataTypeManager extends AbstractExcelSingleFileImportUI implements 
      * is used in some property value.
      */
     public void onDelete() {
-        Preconditions.checkNotNull(selectedEnum);
-        final DataType enumerationDataType = selectedEnum.getEnumeration();
-        if (dataTypeEJB.isDataTypeUsed(enumerationDataType)) {
-            Utility.showMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
-                        "The enumeration data type cannot be deleted because it is in use.");
-        } else {
-            dataTypeEJB.delete(enumerationDataType);
-            selectedEnum = null;
-            refreshUserDataTypes();
+        Preconditions.checkNotNull(selectedEnums);
+        Preconditions.checkState(!selectedEnums.isEmpty());
+        Preconditions.checkState(usedEnums == null || usedEnums.isEmpty());
+
+        for (final UserEnumerationView enumToDelete : selectedEnums) {
+            dataTypeEJB.delete(enumToDelete.getEnumeration());
         }
+        selectedEnums = null;
+        usedEnums = null;
+        refreshUserDataTypes();
     }
 
     /** Validates the enumeration inputs. For new enumeration it verifies that all values contain only alphanumeric
@@ -298,7 +315,7 @@ public class DataTypeManager extends AbstractExcelSingleFileImportUI implements 
 
         final List<String> enumDefs = multilineToDefinitions(value.toString());
         // check whether redefinition is possible and correct
-        if (!isEnumerationBeingAdded && (selectedEnum != null) && !isEnumModificationSafe(enumDefs)) {
+        if (!isEnumerationBeingAdded && (editedEnum != null) && !isEnumModificationSafe(enumDefs)) {
             throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
                                                         "Enumeration already in use. Values can only be added."));
         }
@@ -341,12 +358,12 @@ public class DataTypeManager extends AbstractExcelSingleFileImportUI implements 
     }
 
     private boolean isEnumModificationSafe(List<String> newDefinition) {
-        if (!dataTypeEJB.isDataTypeUsed(selectedEnum.getEnumeration())) {
+        if (!dataTypeEJB.isDataTypeUsed(editedEnum.getEnumeration())) {
             return true;
         }
         // enumeration already used.
         // for each value in the old definition
-        for (String enumValue : selectedEnum.getDefinition()) {
+        for (String enumValue : editedEnum.getDefinition()) {
             // check if it exists in the new definition
             if (!newDefinition.contains(enumValue)) {
                 return false;
@@ -362,21 +379,25 @@ public class DataTypeManager extends AbstractExcelSingleFileImportUI implements 
         return  jsonEnum.toString();
     }
 
-    /** @return <code>true</code> if selected enumeration is used, <code>false</code> otherwise.
-     */
-    public boolean isSelectedEnumUsed() {
-        return selectedEnum != null && dataTypeEJB.isDataTypeUsed(selectedEnum.getEnumeration());
+    /** @return <code>true</code> if a single enumeration is selected , <code>false</code> otherwise */
+    public boolean isSingleEnumSelected() {
+        return (selectedEnums != null) && (selectedEnums.size() == 1);
     }
 
     /* * * * * * * * * * * * * * * * * getters and setters * * * * * * * * * * * * * * * * */
 
-    /** @return The {@link DataType} selected in the dialog */
-    public UserEnumerationView getSelectedEnum() {
-        return selectedEnum;
+    /** @return The {@link DataType}s selected in the table */
+    public List<UserEnumerationView> getSelectedEnums() {
+        return selectedEnums;
     }
-    /** @param selectedEnum The {@link DataType} selected in the dialog */
-    public void setSelectedEnum(UserEnumerationView selectedEnum) {
-        this.selectedEnum = selectedEnum;
+    /** @param selectedEnums The {@link DataType}s selected in the table */
+    public void setSelectedEnums(List<UserEnumerationView> selectedEnums) {
+        this.selectedEnums = selectedEnums;
+    }
+
+    /** @return The sub {@link List} of selected {@link DataType}s that are in use in the database */
+    public List<UserEnumerationView> getUsedEnums() {
+        return usedEnums;
     }
 
     /** @return The name of the user defined enumeration */

@@ -5,7 +5,7 @@
 
     <h:form id="#{formId}">
         <p:dialog widgetVar="#{widgetName}" id="#{widgetName}" modal="true" resizable="false" dynamic="true"
-                closable="false">
+                closable="false" class="dialogWithList">
             <f:facet name="header">
                 <h:outputText value="#{dialogTitle}" />
             </f:facet>
@@ -13,8 +13,8 @@
             <br />
             <br />
             
-            <p:dataTable id="slotTable" rendered="#{isTableDisplayed}" value="#{slotsToDelete}" var="slot" scrollable="true" 
-                style="width: 30em; margin-bottom: 1em;" stickyHeader="true">
+            <p:dataTable rendered="#{isTableDisplayed}" value="#{slotsToDelete}" var="slot" class="dialogListTable" 
+                    scrollable="true"  style="width: 30em; margin-bottom: 1em;" stickyHeader="true">
                 <p:column headerText="Slot">
                     <h:outputText value="#{slot.name}" />
                 </p:column>

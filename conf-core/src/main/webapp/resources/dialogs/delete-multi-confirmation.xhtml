@@ -1,0 +1,33 @@
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html">
+
+    <h:form id="#{formId}">
+        <p:dialog widgetVar="#{widgetName}" id="#{widgetName}" modal="true" resizable="false" dynamic="true"
+                closable="false" class="dialogWithList">
+            <f:facet name="header">
+                <h:outputText value="#{dialogTitle}" />
+            </f:facet>
+            <p:outputPanel style="display: block; width: 30em; margin-bottom: 1.2em;">
+                <h:outputText value="Are you sure you want to delete selected #{entityType}?" 
+                    rendered="#{empty deletePreventionList}" style="margin-bottom: 1ex;" />
+                <h:outputText value="The selected #{entityType} cannot be deleted, because the following #{entityType} are in use:" 
+                    rendered="#{not empty deletePreventionList}" style="margin-bottom: 1ex;" />
+            </p:outputPanel>
+
+            <p:dataTable value="#{empty deletePreventionList ? deleteList : deletePreventionList}" class="dialogListTable" 
+                    var="entity" scrollable="true" style="width: 30em; margin-bottom: 1em;" stickyHeader="true">
+                <p:column headerText="#{entityName}">
+                    <h:outputText value="#{entity.name}" />
+                </p:column>
+            </p:dataTable>
+
+            <p:commandButton value="#{empty deletePreventionList ? 'No' : 'Close'}" styleClass="dialogButton" 
+                onclick="PF('#{widgetName}').hide(); #{closeDialogActions}" />
+            <p:commandButton value="Yes" styleClass="dialogButton" ajax="true" update="#{formsToUpdate}" 
+                rendered="#{empty deletePreventionList}" oncomplete="PF('#{widgetName}').hide(); #{closeDialogActions}" 
+                action="#{controller[submitHandler]}" />
+        </p:dialog>
+    </h:form>
+</ui:composition>
