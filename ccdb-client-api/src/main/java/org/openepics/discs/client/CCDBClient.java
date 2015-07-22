@@ -67,17 +67,18 @@ public class CCDBClient {
     @Nonnull final Client client = ClientBuilder.newClient();
 
     /**
+     * <p>
      * Constructs the instance of the client and loads properties from {@link #PROPERTIES_FILENAME} file found on class
      * path. All values can be overridden by setting the system properties, but that has to be done before this class is
      * loaded.
-     *
+     * </p><p>
      * Configurable properties are {@link CCDBClient#PROPERTY_NAME_BASE_URL}, {@link CCDBClient#PROPERTY_NAME_USERNAME},
      * {@link CCDBClient#PROPERTY_NAME_PASSWORD}
-     *
-     * @param userProperties optional (can be null) properties file that contains configurable properties
+     * </p>
+     * @param userProperties optional (can be <code>null</code>) properties file that contains configurable properties
      *
      */
-    public CCDBClient(Properties userProperties) {
+    public CCDBClient(@Nullable Properties userProperties) {
         Properties properties = resolveProperties(userProperties);
 
         baseUrl = getProperty(properties, PROPERTY_NAME_BASE_URL);
@@ -101,7 +102,7 @@ public class CCDBClient {
      * @return received response
      */
     public ClosableResponse getResponse(final String url,
-                                                @Nullable MultivaluedMap<String, Object> queryParameters) {
+                                                @Nullable final MultivaluedMap<String, Object> queryParameters) {
         final UriBuilder ub = UriBuilder.fromUri(url);
         if (queryParameters != null) {
             for (Entry<String, List<Object>> entry : queryParameters.entrySet()) {
@@ -129,7 +130,7 @@ public class CCDBClient {
     }
 
     /**
-     * Requests Json type data from URL using a query string parameter.
+     * Requests JSON type data from URL using a query string parameter.
      *
      * <p>Method is thread-safe.</p>
      *
@@ -163,12 +164,12 @@ public class CCDBClient {
      * Builds a url with the base path and the path parameter specified as parameter
      * @param path the sub-path of the base url
      *
-     * @return URL path section sunder the base URL
+     * @return URL path section under the base URL
      */
     public String buildUrl(String... path)
     {
         final StringBuilder builder = new StringBuilder(baseUrl);
-        for (String subPath : path) {
+        for (final String subPath : path) {
             builder.append(PATH_SEPARATOR);
             builder.append(subPath);
         }
@@ -188,10 +189,9 @@ public class CCDBClient {
      * @param userProperties
      * @return
      */
-    private Properties resolveProperties(Properties userProperties) {
-        Properties properties = null;
-        if (userProperties != null)
-        {
+    private Properties resolveProperties(@Nullable final Properties userProperties) {
+        final Properties properties;
+        if (userProperties != null) {
             properties = userProperties;
         } else {
             properties = new Properties();
@@ -213,12 +213,12 @@ public class CCDBClient {
      * @param key
      * @return
      */
-    private static String getProperty(Properties custom, String key) {
+    private static String getProperty(final Properties custom, final String key) {
         final String customPropValue = custom.getProperty(key);
         final String propValue = customPropValue != null ? customPropValue : System.getProperties().getProperty(key);
 
-        if (propValue==null) {
-            throw new CCDBClientConfigException("CCDB Client property not found" + key);
+        if (propValue == null) {
+            throw new CCDBClientConfigException("CCDB Client property not found: " + key);
         }
 
         return propValue;
