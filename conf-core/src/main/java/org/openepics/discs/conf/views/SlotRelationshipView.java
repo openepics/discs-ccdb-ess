@@ -27,14 +27,15 @@ import com.google.common.base.Objects;
 
 /**
  * @author <a href="mailto:andraz.pozar@cosylab.com">Andraž Požar</a>
- *
+ * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  */
 public class SlotRelationshipView {
 
-    private String relationshipName;
-    private String targetSlotName;
-    private Slot targetSlot;
-    private SlotPair slotPair;
+    private final String sourceSlotName;
+    private final String relationshipName;
+    private final String targetSlotName;
+    private final Slot targetSlot;
+    private final SlotPair slotPair;
 
     /** Constructs a new slot pair UI view object for the selected {@link Slot} object. The method checks that the
      * <code>selectedSlot</code> is either a parent or a child in the <code>slotPair</code> relationship object.
@@ -44,15 +45,16 @@ public class SlotRelationshipView {
      * <code>slotPair</code> object.
      */
     public SlotRelationshipView(SlotPair slotPair, Slot selectedSlot) {
-
         if (Objects.equal(slotPair.getChildSlot(), selectedSlot)) {
             relationshipName = slotPair.getSlotRelation().getIname();
             targetSlot = slotPair.getParentSlot();
             targetSlotName = slotPair.getParentSlot().getName();
+            sourceSlotName = slotPair.getChildSlot().getName();
         } else if (Objects.equal(slotPair.getParentSlot(), selectedSlot)) {
             relationshipName = slotPair.getSlotRelation().getNameAsString();
             targetSlot = slotPair.getChildSlot();
             targetSlotName = slotPair.getChildSlot().getName();
+            sourceSlotName = slotPair.getParentSlot().getName();
         } else {
             throw new UnhandledCaseException();
         }
@@ -74,5 +76,9 @@ public class SlotRelationshipView {
 
     public SlotPair getSlotPair() {
         return slotPair;
+    }
+
+    public String getSourceSlotName() {
+        return sourceSlotName;
     }
 }

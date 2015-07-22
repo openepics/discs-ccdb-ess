@@ -283,6 +283,15 @@ a {
 	background-position: 0px -94px;
 }
 
+#deleteSlotsForm\:deleteSlots .ui-dialog-content {
+    overflow: hidden;
+}
+
+#deleteSlotsForm\:slotTable .ui-datatable-scrollable-body {
+	height: 7em;
+	overflow-x: hidden;
+}
+
 .logPanelHeader .ui-widget-content {
 	padding: 0 !important;
 }

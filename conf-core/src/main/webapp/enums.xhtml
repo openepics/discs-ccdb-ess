@@ -53,9 +53,9 @@
                         <h:outputText value="#{enum.description}" />
                     </p:column>
 
-                    <p:column headerText="Definition" sortBy="#{enum.definitionAsString}" 
+                    <p:column headerText="Definition" sortBy="#{enum.definitionAsString}" style="width: 50%;" 
                             filterBy="#{enum.definitionAsString}" filterMatchMode="contains">
-                        <h:outputText value="#{enum.definitionAsString}" width="50%"/>
+                        <h:outputText value="#{enum.definitionAsString}" />
                     </p:column>
                 </p:dataTable>
                 <p:commandButton id="exportButton" icon="ui-icon-disk" value="Export" title="Export" 

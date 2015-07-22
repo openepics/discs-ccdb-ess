@@ -45,6 +45,7 @@ import com.google.common.base.Preconditions;
  */
 public class EntityAttributeView {
     private String id;
+    private String parent;
     private String name;
     @Nullable private DataType type;
     @Nullable private Unit unit;
@@ -58,12 +59,23 @@ public class EntityAttributeView {
     /** Construct a new UI view object based on the database entity
      * @param entity the database entity
      * @param kind database entity kind {@link EntityAttributeViewKind}
+     * @param parent the name/id of the parent entity for this attribute
      */
-    public EntityAttributeView(Object entity, EntityAttributeViewKind kind) {
+    public EntityAttributeView(Object entity, EntityAttributeViewKind kind, @Nullable String parent ) {
         Preconditions.checkNotNull(kind);
         this.entity = entity;
         setParameters();
         this.kind = kind;
+        this.parent = parent;
+    }
+
+
+    /** Construct a new UI view object based on the database entity
+     * @param entity the database entity
+     * @param kind database entity kind {@link EntityAttributeViewKind}
+     */
+    public EntityAttributeView(Object entity, EntityAttributeViewKind kind) {
+        this(entity, kind, null);
     }
 
     /** Construct a new UI view object based on the database entity. The entity kind {@link EntityAttributeViewKind} is
@@ -172,5 +184,9 @@ public class EntityAttributeView {
 
     public String getId() {
         return id;
+    }
+
+    public String getParent() {
+        return parent;
     }
 }
