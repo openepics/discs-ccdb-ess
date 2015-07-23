@@ -40,7 +40,7 @@ import org.openepics.discs.conf.jaxb.DeviceType;
  */
 
 public class DeviceTypeResource {
-    private static final String PATH_DEVICE_TYPE = "deviceType";
+    private static final String PATH_DEVICE_TYPES = "deviceType";
     private static final Logger LOGGER = Logger.getLogger(DeviceTypeResource.class.getName());
 
     @Nonnull private final CCDBClient client;
@@ -58,7 +58,7 @@ public class DeviceTypeResource {
     public List<DeviceType> getAllDeviceTypes() {
         LOGGER.fine("Invoking getAllDeviceTypes");
 
-        final String url = client.buildUrl(PATH_DEVICE_TYPE);
+        final String url = client.buildUrl(PATH_DEVICE_TYPES);
         try (final ClosableResponse response = client.getResponse(url)) {
             final List<DeviceType> list = response.readEntity(new GenericType<List<DeviceType>>() {});
             return list;
@@ -81,7 +81,7 @@ public class DeviceTypeResource {
     public DeviceType getDeviceType(final int id) {
         LOGGER.fine("Invoking getDeviceType");
 
-        final String url = client.buildUrl(PATH_DEVICE_TYPE, Integer.toString(id));
+        final String url = client.buildUrl(PATH_DEVICE_TYPES, Integer.toString(id));
         try (final ClosableResponse response = client.getResponse(url)) {
             final DeviceType device = response.readEntity(DeviceType.class);
             return device;

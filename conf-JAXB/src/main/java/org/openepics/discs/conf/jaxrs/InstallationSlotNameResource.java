@@ -17,7 +17,6 @@
  */
 package org.openepics.discs.conf.jaxrs;
 
-import java.util.List;
 import org.openepics.discs.conf.jaxb.InstallationSlotNames;
 
 import javax.ws.rs.GET;

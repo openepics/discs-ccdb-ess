@@ -34,7 +34,6 @@ import org.openepics.discs.conf.jaxb.DeviceType;
  */
 @Path("deviceType")
 public interface DeviceTypeResource {
-
     /** @return returns all device types in the database. */
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
@@ -43,11 +42,11 @@ public interface DeviceTypeResource {
     /**
      * Returns a specific device type.
      *
-     * @param id the id of the device type to retrieve
+     * @param name the name of the device type to retrieve
      * @return the device type instance data
      */
     @GET
-    @Path("{id}")
+    @Path("{name}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public DeviceType getDeviceType(@PathParam("id") Long id);
+    public DeviceType getDeviceType(@PathParam("name") String name);
 }

@@ -31,17 +31,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "deviceType")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class DeviceType {
-    private Long id;
     private String name;
     private String description;
     private String modifiedBy;
     private Date modifiedAt;
 
-    public DeviceType() {
-    }
-
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public DeviceType() { }
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }

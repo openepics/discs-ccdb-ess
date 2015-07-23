@@ -60,9 +60,9 @@ public class CCDBClient {
     /** Path separator */
     private static final String PATH_SEPARATOR = "/";
 
-    @Nonnull private String baseUrl;
-    @Nonnull private String username;
-    @Nonnull private String password;
+    @Nonnull final private String baseUrl;
+    @Nonnull final private String username;
+    @Nonnull final private String password;
 
     @Nonnull final Client client = ClientBuilder.newClient();
 

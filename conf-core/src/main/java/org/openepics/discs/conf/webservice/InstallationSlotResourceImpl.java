@@ -7,11 +7,15 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.inject.Inject;
+import org.apache.commons.lang3.StringUtils;
+import org.openepics.discs.conf.ejb.ComptypeEJB;
 
 import org.openepics.discs.conf.ejb.SlotEJB;
+import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotPair;
+import org.openepics.discs.conf.ent.SlotRelationName;
 import org.openepics.discs.conf.jaxb.InstallationSlot;
 import org.openepics.discs.conf.jaxb.PropertyValue;
 import org.openepics.discs.conf.jaxrs.InstallationSlotResource;
@@ -23,6 +27,7 @@ import org.openepics.discs.conf.jaxrs.InstallationSlotResource;
  */
 public class InstallationSlotResourceImpl implements InstallationSlotResource {
     @Inject private SlotEJB slotEJB;
+    @Inject private ComptypeEJB compTypeEJB;
 
     @FunctionalInterface
     private interface RelatedSlotExtractor {
@@ -30,13 +35,19 @@ public class InstallationSlotResourceImpl implements InstallationSlotResource {
     }
 
     @Override
-    public List<InstallationSlot> getAllSlots() {
-        return slotEJB.findAll().stream().
+    public List<InstallationSlot> getInstallationSlots(String deviceType) {        
+        // Get all slots
+        if ("undefined".equals(deviceType)) {
+            return slotEJB.findAll().stream().
                 filter(slot -> slot!=null && slot.isHostingSlot()).
                 map(slot -> createInstallationSlot(slot)).
-                collect(Collectors.toList());        
-    }
-
+                collect(Collectors.toList());
+        } else {
+            // Get them filtered by deviceType
+            return getInstallationSlotsForType(deviceType);
+        }
+    }    
+    
     @Override
     public InstallationSlot getInstallationSlot(String name) {
         final Slot installationSlot = slotEJB.findByName(name);
@@ -46,21 +57,67 @@ public class InstallationSlotResourceImpl implements InstallationSlotResource {
         return createInstallationSlot(installationSlot);
     }
 
+    private List<InstallationSlot> getInstallationSlotsForType(String deviceType) {
+        if (StringUtils.isEmpty(deviceType)) {
+            return new ArrayList<>();
+        }
+        
+        final ComponentType ct = compTypeEJB.findByName(deviceType);
+        if (ct == null) {
+            return new ArrayList<>();
+        }
+         
+        return slotEJB.findByComponentType(ct).stream().
+                map(slot -> createInstallationSlot(slot)).
+                collect(Collectors.toList());
+    }
+   
     private InstallationSlot createInstallationSlot(final Slot slot) {
+        if (slot==null) {
+            return null;
+        }
+        
         final InstallationSlot installationSlot = new InstallationSlot();
         installationSlot.setName(slot.getName());
         installationSlot.setDesription(slot.getDescription());
         installationSlot.setDeviceType(DeviceTypeResourceImpl.getDeviceType(slot.getComponentType()));
-        installationSlot.setParents(getRelatedSlots(slot.getPairsInWhichThisSlotIsAChildList(), 
-                pair -> pair.getParentSlot()));
-        installationSlot.setChildren(getRelatedSlots(slot.getPairsInWhichThisSlotIsAParentList(), 
-                pair -> pair.getChildSlot()));
+        
+        installationSlot.setParents(
+                getRelatedSlots(slot.getPairsInWhichThisSlotIsAChildList().stream(), 
+                        SlotRelationName.CONTAINS,                
+                        pair -> pair.getParentSlot()));        
+        installationSlot.setChildren(
+                getRelatedSlots(slot.getPairsInWhichThisSlotIsAParentList().stream(),
+                        SlotRelationName.CONTAINS,
+                        pair -> pair.getChildSlot()));
+
+        installationSlot.setPoweredBy(
+                getRelatedSlots(slot.getPairsInWhichThisSlotIsAChildList().stream(), 
+                        SlotRelationName.POWERS,                
+                        pair -> pair.getParentSlot()));        
+        installationSlot.setPowers(
+                getRelatedSlots(slot.getPairsInWhichThisSlotIsAParentList().stream(),
+                        SlotRelationName.POWERS,
+                        pair -> pair.getChildSlot()));
+     
+        installationSlot.setControlledBy(
+                getRelatedSlots(slot.getPairsInWhichThisSlotIsAChildList().stream(), 
+                        SlotRelationName.CONTROLS,                
+                        pair -> pair.getParentSlot()));        
+        installationSlot.setControls(
+                getRelatedSlots(slot.getPairsInWhichThisSlotIsAParentList().stream(),
+                        SlotRelationName.CONTROLS,
+                        pair -> pair.getChildSlot()));
+        
         installationSlot.setProperties(getPropertyValues(slot));
         return installationSlot;
     }
 
-    private List<String> getRelatedSlots(final List<SlotPair> relatedSlots, final RelatedSlotExtractor extractor) {
-        return relatedSlots.stream().
+    private List<String> getRelatedSlots(final Stream<SlotPair> relatedSlotPairs, 
+            final SlotRelationName relationName,
+            final RelatedSlotExtractor extractor) {
+        return relatedSlotPairs.
+                filter(slotPair -> relationName.equals(slotPair.getSlotRelation().getName())).
                 map(relatedSlotPair -> extractor.getRelatedSlot(relatedSlotPair)).
                 filter(slot -> slot.isHostingSlot()).
                 map(slot -> slot.getName()).

@@ -24,12 +24,13 @@ import java.util.logging.Logger;
 
 import javax.annotation.Nonnull;
 import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.MultivaluedHashMap;
 
 import org.openepics.discs.client.impl.ClosableResponse;
 import org.openepics.discs.client.impl.ResponseException;
 import org.openepics.discs.conf.jaxb.DeviceType;
 import org.openepics.discs.conf.jaxb.InstallationSlot;
-import org.openepics.discs.conf.jaxb.InstallationSlotName;
+import org.openepics.discs.conf.jaxb.InstallationSlotNames;
 
 /**
  * This is CCDB service client installation slot parser that is used to get data from server.
@@ -42,8 +43,8 @@ import org.openepics.discs.conf.jaxb.InstallationSlotName;
 public class InstallationSlotResource {
     private static final Logger LOGGER = Logger.getLogger(InstallationSlot.class.getName());
 
-    private static final String PATH_INSTALLATION_SLOT = "installationSlot";
-    private static final String PATH_SLOT_BASICS = "slotBasic";
+    private static final String PATH_SLOTS = "slot";
+    private static final String PATH_SLOT_NAMES = "slotName";
 
     @Nonnull private final CCDBClient client;
 
@@ -60,8 +61,47 @@ public class InstallationSlotResource {
     public List<InstallationSlot> getAllSlots() {
         LOGGER.fine("Invoking getAllSlots");
 
-        final String url = client.buildUrl(PATH_INSTALLATION_SLOT);
+        final String url = client.buildUrl(PATH_SLOTS);
         try (final ClosableResponse response = client.getResponse(url)) {
+            final List<InstallationSlot> list = response.readEntity(new GenericType<List<InstallationSlot>>() {});
+            return list;
+        } catch (Exception e) {
+            throw new ResponseException("Couldn't retrieve data from service at " + url + ".", e);
+        }
+    }
+    
+    /**
+     * Requests a {@link List} of all {@link InstallationSlot} names from the REST service.
+     *
+     * @throws ResponseException
+     *             if data couldn't be retrieved
+     *
+     * @return {@link List} of {@link InstallationSlotName}
+     */
+    public List<String> getAllSlotNames() {
+        LOGGER.fine("Invoking getNamesList.");
+
+        final String url = client.buildUrl(PATH_SLOT_NAMES);
+        try (final ClosableResponse response = client.getResponse(url)) {
+            return response.readEntity(new GenericType<InstallationSlotNames>(){}).getNames();
+        } catch (Exception e) {
+            throw new ResponseException("Couldn't retrieve data from service at " + url + ".", e);
+        }
+    }
+    
+    /**
+     * Gets a list of all Installation Slots for a given Device Type
+     * 
+     * @param devType
+     * @return 
+     */
+    public List<InstallationSlot> getSlotsByDeviceType(String devType) {
+        LOGGER.fine("Invoking getAllSlots");
+
+        final String url = client.buildUrl(PATH_SLOTS);
+        MultivaluedHashMap queryParams = new MultivaluedHashMap();
+        queryParams.put("deviceType", devType);
+        try (final ClosableResponse response = client.getResponse(url, queryParams)) {
             final List<InstallationSlot> list = response.readEntity(new GenericType<List<InstallationSlot>>() {});
             return list;
         } catch (Exception e) {
@@ -79,59 +119,13 @@ public class InstallationSlotResource {
      *
      * @return {@link InstallationSlot}
      */
-    public InstallationSlot getInstallationSlot(final String name) {
+    public InstallationSlot getSlotByName(final String name) {
         LOGGER.fine("Invoking getInstallationSlot.");
 
-        final String url = client.buildUrl(PATH_INSTALLATION_SLOT, name);
+        final String url = client.buildUrl(PATH_SLOTS, name);
         try (final ClosableResponse response = client.getResponse(url)) {
             final InstallationSlot slot = response.readEntity(InstallationSlot.class);
             return slot;
-        } catch (Exception e) {
-            throw new ResponseException("Couldn't retrieve data from service at " + url + ".", e);
-        }
-    }
-
-    /**
-     * Requests a {@link List} of all {@link InstallationSlot} names from the REST service.
-     *
-     * @throws ResponseException
-     *             if data couldn't be retrieved
-     *
-     * @return {@link List} of {@link InstallationSlotName}
-     */
-    public List<InstallationSlotName> getNamesList() {
-        LOGGER.fine("Invoking getNamesList.");
-
-        final String url = client.buildUrl(PATH_SLOT_BASICS);
-        try (final ClosableResponse response = client.getResponse(url)) {
-            final List<InstallationSlotName> list = response
-                    .readEntity(new GenericType<List<InstallationSlotName>>() {});
-            return list;
-        } catch (Exception e) {
-            throw new ResponseException("Couldn't retrieve data from service at " + url + ".", e);
-        }
-    }
-
-    /**
-     * Requests a {@link List} of all {@link InstallationSlot} names of particular {@link DeviceType} from
-     * the REST service.
-     *
-     * @param type
-     *            the requested {@link DeviceType}
-     *
-     * @throws ResponseException
-     *             if data couldn't be retrieved.
-     *
-     * @return {@link List} of all {@link InstallationSlotName} of particular {@link DeviceType}
-     */
-    public List<InstallationSlotName> getNamesList(final DeviceType type) {
-        LOGGER.fine("Invoking getNamesList.");
-
-        final String url = client.buildUrl(PATH_SLOT_BASICS);
-        try (final ClosableResponse response = client.getResponse(url, "type", type.getName())) {
-            final List<InstallationSlotName> list = response
-                    .readEntity(new GenericType<List<InstallationSlotName>>() {});
-            return list;
         } catch (Exception e) {
             throw new ResponseException("Couldn't retrieve data from service at " + url + ".", e);
         }

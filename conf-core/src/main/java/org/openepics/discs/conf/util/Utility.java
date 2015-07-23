@@ -151,7 +151,7 @@ public class Utility {
         }
         return attributeKinds;
     }
-
+    
     public static <T> Stream<T> optionalToStream(Optional<T> optional) {
         return optional.map(Stream::of).orElse(Stream.empty());
     } 
