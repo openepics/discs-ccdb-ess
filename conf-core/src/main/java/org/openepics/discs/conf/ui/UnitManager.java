@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.annotation.ManagedBean;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
@@ -66,7 +65,6 @@ import com.google.common.collect.Lists;
  * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  */
 @Named
-@ManagedBean
 @ViewScoped
 public class UnitManager extends AbstractExcelSingleFileImportUI implements Serializable, SimpleTableExporter {
     private static final long serialVersionUID = 5504821804362597703L;
@@ -76,17 +74,17 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
     @Inject private transient DataLoaderHandler dataLoaderHandler;
     @Inject @UnitsLoader private transient DataLoader unitsDataLoader;
 
-    private List<Unit> units;
     private List<UnitView> unitViews;
     private transient List<UnitView> filteredUnits;
-
-    private transient UnitView selectedUnit;
+    private transient List<UnitView> selectedUnits;
+    private transient List<UnitView> usedUnits;
+    private transient UnitView unitToModify;
 
     // * * * * * * * Add/modify dialog fields * * * * * * *
     private String name;
     private String description;
     private String symbol;
-    private boolean unitAdd;
+    private boolean isUnitAdd;
 
     private ExportSimpleTableDialog simpleTableExporterDialog;
 
@@ -133,8 +131,8 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
             if (!Strings.isNullOrEmpty(unitIdStr)) {
                 final long unitId = Long.parseLong(unitIdStr);
                 int elementPosition = 0;
-                for (Unit unit : units) {
-                    if (unit.getId() == unitId) {
+                for (UnitView unit : unitViews) {
+                    if (unit.getUnit().getId() == unitId) {
                         RequestContext.getCurrentInstance().execute("selectEntityInTable(" + elementPosition
                                 + ", 'unitsTableVar');");
                         return;
@@ -151,30 +149,6 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
     }
 
     @Override
-    public void setDataLoader() {
-        dataLoader = unitsDataLoader;
-    }
-
-    /** @return The list of all user defined physics units in the database */
-    public List<Unit> getUnits() {
-        return units;
-    }
-
-    /** @return The list of all user defined physics units in the database */
-    public List<UnitView> getUnitViews() {
-        return unitViews;
-    }
-
-    /** @return The list of filtered units used by the PrimeFaces filter field */
-    public List<UnitView> getFilteredUnits() {
-        return filteredUnits;
-    }
-    /** @param filteredUnits The list of filtered units used by the PrimeFaces filter field */
-    public void setFilteredUnits(List<UnitView> filteredUnits) {
-        this.filteredUnits = filteredUnits;
-    }
-
-    @Override
     public void doImport() {
         try (InputStream inputStream = new ByteArrayInputStream(importData)) {
             setLoaderResult(dataLoaderHandler.loadData(inputStream, unitsDataLoader));
@@ -185,7 +159,7 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
     }
 
     private void refreshUnits() {
-        units = ImmutableList.copyOf(unitEJB.findAllOrdered());
+        final List<Unit> units = unitEJB.findAllOrdered();
 
         // transform the list of Unit into a list of UnitView
         unitViews = ImmutableList.copyOf(Lists.transform(units, new Function<Unit, UnitView>() {
@@ -200,15 +174,18 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
         name = null;
         description = null;
         symbol = null;
-        unitAdd = true;
+        isUnitAdd = true;
+        unitToModify = null;
     }
 
     /** This method prepares the input fields used in the "Edit unit" dialog */
     public void prepareModifyPopup() {
-        name = selectedUnit.getName();
-        description = selectedUnit.getDescription();
-        symbol = selectedUnit.getSymbol();
-        unitAdd = false;
+        Preconditions.checkState(isSingleUnitSelected());
+        unitToModify = selectedUnits.get(0);
+        name = unitToModify.getName();
+        description = unitToModify.getDescription();
+        symbol = unitToModify.getSymbol();
+        isUnitAdd = false;
     }
 
     /** Method creates a new unit definition when user presses the "Save" button in the "Add new" dialog  */
@@ -216,7 +193,7 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
         Preconditions.checkNotNull(name);
         Preconditions.checkNotNull(description);
         Preconditions.checkNotNull(symbol);
-        selectedUnit = null;
+        selectedUnits = null;
         final Unit unitToAdd = new Unit(name, symbol, description);
         unitEJB.add(unitToAdd);
         refreshUnits();
@@ -227,14 +204,15 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
      * "Modify unit" dialog.
      */
     public void onModify() {
-        final Unit unitToSave = selectedUnit.getUnit();
+        Preconditions.checkNotNull(unitToModify);
+        final Unit unitToSave = unitToModify.getUnit();
         unitToSave.setName(name);
         unitToSave.setDescription(description);
         unitToSave.setSymbol(symbol);
         unitEJB.save(unitToSave);
 
-        // reset the input fields
         refreshUnits();
+        // reset the input fields
         prepareAddPopup();
     }
 
@@ -242,25 +220,47 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
      * @return <code>true</code> if the <code>selectedUnit</code> is used in some {@link Property},
      * <code>false</code> otherwise.
      */
-    public boolean isSelectedUnitInUse() {
-        return (selectedUnit != null) && unitEJB.isUnitUsed(selectedUnit.getUnit());
+    public boolean isModifiedUnitInUse() {
+        return (unitToModify != null) && unitEJB.isUnitUsed(unitToModify.getUnit());
+    }
+
+    /** @return <code>true</code> if a single {@link Unit} is selected, <code>false</code> otherwise */
+    public boolean isSingleUnitSelected() {
+        return (selectedUnits != null) && (selectedUnits.size() == 1);
     }
 
     /**
-     * Method that deletes the unit definition if that is allowed. Unit deletion is prevented if the unit
-     * is used in some {@link Property} definition.
+     * The method builds a list of units that are already used. It the list is not empty, it is displayed
+     * to the user and the user is prevented from deleting them.
+     */
+    public void checkUnitsForDeletion() {
+        Preconditions.checkNotNull(selectedUnits);
+        Preconditions.checkState(!selectedUnits.isEmpty());
+
+        usedUnits = Lists.newArrayList();
+        for (final UnitView unitToDelete : selectedUnits) {
+            if (unitEJB.isUnitUsed(unitToDelete.getUnit())) {
+                usedUnits.add(unitToDelete);
+            }
+        }
+    }
+
+    /**
+     * Method that deletes all the selected unit definitions. Unit deletion is prevented if one of the units is used in
+     * some {@link Property} definition.
      */
     public void onDelete() {
-        Preconditions.checkNotNull(selectedUnit);
-        final Unit unitToDelete = selectedUnit.getUnit();
-        if (unitEJB.isUnitUsed(unitToDelete)) {
-            Utility.showMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
-                                                    "The unit cannot be deleted because it is in use.");
-        } else {
-            unitEJB.delete(unitToDelete);
-            refreshUnits();
-            selectedUnit = null;
+        Preconditions.checkNotNull(selectedUnits);
+        Preconditions.checkState(!selectedUnits.isEmpty());
+        Preconditions.checkState(usedUnits == null || usedUnits.isEmpty());
+
+        for (UnitView unitToDelete : selectedUnits) {
+            unitEJB.delete(unitToDelete.getUnit());
         }
+
+        selectedUnits = null;
+        usedUnits = null;
+        refreshUnits();
     }
 
     /**
@@ -278,20 +278,47 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
 
         final String unitName = value.toString();
         final Unit existingUnit = unitEJB.findByName(unitName);
-        if ((selectedUnit == null && existingUnit != null)
-                || (selectedUnit != null && existingUnit != null && !selectedUnit.getUnit().equals(existingUnit))) {
+        if ((isUnitAdd && existingUnit != null)
+                || (!isUnitAdd && (existingUnit != null) && !unitToModify.getUnit().equals(existingUnit))) {
             throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
                                                                     "The unit with this name already exists."));
         }
     }
 
-    /** @return the selectedUnit */
-    public UnitView getSelectedUnit() {
-        return selectedUnit;
+    //-------------------------------------------------------------------------------------------
+    //                              Getters and setters
+    //-------------------------------------------------------------------------------------------
+    @Override
+    public void setDataLoader() {
+        dataLoader = unitsDataLoader;
     }
-    /** @param selectedUnit the selectedUnit to set */
-    public void setSelectedUnit(UnitView selectedUnit) {
-        this.selectedUnit = selectedUnit;
+
+    /** @return The list of all user defined physics units in the database */
+    public List<UnitView> getUnitViews() {
+        return unitViews;
+    }
+
+    /** @return The list of filtered units used by the PrimeFaces filter field */
+    public List<UnitView> getFilteredUnits() {
+        return filteredUnits;
+    }
+    /** @param filteredUnits The list of filtered units used by the PrimeFaces filter field */
+    public void setFilteredUnits(List<UnitView> filteredUnits) {
+        this.filteredUnits = filteredUnits;
+    }
+
+    /** @return the usedUnits */
+    public List<UnitView> getUsedUnits() {
+        return usedUnits;
+    }
+
+    /** @return the selectedUnits */
+    public List<UnitView> getSelectedUnits() {
+        return selectedUnits;
+    }
+    /** @param selectedUnits the selectedUnits to set */
+    public void setSelectedUnits(List<UnitView> selectedUnits) {
+        this.selectedUnits = selectedUnits;
     }
 
     /** @return the name */
@@ -323,7 +350,7 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
 
     /** @return the unitAdd */
     public boolean isUnitAdd() {
-        return unitAdd;
+        return isUnitAdd;
     }
 
     @Override

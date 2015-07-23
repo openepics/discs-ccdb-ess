@@ -269,6 +269,10 @@ public class DataTypeManager extends AbstractExcelSingleFileImportUI implements 
         refreshUserDataTypes();
     }
 
+    /**
+     * The method builds a list of user enumerations that are already used. It the list is not empty, it is displayed
+     * to the user and the user is prevented from deleting them.
+     */
     public void checkEnumsForDeletion() {
         Preconditions.checkNotNull(selectedEnums);
         Preconditions.checkState(!selectedEnums.isEmpty());

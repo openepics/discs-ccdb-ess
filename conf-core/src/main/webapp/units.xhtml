@@ -38,7 +38,7 @@
             <p:fieldset id="unitsFieldset" legend="Enumerations">
                 <p:dataTable widgetVar="unitsTableVar" var="unit" id="unitsTable" value="#{unitManager.unitViews}" 
                         styleClass="scroll-table" style="width: inherit; overflow-y: hidden;" scrollable="true" 
-                        selection="#{unitManager.selectedUnit}" selectionMode="single" rowKey="#{unit.unit.id}" 
+                        selection="#{unitManager.selectedUnits}" selectionMode="multiple" rowKey="#{unit.unit.id}" 
                         resizableColumns="true" tableStyle="table-layout: fixed; word-wrap: break-word; width: 100%;" 
                         filteredValue="#{unitManager.filteredUnits}" liveScroll="true" scrollRows="50">
                     <p:ajax event="filter" ignoreAutoUpdate="true" />
@@ -67,11 +67,12 @@
                     disabled="#{empty unitManager.unitViews}" update=":exportUnitsForm:exportUnits" 
                     actionListener="#{unitManager.simpleTableDialog.prepareTableExportPopup}" />
                 <p:commandButton id="deleteButton" icon="ui-icon-trash" value="Delete" title="Delete" 
-                    style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('deleteUnit').show();" 
-                    disabled="#{empty unitManager.selectedUnit or unitManager.selectedUnitInUse}" />
+                    style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('deleteUnits').show();" 
+                    disabled="#{empty unitManager.selectedUnits}" update=":deleteUnitsForm:deleteUnits" 
+                    actionListener="#{unitManager.checkUnitsForDeletion()}" />
                 <p:commandButton id="editButton" icon="ui-icon-pencil" value="Edit" title="Edit" 
                     style="float: right; margin: 1em 1ex 0 0;" update=":modifyUnitForm:modifyUnit" 
-                    disabled="#{empty unitManager.selectedUnit}" oncomplete="PF('modifyUnit').show();" 
+                    disabled="#{not unitManager.singleUnitSelected}" oncomplete="PF('modifyUnit').show();" 
                     actionListener="#{unitManager.prepareModifyPopup}" />
                 <p:commandButton ajax="true" actionListener="#{unitManager.prepareAddPopup}" value="Add" 
                     update=":addUnitForm" title="Add unit" icon="ui-icon-plus"
@@ -79,16 +80,19 @@
              </p:fieldset>
         </h:form>
 
-        <ui:include src="/resources/dialogs/delete-confirmation.xhtml" >
-            <ui:param name="formId" value="deleteUnitForm" />
-            <ui:param name="dialogTitle" value="Delete unit" />
-            <ui:param name="widgetName" value="deleteUnit" />
+        <ui:include src="/resources/dialogs/delete-multi-confirmation.xhtml" >
+            <ui:param name="formId" value="deleteUnitsForm" />
+            <ui:param name="dialogTitle" value="Delete units" />
+            <ui:param name="widgetName" value="deleteUnits" />
             <ui:param name="controller" value="#{unitManager}" />
+            <ui:param name="deletePreventionList" value="#{unitManager.usedUnits}" />
+            <ui:param name="deleteList" value="#{unitManager.selectedUnits}" />
             <ui:param name="submitHandler" value="onDelete" />
-            <ui:param name="formToUpdate" value=":unitsForm:unitsTable :unitsForm:deleteButton :unitsForm:editButton 
+            <ui:param name="formsToUpdate" value=":unitsForm:unitsTable :unitsForm:deleteButton :unitsForm:editButton 
                                                 :unitsForm:exportButton" />
-            <ui:param name="resetFilter" value="closeDialogActions(null);" />               
-            <ui:param name="entityType" value="this unit" />
+            <ui:param name="closeDialogActions" value="closeDialogActions(null);" />
+            <ui:param name="entityType" value="units" />
+            <ui:param name="entityName" value="Unit" />
         </ui:include>
 
         <ui:include src="/resources/dialogs/add-or-modify-unit.xhtml">
@@ -114,6 +118,7 @@
             <ui:param name="tableFile" value="#{unitManager.simpleTableDialog.exportedTable}" />
         </ui:include>
         <script type="text/javascript">
+            // <![CDATA[
             jQuery(document).ready(function() {
                 adjustFieldsetHeight('#unitsForm\\:unitsFieldset');
                 removePropColWidth();
@@ -123,6 +128,7 @@
                 adjustFieldsetHeight('#unitsForm\\:unitsFieldset');
                 adjustTableHeight();
             });
+            // ]]>
         </script>
     </ui:define>
 </ui:composition>

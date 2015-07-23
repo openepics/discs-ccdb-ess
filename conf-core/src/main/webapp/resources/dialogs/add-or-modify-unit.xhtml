@@ -10,7 +10,7 @@
                 <h:outputText value="#{dialogTitle}" />
             </f:facet>
             <p:panelGrid id="grp" styleClass="dialog-grid-panel noBorders">
-                <p:row rendered="#{unitManager.selectedUnitInUse and not unitManager.unitAdd}">
+                <p:row rendered="#{unitManager.modifiedUnitInUse and not unitManager.unitAdd}">
                     <p:column colspan="2" style="text-align: center; font-weight: bold;">
                         <h:outputText value="The unit is already in use." />
                     </p:column>
@@ -22,7 +22,7 @@
                     <p:column>
                         <p:inputText id="unitName" value="#{unitManager.name}" required="true" 
                             validator="#{unitManager.nameValidator}" requiredMessage="Please enter a name" 
-                            disabled="#{unitManager.selectedUnitInUse and not unitManager.unitAdd}" />
+                            disabled="#{unitManager.modifiedUnitInUse and not unitManager.unitAdd}" />
                         <p:message for="unitName" />
                     </p:column>
                 </p:row>
@@ -47,7 +47,7 @@
                     <p:column>
                         <p:inputText id="unitSymbol" value="#{unitManager.symbol}" required="true" 
                             requiredMessage="Please enter a symbol" 
-                            disabled="#{unitManager.selectedUnitInUse and not unitManager.unitAdd}" />
+                            disabled="#{unitManager.modifiedUnitInUse and not unitManager.unitAdd}" />
                         <p:message for="unitSymbol" />
                     </p:column>
                 </p:row>
