@@ -38,7 +38,7 @@
         <h:form id="propertiesForm">
             <p:fieldset id="propertiesFieldset" legend="Properties">
                 <p:dataTable widgetVar="propertiesTableVar" var="property" id="propertiesTable" styleClass="scroll-table"
-                        selection="#{propertyManager.selectedProperty}" selectionMode="single" rowKey="#{property.id}" 
+                        selection="#{propertyManager.selectedProperties}" selectionMode="multiple" rowKey="#{property.id}" 
                         value="#{propertyManager.properties}" tableStyle="table-layout: fixed; word-wrap: break-word; width: 100%;"
                         resizableColumns="true" style="width: inherit; overflow-y: hidden;" scrollable="true"
                         filteredValue="#{propertyManager.filteredProperties}" liveScroll="true" scrollRows="50">
@@ -76,11 +76,12 @@
                     disabled="#{empty propertyManager.properties}" update=":exportPropForm:exportProperties" 
                     actionListener="#{propertyManager.simpleTableDialog.prepareTableExportPopup}" />
                 <p:commandButton id="deleteButton" icon="ui-icon-trash" value="Delete" title="Delete" 
-                    style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('deleteProperty').show();" 
-                    disabled="#{not propertyManager.canDeleteProperty()}" />
+                    style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('deleteProperties').show();" 
+                    disabled="#{empty propertyManager.selectedProperties}" update=":deletePropertiesForm:deleteProperties"
+                    actionListener="#{propertyManager.checkPropertiesForDeletion()}" />
                 <p:commandButton id="editButton" icon="ui-icon-pencil" value="Edit" title="Edit" 
                     style="float: right; margin: 1em 1ex 0 0;" update=":modifyPropertyForm:modifyProperty" 
-                    disabled="#{empty propertyManager.selectedProperty}" oncomplete="PF('modifyProperty').show();" 
+                    disabled="#{not propertyManager.singlePropertySelected}" oncomplete="PF('modifyProperty').show();" 
                     actionListener="#{propertyManager.prepareModifyPopup}" />
                 <p:commandButton ajax="true" actionListener="#{propertyManager.prepareAddPopup}" value="Add" 
                     style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('addProperty').show()" 
@@ -88,16 +89,19 @@
             </p:fieldset>
         </h:form>
 
-        <ui:include src="/resources/dialogs/delete-confirmation.xhtml" >
-            <ui:param name="formId" value="deletePropertyForm" />
-            <ui:param name="dialogTitle" value="Delete property" />
-            <ui:param name="widgetName" value="deleteProperty" />
+        <ui:include src="/resources/dialogs/delete-multi-confirmation.xhtml" >
+            <ui:param name="formId" value="deletePropertiesForm" />
+            <ui:param name="dialogTitle" value="Delete properties" />
+            <ui:param name="widgetName" value="deleteProperties" />
             <ui:param name="controller" value="#{propertyManager}" />
+            <ui:param name="deletePreventionList" value="#{propertyManager.usedProperties}" />
+            <ui:param name="deleteList" value="#{propertyManager.selectedProperties}" />
             <ui:param name="submitHandler" value="onDelete" />
-            <ui:param name="entityType" value="this property" />
-            <ui:param name="formToUpdate" value=":propertiesForm:propertiesTable :propertiesForm:deleteButton 
+            <ui:param name="formsToUpdate" value=":propertiesForm:propertiesTable :propertiesForm:deleteButton 
                                                 :propertiesForm:editButton :propertiesForm:exportButton" />
-            <ui:param name="resetFilter" value="closeDialogActions(null);" />
+            <ui:param name="closeDialogActions" value="closeDialogActions(null);" />
+            <ui:param name="entityType" value="properties" />
+            <ui:param name="entityName" value="Property" />
         </ui:include>
 
         <ui:include src="/resources/dialogs/property.xhtml">
@@ -144,6 +148,7 @@
             <ui:param name="tableFile" value="#{propertyManager.simpleTableDialog.exportedTable}" />
         </ui:include>
         <script type="text/javascript">
+            //<![CDATA[
             jQuery(document).ready(function() {
                 adjustFieldsetHeight('#propertiesForm\\:propertiesFieldset');
                 removePropColWidth();
@@ -153,6 +158,7 @@
                 adjustFieldsetHeight('#propertiesForm\\:propertiesFieldset');
                 adjustTableHeight();
             });
+            // ]]>
         </script>
     </ui:define>
 </ui:composition>

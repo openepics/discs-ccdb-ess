@@ -270,7 +270,7 @@ public class DataTypeManager extends AbstractExcelSingleFileImportUI implements 
     }
 
     /**
-     * The method builds a list of user enumerations that are already used. It the list is not empty, it is displayed
+     * The method builds a list of user enumerations that are already used. If the list is not empty, it is displayed
      * to the user and the user is prevented from deleting them.
      */
     public void checkEnumsForDeletion() {
@@ -292,7 +292,8 @@ public class DataTypeManager extends AbstractExcelSingleFileImportUI implements 
     public void onDelete() {
         Preconditions.checkNotNull(selectedEnums);
         Preconditions.checkState(!selectedEnums.isEmpty());
-        Preconditions.checkState(usedEnums == null || usedEnums.isEmpty());
+        Preconditions.checkNotNull(usedEnums);
+        Preconditions.checkState(usedEnums.isEmpty());
 
         for (final UserEnumerationView enumToDelete : selectedEnums) {
             dataTypeEJB.delete(enumToDelete.getEnumeration());

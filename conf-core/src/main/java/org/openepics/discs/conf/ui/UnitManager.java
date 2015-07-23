@@ -230,7 +230,7 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
     }
 
     /**
-     * The method builds a list of units that are already used. It the list is not empty, it is displayed
+     * The method builds a list of units that are already used. If the list is not empty, it is displayed
      * to the user and the user is prevented from deleting them.
      */
     public void checkUnitsForDeletion() {
@@ -252,7 +252,8 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
     public void onDelete() {
         Preconditions.checkNotNull(selectedUnits);
         Preconditions.checkState(!selectedUnits.isEmpty());
-        Preconditions.checkState(usedUnits == null || usedUnits.isEmpty());
+        Preconditions.checkNotNull(usedUnits);
+        Preconditions.checkState(usedUnits.isEmpty());
 
         for (UnitView unitToDelete : selectedUnits) {
             unitEJB.delete(unitToDelete.getUnit());

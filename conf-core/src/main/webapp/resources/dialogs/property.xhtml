@@ -48,10 +48,10 @@
                         <p:selectOneMenu id="propertyDataType" value="#{propertyManager.dataType}" var="dt" 
                                 converter="#{dataTypeConverter}" required="true" requiredMessage="Please select data type" 
                                 disabled="#{propertyManager.propertyUsed}">
-                            <p:ajax update=":#{formId}:propertyUnit" listener="#{propertyManager.setIsUnitComboEnabled}"/>
+                            <p:ajax update=":#{formId}:propertyUnit" listener="#{propertyManager.setIsUnitComboEnabled}" />
                             <f:selectItem itemLabel="Select One" itemValue="" noSelectionOption="true" />
-                            <f:selectItems value="#{dataTypeManager.dataTypes}" var="dataType" itemLabel="#{dataType.name}" 
-                                itemValue="#{dataType}" />
+                            <f:selectItems value="#{dataTypeManager.dataTypes}" var="dataType" 
+                                itemLabel="#{dataType.name}" itemValue="#{dataType}" />
                             <p:column>
                                 <h:outputText value="#{dt.name}" />
                             </p:column>                    
@@ -66,9 +66,10 @@
                     </p:column>
                     <p:column>
                         <p:selectOneMenu id="propertyUnit" value="#{propertyManager.unit}" var="u" converter="#{unitConverter}"  
-                                disabled="#{!propertyManager.unitComboEnabled || propertyManager.propertyUsed}">
+                                disabled="#{not propertyManager.unitComboEnabled or propertyManager.propertyUsed}">
                             <f:selectItem itemLabel="Select One" itemValue="" noSelectionOption="true" />
-                            <f:selectItems value="#{unitManager.units}" var="unit" itemLabel="#{unit.name}" itemValue="#{unit}" />
+                            <f:selectItems value="#{unitManager.unitViews}" var="unitView" 
+                                itemLabel="#{unitView.name}" itemValue="#{unitView.unit}" />
                             <p:column>
                                 <h:outputText value="#{u.name}" />
                             </p:column>

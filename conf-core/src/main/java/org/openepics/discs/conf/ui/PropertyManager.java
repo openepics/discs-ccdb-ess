@@ -57,7 +57,9 @@ import org.openepics.discs.conf.util.BuiltInDataType;
 import org.openepics.discs.conf.util.Utility;
 import org.primefaces.context.RequestContext;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 
 /**
  *
@@ -74,6 +76,9 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
     private static final long serialVersionUID = 1056645993595744719L;
     private static final Logger LOGGER = Logger.getLogger(PropertyManager.class.getCanonicalName());
     private static final String CRLF = "\r\n";
+    private static final List<String> UNIT_CAPABLE_DATA_TYPES =  Arrays.asList( new String[] {BuiltInDataType.INT_NAME,
+                                        BuiltInDataType.DBL_NAME, BuiltInDataType.INT_VECTOR_NAME,
+                                        BuiltInDataType.DBL_VECTOR_NAME, BuiltInDataType.DBL_TABLE_NAME});
 
     @Inject private transient PropertyEJB propertyEJB;
 
@@ -82,12 +87,14 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
 
     private List<Property> properties;
     private List<Property> filteredProperties;
+    private List<Property> selectedProperties;
+    private List<Property> usedProperties;
 
     private String name;
     private String description;
     private DataType dataType;
     private Unit unit;
-    private Property selectedProperty;
+    private Property propertyToModify;
     private boolean unitComboEnabled;
     private boolean isPropertyUsed;
     private PropertyValueUniqueness valueUniqueness;
@@ -142,7 +149,7 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
         try {
             simpleTableExporterDialog = new ExportSimplePropertyTableDialog();
             properties = propertyEJB.findAllOrderedByName();
-            selectedProperty = null;
+            selectedProperties = null;
             resetFields();
         } catch(Exception e) {
             throw new UIException("Device type display initialization fialed: " + e.getMessage(), e);
@@ -235,13 +242,14 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
 
     /** Called when the user presses the "Save" button in the "Modify a property" dialog */
     public void onModify() {
-        selectedProperty.setName(name);
-        selectedProperty.setDescription(description);
-        selectedProperty.setDataType(dataType);
-        selectedProperty.setUnit(unit);
-        selectedProperty.setValueUniqueness(valueUniqueness);
+        Preconditions.checkNotNull(propertyToModify);
+        propertyToModify.setName(name);
+        propertyToModify.setDescription(description);
+        propertyToModify.setDataType(dataType);
+        propertyToModify.setUnit(UNIT_CAPABLE_DATA_TYPES.contains(dataType.getName()) ? unit : null);
+        propertyToModify.setValueUniqueness(valueUniqueness);
 
-        propertyEJB.save(selectedProperty);
+        propertyEJB.save(propertyToModify);
         Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS, "Property was modified");
         init();
     }
@@ -255,36 +263,54 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
 
     /** Prepares the data to be used in the "Modify a property" dialog */
     public void prepareModifyPopup() {
-        name = selectedProperty.getName();
-        description = selectedProperty.getDescription();
-        dataType = selectedProperty.getDataType();
-        unit = selectedProperty.getUnit();
-        valueUniqueness = selectedProperty.getValueUniqueness();
-        isPropertyUsed = propertyEJB.isPropertyUsed(selectedProperty);
+        Preconditions.checkState(isSinglePropertySelected());
+
+        propertyToModify = selectedProperties.get(0);
+        name = propertyToModify.getName();
+        description = propertyToModify.getDescription();
+        dataType = propertyToModify.getDataType();
+        unit = propertyToModify.getUnit();
+        valueUniqueness = propertyToModify.getValueUniqueness();
+        isPropertyUsed = propertyEJB.isPropertyUsed(propertyToModify);
         setIsUnitComboEnabled();
         RequestContext.getCurrentInstance().update("modifyPropertyForm:modifyProperty");
     }
 
-    /** @return <code>true</code> if property can be deleted (UI), <code>false</code> otherwise */
-    public boolean canDeleteProperty() {
-        return selectedProperty != null && !propertyEJB.isPropertyUsed(selectedProperty);
+    /** @return <code>true</code> if only a single property is selected in the table, <code>false</code> otherwise */
+    public boolean isSinglePropertySelected() {
+        return (selectedProperties != null) && (selectedProperties.size() == 1);
+    }
+
+    /**
+     * The method builds a list of properties that are already used. If the list is not empty, it is displayed
+     * to the user and the user is prevented from deleting them.
+     */
+    public void checkPropertiesForDeletion() {
+        Preconditions.checkNotNull(selectedProperties);
+        Preconditions.checkState(!selectedProperties.isEmpty());
+
+        usedProperties = Lists.newArrayList();
+        for (final Property propToDelete : selectedProperties) {
+            if (propertyEJB.isPropertyUsed(propToDelete)) {
+                usedProperties.add(propToDelete);
+            }
+        }
     }
 
     /** Called when the user clicks the "trash can" icon in the UI */
     public void onDelete() {
-        try {
-            propertyEJB.delete(selectedProperty);
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS, "Property was deleted");
-        } catch (Exception e) {
-            if (Utility.causedByPersistenceException(e)) {
-                Utility.showMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_DELETE_FAIL,
-                                                        "The property could not be deleted because it is used.");
-            } else {
-                throw e;
-            }
-        } finally {
-            init();
+        Preconditions.checkNotNull(selectedProperties);
+        Preconditions.checkState(!selectedProperties.isEmpty());
+        Preconditions.checkNotNull(usedProperties);
+        Preconditions.checkState(usedProperties.isEmpty());
+
+        for (Property propertyToDelete : selectedProperties) {
+            propertyEJB.delete(propertyToDelete);
         }
+
+        selectedProperties = null;
+        usedProperties = null;
+        init();
     }
 
     /** @return The list of filtered properties used by the PrimeFaces filter field */
@@ -367,27 +393,34 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
      * </ul>
      */
     public void setIsUnitComboEnabled() {
-        final List<String> possibleTypes = Arrays.asList(new String[] {BuiltInDataType.INT_NAME,
-                                                BuiltInDataType.DBL_NAME, BuiltInDataType.INT_VECTOR_NAME,
-                                                BuiltInDataType.DBL_VECTOR_NAME, BuiltInDataType.DBL_TABLE_NAME } );
-        unitComboEnabled = possibleTypes.contains(dataType.getName());
+        LOGGER.log(Level.FINE, "Selected data type: " + dataType.getName());
+        unitComboEnabled = UNIT_CAPABLE_DATA_TYPES.contains(dataType.getName());
+        if (!unitComboEnabled) {
+            unit = null;
+        }
     }
 
     /**
-     * @return <code>true</code> if the combo box selection is enabled, <code>false</code> otherwise.
      * Used by the UI drop-down element.
+     *
+     * @return <code>true</code> if the combo box selection is enabled, <code>false</code> otherwise.
      */
     public boolean isUnitComboEnabled() {
         return unitComboEnabled;
     }
 
-    /** @return The {@link Property} selected in the dialog */
-    public Property getSelectedProperty() {
-        return selectedProperty;
+    /** @return The {@link List} of {@link Property} selected in the table */
+    public List<Property> getSelectedProperties() {
+        return selectedProperties;
     }
-    /** @param selectedProperty The {@link Property} selected in the dialog */
-    public void setSelectedProperty(Property selectedProperty) {
-        this.selectedProperty = selectedProperty;
+    /** @param selectedProperties The {@link List} of {@link Property} selected in the table */
+    public void setSelectedProperties(List<Property> selectedProperties) {
+        this.selectedProperties = selectedProperties;
+    }
+
+    /** @return the {@link List} of {@link Property} definitions that are used in some property value */
+    public List<Property> getUsedProperties() {
+        return usedProperties;
     }
 
     private void resetFields() {
@@ -403,6 +436,7 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
         batchLeadingZeros = 0;
         batchSaveStage = BatchSaveStage.VALIDATION;
         batchSkipExisting = false;
+        propertyToModify = null;
     }
 
     /**
@@ -450,9 +484,9 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
         }
 
         final Property existingProperty = propertyEJB.findByName(propertyName);
-        if ((selectedProperty == null && existingProperty != null)
-                || (selectedProperty != null &&  existingProperty != null
-                        && !selectedProperty.equals(existingProperty))) {
+        if ((propertyToModify == null && existingProperty != null)
+                || (propertyToModify != null &&  existingProperty != null
+                        && !propertyToModify.equals(existingProperty))) {
             throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
                                                                     "The property with this name already exists."));
         }
