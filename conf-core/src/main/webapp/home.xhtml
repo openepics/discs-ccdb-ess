@@ -50,10 +50,10 @@
                     $('#hierarchies\\:hierarchiesEmptyColumn').css({"height":window.innerHeight-totalHeight});
                 }
                 function hierarchiesResizeAttributes() {
-                    var attrbiutesTableHeight = $("#attributesTable .hierarchies-attributes-cell").outerHeight(true);
-                    var attrbiutesTableHeaderHeight = $("#attributesTable .hierarchies-attributes-cell .ui-datatable-scrollable-header").outerHeight(true);
-                    var attrbiutesTableBodyHeight = attrbiutesTableHeight - attrbiutesTableHeaderHeight;
-                    $('#attributesTable .hierarchies-attributes-cell .ui-datatable-scrollable-body').css({"max-height":attrbiutesTableBodyHeight});
+                    var attributesTableHeight = $("#attributesTable .hierarchies-attributes-cell").outerHeight(true);
+                    var attributesTableHeaderHeight = $("#attributesTable .hierarchies-attributes-cell .ui-datatable-scrollable-header").outerHeight(true);
+                    var attributesTableBodyHeight = attributesTableHeight - attributesTableHeaderHeight;
+                    $('#attributesTable .hierarchies-attributes-cell .ui-datatable-scrollable-body').css({"max-height":attributesTableBodyHeight});
                 }
                 function hierarchiesResizeAll() {
                     resizeHierarchyTrees();
@@ -278,9 +278,8 @@
                                 action="#{hierarchiesController.prepareModifyAttributePopup}" 
                                 style="float: right; margin: 1em 1ex 0 0;" update=":modifyPropertyValueForm :modifyArtifactForm" 
                                 disabled="#{!hierarchiesController.canEditAttribute()}" />
-                            <p:menuButton id="addAttrButton" value="Add" icon="ui-icon-plus" 
-                                    disabled="#{not hierarchiesController.singleNodeSelected}" 
-                                    style="margin: 1em 1ex 0 0; float: right;">
+                            <p:menuButton id="addAttrButton" value="Add" style="margin: 1em 1ex 0 0; float: right;" 
+                                    disabled="#{not hierarchiesController.singleNodeSelected}">
                                 <p:menuitem value="Container property" oncomplete="PF('addPropertyValue').show();" 
                                         actionListener="#{hierarchiesController.prepareForPropertyValueAdd}" 
                                         disabled="#{hierarchiesController.selectedNodeSlot.hostingSlot}" 

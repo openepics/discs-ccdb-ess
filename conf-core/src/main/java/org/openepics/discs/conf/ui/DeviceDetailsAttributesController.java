@@ -96,7 +96,7 @@ public class DeviceDetailsAttributesController extends
         parentProperties = device.getComponentType().getComptypePropertyList();
         parentArtifacts = device.getComponentType().getComptypeArtifactList();
         entityName = device.getSerialNumber();
-        selectedAttribute = null;
+        selectedAttributes = null;
         populateParentTags();
         populateAttributesList();
     }
@@ -112,11 +112,13 @@ public class DeviceDetailsAttributesController extends
         entityName = null;
         parentTags = null;
         attributes = null;
-        selectedAttribute = null;
+        selectedAttributes = null;
     }
 
     @Override
     protected void deleteTagFromParent(Tag tag) {
+        // refresh the device from database. This refreshes all related collections as well.
+        device = deviceEJB.findById(device.getId());
         device.getTags().remove(tag);
         deviceEJB.save(device);
     }

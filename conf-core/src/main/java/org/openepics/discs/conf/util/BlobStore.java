@@ -41,6 +41,7 @@ import javax.inject.Inject;
 @Stateless
 public class BlobStore {
     private static final Logger LOGGER = Logger.getLogger(BlobStore.class.getCanonicalName());
+    private static final String BLOB_STORE_PROPERTY_NAME = "BlobStoreRoot";
 
     private String blobStoreRoot = "/var/confmgr";
 
@@ -54,8 +55,7 @@ public class BlobStore {
     /** Initializes the {@link BlobStore} bean */
     @PostConstruct
     public void init() {
-        // Todo: either move it to AppProperties or inject it
-        final String storeRoot = appProps.getProperty("BlobStoreRoot");
+        final String storeRoot = appProps.getProperty(BLOB_STORE_PROPERTY_NAME);
 
         if (storeRoot != null && !storeRoot.isEmpty()) {
             blobStoreRoot = storeRoot;
@@ -70,40 +70,42 @@ public class BlobStore {
 
     private void copyFile(InputStream is, OutputStream os) throws IOException {
         int len;
-        byte[] buffer = new byte[1024];
+        final byte[] buffer = new byte[8192];
 
         while ((len = is.read(buffer)) > 0) {
             os.write(buffer, 0, len);
         }
     }
 
-    private String newBlobId() {
-        String fileName = UUID.randomUUID().toString();
-        Calendar now = Calendar.getInstance();
-        int year = now.get(Calendar.YEAR);
-        int month = now.get(Calendar.MONTH) + 1; // zero based
-        int day = now.get(Calendar.DAY_OF_MONTH);
+    private String newBlobId() throws IOException {
+        final String fileName = UUID.randomUUID().toString();
+        final Calendar now = Calendar.getInstance();
+        final int year = now.get(Calendar.YEAR);
+        final int month = now.get(Calendar.MONTH) + 1; // zero based
+        final int day = now.get(Calendar.DAY_OF_MONTH);
 
-        String separator = File.separator;
+        final String separator = File.separator;
 
-        String dirName = year + separator + month + separator + day;
-        String pathName = blobStoreRoot + separator + dirName;
+        final String dirName = year + separator + month + separator + day;
+        final String pathName = blobStoreRoot + separator + dirName;
 
-        File folder = new File(pathName);
+        final File folder = new File(pathName);
         if (!folder.exists() && !folder.mkdirs()) {
-            LOGGER.log(Level.SEVERE, "Could not create blob directory {0}", pathName);
-            return null;
+            final String errorMsg = "Could not create blob directory: " + pathName;
+            LOGGER.log(Level.SEVERE, errorMsg);
+            throw new IOException(errorMsg);
         }
 
-        String blobId = dirName + separator + fileName;
-        String fullPath = blobStoreRoot + separator + blobId;
-        File newFile = new File(fullPath);
+        final String blobId = dirName + separator + fileName;
+        final String fullPath = blobStoreRoot + separator + blobId;
+        final File newFile = new File(fullPath);
         if (newFile.exists()) {
-            LOGGER.log(Level.SEVERE, "Blob already exists! Name collision {0}", fullPath);
-            return null;
+            final String errorMsg = "Blob already exists! Name collision: " + fullPath;
+            LOGGER.log(Level.SEVERE, errorMsg);
+            throw new IOException(errorMsg);
         }
 
-        LOGGER.log(Level.INFO, "New Blob Id {0}", blobId);
+        LOGGER.log(Level.FINE, "New Blob Id {0}", blobId);
 
         return blobId;
     }
@@ -116,20 +118,14 @@ public class BlobStore {
      * @throws IOException possible file operation failure
      */
     public String storeFile(InputStream istream) throws IOException {
-        String fileId =  this.newBlobId();
+        final String fileId =  newBlobId();
 
         if (istream == null) {
-            throw new IOException("istream is null");
+            throw new IOException("Blob store: input data stream is null.");
         }
 
-        OutputStream ostream = null;
-        try {
-            ostream = new FileOutputStream( new File(blobStoreRoot + File.separator + fileId) );
+        try (final OutputStream ostream = new FileOutputStream(new File(blobStoreRoot + File.separator + fileId))) {
             copyFile(istream, ostream);
-        } finally {
-            if (ostream != null) {
-                ostream.close();
-            }
         }
 
         return fileId;
@@ -143,11 +139,7 @@ public class BlobStore {
      * @throws IOException possible file operation failure
      */
     public InputStream retreiveFile(String fileId) throws IOException {
-        InputStream istream;
-
-        istream = new FileInputStream(blobStoreRoot + File.separator + fileId);
-
-        return istream;
+        return new FileInputStream(blobStoreRoot + File.separator + fileId);
     }
 
     /**
@@ -171,7 +163,7 @@ public class BlobStore {
 
     /**
      * Checks whether the Blob Store is valid (path is accessible)
-     * @return <code>true</code> if the path is accessable / blob store is valid
+     * @return <code>true</code> if the path is accessible / blob store is valid
      */
     public boolean isValidStore() {
         return validStore;

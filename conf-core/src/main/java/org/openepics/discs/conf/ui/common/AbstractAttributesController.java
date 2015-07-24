@@ -126,7 +126,10 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
     protected List<EntityAttributeView> attributes;
     private List<EntityAttributeView> filteredAttributes;
     private final List<SelectItem> attributeKinds = Utility.buildAttributeKinds();
-    protected EntityAttributeView selectedAttribute;
+    protected List<EntityAttributeView> selectedAttributes;
+    protected List<EntityAttributeView> nonDeletableAttributes;
+    protected EntityAttributeView attributeToModify;
+    private EntityAttributeView downloadArtifactView;
 
     protected byte[] importData;
     protected String importFileName;
@@ -269,50 +272,68 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
     }
 
     /**
-     * Deletes attribute from parent {@link ConfigurationEntity}.
-     * This attribute can be {@link Tag}, {@link PropertyValue} or {@link Artifact}
+     * The method builds a list of units that are already used. If the list is not empty, it is displayed
+     * to the user and the user is prevented from deleting them.
+     */
+    public void checkAttributesForDeletion() {
+        Preconditions.checkNotNull(selectedAttributes);
+        Preconditions.checkState(!selectedAttributes.isEmpty());
+
+        nonDeletableAttributes = Lists.newArrayList();
+        for (final EntityAttributeView attrToDelete : selectedAttributes) {
+            if (!canDelete(attrToDelete)) {
+                nonDeletableAttributes.add(attrToDelete);
+            }
+        }
+    }
+
+    /**
+     * Deletes selected attributes from parent {@link ConfigurationEntity}.
+     * These attributes can be {@link Tag}, {@link PropertyValue} or {@link Artifact}
+     *
      * @throws IOException attribute deletion failure
      */
-    public void deleteAttribute() throws IOException {
-        Preconditions.checkState(selectedAttribute != null);
-        Preconditions.checkState(propertyValueClass != null);
-        Preconditions.checkState(artifactClass != null);
-        Preconditions.checkState(dao != null);
-        try {
-            if (selectedAttribute.getEntity().getClass().equals(propertyValueClass)) {
-                deletePropertyValue();
-            } else if (selectedAttribute.getEntity().getClass().equals(artifactClass)) {
-                deleteArtifact();
-            } else if (selectedAttribute.getEntity().getClass().equals(Tag.class)) {
-                final Tag tagAttr = (Tag) selectedAttribute.getEntity();
+    @SuppressWarnings("unchecked")
+    public void deleteAttributes() throws IOException {
+        Preconditions.checkNotNull(selectedAttributes);
+        Preconditions.checkState(!selectedAttributes.isEmpty());
+        Preconditions.checkNotNull(propertyValueClass);
+        Preconditions.checkNotNull(artifactClass);
+        Preconditions.checkNotNull(dao);
+        Preconditions.checkNotNull(nonDeletableAttributes);
+        Preconditions.checkState(nonDeletableAttributes.isEmpty());
+
+        int deletedAttributes = 0;
+        for (final EntityAttributeView attributeToDelete : selectedAttributes) {
+            if (attributeToDelete.getEntity().getClass().equals(propertyValueClass)) {
+                deletePropertyValue((T) attributeToDelete.getEntity());
+            } else if (attributeToDelete.getEntity().getClass().equals(artifactClass)) {
+                deleteArtifact((S) attributeToDelete.getEntity());
+            } else if (attributeToDelete.getEntity().getClass().equals(Tag.class)) {
+                final Tag tagAttr = (Tag) attributeToDelete.getEntity();
                 deleteTagFromParent(tagAttr);
-                Utility.showMessage(FacesMessage.SEVERITY_INFO, "Tag removed", tagAttr.getName());
             } else {
                 throw new UnhandledCaseException();
             }
-        } finally {
-            selectedAttribute = null;
-            internalPopulateAttributesList();
+
+            ++deletedAttributes;
         }
+
+        selectedAttributes = null;
+        nonDeletableAttributes = null;
+        internalPopulateAttributesList();
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Deleted " + deletedAttributes + " attributes.");
     }
 
-    @SuppressWarnings("unchecked")
-    protected void deletePropertyValue() {
-        final T propValue = (T) selectedAttribute.getEntity();
-        dao.deleteChild(propValue);
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
-                                                                        "Property value has been deleted");
+    protected void deletePropertyValue(final T propValueToDelete) {
+        dao.deleteChild(propValueToDelete);
     }
 
-    @SuppressWarnings("unchecked")
-    private void deleteArtifact() throws IOException {
-        final S artifact = (S) selectedAttribute.getEntity();
-        if (artifact.isInternal()) {
-            blobStore.deleteFile(artifact.getUri());
+    private void deleteArtifact(final S artifactToDelete) throws IOException {
+        if (artifactToDelete.isInternal()) {
+            blobStore.deleteFile(artifactToDelete.getUri());
         }
-        dao.deleteChild(artifact);
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
-                                                                        "Device type artifact has been deleted");
+        dao.deleteChild(artifactToDelete);
     }
 
     /**
@@ -323,12 +344,15 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
      *</ul>
      */
     public void prepareModifyPropertyPopUp() {
-        Preconditions.checkState(selectedAttribute != null);
-        Preconditions.checkState(propertyValueClass != null);
-        Preconditions.checkState(artifactClass != null);
-        if (selectedAttribute.getEntity().getClass().equals(propertyValueClass)) {
+        Preconditions.checkNotNull(selectedAttributes);
+        Preconditions.checkState(selectedAttributes.size() == 1);
+        Preconditions.checkNotNull(propertyValueClass);
+        Preconditions.checkNotNull(artifactClass);
+
+        attributeToModify = selectedAttributes.get(0);
+        if (attributeToModify.getEntity().getClass().equals(propertyValueClass)) {
             prepareModifyPropertyValuePopUp();
-        } else if (selectedAttribute.getEntity().getClass().equals(artifactClass)) {
+        } else if (attributeToModify.getEntity().getClass().equals(artifactClass)) {
             prepareModifyArtifactPopUp();
         } else {
             throw new UnhandledCaseException();
@@ -337,14 +361,14 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
 
     @SuppressWarnings("unchecked")
     private void prepareModifyPropertyValuePopUp() {
-        final T selectedPropertyValue = (T) selectedAttribute.getEntity();
+        final T selectedPropertyValue = (T) attributeToModify.getEntity();
         property = selectedPropertyValue.getProperty();
         propertyValue = selectedPropertyValue.getPropValue();
 
-        if (selectedAttribute.getEntity() instanceof PropertyValue) {
-            propertyNameChangeDisabled = selectedAttribute.getEntity() instanceof DevicePropertyValue
-                    || selectedAttribute.getEntity() instanceof SlotPropertyValue
-                    || isPropertyValueInherited((PropertyValue)selectedAttribute.getEntity()) ;
+        if (attributeToModify.getEntity() instanceof PropertyValue) {
+            propertyNameChangeDisabled = attributeToModify.getEntity() instanceof DevicePropertyValue
+                    || attributeToModify.getEntity() instanceof SlotPropertyValue
+                    || isPropertyValueInherited((PropertyValue)attributeToModify.getEntity()) ;
         }
 
         propertyValueUIElement = Conversion.getUIElementFromProperty(property);
@@ -364,7 +388,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
 
     @SuppressWarnings("unchecked")
     private void prepareModifyArtifactPopUp() {
-        final S selectedArtifact = (S) selectedAttribute.getEntity();
+        final S selectedArtifact = (S) attributeToModify.getEntity();
         if (selectedArtifact.isInternal()) {
             importFileName = selectedArtifact.getName();
             artifactName = null;
@@ -385,7 +409,9 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
     /** Modifies {@link PropertyValue} */
     @SuppressWarnings("unchecked")
     public void modifyPropertyValue() {
-        final T selectedPropertyValue = (T) selectedAttribute.getEntity();
+        Preconditions.checkNotNull(attributeToModify);
+
+        final T selectedPropertyValue = (T) attributeToModify.getEntity();
         selectedPropertyValue.setProperty(property);
         selectedPropertyValue.setPropValue(propertyValue);
 
@@ -410,7 +436,9 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
     /** Modifies {@link Artifact} */
     @SuppressWarnings("unchecked")
     public void modifyArtifact() {
-        final S selectedArtifact = (S) selectedAttribute.getEntity();
+        Preconditions.checkNotNull(attributeToModify);
+
+        final S selectedArtifact = (S) attributeToModify.getEntity();
         selectedArtifact.setDescription(artifactDescription);
         selectedArtifact.setUri(artifactURI);
         if (!selectedArtifact.isInternal()) {
@@ -434,11 +462,21 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
      */
     @SuppressWarnings("unchecked")
     public StreamedContent getDownloadFile() throws FileNotFoundException {
-        final S selectedArtifact = (S) selectedAttribute.getEntity();
+        final S selectedArtifact = (S) downloadArtifactView.getEntity();
         final String filePath = blobStore.getBlobStoreRoot() + File.separator + selectedArtifact.getUri();
-        final String contentType = FacesContext.getCurrentInstance().getExternalContext().getMimeType(filePath);
+        // guess mime type based on the original file name, not on the name of the blob (UUID).
+        final String contentType = FacesContext.getCurrentInstance().getExternalContext()
+                                                                .getMimeType(selectedArtifact.getName());
 
         return new DefaultStreamedContent(new FileInputStream(filePath), contentType, selectedArtifact.getName());
+    }
+
+    public EntityAttributeView getDownloadArtifact() {
+        return downloadArtifactView;
+    }
+
+    public void setDownloadArtifact(EntityAttributeView downloadArtifact) {
+        this.downloadArtifactView = downloadArtifact;
     }
 
     /** This method determines whether the entity attribute should have the "pencil" icon displayed in the UI.
@@ -520,7 +558,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
         property = null;
         propertyValue = null;
         enumSelections = null;
-        selectedAttribute = null;
+        selectedAttributes = null;
         propertyValueUIElement = PropertyValueUIElement.NONE;
         selectedProperties = null;
         selectionPropertiesFiltered = null;
@@ -584,7 +622,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
      * @param propertyValue String representation of the property value.
      */
     public void setPropertyValue(String propertyValue) {
-        final DataType dataType = selectedAttribute != null ? selectedAttribute.getType() : property.getDataType();
+        final DataType dataType = attributeToModify != null ? attributeToModify.getType() : property.getDataType();
         this.propertyValue = Conversion.stringToValue(propertyValue, dataType);
     }
     /** @return String representation of the property value. */
@@ -657,36 +695,14 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
         return isArtifactBeingModified;
     }
 
-    /** @see AbstractAttributesController#setSelectedAttribute(EntityAttributeView)
-     * @return the table row (UI view presentation) the user selected
+    /** @return the selected table rows (UI view presentation)
      */
-    public EntityAttributeView getSelectedAttribute() {
-        return selectedAttribute;
+    public List<EntityAttributeView> getSelectedAttributes() {
+        return selectedAttributes;
     }
-    /** This method is called to store a reference to the attribute the user selected for the action. When the user
-     * clicks on the "Action" icon in the attribute table, the reference to the entity represented by that line is
-     * stored first, than a generic handler is called which acts on the selected entity.
-     *
-     * @param selectedAttribute A property value, a tag or an artifact.
-     */
-    public void setSelectedAttribute(EntityAttributeView selectedAttribute) {
-        this.selectedAttribute = selectedAttribute;
-    }
-
-    /** @see AbstractAttributesController#setSelectedAttribute(EntityAttributeView)
-     * @return A property value, a tag or an artifact.
-     */
-    public EntityAttributeView getSelectedAttributeToModify() {
-        return selectedAttribute;
-    }
-    /** Equal to {@link AbstractAttributesController#setSelectedAttribute(EntityAttributeView)}, but when modifying
-     * an attribute some additional actions need to be performed.
-     *
-     * @param selectedAttribute the selected attribute
-     */
-    public void setSelectedAttributeToModify(EntityAttributeView selectedAttribute) {
-        this.selectedAttribute = selectedAttribute;
-        prepareModifyPropertyPopUp();
+    /** @param selectedAttributes a list of  property values, tags and  artifacts */
+    public void setSelectedAttributes(List<EntityAttributeView> selectedAttributes) {
+        this.selectedAttributes = selectedAttributes;
     }
 
     protected void setDao(DAO<? extends ConfigurationEntity> dao) {
@@ -783,7 +799,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
                     Utility.MESSAGE_SUMMARY_ERROR, "You must select a property first."));
         }
 
-        final DataType dataType = property != null ? property.getDataType() : selectedAttribute.getType();
+        final DataType dataType = property != null ? property.getDataType() : attributeToModify.getType();
         validateMultiLine(value.toString(), dataType);
     }
 
@@ -894,7 +910,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
                     Utility.MESSAGE_SUMMARY_ERROR, "You must select a property first."));
         }
 
-        final DataType dataType = property != null ? property.getDataType() : selectedAttribute.getType();
+        final DataType dataType = property != null ? property.getDataType() : attributeToModify.getType();
 
         validateSingleLine(value.toString(), dataType);
     }
@@ -990,6 +1006,13 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
         this.selectionPropertiesFiltered = selectionPropertiesFiltered;
     }
 
+    /**
+     * @return <code>true</code> if a single attribute is selected, <code>false</code> otherwise.
+     */
+    public boolean isSingleAttributeSelected() {
+        return (selectedAttributes != null) && (selectedAttributes.size() == 1);
+    }
+
     /** This method is called from the UI and resets a table with the implicit ID "propertySelect" in the form
      * indicated by the parameter.
      * @param id the ID of the from containing a table #propertySelect
@@ -1001,5 +1024,10 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
         dataTable.setFirst(0);
         dataTable.setFilteredValue(null);
         dataTable.setFilters(null);
+    }
+
+    /** @return the nonDeletableAttributes */
+    public List<EntityAttributeView> getNonDeletableAttributes() {
+        return nonDeletableAttributes;
     }
 }

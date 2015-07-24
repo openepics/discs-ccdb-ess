@@ -255,13 +255,16 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
         Preconditions.checkNotNull(usedUnits);
         Preconditions.checkState(usedUnits.isEmpty());
 
+        int deletedUnits = 0;
         for (UnitView unitToDelete : selectedUnits) {
             unitEJB.delete(unitToDelete.getUnit());
+            ++deletedUnits;
         }
 
         selectedUnits = null;
         usedUnits = null;
         refreshUnits();
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Deleted " + deletedUnits + " units.");
     }
 
     /**

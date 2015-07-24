@@ -304,13 +304,16 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
         Preconditions.checkNotNull(usedProperties);
         Preconditions.checkState(usedProperties.isEmpty());
 
+        int deletedProperties = 0;
         for (Property propertyToDelete : selectedProperties) {
             propertyEJB.delete(propertyToDelete);
+            ++deletedProperties;
         }
 
         selectedProperties = null;
         usedProperties = null;
         init();
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Deleted " + deletedProperties + " properties.");
     }
 
     /** @return The list of filtered properties used by the PrimeFaces filter field */

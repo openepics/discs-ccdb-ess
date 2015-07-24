@@ -111,13 +111,16 @@
                                 updateButtons=":devicesForm:editAttrButton :devicesForm:deleteAttrButton" />
 
                             <p:commandButton id="deleteAttrButton" value="Delete" icon="ui-icon-trash" 
-                                style="float: right; margin-top: 1em;" oncomplete="PF('deleteAttribute').show()"
-                                disabled="#{empty deviceDetailsAttributesController.selectedAttribute ? true : not deviceDetailsAttributesController.canDelete(deviceDetailsAttributesController.selectedAttribute)}"/>
+                                style="float: right; margin-top: 1em;" oncomplete="PF('deleteAttributes').show()"
+                                update=":deleteAttributesForm:deleteAttributes" 
+                                actionListener="#{deviceDetailsAttributesController.checkAttributesForDeletion()}"
+                                disabled="#{empty deviceDetailsAttributesController.selectedAttributes}"/>
                                 
                             <p:commandButton id="editAttrButton" value="Edit" icon="ui-icon-pencil" 
                                 action="#{deviceDetailsAttributesController.prepareModifyPropertyPopUp()}" 
                                 style="float: right; margin: 1em 1ex 0 0;" update=":modifyPropertyValueForm :modifyArtifactForm" 
-                                disabled="#{empty deviceDetailsAttributesController.selectedAttribute ? true : not deviceDetailsAttributesController.canEdit(deviceDetailsAttributesController.selectedAttribute)}"/>
+                                disabled="#{not deviceDetailsAttributesController.singleAttributeSelected or 
+                                    not deviceDetailsAttributesController.canEdit(deviceDetailsAttributesController.selectedAttributes.get(0))}"/>
 
                             <p:commandButton id="addButton" value="Add" type="button" icon="ui-icon-plus" 
                                     style="float: right; margin: 1em 1ex 0 0;" disabled="true" />
@@ -136,6 +139,7 @@
         </h:form>
         
         <script type="text/javascript">
+            // <![CDATA[
             jQuery(window).resize(function() {
                 adjustFieldsetHeight('#devicesForm\\:deviceFieldset');
                 adjustFieldsetHeight('#devicesForm\\:propFieldset');
@@ -147,6 +151,7 @@
                 removePropColWidth();
                 adjustTableHeights();
             });
+            // ]]>
         </script>
 
         <ui:include src="/resources/dialogs/device-add-or-modify-dialog.xhtml">
@@ -164,7 +169,7 @@
             <ui:param name="formId" value="deviceEditForm" />
             <ui:param name="widgetName" value="editDeviceDialog" />
             <ui:param name="dialogTitle" value="Edit device" />
-            <ui:param name="saveAction" value="PF('editDeviceDialog').hide();PF('devicesTableVar').filter();adjustTableHeights();" />
+            <ui:param name="saveAction" value="PF('editDeviceDialog').hide();PF('devicesTableVar').filter(); adjustTableHeights();" />
             <ui:param name="updateComponents" value=":devicesForm:devicesTable" />
             <ui:param name="submitHandler" value="onDeviceEdit" />
         </ui:include>
@@ -173,7 +178,7 @@
             <ui:param name="formId" value="modifyPropertyValueForm" />
             <ui:param name="dialogTitle" value="Modify device type property" />
             <ui:param name="widgetName" value="modifyPropertyValue" />
-            <ui:param name="resetFilter" value="PF('attributesDataTable').filter();" />
+            <ui:param name="resetFilter" value="PF('attributesDataTable').filter(); adjustTableHeights();" />
             <ui:param name="controller" value="#{deviceDetailsAttributesController}" />
             <ui:param name="submitHandler" value="modifyPropertyValue" />
             <ui:param name="componentToUpdate" value=":devicesForm:attributesDataTable:attributesDataTable" />
@@ -183,7 +188,7 @@
             <ui:param name="formId" value="addDeviceTagForm" />
             <ui:param name="dialogTitle" value="Add new device instance tag" />
             <ui:param name="widgetName" value="addDeviceTag" />
-            <ui:param name="resetFilter" value="PF('attributesDataTable').filter();" />
+            <ui:param name="resetFilter" value="PF('attributesDataTable').filter(); adjustTableHeights();" />
             <ui:param name="controller" value="#{deviceDetailsAttributesController}" />
             <ui:param name="submitHandler" value="addNewTag" />
             <ui:param name="componentToUpdate" value=":devicesForm:attributesDataTable:attributesDataTable" />
@@ -193,7 +198,7 @@
             <ui:param name="formId" value="addArtifactForm" />
             <ui:param name="dialogTitle" value="Add new device instance artifact" />
             <ui:param name="widgetName" value="addArtifact" />
-            <ui:param name="resetFilter" value="PF('attributesDataTable').filter();" />
+            <ui:param name="resetFilter" value="PF('attributesDataTable').filter(); adjustTableHeights();" />
             <ui:param name="controller" value="#{deviceDetailsAttributesController}" />
             <ui:param name="submitHandler" value="addNewArtifact" />
             <ui:param name="componentToUpdate" value=":devicesForm:attributesDataTable:attributesDataTable" />
@@ -203,7 +208,7 @@
             <ui:param name="formId" value="modifyArtifactForm" />
             <ui:param name="dialogTitle" value="Modify device type artifact" />
             <ui:param name="widgetName" value="modifyArtifact" />
-            <ui:param name="resetFilter" value="PF('attributesDataTable').filter();" />
+            <ui:param name="resetFilter" value="PF('attributesDataTable').filter(); adjustTableHeights();" />
             <ui:param name="controller" value="#{deviceDetailsAttributesController}" />
             <ui:param name="submitHandler" value="modifyArtifact" />
             <ui:param name="componentToUpdate" value=":devicesForm:attributesDataTable:attributesDataTable" />
@@ -213,7 +218,7 @@
             <ui:param name="formId" value="deleteDeviceForm" />
             <ui:param name="dialogTitle" value="Delete device" />
             <ui:param name="widgetName" value="deleteDevice" />
-            <ui:param name="resetFilter" value="PF('devicesTableVar').filter();clearDeviceInstance();" />
+            <ui:param name="resetFilter" value="PF('devicesTableVar').filter(); clearDeviceInstance();" />
             <ui:param name="resizeContent" value="adjustTableHeights();" />
             <ui:param name="controller" value="#{devicesByTypeManager}" />
             <ui:param name="submitHandler" value="onDeviceDelete" />
@@ -222,15 +227,19 @@
             <ui:param name="entityType" value="this device" />
         </ui:include>
 
-        <ui:include src="/resources/dialogs/delete-confirmation.xhtml">
-            <ui:param name="formId" value="deleteAttributeForm" />
-            <ui:param name="dialogTitle" value="Delete attribute" />
-            <ui:param name="widgetName" value="deleteAttribute" />
-            <ui:param name="resetFilter" value="PF('attributesDataTable').filter();" />
+        <ui:include src="/resources/dialogs/delete-multi-confirmation.xhtml" >
+            <ui:param name="formId" value="deleteAttributesForm" />
+            <ui:param name="dialogTitle" value="Delete attributes" />
+            <ui:param name="widgetName" value="deleteAttributes" />
             <ui:param name="controller" value="#{deviceDetailsAttributesController}" />
-            <ui:param name="submitHandler" value="deleteAttribute" />
-            <ui:param name="formToUpdate" value=":devicesForm:attributesDataTable:attributesDataTable :devicesForm:editAttrButton :devicesForm:deleteAttrButton" />
-            <ui:param name="entityType" value="selected attribute" />
+            <ui:param name="deletePreventionList" value="#{deviceDetailsAttributesController.nonDeletableAttributes}" />
+            <ui:param name="deleteList" value="#{deviceDetailsAttributesController.selectedAttributes}" />
+            <ui:param name="submitHandler" value="deleteAttributes" />
+            <ui:param name="formsToUpdate" value=":devicesForm:attributesDataTable:attributesDataTable 
+                                                    :devicesForm:editAttrButton :devicesForm:deleteAttrButton" />
+            <ui:param name="closeDialogActions" value="PF('attributesDataTable').filter(); adjustTableHeights();" />
+            <ui:param name="entityType" value="attributes" />
+            <ui:param name="entityName" value="Attribute" />
         </ui:include>
 
         <ui:include src="/resources/dialogs/batch-creation-conflict.xhtml">

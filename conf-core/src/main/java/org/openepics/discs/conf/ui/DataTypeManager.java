@@ -295,12 +295,15 @@ public class DataTypeManager extends AbstractExcelSingleFileImportUI implements 
         Preconditions.checkNotNull(usedEnums);
         Preconditions.checkState(usedEnums.isEmpty());
 
+        int deletedEnums = 0;
         for (final UserEnumerationView enumToDelete : selectedEnums) {
             dataTypeEJB.delete(enumToDelete.getEnumeration());
+            ++deletedEnums;
         }
         selectedEnums = null;
         usedEnums = null;
         refreshUserDataTypes();
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Deleted " + deletedEnums + " enumerations.");
     }
 
     /** Validates the enumeration inputs. For new enumeration it verifies that all values contain only alphanumeric

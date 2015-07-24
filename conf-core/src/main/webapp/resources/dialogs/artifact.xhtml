@@ -9,7 +9,7 @@
             <f:facet name="header">
                 <h:outputText value="#{dialogTitle}" />
             </f:facet>
-            <h:panelGroup id="group" display="block">
+            <h:panelGroup id="group" style="display: block">
                 <p:panelGrid id="grp" styleClass="dialog-grid-panel noBorders" style="margin-bottom: 1ex;">
                     <p:row rendered="#{!controller.artifactInternal}">
                         <p:column class="alignRight dialog-labels-width-2" style="padding-top: 0.5em;">
@@ -99,7 +99,7 @@
                 <p:commandButton value="Save" styleClass="dialogButton" update="#{componentToUpdate} grp" id="saveButton" 
                         oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('#{widgetName}').hide(); #{resetFilter}}" 
                         action="#{controller[submitHandler]}" 
-                        disabled="#{!controller.artifactBeingModified and controller.artifactInternal and empty controller.importFileName}"/>
+                        disabled="#{not controller.artifactBeingModified and controller.artifactInternal and empty controller.importFileName}"/>
             </h:panelGroup>
         </p:dialog>
 

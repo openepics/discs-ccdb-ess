@@ -14,8 +14,8 @@
 
     <cc:implementation> 
         <p:dataTable id="#{cc.attrs.id}" var="attribute" value="#{cc.attrs.controllerBean.attributes}" 
-                selection="#{cc.attrs.controllerBean.selectedAttribute}" selectionMode="single" rowKey="#{attribute.id}"
-                styleClass="scroll-table" style="width: inherit; overflow-y: hidden;" 
+                selection="#{cc.attrs.controllerBean.selectedAttributes}" selectionMode="multiple" 
+                rowKey="#{attribute.id}" styleClass="scroll-table" style="width: inherit; overflow-y: hidden;" 
                 scrollable="true" resizableColumns="true" filteredValue="#{cc.attrs.controllerBean.filteredAttributes}"  
                 tableStyle="table-layout: fixed; word-wrap: break-word; width: 100%;" widgetVar="attributesDataTable">
             <p:ajax event="rowSelect" update="#{cc.attrs.updateButtons}" />
@@ -34,7 +34,7 @@
                 <h:outputText value="#{!empty attribute.value ? attribute.value : '-'}" rendered="#{not attribute.hasURL}" />
                 <p:commandLink ajax="false" title="Download" rendered="#{attribute.hasFile}" style="margin-left: 1ex;">
                     <h:outputText styleClass="ui-icon ui-icon-arrowthick-1-s" style="display: inline-block !important; margin-right: 6px;" />
-                    <f:setPropertyActionListener value="#{attribute}" target="#{cc.attrs.controllerBean.selectedAttribute}" />
+                    <f:setPropertyActionListener value="#{attribute}" target="#{cc.attrs.controllerBean.downloadArtifact}" />
                     <p:fileDownload value="#{cc.attrs.controllerBean.downloadFile}" />
                 </p:commandLink>
             </p:column>

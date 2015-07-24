@@ -151,24 +151,22 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
         return true;
     }
 
-
     @Override
-    protected void deletePropertyValue() {
-        final ComptypePropertyValue propValue = (ComptypePropertyValue) selectedAttribute.getEntity();
-        if (propValue.isPropertyDefinition()) {
-            if (propValue.isDefinitionTargetSlot()) {
+    protected void deletePropertyValue(final ComptypePropertyValue propValueToDelete) {
+        if (propValueToDelete.isPropertyDefinition()) {
+            if (propValueToDelete.isDefinitionTargetSlot()) {
                 for (final Slot slot : slotEJB.findByComponentType(compType)) {
-                    removeUndefinedProperty(slot.getSlotPropertyList(), propValue.getProperty(), slotEJB);
+                    removeUndefinedProperty(slot.getSlotPropertyList(), propValueToDelete.getProperty(), slotEJB);
                 }
             }
 
-            if (propValue.isDefinitionTargetDevice()) {
+            if (propValueToDelete.isDefinitionTargetDevice()) {
                 for (final Device device : deviceEJB.findDevicesByComponentType(compType)) {
-                    removeUndefinedProperty(device.getDevicePropertyList(), propValue.getProperty(), deviceEJB);
+                    removeUndefinedProperty(device.getDevicePropertyList(), propValueToDelete.getProperty(), deviceEJB);
                 }
             }
         }
-        super.deletePropertyValue();
+        super.deletePropertyValue(propValueToDelete);
     }
 
     private <T extends PropertyValue> void removeUndefinedProperty(final List<T> entityProperties,
@@ -193,7 +191,7 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
     protected void populateAttributesList() {
         attributes = new ArrayList<>();
         // refresh the component type from database. This refreshes all related collections as well.
-        compType = comptypeEJB.findById(this.compType.getId());
+        compType = comptypeEJB.findById(compType.getId());
 
         for (final ComptypePropertyValue prop : compType.getComptypePropertyList()) {
             attributes.add(new EntityAttributeView(prop));
@@ -234,7 +232,7 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
     /** @param deviceType the device type the user selected */
     public void prepareDeviceType(ComponentType deviceType) {
         compType = deviceType;
-        selectedAttribute = null;
+        selectedAttributes = null;
         populateAttributesList();
         filterProperties();
     }
@@ -244,7 +242,7 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
         compType = null;
         attributes = null;
         filteredProperties = null;
-        selectedAttribute = null;
+        selectedAttributes = null;
     }
 
     @Override
@@ -268,6 +266,8 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
 
     @Override
     protected void deleteTagFromParent(Tag tag) {
+        // refresh the component type from database. This refreshes all related collections as well.
+        compType = comptypeEJB.findById(compType.getId());
         compType.getTags().remove(tag);
         comptypeEJB.save(compType);
     }
