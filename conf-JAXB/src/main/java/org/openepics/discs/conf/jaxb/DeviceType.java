@@ -33,8 +33,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class DeviceType {
     private String name;
     private String description;
-    private String modifiedBy;
-    private Date modifiedAt;
 
     public DeviceType() { }
 
@@ -43,10 +41,4 @@ public class DeviceType {
 
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
-
-    public String getModifiedBy() { return modifiedBy; }
-    public void setModifiedBy(String modifiedBy) { this.modifiedBy = modifiedBy; }
-
-    public Date getModifiedAt() { return modifiedAt; }
-    public void setModifiedAt(Date modifiedAt) { this.modifiedAt = modifiedAt; }
 }

@@ -34,6 +34,7 @@ import javax.ws.rs.core.MediaType;
 public interface InstallationSlotNameResource {
     /**
      * @param deviceTypeName the name of the device type to return information for.
+     * 
      * @return a list of installation slot names that correspond to a requested type, or all if omitted.
      */
     @GET

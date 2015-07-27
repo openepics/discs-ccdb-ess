@@ -43,27 +43,27 @@ public class InstallationSlot {
     @XmlElement private DeviceType deviceType;
 
     @XmlElementWrapper(name = "parents")
-    @XmlElement(name = "slot")
+    @XmlElement(name = "parent")
     private List<String> parents = new ArrayList<>();
 
     @XmlElementWrapper(name = "children")
-    @XmlElement(name = "slot")
+    @XmlElement(name = "child")
     private List<String> children = new ArrayList<>();
 
     @XmlElementWrapper(name = "powers")
-    @XmlElement(name = "slot")
+    @XmlElement(name = "power")
     private List<String> powers = new ArrayList<>();
 
     @XmlElementWrapper(name = "poweredBy")
-    @XmlElement(name = "slot")
+    @XmlElement(name = "powerBy")
     private List<String> poweredBy = new ArrayList<>();
 
     @XmlElementWrapper(name = "controls")
-    @XmlElement(name = "slot")
+    @XmlElement(name = "control")
     private List<String> controls = new ArrayList<>();
 
     @XmlElementWrapper(name = "controlledBy")
-    @XmlElement(name = "slot")
+    @XmlElement(name = "controlBy")
     private List<String> controlledBy = new ArrayList<>();
 
     @XmlElementWrapper(name = "properties")

@@ -21,6 +21,7 @@ package org.openepics.discs.client;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -31,13 +32,19 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
 import org.openepics.discs.client.impl.CCDBClientConfigException;
 import org.openepics.discs.client.impl.ClosableResponse;
+import org.openepics.discs.conf.jaxrs.DeviceTypeResource;
+import org.openepics.discs.conf.jaxrs.InstallationSlotNameResource;
+import org.openepics.discs.conf.jaxrs.InstallationSlotResource;
 
 /**
  * This is CCDB service client API that clients can use to access the service.
@@ -156,7 +163,7 @@ public class CCDBClient {
             throw new IllegalArgumentException("Parameter paramValue must not be null.");
         }
         final MultivaluedHashMap<String, Object> queryParameters = new MultivaluedHashMap<>();
-        queryParameters.add(paramName, paramValue);
+        queryParameters.add(paramName, Arrays.asList(paramValue));
         return getResponse(url, queryParameters);
     }
 
@@ -222,5 +229,18 @@ public class CCDBClient {
         }
 
         return propValue;
+    }
+    
+    /* FACTORY METHODS */
+    public DeviceTypeResource createDeviceTypeResource() {
+        return new DeviceTypeClient(this);
+    }
+    
+    public InstallationSlotNameResource createInstallationSlotNameResource() {
+        return new InstallationSlotNameClient(this);
+    }
+    
+    public InstallationSlotResource createInstallationSlotResource() {
+        return new InstallationSlotClient(this);
     }
 }

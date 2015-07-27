@@ -58,9 +58,7 @@ public class DeviceTypeResourceImpl implements DeviceTypeResource {
         } else {
             final DeviceType deviceType = new DeviceType();
             deviceType.setName(componentType.getName());
-            deviceType.setDescription(componentType.getDescription());
-            deviceType.setModifiedBy(componentType.getModifiedBy());
-            deviceType.setModifiedAt(componentType.getModifiedAt());
+            deviceType.setDescription(componentType.getDescription());           
             return deviceType;
         }
     }

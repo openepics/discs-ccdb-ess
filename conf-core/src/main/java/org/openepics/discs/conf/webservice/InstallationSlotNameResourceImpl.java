@@ -27,6 +27,7 @@ import org.openepics.discs.conf.jaxrs.InstallationSlotNameResource;
 
 import com.google.common.base.Strings;
 import java.util.stream.Collectors;
+import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.util.Utility;
 
 /**
@@ -40,13 +41,13 @@ public class InstallationSlotNameResourceImpl implements InstallationSlotNameRes
 
     @Override
     public InstallationSlotNames getAllInstallationSlotNames(String deviceTypeName) {
-        return new InstallationSlotNames(Strings.isNullOrEmpty(deviceTypeName) ?
+        return new InstallationSlotNames( Strings.isNullOrEmpty(deviceTypeName) ?
                 slotEJB.findAll().stream().
-                    map(slot -> slot.getName()).
+                    map(Slot::getName).
                     collect(Collectors.toList()) :
                 Utility.nullableToStream(comptypeEJB.findByName(deviceTypeName)).
                     flatMap(compType -> slotEJB.findByComponentType(compType).stream()).
-                    map(slot -> slot.getName()).
-                    collect(Collectors.toList()));
+                    map(Slot::getName).
+                    collect(Collectors.toList()) );
     }
 }
