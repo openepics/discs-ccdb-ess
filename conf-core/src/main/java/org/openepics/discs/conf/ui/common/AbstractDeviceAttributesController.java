@@ -25,25 +25,25 @@ import java.io.InputStream;
 
 import javax.inject.Inject;
 
-import org.openepics.discs.conf.dl.annotations.ComponentTypesLoader;
+import org.openepics.discs.conf.dl.annotations.DevicesLoader;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
-import org.openepics.discs.conf.ent.ComptypeArtifact;
-import org.openepics.discs.conf.ent.ComptypePropertyValue;
+import org.openepics.discs.conf.ent.DeviceArtifact;
+import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ui.export.ExportSimpleTableDialog;
 import org.primefaces.event.FileUploadEvent;
 
 /**
  * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  */
-public abstract class AbstractComptypeAttributesController
-        extends AbstractAttributesController<ComptypePropertyValue, ComptypeArtifact>
+public abstract class AbstractDeviceAttributesController
+        extends AbstractAttributesController<DevicePropertyValue, DeviceArtifact>
         implements ExcelSingleFileImportUIHandlers {
 
-    private static final long serialVersionUID = 5703434699958338017L;
+    private static final long serialVersionUID = -1920073445045143338L;
 
     @Inject private transient DataLoaderHandler dataLoaderHandler;
-    @Inject @ComponentTypesLoader private transient DataLoader compTypesDataLoader;
+    @Inject @DevicesLoader private transient DataLoader devicesDataLoader;
 
     private ExcelSingleFileImportUI excelSingleFileImportUI;
 
@@ -54,13 +54,13 @@ public abstract class AbstractComptypeAttributesController
 
         @Override
         public void setDataLoader() {
-            dataLoader = compTypesDataLoader;
+            dataLoader = devicesDataLoader;
         }
 
         @Override
         public void doImport() {
             try (InputStream inputStream = new ByteArrayInputStream(importData)) {
-                setLoaderResult(dataLoaderHandler.loadData(inputStream, compTypesDataLoader));
+                setLoaderResult(dataLoaderHandler.loadData(inputStream, devicesDataLoader));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -71,7 +71,7 @@ public abstract class AbstractComptypeAttributesController
         excelSingleFileImportUI = new ExcelSingleFileImportUI();
     }
 
-    /** @see org.openepics.discs.conf.ui.common.AbstractComptypeAttributesController.ExcelSingleFileImportUI#doImport()
+    /** @see org.openepics.discs.conf.ui.common.AbstractDeviceAttributesController.ExcelSingleFileImportUI#doImport()
      */
     @Override
     public void doImport() {

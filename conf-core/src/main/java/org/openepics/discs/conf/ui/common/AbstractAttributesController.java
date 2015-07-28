@@ -138,6 +138,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
     private Class<T> propertyValueClass;
     private Class<S> artifactClass;
 
+    // TODO remove
     protected List<ComptypePropertyValue> parentProperties;
     protected List<ComptypeArtifact> parentArtifacts;
     protected Set<Tag> parentTags;
@@ -492,6 +493,9 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
     }
 
     /** This method determines whether the entity attribute should have the "trash can" icon displayed in the UI.
+     *
+     * TODO remove
+     *
      * @param attributeView The object containing the UI info for the attribute table row.
      * @return <code>true</code> if the attribute can be deleted, <code>false</code> otherwise.
      */
@@ -502,6 +506,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
                 || (attribute instanceof Tag && attributeView.getKind() != EntityAttributeViewKind.DEVICE_TYPE_TAG);
     }
 
+    // TODO remove
     private boolean isPropertyValueInherited(PropertyValue propertyValue) {
         if (parentProperties == null) {
             return false;

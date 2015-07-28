@@ -64,8 +64,13 @@ public class DeviceView {
         }
     }
 
-    /** @return the inventoryId  */
+    /** @return the inventoryId */
     public String getInventoryId() {
+        return inventoryId;
+    }
+
+    /** @return the inventoryId for display in multi-delete confirmation dialog */
+    public String getName() {
         return inventoryId;
     }
 
