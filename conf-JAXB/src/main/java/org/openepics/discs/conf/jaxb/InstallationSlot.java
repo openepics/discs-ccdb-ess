@@ -17,6 +17,7 @@
  */
 package org.openepics.discs.conf.jaxb;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -34,7 +35,7 @@ import javax.xml.bind.annotation.XmlSeeAlso;
  */
 @XmlRootElement(name = "installationSlot")
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlSeeAlso({InstallationSlotBasic.class, PropertyValue.class})
+@XmlSeeAlso({PropertyValue.class})
 public class InstallationSlot {
     private String name;
     private String desription;
@@ -42,59 +43,62 @@ public class InstallationSlot {
     @XmlElement private DeviceType deviceType;
 
     @XmlElementWrapper(name = "parents")
-    @XmlAnyElement(lax = true)
-    private List<InstallationSlotBasic> parents;
+    @XmlElement(name = "parent")
+    private List<String> parents = new ArrayList<>();
 
     @XmlElementWrapper(name = "children")
-    @XmlAnyElement(lax = true)
-    private List<InstallationSlotBasic> children;
+    @XmlElement(name = "child")
+    private List<String> children = new ArrayList<>();
+
+    @XmlElementWrapper(name = "powers")
+    @XmlElement(name = "power")
+    private List<String> powers = new ArrayList<>();
+
+    @XmlElementWrapper(name = "poweredBy")
+    @XmlElement(name = "powerBy")
+    private List<String> poweredBy = new ArrayList<>();
+
+    @XmlElementWrapper(name = "controls")
+    @XmlElement(name = "control")
+    private List<String> controls = new ArrayList<>();
+
+    @XmlElementWrapper(name = "controlledBy")
+    @XmlElement(name = "controlBy")
+    private List<String> controlledBy = new ArrayList<>();
 
     @XmlElementWrapper(name = "properties")
     @XmlAnyElement(lax = true)
     private List<PropertyValue> properties;
 
-    public InstallationSlot() {
-    }
+    public InstallationSlot() { }
 
-    public String getName() {
-        return name;
-    }
-    public void setName(String name) {
-        this.name = name;
-    }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
 
-    public String getDesription() {
-        return desription;
-    }
-    public void setDesription(String desription) {
-        this.desription = desription;
-    }
+    public String getDesription() { return desription; }
+    public void setDesription(String desription) { this.desription = desription; }
 
-    public DeviceType getDeviceType() {
-        return deviceType;
-    }
-    public void setDeviceType(DeviceType deviceType) {
-        this.deviceType = deviceType;
-    }
+    public DeviceType getDeviceType() { return deviceType; }
+    public void setDeviceType(DeviceType deviceType) { this.deviceType = deviceType; }
 
-    public List<InstallationSlotBasic> getParents() {
-        return parents;
-    }
-    public void setParents(List<InstallationSlotBasic> parents) {
-        this.parents = parents;
-    }
+    public List<String> getParents() { return parents; }
+    public void setParents(List<String> parents) { this.parents = parents; }
 
-    public List<InstallationSlotBasic> getChildren() {
-        return children;
-    }
-    public void setChildren(List<InstallationSlotBasic> children) {
-        this.children = children;
-    }
+    public List<String> getChildren() { return children; }
+    public void setChildren(List<String> children) { this.children = children; }
 
-    public List<PropertyValue> getProperties() {
-        return properties;
-    }
-    public void setProperties(List<PropertyValue> properties) {
-        this.properties = properties;
-    }
+    public List<String> getPowers() { return powers; }
+    public void setPowers(List<String> powers) { this.powers = powers; }
+
+    public List<String> getPoweredBy() { return poweredBy; }
+    public void setPoweredBy(List<String> poweredBy) { this.poweredBy = poweredBy; }
+
+    public List<String> getControls() { return controls; }
+    public void setControls(List<String> controls) { this.controls = controls; }
+
+    public List<String> getControlledBy() { return controlledBy; }
+    public void setControlledBy(List<String> controlledBy) { this.controlledBy = controlledBy; }
+    
+    public List<PropertyValue> getProperties() { return properties; }
+    public void setProperties(List<PropertyValue> properties) { this.properties = properties; }   
 }

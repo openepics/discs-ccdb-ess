@@ -17,8 +17,11 @@
  */
 package org.openepics.discs.conf.jaxb;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -27,18 +30,16 @@ import javax.xml.bind.annotation.XmlRootElement;
  *
  * @author <a href="mailto:sunil.sah@cosylab.com">Sunil Sah</a>
  */
-@XmlRootElement(name = "installationSlotBasic")
+@XmlRootElement(name = "slotNames")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class InstallationSlotBasic {
-    private String name;
+public class InstallationSlotNames {    
+    @XmlElement(name = "name")
+    private List<String> names;
 
-    public InstallationSlotBasic() {
-    }
-
-    public String getName() {
-        return name;
-    }
-    public void setName(String name) {
-        this.name = name;
-    }
+    public InstallationSlotNames() { this.names = new ArrayList<>(); }
+    public InstallationSlotNames(List<String> names) { this.names = names; }
+    
+    public List<String> getNames() { return names; }
 }
+
+

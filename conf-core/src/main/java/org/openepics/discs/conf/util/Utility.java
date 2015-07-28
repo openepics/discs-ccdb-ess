@@ -49,6 +49,8 @@ import org.openepics.discs.conf.ent.SlotRelationName;
 import org.openepics.discs.conf.views.EntityAttributeViewKind;
 
 import com.google.common.collect.Lists;
+import java.util.Optional;
+import java.util.stream.Stream;
 /**
  *
  * @author vuppala
@@ -149,5 +151,12 @@ public class Utility {
         }
         return attributeKinds;
     }
-
+    
+    public static <T> Stream<T> optionalToStream(Optional<T> optional) {
+        return optional.map(Stream::of).orElse(Stream.empty());
+    } 
+    
+    public static <T> Stream<T> nullableToStream(T object) {
+        return object != null ? Stream.of(object) : Stream.empty();
+    }
 }

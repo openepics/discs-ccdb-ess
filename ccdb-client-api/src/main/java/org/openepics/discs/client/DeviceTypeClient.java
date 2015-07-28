@@ -28,6 +28,7 @@ import javax.ws.rs.core.GenericType;
 import org.openepics.discs.client.impl.ClosableResponse;
 import org.openepics.discs.client.impl.ResponseException;
 import org.openepics.discs.conf.jaxb.DeviceType;
+import org.openepics.discs.conf.jaxrs.DeviceTypeResource;
 
 /**
  * This is CCDB service clientdataType parser that is used to get data from server.
@@ -39,29 +40,31 @@ import org.openepics.discs.conf.jaxb.DeviceType;
  * @author <a href="mailto:miroslav.pavleski@cosylab.com">Miroslav Pavleski</a>
  */
 
-public class DeviceTypeResource {
-    private static final String PATH_DEVICE_TYPE = "deviceType";
-    private static final Logger LOGGER = Logger.getLogger(DeviceTypeResource.class.getName());
+class DeviceTypeClient 
+    implements DeviceTypeResource {
+    
+    private static final Logger LOG = Logger.getLogger(DeviceTypeClient.class.getName());
+    
+    private static final String PATH_DEVICE_TYPES = "deviceType";
 
     @Nonnull private final CCDBClient client;
 
-    public DeviceTypeResource(CCDBClient client) { this.client = client; }
+    DeviceTypeClient(CCDBClient client) { this.client = client; }
 
     /**
      * Requests a {@link List} of all {@link DeviceType}s from the REST service.
      *
-     * @throws ResponseException
-     *             if data couldn't be retrieved
+     * @throws ResponseException if data couldn't be retrieved
      *
      * @return {@link List} of all {@link DeviceType}s
      */
+    @Override
     public List<DeviceType> getAllDeviceTypes() {
-        LOGGER.fine("Invoking getAllDeviceTypes");
+        LOG.fine("Invoking getAllDeviceTypes");
 
-        final String url = client.buildUrl(PATH_DEVICE_TYPE);
+        final String url = client.buildUrl(PATH_DEVICE_TYPES);
         try (final ClosableResponse response = client.getResponse(url)) {
-            final List<DeviceType> list = response.readEntity(new GenericType<List<DeviceType>>() {});
-            return list;
+            return response.readEntity(new GenericType<List<DeviceType>>() {});
         } catch (Exception e) {
             throw new ResponseException("Couldn't retrieve data from service at " + url + ".", e);
         }
@@ -70,21 +73,19 @@ public class DeviceTypeResource {
     /**
      * Requests particular {@link DeviceType} from the REST service.
      *
-     * @param id
-     *            the id of desired DeviceType
+     * @param name the name of the desired DeviceType
      *
-     * @throws ResponseException
-     *             if data couldn't be retrieved
+     * @throws ResponseException  if data couldn't be retrieved
      *
      * @return {@link DeviceType}
      */
-    public DeviceType getDeviceType(final int id) {
-        LOGGER.fine("Invoking getDeviceType");
+    @Override
+    public DeviceType getDeviceType(String name) {
+        LOG.fine("Invoking getDeviceType");
 
-        final String url = client.buildUrl(PATH_DEVICE_TYPE, Integer.toString(id));
+        final String url = client.buildUrl(PATH_DEVICE_TYPES, name);
         try (final ClosableResponse response = client.getResponse(url)) {
-            final DeviceType device = response.readEntity(DeviceType.class);
-            return device;
+            return response.readEntity(DeviceType.class);
         } catch (Exception e) {
             throw new ResponseException("Couldn't retrieve data from service at " + url + ".", e);
         }
