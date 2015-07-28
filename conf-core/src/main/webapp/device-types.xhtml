@@ -35,20 +35,20 @@
                     <p:column style="width: 35%; min-width: 20em;">
                         <p:fieldset legend="Device type" id="devTypeFieldset">
                             <p:dataTable id="deviceTypeTable" widgetVar="deviceTypeTableVar" var="deviceType" 
-                                    value="#{comptypeAttributesController.deviceTypes}" resizableColumns="true" 
+                                    value="#{componentTypeManager.deviceTypes}" resizableColumns="true" 
                                     style="width: inherit; overflow-y: hidden;" scrollable="true"
-                                    filteredValue="#{comptypeAttributesController.filteredDeviceTypes}" styleClass="scroll-table"
+                                    filteredValue="#{componentTypeManager.filteredDeviceTypes}" styleClass="scroll-table"
                                     tableStyle="table-layout: fixed; word-wrap: break-word; width: 100%;" 
-                                    selection="#{comptypeAttributesController.selectedDeviceTypes}" liveScroll="true"
+                                    selection="#{componentTypeManager.selectedDeviceTypes}" liveScroll="true"
                                     selectionMode="multiple" rowKey="#{deviceType.id}" scrollRows="50">
                                 <p:ajax event="filter" ignoreAutoUpdate="true" />
                                 <p:ajax event="rowSelect" oncomplete="adjustTableHeights();"
-                                    listener="#{comptypeAttributesController.onRowSelect}" 
+                                    listener="#{componentTypeManager.onRowSelect}" 
                                     update=":deviceTypesForm:deleteButton :deviceTypesForm:editButton :deviceTypesForm:addButton 
                                         :deviceTypesForm:attributesDataTable:attributesDataTable :deviceTypesForm:editAttrButton 
                                         :deviceTypesForm:deleteAttrButton" />
                                 <p:ajax event="rowUnselect" oncomplete="adjustTableHeights();"
-                                    listener="#{comptypeAttributesController.onRowSelect}" 
+                                    listener="#{componentTypeManager.onRowSelect}" 
                                     update=":deviceTypesForm:deleteButton :deviceTypesForm:editButton :deviceTypesForm:addButton 
                                         :deviceTypesForm:attributesDataTable:attributesDataTable :deviceTypesForm:editAttrButton 
                                         :deviceTypesForm:deleteAttrButton" />
@@ -65,55 +65,55 @@
                             </p:dataTable>
                             <p:commandButton id="exportButton" icon="ui-icon-disk" value="Export" title="Export" 
                                 style="float: right; margin-top: 1em;" oncomplete="PF('exportDevTypes').show();" 
-                                disabled="#{empty comptypeAttributesController.deviceTypes}" update=":exportDevTypesForm:exportDevTypes" 
-                                actionListener="#{comptypeAttributesController.simpleTableDialog.prepareTableExportPopup}" />
+                                disabled="#{empty componentTypeManager.deviceTypes}" update=":exportDevTypesForm:exportDevTypes" 
+                                actionListener="#{componentTypeManager.simpleTableDialog.prepareTableExportPopup}" />
                             <p:commandButton id="deleteButton" ajax="true" style="float: right; margin: 1em 1ex 0 0;" 
                                 value="Delete" icon="ui-icon-trash" oncomplete="PF('deleteDeviceTypes').show();" 
-                                actionListener="#{comptypeAttributesController.checkDeviceTypesForDeletion()}"
+                                actionListener="#{componentTypeManager.checkDeviceTypesForDeletion()}"
                                 update=":deleteDeviceTypesForm:deleteDeviceTypes"
-                                disabled="#{empty comptypeAttributesController.selectedDeviceTypes}" />
+                                disabled="#{empty componentTypeManager.selectedDeviceTypes}" />
                             <p:commandButton id="editButton" ajax="true" style="float: right; margin: 1em 1ex 0 0;" 
-                                value="Edit" action="#{comptypeAttributesController.prepareEditPopup()}" 
+                                value="Edit" action="#{componentTypeManager.prepareEditPopup()}" 
                                 update=":editDeviceTypeForm" icon="ui-icon-pencil" oncomplete="PF('editDeviceType').show();" 
-                                disabled="#{not comptypeAttributesController.singleDeviceTypeSelected}" />
+                                disabled="#{not componentTypeManager.singleDeviceTypeSelected}" />
                             <p:commandButton ajax="true" style="float: right; margin: 1em 1ex 0 0;" icon="ui-icon-plus" 
-                                actionListener="#{comptypeAttributesController.prepareAddPopup()}" value="Add" 
+                                actionListener="#{componentTypeManager.prepareAddPopup()}" value="Add" 
                                 oncomplete="PF('addDeviceType').show();" />
                         </p:fieldset>
                     </p:column>
                     <p:column style="width: 65%; min-width: 30em;">
                         <p:fieldset legend="Properties" id="propFieldset">
-                            <rc:new-attribute-table id="attributesDataTable" controllerBean="#{comptypeAttributesController}" 
+                            <rc:new-attribute-table id="attributesDataTable" controllerBean="#{componentTypeManager}" 
                                 updateTargets=":modifyPropertyValueForm :modifyArtifactForm" 
                                 updateButtons=":deviceTypesForm:editAttrButton :deviceTypesForm:deleteAttrButton" />
     
                             <p:commandButton id="deleteAttrButton" value="Delete" icon="ui-icon-trash" 
                                 style="float: right; margin-top: 1em;" oncomplete="PF('deleteAttributes').show()" 
                                 update=":deleteAttributesForm:deleteAttributes" 
-                                actionListener="#{comptypeAttributesController.checkAttributesForDeletion()}"
-                                disabled="#{empty comptypeAttributesController.selectedAttributes}" />
+                                actionListener="#{componentTypeManager.checkAttributesForDeletion()}"
+                                disabled="#{empty componentTypeManager.selectedAttributes}" />
     
                             <p:commandButton id="editAttrButton" value="Edit" icon="ui-icon-pencil" 
-                                action="#{comptypeAttributesController.prepareModifyPropertyPopUp()}" 
+                                action="#{componentTypeManager.prepareModifyPropertyPopUp()}" 
                                 style="float: right; margin: 1em 1ex 0 0;" update=":modifyPropertyValueForm :modifyArtifactForm" 
-                                disabled="#{not comptypeAttributesController.singleAttributeSelected or 
-                                    not comptypeAttributesController.canEdit(comptypeAttributesController.selectedAttributes.get(0))}"/>
+                                disabled="#{not componentTypeManager.singleAttributeSelected or 
+                                    not componentTypeManager.canEdit(componentTypeManager.selectedAttributes.get(0))}" />
     
                             <p:menuButton id="addButton" value="Add" style="float: right; margin: 1em 1ex 0 0;" 
-                                disabled="#{not comptypeAttributesController.singleDeviceTypeSelected}">
+                                disabled="#{not componentTypeManager.singleDeviceTypeSelected}">
                                 <p:menuitem value="Device Type Property" oncomplete="PF('addPropertyValue').show();" 
-                                    actionListener="#{comptypeAttributesController.prepareForPropertyValueAdd}" 
+                                    actionListener="#{componentTypeManager.prepareForPropertyValueAdd}" 
                                     update=":addPropertyValueForm:addPropertyValue" />
                                 <p:menuitem value="Installation Slot Property" oncomplete="PF('installationSlotProperty').show();" 
-                                    actionListener="#{comptypeAttributesController.prepareForSlotPropertyAdd()}" 
+                                    actionListener="#{componentTypeManager.prepareForSlotPropertyAdd()}" 
                                     update=":installationSlotPropertyForm:installationSlotProperty" />
                                 <p:menuitem value="Device Instance Property" oncomplete="PF('deviceInstanceProperty').show();" 
-                                    actionListener="#{comptypeAttributesController.prepareForDevicePropertyAdd()}" 
+                                    actionListener="#{componentTypeManager.prepareForDevicePropertyAdd()}" 
                                     update=":deviceInstancePropertyForm:deviceInstanceProperty" />
                                 <p:menuitem value="Tag" oncomplete="PF('deviceTypeTag').show();" update=":deviceTypeTagForm" 
-                                    actionListener="#{comptypeAttributesController.prepareForTagAdd}" />
+                                    actionListener="#{componentTypeManager.prepareForTagAdd}" />
                                 <p:menuitem value="Artifact" oncomplete="PF('addArtifact').show();" 
-                                    actionListener="#{comptypeAttributesController.prepareForArtifactAdd}" 
+                                    actionListener="#{componentTypeManager.prepareForArtifactAdd}" 
                                     update=":addArtifactForm:addArtifact" />
                             </p:menuButton>
                         </p:fieldset>
@@ -154,9 +154,9 @@
             <ui:param name="formId" value="deleteDeviceTypesForm" />
             <ui:param name="dialogTitle" value="Delete device types" />
             <ui:param name="widgetName" value="deleteDeviceTypes" />
-            <ui:param name="controller" value="#{comptypeAttributesController}" />
-            <ui:param name="deletePreventionList" value="#{comptypeAttributesController.usedDeviceTypes}" />
-            <ui:param name="deleteList" value="#{comptypeAttributesController.selectedDeviceTypes}" />
+            <ui:param name="controller" value="#{componentTypeManager}" />
+            <ui:param name="deletePreventionList" value="#{componentTypeManager.usedDeviceTypes}" />
+            <ui:param name="deleteList" value="#{componentTypeManager.selectedDeviceTypes}" />
             <ui:param name="submitHandler" value="onDelete" />
             <ui:param name="formsToUpdate" value=":deviceTypesForm:deviceTypeTable :deviceTypesForm:deleteButton 
                                                 :deviceTypesForm:editButton :deviceTypesForm:exportButton
@@ -186,7 +186,7 @@
             <ui:param name="formId" value="modifyPropertyValueForm" />
             <ui:param name="dialogTitle" value="Modify device type property" />
             <ui:param name="widgetName" value="modifyPropertyValue" />
-            <ui:param name="controller" value="#{comptypeAttributesController}" />
+            <ui:param name="controller" value="#{componentTypeManager}" />
             <ui:param name="resetFilter" value="PF('attributesDataTable').clearFilters(); adjustTableHeights();" />
             <ui:param name="submitHandler" value="modifyPropertyValue" />
             <ui:param name="componentToUpdate" value=":deviceTypesForm:attributesDataTable:attributesDataTable" />
@@ -196,7 +196,7 @@
             <ui:param name="formId" value="modifyArtifactForm" />
             <ui:param name="dialogTitle" value="Modify device type artifact" />
             <ui:param name="widgetName" value="modifyArtifact" />
-            <ui:param name="controller" value="#{comptypeAttributesController}" />
+            <ui:param name="controller" value="#{componentTypeManager}" />
             <ui:param name="resetFilter" value="PF('attributesDataTable').clearFilters(); adjustTableHeights();" />
             <ui:param name="submitHandler" value="modifyArtifact" />
             <ui:param name="componentToUpdate" value=":deviceTypesForm:attributesDataTable:attributesDataTable" />
@@ -206,7 +206,7 @@
             <ui:param name="formId" value="addPropertyValueForm" />
             <ui:param name="dialogTitle" value="Add new device type property" />
             <ui:param name="widgetName" value="addPropertyValue" />
-            <ui:param name="controller" value="#{comptypeAttributesController}" />
+            <ui:param name="controller" value="#{componentTypeManager}" />
             <ui:param name="resetFilter" value="PF('attributesDataTable').clearFilters(); adjustTableHeights();" />
             <ui:param name="submitHandler" value="saveMultiplePropertyValues" />
             <ui:param name="componentToUpdate" value=":deviceTypesForm:attributesDataTable:attributesDataTable" />
@@ -216,7 +216,7 @@
             <ui:param name="formId" value="installationSlotPropertyForm" />
             <ui:param name="dialogTitle" value="Add new installation slot property" />
             <ui:param name="widgetName" value="installationSlotProperty" />
-            <ui:param name="controller" value="#{comptypeAttributesController}" />
+            <ui:param name="controller" value="#{componentTypeManager}" />
             <ui:param name="resetFilter" value="PF('attributesDataTable').clearFilters(); adjustTableHeights();" />
             <ui:param name="submitHandler" value="addNewPropertyValueDefs" />
             <ui:param name="componentToUpdate" value=":deviceTypesForm:attributesDataTable:attributesDataTable" />
@@ -226,7 +226,7 @@
             <ui:param name="formId" value="deviceInstancePropertyForm" />
             <ui:param name="dialogTitle" value="Add new device instance property" />
             <ui:param name="widgetName" value="deviceInstanceProperty" />
-            <ui:param name="controller" value="#{comptypeAttributesController}" />
+            <ui:param name="controller" value="#{componentTypeManager}" />
             <ui:param name="resetFilter" value="PF('attributesDataTable').clearFilters(); adjustTableHeights();" />
             <ui:param name="submitHandler" value="addNewPropertyValueDefs" />
             <ui:param name="componentToUpdate" value=":deviceTypesForm:attributesDataTable:attributesDataTable" />
@@ -236,7 +236,7 @@
             <ui:param name="formId" value="deviceTypeTagForm" />
             <ui:param name="dialogTitle" value="Add new device type tag" />
             <ui:param name="widgetName" value="deviceTypeTag" />
-            <ui:param name="controller" value="#{comptypeAttributesController}" />
+            <ui:param name="controller" value="#{componentTypeManager}" />
             <ui:param name="resetFilter" value="PF('attributesDataTable').clearFilters(); adjustTableHeights();" />
             <ui:param name="submitHandler" value="addNewTag" />
             <ui:param name="componentToUpdate" value=":deviceTypesForm:deviceTypeTable :deviceTypesForm:attributesDataTable:attributesDataTable" />
@@ -246,7 +246,7 @@
             <ui:param name="formId" value="addArtifactForm" />
             <ui:param name="dialogTitle" value="Add new device type artifact" />
             <ui:param name="widgetName" value="addArtifact" />
-            <ui:param name="controller" value="#{comptypeAttributesController}" />
+            <ui:param name="controller" value="#{componentTypeManager}" />
             <ui:param name="resetFilter" value="PF('attributesDataTable').clearFilters(); adjustTableHeights();" />
             <ui:param name="submitHandler" value="addNewArtifact" />
             <ui:param name="componentToUpdate" value=":deviceTypesForm:attributesDataTable:attributesDataTable" />
@@ -256,9 +256,9 @@
             <ui:param name="formId" value="deleteAttributesForm" />
             <ui:param name="dialogTitle" value="Delete attributes" />
             <ui:param name="widgetName" value="deleteAttributes" />
-            <ui:param name="controller" value="#{comptypeAttributesController}" />
-            <ui:param name="deletePreventionList" value="#{comptypeAttributesController.nonDeletableAttributes}" />
-            <ui:param name="deleteList" value="#{comptypeAttributesController.selectedAttributes}" />
+            <ui:param name="controller" value="#{componentTypeManager}" />
+            <ui:param name="deletePreventionList" value="#{componentTypeManager.nonDeletableAttributes}" />
+            <ui:param name="deleteList" value="#{componentTypeManager.selectedAttributes}" />
             <ui:param name="submitHandler" value="deleteAttributes" />
             <ui:param name="formsToUpdate" value=":deviceTypesForm:attributesDataTable:attributesDataTable 
                                                 :deviceTypesForm:editAttrButton :deviceTypesForm:deleteAttrButton" />
@@ -271,9 +271,9 @@
             <ui:param name="formId" value="exportDevTypesForm" />
             <ui:param name="widgetName" value="exportDevTypes" />
             <ui:param name="dialogTitle" value="Export device types table" />
-            <ui:param name="fileFormatSelection" value="#{comptypeAttributesController.simpleTableDialog.fileFormat}" />
-            <ui:param name="includeHeader" value="#{comptypeAttributesController.simpleTableDialog.includeHeaderRow}" />
-            <ui:param name="tableFile" value="#{comptypeAttributesController.simpleTableDialog.exportedTable}" />
+            <ui:param name="fileFormatSelection" value="#{componentTypeManager.simpleTableDialog.fileFormat}" />
+            <ui:param name="includeHeader" value="#{componentTypeManager.simpleTableDialog.includeHeaderRow}" />
+            <ui:param name="tableFile" value="#{componentTypeManager.simpleTableDialog.exportedTable}" />
         </ui:include>
     </ui:define>
 </ui:composition>

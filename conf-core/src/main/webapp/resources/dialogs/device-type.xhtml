@@ -14,7 +14,7 @@
 
                 <p:outputLabel for="deviceTypeName" value="Name:" />
                 <h:panelGroup>
-                    <p:inputText id="deviceTypeName" value="#{comptypeAttributesController.name}" required="true" 
+                    <p:inputText id="deviceTypeName" value="#{componentTypeManager.name}" required="true" 
                             requiredMessage="Please enter a name" />
                     <p:message for="deviceTypeName" />
                 </h:panelGroup>
@@ -22,7 +22,7 @@
                 <p:outputLabel for="deviceTypeDesc" value="Description:" />
                 <h:panelGroup>
                     <p:inputTextarea id="deviceTypeDesc" rows="5" cols="60" maxlength="254" required="true" 
-                        requiredMessage="Please enter a description" value="#{comptypeAttributesController.description}" />
+                        requiredMessage="Please enter a description" value="#{componentTypeManager.description}" />
                     <br/>
                     <p:message for="deviceTypeDesc" />
                 </h:panelGroup>
@@ -32,7 +32,7 @@
                     resetValues="true" />
             <p:commandButton value="Save" styleClass="dialogButton" update=":deviceTypesForm:exportButton grp" 
                     oncomplete="if (args &amp;&amp; !args.validationFailed) { PF('#{widgetName}').hide(); PF('deviceTypeTableVar').clearFilters(); }" 
-                    action="#{comptypeAttributesController[submitHandler]}" />
+                    action="#{componentTypeManager[submitHandler]}" />
         </p:dialog>
 
     </h:form>

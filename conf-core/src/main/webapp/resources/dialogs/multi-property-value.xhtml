@@ -4,7 +4,7 @@
     xmlns:h="http://java.sun.com/jsf/html">
 
     <h:form id="#{formId}">
-        <p:remoteCommand name="updateToggle" actionListener="#{comptypeAttributesController.updateToggle()}" 
+        <p:remoteCommand name="updateToggle" actionListener="#{componentTypeManager.updateToggle()}" 
             update=":#{formId}:propertySelect" />
         <p:dialog widgetVar="#{widgetName}" id="#{widgetName}" modal="true" resizable="false" closable="false" 
                 dynamic="true" styleClass="property-selection">
@@ -13,23 +13,23 @@
             </f:facet>
             <p:messages id="inputValidationFail" showDetail="true" autoUpdate="true" />
             <p:panel style="margin-bottom: 2ex; border: 0;">
-                <p:dataTable id="propertySelect" value="#{comptypeAttributesController.filteredPropertyValues}" var="prop" 
+                <p:dataTable id="propertySelect" value="#{componentTypeManager.filteredPropertyValues}" var="prop" 
                         editable="true" editMode="cell" scrollable="true" 
                         scrollHeight="200" tableStyle="width: 68em; table-layout: auto;" widgetVar="propSelectTable" 
-                        filteredValue="#{comptypeAttributesController.selectionPropertyValuesFiltered}">
-                    <p:ajax event="cellEdit" listener="#{comptypeAttributesController.onEditCell}" update=":#{formId}:propertySelect" />
+                        filteredValue="#{componentTypeManager.selectionPropertyValuesFiltered}">
+                    <p:ajax event="cellEdit" listener="#{componentTypeManager.onEditCell}" update=":#{formId}:propertySelect" />
                     <p:ajax event="filter" oncomplete="updateToggle();" />
 
                     <p:column id="rowSelection" style="width: 2em;">
                         <f:facet name="header">
-                            <p:selectBooleanCheckbox id="toggleAll" value="#{comptypeAttributesController.selectAllRows}">
-                                <p:ajax listener="#{comptypeAttributesController.handleToggleAll}" 
+                            <p:selectBooleanCheckbox id="toggleAll" value="#{componentTypeManager.selectAllRows}">
+                                <p:ajax listener="#{componentTypeManager.handleToggleAll}" 
                                     update=":#{formId}:propertySelect" />
                             </p:selectBooleanCheckbox>
                         </f:facet>
                         <p:selectBooleanCheckbox value="#{prop.selected}">
                             <p:ajax update=":#{formId}:propertySelect" oncomplete="updateToggle();" 
-                                listener="#{comptypeAttributesController.rowSelectListener(prop)}"/>
+                                listener="#{componentTypeManager.rowSelectListener(prop)}"/>
                         </p:selectBooleanCheckbox>
                     </p:column>
                     <p:column headerText="Property" style="width: 20em;" sortBy="#{prop.name}" filterBy="#{prop.name}">
@@ -50,7 +50,7 @@
                     <p:column headerText="Value" style="width: 16em;">
                         <p:cellEditor rendered="#{prop.selected}">
                             <f:facet name="output">
-                                <h:outputText value="#{comptypeAttributesController.displayPropertyValue(prop)}" />
+                                <h:outputText value="#{componentTypeManager.displayPropertyValue(prop)}" />
                             </f:facet>
                             <f:facet name="input">
                                 <p:inputText id="propertyValueSimple" value="#{prop.uiValue}" rendered="#{prop.propertyValueUIElement eq 'INPUT'}" />
@@ -72,10 +72,10 @@
             </p:panel>
 
             <p:commandButton value="Cancel" styleClass="dialogButton" oncomplete="PF('#{widgetName}').hide();#{resetFilter}" 
-                    update="propertySelect" resetValues="true" action="#{comptypeAttributesController.resetPropertySelection(formId)}" />
+                    update="propertySelect" resetValues="true" action="#{componentTypeManager.resetPropertySelection(formId)}" />
             <p:commandButton value="Save" styleClass="dialogButton" update="#{componentToUpdate} propertySelect" 
                     oncomplete="if (args &amp;&amp; !args.validationFailed) { PF('#{widgetName}').hide(); #{resetFilter} }" 
-                    action="#{comptypeAttributesController[submitHandler]}"/>
+                    action="#{componentTypeManager[submitHandler]}"/>
         </p:dialog>
     </h:form>
 </ui:composition>
