@@ -48,7 +48,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
     @NamedQuery(name = "Unit.findBySymbol", query = "SELECT u FROM Unit u WHERE u.symbol = :symbol"),
     @NamedQuery(name = "Unit.findByModifiedBy", query = "SELECT u FROM Unit u WHERE u.modifiedBy = :modifiedBy")
 })
-public class Unit extends ConfigurationEntity {
+public class Unit extends ConfigurationEntity implements NamedEntity {
     private static final long serialVersionUID = -1574351545793376961L;
 
     @Basic(optional = false)
@@ -89,6 +89,7 @@ public class Unit extends ConfigurationEntity {
     }
 
 
+    @Override
     public String getName() {
         return name;
     }

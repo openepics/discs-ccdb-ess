@@ -52,7 +52,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Property.findByModifiedBy", query = "SELECT p FROM Property p "
             + "WHERE p.modifiedBy = :modifiedBy")
 })
-public class Property extends ConfigurationEntity {
+public class Property extends ConfigurationEntity implements NamedEntity {
     private static final long serialVersionUID = 7015867086270956395L;
 
     @Basic(optional = false)
@@ -95,6 +95,7 @@ public class Property extends ConfigurationEntity {
     /**
      * @return The name of the property
      */
+    @Override
     public String getName() {
         return name;
     }

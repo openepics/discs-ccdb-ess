@@ -43,7 +43,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "DataType.findByDataTypeId", query = "SELECT d FROM DataType d WHERE d.id = :id"),
     @NamedQuery(name = "DataType.findByModifiedBy", query = "SELECT d FROM DataType d WHERE d.modifiedBy = :modifiedBy")
 })
-public class DataType extends ConfigurationEntity {
+public class DataType extends ConfigurationEntity implements NamedEntity {
     private static final long serialVersionUID = 8190792924852505638L;
 
     @Basic(optional = false)
@@ -83,6 +83,7 @@ public class DataType extends ConfigurationEntity {
         this.definition = definition;
     }
 
+    @Override
     public String getName() {
         return name;
     }

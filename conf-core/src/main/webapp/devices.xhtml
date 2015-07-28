@@ -60,7 +60,6 @@
                                         listener="#{deviceDetailsAttributesController.clearDeviceInstance()}" 
                                         update=":deviceAddForm:addDeviceDialog :devicesForm:deleteButton :devicesForm:editButton 
                                                 :devicesForm:attributesDataTable:attributesDataTable" />
-                                <p:ajax event="page" oncomplete="onTablePageSwitchAction();" />
 
                                 <p:column headerText="Type" sortBy="#{device.device.componentType.name}" filterStyle="width: 90%;" 
                                         filterBy="#{device.device.componentType.name}" filterMatchMode="contains">

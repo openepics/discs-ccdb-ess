@@ -303,7 +303,8 @@ public class DataTypeManager extends AbstractExcelSingleFileImportUI implements 
         selectedEnums = null;
         usedEnums = null;
         refreshUserDataTypes();
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Deleted " + deletedEnums + " enumerations.");
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+                "Deleted " + deletedEnums + " enumerations.");
     }
 
     /** Validates the enumeration inputs. For new enumeration it verifies that all values contain only alphanumeric

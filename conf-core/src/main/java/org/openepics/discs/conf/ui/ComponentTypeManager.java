@@ -38,11 +38,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.openepics.discs.conf.dl.annotations.ComponentTypesLoader;
 import org.openepics.discs.conf.dl.common.DataLoader;
-import org.openepics.discs.conf.ejb.AuditRecordEJB;
 import org.openepics.discs.conf.ejb.ComptypeEJB;
-import org.openepics.discs.conf.ent.AuditRecord;
 import org.openepics.discs.conf.ent.ComponentType;
-import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.export.ExportTable;
 import org.openepics.discs.conf.ui.common.AbstractExcelSingleFileImportUI;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
@@ -52,7 +49,9 @@ import org.openepics.discs.conf.ui.export.SimpleTableExporter;
 import org.openepics.discs.conf.util.Utility;
 import org.primefaces.context.RequestContext;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 
 /**
  *
@@ -68,16 +67,16 @@ public class ComponentTypeManager extends AbstractExcelSingleFileImportUI
     private static final Logger LOGGER = Logger.getLogger(ComponentTypeManager.class.getCanonicalName());
 
     @Inject private transient ComptypeEJB comptypeEJB;
-    @Inject private transient AuditRecordEJB auditRecordEJB;
     @Inject private transient DataLoaderHandler dataLoaderHandler;
     @Inject @ComponentTypesLoader private transient DataLoader compTypesDataLoader;
 
     private List<ComponentType> deviceTypes;
     private List<ComponentType> filteredDeviceTypes;
+    private List<ComponentType> selectedDeviceTypes;
+    private List<ComponentType> usedDeviceTypes;
+    private ComponentType editedDeviceType;
     private String name;
     private String description;
-    private ComponentType selectedDeviceType;
-    private List<AuditRecord> auditRecordsForEntity;
 
     private ExportSimpleTableDialog simpleTableExporterDialog;
 
@@ -138,7 +137,7 @@ public class ComponentTypeManager extends AbstractExcelSingleFileImportUI
             }
         } catch (NumberFormatException e) {
             // just log
-            LOGGER.log(Level.WARNING, "URL contained strange device type ID: " + deviceTypeIdStr );
+            LOGGER.log(Level.WARNING, "URL contained strange device type ID: " + deviceTypeIdStr);
         } catch(Exception e) {
             throw new UIException("Device type display initialization fialed: " + e.getMessage(), e);
         }
@@ -169,11 +168,6 @@ public class ComponentTypeManager extends AbstractExcelSingleFileImportUI
         description = null;
     }
 
-    /** Support method to enable clearing the selected device type from the UI */
-    public void clearSelectedDeviceType() {
-        selectedDeviceType = null;
-    }
-
     /** Called when the user presses the "Save" button in the "Add a new device type" dialog. */
     public void onAdd() {
         final ComponentType componentTypeToAdd = new ComponentType(name);
@@ -196,19 +190,22 @@ public class ComponentTypeManager extends AbstractExcelSingleFileImportUI
 
     /** Prepares the data for the device type editing dialog fields based on the selected device type. */
     public void prepareEditPopup() {
-        name = selectedDeviceType.getName();
-        description = selectedDeviceType.getDescription();
+        Preconditions.checkState(isSingleDeviceTypeSelected());
+        editedDeviceType = comptypeEJB.findById(selectedDeviceTypes.get(0).getId());
+        name = editedDeviceType.getName();
+        description = editedDeviceType.getDescription();
     }
 
-    /** Saves the new devidce type data (name and/or description) */
+    /** Saves the new device type data (name and/or description) */
     public void onChange() {
-        selectedDeviceType.setName(name);
-        selectedDeviceType.setDescription(description);
+        Preconditions.checkNotNull(editedDeviceType);
+        editedDeviceType.setName(name);
+        editedDeviceType.setDescription(description);
         try {
-            comptypeEJB.save(selectedDeviceType);
+            comptypeEJB.save(editedDeviceType);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
                     "Device type updated");
-            selectedDeviceType = null;
+            editedDeviceType = null;
         } catch (Exception e) {
             if (Utility.causedByPersistenceException(e)) {
                 Utility.showMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
@@ -221,24 +218,48 @@ public class ComponentTypeManager extends AbstractExcelSingleFileImportUI
         }
     }
 
+    /**
+     * The method builds a list of device types that are already used. If the list is not empty, it is displayed
+     * to the user and the user is prevented from deleting them.
+     */
+    public void checkDeviceTypesForDeletion() {
+        Preconditions.checkNotNull(selectedDeviceTypes);
+        Preconditions.checkState(!selectedDeviceTypes.isEmpty());
+
+        usedDeviceTypes = Lists.newArrayList();
+        for (final ComponentType deviceTypeToDelete : selectedDeviceTypes) {
+            if (comptypeEJB.isComponentTypeUsed(deviceTypeToDelete)) {
+                usedDeviceTypes.add(deviceTypeToDelete);
+            }
+        }
+    }
+
+
     /** Called when the user clicks the "trash can" icon in the table listing the devices types. */
     public void onDelete() {
-        try {
-            final ComponentType deleteDeviceType = comptypeEJB.findById(selectedDeviceType.getId());
-            comptypeEJB.delete(deleteDeviceType);
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
-                    "Device type was deleted");
-            selectedDeviceType = null;
-        } catch (Exception e) {
-            if (Utility.causedByPersistenceException(e)) {
-                Utility.showMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_DELETE_FAIL,
-                        "The device type could not be deleted because it is used.");
-            } else {
-                throw e;
-            }
-        } finally {
-            deviceTypes = comptypeEJB.findAll();
+        Preconditions.checkNotNull(selectedDeviceTypes);
+        Preconditions.checkState(!selectedDeviceTypes.isEmpty());
+        Preconditions.checkNotNull(usedDeviceTypes);
+        Preconditions.checkState(usedDeviceTypes.isEmpty());
+
+        int deletedDeviceTypes = 0;
+        for (final ComponentType deviceTypeToDelete : selectedDeviceTypes) {
+            final ComponentType freshEntity = comptypeEJB.findById(deviceTypeToDelete.getId());
+            freshEntity.getTags().clear();
+            comptypeEJB.delete(freshEntity);
+            ++deletedDeviceTypes;
         }
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+                "Deleted " + deletedDeviceTypes + " device types.");
+        selectedDeviceTypes = null;
+        filteredDeviceTypes = null;
+        usedDeviceTypes = null;
+        deviceTypes = comptypeEJB.findAll();
+    }
+
+    /** @return <code>true</code> if a single device type is selected , <code>false</code> otherwise */
+    public boolean isSingleDeviceTypeSelected() {
+        return (selectedDeviceTypes != null) && (selectedDeviceTypes.size() == 1);
     }
 
     @Override
@@ -253,46 +274,18 @@ public class ComponentTypeManager extends AbstractExcelSingleFileImportUI
 
     // -------------------- Getters and Setters ---------------------------------------
 
-    /**
-     * @return The reference to the device type displayed in the row the user clicked the action for.
-     * @see ComponentTypeManager#setSelectedDeviceType(ComponentType)
-     */
-    public ComponentType getSelectedDeviceType() {
-        return selectedDeviceType;
+    /** @return the selectedDeviceTypes */
+    public List<ComponentType> getSelectedDeviceTypes() {
+        return selectedDeviceTypes;
     }
-    /**
-     * @param selectedDeviceType When the user clicks on the action in the "Action" column of the table listing all the
-     * device type, this method stores the reference to the device type displayed in that table row.
-     */
-    public void setSelectedDeviceType(ComponentType selectedDeviceType) {
-        this.selectedDeviceType = selectedDeviceType;
+    /** @param selectedDeviceTypes the selectedDeviceTypes to set */
+    public void setSelectedDeviceTypes(List<ComponentType> selectedDeviceTypes) {
+        this.selectedDeviceTypes = selectedDeviceTypes;
     }
 
-    /**
-     * @return Returns the reference to the device type displayed in the row the user clicked the action for.
-     * @see ComponentTypeManager#getSelectedDeviceTypeForLog()
-     */
-    public ComponentType getSelectedDeviceTypeForLog() {
-        return selectedDeviceType;
-    }
-    /** Sets the same reference as {@link #setSelectedDeviceType(ComponentType)} plus addition data required for audit
-     * log display.
-     * @param selectedDeviceType When the user clicks on the "pencil" action in the "Action" column of the table
-     * listing all the device type, this method stores the reference to the device type displayed in that table row.
-     */
-    public void setSelectedDeviceTypeForLog(ComponentType selectedDeviceType) {
-        this.selectedDeviceType = selectedDeviceType;
-        auditRecordsForEntity = auditRecordEJB.findByEntityIdAndType(selectedDeviceType.getId(),
-                                                                                EntityType.COMPONENT_TYPE);
-        RequestContext.getCurrentInstance().update("deviceTypeLogForm:deviceTypeLog");
-    }
-
-    /**
-     * @return The list of {@link AuditRecord} entries for selected entity.
-     * @see ComponentTypeManager#setSelectedDeviceTypeForLog(ComponentType)
-     */
-    public List<AuditRecord> getAuditRecordsForEntity() {
-        return auditRecordsForEntity;
+    /** @return the {@link List} of used device types */
+    public List<ComponentType> getUsedDeviceTypes() {
+        return usedDeviceTypes;
     }
 
     /** @return The name of the device type the user is adding or modifying. Used in the UI dialog. */

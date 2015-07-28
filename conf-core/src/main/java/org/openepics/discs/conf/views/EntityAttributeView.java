@@ -24,6 +24,7 @@ import javax.annotation.Nullable;
 import org.openepics.discs.conf.ent.Artifact;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.DataType;
+import org.openepics.discs.conf.ent.NamedEntity;
 import org.openepics.discs.conf.ent.PropertyValue;
 import org.openepics.discs.conf.ent.Tag;
 import org.openepics.discs.conf.ent.Unit;
@@ -45,7 +46,8 @@ import com.google.common.base.Preconditions;
  */
 public class EntityAttributeView {
     private String id;
-    private String parent;
+    private String parentName;
+    private Long parentId;
     private String name;
     @Nullable private DataType type;
     @Nullable private Unit unit;
@@ -59,14 +61,17 @@ public class EntityAttributeView {
     /** Construct a new UI view object based on the database entity
      * @param entity the database entity
      * @param kind database entity kind {@link EntityAttributeViewKind}
-     * @param parent the name/id of the parent entity for this attribute
+     * @param parent the named entity parent for this attribute
      */
-    public EntityAttributeView(Object entity, EntityAttributeViewKind kind, @Nullable String parent ) {
+    public EntityAttributeView(Object entity, EntityAttributeViewKind kind, @Nullable NamedEntity parent) {
         Preconditions.checkNotNull(kind);
         this.entity = entity;
         setParameters();
         this.kind = kind;
-        this.parent = parent;
+        if (parent != null) {
+            this.parentName = parent.getName();
+            this.parentId = parent.getId();
+        }
     }
 
 
@@ -77,6 +82,20 @@ public class EntityAttributeView {
     public EntityAttributeView(Object entity, EntityAttributeViewKind kind) {
         this(entity, kind, null);
     }
+
+    /** Construct a new UI view object based on the database entity. The entity kind {@link EntityAttributeViewKind} is
+     * determined automatically based on the type of the <code>entity</code>.
+     * @param entity the database entity
+     * @param parent the named entity parent for this attribute
+     */
+    public EntityAttributeView(Object entity, @Nullable NamedEntity parent) {
+        this(entity);
+        if (parent != null) {
+            this.parentName = parent.getName();
+            this.parentId = parent.getId();
+        }
+    }
+
 
     /** Construct a new UI view object based on the database entity. The entity kind {@link EntityAttributeViewKind} is
      * determined automatically based on the type of the <code>entity</code>.
@@ -187,6 +206,10 @@ public class EntityAttributeView {
     }
 
     public String getParent() {
-        return parent;
+        return parentName;
+    }
+
+    public Long getParentId() {
+        return parentId;
     }
 }

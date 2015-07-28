@@ -25,7 +25,10 @@ import javax.ejb.Stateless;
 
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
+import org.openepics.discs.conf.ent.ConfigurationEntity;
+import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.PropertyValue;
+import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.util.PropertyValueNotUniqueException;
 
 import com.google.common.base.Preconditions;
@@ -42,8 +45,7 @@ import com.google.common.base.Preconditions;
 public class ComptypeEJB extends DAO<ComponentType> {
     /**
      * @return A list of all device types ordered by name.
-     */
-    public List<ComponentType> findComponentTypeOrderedByName() {
+     */    public List<ComponentType> findComponentTypeOrderedByName() {
         return em.createNamedQuery("ComponentType.findAllOrdered", ComponentType.class).getResultList();
     }
 
@@ -81,5 +83,35 @@ public class ComptypeEJB extends DAO<ComponentType> {
     public void checkPropertyValueUnique(final ComptypePropertyValue pv) {
         Preconditions.checkNotNull(pv);
         uniquePropertyValueCheck(pv, (ComponentType)pv.getPropertiesParent());
+    }
+
+    /**
+     * @param compType the device type to search for
+     * @return <code>true</code> if the device type is used in the database, <code>false</code> otherwise
+     */
+    public boolean isComponentTypeUsed(final ComponentType compType) {
+        List<? extends ConfigurationEntity> entitiesWithComponentType =
+                em.createNamedQuery("Slot.findByComponentType", Slot.class).setParameter("componentType", compType)
+                    .setMaxResults(1).getResultList();
+        if (entitiesWithComponentType.isEmpty()) {
+            entitiesWithComponentType = em.createNamedQuery("Device.findByComponentType", Device.class)
+                        .setParameter("componentType", compType).setMaxResults(1).getResultList();
+            if (entitiesWithComponentType.isEmpty()) {
+                // utility join table, not part of the model, native query needs to be used.
+                long uses = ((Number)
+                        em.createNativeQuery("SELECT COUNT(1) FROM filter_by_type WHERE type_id = ? LIMIT 1;")
+                            .setParameter(1, compType.getId()).getSingleResult()).longValue();
+                if (uses == 0) {
+                    // two columns need to be checked with as single query. Native query needs to be used.
+                    uses = ((Number)
+                            em.createNativeQuery("SELECT COUNT(1) FROM comptype_asm "
+                                    + "WHERE child_type = ? OR parent_type = ? LIMIT 1")
+                                    .setParameter(1, compType.getId()).setParameter(2, compType.getId())
+                                    .getSingleResult()).longValue();
+                    return (uses != 0);
+                }
+            }
+        }
+        return true;
     }
 }

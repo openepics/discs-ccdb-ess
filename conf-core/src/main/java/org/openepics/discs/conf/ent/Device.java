@@ -64,7 +64,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 })
 
 public class Device extends ConfigurationEntity
-    implements EntityWithProperties, EntityWithArtifacts {
+    implements EntityWithProperties, EntityWithArtifacts, NamedEntity {
 
     private static final long serialVersionUID = 113778637670841841L;
     @Basic(optional = false)
@@ -214,6 +214,11 @@ public class Device extends ConfigurationEntity
     @Override
     public String toString() {
         return "Device[ deviceId=" + id + " ]";
+    }
+
+    @Override
+    public String getName() {
+        return serialNumber;
     }
 
 }

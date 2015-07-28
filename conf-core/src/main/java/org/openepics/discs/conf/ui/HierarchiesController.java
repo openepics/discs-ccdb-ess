@@ -165,7 +165,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     private TreeNode rootNode;
     private TreeNode powersRootNode;
     private TreeNode controlsRootNode;
-    private List<TreeNode>selectedNodes;
+    private List<TreeNode> selectedNodes;
     /** <code>selectedSlot</code> is only initialized when there is only one node in the tree selected */
     private Slot selectedSlot;
     /** <code>selectedSlotView</code> is only initialized when there is only one node in the tree selected */
@@ -342,7 +342,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
                     attributesIter.set(new EntityAttributeView(propertyValue, slot.isHostingSlot()
                             ? EntityAttributeViewKind.INSTALL_SLOT_PROPERTY
                                     : EntityAttributeViewKind.CONTAINER_SLOT_PROPERTY,
-                            slot.getName()));
+                            slot));
                     return;
                 }
 
@@ -365,7 +365,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         //   the last attribute for this parent (no artifacts and tags), or the very last attribute in the entire table
         attributesIter.add(new EntityAttributeView(propertyValue, slot.isHostingSlot()
                 ? EntityAttributeViewKind.INSTALL_SLOT_PROPERTY : EntityAttributeViewKind.CONTAINER_SLOT_PROPERTY,
-                slot.getName()));
+                slot));
     }
 
     private void refreshAttributeList(final Slot slot, final Tag tag) {
@@ -385,8 +385,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         // the insertion pointer is at the right spot. This is either the last attribute for this parent,
         //     or the very last attribute in the entire table
         attributesIter.add(new EntityAttributeView(tag,  slot.isHostingSlot()
-                ? EntityAttributeViewKind.INSTALL_SLOT_TAG : EntityAttributeViewKind.CONTAINER_SLOT_TAG,
-                slot.getName()));
+                ? EntityAttributeViewKind.INSTALL_SLOT_TAG : EntityAttributeViewKind.CONTAINER_SLOT_TAG, slot));
     }
 
     private void refreshAttributeList(final Slot slot, final SlotArtifact artifact) {
@@ -404,8 +403,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
                     // found the existing artifact, update it and exit!
                     attributesIter.set(new EntityAttributeView(artifact, slot.isHostingSlot()
                             ? EntityAttributeViewKind.INSTALL_SLOT_ARTIFACT
-                                    : EntityAttributeViewKind.CONTAINER_SLOT_ARTIFACT,
-                            slot.getName()));
+                                    : EntityAttributeViewKind.CONTAINER_SLOT_ARTIFACT, slot));
                     return;
                 }
 
@@ -428,7 +426,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         //     the last attribute for this parent (no tags), or the very last attribute in the entire table
         attributesIter.add(new EntityAttributeView(artifact, slot.isHostingSlot()
                 ? EntityAttributeViewKind.INSTALL_SLOT_ARTIFACT : EntityAttributeViewKind.CONTAINER_SLOT_ARTIFACT,
-                slot.getName()));
+                slot));
     }
 
     private void removeRelatedAttributes(Slot slot) {
@@ -447,8 +445,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
         for (final ComptypePropertyValue value : slot.getComponentType().getComptypePropertyList()) {
             if (!value.isPropertyDefinition()) {
-                attributes.add(new EntityAttributeView(value, EntityAttributeViewKind.DEVICE_TYPE_PROPERTY,
-                                                            slot.getName()));
+                attributes.add(new EntityAttributeView(value, EntityAttributeViewKind.DEVICE_TYPE_PROPERTY, slot));
             }
         }
 
@@ -456,14 +453,14 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             attributes.add(new EntityAttributeView(value, isHostingSlot
                                                             ? EntityAttributeViewKind.INSTALL_SLOT_PROPERTY
                                                             : EntityAttributeViewKind.CONTAINER_SLOT_PROPERTY,
-                                                            slot.getName()));
+                                                            slot));
         }
 
         if (installedDevice != null) {
             for (final DevicePropertyValue devicePropertyValue : installedDevice.getDevicePropertyList()) {
                 attributes.add(new EntityAttributeView(devicePropertyValue,
                                                             EntityAttributeViewKind.DEVICE_PROPERTY,
-                                                            slot.getName()));
+                                                            slot));
             }
         }
     }
@@ -473,22 +470,20 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         final Device installedDevice = getInstalledDevice();
 
         for (final ComptypeArtifact artifact : slot.getComponentType().getComptypeArtifactList()) {
-            attributes.add(new EntityAttributeView(artifact, EntityAttributeViewKind.DEVICE_TYPE_ARTIFACT,
-                                                            slot.getName()));
+            attributes.add(new EntityAttributeView(artifact, EntityAttributeViewKind.DEVICE_TYPE_ARTIFACT, slot));
         }
 
         for (final SlotArtifact artifact : slot.getSlotArtifactList()) {
             attributes.add(new EntityAttributeView(artifact, isHostingSlot
                                                             ? EntityAttributeViewKind.INSTALL_SLOT_ARTIFACT
                                                             : EntityAttributeViewKind.CONTAINER_SLOT_ARTIFACT,
-                                                            slot.getName()));
+                                                            slot));
         }
 
         if (installedDevice != null) {
             for (final DeviceArtifact deviceArtifact : installedDevice.getDeviceArtifactList()) {
                 attributes.add(new EntityAttributeView(deviceArtifact,
-                                                            EntityAttributeViewKind.DEVICE_ARTIFACT,
-                                                            slot.getName()));
+                                                            EntityAttributeViewKind.DEVICE_ARTIFACT, slot));
             }
         }
     }
@@ -498,21 +493,19 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         final Device installedDevice = getInstalledDevice();
 
         for (final Tag tagInstance : slot.getComponentType().getTags()) {
-            attributes.add(new EntityAttributeView(tagInstance, EntityAttributeViewKind.DEVICE_TYPE_TAG,
-                                                            slot.getName()));
+            attributes.add(new EntityAttributeView(tagInstance, EntityAttributeViewKind.DEVICE_TYPE_TAG, slot));
         }
 
         for (final Tag tagInstance : slot.getTags()) {
             attributes.add(new EntityAttributeView(tagInstance, isHostingSlot
                                                             ? EntityAttributeViewKind.INSTALL_SLOT_TAG
                                                             : EntityAttributeViewKind.CONTAINER_SLOT_TAG,
-                                                            slot.getName()));
+                                                            slot));
         }
 
         if (installedDevice != null) {
             for (final Tag tagInstance : installedDevice.getTags()) {
-                attributes.add(new EntityAttributeView(tagInstance, EntityAttributeViewKind.DEVICE_TAG,
-                                                            slot.getName()));
+                attributes.add(new EntityAttributeView(tagInstance, EntityAttributeViewKind.DEVICE_TAG, slot));
             }
         }
     }

@@ -41,7 +41,7 @@ import com.google.common.base.Preconditions;
  */
 @Entity
 @Table(name = "report")
-public class Report extends ConfigurationEntity {
+public class Report extends ConfigurationEntity implements NamedEntity {
     private static final long serialVersionUID = 891891512813117709L;
 
     @Basic(optional = false)
@@ -66,6 +66,7 @@ public class Report extends ConfigurationEntity {
         this.name = Preconditions.checkNotNull(name);
     }
 
+    @Override
     public String getName() {
         return name;
     }

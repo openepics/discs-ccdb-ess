@@ -40,6 +40,8 @@ import org.openepics.discs.conf.ui.common.UIException;
 import org.openepics.discs.conf.views.EntityAttributeView;
 import org.openepics.discs.conf.views.EntityAttributeViewKind;
 
+import com.google.common.base.Preconditions;
+
 /**
  * Controller bean for manipulation of {@link Device} attributes
  *
@@ -55,6 +57,7 @@ public class DeviceDetailsAttributesController extends
     @Inject private transient DeviceEJB deviceEJB;
 
     private Device device;
+    private Device tagParent;
 
     @PostConstruct
     public void init() {
@@ -79,6 +82,7 @@ public class DeviceDetailsAttributesController extends
 
     @Override
     protected void setTagParent(Tag tag) {
+        Preconditions.checkNotNull(device);
         final Set<Tag> existingTags = device.getTags();
         if (!existingTags.contains(tag)) {
             existingTags.add(tag);
@@ -116,11 +120,17 @@ public class DeviceDetailsAttributesController extends
     }
 
     @Override
+    protected void setTagParentForOperations(Long parentId) {
+        Preconditions.checkNotNull(parentId);
+        tagParent = deviceEJB.findById(parentId);
+        device = tagParent;
+    }
+
+    @Override
     protected void deleteTagFromParent(Tag tag) {
-        // refresh the device from database. This refreshes all related collections as well.
-        device = deviceEJB.findById(device.getId());
-        device.getTags().remove(tag);
-        deviceEJB.save(device);
+        Preconditions.checkNotNull(tagParent);
+        tagParent.getTags().remove(tag);
+        deviceEJB.save(tagParent);
     }
 
     @Override
@@ -137,28 +147,30 @@ public class DeviceDetailsAttributesController extends
 
         for (final ComptypePropertyValue parentProp : parentProperties) {
             if (parentProp.getPropValue() != null) {
-                attributes.add(new EntityAttributeView(parentProp, EntityAttributeViewKind.DEVICE_TYPE_PROPERTY));
+                attributes.add(new EntityAttributeView(parentProp, EntityAttributeViewKind.DEVICE_TYPE_PROPERTY,
+                                                                            device));
             }
         }
 
         for (final ComptypeArtifact parentArtifact : parentArtifacts) {
-            attributes.add(new EntityAttributeView(parentArtifact, EntityAttributeViewKind.DEVICE_TYPE_ARTIFACT));
+            attributes.add(new EntityAttributeView(parentArtifact, EntityAttributeViewKind.DEVICE_TYPE_ARTIFACT,
+                                                                            device));
         }
 
         for (final Tag parentTag : parentTags) {
-            attributes.add(new EntityAttributeView(parentTag, EntityAttributeViewKind.DEVICE_TYPE_TAG));
+            attributes.add(new EntityAttributeView(parentTag, EntityAttributeViewKind.DEVICE_TYPE_TAG, device));
         }
 
         for (final DevicePropertyValue propVal : device.getDevicePropertyList()) {
-            attributes.add(new EntityAttributeView(propVal, EntityAttributeViewKind.DEVICE_PROPERTY));
+            attributes.add(new EntityAttributeView(propVal, EntityAttributeViewKind.DEVICE_PROPERTY, device));
         }
 
         for (final DeviceArtifact artf : device.getDeviceArtifactList()) {
-            attributes.add(new EntityAttributeView(artf, EntityAttributeViewKind.DEVICE_ARTIFACT));
+            attributes.add(new EntityAttributeView(artf, EntityAttributeViewKind.DEVICE_ARTIFACT, device));
         }
 
         for (final Tag tagAttr : device.getTags()) {
-            attributes.add(new EntityAttributeView(tagAttr, EntityAttributeViewKind.DEVICE_TAG));
+            attributes.add(new EntityAttributeView(tagAttr, EntityAttributeViewKind.DEVICE_TAG, device));
         }
     }
 

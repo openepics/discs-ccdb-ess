@@ -93,7 +93,7 @@ public class DeviceEntityLogger implements EntityLogger<Device> {
 
         return ImmutableList.of(new AuditLogUtil(device)
                                 .removeTopProperties(Arrays.asList("id", "modifiedAt", "modifiedBy",
-                                        "version", "serialNumber", "componentType"))
+                                        "version", "serialNumber", "componentType", "name"))
                                 .addStringProperty("componentType",
                                         device.getComponentType() != null ? device.getComponentType().getName() : null)
                                 .addArrayOfMappedProperties("installation", installationSlotMap)

@@ -35,7 +35,7 @@ import javax.validation.constraints.Size;
  */
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public abstract class Artifact extends ConfigurationEntity {
+public abstract class Artifact extends ConfigurationEntity implements NamedEntity {
 
     private static final long serialVersionUID = 2926588619140123269L;
 
@@ -76,6 +76,7 @@ public abstract class Artifact extends ConfigurationEntity {
         this.uri = uri;
     }
 
+    @Override
     public String getName() {
         return name;
     }

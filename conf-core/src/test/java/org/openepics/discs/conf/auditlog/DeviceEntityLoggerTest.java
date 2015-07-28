@@ -19,7 +19,7 @@
  */
 package org.openepics.discs.conf.auditlog;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -59,7 +59,7 @@ public class DeviceEntityLoggerTest {
 
     @Test
     public void testGetType() {
-        assertTrue(Device.class.equals(deviceEntityLogger.getType()));
+        assertEquals(Device.class, deviceEntityLogger.getType());
     }
 
     @Test
@@ -68,6 +68,6 @@ public class DeviceEntityLoggerTest {
                 + "[{\"APERTURE\":\"20\"},{\"DETER\":\"10\"}],\"deviceArtifactList\":"
                 + "[{\"CAT Image\":\"/var/usr/images/CAT\"},{\"Manual\":\"www.deteriorator.com/user-manual\"}]}";
 
-        assertTrue(RESULT.equals(deviceEntityLogger.auditEntries(device, EntityTypeOperation.CREATE).get(0).getEntry()));
+        assertEquals(RESULT, deviceEntityLogger.auditEntries(device, EntityTypeOperation.CREATE).get(0).getEntry());
     }
 }

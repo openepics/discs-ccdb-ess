@@ -20,6 +20,11 @@
                 tableStyle="table-layout: fixed; word-wrap: break-word; width: 100%;" widgetVar="attributesDataTable">
             <p:ajax event="rowSelect" update="#{cc.attrs.updateButtons}" />
             <p:ajax event="rowUnselect" update="#{cc.attrs.updateButtons}" />
+
+            <p:column headerText="Parent" sortBy="#{attribute.parent}" filterBy="#{attribute.parent}" 
+                    filterMatchMode="contains" filterStyle="max-width: 90%;">
+                <h:outputText value="#{attribute.parent}" />
+            </p:column>
             
             <p:column headerText="Name" sortBy="#{attribute.name}" filterBy="#{attribute.name}" 
                     filterMatchMode="contains" filterStyle="max-width: 90%;">

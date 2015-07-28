@@ -264,7 +264,8 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
         selectedUnits = null;
         usedUnits = null;
         refreshUnits();
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Deleted " + deletedUnits + " units.");
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+                "Deleted " + deletedUnits + " units.");
     }
 
     /**

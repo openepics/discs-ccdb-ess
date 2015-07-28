@@ -313,7 +313,8 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
         selectedProperties = null;
         usedProperties = null;
         init();
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Deleted " + deletedProperties + " properties.");
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+                "Deleted " + deletedProperties + " properties.");
     }
 
     /** @return The list of filtered properties used by the PrimeFaces filter field */

@@ -34,6 +34,7 @@ import javax.faces.validator.ValidatorException;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.servlet.http.HttpServletRequest;
 
 import org.openepics.discs.conf.ejb.ComptypeEJB;
 import org.openepics.discs.conf.ejb.DAO;
@@ -52,8 +53,12 @@ import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.ent.Tag;
 import org.openepics.discs.conf.ent.values.Value;
+import org.openepics.discs.conf.export.ExportTable;
 import org.openepics.discs.conf.ui.common.AbstractAttributesController;
+import org.openepics.discs.conf.ui.common.AbstractComptypeAttributesController;
 import org.openepics.discs.conf.ui.common.UIException;
+import org.openepics.discs.conf.ui.export.ExportSimpleTableDialog;
+import org.openepics.discs.conf.ui.export.SimpleTableExporter;
 import org.openepics.discs.conf.util.Conversion;
 import org.openepics.discs.conf.util.PropertyValueNotUniqueException;
 import org.openepics.discs.conf.util.PropertyValueUIElement;
@@ -62,21 +67,24 @@ import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.views.EntityAttributeView;
 import org.openepics.discs.conf.views.EntityAttributeViewKind;
 import org.openepics.discs.conf.views.MultiPropertyValueView;
+import org.primefaces.context.RequestContext;
 import org.primefaces.event.CellEditEvent;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
 /**
  * Controller bean for manipulation of {@link ComponentType} attributes
  *
- * @author <a href="mailto:andraz.pozar@cosylab.com">Andraž Požar</a>
+ * @author vuppala
+ * @author <a href="mailto:miroslav.pavleski@cosylab.com">Miroslav Pavleski</a>
  * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
- *
+ * @author <a href="mailto:andraz.pozar@cosylab.com">Andraž Požar</a>
  */
 @Named
 @ViewScoped
-public class ComptypeAttributesController extends AbstractAttributesController<ComptypePropertyValue, ComptypeArtifact> {
+public class ComptypeAttributesController extends AbstractComptypeAttributesController implements SimpleTableExporter {
     private static final long serialVersionUID = 1156974438243970794L;
 
     private static final Logger LOGGER = Logger.getLogger(ComptypeAttributesController.class.getCanonicalName());
@@ -92,14 +100,73 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
     private transient List<MultiPropertyValueView> selectionPropertyValuesFiltered;
     private boolean selectAllRows;
 
+    private List<ComponentType> deviceTypes;
+    private List<ComponentType> filteredDeviceTypes;
+    private List<ComponentType> selectedDeviceTypes;
+    private List<ComponentType> usedDeviceTypes;
+    private String name;
+    private String description;
+
+    private ExportSimpleTableDialog simpleTableExporterDialog;
+
+    private class ExportSimpleDevTypeTableDialog extends ExportSimpleTableDialog {
+        @Override
+        protected String getTableName() {
+            return "Device types";
+        }
+
+        @Override
+        protected String getFileName() {
+            return "device-types";
+        }
+
+        @Override
+        protected void addHeaderRow(ExportTable exportTable) {
+            exportTable.addHeaderRow("Name", "Description");
+        }
+
+        @Override
+        protected void addData(ExportTable exportTable) {
+            final List<ComponentType> exportData = filteredDeviceTypes == null || filteredDeviceTypes.isEmpty()
+                    ? deviceTypes
+                    : filteredDeviceTypes;
+            for (final ComponentType devType : exportData) {
+                exportTable.addDataRow(devType.getName(), devType.getDescription());
+            }
+        }
+    }
+
+    @Override
     @PostConstruct
     public void init() {
+        final String deviceTypeIdStr = ((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().
+                getRequest()).getParameter("id");
         try {
+            super.init();
+            simpleTableExporterDialog = new ExportSimpleDevTypeTableDialog();
+            deviceTypes = comptypeEJB.findAll();
             setArtifactClass(ComptypeArtifact.class);
             setPropertyValueClass(ComptypePropertyValue.class);
             setDao(comptypeEJB);
+            resetFields();
+
+            if (!Strings.isNullOrEmpty(deviceTypeIdStr)) {
+                final long deviceTypeId = Long.parseLong(deviceTypeIdStr);
+                int elementPosition = 0;
+                for (final ComponentType deviceType : deviceTypes) {
+                    if (deviceType.getId() == deviceTypeId) {
+                        RequestContext.getCurrentInstance().execute("selectEntityInTable(" + elementPosition
+                                + ", 'deviceTypeTableVar');");
+                        return;
+                    }
+                    ++elementPosition;
+                }
+            }
+        } catch (NumberFormatException e) {
+            // just log
+            LOGGER.log(Level.WARNING, "URL contained strange device type ID: " + deviceTypeIdStr);
         } catch(Exception e) {
-            throw new UIException("Device type details display initialization fialed: " + e.getMessage(), e);
+            throw new UIException("Device type display initialization fialed: " + e.getMessage(), e);
         }
     }
 
@@ -189,20 +256,26 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
 
     @Override
     protected void populateAttributesList() {
+        Preconditions.checkNotNull(selectedDeviceTypes);
         attributes = new ArrayList<>();
-        // refresh the component type from database. This refreshes all related collections as well.
-        compType = comptypeEJB.findById(compType.getId());
 
-        for (final ComptypePropertyValue prop : compType.getComptypePropertyList()) {
-            attributes.add(new EntityAttributeView(prop));
-        }
+        for (final ComponentType selectedMember : selectedDeviceTypes) {
+            // refresh the component type from database. This refreshes all related collections as well.
+            final ComponentType freshComponentType = comptypeEJB.findById(selectedMember.getId());
 
-        for (final ComptypeArtifact art : compType.getComptypeArtifactList()) {
-            attributes.add(new EntityAttributeView(art, EntityAttributeViewKind.DEVICE_TYPE_ARTIFACT));
-        }
+            for (final ComptypePropertyValue prop : freshComponentType.getComptypePropertyList()) {
+                attributes.add(new EntityAttributeView(prop, freshComponentType));
+            }
 
-        for (final Tag tagAttr : compType.getTags()) {
-            attributes.add(new EntityAttributeView(tagAttr, EntityAttributeViewKind.DEVICE_TYPE_TAG));
+            for (final ComptypeArtifact art : freshComponentType.getComptypeArtifactList()) {
+                attributes.add(new EntityAttributeView(art, EntityAttributeViewKind.DEVICE_TYPE_ARTIFACT,
+                                                            freshComponentType));
+            }
+
+            for (final Tag tagAttr : freshComponentType.getTags()) {
+                attributes.add(new EntityAttributeView(tagAttr, EntityAttributeViewKind.DEVICE_TYPE_TAG,
+                                                            freshComponentType));
+            }
         }
     }
 
@@ -221,42 +294,39 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
         filteredProperties = propertyCandidates;
     }
 
-    /**
-     * Returns {@link ComponentType} for which attributes are being manipulated
-     * @return the {@link ComponentType}
-     */
-    public ComponentType getDeviceType() {
-        return compType;
-    }
-
-    /** @param deviceType the device type the user selected */
-    public void prepareDeviceType(ComponentType deviceType) {
-        compType = deviceType;
-        selectedAttributes = null;
-        populateAttributesList();
-        filterProperties();
-    }
-
-    /** Called when a user deselects a device type */
-    public void clearDeviceType() {
-        compType = null;
-        attributes = null;
-        filteredProperties = null;
-        selectedAttributes = null;
+    /** Called when user selects a row */
+    public void onRowSelect() {
+        if (selectedDeviceTypes != null && !selectedDeviceTypes.isEmpty()) {
+            // selectedDeviceTypes = getFreshTypes(deviceTypes);
+            if (selectedDeviceTypes.size() == 1) {
+                compType = comptypeEJB.findById(selectedDeviceTypes.get(0).getId());
+            } else {
+                compType = null;
+            }
+            selectedAttributes = null;
+            filteredAttributes = null;
+            populateAttributesList();
+        } else {
+            clearDeviceTypeRelatedInformation();
+        }
     }
 
     @Override
     protected void setPropertyValueParent(ComptypePropertyValue child) {
+        compType = comptypeEJB.findById(compType.getId());
         child.setComponentType(compType);
     }
 
     @Override
     protected void setArtifactParent(ComptypeArtifact child) {
+        compType = comptypeEJB.findById(compType.getId());
         child.setComponentType(compType);
     }
 
     @Override
     protected void setTagParent(Tag tag) {
+        Preconditions.checkNotNull(compType);
+        compType = comptypeEJB.findById(compType.getId());
         final Set<Tag> existingTags = compType.getTags();
         if (!existingTags.contains(tag)) {
             existingTags.add(tag);
@@ -265,8 +335,15 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
     }
 
     @Override
+    protected void setTagParentForOperations(Long parentId) {
+        Preconditions.checkNotNull(parentId);
+        Preconditions.checkNotNull(compType);
+        compType = comptypeEJB.findById(parentId);
+    }
+
+    @Override
     protected void deleteTagFromParent(Tag tag) {
-        // refresh the component type from database. This refreshes all related collections as well.
+        Preconditions.checkNotNull(compType);
         compType = comptypeEJB.findById(compType.getId());
         compType.getTags().remove(tag);
         comptypeEJB.save(compType);
@@ -538,5 +615,185 @@ public class ComptypeAttributesController extends AbstractAttributesController<C
             compType = comptypeEJB.findById(compType.getId());
         }
         populateAttributesList();
+    }
+
+    private void clearDeviceTypeRelatedInformation() {
+        selectedDeviceTypes = null;
+        filteredDeviceTypes = null;
+        compType = null;
+        attributes = null;
+        filteredAttributes = null;
+        filteredProperties = null;
+        selectedAttributes = null;
+    }
+
+    // ---------------------------------------------------------------------------------------------------------
+    //
+    //      Old ComponentTypeManager methods
+    //
+    // ---------------------------------------------------------------------------------------------------------
+
+    /** Prepares the UI data for the "Add a new device type" dialog. */
+    public void prepareAddPopup() {
+        resetFields();
+        RequestContext.getCurrentInstance().update("addDeviceTypeForm:addDeviceType");
+    }
+
+    @Override
+    public void resetFields() {
+        super.resetFields();
+        name = null;
+        description = null;
+    }
+
+    /** Called when the user presses the "Save" button in the "Add a new device type" dialog. */
+    public void onAdd() {
+        final ComponentType componentTypeToAdd = new ComponentType(name);
+        componentTypeToAdd.setDescription(description);
+        try {
+            comptypeEJB.add(componentTypeToAdd);
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+                    "New device type has been created");
+        } catch (Exception e) {
+            if (Utility.causedByPersistenceException(e)) {
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
+                        "Device type could not be added because a device type instance with same name already exists.");
+            } else {
+                throw e;
+            }
+        } finally {
+            deviceTypes = comptypeEJB.findAll();
+        }
+    }
+
+    /** Prepares the data for the device type editing dialog fields based on the selected device type. */
+    public void prepareEditPopup() {
+        Preconditions.checkState(isSingleDeviceTypeSelected());
+        name = compType.getName();
+        description = compType.getDescription();
+    }
+
+    /** Saves the new device type data (name and/or description) */
+    public void onChange() {
+        Preconditions.checkNotNull(compType);
+        compType.setName(name);
+        compType.setDescription(description);
+        try {
+            comptypeEJB.save(compType);
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+                    "Device type updated");
+        } catch (Exception e) {
+            if (Utility.causedByPersistenceException(e)) {
+                Utility.showMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
+                        "Device type could not be modified because a device type instance with same name already exists.");
+            } else {
+                throw e;
+            }
+        } finally {
+            compType = comptypeEJB.findById(compType.getId());
+            deviceTypes = comptypeEJB.findAll();
+        }
+    }
+
+    /**
+     * The method builds a list of device types that are already used. If the list is not empty, it is displayed
+     * to the user and the user is prevented from deleting them.
+     */
+    public void checkDeviceTypesForDeletion() {
+        Preconditions.checkNotNull(selectedDeviceTypes);
+        Preconditions.checkState(!selectedDeviceTypes.isEmpty());
+
+        usedDeviceTypes = Lists.newArrayList();
+        for (final ComponentType deviceTypeToDelete : selectedDeviceTypes) {
+            if (comptypeEJB.isComponentTypeUsed(deviceTypeToDelete)) {
+                usedDeviceTypes.add(deviceTypeToDelete);
+            }
+        }
+    }
+
+    /** Called when the user presses the "Delete" button under table listing the devices types. */
+    public void onDelete() {
+        Preconditions.checkNotNull(selectedDeviceTypes);
+        Preconditions.checkState(!selectedDeviceTypes.isEmpty());
+        Preconditions.checkNotNull(usedDeviceTypes);
+        Preconditions.checkState(usedDeviceTypes.isEmpty());
+
+        int deletedDeviceTypes = 0;
+        for (final ComponentType deviceTypeToDelete : selectedDeviceTypes) {
+            final ComponentType freshEntity = comptypeEJB.findById(deviceTypeToDelete.getId());
+            freshEntity.getTags().clear();
+            comptypeEJB.delete(freshEntity);
+            ++deletedDeviceTypes;
+        }
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+                "Deleted " + deletedDeviceTypes + " device types.");
+        clearDeviceTypeRelatedInformation();
+        deviceTypes = comptypeEJB.findAll();
+    }
+
+    /** @return <code>true</code> if a single device type is selected , <code>false</code> otherwise */
+    public boolean isSingleDeviceTypeSelected() {
+        return (selectedDeviceTypes != null) && (selectedDeviceTypes.size() == 1);
+    }
+
+    @Override
+    public void doImport() {
+        super.doImport();
+        deviceTypes = comptypeEJB.findAll();
+    }
+
+    // -------------------- Getters and Setters ---------------------------------------
+
+    /** @return the selectedDeviceTypes */
+    public List<ComponentType> getSelectedDeviceTypes() {
+        return selectedDeviceTypes;
+    }
+    /** @param selectedDeviceTypes the selectedDeviceTypes to set */
+    public void setSelectedDeviceTypes(List<ComponentType> selectedDeviceTypes) {
+        this.selectedDeviceTypes = selectedDeviceTypes;
+    }
+
+    /** @return the {@link List} of used device types */
+    public List<ComponentType> getUsedDeviceTypes() {
+        return usedDeviceTypes;
+    }
+
+    /** @return The name of the device type the user is adding or modifying. Used in the UI dialog. */
+    public String getName() {
+        return name;
+    }
+    /** @param name The name of the device type the user is adding or modifying. Used in the UI dialog. */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /** @return The description of the device type the user is adding or modifying. Used in the UI dialog. */
+    public String getDescription() {
+        return description;
+    }
+    /**
+     * @param description The description of the device type the user is adding or modifying. Used in the UI dialog.
+     */
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    /** @return The list of filtered device types used by the PrimeFaces filter field. */
+    public List<ComponentType> getFilteredDeviceTypes() {
+        return filteredDeviceTypes;
+    }
+    /** @param filteredDeviceTypes The list of filtered device types used by the PrimeFaces filter field. */
+    public void setFilteredDeviceTypes(List<ComponentType> filteredDeviceTypes) {
+        this.filteredDeviceTypes = filteredDeviceTypes;
+    }
+
+    /** @return The list of all device types in the database. */
+    public List<ComponentType> getDeviceTypes() {
+        return deviceTypes;
+    }
+
+    @Override
+    public ExportSimpleTableDialog getSimpleTableDialog() {
+        return simpleTableExporterDialog;
     }
 }

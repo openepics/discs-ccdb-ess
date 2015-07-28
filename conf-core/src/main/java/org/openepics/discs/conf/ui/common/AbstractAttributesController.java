@@ -124,7 +124,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
     protected boolean isArtifactBeingModified;
 
     protected List<EntityAttributeView> attributes;
-    private List<EntityAttributeView> filteredAttributes;
+    protected List<EntityAttributeView> filteredAttributes;
     private final List<SelectItem> attributeKinds = Utility.buildAttributeKinds();
     protected List<EntityAttributeView> selectedAttributes;
     protected List<EntityAttributeView> nonDeletableAttributes;
@@ -194,8 +194,8 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
      * type and property values to already existing installation slots or device instances.
      */
     public void addNewPropertyValueDefs() {
-        for (Property selectedProperty : selectedProperties) {
-            try {
+        try {
+            for (Property selectedProperty : selectedProperties) {
                 final T newPropertyValueInstance = propertyValueClass.newInstance();
                 newPropertyValueInstance.setInRepository(false);
                 newPropertyValueInstance.setProperty(selectedProperty);
@@ -213,10 +213,10 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
                 }
                 dao.addChild(newPropertyValueInstance);
                 addPropertyValueBasedOnDef(newPropertyValueInstance);
-                populateAttributesList();
-            } catch (InstantiationException | IllegalAccessException e) {
-                throw new RuntimeException(e);
             }
+            populateAttributesList();
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -311,6 +311,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
                 deleteArtifact((S) attributeToDelete.getEntity());
             } else if (attributeToDelete.getEntity().getClass().equals(Tag.class)) {
                 final Tag tagAttr = (Tag) attributeToDelete.getEntity();
+                setTagParentForOperations(attributeToDelete.getParentId());
                 deleteTagFromParent(tagAttr);
             } else {
                 throw new UnhandledCaseException();
@@ -322,7 +323,8 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
         selectedAttributes = null;
         nonDeletableAttributes = null;
         internalPopulateAttributesList();
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Success", "Deleted " + deletedAttributes + " attributes.");
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+                "Deleted " + deletedAttributes + " attributes.");
     }
 
     protected void deletePropertyValue(final T propValueToDelete) {
@@ -517,6 +519,8 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
     protected abstract void setPropertyValueParent(T child);
 
     protected abstract void setArtifactParent(S child);
+
+    protected abstract void setTagParentForOperations(Long parentId);
 
     protected abstract void setTagParent(Tag tag);
 
