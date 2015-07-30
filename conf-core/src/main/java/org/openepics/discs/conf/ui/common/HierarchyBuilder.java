@@ -25,6 +25,7 @@ import java.util.ListIterator;
 import javax.annotation.Nullable;
 
 import org.openepics.discs.conf.ejb.InstallationEJB;
+import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.InstallationRecord;
 import org.openepics.discs.conf.ent.Slot;
@@ -48,20 +49,18 @@ public class HierarchyBuilder {
     private ComponentType desiredDeviceType;
     private final SlotView fakeSlotView;
     private final InstallationEJB installationEJB;
+    private final SlotEJB slotEJB;
 
     private TreeFilterMethod filterMethod;
 
-    public HierarchyBuilder() {
-        this(0, null);
-    }
-
-    public HierarchyBuilder(int preloadLimit, InstallationEJB installationEJB) {
+    public HierarchyBuilder(int preloadLimit, InstallationEJB installationEJB, SlotEJB slotEJB) {
         this.relationship = SlotRelationName.CONTAINS;
         this.preloadLimit = preloadLimit;
         this.installationEJB = installationEJB;
+        this.slotEJB = slotEJB;
         final Slot fakeSlot = new Slot("Fake slot", false);
         fakeSlot.setDescription("Fake slot");
-        this.fakeSlotView = new SlotView(fakeSlot, null, 1);
+        this.fakeSlotView = new SlotView(fakeSlot, null, 1, null);
     }
 
     public void setFilterMethod(@Nullable TreeFilterMethod filterMethod) {
@@ -108,7 +107,6 @@ public class HierarchyBuilder {
         final SlotView slotView = (SlotView) node.getData();
         if (!slotView.isInitialzed()) {
             rebuildSubTree(node);
-            slotView.setInitialzed(true);
         }
     }
 
@@ -137,7 +135,7 @@ public class HierarchyBuilder {
                     || ((child.isHostingSlot() && (pairRelationName == relationship))
                         && isSlotAcceptedByFilter(child))) {
                 // 4.b   Add the child
-                final SlotView childSlotView = new SlotView(child, parentSlotView, pair.getSlotOrder());
+                final SlotView childSlotView = new SlotView(child, parentSlotView, pair.getSlotOrder(), slotEJB);
                 addChildToParent(node, childSlotView);
             }
         }
@@ -250,7 +248,8 @@ public class HierarchyBuilder {
                         if (slotView.getLevel() >= preloadLimit) {
                             // add this child properly!
                             slotView.setInitialzed(true);
-                            final SlotView childSlotView = new SlotView(childSlot, slotView, pair.getSlotOrder());
+                            final SlotView childSlotView = new SlotView(childSlot, slotView, pair.getSlotOrder(),
+                                    slotEJB);
                             addChildToParent(node, childSlotView);
                         } else {
                             // the preload limit still not reached. Just add one fake node.
@@ -260,7 +259,7 @@ public class HierarchyBuilder {
                         }
                     } else {
                         // we know that this is an installation slot, since a container is already covered above
-                        final SlotView childSlotView = new SlotView(childSlot, slotView, pair.getSlotOrder());
+                        final SlotView childSlotView = new SlotView(childSlot, slotView, pair.getSlotOrder(), slotEJB);
                         final boolean childContainsFilters = addChildToParent(node, childSlotView);
                         if (!childContainsFilters) {
                             pruneChild(node, childSlotView);

@@ -271,14 +271,6 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         if (selectedSlot != null) {
             selectedSlot = freshSlot;
         }
-        if (selectedSlotView != null) {
-            selectedSlotView.setSlot(freshSlot);
-        }
-        updateTreesWithFreshSlot(freshSlot);
-    }
-
-    private void updateTreesWithFreshSlot(final Slot freshSlot) {
-        updateTreesWithFreshSlot(freshSlot, false);
     }
 
     private void updateTreesWithFreshSlot(final Slot freshSlot, boolean rebuildAffectedSlots) {
@@ -855,13 +847,10 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             final TreeNode parentTreeNode = nodeToRemove.getParent();
             final Slot slotToDelete = ((SlotView) nodeToRemove.getData()).getSlot();
             slotEJB.delete(slotToDelete);
-            // node removed. Refresh the parent
-            final SlotView parentSlotView = (SlotView) parentTreeNode.getData();
-            parentSlotView.setSlot(slotEJB.findById(parentSlotView.getSlot().getId()));
             // update UI data as well
             parentTreeNode.getChildren().remove(nodeToRemove);
             if (parentTreeNode.getChildCount() == 0) {
-                parentSlotView.setDeletable(true);
+                ((SlotView) parentTreeNode.getData()).setDeletable(true);
             }
         }
         Utility.showMessage(FacesMessage.SEVERITY_INFO, "Slots deleted", Integer.toString(numSlotstoDelete)
@@ -884,25 +873,25 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     }
 
     private void initIncludeHierarchy() {
-        hierarchyBuilder = new HierarchyBuilder(3, installationEJB);
-        rootNode = new DefaultTreeNode(new SlotView(slotEJB.getRootNode(), null, 1), null);
+        hierarchyBuilder = new HierarchyBuilder(3, installationEJB, slotEJB);
+        rootNode = new DefaultTreeNode(new SlotView(slotEJB.getRootNode(), null, 1, slotEJB), null);
 
         hierarchyBuilder.rebuildSubTree(rootNode);
     }
 
     private void initPowersHierarchy() {
-        powersHierarchyBuilder = new HierarchyBuilder(3, installationEJB);
+        powersHierarchyBuilder = new HierarchyBuilder(3, installationEJB, slotEJB);
         powersHierarchyBuilder.setRelationship(SlotRelationName.POWERS);
 
-        powersRootNode = new DefaultTreeNode(new SlotView(slotEJB.getRootNode(), null, 1), null);
+        powersRootNode = new DefaultTreeNode(new SlotView(slotEJB.getRootNode(), null, 1, slotEJB), null);
         powersHierarchyBuilder.rebuildSubTree(powersRootNode);
     }
 
     private void initControlsHierarchy() {
-        controlsHierarchyBuilder = new HierarchyBuilder(3, installationEJB);
+        controlsHierarchyBuilder = new HierarchyBuilder(3, installationEJB, slotEJB);
         controlsHierarchyBuilder.setRelationship(SlotRelationName.CONTROLS);
 
-        controlsRootNode = new DefaultTreeNode(new SlotView(slotEJB.getRootNode(), null, 1), null);
+        controlsRootNode = new DefaultTreeNode(new SlotView(slotEJB.getRootNode(), null, 1, slotEJB), null);
         controlsHierarchyBuilder.rebuildSubTree(controlsRootNode);
     }
 
@@ -999,7 +988,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             modifiedSlot.setComponentType(deviceType);
         }
         slotEJB.save(modifiedSlot);
-        selectedSlotView.setSlot(slotEJB.findById(modifiedSlot.getId()));
+        selectedSlotView.setSlot(modifiedSlot);
     }
 
     /** Called to add a new installation slot / container to the database */
@@ -1018,7 +1007,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
         // first update the back-end data
         final SlotView slotViewToUpdate = (SlotView) parentNode.getData();
-        slotViewToUpdate.setSlot(slotEJB.findById(slotViewToUpdate.getSlot().getId()));
+        // slotViewToUpdate.setSlot(slotEJB.findById(slotViewToUpdate.getSlot().getId()));  // TODO remove
         if (selectedSlotView != null) {
             selectedSlotView = slotViewToUpdate;
         }
@@ -1028,7 +1017,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             final List<SlotPair> containsRelation = slotPairEJB.findSlotPairsByParentChildRelation(newSlot.getName(),
                     slotViewToUpdate.getName(), SlotRelationName.CONTAINS);
             final SlotPair newRelation = containsRelation.get(0);
-            final SlotView slotViewToAdd = new SlotView(newSlot, slotViewToUpdate, newRelation.getSlotOrder());
+            final SlotView slotViewToAdd = new SlotView(newSlot, slotViewToUpdate, newRelation.getSlotOrder(), slotEJB);
             hierarchyBuilder.addChildToParent(parentNode, slotViewToAdd);
         } else {
             hierarchyBuilder.rebuildSubTree(parentNode);
@@ -1146,7 +1135,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
     private void moveSlotsToNewParent() {
         final TreeNode newParent = (selectedNodes == null || selectedNodes.isEmpty()) ? rootNode : selectedNodes.get(0);
-        final Slot parentSlot = ((SlotView) newParent.getData()).getSlot();
+        SlotView parentSlotView = (SlotView) newParent.getData();
         for (final ListIterator<TreeNode> clipIterator = clipboardNodes.listIterator(); clipIterator.hasNext(); ) {
             final TreeNode node = clipIterator.next();
             // remove node from clipboard and unmark it
@@ -1159,21 +1148,25 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             }
             // move the node to target
             // create new relation first
-            slotPairEJB.add(new SlotPair(childSlotView.getSlot(), parentSlot,
+            slotPairEJB.add(new SlotPair(childSlotView.getSlot(), parentSlotView.getSlot(),
                                     slotRelationEJB.findBySlotRelationName(SlotRelationName.CONTAINS)));
-            // move in the UI
+            // remove in the UI
             final TreeNode oldParent = node.getParent();
             oldParent.getChildren().remove(node);
-            newParent.getChildren().add(node);
             node.setParent(newParent);
             // remove the old relationship
-            final SlotPair relationToRemove = findExistingPair(((SlotView) oldParent.getData()).getSlot(),
-                                                                    childSlotView.getSlot());
+            final Slot oldParentSlot = ((SlotView) oldParent.getData()).getSlot();
+            updateTreeWithFreshSlot(oldParent, oldParentSlot, false);
+            final SlotPair relationToRemove = findExistingPair(oldParentSlot, childSlotView.getSlot());
             if (relationToRemove != null) {
                 slotPairEJB.delete(relationToRemove);
             }
         }
-        // move the node to target
+        // Refresh the information about the affected slots in all the hierarchy trees
+        hierarchyBuilder. rebuildSubTree(newParent);
+        if (!newParent.equals(rootNode)) {
+            newParent.setExpanded(true);
+        }
     }
 
     private SlotPair findExistingPair(final Slot parent, final Slot child) {

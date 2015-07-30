@@ -19,6 +19,7 @@
  */
 package org.openepics.discs.conf.views;
 
+import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.Slot;
@@ -35,7 +36,6 @@ public class SlotView {
     private String description;
     private boolean isDeletable;
     private final SlotView parentNode;
-    private Slot slot;
     private final boolean isHostingSlot;
     private final ComponentType deviceType;
     private Device installedDevice;
@@ -45,14 +45,15 @@ public class SlotView {
     private boolean isInitialzed;
     private boolean isInClipboard;
     private int level;
+    final private SlotEJB slotEJB;
 
     /** Simpler constructor, used in the new Hierarchy builder.
      * @param slot the {@link Slot} to create the UI view object for
      * @param parentNode a reference to the SlotView object of a parent in the hierarchy tree
      * @param order the ordinal number of the SlotView object - defines the order in the hierarchy tree
+     * @param slotEJB the {@link Slot} Enterprise bean
      */
-    public SlotView(Slot slot, SlotView parentNode, int order) {
-        this.slot = slot;
+    public SlotView(Slot slot, SlotView parentNode, int order, SlotEJB slotEJB) {
         this.name = slot.getName();
         this.description = slot.getDescription();
         this.id = slot.getId();
@@ -61,6 +62,7 @@ public class SlotView {
         this.deviceType = slot.getComponentType();
         this.order = order;
         this.isInClipboard = false;
+        this.slotEJB = slotEJB;
     }
 
     public Long getId() {
@@ -88,14 +90,13 @@ public class SlotView {
     }
 
     public Slot getSlot() {
-        return slot;
+        return slotEJB != null ? slotEJB.findById(id) : null;
     }
 
     /** This method sets the name and description at the same time as the slot.
      * @param slot the slot
      */
     public void setSlot(Slot slot) {
-        this.slot = slot;
         name = slot.getName();
         description = slot.getDescription();
     }
@@ -149,11 +150,11 @@ public class SlotView {
     public void setLevel(int level) {
         this.level = level;
     }
-    
+
     public boolean isInClipboard() {
         return isInClipboard;
     }
-    
+
     public void setInClipboard(final boolean isInClipboard) {
         this.isInClipboard = isInClipboard;
     }
