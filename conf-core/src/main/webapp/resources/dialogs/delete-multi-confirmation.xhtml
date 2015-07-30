@@ -11,9 +11,9 @@
             </f:facet>
             <p:outputPanel style="display: block; width: 30em; margin-bottom: 1.2em;">
                 <h:outputText value="Are you sure you want to delete selected #{entityType}?" 
-                    rendered="#{empty deletePreventionList}" style="margin-bottom: 1ex;" />
+                    rendered="#{empty deletePreventionList}" />
                 <h:outputText value="The selected #{entityType} cannot be deleted, because the following #{entityType} are in use:" 
-                    rendered="#{not empty deletePreventionList}" style="margin-bottom: 1ex;" />
+                    rendered="#{not empty deletePreventionList}" />
             </p:outputPanel>
 
             <p:dataTable value="#{empty deletePreventionList ? deleteList : deletePreventionList}" class="dialogListTable" 

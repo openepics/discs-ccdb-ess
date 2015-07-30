@@ -43,6 +43,7 @@ public class SlotView {
     private boolean isFirst;
     private boolean isLast;
     private boolean isInitialzed;
+    private boolean isInClipboard;
     private int level;
 
     /** Simpler constructor, used in the new Hierarchy builder.
@@ -59,6 +60,7 @@ public class SlotView {
         this.isHostingSlot = slot.isHostingSlot();
         this.deviceType = slot.getComponentType();
         this.order = order;
+        this.isInClipboard = false;
     }
 
     public Long getId() {
@@ -146,5 +148,13 @@ public class SlotView {
 
     public void setLevel(int level) {
         this.level = level;
+    }
+    
+    public boolean isInClipboard() {
+        return isInClipboard;
+    }
+    
+    public void setInClipboard(final boolean isInClipboard) {
+        this.isInClipboard = isInClipboard;
     }
 }

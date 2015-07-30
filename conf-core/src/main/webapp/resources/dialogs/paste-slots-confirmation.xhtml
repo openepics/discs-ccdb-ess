@@ -1,0 +1,36 @@
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html">
+
+    <h:form id="#{formId}">
+        <p:dialog widgetVar="#{widgetName}" id="#{widgetName}" modal="true" resizable="false" dynamic="true"
+                closable="false" class="dialogWithList">
+            <f:facet name="header">
+                <h:outputText value="Paste installation slots and containers" />
+            </f:facet>
+            <p:outputPanel style="display: block; width: 30em; margin-bottom: 1.2em;">
+                <h:outputText value="Are you sure you want paste the lsited slots to the selected target?" 
+                    rendered="#{empty hierarchiesController.pasteErrors}" />
+                <h:outputText value="#{hierarchiesController.pasteErrorReason}" 
+                    rendered="#{not empty hierarchiesController.pasteErrors}" />
+            </p:outputPanel>
+
+            <p:dataTable value="#{empty hierarchiesController.pasteErrors 
+                        ? hierarchiesController.clipboardSlots : hierarchiesController.pasteErrors}" 
+                    class="dialogListTable" var="slot" scrollable="true" style="width: 30em; margin-bottom: 1em;" 
+                    stickyHeader="true">
+                <p:column headerText="Slot name">
+                    <h:outputText value="#{slot.name}" />
+                </p:column>
+            </p:dataTable>
+
+            <p:commandButton value="#{empty hierarchiesController.pasteErrors ? 'No' : 'Close'}" styleClass="dialogButton" 
+                onclick="PF('#{widgetName}').hide(); #{closeDialogActions}" />
+            <p:commandButton value="Yes" styleClass="dialogButton" update="#{formsToUpdate}" 
+                rendered="#{empty hierarchiesController.pasteErrors}" 
+                oncomplete="PF('#{widgetName}').hide(); #{closeDialogActions}" 
+                action="#{hierarchiesController.pasteTreeNodes}" />
+        </p:dialog>
+    </h:form>
+</ui:composition>
