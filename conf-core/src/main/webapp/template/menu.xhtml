@@ -17,13 +17,15 @@
         }
         // ]]>
         </script>
-    
+
         <p:growl id="menumsgs" showDetail="true" />
 
         <p:menubar id="mainMenu" styleClass="menubar">
-        
-            <p:submenu label="Home" icon="ui-icon-home" 
-                    styleClass="#{fn:endsWith(request.requestURL,'home.xhtml') ? 'menu-selected' : ''} homeMenu" >
+
+            <p:menuitem value="Home" title="The main application view" url="/" 
+                rendered="#{not fn:endsWith(request.requestURL,'home.xhtml')}" icon="ui-icon-home" />
+            <p:submenu label="Home" icon="ui-icon-home" rendered="#{fn:endsWith(request.requestURL,'home.xhtml')}" 
+                    styleClass="#{fn:endsWith(request.requestURL,'home.xhtml') ? 'menu-selected' : ''}" >
                 <p:menuitem value="View" title="View Home Screen" styleClass="noClickEvent" url="/" />
 
                 <p:menuitem value="Import" update=":importSlotsForm" styleClass="noClickEvent" 
@@ -37,18 +39,22 @@
                     disabled="#{!securityPolicy.getUIHint('SIGNALS')}" />
             </p:submenu>
 
-            <p:submenu label="Devices" icon="ui-icon-gear" 
-                    styleClass="#{fn:endsWith(request.requestURL,'devices.xhtml') ? 'menu-selected' : ''} devicesMenu">
+            <p:menuitem value="Devices" title="View device instances" url="/devices.xhtml" 
+                rendered="#{not fn:endsWith(request.requestURL,'devices.xhtml')}" icon="ui-icon-gear" />
+            <p:submenu label="Devices" icon="ui-icon-gear"  rendered="#{fn:endsWith(request.requestURL,'devices.xhtml')}" 
+                    styleClass="#{fn:endsWith(request.requestURL,'devices.xhtml') ? 'menu-selected' : ''}">
                 <p:menuitem value="View" title="View Device Instances" styleClass="noClickEvent" url="/devices.xhtml" />
-            
+
                 <p:menuitem value="Import" update=":importDevicesForm" styleClass="noClickEvent" 
                     oncomplete="PF('importDevices').show();" title="Import Device Instances" 
                     actionListener="#{devicesController.prepareImportPopup()}" 
                     disabled="#{!securityPolicy.getUIHint('DEVICE')}" />
             </p:submenu>
 
-            <p:submenu label="Device Types" icon="ui-icon-wrench" 
-                    styleClass="#{fn:endsWith(request.requestURL,'device-types.xhtml') ? 'menu-selected' : ''} devTypesMenu">
+            <p:menuitem value="Device types" title="View device types" url="/device-types.xhtml" 
+                rendered="#{not fn:endsWith(request.requestURL,'device-types.xhtml')}" icon="ui-icon-wrench" />
+            <p:submenu label="Device types" icon="ui-icon-wrench" rendered="#{fn:endsWith(request.requestURL,'device-types.xhtml')}" 
+                    styleClass="#{fn:endsWith(request.requestURL,'device-types.xhtml') ? 'menu-selected' : ''}">
                 <p:menuitem value="View" title="View Device Types" styleClass="noClickEvent" url="/device-types.xhtml" />
 
                 <p:menuitem value="Import" update=":importCompTypesForm" styleClass="noClickEvent" 
@@ -56,9 +62,11 @@
                     actionListener="#{componentTypeManager.prepareImportPopup()}" 
                     disabled="#{!securityPolicy.getUIHint('COMPONENT_TYPE')}" />
             </p:submenu>
-            
-            <p:submenu label="Properties" icon="ui-icon-contact" 
-                    styleClass="#{fn:endsWith(request.requestURL,'properties.xhtml') ? 'menu-selected' : ''} propertiesMenu">
+
+            <p:menuitem value="Properties" title="View property definitions" url="/properties.xhtml" 
+                rendered="#{not fn:endsWith(request.requestURL,'properties.xhtml')}" icon="ui-icon-contact" />
+            <p:submenu label="Properties" icon="ui-icon-contact" rendered="#{fn:endsWith(request.requestURL,'properties.xhtml')}" 
+                    styleClass="#{fn:endsWith(request.requestURL,'properties.xhtml') ? 'menu-selected' : ''}">
                 <p:menuitem value="View" title="View Properties" styleClass="noClickEvent" url="/properties.xhtml" />
 
                 <p:menuitem value="Import" update=":importPropertiesForm" styleClass="noClickEvent" 
@@ -67,9 +75,10 @@
                     disabled="#{!securityPolicy.getUIHint('PROPERTY')}" />
             </p:submenu>
 
-
-            <p:submenu label="Enumerations" icon="ui-icon-radio-off" 
-                    styleClass="#{fn:endsWith(request.requestURL,'enums.xhtml') ? 'menu-selected' : ''} enumsMenu">
+            <p:menuitem value="Enumerations" title="View user defined enumerations" url="/enums.xhtml" 
+                rendered="#{not fn:endsWith(request.requestURL,'enums.xhtml')}" icon="ui-icon-radio-off" />
+            <p:submenu label="Enumerations" icon="ui-icon-radio-off" rendered="#{fn:endsWith(request.requestURL,'enums.xhtml')}" 
+                    styleClass="#{fn:endsWith(request.requestURL,'enums.xhtml') ? 'menu-selected' : ''}">
                 <p:menuitem value="View" title="View User Defined Enumerations" styleClass="noClickEvent" 
                         url="/enums.xhtml" />
 
@@ -79,8 +88,10 @@
                     disabled="#{!securityPolicy.getUIHint('DATA_TYPE')}" />
             </p:submenu>
 
-            <p:submenu label="Units" icon="ui-icon-folder-open"
-                    styleClass="#{fn:endsWith(request.requestURL,'units.xhtml') ? 'menu-selected' : ''} unitsMenu">
+            <p:menuitem value="Units" title="View units" url="units.xhtml" 
+                rendered="#{not fn:endsWith(request.requestURL,'units.xhtml')}" icon="ui-icon-folder-open" />
+            <p:submenu label="Units" icon="ui-icon-folder-open" rendered="#{fn:endsWith(request.requestURL,'units.xhtml')}"
+                    styleClass="#{fn:endsWith(request.requestURL,'units.xhtml') ? 'menu-selected' : ''}">
                 <p:menuitem value="View" title="View Units" styleClass="noClickEvent" url="/units.xhtml" />
 
                 <p:menuitem value="Import" update=":importUnitsForm" 
@@ -115,95 +126,65 @@
         </p:menubar>
     </h:form>
 
-    <ui:include src="../loaders/single-file-DL.xhtml">
-        <ui:param name="formId" value="importUnitsForm" />
-        <ui:param name="dialogTitle" value="Units import" />
-        <ui:param name="widgetName" value="importUnits" />
-        <ui:param name="controller" value="#{unitManager}" />
-    </ui:include>
+    <h:panelGroup rendered="#{fn:endsWith(request.requestURL,'units.xhtml')}">
+        <ui:include src="../loaders/single-file-DL.xhtml">
+            <ui:param name="formId" value="importUnitsForm" />
+            <ui:param name="dialogTitle" value="Units import" />
+            <ui:param name="widgetName" value="importUnits" />
+            <ui:param name="controller" value="#{unitManager}" />
+        </ui:include>
+    </h:panelGroup>
 
-    <ui:include src="../loaders/single-file-DL.xhtml">
-        <ui:param name="formId" value="importPropertiesForm" />
-        <ui:param name="dialogTitle" value="Properties import" />
-        <ui:param name="widgetName" value="importProperties" />
-        <ui:param name="controller" value="#{propertyManager}" />
-    </ui:include>
+    <h:panelGroup rendered="#{fn:endsWith(request.requestURL,'properties.xhtml')}">
+        <ui:include src="../loaders/single-file-DL.xhtml">
+            <ui:param name="formId" value="importPropertiesForm" />
+            <ui:param name="dialogTitle" value="Properties import" />
+            <ui:param name="widgetName" value="importProperties" />
+            <ui:param name="controller" value="#{propertyManager}" />
+        </ui:include>
+    </h:panelGroup>
 
-    <ui:include src="../loaders/single-file-DL.xhtml">
-        <ui:param name="formId" value="importCompTypesForm" />
-        <ui:param name="dialogTitle" value="Device types import" />
-        <ui:param name="widgetName" value="importCompTypes" />
-        <ui:param name="controller" value="#{componentTypeManager}" />
-    </ui:include>
+    <h:panelGroup rendered="#{fn:endsWith(request.requestURL,'device-types.xhtml')}">
+        <ui:include src="../loaders/single-file-DL.xhtml">
+            <ui:param name="formId" value="importCompTypesForm" />
+            <ui:param name="dialogTitle" value="Device types import" />
+            <ui:param name="widgetName" value="importCompTypes" />
+            <ui:param name="controller" value="#{componentTypeManager}" />
+        </ui:include>
+    </h:panelGroup>
 
-    <ui:include src="../loaders/multiple-files-DL.xhtml">
-        <ui:param name="formId" value="importSlotsForm" />
-        <ui:param name="dialogTitle" value="Slots and slot pairs import" />
-        <ui:param name="widgetName" value="importSlots" />
-        <ui:param name="controller" value="#{slotManager}" />
-        <ui:param name="firstFileContents" value="slots" />
-        <ui:param name="secondFileContents" value="slot pairs" />
-    </ui:include>
+    <h:panelGroup rendered="#{fn:endsWith(request.requestURL,'devices.xhtml')}">
+        <ui:include src="../loaders/single-file-DL.xhtml">
+            <ui:param name="formId" value="importDevicesForm" />
+            <ui:param name="dialogTitle" value="Devices import" />
+            <ui:param name="widgetName" value="importDevices" />
+            <ui:param name="controller" value="#{devicesController}" />
+        </ui:include>
+    </h:panelGroup>
 
-    <ui:include src="../loaders/single-file-DL.xhtml">
-        <ui:param name="formId" value="importDevicesForm" />
-        <ui:param name="dialogTitle" value="Devices import" />
-        <ui:param name="widgetName" value="importDevices" />
-        <ui:param name="controller" value="#{devicesController}" />
-    </ui:include>
+    <h:panelGroup rendered="#{fn:endsWith(request.requestURL,'enums.xhtml')}">
+        <ui:include src="../loaders/single-file-DL.xhtml">
+            <ui:param name="formId" value="importEnumsForm" />
+            <ui:param name="dialogTitle" value="Enumerations import" />
+            <ui:param name="widgetName" value="importEnums" />
+            <ui:param name="controller" value="#{dataTypeManager}" />
+        </ui:include>
+    </h:panelGroup>
 
-    <ui:include src="../loaders/single-file-DL.xhtml">
-        <ui:param name="formId" value="importEnumsForm" />
-        <ui:param name="dialogTitle" value="Enumerations import" />
-        <ui:param name="widgetName" value="importEnums" />
-        <ui:param name="controller" value="#{dataTypeManager}" />
-    </ui:include>
-
-    <ui:include src="../loaders/single-file-DL.xhtml">
-        <ui:param name="formId" value="importSignalsForm" />
-        <ui:param name="dialogTitle" value="Signals import" />
-        <ui:param name="widgetName" value="importSignals" />
-        <ui:param name="controller" value="#{hierarchiesController}" />
-    </ui:include>
-
-    <script type="text/javascript">
-        //<![CDATA[
-        function noClickTarget(target) {
-            if (target == null) return false;
-            if (target.classList && target.classList.contains("noClickEvent")) return true;
-            if ((target.nodeName == null) || (target.nodeName == "LI") || (target.nodeName == "UL")) return false;
-            return noClickTarget(target.parentNode);
-        }
-        jQuery(".homeMenu").on("click", function(event) {
-            if (noClickTarget(event.target) == false) {
-                window.location.replace("#{request.contextPath}/");
-            }
-        });
-        jQuery(".devicesMenu").on("click", function(event) {
-            if (noClickTarget(event.target) == false) {
-                window.location.replace("#{request.contextPath}/devices.xhtml");
-            }
-        });
-        jQuery(".devTypesMenu").on("click", function(event) {
-            if (noClickTarget(event.target) == false) {
-                window.location.replace("#{request.contextPath}/device-types.xhtml");
-            }
-        });
-        jQuery(".propertiesMenu").on("click", function(event) {
-            if (noClickTarget(event.target) == false) {
-                window.location.replace("#{request.contextPath}/properties.xhtml");
-            }
-        });
-        jQuery(".unitsMenu").on("click", function(event) {
-            if (noClickTarget(event.target) == false) {
-                window.location.replace("#{request.contextPath}/units.xhtml");
-            }
-        });
-        jQuery(".enumsMenu").on("click", function(event) {
-            if (noClickTarget(event.target) == false) {
-                window.location.replace("#{request.contextPath}/enums.xhtml");
-            }
-        });
-        // ]]>
-    </script>
+    <h:panelGroup rendered="#{fn:endsWith(request.requestURL,'home.xhtml')}">
+        <ui:include src="../loaders/single-file-DL.xhtml">
+            <ui:param name="formId" value="importSignalsForm" />
+            <ui:param name="dialogTitle" value="Signals import" />
+            <ui:param name="widgetName" value="importSignals" />
+            <ui:param name="controller" value="#{hierarchiesController}" />
+        </ui:include>
+        <ui:include src="../loaders/multiple-files-DL.xhtml">
+            <ui:param name="formId" value="importSlotsForm" />
+            <ui:param name="dialogTitle" value="Slots and slot pairs import" />
+            <ui:param name="widgetName" value="importSlots" />
+            <ui:param name="controller" value="#{slotManager}" />
+            <ui:param name="firstFileContents" value="slots" />
+            <ui:param name="secondFileContents" value="slot pairs" />
+        </ui:include>
+    </h:panelGroup>
 </ui:composition>
