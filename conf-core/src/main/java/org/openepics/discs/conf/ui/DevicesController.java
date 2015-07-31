@@ -21,7 +21,6 @@ package org.openepics.discs.conf.ui;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -229,39 +228,33 @@ public class DevicesController
             for (final ComptypePropertyValue parentProp : parent.getComptypePropertyList()) {
                 if (parentProp.getPropValue() != null) {
                     attributes.add(new EntityAttributeView(parentProp, EntityAttributeViewKind.DEVICE_TYPE_PROPERTY,
-                                                                attrDevice));
+                                                                attrDevice, deviceEJB));
                 }
             }
 
             for (final ComptypeArtifact parentArtifact : parent.getComptypeArtifactList()) {
                 attributes.add(new EntityAttributeView(parentArtifact, EntityAttributeViewKind.DEVICE_TYPE_ARTIFACT,
-                                                                attrDevice));
+                                                                attrDevice, deviceEJB));
             }
 
             for (final Tag parentTag : parent.getTags()) {
-                attributes.add(new EntityAttributeView(parentTag, EntityAttributeViewKind.DEVICE_TYPE_TAG, attrDevice));
+                attributes.add(new EntityAttributeView(parentTag, EntityAttributeViewKind.DEVICE_TYPE_TAG,
+                                                                attrDevice, deviceEJB));
             }
 
             for (final DevicePropertyValue propVal : attrDevice.getDevicePropertyList()) {
-                attributes.add(new EntityAttributeView(propVal, EntityAttributeViewKind.DEVICE_PROPERTY, attrDevice));
+                attributes.add(new EntityAttributeView(propVal, EntityAttributeViewKind.DEVICE_PROPERTY,
+                                                                attrDevice, deviceEJB));
             }
 
             for (final DeviceArtifact artf : attrDevice.getDeviceArtifactList()) {
-                attributes.add(new EntityAttributeView(artf, EntityAttributeViewKind.DEVICE_ARTIFACT, attrDevice));
+                attributes.add(new EntityAttributeView(artf, EntityAttributeViewKind.DEVICE_ARTIFACT,
+                                                                attrDevice, deviceEJB));
             }
 
             for (final Tag tagAttr : attrDevice.getTags()) {
-                attributes.add(new EntityAttributeView(tagAttr, EntityAttributeViewKind.DEVICE_TAG, attrDevice));
-            }
-        }
-    }
-
-    @Override
-    protected void populateParentTags() {
-        parentTags = new HashSet<Tag>();
-        for (final Tag parentTag : device.getComponentType().getTags()) {
-            if (!device.getTags().contains(parentTag)) {
-                parentTags.add(parentTag);
+                attributes.add(new EntityAttributeView(tagAttr, EntityAttributeViewKind.DEVICE_TAG,
+                                                                attrDevice, deviceEJB));
             }
         }
     }

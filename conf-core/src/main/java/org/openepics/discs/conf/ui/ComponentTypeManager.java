@@ -264,17 +264,18 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
             final ComponentType freshComponentType = comptypeEJB.findById(selectedMember.getId());
 
             for (final ComptypePropertyValue prop : freshComponentType.getComptypePropertyList()) {
-                attributes.add(new EntityAttributeView(prop, freshComponentType));
+                attributes.add(new EntityAttributeView(prop, EntityAttributeViewKind.DEVICE_TYPE_PROPERTY,
+                                                            freshComponentType, comptypeEJB));
             }
 
             for (final ComptypeArtifact art : freshComponentType.getComptypeArtifactList()) {
                 attributes.add(new EntityAttributeView(art, EntityAttributeViewKind.DEVICE_TYPE_ARTIFACT,
-                                                            freshComponentType));
+                                                            freshComponentType, comptypeEJB));
             }
 
             for (final Tag tagAttr : freshComponentType.getTags()) {
                 attributes.add(new EntityAttributeView(tagAttr, EntityAttributeViewKind.DEVICE_TYPE_TAG,
-                                                            freshComponentType));
+                                                            freshComponentType, comptypeEJB));
             }
         }
     }
@@ -366,11 +367,6 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
         return pvViewList;
     }
 
-    @Override
-    protected void populateParentTags() {
-        // Nothing to do since component types don't inherit anything
-    }
-
     /** Prepares the data for slot property (definition) creation */
     public void prepareForSlotPropertyAdd() {
         definitionTarget = AbstractAttributesController.DefinitionTarget.SLOT;
@@ -395,7 +391,7 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
     }
 
     @Override
-    public boolean canDelete(EntityAttributeView attribute) {
+    protected boolean canDelete(EntityAttributeView attribute) {
         return attribute.getKind() == EntityAttributeViewKind.DEVICE_TYPE_ARTIFACT
                 || attribute.getKind() == EntityAttributeViewKind.DEVICE_TYPE_TAG
                 || super.canDelete(attribute);

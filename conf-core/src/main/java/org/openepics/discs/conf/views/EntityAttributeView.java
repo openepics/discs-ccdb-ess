@@ -21,8 +21,10 @@ package org.openepics.discs.conf.views;
 
 import javax.annotation.Nullable;
 
+import org.openepics.discs.conf.ejb.ReadOnlyDAO;
 import org.openepics.discs.conf.ent.Artifact;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
+import org.openepics.discs.conf.ent.ConfigurationEntity;
 import org.openepics.discs.conf.ent.DataType;
 import org.openepics.discs.conf.ent.NamedEntity;
 import org.openepics.discs.conf.ent.PropertyValue;
@@ -52,58 +54,29 @@ public class EntityAttributeView {
     @Nullable private DataType type;
     @Nullable private Unit unit;
     @Nullable private Value value;
-    private EntityAttributeViewKind kind;
+    final private EntityAttributeViewKind kind;
     private boolean hasFile;
     private boolean hasURL;
     private boolean isBuiltIn;
     private Object entity;
+    final private ReadOnlyDAO<? extends ConfigurationEntity> dao;
 
     /** Construct a new UI view object based on the database entity
      * @param entity the database entity
      * @param kind database entity kind {@link EntityAttributeViewKind}
      * @param parent the named entity parent for this attribute
      */
-    public EntityAttributeView(Object entity, EntityAttributeViewKind kind, @Nullable NamedEntity parent) {
+    public EntityAttributeView(Object entity, EntityAttributeViewKind kind, @Nullable NamedEntity parent,
+            ReadOnlyDAO<? extends ConfigurationEntity> dao) {
         Preconditions.checkNotNull(kind);
         this.entity = entity;
-        setParameters();
         this.kind = kind;
-        if (parent != null) {
-            this.parentName = parent.getName();
-            this.parentId = parent.getId();
-        }
-    }
-
-
-    /** Construct a new UI view object based on the database entity
-     * @param entity the database entity
-     * @param kind database entity kind {@link EntityAttributeViewKind}
-     */
-    public EntityAttributeView(Object entity, EntityAttributeViewKind kind) {
-        this(entity, kind, null);
-    }
-
-    /** Construct a new UI view object based on the database entity. The entity kind {@link EntityAttributeViewKind} is
-     * determined automatically based on the type of the <code>entity</code>.
-     * @param entity the database entity
-     * @param parent the named entity parent for this attribute
-     */
-    public EntityAttributeView(Object entity, @Nullable NamedEntity parent) {
-        this(entity);
-        if (parent != null) {
-            this.parentName = parent.getName();
-            this.parentId = parent.getId();
-        }
-    }
-
-
-    /** Construct a new UI view object based on the database entity. The entity kind {@link EntityAttributeViewKind} is
-     * determined automatically based on the type of the <code>entity</code>.
-     * @param entity the database entity
-     */
-    public EntityAttributeView(Object entity) {
-        this.entity = entity;
         setParameters();
+        if (parent != null) {
+            this.parentName = parent.getName();
+            this.parentId = parent.getId();
+        }
+        this.dao = dao;
     }
 
     private void setParameters() {
@@ -123,17 +96,6 @@ public class EntityAttributeView {
     private void setComponentTypeParameters() {
         setPropValueParameters();
         final ComptypePropertyValue comptypePropertyValue = (ComptypePropertyValue) entity;
-        if (!comptypePropertyValue.isPropertyDefinition()) {
-            kind = EntityAttributeViewKind.DEVICE_TYPE_PROPERTY;
-        } else {
-            if (comptypePropertyValue.isDefinitionTargetSlot()) {
-                kind = EntityAttributeViewKind.INSTALL_SLOT_PROPERTY;
-            } else if (comptypePropertyValue.isDefinitionTargetDevice()) {
-                kind = EntityAttributeViewKind.DEVICE_PROPERTY;
-            } else {
-                kind = EntityAttributeViewKind.UNKNOWN_PROPERTY;
-            }
-        }
         id = comptypePropertyValue.getId().toString();
     }
 
@@ -143,7 +105,6 @@ public class EntityAttributeView {
         type = propertyValue.getProperty().getDataType();
         unit = propertyValue.getProperty().getUnit();
         value = propertyValue.getPropValue();
-        kind =  EntityAttributeViewKind.PROPERTY;
         id = propertyValue.getId().toString();
     }
 
@@ -153,13 +114,11 @@ public class EntityAttributeView {
         hasFile = artifact.isInternal();
         hasURL = !artifact.isInternal();
         value = hasURL ? new StrValue(artifact.getUri()) : new StrValue("Download attachment");
-        kind =  EntityAttributeViewKind.ARTIFACT;
         id = artifact.getId().toString();
     }
 
     private void setTagParameters() {
         name = ((Tag) entity).getName();
-        kind =  EntityAttributeViewKind.TAG;
         value = null;
         id = "TAG_" + name;
     }
@@ -211,5 +170,9 @@ public class EntityAttributeView {
 
     public Long getParentId() {
         return parentId;
+    }
+
+    public ConfigurationEntity getParentEntity() {
+        return (dao != null) && (parentId != null) ? dao.findById(parentId) : null;
     }
 }

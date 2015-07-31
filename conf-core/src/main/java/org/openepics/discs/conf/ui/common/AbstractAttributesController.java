@@ -29,7 +29,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import java.util.Set;
 import java.util.regex.Pattern;
 
 import javax.ejb.EJBException;
@@ -46,13 +45,16 @@ import org.openepics.discs.conf.ejb.DAO;
 import org.openepics.discs.conf.ejb.DataTypeEJB;
 import org.openepics.discs.conf.ejb.TagEJB;
 import org.openepics.discs.conf.ent.Artifact;
+import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypeArtifact;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.ConfigurationEntity;
 import org.openepics.discs.conf.ent.DataType;
+import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyValue;
+import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.ent.Tag;
 import org.openepics.discs.conf.ent.values.Value;
@@ -139,9 +141,6 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
     private Class<S> artifactClass;
 
     // TODO remove
-    protected List<ComptypePropertyValue> parentProperties;
-    protected List<ComptypeArtifact> parentArtifacts;
-    protected Set<Tag> parentTags;
     protected T propertyValueInstance;
 
     protected String entityName;
@@ -371,7 +370,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
         if (attributeToModify.getEntity() instanceof PropertyValue) {
             propertyNameChangeDisabled = attributeToModify.getEntity() instanceof DevicePropertyValue
                     || attributeToModify.getEntity() instanceof SlotPropertyValue
-                    || isPropertyValueInherited((PropertyValue)attributeToModify.getEntity()) ;
+                    || isPropertyValueInherited(attributeToModify);
         }
 
         propertyValueUIElement = Conversion.getUIElementFromProperty(property);
@@ -492,22 +491,38 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
                     || (attribute instanceof Artifact && !(attribute instanceof ComptypeArtifact));
     }
 
-    /** This method determines whether the entity attribute should have the "trash can" icon displayed in the UI.
-     *
-     * TODO remove
+    /** This method determines whether the entity attribute can be deleted - is not used anywhere.
      *
      * @param attributeView The object containing the UI info for the attribute table row.
      * @return <code>true</code> if the attribute can be deleted, <code>false</code> otherwise.
      */
-    public boolean canDelete(EntityAttributeView attributeView) {
+    protected boolean canDelete(EntityAttributeView attributeView) {
         final Object attribute = attributeView.getEntity();
         return (attribute instanceof Artifact && !(attribute instanceof ComptypeArtifact))
-                || (attribute instanceof PropertyValue && !isPropertyValueInherited((PropertyValue)attribute))
-                || (attribute instanceof Tag && attributeView.getKind() != EntityAttributeViewKind.DEVICE_TYPE_TAG);
+                || (attribute instanceof Tag && attributeView.getKind() != EntityAttributeViewKind.DEVICE_TYPE_TAG)
+                || (attribute instanceof PropertyValue && !isPropertyValueInherited(attributeView));
     }
 
-    // TODO remove
-    private boolean isPropertyValueInherited(PropertyValue propertyValue) {
+    private boolean isPropertyValueInherited(EntityAttributeView attributeView) {
+        final PropertyValue propertyValue = (PropertyValue) attributeView.getEntity();
+        List<ComptypePropertyValue> parentProperties = null;
+        ConfigurationEntity parentEntity = attributeView.getParentEntity();
+        if (parentEntity != null) {
+            if (parentEntity instanceof Slot) {
+                if (((Slot) parentEntity).isHostingSlot()) {
+                    parentProperties = ((Slot) parentEntity).getComponentType().getComptypePropertyList();
+                } else {
+                    return false;
+                }
+            } else if (parentEntity instanceof Device) {
+                parentProperties = ((Device) parentEntity).getComponentType().getComptypePropertyList();
+            } else if (parentEntity instanceof ComponentType) {
+                return false;
+            } else {
+                throw new UnhandledCaseException();
+            }
+        }
+
         if (parentProperties == null) {
             return false;
         }
@@ -535,8 +550,6 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
     protected abstract void filterProperties();
 
     protected abstract void populateAttributesList();
-
-    protected abstract void populateParentTags();
 
     private void internalPopulateAttributesList() {
         fillTagsAutocomplete();
