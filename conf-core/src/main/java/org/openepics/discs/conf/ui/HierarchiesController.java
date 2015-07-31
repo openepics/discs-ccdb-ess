@@ -1008,7 +1008,6 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
         // first update the back-end data
         final SlotView slotViewToUpdate = (SlotView) parentNode.getData();
-        // slotViewToUpdate.setSlot(slotEJB.findById(slotViewToUpdate.getSlot().getId()));  // TODO remove
         if (selectedSlotView != null) {
             selectedSlotView = slotViewToUpdate;
         }
