@@ -43,7 +43,7 @@
             
                 <p:menuitem value="Import" update=":importDevicesForm" styleClass="noClickEvent" 
                     oncomplete="PF('importDevices').show();" title="Import Device Instances" 
-                    actionListener="#{devicesByTypeManager.prepareImportPopup()}" 
+                    actionListener="#{devicesController.prepareImportPopup()}" 
                     disabled="#{!securityPolicy.getUIHint('DEVICE')}" />
             </p:submenu>
 
@@ -149,7 +149,7 @@
         <ui:param name="formId" value="importDevicesForm" />
         <ui:param name="dialogTitle" value="Devices import" />
         <ui:param name="widgetName" value="importDevices" />
-        <ui:param name="controller" value="#{devicesByTypeManager}" />
+        <ui:param name="controller" value="#{devicesController}" />
     </ui:include>
 
     <ui:include src="../loaders/single-file-DL.xhtml">

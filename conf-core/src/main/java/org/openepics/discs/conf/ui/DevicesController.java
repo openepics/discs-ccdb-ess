@@ -75,12 +75,12 @@ import com.google.common.collect.Lists;
  */
 @Named
 @ViewScoped
-public class DeviceDetailsAttributesController
+public class DevicesController
                     extends AbstractDeviceAttributesController
                     implements SimpleTableExporter{
     private static final long serialVersionUID = -2881746639197321061L;
 
-    private static final Logger LOGGER = Logger.getLogger(DeviceDetailsAttributesController.class.getCanonicalName());
+    private static final Logger LOGGER = Logger.getLogger(DevicesController.class.getCanonicalName());
     private static final String CRLF = "\r\n";
 
     @Inject private transient ComptypeEJB componentTypesEJB;
@@ -141,7 +141,7 @@ public class DeviceDetailsAttributesController
         }
     }
 
-    public DeviceDetailsAttributesController() {
+    public DevicesController() {
     }
 
     @Override
