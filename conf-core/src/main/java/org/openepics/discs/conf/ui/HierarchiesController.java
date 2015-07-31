@@ -446,7 +446,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
     private void addPropertyValues(final Slot slot) {
         final boolean isHostingSlot = slot.isHostingSlot();
-        final Device installedDevice = getInstalledDevice();
+        final InstallationRecord activeInstallationRecord = installationEJB.getActiveInstallationRecordForSlot(slot);
 
         for (final ComptypePropertyValue value : slot.getComponentType().getComptypePropertyList()) {
             if (!value.isPropertyDefinition()) {
@@ -461,8 +461,9 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
                                                             slot));
         }
 
-        if (installedDevice != null) {
-            for (final DevicePropertyValue devicePropertyValue : installedDevice.getDevicePropertyList()) {
+        if (activeInstallationRecord != null) {
+            for (final DevicePropertyValue devicePropertyValue : activeInstallationRecord.getDevice().
+                                                                                        getDevicePropertyList()) {
                 attributes.add(new EntityAttributeView(devicePropertyValue,
                                                             EntityAttributeViewKind.DEVICE_PROPERTY,
                                                             slot));
@@ -472,7 +473,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
     private void addArtifacts(final Slot slot) {
         final boolean isHostingSlot = slot.isHostingSlot();
-        final Device installedDevice = getInstalledDevice();
+        final InstallationRecord activeInstallationRecord = installationEJB.getActiveInstallationRecordForSlot(slot);
 
         for (final ComptypeArtifact artifact : slot.getComponentType().getComptypeArtifactList()) {
             attributes.add(new EntityAttributeView(artifact, EntityAttributeViewKind.DEVICE_TYPE_ARTIFACT, slot));
@@ -485,8 +486,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
                                                             slot));
         }
 
-        if (installedDevice != null) {
-            for (final DeviceArtifact deviceArtifact : installedDevice.getDeviceArtifactList()) {
+        if (activeInstallationRecord != null) {
+            for (final DeviceArtifact deviceArtifact : activeInstallationRecord.getDevice().getDeviceArtifactList()) {
                 attributes.add(new EntityAttributeView(deviceArtifact,
                                                             EntityAttributeViewKind.DEVICE_ARTIFACT, slot));
             }
@@ -495,7 +496,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
     private void addTags(final Slot slot) {
         final boolean isHostingSlot = slot.isHostingSlot();
-        final Device installedDevice = getInstalledDevice();
+        final InstallationRecord activeInstallationRecord = installationEJB.getActiveInstallationRecordForSlot(slot);
 
         for (final Tag tagInstance : slot.getComponentType().getTags()) {
             attributes.add(new EntityAttributeView(tagInstance, EntityAttributeViewKind.DEVICE_TYPE_TAG, slot));
@@ -508,8 +509,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
                                                             slot));
         }
 
-        if (installedDevice != null) {
-            for (final Tag tagInstance : installedDevice.getTags()) {
+        if (activeInstallationRecord != null) {
+            for (final Tag tagInstance : activeInstallationRecord.getDevice().getTags()) {
                 attributes.add(new EntityAttributeView(tagInstance, EntityAttributeViewKind.DEVICE_TAG, slot));
             }
         }
@@ -2057,14 +2058,6 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Device instance installation
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /**
-     * @return The device that is installed in the currently selected slot, <code>null</code> if no device is installed
-     * or this is a <i>container</i> or no node is selected or there are multiple nodes selected.
-     */
-    public Device getInstalledDevice() {
-        return getSelectedInstallationRecord() == null ? null : getSelectedInstallationRecord().getDevice();
-    }
-
     /**
      * @return The latest installation records associated with the selected installation slots, <code>null</code> if no
      * slots are selected.
