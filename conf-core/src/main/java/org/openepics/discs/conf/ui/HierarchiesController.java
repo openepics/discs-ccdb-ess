@@ -1053,10 +1053,11 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
         clipboardOperation = ClipboardOperations.CUT;
         putSelectedNodesOntoClipboard();
+        selectedNodes.clear();
     }
 
     private void putSelectedNodesOntoClipboard() {
-        // 1. If anything is in the clipboard, we unmark it as in the clipboard
+        // 1. If anything is in the clipboard, we unmark it as in the clipboard. Takes care of consecutive "Cut"s.
         if (clipboardNodes != null) {
             for (final TreeNode node : clipboardNodes) {
                 ((SlotView) node.getData()).setInClipboard(false);

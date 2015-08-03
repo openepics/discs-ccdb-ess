@@ -185,11 +185,11 @@
                                     action="#{hierarchiesController.cutTreeNodes}" oncomplete="hierarchiesResizeAll();" 
                                     disabled="#{not hierarchiesController.includesActive or 
                                                     empty hierarchiesController.selectedIncludesNodes}" 
-                                    update=":hierarchies:hierarchyTabs:tree" />
+                                    update=":hierarchies:hierarchyTabs:tree :hierarchies:clipboardOperations" />
                                 <p:menuitem value="Paste" id="pasteButton" icon="ui-icon-clipboard" 
                                     title="Paste into the selected parent" oncomplete="PF('pasteSlots').show();" 
                                     disabled="#{not hierarchiesController.includesActive 
-                                                    or not hierarchiesController.singleNodeSelected 
+                                                    or hierarchiesController.multipleNodesSelected 
                                                     or hierarchiesController.clipboardEmpty}" 
                                     action="#{hierarchiesController.checkPasteAction}"
                                     update=":pasteSlotsForm:pasteSlots" />
