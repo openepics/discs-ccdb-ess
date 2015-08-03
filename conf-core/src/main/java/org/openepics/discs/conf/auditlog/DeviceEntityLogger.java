@@ -81,7 +81,7 @@ public class DeviceEntityLogger implements EntityLogger<Device> {
         }
 
         if (lastInstallationRecord != null) {
-            final SimpleDateFormat timestampFormat = new SimpleDateFormat(Conversion.DATE_ONLY_FORMAT);
+            final SimpleDateFormat timestampFormat = new SimpleDateFormat(Conversion.DATE_TIME_FORMAT);
             installationSlotMap.put("installationSlot", lastInstallationRecord.getSlot().getName());
             installationSlotMap.put("installationDate",
                                             timestampFormat.format(lastInstallationRecord.getInstallDate()));

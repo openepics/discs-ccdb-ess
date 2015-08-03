@@ -200,8 +200,7 @@
                             <p:commandButton id="deleteButton" icon="ui-icon-trash" value="Delete" title="Delete" 
                                 style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('deleteSlots').show();" 
                                 disabled="#{not hierarchiesController.includesActive 
-                                                or empty hierarchiesController.selectedIncludesNodes 
-                                                or not hierarchiesController.nodesDeletable}" 
+                                                or empty hierarchiesController.selectedIncludesNodes}" 
                                 update=":deleteSlotsForm" actionListener="#{hierarchiesController.prepareDeletePopup()}" />
                             <p:commandButton id="downButton" icon="ui-icon-arrowthick-1-s" value="Down" title="Move down" 
                                 style="float: right; margin: 1em 1ex 0 0;" 
@@ -373,7 +372,8 @@
                             <p:dataTable id="installationTable" value="#{hierarchiesController.installationRecords}" 
                                     var="installationRecord" style="width: 100%;" selectionMode="single" 
                                     selection="#{hierarchiesController.selectedInstallationView}"
-                                    emptyMessage="No element selected." rowKey="#{installationRecord.slotName}">
+                                    emptyMessage="No element selected." rowKey="#{installationRecord.slotName}" 
+                                    widgetVar="installationWidget">
 
                                 <p:ajax event="rowSelect" update=":hierarchies:installDeviceBtn :hierarchies:uninstallDeviceBtn" />
                                 <p:ajax event="rowUnselect" update=":hierarchies:installDeviceBtn :hierarchies:uninstallDeviceBtn" />
@@ -441,12 +441,15 @@
             <ui:param name="submitHandler" value="onSlotsDelete" />
             <ui:param name="formToUpdate" value=":hierarchies:hierarchyTabs:tree :hierarchies:deleteButton 
                     :hierarchies:slotAttributes :hierarchies:relationsTable :hierarchies:installationDetails 
-                    :hierarchies:downButton :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton" />
+                    :hierarchies:downButton :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton
+                    :hierarchies:clipboardOperations" />
             <ui:param name="resizeContent" value="hierarchiesResizeAll();" />
             <ui:param name="entityType" value="#{hierarchiesController.numberOfSlotsToDelete gt 1 
                                                         ? 'the following slots:' : 'selected slot?'}" />
             <ui:param name="isTableDisplayed" value="#{(hierarchiesController.numberOfSlotsToDelete gt 1)}" />
             <ui:param name="slotsToDelete" value="#{hierarchiesController.slotsToDelete}" />
+            <ui:param name="resetFilter" 
+                value="PF('attributesWidget').clearFilters(); PF('relationshipsWidget').clearFilters(); PF('installationWidget').clearFilters();" />
         </ui:include>
 
         <ui:include src="/resources/dialogs/paste-slots-confirmation.xhtml" >

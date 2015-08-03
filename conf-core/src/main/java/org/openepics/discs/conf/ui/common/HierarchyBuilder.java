@@ -175,26 +175,26 @@ public class HierarchyBuilder {
             }
         }
         // find correct position
-        TreeNode manupulatedSibling = null;
+        TreeNode manipulatedSibling = null;
         while (treeNodeChildren.hasNext()) {
             final TreeNode nextChild = treeNodeChildren.next();
-            manupulatedSibling = nextChild;
+            manipulatedSibling = nextChild;
             final SlotView childData = (SlotView) nextChild.getData();
             if (childData.getOrder() > slotView.getOrder()) {
                 // move one back, because this slot needs to be after inserting slot
-                manupulatedSibling = treeNodeChildren.previous();
+                manipulatedSibling = treeNodeChildren.previous();
                 break;
             }
         }
-        if (manupulatedSibling != null) {
+        if (manipulatedSibling != null) {
             if (!treeNodeChildren.hasPrevious()) {
                 // we're inserting at the start of the collection
-                ((SlotView) manupulatedSibling.getData()).setFirst(false);
+                ((SlotView) manipulatedSibling.getData()).setFirst(false);
                 slotView.setFirst(true);
             }
             if (!treeNodeChildren.hasNext()) {
                 // we're appending to the end of the collection
-                ((SlotView) manupulatedSibling.getData()).setLast(false);
+                ((SlotView) manipulatedSibling.getData()).setLast(false);
                 slotView.setLast(true);
             }
         } else {

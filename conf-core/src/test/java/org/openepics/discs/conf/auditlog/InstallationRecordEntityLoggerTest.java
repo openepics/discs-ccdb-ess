@@ -68,13 +68,13 @@ public class InstallationRecordEntityLoggerTest {
 
     @Test
     public void testSerializeEntityInstallationDate() {
-        final String DEVICE_LOG_ENTRY = "{\"installation\":[{\"installationDate\":\"1970-01-03\"},"
+        final String DEVICE_LOG_ENTRY = "{\"installation\":[{\"installationDate\":\"1970-01-03 12:12:03\"},"
                 + "{\"installationSlot\":\"slot1\"}]}";
         assertEquals(DEVICE_LOG_ENTRY, installationRecordEntityLogger.auditEntries(installationRecord,
                                                                         EntityTypeOperation.CREATE).get(0).getEntry());
 
         final String SLOT_LOG_ENTRY = "{\"hostingSlot\":true,\"installation\":[{\"installationDate\":"
-                + "\"1970-01-03\"},{\"inventoryID\":\"device1\"}]}";
+                + "\"1970-01-03 12:12:03\"},{\"inventoryID\":\"device1\"}]}";
         assertEquals(SLOT_LOG_ENTRY, installationRecordEntityLogger.auditEntries(installationRecord,
                                                                         EntityTypeOperation.CREATE).get(1).getEntry());
     }
@@ -82,13 +82,13 @@ public class InstallationRecordEntityLoggerTest {
     @Test
     public void testSerializeEntityUninstallDate() {
         installationRecord.setUninstallDate(new Date(213123213));
-        final String DEVICE_LOG_ENTRY = "{\"installation\":[{\"installationDate\":\"1970-01-03\"},"
-                + "{\"installationSlot\":\"slot1\"},{\"uninstallationDate\":\"1970-01-03\"}]}";
+        final String DEVICE_LOG_ENTRY = "{\"installation\":[{\"installationDate\":\"1970-01-03 12:12:03\"},"
+                + "{\"installationSlot\":\"slot1\"},{\"uninstallationDate\":\"1970-01-03 12:12:03\"}]}";
         assertEquals(DEVICE_LOG_ENTRY, installationRecordEntityLogger.auditEntries(installationRecord,
                                                                         EntityTypeOperation.CREATE).get(0).getEntry());
 
         final String SLOT_LOG_ENTRY = "{\"hostingSlot\":true,\"installation\":[{\"installationDate\":"
-                + "\"1970-01-03\"},{\"inventoryID\":\"device1\"},{\"uninstallationDate\":\"1970-01-03\"}]}";
+                + "\"1970-01-03 12:12:03\"},{\"inventoryID\":\"device1\"},{\"uninstallationDate\":\"1970-01-03 12:12:03\"}]}";
         assertEquals(SLOT_LOG_ENTRY, installationRecordEntityLogger.auditEntries(installationRecord,
                                                                         EntityTypeOperation.CREATE).get(1).getEntry());
     }

@@ -112,7 +112,7 @@ public class SlotEntityLogger implements EntityLogger<Slot> {
         }
 
         if (lastInstallationRecord != null) {
-            final SimpleDateFormat timestampFormat = new SimpleDateFormat(Conversion.DATE_ONLY_FORMAT);
+            final SimpleDateFormat timestampFormat = new SimpleDateFormat(Conversion.DATE_TIME_FORMAT);
             final String installationDeviceSerial = lastInstallationRecord.getDevice().getSerialNumber();
             installationDeviceMap.put("inventoryID", installationDeviceSerial);
             installationDeviceMap.put("installationDate",
