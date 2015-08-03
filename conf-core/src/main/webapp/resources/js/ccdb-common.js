@@ -69,3 +69,13 @@ function selectEntityInTable(globalIndex, tableVarName) {
     scrollSelectedIntoView(tableWidget);
 }
 
+function resizeDeleteList(deleteDialogId) {
+	var deleteTable = $("#" + deleteDialogId + " .dialogListTable .ui-datatable-scrollable-body");
+	var tableContentHeight = $("#" + deleteDialogId + " .dialogListTable .ui-datatable-data").outerHeight(true);
+	var calculatedHeight = emHeight() * 13;
+	if (tableContentHeight >= emHeight() * 13) {
+		calculatedHeight = tableContentHeight;
+	} else if (tableContentHeight < emHeight() * 25) {
+		calculatedHeight = emHeight() * 25;
+	}
+}
