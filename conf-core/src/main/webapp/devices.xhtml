@@ -42,13 +42,15 @@
                                     tableStyle="table-layout: fixed; word-wrap: break-word; width: 100%;" 
                                     selection="#{devicesController.selectedDevices}" liveScroll="true" 
                                     selectionMode="multiple" rowKey="#{device.device.id}" emptyMessage="No devices found.">
-                                <p:ajax event="rowSelect" update=":devicesForm:deleteButton :devicesForm:editButton 
-                                                :devicesForm:attributesDataTable:attributesDataTable :devicesForm:deleteAttrButton
-                                                :devicesForm:editAttrButton :devicesForm:addButton" 
+                                <p:ajax event="rowSelect" oncomplete="adjustTableHeights();" 
+                                        update=":devicesForm:deleteButton :devicesForm:editButton :devicesForm:addButton 
+                                                :devicesForm:deleteAttrButton :devicesForm:editAttrButton 
+                                                :devicesForm:attributesDataTable:attributesDataTable" 
                                         listener="#{devicesController.onRowSelect}" />
-                                <p:ajax event="rowUnselect" update=":devicesForm:deleteButton :devicesForm:editButton 
-                                                :devicesForm:attributesDataTable:attributesDataTable :devicesForm:deleteAttrButton
-                                                :devicesForm:editAttrButton :devicesForm:addButton" 
+                                <p:ajax event="rowUnselect" oncomplete="adjustTableHeights();" 
+                                        update=":devicesForm:deleteButton :devicesForm:editButton :devicesForm:addButton 
+                                                :devicesForm:deleteAttrButton :devicesForm:editAttrButton 
+                                                :devicesForm:attributesDataTable:attributesDataTable" 
                                         listener="#{devicesController.onRowSelect}" />
 
                                 <p:column headerText="Type" sortBy="#{device.device.componentType.name}" filterStyle="width: 90%;" 
