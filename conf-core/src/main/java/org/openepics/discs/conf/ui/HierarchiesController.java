@@ -961,7 +961,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         isInstallationSlot = selectedSlotView.isHostingSlot();
         name = selectedSlotView.getName();
         description = selectedSlotView.getDescription();
-        deviceType = selectedSlotView.getDeviceType();
+        deviceType = selectedSlotView.getSlot().getComponentType();
     }
 
     /** Prepares fields that are used in pop up for adding a new container */

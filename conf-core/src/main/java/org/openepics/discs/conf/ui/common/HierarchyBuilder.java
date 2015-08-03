@@ -60,6 +60,7 @@ public class HierarchyBuilder {
         this.slotEJB = slotEJB;
         final Slot fakeSlot = new Slot("Fake slot", false);
         fakeSlot.setDescription("Fake slot");
+        fakeSlot.setComponentType(new ComponentType("Fake type"));
         this.fakeSlotView = new SlotView(fakeSlot, null, 1, null);
     }
 

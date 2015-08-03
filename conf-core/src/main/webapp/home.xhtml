@@ -117,7 +117,8 @@
                                              <h:outputText value="" rendered="#{!installationSlot.hostingSlot}" 
                                                  style="display:inline-block; vertical-align:bottom !important" 
                                                  styleClass="ui-icon ui-icon-folder-collapsed" />
-                                             <h:outputText value="#{installationSlot.name}" title="#{installationSlot.description}" />
+                                             <h:outputText value="#{installationSlot.name}" 
+                                                title="#{installationSlot.description}#{installationSlot.hostingSlot ? ' ('.concat(installationSlot.deviceTypeName).concat(')') : ''}" />
                                              <h:outputText value="" rendered="#{installationSlot.inClipboard}" 
                                                  style="display:inline-block; vertical-align:bottom !important; margin-right: 1.2em; float: right;" 
                                                  styleClass="ui-icon ui-icon-clipboard" />
@@ -146,7 +147,8 @@
                                              <h:outputText value="" rendered="#{!ctrlSlot.hostingSlot}" 
                                                  style="display:inline-block; vertical-align:bottom !important" 
                                                  styleClass="ui-icon ui-icon-folder-collapsed" />
-                                             <h:outputText value="#{ctrlSlot.name}" title="#{ctrlSlot.description}" />
+                                             <h:outputText value="#{ctrlSlot.name}" 
+                                                title="#{ctrlSlot.description}#{ctrlSlot.hostingSlot ? ' ('.concat(ctrlSlot.deviceTypeName).concat(')') : ''}" />
                                          </p:column>
                                      </p:treeTable>                                
                                 </p:tab>
@@ -172,7 +174,8 @@
                                              <h:outputText value="" rendered="#{!powerSlot.hostingSlot}" 
                                                  style="display:inline-block; vertical-align:bottom !important" 
                                                  styleClass="ui-icon ui-icon-folder-collapsed" />
-                                             <h:outputText value="#{powerSlot.name}" title="#{powerSlot.description}" />
+                                             <h:outputText value="#{powerSlot.name}" 
+                                                title="#{powerSlot.description}#{powerSlot.hostingSlot ? ' ('.concat(powerSlot.deviceTypeName).concat(')') : ''}" />
                                          </p:column>
                                      </p:treeTable>                                
                                 </p:tab>
@@ -237,9 +240,7 @@
                         </p:fieldset>
                     </p:column>
                     <p:column id="attributesColumn" styleClass="alignTop" >
-                        <p:fieldset id="slotAttributes" legend="#{hierarchiesController.selectedNodeSlot.hostingSlot 
-                                ? hierarchiesController.selectedNodeSlot.componentType.name.concat(' installation slot attributes') 
-                                : 'Container attributes'}">
+                        <p:fieldset id="slotAttributes" legend="Properties">
                             <p:dataTable id="attributesTable" class="hierarchies-attributes-cell" emptyMessage="No element selected." 
                                     value="#{hierarchiesController.attributes}" var="attribute" scrollable="true" 
                                     style="width: 100%; overflow-y: hidden; max-height: 30%;" resizableColumns="true" 
@@ -318,7 +319,7 @@
                 </p:row>
                 <p:row>
                     <p:column id="relationsColumn" styleClass="alignTop">
-                        <p:fieldset id="relationsTable" legend="Slot relationships">
+                        <p:fieldset id="relationsTable" legend="Relationships">
                             <p:dataTable value="#{hierarchiesController.relationships}" id="relationshipTable"
                                     style="width: 100%; overflow-y: hidden; max-height: 324px;" var="relationship" 
                                     emptyMessage="No element selected." scrollable="true" class="hierarchies-attributes-cell" 
@@ -368,7 +369,7 @@
                 </p:row>
                 <p:row>
                     <p:column id="installationColumn">
-                        <p:fieldset id="installationDetails" legend="Installation details">
+                        <p:fieldset id="installationDetails" legend="Installation">
                             <p:dataTable id="installationTable" value="#{hierarchiesController.installationRecords}" 
                                     var="installationRecord" style="width: 100%;" selectionMode="single" 
                                     selection="#{hierarchiesController.selectedInstallationView}"

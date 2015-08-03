@@ -20,7 +20,6 @@
 package org.openepics.discs.conf.views;
 
 import org.openepics.discs.conf.ejb.SlotEJB;
-import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.Slot;
 
@@ -37,7 +36,7 @@ public class SlotView {
     private boolean isDeletable;
     private final SlotView parentNode;
     private final boolean isHostingSlot;
-    private final ComponentType deviceType;
+    private String deviceTypeName;
     private Device installedDevice;
     private final int order;
     private boolean isFirst;
@@ -59,7 +58,7 @@ public class SlotView {
         this.id = slot.getId();
         this.parentNode = parentNode;
         this.isHostingSlot = slot.isHostingSlot();
-        this.deviceType = slot.getComponentType();
+        this.deviceTypeName = slot.getComponentType().getName();
         this.order = order;
         this.isInClipboard = false;
         this.slotEJB = slotEJB;
@@ -99,14 +98,15 @@ public class SlotView {
     public void setSlot(Slot slot) {
         name = slot.getName();
         description = slot.getDescription();
+        deviceTypeName = slot.getComponentType().getName();
     }
 
     public boolean isHostingSlot() {
         return isHostingSlot;
     }
 
-    public ComponentType getDeviceType() {
-        return deviceType;
+    public String getDeviceTypeName() {
+        return deviceTypeName;
     }
 
     public Device getInstalledDevice() {
