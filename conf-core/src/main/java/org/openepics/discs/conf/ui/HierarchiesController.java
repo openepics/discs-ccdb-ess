@@ -852,6 +852,10 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         if (!nodesToDelete.contains(nodeToDelete)) {
             nodesToDelete.add(nodeToDelete);
         }
+        // make sure that the tree children are properly initialized.
+        if (!((SlotView)nodeToDelete.getData()).isInitialzed()) {
+            hierarchyBuilder.expandNode(nodeToDelete);
+        }
         for (final TreeNode child : nodeToDelete.getChildren()) {
             addSlotToDeleteWithChildren(child);
         }
