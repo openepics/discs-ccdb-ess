@@ -95,6 +95,7 @@ public class DevicesController
     private transient List<DeviceView> filteredDevices;
     private transient List<DeviceView> selectedDevices;
     private transient List<DeviceView> usedDevices;
+    private transient List<DeviceView> filteredDialogDevices;
 
     private String serialNumber;
     private boolean isDeviceBeingEdited;
@@ -653,5 +654,15 @@ public class DevicesController
     public void doImport() {
         super.doImport();
         prepareDevicesForDisplay(null);
+    }
+
+    /** @return the filteredDialogDevices */
+    public List<DeviceView> getFilteredDialogDevices() {
+        return filteredDialogDevices;
+    }
+
+    /** @param filteredDialogDevices the filteredDialogDevices to set */
+    public void setFilteredDialogDevices(List<DeviceView> filteredDialogDevices) {
+        this.filteredDialogDevices = filteredDialogDevices;
     }
 }

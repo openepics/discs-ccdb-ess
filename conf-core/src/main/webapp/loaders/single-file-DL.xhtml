@@ -101,11 +101,11 @@
                     filteredValue="#{controller.loaderResult.filteredMessages}"
                     style="max-width: 100%; margin-bottom: 1em; width: 58em;" rendered="#{controller.loaderResult.error}">
                 <p:column headerText="Row" width="15%" filterBy="#{errorRow.row}" filterMatchMode="contains" 
-                        sortBy="#{errorRow.row}" filterStyle="width: 90%;">
+                        sortBy="#{errorRow.row}">
                     <h:outputText value="#{errorRow.row}" />
                 </p:column>
                 <p:column headerText="Column" width="15%" filterBy="#{errorRow.column}" filterMatchMode="contains" 
-                        sortBy="#{errorRow.column}" filterStyle="width: 90%;">
+                        sortBy="#{errorRow.column}">
                     <h:outputText value="#{errorRow.column}" />
                 </p:column>
                 <p:column headerText="Error" width="70%" filterBy="#{errorRow.message.toString()}" 

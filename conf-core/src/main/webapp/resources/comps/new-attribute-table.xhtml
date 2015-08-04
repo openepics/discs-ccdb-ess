@@ -22,17 +22,17 @@
             <p:ajax event="rowUnselect" update="#{cc.attrs.updateButtons}" />
 
             <p:column headerText="Parent" sortBy="#{attribute.parent}" filterBy="#{attribute.parent}" 
-                    filterMatchMode="contains" filterStyle="max-width: 90%;">
+                    filterMatchMode="contains">
                 <h:outputText value="#{attribute.parent}" />
             </p:column>
             
             <p:column headerText="Name" sortBy="#{attribute.name}" filterBy="#{attribute.name}" 
-                    filterMatchMode="contains" filterStyle="max-width: 90%;">
+                    filterMatchMode="contains">
                 <h:outputText value="#{attribute.name}" />
             </p:column>
     
             <p:column headerText="Value" style="width: 30%" sortBy="#{attribute.value}" filterBy="#{attribute.value}" 
-                    filterMatchMode="contains" filterStyle="max-width: 90%;">
+                    filterMatchMode="contains">
                 <h:outputLink rendered="#{attribute.hasURL}" target="_blank" value="#{attribute.value}" title="Go to URL">
                     <h:outputText value="#{attribute.value}" style="text-decoration: underline;" />
                 </h:outputLink>
@@ -45,7 +45,7 @@
             </p:column>
     
             <p:column headerText="Unit" sortBy="#{attribute.unit}" filterBy="#{attribute.unit.name}" 
-                    filterMatchMode="contains" filterStyle="max-width: 90%;">
+                    filterMatchMode="contains">
                 <h:outputLink rendered="#{!empty attribute.unit}" 
                         value="#{request.contextPath}/units.xhtml?id=#{attribute.unit.id}">
                     <h:outputText value="#{attribute.unit.name}" style="text-decoration: underline;" />
@@ -59,7 +59,7 @@
             </p:column>
     
             <p:column headerText="Data type" sortBy="#{attribute.type.name}" filterBy="#{attribute.type.name}" 
-                    filterMatchMode="contains" filterStyle="max-width: 90%;">
+                    filterMatchMode="contains">
                 <h:outputText value="#{!empty attribute.type ? attribute.type.name : '-'}" />
             </p:column>
         </p:dataTable>                    

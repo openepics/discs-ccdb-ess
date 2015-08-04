@@ -5,7 +5,7 @@
 function removeParametersFromUrl() {
     if (window.location.search != '') {
         window.history.pushState("", "", window.location.href.replace(window.location.search, ''));
-    } 
+    }
 }
 
 function emHeight() {
@@ -14,7 +14,7 @@ function emHeight() {
 
 function adjustFooterPosition() {
     var footerWidth = $('.footer-message').outerWidth(true);
-    $('.footer-message').css({"left":(window.innerWidth-footerWidth)/2 });
+    $('.footer-message').css({"left":(window.innerWidth-footerWidth)/2});
 }
 
 function adjustFieldsetHeight(selector) {
@@ -22,7 +22,7 @@ function adjustFieldsetHeight(selector) {
     var em = emHeight();
 
     var totalMenusHeight = menusHeight + 4*em;
-    $(selector).css({"height":window.innerHeight-totalMenusHeight});                
+    $(selector).css({"height":window.innerHeight-totalMenusHeight});
 }
 
 function startDownload() {
@@ -37,7 +37,7 @@ function scrollSelectedIntoView(tableWidget) {
         selectionTable = tableWidget.selection;
     }
     if (selectionTable.length > 0) {
-        var scrollableBodyHeight = tableWidget.scrollBody[0].clientHeight
+        var scrollableBodyHeight = tableWidget.scrollBody[0].clientHeight;
         var selectedNodeSelector = "tr[data-rk='" + selectionTable[0] + "']";
         var selectedNode = $(selectedNodeSelector);
         var selectedNodePosition = selectedNode[0].offsetTop;
@@ -54,8 +54,8 @@ function scrollSelectedIntoView(tableWidget) {
  * @param tableVarName the name of the PrimeFaces table variable
  */
 function selectEntityInTable(globalIndex, tableVarName) {
-    // selectEntityInTable() only works on page load, so it can be used for navigating to 
-    //     an entity form another screen. 
+    // selectEntityInTable() only works on page load, so it can be used for navigating to
+    //     an entity form another screen.
     var tableWidget = PF(tableVarName);
 
     if (tableWidget.cfg.scrollLimit < 1 || tableWidget.cfg.scrollLimit < globalIndex) return;
@@ -73,9 +73,10 @@ function resizeDeleteList(deleteDialogId) {
 	var deleteTable = $("#" + deleteDialogId + " .dialogListTable .ui-datatable-scrollable-body");
 	var tableContentHeight = $("#" + deleteDialogId + " .dialogListTable .ui-datatable-data").outerHeight(true);
 	var calculatedHeight = emHeight() * 13;
-	if (tableContentHeight >= emHeight() * 13) {
-		calculatedHeight = tableContentHeight;
-	} else if (tableContentHeight < emHeight() * 25) {
+	if (tableContentHeight >= emHeight() * 25) {
 		calculatedHeight = emHeight() * 25;
+	} else if (tableContentHeight >= emHeight() * 13) {
+		calculatedHeight = tableContentHeight + 2;
 	}
+	deleteTable.css({"height":calculatedHeight});
 }

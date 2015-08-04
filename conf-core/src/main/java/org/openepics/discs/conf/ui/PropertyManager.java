@@ -89,6 +89,7 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
     private List<Property> filteredProperties;
     private List<Property> selectedProperties;
     private List<Property> usedProperties;
+    private List<Property> filteredDialogProperties;
 
     private String name;
     private String description;
@@ -566,5 +567,15 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
     @Override
     public ExportSimpleTableDialog getSimpleTableDialog() {
         return simpleTableExporterDialog;
+    }
+
+    /** @return the filteredDialogProperties */
+    public List<Property> getFilteredDialogProperties() {
+        return filteredDialogProperties;
+    }
+
+    /** @param filteredDialogProperties the filteredDialogProperties to set */
+    public void setFilteredDialogProperties(List<Property> filteredDialogProperties) {
+        this.filteredDialogProperties = filteredDialogProperties;
     }
 }

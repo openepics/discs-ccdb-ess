@@ -130,6 +130,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
     private final List<SelectItem> attributeKinds = Utility.buildAttributeKinds();
     protected List<EntityAttributeView> selectedAttributes;
     protected List<EntityAttributeView> nonDeletableAttributes;
+    private List<EntityAttributeView> filteredDialogAttributes;
     protected EntityAttributeView attributeToModify;
     private EntityAttributeView downloadArtifactView;
 
@@ -279,6 +280,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
         Preconditions.checkNotNull(selectedAttributes);
         Preconditions.checkState(!selectedAttributes.isEmpty());
 
+        filteredDialogAttributes = Lists.newArrayList();
         nonDeletableAttributes = Lists.newArrayList();
         for (final EntityAttributeView attrToDelete : selectedAttributes) {
             if (!canDelete(attrToDelete)) {
@@ -1051,5 +1053,15 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
     /** @return the nonDeletableAttributes */
     public List<EntityAttributeView> getNonDeletableAttributes() {
         return nonDeletableAttributes;
+    }
+
+    /** @return the filteredDialogAttributes */
+    public List<EntityAttributeView> getFilteredDialogAttributes() {
+        return filteredDialogAttributes;
+    }
+
+    /** @param filteredDialogAttributes the filteredDialogAttributes to set */
+    public void setFilteredDialogAttributes(List<EntityAttributeView> filteredDialogAttributes) {
+        this.filteredDialogAttributes = filteredDialogAttributes;
     }
 }

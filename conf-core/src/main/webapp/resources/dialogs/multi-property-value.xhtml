@@ -40,11 +40,11 @@
                         <h:outputText value="#{prop.description}" />
                     </p:column>
                     <p:column headerText="Data type" style="width: 8em;" sortBy="#{prop.dataType.name}" 
-                            filterBy="#{prop.dataType.name}" filterMatchMode="contains" filterStyle="width: 90%;">
+                            filterBy="#{prop.dataType.name}" filterMatchMode="contains">
                         <h:outputText value="#{prop.dataType.name}" />
                     </p:column>
                     <p:column headerText="Unit" style="width: 6em;" sortBy="#{prop.unit.name}" 
-                            filterBy="#{prop.unit.name}" filterMatchMode="contains" filterStyle="width: 90%;">
+                            filterBy="#{prop.unit.name}" filterMatchMode="contains">
                         <h:outputText value="#{not empty prop.unit ? prop.unit.name : '-'}" />
                     </p:column>
                     <p:column headerText="Value" style="width: 16em;">

@@ -104,6 +104,7 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
     private List<ComponentType> filteredDeviceTypes;
     private List<ComponentType> selectedDeviceTypes;
     private List<ComponentType> usedDeviceTypes;
+    private List<ComponentType> filteredDialogTypes;
     private String name;
     private String description;
 
@@ -699,6 +700,7 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
         Preconditions.checkNotNull(selectedDeviceTypes);
         Preconditions.checkState(!selectedDeviceTypes.isEmpty());
 
+        filteredDialogTypes = Lists.newArrayList();
         usedDeviceTypes = Lists.newArrayList();
         for (final ComponentType deviceTypeToDelete : selectedDeviceTypes) {
             if (comptypeEJB.isComponentTypeUsed(deviceTypeToDelete)) {
@@ -791,5 +793,15 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
     @Override
     public ExportSimpleTableDialog getSimpleTableDialog() {
         return simpleTableExporterDialog;
+    }
+
+    /** @return the filteredDialogTypes */
+    public List<ComponentType> getFilteredDialogTypes() {
+        return filteredDialogTypes;
+    }
+
+    /** @param filteredDialogTypes the filteredDialogTypes to set */
+    public void setFilteredDialogTypes(List<ComponentType> filteredDialogTypes) {
+        this.filteredDialogTypes = filteredDialogTypes;
     }
 }

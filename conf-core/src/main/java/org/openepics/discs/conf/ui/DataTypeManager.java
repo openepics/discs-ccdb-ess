@@ -79,6 +79,7 @@ public class DataTypeManager extends AbstractExcelSingleFileImportUI implements 
     private transient List<UserEnumerationView> filteredDataTypesViews;
     private transient List<UserEnumerationView> selectedEnums;
     private transient List<UserEnumerationView> usedEnums;
+    private transient List<UserEnumerationView> filteredDialogEnums;
     private transient UserEnumerationView editedEnum;
     private List<DataType> dataTypes;
     private List<String> builtInDataTypeNames;
@@ -449,5 +450,15 @@ public class DataTypeManager extends AbstractExcelSingleFileImportUI implements 
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /** @return the filteredDialogEnums */
+    public List<UserEnumerationView> getFilteredDialogEnums() {
+        return filteredDialogEnums;
+    }
+
+    /** @param filteredDialogEnums the filteredDialogEnums to set */
+    public void setFilteredDialogEnums(List<UserEnumerationView> filteredDialogEnums) {
+        this.filteredDialogEnums = filteredDialogEnums;
     }
 }

@@ -5,7 +5,7 @@
 
     <h:form id="#{formId}">
         <p:dialog widgetVar="#{widgetName}" id="#{widgetName}" modal="true" resizable="false" dynamic="true"
-                closable="false" class="dialogWithList">
+                closable="false" class="dialogWithList" onShow="resizeDeleteList('#{formId}');">
             <f:facet name="header">
                 <h:outputText value="#{dialogTitle}" />
             </f:facet>

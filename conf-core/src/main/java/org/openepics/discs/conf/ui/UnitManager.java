@@ -78,6 +78,7 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
     private transient List<UnitView> filteredUnits;
     private transient List<UnitView> selectedUnits;
     private transient List<UnitView> usedUnits;
+    private transient List<UnitView> filteredDialogUnits;
     private transient UnitView unitToModify;
 
     // * * * * * * * Add/modify dialog fields * * * * * * *
@@ -361,5 +362,15 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
     @Override
     public ExportSimpleTableDialog getSimpleTableDialog() {
         return simpleTableExporterDialog;
+    }
+
+    /** @return the filteredDialogUnits */
+    public List<UnitView> getFilteredDialogUnits() {
+        return filteredDialogUnits;
+    }
+
+    /** @param filteredDialogUnits the filteredDialogUnits to set */
+    public void setFilteredDialogUnits(List<UnitView> filteredDialogUnits) {
+        this.filteredDialogUnits = filteredDialogUnits;
     }
 }

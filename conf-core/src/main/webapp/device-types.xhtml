@@ -54,12 +54,12 @@
                                         :deviceTypesForm:deleteAttrButton" />
     
                                 <p:column headerText="Name" sortBy="#{deviceType.name.toUpperCase()}" filterBy="#{deviceType.name}" 
-                                        filterMatchMode="contains" style="width: 14em;" filterStyle="width: 90%;">
+                                        filterMatchMode="contains" style="width: 14em;">
                                     <h:outputText value="#{deviceType.name}" />
                                 </p:column>
     
                                 <p:column headerText="Description" sortBy="#{deviceType.description}" filterBy="#{deviceType.description}" 
-                                        filterMatchMode="contains" style="width: 25em;" filterStyle="width: 75%;">
+                                        filterMatchMode="contains" style="width: 25em;">
                                     <h:outputText value="#{deviceType.description}" />
                                 </p:column>
                             </p:dataTable>
@@ -157,6 +157,7 @@
             <ui:param name="controller" value="#{componentTypeManager}" />
             <ui:param name="deletePreventionList" value="#{componentTypeManager.usedDeviceTypes}" />
             <ui:param name="deleteList" value="#{componentTypeManager.selectedDeviceTypes}" />
+            <ui:param name="filteredDialogList" value="#{componentTypeManager.filteredDialogTypes}" />
             <ui:param name="submitHandler" value="onDelete" />
             <ui:param name="formsToUpdate" value=":deviceTypesForm:deviceTypeTable :deviceTypesForm:deleteButton 
                                                 :deviceTypesForm:editButton :deviceTypesForm:exportButton
@@ -259,6 +260,7 @@
             <ui:param name="controller" value="#{componentTypeManager}" />
             <ui:param name="deletePreventionList" value="#{componentTypeManager.nonDeletableAttributes}" />
             <ui:param name="deleteList" value="#{componentTypeManager.selectedAttributes}" />
+            <ui:param name="filteredDialogList" value="#{componentTypeManager.filteredDialogAttributes}" />
             <ui:param name="submitHandler" value="deleteAttributes" />
             <ui:param name="formsToUpdate" value=":deviceTypesForm:attributesDataTable:attributesDataTable 
                                                 :deviceTypesForm:editAttrButton :deviceTypesForm:deleteAttrButton" />

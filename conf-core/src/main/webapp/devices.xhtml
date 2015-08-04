@@ -53,19 +53,19 @@
                                                 :devicesForm:attributesDataTable:attributesDataTable" 
                                         listener="#{devicesController.onRowSelect}" />
 
-                                <p:column headerText="Type" sortBy="#{device.device.componentType.name}" filterStyle="width: 90%;" 
+                                <p:column headerText="Type" sortBy="#{device.device.componentType.name}" 
                                         filterBy="#{device.device.componentType.name}" filterMatchMode="contains">
                                     <h:link outcome="deviceTypesManager" value="#{device.device.componentType.name}" class="link">
                                         <f:param name="id" value="#{device.device.componentType.id}" />
                                     </h:link>                                    
                                 </p:column>
 
-                                <p:column headerText="Inventory ID" sortBy="#{device.inventoryId}" filterStyle="width: 90%;" 
+                                <p:column headerText="Inventory ID" sortBy="#{device.inventoryId}" 
                                         filterBy="#{device.inventoryId}" filterMatchMode="contains">
                                     <h:outputText value="#{device.inventoryId}" />
                                 </p:column>
 
-                                <p:column headerText="Installed in" sortBy="#{device.installedIn}" filterStyle="width: 90%;" 
+                                <p:column headerText="Installed in" sortBy="#{device.installedIn}" 
                                         filterBy="#{device.installedIn}" filterMatchMode="contains">
                                     <h:outputLink rendered="#{!empty device.installedSlotId}" 
                                             value="#{request.contextPath}/?id=#{device.installedSlotId}">
@@ -74,7 +74,7 @@
                                     <h:outputText value="-" rendered="#{empty device.installedSlotId}" />
                                 </p:column>
 
-                                <p:column headerText="Installation timestamp" sortBy="#{device.installationDate}" filterStyle="width: 90%;" 
+                                <p:column headerText="Installation timestamp" sortBy="#{device.installationDate}" 
                                         filterBy="#{device.installationDate}" filterMatchMode="contains">
                                     <h:outputText value="#{device.installationDate}" />
                                 </p:column>
@@ -214,6 +214,7 @@
             <ui:param name="controller" value="#{devicesController}" />
             <ui:param name="deletePreventionList" value="#{devicesController.usedDevices}" />
             <ui:param name="deleteList" value="#{devicesController.selectedDevices}" />
+            <ui:param name="filteredDialogList" value="#{devicesController.filteredDialogDevices}" />
             <ui:param name="submitHandler" value="onDeviceDelete" />
             <ui:param name="formsToUpdate" value=":devicesForm:attributesDataTable:attributesDataTable 
                                                     :devicesForm:editAttrButton :devicesForm:deleteAttrButton" />
@@ -230,6 +231,7 @@
             <ui:param name="deletePreventionList" value="#{devicesController.nonDeletableAttributes}" />
             <ui:param name="deleteList" value="#{devicesController.selectedAttributes}" />
             <ui:param name="submitHandler" value="deleteAttributes" />
+            <ui:param name="filteredDialogList" value="#{devicesController.filteredDialogAttributes}" />
             <ui:param name="formsToUpdate" value=":devicesForm:attributesDataTable:attributesDataTable 
                                                     :devicesForm:editAttrButton :devicesForm:deleteAttrButton" />
             <ui:param name="closeDialogActions" value="PF('attributesDataTable').clearFilters; adjustTableHeights();" />

@@ -44,7 +44,7 @@
                     <p:ajax event="rowUnselect" update=":enumsForm:deleteButton :enumsForm:editButton" />
 
                     <p:column headerText="Name" sortBy="#{enum.name}" filterBy="#{enum.name}" width="10%" 
-                            filterMatchMode="contains" filterStyle="width: 90%;">
+                            filterMatchMode="contains">
                         <h:outputText value="#{enum.name}" />
                     </p:column>
 
@@ -83,6 +83,7 @@
             <ui:param name="controller" value="#{dataTypeManager}" />
             <ui:param name="deletePreventionList" value="#{dataTypeManager.usedEnums}" />
             <ui:param name="deleteList" value="#{dataTypeManager.selectedEnums}" />
+            <ui:param name="filteredDialogList" value="#{dataTypeManager.filteredDialogEnums}" />
             <ui:param name="submitHandler" value="onDelete" />
             <ui:param name="formsToUpdate" value=":enumsForm:enumsTable :enumsForm:deleteButton 
                                                 :enumsForm:editButton :enumsForm:exportButton" />

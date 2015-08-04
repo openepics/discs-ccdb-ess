@@ -5,7 +5,7 @@
 
     <h:form id="#{formId}">
         <p:dialog widgetVar="#{widgetName}" id="#{widgetName}" modal="true" resizable="false" dynamic="true"
-                closable="false" class="dialogWithList">
+                closable="false" class="dialogWithList" onShow="resizeDeleteList('#{formId}');">
             <f:facet name="header">
                 <h:outputText value="#{dialogTitle}" />
             </f:facet>
@@ -16,9 +16,11 @@
                     rendered="#{not empty deletePreventionList}" />
             </p:outputPanel>
 
-            <p:dataTable value="#{empty deletePreventionList ? deleteList : deletePreventionList}" class="dialogListTable" 
-                    var="entity" scrollable="true" style="width: 30em; margin-bottom: 1em;" stickyHeader="true">
-                <p:column headerText="#{entityName}">
+            <p:dataTable value="#{empty deletePreventionList ? deleteList : deletePreventionList}" 
+                    class="dialogListTable" filteredValue="#{filteredDialogList}" var="entity" 
+                    scrollable="true" style="width: 30em; margin-bottom: 1em;">
+                <p:column headerText="#{entityName}" sortBy="#{entity.name}" filterBy="#{entity.name}" 
+                        filterMatchMode="contains">
                     <h:outputText value="#{entity.name}" />
                 </p:column>
             </p:dataTable>

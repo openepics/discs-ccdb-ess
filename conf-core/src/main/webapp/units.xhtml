@@ -51,12 +51,12 @@
                     </p:column>
    
                     <p:column headerText="Description" sortBy="#{unit.description}" filterBy="#{unit.description}" 
-                            filterStyle="max-width: 20em; width: 90%;" filterMatchMode="contains" styleClass="tableColWidth60">
+                            filterStyle="width: 20em;" filterMatchMode="contains" styleClass="tableColWidth60">
                         <h:outputText value="#{unit.description}" />
                     </p:column>
 
                     <p:column headerText="Symbol" sortBy="#{unit.symbol}" filterBy="#{unit.symbol}" 
-                            styleClass="tableColWidth10" filterStyle="width: 90%;">
+                            styleClass="tableColWidth10">
                         <h:outputText value="#{unit.symbol}" />
                     </p:column>
                 </p:dataTable>
@@ -86,6 +86,7 @@
             <ui:param name="controller" value="#{unitManager}" />
             <ui:param name="deletePreventionList" value="#{unitManager.usedUnits}" />
             <ui:param name="deleteList" value="#{unitManager.selectedUnits}" />
+            <ui:param name="filteredDialogList" value="#{unitManager.filteredDialogUnits}" />
             <ui:param name="submitHandler" value="onDelete" />
             <ui:param name="formsToUpdate" value=":unitsForm:unitsTable :unitsForm:deleteButton :unitsForm:editButton 
                                                 :unitsForm:exportButton" />

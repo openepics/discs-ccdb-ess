@@ -52,12 +52,12 @@
                     </p:column>
     
                     <p:column id="descCol" headerText="Description" sortBy="#{property.description}" filterBy="#{property.description}" 
-                            filterStyle="max-width: 20em; width: 90%;" filterMatchMode="contains" styleClass="tableColWidth60">
+                            filterStyle="width: 20em;" filterMatchMode="contains" styleClass="tableColWidth60">
                         <h:outputText value="#{property.description}" />
                     </p:column>
     
-                    <p:column id="uniCol" headerText="Unit" sortBy="#{property.unit.name}" filterBy="#{property.unit.name}" 
-                            filterStyle="width: 90%;" styleClass="tableColWidth10">
+                    <p:column id="uniCol" headerText="Unit" sortBy="#{property.unit.name}" 
+                            filterBy="#{property.unit.name}" styleClass="tableColWidth10">
                         <h:outputLink rendered="#{!empty property.unit}" 
                                 value="#{request.contextPath}/units.xhtml?id=#{property.unit.id}">
                             <h:outputText value="#{property.unit.name}" style="text-decoration: underline;" />
@@ -65,8 +65,8 @@
                         <h:outputText value="-" rendered="#{empty property.unit}" />
                     </p:column>
     
-                    <p:column headerText="Data Type" sortBy="#{property.dataType.name}" filterBy="#{property.dataType.name}" 
-                            filterStyle="width: 90%;" styleClass="tableColWidth10">
+                    <p:column headerText="Data Type" sortBy="#{property.dataType.name}" 
+                            filterBy="#{property.dataType.name}" styleClass="tableColWidth10">
                         <h:outputText value="#{property.dataType.name}" />
                     </p:column>
                 </p:dataTable>
@@ -96,6 +96,7 @@
             <ui:param name="controller" value="#{propertyManager}" />
             <ui:param name="deletePreventionList" value="#{propertyManager.usedProperties}" />
             <ui:param name="deleteList" value="#{propertyManager.selectedProperties}" />
+            <ui:param name="filteredDialogList" value="#{propertyManager.filteredDialogProperties}" />
             <ui:param name="submitHandler" value="onDelete" />
             <ui:param name="formsToUpdate" value=":propertiesForm:propertiesTable :propertiesForm:deleteButton 
                                                 :propertiesForm:editButton :propertiesForm:exportButton" />
