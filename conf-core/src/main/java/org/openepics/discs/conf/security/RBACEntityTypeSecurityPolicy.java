@@ -25,7 +25,6 @@ import static org.openepics.discs.conf.ent.EntityTypeOperation.RENAME;
 import static org.openepics.discs.conf.ent.EntityTypeOperation.UPDATE;
 
 import java.io.Serializable;
-import java.security.Principal;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.Map;
@@ -35,12 +34,14 @@ import java.util.logging.Logger;
 
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.Alternative;
+import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
 
-import se.esss.ics.rbac.loginmodules.RBACPrincipal;
+import se.esss.ics.rbac.loginmodules.service.Message;
+import se.esss.ics.rbac.loginmodules.service.RBACSSOSessionService;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
@@ -63,11 +64,11 @@ import com.google.common.collect.ImmutableMap.Builder;
 public class RBACEntityTypeSecurityPolicy extends AbstractEnityTypeSecurityPolicy
     implements SecurityPolicy, Serializable {
 
+    @Inject private RBACSSOSessionService sessionService;
+
     private static final long serialVersionUID = 7573725310824284483L;
 
     private static final Logger LOGGER = Logger.getLogger(RBACEntityTypeSecurityPolicy.class.getCanonicalName());
-
-    private static final String RBAC_RESOURCE = "ControlsDatabase";
 
     private static final Map<String, EntityType> PERMISSION_MAPPING;
 
@@ -95,25 +96,25 @@ public class RBACEntityTypeSecurityPolicy extends AbstractEnityTypeSecurityPolic
 
     @Override
     public void login(String userName, String password) {
-        super.login(userName, password);
+        Message message = sessionService.login(userName, password);
+        if (!message.isSuccessful()) {
+            LOGGER.log(Level.FINE, message.getMessage());
+            throw new SecurityException(message.getMessage());
+        }
+    }
 
-        final Principal principal = servletRequest.getUserPrincipal();
-        if (principal==null || !(principal instanceof RBACPrincipal)) {
-            throw new SecurityException(RBACEntityTypeSecurityPolicy.class.getName() + " Could not get RBAC user "
-                    + "Principal. Is RBAC Login Module installed on the server?");
+    @Override
+    public void logout() {
+        Message message = sessionService.logout();
+        if (!message.isSuccessful()) {
+            LOGGER.log(Level.FINE, message.getMessage());
+            throw new SecurityException(message.getMessage());
         }
+    }
 
-        final RBACPrincipal rbacPrincipal = (RBACPrincipal) principal;
-        if (!RBAC_RESOURCE.equals(rbacPrincipal.getResource())) {
-            throw new SecurityException(RBACEntityTypeSecurityPolicy.class.getName() + " ControlsDatabase resource not "
-                    + "available in the principal. Is the RBAC login module configured properly?");
-        }
-        for (String roleName : rbacPrincipal.getRoles()) {
-            LOGGER.log(Level.FINE, "User role: " + roleName);
-        }
-        for (String permissionName : rbacPrincipal.getPermissions()) {
-            LOGGER.log(Level.FINE, "User permission: " + permissionName);
-        }
+    @Override
+    public String getUserId() {
+        return sessionService.getLoggedInName();
     }
 
     @Override
@@ -121,16 +122,12 @@ public class RBACEntityTypeSecurityPolicy extends AbstractEnityTypeSecurityPolic
         Preconditions.checkArgument(cachedPermissions==null,
                                     "populateCachedPermissions called when cached data was already available");
 
-        cachedPermissions = new EnumMap<EntityType, Set<EntityTypeOperation>>(EntityType.class);
-
-        RBACPrincipal principal = (RBACPrincipal) servletRequest.getUserPrincipal();
-
         final Set<EntityTypeOperation> allWritePermissions = EnumSet.of(UPDATE, CREATE, DELETE, RENAME);
 
-        for (String rbacPermission : principal.getPermissions()) {
-            final EntityType entityType = PERMISSION_MAPPING.get(rbacPermission);
-            if (entityType != null) {
-                cachedPermissions.put(entityType, allWritePermissions);
+        cachedPermissions = new EnumMap<EntityType, Set<EntityTypeOperation>>(EntityType.class);
+        for (String perm : PERMISSION_MAPPING.keySet()) {
+            if (sessionService.hasPermission(perm)) {
+                cachedPermissions.put(PERMISSION_MAPPING.get(perm), allWritePermissions);
             }
         }
     }

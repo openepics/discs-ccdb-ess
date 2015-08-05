@@ -24,12 +24,15 @@ import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.enterprise.context.SessionScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.servlet.http.HttpServletRequest;
 
 import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
@@ -57,11 +60,41 @@ public class DBTableEntityTypeSecurityPolicy extends AbstractEnityTypeSecurityPo
 
     @PersistenceContext private transient EntityManager em;
 
+    @Inject private  HttpServletRequest servletRequest;
+
+
     /**
      * Default no-params constructor
      */
     public DBTableEntityTypeSecurityPolicy() {
         super();
+    }
+
+    @Override
+    public void login(String userName, String password) {
+        try {
+            if (servletRequest.getUserPrincipal() == null) {
+                servletRequest.login(userName, password);
+                LOGGER.log(Level.INFO, "Login successful for " + userName);
+            }
+        } catch (Exception e) {
+            throw new SecurityException("Login Failed !", e);
+        }
+    }
+
+    @Override
+    public void logout() {
+        try {
+            servletRequest.logout();
+            servletRequest.getSession().invalidate();
+        } catch (Exception e) {
+            throw new SecurityException("Error while logging out!", e);
+        }
+    }
+
+    @Override
+    public String getUserId() {
+        return servletRequest.getUserPrincipal()!=null ? servletRequest.getUserPrincipal().getName() : null;
     }
 
     @Override

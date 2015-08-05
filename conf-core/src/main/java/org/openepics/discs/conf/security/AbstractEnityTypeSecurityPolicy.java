@@ -25,7 +25,6 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.inject.Inject;
 import javax.security.auth.spi.LoginModule;
 import javax.servlet.http.HttpServletRequest;
 
@@ -52,11 +51,9 @@ import org.openepics.discs.conf.ent.EntityTypeOperation;
  */
 
 public abstract class AbstractEnityTypeSecurityPolicy implements SecurityPolicy, Serializable {
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -1711496211869305655L;
 
     private static final Logger LOGGER = Logger.getLogger(AbstractEnityTypeSecurityPolicy.class.getCanonicalName());
-
-    @Inject protected HttpServletRequest servletRequest;
 
     /**
      * Contains cached permissions
@@ -71,31 +68,13 @@ public abstract class AbstractEnityTypeSecurityPolicy implements SecurityPolicy,
     }
 
     @Override
-    public void login(String userName, String password) {
-        try {
-            if (servletRequest.getUserPrincipal() == null) {
-                servletRequest.login(userName, password);
-                LOGGER.log(Level.INFO, "Login successful for " + userName);
-            }
-        } catch (Exception e) {
-            throw new SecurityException("Login Failed !", e);
-        }
-    }
+    public abstract void login(String userName, String password);
 
     @Override
-    public void logout() {
-        try {
-            servletRequest.logout();
-            servletRequest.getSession().invalidate();
-        } catch (Exception e) {
-            throw new SecurityException("Error while logging out!", e);
-        }
-    }
+    public abstract void logout();
 
     @Override
-    public String getUserId() {
-        return servletRequest.getUserPrincipal()!=null ? servletRequest.getUserPrincipal().getName() : null;
-    }
+    public abstract String getUserId();
 
     @Override
     public void checkAuth(Object entity, EntityTypeOperation operationType) {
