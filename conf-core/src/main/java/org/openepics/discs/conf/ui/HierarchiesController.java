@@ -807,8 +807,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
     public void onTabChange(TabChangeEvent event) {
         if (activeTab == ActiveTab.INCLUDES) {
-            initPowersHierarchy();
-            initControlsHierarchy();
+            initHierarchy(powersRootNode, SlotRelationName.POWERS, powersHierarchyBuilder);
+            initHierarchy(controlsRootNode, SlotRelationName.CONTROLS, controlsHierarchyBuilder);
         }
         activeTab = ActiveTab.valueOf(event.getTab().getId());
         unselectAllTreeNodes();
@@ -943,51 +943,27 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         controlsRootNode = new DefaultTreeNode(new SlotView(slotEJB.getRootNode(), null, 1, slotEJB), null);
     }
 
-    private void initPowersHierarchy() {
-        powersRootNode.getChildren().clear();;
-        final SlotView rootSlotView = (SlotView) powersRootNode.getData();
+    private void initHierarchy(final TreeNode root, final SlotRelationName name, final HierarchyBuilder builder) {
+        root.getChildren().clear();
+        final SlotView rootSlotView = (SlotView) root.getData();
         rootSlotView.setLevel(0);
 
-        final List<Slot> rootNodes;
+        final List<Slot> levelOneSlots;
         if (isSingleNodeSelected()) {
-            // find root nodes for this sub-tree
-            rootNodes = Lists.newArrayList();
-            findRelationRootsForSelectedNode(selectedNodes.get(0), rootNodes, SlotRelationName.POWERS);
+            // find root nodes for the selected sub-tree
+            levelOneSlots = Lists.newArrayList();
+            findRelationRootsForSelectedNode(selectedNodes.get(0), levelOneSlots, name);
         } else {
             // find all roots
-            rootNodes = slotEJB.findRootSlotsForRelation(
-                                                    slotRelationEJB.findBySlotRelationName(SlotRelationName.POWERS));
+            levelOneSlots = slotEJB.findRootSlotsForRelation(
+                                                    slotRelationEJB.findBySlotRelationName(name));
         }
         int order = 0;
-        for (final Slot root : new HashSet<Slot>(rootNodes)) {
-            final SlotView newRoot = new SlotView(root, rootSlotView, ++order, slotEJB);
-            newRoot.setLevel(1);
-            final TreeNode newRootNode = new DefaultTreeNode(newRoot, powersRootNode);
-            powersHierarchyBuilder.rebuildSubTree(newRootNode);
-        }
-    }
-
-    private void initControlsHierarchy() {
-        controlsRootNode.getChildren().clear();
-        final SlotView rootSlotView = (SlotView) controlsRootNode.getData();
-        rootSlotView.setLevel(0);
-
-        final List<Slot> rootNodes;
-        if (isSingleNodeSelected()) {
-            // find root nodes for this sub-tree
-            rootNodes = Lists.newArrayList();
-            findRelationRootsForSelectedNode(selectedNodes.get(0), rootNodes, SlotRelationName.CONTROLS);
-        } else {
-            // find all roots
-            rootNodes = slotEJB.findRootSlotsForRelation(
-                                                    slotRelationEJB.findBySlotRelationName(SlotRelationName.CONTROLS));
-        }
-        int order = 0;
-        for (final Slot root : new HashSet<Slot>(rootNodes)) {
-            final SlotView newRoot = new SlotView(root, rootSlotView, ++order, slotEJB);
-            newRoot.setLevel(0);
-            final TreeNode newRootNode = new DefaultTreeNode(newRoot, controlsRootNode);
-            controlsHierarchyBuilder.rebuildSubTree(newRootNode);
+        for (final Slot levelOne : new HashSet<Slot>(levelOneSlots)) {
+            final SlotView levelOneView = new SlotView(levelOne, rootSlotView, ++order, slotEJB);
+            levelOneView.setLevel(1);
+            final TreeNode newLevelOneNode = new DefaultTreeNode(levelOneView, root);
+            builder.rebuildSubTree(newLevelOneNode);
         }
     }
 
