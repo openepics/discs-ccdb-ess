@@ -224,9 +224,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         try {
             super.init();
             activeTab = ActiveTab.INCLUDES;
-            initIncludeHierarchy();
-            initPowersHierarchy();
-            initControlsHierarchy();
+
+            initHierarchies();
             fillNamesAutocomplete();
             attributeKinds = Utility.buildAttributeKinds();
             relationshipTypes = buildRelationshipTypeList();
@@ -807,6 +806,10 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     }
 
     public void onTabChange(TabChangeEvent event) {
+        if (activeTab == ActiveTab.INCLUDES) {
+            initPowersHierarchy();
+            initControlsHierarchy();
+        }
         activeTab = ActiveTab.valueOf(event.getTab().getId());
         unselectAllTreeNodes();
         selectedNodes = null;
@@ -923,29 +926,91 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         return true;
     }
 
-    private void initIncludeHierarchy() {
+    private void initHierarchies() {
         hierarchyBuilder = new HierarchyBuilder(3, installationEJB, slotEJB);
         rootNode = new DefaultTreeNode(new SlotView(slotEJB.getRootNode(), null, 1, slotEJB), null);
-
         hierarchyBuilder.rebuildSubTree(rootNode);
+
+        // for POWERS and CONTROLS hierarchies, the trees will be rebuild dynamically based on user selection
+        powersHierarchyBuilder = new HierarchyBuilder(3, installationEJB, slotEJB);
+        powersHierarchyBuilder.setRelationship(SlotRelationName.POWERS);
+        // initializing root node prevents NPE in initial page display
+        powersRootNode = new DefaultTreeNode(new SlotView(slotEJB.getRootNode(), null, 1, slotEJB), null);
+
+        controlsHierarchyBuilder = new HierarchyBuilder(3, installationEJB, slotEJB);
+        controlsHierarchyBuilder.setRelationship(SlotRelationName.CONTROLS);
+        // initializing root node prevents NPE in initial page display
+        controlsRootNode = new DefaultTreeNode(new SlotView(slotEJB.getRootNode(), null, 1, slotEJB), null);
     }
 
     private void initPowersHierarchy() {
-        powersHierarchyBuilder = new HierarchyBuilder(3, installationEJB, slotEJB);
-        powersHierarchyBuilder.setRelationship(SlotRelationName.POWERS);
+        powersRootNode.getChildren().clear();;
+        final SlotView rootSlotView = (SlotView) powersRootNode.getData();
+        rootSlotView.setLevel(0);
 
-        powersRootNode = new DefaultTreeNode(new SlotView(slotEJB.getRootNode(), null, 1, slotEJB), null);
-        powersHierarchyBuilder.rebuildSubTree(powersRootNode);
+        final List<Slot> rootNodes;
+        if (isSingleNodeSelected()) {
+            // find root nodes for this sub-tree
+            rootNodes = Lists.newArrayList();
+            findRelationRootsForSelectedNode(selectedNodes.get(0), rootNodes, SlotRelationName.POWERS);
+        } else {
+            // find all roots
+            rootNodes = slotEJB.findRootSlotsForRelation(
+                                                    slotRelationEJB.findBySlotRelationName(SlotRelationName.POWERS));
+        }
+        int order = 0;
+        for (final Slot root : new HashSet<Slot>(rootNodes)) {
+            final SlotView newRoot = new SlotView(root, rootSlotView, ++order, slotEJB);
+            newRoot.setLevel(1);
+            final TreeNode newRootNode = new DefaultTreeNode(newRoot, powersRootNode);
+            powersHierarchyBuilder.rebuildSubTree(newRootNode);
+        }
     }
 
     private void initControlsHierarchy() {
-        controlsHierarchyBuilder = new HierarchyBuilder(3, installationEJB, slotEJB);
-        controlsHierarchyBuilder.setRelationship(SlotRelationName.CONTROLS);
+        controlsRootNode.getChildren().clear();
+        final SlotView rootSlotView = (SlotView) controlsRootNode.getData();
+        rootSlotView.setLevel(0);
 
-        controlsRootNode = new DefaultTreeNode(new SlotView(slotEJB.getRootNode(), null, 1, slotEJB), null);
-        controlsHierarchyBuilder.rebuildSubTree(controlsRootNode);
+        final List<Slot> rootNodes;
+        if (isSingleNodeSelected()) {
+            // find root nodes for this sub-tree
+            rootNodes = Lists.newArrayList();
+            findRelationRootsForSelectedNode(selectedNodes.get(0), rootNodes, SlotRelationName.CONTROLS);
+        } else {
+            // find all roots
+            rootNodes = slotEJB.findRootSlotsForRelation(
+                                                    slotRelationEJB.findBySlotRelationName(SlotRelationName.CONTROLS));
+        }
+        int order = 0;
+        for (final Slot root : new HashSet<Slot>(rootNodes)) {
+            final SlotView newRoot = new SlotView(root, rootSlotView, ++order, slotEJB);
+            newRoot.setLevel(0);
+            final TreeNode newRootNode = new DefaultTreeNode(newRoot, controlsRootNode);
+            controlsHierarchyBuilder.rebuildSubTree(newRootNode);
+        }
     }
 
+    private void findRelationRootsForSelectedNode(final TreeNode node, final List<Slot> rootSlots,
+            final SlotRelationName slotRelationName) {
+        final SlotView nodeSlotView = (SlotView) node.getData();
+        final Slot nodeSlot = nodeSlotView.getSlot();
+        if (!nodeSlotView.isInitialzed()) {
+            hierarchyBuilder.rebuildSubTree(node);
+        }
+
+        final List<SlotPair> relations = nodeSlot.getPairsInWhichThisSlotIsAParentList();
+        for (final SlotPair relationCandidate : relations) {
+            if (relationCandidate.getSlotRelation().getName() == slotRelationName) {
+                rootSlots.add(nodeSlot);
+                return;
+            }
+        }
+        // this node is not a root
+        for (final TreeNode childNode : node.getChildren()) {
+            findRelationRootsForSelectedNode(childNode, rootSlots, slotRelationName);
+        }
+    }
 
     /** The action event to be called when the user presses the "move up" action button. This action moves the current
      * container/installation slot up one space, if that is possible.

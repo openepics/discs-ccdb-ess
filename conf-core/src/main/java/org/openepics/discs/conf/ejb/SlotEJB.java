@@ -42,6 +42,7 @@ import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotArtifact;
 import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
+import org.openepics.discs.conf.ent.SlotRelation;
 import org.openepics.discs.conf.ent.SlotRelationName;
 import org.openepics.discs.conf.ent.values.Value;
 import org.openepics.discs.conf.security.Authorized;
@@ -255,6 +256,7 @@ public class SlotEJB extends DAO<Slot> {
      * @param <T> the actual instance type of the {@link PropertyValue}
      * @return a fresh instance of the property value from the database
      */
+    @SuppressWarnings("unchecked")
     public <T extends PropertyValue> T refreshPropertyValue(T propertyValue) {
         Preconditions.checkNotNull(propertyValue);
         Preconditions.checkNotNull(propertyValue.getId());
@@ -280,6 +282,7 @@ public class SlotEJB extends DAO<Slot> {
      * @param <T> the actual instance type of the {@link Artifact}
      * @return a fresh instance of the artifact from the database
      */
+    @SuppressWarnings("unchecked")
     public <T extends Artifact> T refreshArtifact(T artifact) {
         Preconditions.checkNotNull(artifact);
         Preconditions.checkNotNull(artifact.getId());
@@ -296,5 +299,14 @@ public class SlotEJB extends DAO<Slot> {
             throw new UnhandledCaseException();
         }
         return returnPropertyValue;
+    }
+
+    /** This method returns all {@link Slot}s, that are the root of some relationship (do not have any parents).
+     * @param relation the relationship to test for
+     * @return a {@link List} of {@link Slot}s that are roots of a certain relationship type.
+     */
+    public List<Slot> findRootSlotsForRelation(final SlotRelation relation) {
+        return em.createNamedQuery("SlotPair.findRootSlotsForRelation", Slot.class)
+                .setParameter("relation", relation).getResultList();
     }
 }

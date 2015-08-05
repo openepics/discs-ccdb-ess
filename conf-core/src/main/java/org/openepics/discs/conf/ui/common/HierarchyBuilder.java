@@ -143,15 +143,12 @@ public class HierarchyBuilder {
         parentSlotView.setInitialzed(true);
     }
 
-    /**
-     * <p>
+    /** <p>
      * Add the child to appropriate place in the children collection
-     * </p>
-     * <p>
+     * </p><p>
      * If the level equals or is greater than preload limit call expand on all children
      * otherwise, check if the child has children of its own. If yes, add a fake node to it and exit.
-     * </p>
-     * <p>
+     * </p><p>
      * This method adds a node unconditionally, disregarding the filters. If filtering is applied and the node is
      * an installation slot, then this method builds the subtree while applying the filter.
      * </p>
@@ -226,8 +223,7 @@ public class HierarchyBuilder {
         if (!slotChildren.isEmpty()) {
             // we add fake child or all children
             for (SlotPair pair : slotChildren) {
-                if ((pair.getSlotRelation().getName() == relationship) ||
-                        (isSlotContainer && (pair.getSlotRelation().getName() == SlotRelationName.CONTAINS))) {
+                if (pair.getSlotRelation().getName() == relationship) {
                     // relationship match is OK, but is the filter match OK
                     final Slot childSlot = pair.getChildSlot();
                     // There are two branches: no filtering or filtering

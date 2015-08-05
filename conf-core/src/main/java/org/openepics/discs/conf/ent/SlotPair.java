@@ -60,6 +60,10 @@ import javax.xml.bind.annotation.XmlRootElement;
             + "WHERE s.childSlot = :childSlot AND s.slotRelation.name = :relationName"),
     @NamedQuery(name = "SlotPair.findSlotRelations", query = "SELECT s from SlotPair s "
             + "WHERE s.childSlot = :slot OR s.parentSlot = :slot"),
+    @NamedQuery(name = "SlotPair.findRootSlotsForRelation", query = "SELECT p.parentSlot from SlotPair p "
+            + "WHERE p.slotRelation = :relation AND "
+                    + "(SELECT COUNT(p2) FROM SlotPair p2 WHERE "
+                    + "p2.childSlot = p.parentSlot AND p2.slotRelation = :relation) = 0"),
     @NamedQuery(name = "SlotPair.findPrecedingPairs", query = "SELECT s FROM SlotPair s "
             + "WHERE s.parentSlot = :parentSlot AND s.slotRelation = :slotRelation AND s.slotOrder < :order "
             + "ORDER BY s.slotOrder DESC"),
