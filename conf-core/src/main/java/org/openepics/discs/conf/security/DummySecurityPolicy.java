@@ -23,7 +23,7 @@ import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.enterprise.context.SessionScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Alternative;
 import javax.inject.Named;
 
@@ -37,7 +37,7 @@ import org.openepics.discs.conf.ent.EntityTypeOperation;
  * @author <a href="mailto:miroslav.pavleski@cosylab.com">Miroslav Pavleski</a>
  *
  */
-@SessionScoped
+@RequestScoped
 @Named("securityPolicy")
 @Alternative
 public class DummySecurityPolicy implements SecurityPolicy, Serializable {

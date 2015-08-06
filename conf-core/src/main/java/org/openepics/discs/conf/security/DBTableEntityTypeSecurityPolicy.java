@@ -20,34 +20,29 @@
 package org.openepics.discs.conf.security;
 
 import java.io.Serializable;
-import java.util.EnumMap;
-import java.util.EnumSet;
 import java.util.List;
-import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.enterprise.context.SessionScoped;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.servlet.http.HttpServletRequest;
 
 import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.Privilege;
 
-import com.google.common.base.Preconditions;
-
-
 /**
  * Implementation of simple security policy (checking for entity-type access only) using the DB {@link Privilege} table
  * and the Java EE security module, as was in Configuration Module v. 1.0.
  *
- * Stateful EJB, caches all permissions from database on first access.
- *
  * @author <a href="mailto:miroslav.pavleski@cosylab.com">Miroslav Pavleski</a>
- *
+ * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  */
-@SessionScoped
+@RequestScoped
 @Named("securityPolicy")
 public class DBTableEntityTypeSecurityPolicy extends AbstractEnityTypeSecurityPolicy
                 implements SecurityPolicy, Serializable {
@@ -57,43 +52,56 @@ public class DBTableEntityTypeSecurityPolicy extends AbstractEnityTypeSecurityPo
 
     @PersistenceContext private transient EntityManager em;
 
-    /**
-     * Default no-params constructor
-     */
-    public DBTableEntityTypeSecurityPolicy() {
-        super();
+    @Inject private HttpServletRequest servletRequest;
+
+    /** Default no-params constructor */
+    public DBTableEntityTypeSecurityPolicy() {}
+
+    @Override
+    public void login(String userName, String password) {
+        try {
+            if (servletRequest.getUserPrincipal() == null) {
+                servletRequest.login(userName, password);
+                LOGGER.log(Level.INFO, "Login successful for " + userName);
+            }
+        } catch (Exception e) {
+            throw new SecurityException("Login Failed !", e);
+        }
     }
 
     @Override
-    protected void populateCachedPermissions() {
-        Preconditions.checkArgument(cachedPermissions==null,
-                                    "EntityTypeDBTableSecurityPolicy.populateCachedPermissions called when "
-                                    + "cached data was already available");
+    public void logout() {
+        try {
+            servletRequest.logout();
+            servletRequest.getSession().invalidate();
+        } catch (Exception e) {
+            throw new SecurityException("Error while logging out!", e);
+        }
+    }
 
-        cachedPermissions = new EnumMap<EntityType, Set<EntityTypeOperation>>(EntityType.class);
+    @Override
+    public String getUserId() {
+        return servletRequest.getUserPrincipal() != null ? servletRequest.getUserPrincipal().getName() : null;
+    }
 
+    @Override
+    protected boolean hasPermission(EntityType entityType, EntityTypeOperation operationType) {
         final String principal = getUserId();
-        // The following should not happen for logged in user
         if (principal == null || principal.isEmpty()) {
-            throw new SecurityException("Identity could not be established. Is user logged in");
+            return false;
         }
 
         final List<Privilege> privs = em.createQuery(
                 "SELECT p FROM UserRole ur JOIN ur.role r JOIN r.privilegeList p " +
-                "WHERE ur.user.userId = :user", Privilege.class).
-                setParameter("user", principal).getResultList();
-        LOGGER.finer("found privileges: " + privs.size());
+                "WHERE ur.user.userId = :user AND p.resource = :entityType", Privilege.class).
+                setParameter("user", principal).setParameter("entityType", entityType).getResultList();
+        LOGGER.log(Level.FINE, "Found privileges for user \"" + principal + "\": " + privs);
 
         for (Privilege p : privs) {
-            final EntityType entityType = p.getResource();
-
-            Set<EntityTypeOperation> operationTypeSet = cachedPermissions.get(entityType);
-            if (operationTypeSet == null) {
-                operationTypeSet = EnumSet.noneOf(EntityTypeOperation.class);
-                cachedPermissions.put(entityType, operationTypeSet);
+            if (p.getOper() == operationType) {
+                return true;
             }
-
-            operationTypeSet.add(p.getOper());
         }
+        return false;
     }
 }
