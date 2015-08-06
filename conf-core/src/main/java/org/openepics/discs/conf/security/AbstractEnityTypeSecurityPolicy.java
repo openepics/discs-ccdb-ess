@@ -20,10 +20,6 @@
 package org.openepics.discs.conf.security;
 
 import java.io.Serializable;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.security.auth.spi.LoginModule;
 import javax.servlet.http.HttpServletRequest;
@@ -49,23 +45,8 @@ import org.openepics.discs.conf.ent.EntityTypeOperation;
  * @author <a href="mailto:miroslav.pavleski@cosylab.com">Miroslav Pavleski</a>
  *
  */
-
 public abstract class AbstractEnityTypeSecurityPolicy implements SecurityPolicy, Serializable {
-    private static final long serialVersionUID = -1711496211869305655L;
-
-    private static final Logger LOGGER = Logger.getLogger(AbstractEnityTypeSecurityPolicy.class.getCanonicalName());
-
-    /**
-     * Contains cached permissions
-     */
-    protected Map<EntityType, Set<EntityTypeOperation> > cachedPermissions;
-
-    /**
-     * Default constructor.
-     */
-    public AbstractEnityTypeSecurityPolicy() {
-        LOGGER.log(Level.INFO, "Creating " + this.getClass().getCanonicalName());
-    }
+    private static final long serialVersionUID = 1869933525057076928L;
 
     @Override
     public abstract void login(String userName, String password);
@@ -75,6 +56,15 @@ public abstract class AbstractEnityTypeSecurityPolicy implements SecurityPolicy,
 
     @Override
     public abstract String getUserId();
+
+    /**
+     * Checks if the user has access to the given entityType using operation operationType
+     *
+     * @param entityType
+     * @param operationType
+     * @return <code>true</code> if permission exists, <code>false</code> otherwise
+     */
+    protected abstract boolean hasPermission(EntityType entityType, EntityTypeOperation operationType);
 
     @Override
     public void checkAuth(Object entity, EntityTypeOperation operationType) {
@@ -110,37 +100,4 @@ public abstract class AbstractEnityTypeSecurityPolicy implements SecurityPolicy,
                hasPermission(entityType, EntityTypeOperation.UPDATE) ||
                hasPermission(entityType, EntityTypeOperation.RENAME);
     }
-
-    /**
-     * Checks if the user has access to the given entityType using operation operationType
-     *
-     * @param entityType
-     * @param operationType
-     * @return true if permission exists
-     */
-    private boolean hasPermission(EntityType entityType, EntityTypeOperation operationType) {
-
-        final String principal = getUserId();
-
-        // Handle the non-logged case
-        if (principal == null) {
-            return false;
-        }
-
-        if (cachedPermissions == null)
-            populateCachedPermissions();
-
-        final Set<EntityTypeOperation> entityTypeOperations = cachedPermissions.get(entityType);
-
-        if (entityTypeOperations == null) {
-            return false;
-        } else {
-            return entityTypeOperations.contains(operationType);
-        }
-    }
-
-    /**
-     * Populates the map of cached privileges from the database
-     */
-    protected abstract void populateCachedPermissions();
 }
