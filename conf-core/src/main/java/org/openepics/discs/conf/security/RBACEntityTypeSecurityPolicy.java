@@ -24,7 +24,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Alternative;
 import javax.inject.Inject;
@@ -34,7 +33,6 @@ import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
 
 import se.esss.ics.rbac.loginmodules.service.Message;
-import se.esss.ics.rbac.loginmodules.service.RBACSSOSessionService;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
@@ -53,7 +51,7 @@ import com.google.common.collect.ImmutableMap.Builder;
 public class RBACEntityTypeSecurityPolicy extends AbstractEnityTypeSecurityPolicy
     implements SecurityPolicy, Serializable {
 
-    @Inject private RBACSSOSessionService sessionService;
+    @Inject private SSOSessionService sessionService;
 
     private static final long serialVersionUID = 7573725310824284483L;
 
@@ -78,11 +76,6 @@ public class RBACEntityTypeSecurityPolicy extends AbstractEnityTypeSecurityPolic
 
     /** Default no-params constructor */
     public RBACEntityTypeSecurityPolicy() {}
-
-    @PostConstruct
-    public void init() {
-        LOGGER.log(Level.INFO, "Creating...");
-    }
 
     @Override
     public void login(String userName, String password) {
