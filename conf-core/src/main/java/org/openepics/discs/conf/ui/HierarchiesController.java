@@ -131,6 +131,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
                                                 "The following installation slots cannot be made hierarchy roots:";
     private static final String CANNOT_PASTE_INTO_SLOT =
             "The following containers cannot become children of installation slot:";
+    private static final int PRELOAD_LIMIT = 3;
 
     @Inject private transient SlotEJB slotEJB;
     @Inject private transient SlotPairEJB slotPairEJB;
@@ -927,17 +928,17 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     }
 
     private void initHierarchies() {
-        hierarchyBuilder = new HierarchyBuilder(3, installationEJB, slotEJB);
+        hierarchyBuilder = new HierarchyBuilder(PRELOAD_LIMIT, installationEJB, slotEJB);
         rootNode = new DefaultTreeNode(new SlotView(slotEJB.getRootNode(), null, 1, slotEJB), null);
         hierarchyBuilder.rebuildSubTree(rootNode);
 
         // for POWERS and CONTROLS hierarchies, the trees will be rebuild dynamically based on user selection
-        powersHierarchyBuilder = new HierarchyBuilder(3, installationEJB, slotEJB);
+        powersHierarchyBuilder = new HierarchyBuilder(PRELOAD_LIMIT, installationEJB, slotEJB);
         powersHierarchyBuilder.setRelationship(SlotRelationName.POWERS);
         // initializing root node prevents NPE in initial page display
         powersRootNode = new DefaultTreeNode(new SlotView(slotEJB.getRootNode(), null, 1, slotEJB), null);
 
-        controlsHierarchyBuilder = new HierarchyBuilder(3, installationEJB, slotEJB);
+        controlsHierarchyBuilder = new HierarchyBuilder(PRELOAD_LIMIT, installationEJB, slotEJB);
         controlsHierarchyBuilder.setRelationship(SlotRelationName.CONTROLS);
         // initializing root node prevents NPE in initial page display
         controlsRootNode = new DefaultTreeNode(new SlotView(slotEJB.getRootNode(), null, 1, slotEJB), null);
