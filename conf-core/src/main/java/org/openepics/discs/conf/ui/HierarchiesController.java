@@ -980,7 +980,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         for (final SlotPair relationCandidate : relations) {
             if (relationCandidate.getSlotRelation().getName() == slotRelationName) {
                 rootSlots.add(nodeSlot);
-                return;
+                // We must continue the search even after finding this root, since the node may
+                // also CONTAIN some children that may CONTROL/POWER some other slot.
             }
         }
         // this node is not a root
