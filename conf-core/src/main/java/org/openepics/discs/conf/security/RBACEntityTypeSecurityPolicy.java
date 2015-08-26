@@ -49,10 +49,7 @@ import com.google.common.collect.ImmutableMap.Builder;
 @Named("securityPolicy")
 @Alternative
 public class RBACEntityTypeSecurityPolicy extends AbstractEnityTypeSecurityPolicy
-    implements SecurityPolicy, Serializable {
-
-    @Inject private SSOSessionService sessionService;
-
+        implements SecurityPolicy, Serializable {
     private static final long serialVersionUID = 7573725310824284483L;
 
     private static final Logger LOGGER = Logger.getLogger(RBACEntityTypeSecurityPolicy.class.getCanonicalName());
@@ -73,6 +70,8 @@ public class RBACEntityTypeSecurityPolicy extends AbstractEnityTypeSecurityPolic
 
         PERMISSION_MAPPING = permissionMappingBuilder.build();
     }
+
+    @Inject private SSOSessionService sessionService;
 
     /** Default no-params constructor */
     public RBACEntityTypeSecurityPolicy() {}
@@ -104,5 +103,10 @@ public class RBACEntityTypeSecurityPolicy extends AbstractEnityTypeSecurityPolic
     protected boolean hasPermission(EntityType entityType, EntityTypeOperation operationType) {
         return PERMISSION_MAPPING.containsKey(entityType)
                     && sessionService.hasPermission(PERMISSION_MAPPING.get(entityType));
+    }
+
+    @Override
+    public boolean isLoggedIn() {
+        return sessionService.isLoggedIn();
     }
 }

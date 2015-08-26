@@ -57,6 +57,9 @@ public abstract class AbstractEnityTypeSecurityPolicy implements SecurityPolicy,
     @Override
     public abstract String getUserId();
 
+    @Override
+    public abstract boolean isLoggedIn();
+
     /**
      * Checks if the user has access to the given entityType using operation operationType
      *

@@ -36,7 +36,7 @@ import org.openepics.discs.conf.util.Utility;
 /**
  * @author <a href="mailto:vuppala@frib.msu.org">Vasu V</a>
  * @author <a href="mailto:miroslav.pavleski@cosylab.com">Miroslav Pavleski</a>
- *
+ * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  */
 @Named
 @SessionScoped
@@ -48,10 +48,7 @@ public class LoginManager implements Serializable {
     private String userId;
     private String password;
 
-    private boolean loggedIn = false;
-
     @Inject private SecurityPolicy securityPolicy;
-
 
     /** Called when the user clicks on the "Login" button in the UI.
      * @return <code>null</code>
@@ -60,14 +57,12 @@ public class LoginManager implements Serializable {
         try {
             securityPolicy.login(userId, password);
             Utility.showMessage(FacesMessage.SEVERITY_INFO, "You are logged in. Welcome!", userId);
-            loggedIn = true;
         } catch (Exception e) {
-            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Login Failed! Please try again. ", "Status: ");
+            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Login failed!", "Please try again.");
             LOGGER.log(Level.INFO, "Login failed for " + userId);
             LOGGER.log(Level.FINE, "Login failed for " + userId, e);
-            loggedIn = false;
         } finally {
-            password = "xxxxxx"; // ToDo implement a better way destroy the password (from JVM)
+            password = "xxxxxx"; // TODO implement a better way destroy the password (from JVM)
         }
         return null;
     }
@@ -78,17 +73,15 @@ public class LoginManager implements Serializable {
     public String onLogout() {
         try {
             securityPolicy.logout();
-            loggedIn = false;
             userId = null;
             final ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
             ec.redirect(ec.getRequestContextPath());
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, "You have been logged out.", "Thank you!");
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, "Logout", "You have been logged out.");
         } catch (Exception e) {
-            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Strangely, logout has failed", "That's odd!");
-            LOGGER.log(Level.FINE,  "Strangely, logout has failed", e);
+            Utility.showMessage(FacesMessage.SEVERITY_ERROR, "Logout", "Logout has failed.");
+            LOGGER.log(Level.FINE, "Strangely, logout has failed.", e);
         }
-
-        return "logout"; // ToDo: replace with null
+        return "logout";
     }
 
     public String getUserId() {
@@ -108,6 +101,6 @@ public class LoginManager implements Serializable {
     }
 
     public boolean isLoggedIn() {
-        return loggedIn;
+        return securityPolicy.isLoggedIn();
     }
 }

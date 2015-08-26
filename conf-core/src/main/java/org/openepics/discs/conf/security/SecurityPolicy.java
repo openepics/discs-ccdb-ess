@@ -67,4 +67,9 @@ public interface SecurityPolicy {
      * @return a {@link Boolean} value for the hint
      */
     public boolean getUIHint(String param);
+
+    /**
+     * @return <code>true</code> if the user is logged in, <code>false</code> otherwise.
+     */
+    public boolean isLoggedIn();
 }

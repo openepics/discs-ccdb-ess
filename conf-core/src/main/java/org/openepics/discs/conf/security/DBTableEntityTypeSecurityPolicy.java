@@ -104,4 +104,9 @@ public class DBTableEntityTypeSecurityPolicy extends AbstractEnityTypeSecurityPo
         }
         return false;
     }
+
+    @Override
+    public boolean isLoggedIn() {
+        return servletRequest.getUserPrincipal() != null;
+    }
 }
