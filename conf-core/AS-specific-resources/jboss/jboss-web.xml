@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jboss-web>
-    <context-root>/confmgr</context-root>
+    <context-root>/ccdb</context-root>
     <security-domain>ccdb.security-domain</security-domain>
     <!-- <server-instance>default-server_external</server-instance> -->
 </jboss-web>

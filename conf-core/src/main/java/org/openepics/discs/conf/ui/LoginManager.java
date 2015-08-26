@@ -101,6 +101,10 @@ public class LoginManager implements Serializable {
     }
 
     public boolean isLoggedIn() {
-        return securityPolicy.isLoggedIn();
+        final boolean loggedIn = securityPolicy.isLoggedIn();
+        if (loggedIn && userId == null) {
+            userId = securityPolicy.getUserId();
+        }
+        return loggedIn;
     }
 }
