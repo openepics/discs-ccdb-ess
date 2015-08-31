@@ -7,6 +7,20 @@
 	<name>CCDB-JAXB</name>
 	<version>1.0.0-SNAPSHOT</version>
 
+    <distributionManagement>
+        <repository>
+            <id>artifactory01.esss.lu.se</id>
+            <name>artifactory01.esss.lu.se-releases</name>
+            <url>https://artifactory01.esss.lu.se/artifactory/libs-release-local</url>
+        </repository>
+        <snapshotRepository>
+            <uniqueVersion>false</uniqueVersion>
+            <id>artifactory01.esss.lu.se</id>
+            <name>artifactory01.esss.lu.se-snapshots</name>
+            <url>https://artifactory01.esss.lu.se/artifactory/libs-snapshot-local</url>
+        </snapshotRepository>
+    </distributionManagement>
+
 	<parent>
 		<groupId>se.esss.ics</groupId>
 		<artifactId>ess-java-config</artifactId>
