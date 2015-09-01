@@ -65,6 +65,7 @@ public class EntityAttributeView {
      * @param entity the database entity
      * @param kind database entity kind {@link EntityAttributeViewKind}
      * @param parent the named entity parent for this attribute
+     * @param dao the EJB to handle the entities associated with this view object
      */
     public EntityAttributeView(Object entity, EntityAttributeViewKind kind, @Nullable NamedEntity parent,
             ReadOnlyDAO<? extends ConfigurationEntity> dao) {

@@ -117,14 +117,14 @@ public abstract class AbstractDeviceAttributesController
     }
 
     /**
-     * @return
+     * @return the import statistics for the imported file
      * @see org.openepics.discs.conf.ui.common.AbstractExcelSingleFileImportUI#getImportFileStatistics() */
     public ImportFileStatistics getImportFileStatistics() {
         return excelSingleFileImportUI.getImportFileStatistics();
     }
 
     /**
-     * @return
+     * @return the dialog containing a simple error message
      * @see org.openepics.discs.conf.ui.common.AbstractExcelSingleFileImportUI#getSimpleErrorTableExportDialog() */
     public ExportSimpleTableDialog getSimpleErrorTableExportDialog() {
         return excelSingleFileImportUI.getSimpleErrorTableExportDialog();

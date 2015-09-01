@@ -63,8 +63,8 @@ public abstract class AbstractEnityTypeSecurityPolicy implements SecurityPolicy,
     /**
      * Checks if the user has access to the given entityType using operation operationType
      *
-     * @param entityType
-     * @param operationType
+     * @param entityType the {@link EntityType} for which to check for
+     * @param operationType the {@link EntityTypeOperation} for which to check for
      * @return <code>true</code> if permission exists, <code>false</code> otherwise
      */
     protected abstract boolean hasPermission(EntityType entityType, EntityTypeOperation operationType);
