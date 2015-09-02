@@ -95,7 +95,7 @@
                                     <p:treeTable id="tree" value="#{hierarchiesController.rootNode}" var="installationSlot" 
                                              selectionMode="multiple" selection="#{hierarchiesController.selectedIncludesNodes}" 
                                              scrollable="true" scrollWidth="auto" rowStyleClass="treeRows" 
-                                             style="width: 35em;" widgetVar="hierarchyWidget">
+                                             style="width: 35em;" widgetVar="hierarchyWidget" nodeVar="slotNode">
                                          <p:ajax event="select" listener="#{hierarchiesController.onNodeSelect}" 
                                              update=":hierarchies:relationsTable :hierarchies:deleteButton :hierarchies:downButton 
                                                      :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton 
@@ -119,8 +119,15 @@
                                                  styleClass="ui-icon ui-icon-folder-collapsed" />
                                              <h:outputText value="#{installationSlot.name}" 
                                                 title="#{installationSlot.description}#{installationSlot.hostingSlot ? ' ('.concat(installationSlot.deviceTypeName).concat(')') : ''}" />
-                                             <h:outputText value="" rendered="#{installationSlot.inClipboard}" 
-                                                 style="display:inline-block; vertical-align:bottom !important; margin-right: 1.2em; float: right;" 
+                                             <h:outputText value="" rendered="#{installationSlot.inClipboard or 
+                                                                                (hierarchiesController.cliboardOperation == 'COPY' 
+                                                                                    and hierarchiesController.isAncestorNodeInClipboard(slotNode))}" 
+                                                 style="display:inline-block; vertical-align:bottom !important; float: right; right: 1.2em; position: relative;" 
+                                                 styleClass="ui-icon ui-icon-clipboard" />
+                                             <h:outputText value="" rendered="#{hierarchiesController.cliboardOperation == 'COPY' 
+                                                                                and (installationSlot.inClipboard 
+                                                                                    or hierarchiesController.isAncestorNodeInClipboard(slotNode))}" 
+                                                 style="display:inline-block; vertical-align:bottom !important; float: right; position: relative; right: 0; bottom: 0.15em; opacity: 0.7;" 
                                                  styleClass="ui-icon ui-icon-clipboard" />
                                          </p:column>
                                      </p:treeTable>                                
@@ -183,6 +190,12 @@
 
                             <p:menuButton value="C/P" id="clipboardOperations" style="float: right; margin-top: 1em;" 
                                 disabled="#{not hierarchiesController.includesActive}">
+                                <p:menuitem value="Copy" id="copyButton" icon="ui-icon-copy" 
+                                    title="Put selected items to clipboard for copying" 
+                                    action="#{hierarchiesController.copyTreeNodes}" oncomplete="hierarchiesResizeAll();" 
+                                    disabled="#{not hierarchiesController.includesActive or 
+                                                    empty hierarchiesController.selectedIncludesNodes}" 
+                                    update=":hierarchies:hierarchyTabs:tree :hierarchies:clipboardOperations" />
                                 <p:menuitem value="Cut" id="cutButton" icon="ui-icon-scissors" 
                                     title="Put selected items to clipboard for moving" 
                                     action="#{hierarchiesController.cutTreeNodes}" oncomplete="hierarchiesResizeAll();" 

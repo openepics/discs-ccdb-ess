@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
+import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJBException;
 import javax.faces.application.FacesMessage;
@@ -51,7 +52,6 @@ import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.NotImplementedException;
 import org.openepics.discs.conf.dl.annotations.SignalsLoader;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.ejb.ComptypeEJB;
@@ -73,6 +73,7 @@ import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ent.InstallationRecord;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyValue;
+import org.openepics.discs.conf.ent.PropertyValueUniqueness;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotArtifact;
 import org.openepics.discs.conf.ent.SlotPair;
@@ -576,7 +577,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     private void updateDisplayedSlotInformation() {
         selectedSlotView = null;
         selectedSlot = null;
-        if (selectedNodes == null || selectedNodes.isEmpty()) {
+        if (Utility.isNullOrEmpty(selectedNodes)) {
             selectedNodeIds = null;
             displayedAttributeNodeIds = null;
             clearRelatedInformation();
@@ -873,6 +874,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         final int numSlotsToDelete = nodesToDelete.size();
         final List<TreeNode> parentRefreshList = Lists.newArrayList();
         while (!nodesToDelete.isEmpty()) {
+            removeDeletedFromClipboard();
             deleteWithChildren(nodesToDelete.get(0), parentRefreshList);
         }
         for (final TreeNode refreshNode : parentRefreshList) {
@@ -883,6 +885,14 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         selectedNodes = null;
         nodesToDelete = null;
         clearRelatedInformation();
+    }
+
+    private void removeDeletedFromClipboard() {
+        if (!Utility.isNullOrEmpty(clipboardNodes)) {
+            for (final TreeNode deleteCandidate : nodesToDelete) {
+                clipboardNodes.remove(deleteCandidate);
+            }
+        }
     }
 
     private void deleteWithChildren(final TreeNode node, final List<TreeNode> parentRefreshList) {
@@ -1146,6 +1156,30 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         selectedNodes.clear();
     }
 
+    public void copyTreeNodes() {
+        Preconditions.checkState(isIncludesActive());
+        Preconditions.checkState(!selectedNodes.isEmpty());
+
+        clipboardOperation = ClipboardOperations.COPY;
+        putSelectedNodesOntoClipboard();
+        selectedNodes.clear();
+    }
+
+    public ClipboardOperations getCliboardOperation() {
+        return clipboardOperation;
+    }
+
+    public boolean isAncestorNodeInClipboard(final TreeNode node) {
+        if (Utility.isNullOrEmpty(clipboardNodes) || (node == null) || node.equals(rootNode)) {
+            return false;
+        }
+        if (clipboardNodes.contains(node)) {
+            return true;
+        } else {
+            return isAncestorNodeInClipboard(node.getParent());
+        }
+    }
+
     private void putSelectedNodesOntoClipboard() {
         // 1. If anything is in the clipboard, we unmark it as in the clipboard. Takes care of consecutive "Cut"s.
         if (clipboardNodes != null) {
@@ -1164,7 +1198,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         // 3. We remove all the nodes that have their parents in the clipboard
         for (final ListIterator<TreeNode> nodesIterator = clipboardNodes.listIterator(); nodesIterator.hasNext();) {
             final TreeNode removalCandidate = nodesIterator.next();
-            if (isParentNodeInList(selectedNodes, removalCandidate)) {
+            if (isAncestorNodeInList(selectedNodes, removalCandidate)) {
                 nodesIterator.remove();
             }
         }
@@ -1175,7 +1209,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         }
     }
 
-    private boolean isParentNodeInList(final List<TreeNode> candidates, final TreeNode node) {
+    private boolean isAncestorNodeInList(final List<TreeNode> candidates, final TreeNode node) {
         TreeNode parentNode = node.getParent();
         while (parentNode != null) {
             if (candidates.contains(parentNode)) {
@@ -1195,7 +1229,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         Preconditions.checkState(!isClipboardEmpty());
         Preconditions.checkState(selectedNodes == null || selectedNodes.size() < 2);
 
-        final boolean makeRoots = selectedNodes == null || selectedNodes.isEmpty();
+        final boolean makeRoots = Utility.isNullOrEmpty(selectedNodes);
         final boolean isTargetInstallationslot = !makeRoots && selectedSlot.isHostingSlot();
         if (makeRoots) {
             pasteErrorReason = CANNOT_PASTE_INTO_ROOT;
@@ -1217,18 +1251,20 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     public void pasteTreeNodes() {
         Preconditions.checkState(isIncludesActive());
         Preconditions.checkState(!isClipboardEmpty());
+        Preconditions.checkState(selectedNodes == null || selectedNodes.size() < 2);
         Preconditions.checkNotNull(pasteErrors);
         Preconditions.checkState(pasteErrors.isEmpty());
 
         if (clipboardOperation == ClipboardOperations.CUT) {
             moveSlotsToNewParent();
         } else {
-            copySlotsToParent();
+            final TreeNode parentNode = selectedNodes != null ? selectedNodes.get(0) : rootNode;
+            copySlotsToParent(clipboardNodes, parentNode);
         }
     }
 
     private void moveSlotsToNewParent() {
-        final TreeNode newParent = (selectedNodes == null || selectedNodes.isEmpty()) ? rootNode : selectedNodes.get(0);
+        final TreeNode newParent = Utility.isNullOrEmpty(selectedNodes) ? rootNode : selectedNodes.get(0);
         SlotView parentSlotView = (SlotView) newParent.getData();
         for (final ListIterator<TreeNode> clipIterator = clipboardNodes.listIterator(); clipIterator.hasNext(); ) {
             final TreeNode node = clipIterator.next();
@@ -1236,7 +1272,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             clipIterator.remove();
             final SlotView childSlotView = (SlotView) node.getData();
             childSlotView.setInClipboard(false);
-            if (node.getParent().equals(newParent) || isParentNodeInList(Lists.newArrayList(node), newParent)) {
+            if (node.getParent().equals(newParent) || isAncestorNodeInList(Lists.newArrayList(node), newParent)) {
                 // The node is pasted to its own parent or the target is the nodes own descendant
                 continue;
             }
@@ -1274,9 +1310,145 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         return null;
     }
 
-    private void copySlotsToParent() {
-        throw new NotImplementedException();
+    private void copySlotsToParent(final List<TreeNode> sourceNodes, final TreeNode parentNode) {
+        for (final TreeNode copySource : sourceNodes) {
+            final Slot newCopy = createSlotCopy((SlotView) copySource.getData(), parentNode);
+            addAttributesToNewCopy(newCopy, ((SlotView) copySource.getData()).getSlot());
+            copySlotsToParent(copySource.getChildren(), findNodeForSlot(newCopy, parentNode));
+        }
     }
+
+    /*
+     * Finds a TreeNode for a given slot among the parent's children. If no such TreeNode can be found, the methods
+     * returns 'null'.
+     */
+    private @Nullable TreeNode findNodeForSlot(final Slot slot, final TreeNode parentNode) {
+        for (final TreeNode child : parentNode.getChildren()) {
+            if (((SlotView)child.getData()).getSlot().equals(slot)) {
+                return child;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * This method transfers from the copy source all the attributes that can be copied:
+     * <ul>
+     * <li>non-unique <b>DEFINED</b> property values</li>
+     * <li>tags</li>
+     * <li>URL artifacts</li>
+     * </ul>
+     * It does not copy the attachments, since this may be too heavy.
+     *
+     * @param newCopy the slot that was just created
+     * @param copySource the slot that is the source of the data
+     */
+    private void addAttributesToNewCopy(final Slot newCopy, final Slot copySource) {
+        if (newCopy.isHostingSlot()) {
+            transferValuesFromSource(newCopy, copySource);
+        } else {
+            copyValuesFromSource(newCopy, copySource);
+        }
+
+        copyTagsFromSource(newCopy, copySource);
+        copyArtifactsFromSource(newCopy, copySource);
+
+        slotEJB.save(newCopy);
+    }
+
+    private void transferValuesFromSource(final Slot newCopy, final Slot copySource) {
+        for (final SlotPropertyValue pv : newCopy.getSlotPropertyList()) {
+            if (pv.getProperty().getValueUniqueness() == PropertyValueUniqueness.NONE) {
+                final SlotPropertyValue parentPv = getPropertyValue(copySource, pv.getProperty().getName());
+                if (parentPv != null) {
+                    pv.setPropValue(parentPv.getPropValue());
+                }
+            }
+        }
+    }
+
+    private SlotPropertyValue getPropertyValue(final Slot slot, final String pvName) {
+        for (final SlotPropertyValue pv : slot.getSlotPropertyList()) {
+            if (pv.getProperty().getName().equals(pvName)) {
+                return pv;
+            }
+        }
+        return null;
+    }
+
+    private void copyValuesFromSource(final Slot newCopy, final Slot copySource) {
+        for (final SlotPropertyValue pv : copySource.getSlotPropertyList()) {
+            final SlotPropertyValue targetPv = new SlotPropertyValue(false);
+            targetPv.setProperty(pv.getProperty());
+            targetPv.setUnit(pv.getUnit());
+            if (pv.getProperty().getValueUniqueness() == PropertyValueUniqueness.NONE) {
+                targetPv.setPropValue(pv.getPropValue());
+            }
+            targetPv.setSlot(newCopy);
+            slotEJB.addChild(targetPv);
+            newCopy.getSlotPropertyList().add(targetPv);
+        }
+    }
+
+    private void copyTagsFromSource(final Slot newCopy, final Slot copySource) {
+        for (final Tag tag : copySource.getTags()) {
+            newCopy.getTags().add(tag);
+        }
+    }
+
+    private void copyArtifactsFromSource(final Slot newCopy, final Slot copySource) {
+        for (final SlotArtifact artifact : copySource.getSlotArtifactList()) {
+            if (!artifact.isInternal()) {
+                final SlotArtifact newArtifact = new SlotArtifact(artifact.getName(), false, artifact.getDescription(),
+                                                                    artifact.getUri());
+                newArtifact.setSlot(newCopy);
+                slotEJB.addChild(newArtifact);
+            }
+        }
+    }
+
+    private Slot createSlotCopy(final SlotView source, final TreeNode parentNode) {
+        final String newName = findNewSlotCopyName(source.getName());
+        final Slot newSlot = new Slot(newName, source.isHostingSlot());
+        newSlot.setDescription(source.getDescription());
+        newSlot.setComponentType(source.getSlot().getComponentType());
+        final Slot parentSlot = selectedNodes != null ? ((SlotView) parentNode.getData()).getSlot() : null;
+        slotEJB.addSlotToParentWithPropertyDefs(newSlot, parentSlot, false);
+
+        // first update the back-end data
+        final SlotView slotViewToUpdate = (SlotView) parentNode.getData();
+        if (selectedSlotView != null) {
+            selectedSlotView = slotViewToUpdate;
+        }
+
+        // now update the front-end data as well.
+        if (slotViewToUpdate.isInitialzed()) {
+            final List<SlotPair> containsRelation = slotPairEJB.findSlotPairsByParentChildRelation(newSlot.getName(),
+                    slotViewToUpdate.getName(), SlotRelationName.CONTAINS);
+            final SlotPair newRelation = containsRelation.get(0);
+            final SlotView slotViewToAdd = new SlotView(newSlot, slotViewToUpdate, newRelation.getSlotOrder(), slotEJB);
+            hierarchyBuilder.addChildToParent(parentNode, slotViewToAdd);
+        } else {
+            hierarchyBuilder.rebuildSubTree(parentNode);
+        }
+        slotViewToUpdate.setDeletable(false);
+        parentNode.setExpanded(true);
+        return newSlot;
+    }
+
+    private String findNewSlotCopyName(String name) {
+        int slotIndex = 1;
+        String returnName = "";
+        while (returnName.isEmpty()) {
+            String candidateName = name + "_" + slotIndex;
+            if (slotEJB.findByName(candidateName) == null) {
+                return candidateName;
+            }
+            ++slotIndex;
+        }
+        return returnName;
+    }
+
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      * Above: Methods for manipulation, populating and editing the hierarchy tree of slots and containers.
@@ -2121,7 +2293,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     }
 
     public boolean isClipboardEmpty() {
-        return (clipboardNodes == null) || (clipboardNodes.isEmpty());
+        return Utility.isNullOrEmpty(clipboardNodes);
     }
 
     public List<SlotView> getSlotsToDelete() {
