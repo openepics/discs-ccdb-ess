@@ -14,7 +14,6 @@
             <url>https://artifactory01.esss.lu.se/artifactory/libs-release-local</url>
         </repository>
         <snapshotRepository>
-            <uniqueVersion>false</uniqueVersion>
             <id>artifactory01.esss.lu.se</id>
             <name>artifactory01.esss.lu.se-snapshots</name>
             <url>https://artifactory01.esss.lu.se/artifactory/libs-snapshot-local</url>
