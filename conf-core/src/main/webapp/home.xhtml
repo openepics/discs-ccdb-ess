@@ -95,7 +95,7 @@
                                     <p:treeTable id="tree" value="#{hierarchiesController.rootNode}" var="installationSlot" 
                                              selectionMode="multiple" selection="#{hierarchiesController.selectedIncludesNodes}" 
                                              scrollable="true" scrollWidth="auto" rowStyleClass="treeRows" 
-                                             style="width: 35em;" widgetVar="hierarchyWidget">
+                                             style="width: 35em;" widgetVar="hierarchyWidget" nodeVar="slotNode">
                                          <p:ajax event="select" listener="#{hierarchiesController.onNodeSelect}" 
                                              update=":hierarchies:relationsTable :hierarchies:deleteButton :hierarchies:downButton 
                                                      :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton 
@@ -119,10 +119,14 @@
                                                  styleClass="ui-icon ui-icon-folder-collapsed" />
                                              <h:outputText value="#{installationSlot.name}" 
                                                 title="#{installationSlot.description}#{installationSlot.hostingSlot ? ' ('.concat(installationSlot.deviceTypeName).concat(')') : ''}" />
-                                             <h:outputText value="" rendered="#{installationSlot.inClipboard}" 
+                                             <h:outputText value="" rendered="#{installationSlot.inClipboard or 
+                                                                                (hierarchiesController.cliboardOperation == 'COPY' 
+                                                                                    and hierarchiesController.isAncestorNodeInClipboard(slotNode))}" 
                                                  style="display:inline-block; vertical-align:bottom !important; float: right; right: 1.2em; position: relative;" 
                                                  styleClass="ui-icon ui-icon-clipboard" />
-                                             <h:outputText value="" rendered="#{installationSlot.inClipboard and hierarchiesController.cliboardOperation == 'COPY'}" 
+                                             <h:outputText value="" rendered="#{hierarchiesController.cliboardOperation == 'COPY' 
+                                                                                and (installationSlot.inClipboard 
+                                                                                    or hierarchiesController.isAncestorNodeInClipboard(slotNode))}" 
                                                  style="display:inline-block; vertical-align:bottom !important; float: right; position: relative; right: 0; bottom: 0.15em; opacity: 0.7;" 
                                                  styleClass="ui-icon ui-icon-clipboard" />
                                          </p:column>

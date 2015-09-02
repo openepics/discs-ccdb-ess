@@ -35,7 +35,11 @@
 package org.openepics.discs.conf.util;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -49,8 +53,6 @@ import org.openepics.discs.conf.ent.SlotRelationName;
 import org.openepics.discs.conf.views.EntityAttributeViewKind;
 
 import com.google.common.collect.Lists;
-import java.util.Optional;
-import java.util.stream.Stream;
 /**
  *
  * @author vuppala
@@ -65,7 +67,6 @@ public class Utility {
     private static final String PATH_SEPARATOR = "\u00A0\u00A0\u00BB\u00A0\u00A0";
 
     private Utility() {}
-
 
     /**
      * Utility method used to display a message to the user
@@ -151,12 +152,21 @@ public class Utility {
         }
         return attributeKinds;
     }
-    
+
     public static <T> Stream<T> optionalToStream(Optional<T> optional) {
         return optional.map(Stream::of).orElse(Stream.empty());
-    } 
-    
+    }
+
     public static <T> Stream<T> nullableToStream(T object) {
         return object != null ? Stream.of(object) : Stream.empty();
     }
+
+    public static boolean isNullOrEmpty(final Collection<?> collection) {
+        return collection == null || collection.isEmpty();
+    }
+
+    public static boolean isNullOrEmpty(final Map<?, ?> map) {
+        return map == null || map.isEmpty();
+    }
+
 }
