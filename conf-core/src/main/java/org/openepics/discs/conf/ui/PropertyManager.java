@@ -109,7 +109,7 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
     private BatchSaveStage batchSaveStage;
     private boolean batchSkipExisting;
 
-    private ExportSimpleTableDialog simpleTableExporterDialog;
+    private transient ExportSimpleTableDialog simpleTableExporterDialog;
 
     private class ExportSimplePropertyTableDialog extends ExportSimpleTableDialog {
         @Override

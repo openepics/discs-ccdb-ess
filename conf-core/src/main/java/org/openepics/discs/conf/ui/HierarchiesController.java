@@ -1258,7 +1258,9 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         if (clipboardOperation == ClipboardOperations.CUT) {
             moveSlotsToNewParent();
         } else {
-            final TreeNode parentNode = selectedNodes != null ? selectedNodes.get(0) : rootNode;
+            final TreeNode parentNode = (selectedNodes != null) && (!selectedNodes.isEmpty())
+                                            ? selectedNodes.get(0)
+                                            : rootNode;
             copySlotsToParent(clipboardNodes, parentNode);
         }
     }
@@ -1312,8 +1314,11 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
     private void copySlotsToParent(final List<TreeNode> sourceNodes, final TreeNode parentNode) {
         for (final TreeNode copySource : sourceNodes) {
-            final Slot newCopy = createSlotCopy((SlotView) copySource.getData(), parentNode);
-            addAttributesToNewCopy(newCopy, ((SlotView) copySource.getData()).getSlot());
+            // initialize subtree if required
+            hierarchyBuilder.expandNode(copySource);
+            final SlotView copySourceView = (SlotView) copySource.getData();
+            final Slot newCopy = createSlotCopy(copySourceView, parentNode);
+            addAttributesToNewCopy(newCopy, copySourceView.getSlot());
             copySlotsToParent(copySource.getChildren(), findNodeForSlot(newCopy, parentNode));
         }
     }
@@ -1345,8 +1350,10 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      */
     private void addAttributesToNewCopy(final Slot newCopy, final Slot copySource) {
         if (newCopy.isHostingSlot()) {
+            // installation slots already have the property value instances, we just need to copy the actual values
             transferValuesFromSource(newCopy, copySource);
         } else {
+            // containers can have "free floating" property values. We need to copy them to the newly created containers
             copyValuesFromSource(newCopy, copySource);
         }
 
@@ -1412,7 +1419,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         final Slot newSlot = new Slot(newName, source.isHostingSlot());
         newSlot.setDescription(source.getDescription());
         newSlot.setComponentType(source.getSlot().getComponentType());
-        final Slot parentSlot = selectedNodes != null ? ((SlotView) parentNode.getData()).getSlot() : null;
+        final Slot parentSlot = ((SlotView) parentNode.getData()).getSlot();
         slotEJB.addSlotToParentWithPropertyDefs(newSlot, parentSlot, false);
 
         // first update the back-end data
@@ -1910,7 +1917,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
                     Utility.MESSAGE_SUMMARY_ERROR, "You must select a property first."));
         }
 
-        final DataType dataType = property != null ? property.getDataType() : selectedAttribute.getType();
+        final DataType dataType = property.getDataType();
         validateSingleLine(value.toString(), dataType);
     }
 
@@ -1966,7 +1973,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
                     Utility.MESSAGE_SUMMARY_ERROR, "You must select a property first."));
         }
 
-        final DataType dataType = property != null ? property.getDataType() : selectedAttribute.getType();
+        final DataType dataType = property.getDataType();
         validateMultiLine(value.toString(), dataType);
     }
 

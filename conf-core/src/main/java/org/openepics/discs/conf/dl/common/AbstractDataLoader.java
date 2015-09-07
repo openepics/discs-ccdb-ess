@@ -63,12 +63,6 @@ public abstract class AbstractDataLoader implements DataLoader {
      */
     protected Map<String, Integer> indicies = null;
 
-    /**
-     * Indexes of all unknown (probably property) fields. Changes when new headers are present
-     * ("HEADER" command appears)
-     */
-    private Map<String, Integer> propertyIndicies = null;
-
     /** For stateful row processing, represents the data for the current row, private, exposed to sub-classes by
      * {@link #readCurrentRowCellForHeader(String)}
      */
@@ -180,7 +174,6 @@ public abstract class AbstractDataLoader implements DataLoader {
      */
     protected void init() {
         result.clear();
-        propertyIndicies = null;
         setUpIndexesForFields();
     }
 
@@ -323,25 +316,6 @@ public abstract class AbstractDataLoader implements DataLoader {
      */
     protected String readCurrentRowCellForHeader(int index) {
         return currentRowData.get(index);
-    }
-
-    /**
-     * During row processing, returns a {@link String} cell within the row that belongs to given property column
-
-     * @param propertyColumnName header column name
-     * @return the content of the appropriate column cell within the current row
-     */
-    protected String readCurrentRowCellForProperty(String propertyColumnName) {
-        Preconditions.checkNotNull(propertyIndicies);
-        final Integer index = propertyIndicies.get(propertyColumnName);
-
-        return (index != null && index != -1) ? currentRowData.get(index) : null;
-    }
-
-    /** @return the column-names for the properties */
-    protected Set<String> getProperties() {
-        Preconditions.checkNotNull(propertyIndicies);
-        return propertyIndicies.keySet();
     }
 
     /**

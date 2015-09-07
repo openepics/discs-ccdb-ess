@@ -85,7 +85,7 @@ public class ComponentTypesDataLoader extends AbstractEntityWithPropertiesDataLo
 
     @Override
     protected @Nullable Integer getUniqueColumnIndex() {
-        return new Integer(COL_INDEX_NAME);
+        return Integer.valueOf(COL_INDEX_NAME);
     }
 
     @SuppressWarnings("unchecked")

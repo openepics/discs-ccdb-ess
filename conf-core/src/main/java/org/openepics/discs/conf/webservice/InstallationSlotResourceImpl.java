@@ -1,3 +1,22 @@
+/*
+ * Copyright (c) 2014 European Spallation Source
+ * Copyright (c) 2014 Cosylab d.d.
+ *
+ * This file is part of Controls Configuration Database.
+ *
+ * Controls Configuration Database is free software: you can redistribute it
+ * and/or modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 2 of the License,
+ * or any newer version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
+ */
 package org.openepics.discs.conf.webservice;
 
 import java.util.ArrayList;
@@ -7,9 +26,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.openepics.discs.conf.ejb.ComptypeEJB;
-
 import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.Property;
@@ -35,7 +54,7 @@ public class InstallationSlotResourceImpl implements InstallationSlotResource {
     }
 
     @Override
-    public List<InstallationSlot> getInstallationSlots(String deviceType) {        
+    public List<InstallationSlot> getInstallationSlots(String deviceType) {
         // Get all slots
         if ("undefined".equals(deviceType)) {
             return slotEJB.findAll().stream().
@@ -46,8 +65,8 @@ public class InstallationSlotResourceImpl implements InstallationSlotResource {
             // Get them filtered by deviceType
             return getInstallationSlotsForType(deviceType);
         }
-    }    
-    
+    }
+
     @Override
     public InstallationSlot getInstallationSlot(String name) {
         final Slot installationSlot = slotEJB.findByName(name);
@@ -61,59 +80,59 @@ public class InstallationSlotResourceImpl implements InstallationSlotResource {
         if (StringUtils.isEmpty(deviceType)) {
             return new ArrayList<>();
         }
-        
+
         final ComponentType ct = compTypeEJB.findByName(deviceType);
         if (ct == null) {
             return new ArrayList<>();
         }
-         
+
         return slotEJB.findByComponentType(ct).stream().
                 map(slot -> createInstallationSlot(slot)).
                 collect(Collectors.toList());
     }
-   
+
     private InstallationSlot createInstallationSlot(final Slot slot) {
         if (slot==null) {
             return null;
         }
-        
+
         final InstallationSlot installationSlot = new InstallationSlot();
         installationSlot.setName(slot.getName());
         installationSlot.setDesription(slot.getDescription());
         installationSlot.setDeviceType(DeviceTypeResourceImpl.getDeviceType(slot.getComponentType()));
-        
+
         installationSlot.setParents(
-                getRelatedSlots(slot.getPairsInWhichThisSlotIsAChildList().stream(), 
-                        SlotRelationName.CONTAINS,                
-                        pair -> pair.getParentSlot()));        
+                getRelatedSlots(slot.getPairsInWhichThisSlotIsAChildList().stream(),
+                        SlotRelationName.CONTAINS,
+                        pair -> pair.getParentSlot()));
         installationSlot.setChildren(
                 getRelatedSlots(slot.getPairsInWhichThisSlotIsAParentList().stream(),
                         SlotRelationName.CONTAINS,
                         pair -> pair.getChildSlot()));
 
         installationSlot.setPoweredBy(
-                getRelatedSlots(slot.getPairsInWhichThisSlotIsAChildList().stream(), 
-                        SlotRelationName.POWERS,                
-                        pair -> pair.getParentSlot()));        
+                getRelatedSlots(slot.getPairsInWhichThisSlotIsAChildList().stream(),
+                        SlotRelationName.POWERS,
+                        pair -> pair.getParentSlot()));
         installationSlot.setPowers(
                 getRelatedSlots(slot.getPairsInWhichThisSlotIsAParentList().stream(),
                         SlotRelationName.POWERS,
                         pair -> pair.getChildSlot()));
-     
+
         installationSlot.setControlledBy(
-                getRelatedSlots(slot.getPairsInWhichThisSlotIsAChildList().stream(), 
-                        SlotRelationName.CONTROLS,                
-                        pair -> pair.getParentSlot()));        
+                getRelatedSlots(slot.getPairsInWhichThisSlotIsAChildList().stream(),
+                        SlotRelationName.CONTROLS,
+                        pair -> pair.getParentSlot()));
         installationSlot.setControls(
                 getRelatedSlots(slot.getPairsInWhichThisSlotIsAParentList().stream(),
                         SlotRelationName.CONTROLS,
                         pair -> pair.getChildSlot()));
-        
+
         installationSlot.setProperties(getPropertyValues(slot));
         return installationSlot;
     }
 
-    private List<String> getRelatedSlots(final Stream<SlotPair> relatedSlotPairs, 
+    private List<String> getRelatedSlots(final Stream<SlotPair> relatedSlotPairs,
             final SlotRelationName relationName,
             final RelatedSlotExtractor extractor) {
         return relatedSlotPairs.

@@ -108,7 +108,7 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
     private String name;
     private String description;
 
-    private ExportSimpleTableDialog simpleTableExporterDialog;
+    private transient ExportSimpleTableDialog simpleTableExporterDialog;
 
     private class ExportSimpleDevTypeTableDialog extends ExportSimpleTableDialog {
         @Override

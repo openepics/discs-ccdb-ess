@@ -92,7 +92,7 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
 
     @Override
     protected Integer getUniqueColumnIndex() {
-        return new Integer(COL_INDEX_NAME);
+        return Integer.valueOf(COL_INDEX_NAME);
     }
 
     @Override

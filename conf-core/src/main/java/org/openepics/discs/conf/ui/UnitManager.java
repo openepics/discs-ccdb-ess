@@ -87,7 +87,7 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
     private String symbol;
     private boolean isUnitAdd;
 
-    private ExportSimpleTableDialog simpleTableExporterDialog;
+    private transient ExportSimpleTableDialog simpleTableExporterDialog;
 
     private class ExportSimpleUnitTableDialog extends ExportSimpleTableDialog {
         @Override

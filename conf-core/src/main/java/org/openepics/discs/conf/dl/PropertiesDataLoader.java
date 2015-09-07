@@ -108,7 +108,7 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
 
     @Override
     protected @Nullable Integer getUniqueColumnIndex() {
-        return new Integer(COL_INDEX_NAME);
+        return Integer.valueOf(COL_INDEX_NAME);
     }
 
     @Override

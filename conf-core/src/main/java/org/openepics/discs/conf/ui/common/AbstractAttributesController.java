@@ -823,7 +823,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
                     Utility.MESSAGE_SUMMARY_ERROR, "You must select a property first."));
         }
 
-        final DataType dataType = property != null ? property.getDataType() : attributeToModify.getType();
+        final DataType dataType = property.getDataType();
         validateMultiLine(value.toString(), dataType);
     }
 
@@ -934,7 +934,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
                     Utility.MESSAGE_SUMMARY_ERROR, "You must select a property first."));
         }
 
-        final DataType dataType = property != null ? property.getDataType() : attributeToModify.getType();
+        final DataType dataType = property.getDataType();
 
         validateSingleLine(value.toString(), dataType);
     }

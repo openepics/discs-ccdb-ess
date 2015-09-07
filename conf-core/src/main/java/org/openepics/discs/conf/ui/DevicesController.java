@@ -110,7 +110,7 @@ public class DevicesController
     private boolean batchSkipExisting;
     private int selectedIndex = -1;
 
-    private ExportSimpleTableDialog simpleTableExporterDialog;
+    private transient ExportSimpleTableDialog simpleTableExporterDialog;
 
     private class ExportSimpleDeviceTableDialog extends ExportSimpleTableDialog {
         @Override

@@ -101,7 +101,7 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
 
     @Override
     protected @Nullable Integer getUniqueColumnIndex() {
-        return new Integer(COL_INDEX_NAME);
+        return Integer.valueOf(COL_INDEX_NAME);
     }
 
     @Override

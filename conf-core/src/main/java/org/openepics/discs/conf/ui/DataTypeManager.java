@@ -90,7 +90,7 @@ public class DataTypeManager extends AbstractExcelSingleFileImportUI implements 
     private String definition;
     private boolean isEnumerationBeingAdded;
 
-    private ExportSimpleTableDialog simpleTableExporterDialog;
+    private transient ExportSimpleTableDialog simpleTableExporterDialog;
 
     private class ExportSimpleEnumTableDialog extends ExportSimpleTableDialog {
         @Override
