@@ -394,6 +394,19 @@ public class DataTypeManager extends AbstractExcelSingleFileImportUI implements 
         return (selectedEnums != null) && (selectedEnums.size() == 1);
     }
 
+    public void duplicate() {
+        Preconditions.checkState(!Utility.isNullOrEmpty(selectedEnums));
+
+        for (final UserEnumerationView userEnumerationView : selectedEnums) {
+            final DataType enumToCopy = userEnumerationView.getEnumeration();
+            final String newEnumName = Utility.findFreeName(enumToCopy.getName(), dataTypeEJB);
+            final DataType newEnum = new DataType(newEnumName, enumToCopy.getDescription(), enumToCopy.isScalar(),
+                    enumToCopy.getDefinition());
+            dataTypeEJB.save(newEnum);
+        }
+        refreshUserDataTypes();
+    }
+
     /* * * * * * * * * * * * * * * * * getters and setters * * * * * * * * * * * * * * * * */
 
     /** @return The {@link DataType}s selected in the table */

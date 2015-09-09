@@ -1357,7 +1357,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             copyValuesFromSource(newCopy, copySource);
         }
 
-        copyTagsFromSource(newCopy, copySource);
+        newCopy.getTags().addAll(copySource.getTags());
         copyArtifactsFromSource(newCopy, copySource);
 
         slotEJB.save(newCopy);
@@ -1394,12 +1394,6 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             targetPv.setSlot(newCopy);
             slotEJB.addChild(targetPv);
             newCopy.getSlotPropertyList().add(targetPv);
-        }
-    }
-
-    private void copyTagsFromSource(final Slot newCopy, final Slot copySource) {
-        for (final Tag tag : copySource.getTags()) {
-            newCopy.getTags().add(tag);
         }
     }
 

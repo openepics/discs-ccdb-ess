@@ -346,6 +346,20 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
         }
     }
 
+    public void duplicate() {
+        Preconditions.checkState(!Utility.isNullOrEmpty(selectedProperties));
+
+        for (final Property propToCopy : selectedProperties) {
+            final String newPropName = Utility.findFreeName(propToCopy.getName(), propertyEJB);
+            final Property newProp = new Property(newPropName, propToCopy.getDescription());
+            newProp.setDataType(propToCopy.getDataType());
+            newProp.setUnit(propToCopy.getUnit());
+            newProp.setValueUniqueness(propToCopy.getValueUniqueness());
+            propertyEJB.save(newProp);
+        }
+        properties = propertyEJB.findAllOrderedByName();
+    }
+
     /** @return The name of the property the user is working on. Used by UI */
     public String getName() {
         return name;

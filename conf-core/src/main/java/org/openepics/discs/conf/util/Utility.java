@@ -46,6 +46,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.persistence.PersistenceException;
 
+import org.openepics.discs.conf.ejb.ReadOnlyDAO;
 import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotPair;
@@ -168,5 +169,24 @@ public class Utility {
     public static boolean isNullOrEmpty(final Map<?, ?> map) {
         return map == null || map.isEmpty();
     }
+
+    public static String findFreeName(final String candidateName, ReadOnlyDAO<?> dao) {
+        final String nameRoot;
+        int numPostfix;
+        if (candidateName.matches(".*_(\\d)*$")) {
+            final int delimiter = candidateName.lastIndexOf('_');
+            nameRoot = candidateName.substring(0, delimiter);
+            numPostfix = Integer.valueOf(candidateName.substring(delimiter + 1));
+        } else {
+            nameRoot = candidateName;
+            numPostfix = 1;
+        }
+
+        while (dao.findByName(nameRoot + "_" + numPostfix) != null) {
+            ++numPostfix;
+        }
+        return nameRoot + "_" + numPostfix;
+    }
+
 
 }

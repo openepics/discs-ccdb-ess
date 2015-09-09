@@ -24,10 +24,13 @@ import java.util.List;
 import javax.ejb.Stateless;
 
 import org.openepics.discs.conf.ent.ComponentType;
+import org.openepics.discs.conf.ent.ComptypeArtifact;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.ConfigurationEntity;
 import org.openepics.discs.conf.ent.Device;
+import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyValue;
+import org.openepics.discs.conf.ent.PropertyValueUniqueness;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.util.PropertyValueNotUniqueException;
 
@@ -113,5 +116,49 @@ public class ComptypeEJB extends DAO<ComponentType> {
             }
         }
         return true;
+    }
+
+    /**
+     * This method duplicates selected device types. This method actually copies
+     * selected device type name, description, tags, artifacts and properties
+     * into new device type. If property has set universally unique value,
+     * copied property value is set to null.
+     */
+    public void duplicate(final ComponentType selectedDeviceType, final String newName) {
+        ComponentType newDeviceType = new ComponentType(newName);
+        newDeviceType.setDescription(selectedDeviceType.getDescription());
+        add(newDeviceType);
+
+        duplicateProperties(newDeviceType, selectedDeviceType);
+        newDeviceType.getTags().addAll(selectedDeviceType.getTags());
+        duplicateArtifactsFromSource(newDeviceType, selectedDeviceType);
+
+        save(newDeviceType);
+    }
+
+    private void duplicateArtifactsFromSource(final ComponentType newDeviceType, final ComponentType copyDeviceType) {
+        for (final ComptypeArtifact artifact : copyDeviceType.getComptypeArtifactList()) {
+            if (!artifact.isInternal()) {
+                ComptypeArtifact newArtifact = new ComptypeArtifact(artifact.getName(),
+                        false, artifact.getDescription(), artifact.getUri());
+                newArtifact.setComponentType(newDeviceType);
+                addChild(newArtifact);
+            }
+        }
+    }
+
+    private void duplicateProperties(final ComponentType newDeviceType, final ComponentType copyDeviceType) {
+        for(final ComptypePropertyValue propertyValue : copyDeviceType.getComptypePropertyList()) {
+            final Property property = propertyValue.getProperty();
+            final ComptypePropertyValue pv = new ComptypePropertyValue();
+            pv.setComponentType(newDeviceType);
+            pv.setProperty(property);
+            pv.setDefinitionTargetDevice(propertyValue.isDefinitionTargetDevice());
+            pv.setDefinitionTargetSlot(propertyValue.isDefinitionTargetSlot());
+            if (property.getValueUniqueness() != PropertyValueUniqueness.UNIVERSAL) {
+                pv.setPropValue(propertyValue.getPropValue());
+            }
+            addChild(pv);
+        }
     }
 }

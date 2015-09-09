@@ -46,6 +46,7 @@ import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.DeviceArtifact;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ent.InstallationRecord;
+import org.openepics.discs.conf.ent.PropertyValueUniqueness;
 import org.openepics.discs.conf.ent.Tag;
 import org.openepics.discs.conf.export.ExportTable;
 import org.openepics.discs.conf.ui.common.AbstractDeviceAttributesController;
@@ -364,8 +365,12 @@ public class DevicesController
     }
 
     private Device createNewDevice(String deviceSerailNo) {
+        return createNewDevice(deviceSerailNo, selectedComponentType);
+    }
+            
+    private Device createNewDevice(String deviceSerailNo, final ComponentType componentType) {
         final Device newDevice = new Device(deviceSerailNo);
-        newDevice.setComponentType(selectedComponentType);
+        newDevice.setComponentType(componentType);
         return newDevice;
     }
 
@@ -498,6 +503,53 @@ public class DevicesController
         devices = listBuilder.build();
     }
 
+    public void duplicate() {
+        Preconditions.checkState(!Utility.isNullOrEmpty(selectedDevices));
+            
+        for (final DeviceView deviceView : selectedDevices) {
+            final Device deviceToCopy = deviceView.getDevice();
+            final String newDeviceSerial = Utility.findFreeName(deviceToCopy.getSerialNumber(), deviceEJB);
+            final Device newCopy = createNewDevice(newDeviceSerial, deviceToCopy.getComponentType());
+            deviceEJB.addDeviceAndPropertyDefs(newCopy);
+            transferValuesFromSource(newCopy, deviceToCopy);
+            copyArtifactsFromSource(newCopy, deviceToCopy);
+            newCopy.getTags().addAll(deviceToCopy.getTags());
+            deviceEJB.save(newCopy);
+        }
+        prepareDevicesForDisplay(null);
+    }
+    
+    private void copyArtifactsFromSource(final Device newCopy, final Device copySource) {
+        for (final DeviceArtifact artifact : copySource.getDeviceArtifactList()) {
+            if (!artifact.isInternal()) {
+                final DeviceArtifact newArtifact = new DeviceArtifact(artifact.getName(), false, artifact.getDescription(),
+                        artifact.getUri());
+                newArtifact.setDevice(newCopy);
+                deviceEJB.addChild(newArtifact);
+            }
+        }
+    }
+        
+    private void transferValuesFromSource(final Device newCopy, final Device copySource) {
+        for (final DevicePropertyValue pv : newCopy.getDevicePropertyList()) {
+            if (pv.getProperty().getValueUniqueness() == PropertyValueUniqueness.NONE) {
+                final DevicePropertyValue parentPv = getPropertyValue(copySource, pv.getProperty().getName());
+                if (parentPv != null) {
+                    pv.setPropValue(parentPv.getPropValue());
+                }
+            }
+        }
+    }
+    
+    private DevicePropertyValue getPropertyValue(final Device device, final String pvName) {
+        for (final DevicePropertyValue pv : device.getDevicePropertyList()) {
+            if (pv.getProperty().getName().equals(pvName)) {
+                return pv;
+            }
+        }
+        return null;
+    }
+        
     /** @return The list of all {@link Device} instances to display to the the user */
     public List<DeviceView> getDevices() {
         return devices;
