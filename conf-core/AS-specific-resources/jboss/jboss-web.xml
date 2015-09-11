@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jboss-web>
+    <!-- For production the context root is only "/" -->
     <context-root>/ccdb</context-root>
     <security-domain>ccdb.security-domain</security-domain>
     <!-- <server-instance>default-server_external</server-instance> -->
+    <!-- <virtual-host>ccdb</virtual-host> -->
 </jboss-web>
