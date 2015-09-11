@@ -1892,7 +1892,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      * @throws ValidatorException validation failed
      */
     public void validateInstallationSlot(FacesContext ctx, UIComponent component, Object value) {
-        if (isInstallationSlot && isNewInstallationSlot && !slotEJB.isInstallationSlotNameUnique(value.toString())) {
+        if (isInstallationSlot && !slotEJB.isInstallationSlotNameUnique(value.toString())) {
             throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
                     "The installation slot name must be unique."));
         }
