@@ -45,12 +45,14 @@
                                 <p:ajax event="rowSelect" oncomplete="adjustTableHeights();" 
                                         update=":devicesForm:deleteButton :devicesForm:editButton :devicesForm:addButton 
                                                 :devicesForm:deleteAttrButton :devicesForm:editAttrButton 
-                                                :devicesForm:attributesDataTable:attributesDataTable" 
+                                                :devicesForm:attributesDataTable:attributesDataTable 
+                                                :devicesForm:duplicateButton" 
                                         listener="#{devicesController.onRowSelect}" />
                                 <p:ajax event="rowUnselect" oncomplete="adjustTableHeights();" 
                                         update=":devicesForm:deleteButton :devicesForm:editButton :devicesForm:addButton 
                                                 :devicesForm:deleteAttrButton :devicesForm:editAttrButton 
-                                                :devicesForm:attributesDataTable:attributesDataTable" 
+                                                :devicesForm:attributesDataTable:attributesDataTable 
+                                                :devicesForm:duplicateButton" 
                                         listener="#{devicesController.onRowSelect}" />
 
                                 <p:column headerText="Type" sortBy="#{device.device.componentType.name}" 
@@ -79,6 +81,11 @@
                                     <h:outputText value="#{device.installationDate}" />
                                 </p:column>
                             </p:dataTable>
+
+                            <p:commandButton id="duplicateButton" icon="ui-icon-copy" value="Duplicate" title="Duplicate selected" 
+                                style="float: right; margin-top: 1em;" disabled="#{empty devicesController.selectedDevices}" 
+                                oncomplete="adjustTableHeights();" update=":devicesForm:devicesTable" 
+                                actionListener="#{devicesController.duplicate}" />
                             <p:commandButton id="exportButton" icon="ui-icon-disk" value="Export" title="Export" 
                                 style="float: right; margin-top: 1em;" oncomplete="PF('exportDevices').show();" 
                                 disabled="#{empty devicesController.devices}" update=":exportDevForm:exportDevices" 

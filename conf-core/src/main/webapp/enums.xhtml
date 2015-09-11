@@ -40,8 +40,10 @@
                         resizableColumns="true" tableStyle="table-layout: fixed; word-wrap: break-word; width: 100%;" 
                         filteredValue="#{dataTypeManager.filteredDataTypeViews}" liveScroll="true" scrollRows="50">
                     <p:ajax event="filter" ignoreAutoUpdate="true"/>
-                    <p:ajax event="rowSelect" update=":enumsForm:deleteButton :enumsForm:editButton" />
-                    <p:ajax event="rowUnselect" update=":enumsForm:deleteButton :enumsForm:editButton" />
+                    <p:ajax event="rowSelect" update=":enumsForm:deleteButton :enumsForm:editButton 
+                            :enumsForm:duplicateButton" />
+                    <p:ajax event="rowUnselect" update=":enumsForm:deleteButton :enumsForm:editButton 
+                            :enumsForm:duplicateButton" />
 
                     <p:column headerText="Name" sortBy="#{enum.name}" filterBy="#{enum.name}" width="10%" 
                             filterMatchMode="contains">
@@ -58,6 +60,11 @@
                         <h:outputText value="#{enum.definitionAsString}" />
                     </p:column>
                 </p:dataTable>
+
+                <p:commandButton id="duplicateButton" icon="ui-icon-copy" value="Duplicate" title="Duplicate selected" 
+                    style="float: right; margin-top: 1em;" disabled="#{empty dataTypeManager.selectedEnums}" 
+                    oncomplete="adjustTableHeight();" 
+                    update=":enumsForm:enumsTable" actionListener="#{dataTypeManager.duplicate}" />
                 <p:commandButton id="exportButton" icon="ui-icon-disk" value="Export" title="Export" 
                     style="float: right; margin-top: 1em;" oncomplete="PF('exportEnums').show();" 
                     disabled="#{empty dataTypeManager.dataTypeViews}" update=":exportEnumsForm:exportEnums" 

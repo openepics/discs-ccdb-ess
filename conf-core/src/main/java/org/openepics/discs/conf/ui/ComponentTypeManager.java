@@ -536,6 +536,22 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
         throw new RuntimeException("MultiPropertyValue: UI string value cannot be extracted.");
     }
 
+    /**
+     * This method duplicates selected device types. This method actually copies
+     * selected device type name, description, tags, artifacts and properties
+     * into new device type. If property has set universally unique value,
+     * copied property value is set to null.
+     */
+    public void duplicate() {
+        Preconditions.checkState(!Utility.isNullOrEmpty(selectedDeviceTypes));
+
+        for (final ComponentType selectedDeviceType : selectedDeviceTypes) {
+            String newName = Utility.findFreeName(selectedDeviceType.getName(), comptypeEJB);
+            comptypeEJB.duplicate(selectedDeviceType, newName);
+        }
+        deviceTypes = comptypeEJB.findAll();
+    }
+
     /** This method returns a String representation of the property value.
      * @param prop the value of the property to show value for
      * @return the string representation

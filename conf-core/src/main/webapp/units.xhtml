@@ -42,8 +42,10 @@
                         resizableColumns="true" tableStyle="table-layout: fixed; word-wrap: break-word; width: 100%;" 
                         filteredValue="#{unitManager.filteredUnits}" liveScroll="true" scrollRows="50">
                     <p:ajax event="filter" ignoreAutoUpdate="true" />
-                    <p:ajax event="rowSelect" update=":unitsForm:deleteButton :unitsForm:editButton" />
-                    <p:ajax event="rowUnselect" update=":unitsForm:deleteButton :unitsForm:editButton" />
+                    <p:ajax event="rowSelect" update=":unitsForm:deleteButton :unitsForm:editButton 
+                            :unitsForm:duplicateButton" />
+                    <p:ajax event="rowUnselect" update=":unitsForm:deleteButton :unitsForm:editButton 
+                            :unitsForm:duplicateButton" />
 
                     <p:column headerText="Name" sortBy="#{unit.name.toUpperCase()}" filterBy="#{unit.name}"
                             filterMatchMode="contains" styleClass="tableColWidth30">
@@ -61,6 +63,10 @@
                     </p:column>
                 </p:dataTable>
 
+                <p:commandButton id="duplicateButton" icon="ui-icon-copy" value="Duplicate" title="Duplicate selected" 
+                    style="float: right; margin-top: 1em;" disabled="#{empty unitManager.selectedUnits}" 
+                    oncomplete="adjustTableHeight();" 
+                    update=":unitsForm:unitsTable" actionListener="#{unitManager.duplicate}" />
                 <p:commandButton id="exportButton" icon="ui-icon-disk" value="Export" title="Export" 
                     style="float: right; margin-top: 1em;" oncomplete="PF('exportUnits').show();" 
                     disabled="#{empty unitManager.unitViews}" update=":exportUnitsForm:exportUnits" 

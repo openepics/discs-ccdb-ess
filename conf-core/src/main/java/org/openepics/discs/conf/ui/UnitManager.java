@@ -291,6 +291,18 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
         }
     }
 
+    public void duplicate() {
+        Preconditions.checkState(!Utility.isNullOrEmpty(selectedUnits));
+
+        for (final UnitView unitView : selectedUnits) {
+            final Unit unitToCopy = unitView.getUnit();
+            final String newUnitName = Utility.findFreeName(unitToCopy.getName(), unitEJB);
+            final Unit newUnit = new Unit(newUnitName, unitToCopy.getSymbol(), unitToCopy.getDescription());
+            unitEJB.save(newUnit);
+        }
+        refreshUnits();
+    }
+
     //-------------------------------------------------------------------------------------------
     //                              Getters and setters
     //-------------------------------------------------------------------------------------------

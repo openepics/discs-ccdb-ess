@@ -43,8 +43,10 @@
                         resizableColumns="true" style="width: inherit; overflow-y: hidden;" scrollable="true"
                         filteredValue="#{propertyManager.filteredProperties}" liveScroll="true" scrollRows="50">
                     <p:ajax event="filter" ignoreAutoUpdate="true" />
-                    <p:ajax event="rowSelect" update=":propertiesForm:deleteButton :propertiesForm:editButton" />
-                    <p:ajax event="rowUnselect" update=":propertiesForm:deleteButton :propertiesForm:editButton" />
+                    <p:ajax event="rowSelect" update=":propertiesForm:deleteButton :propertiesForm:editButton 
+                            :propertiesForm:duplicateButton" />
+                    <p:ajax event="rowUnselect" update=":propertiesForm:deleteButton :propertiesForm:editButton 
+                            :propertiesForm:duplicateButton" />
     
                     <p:column headerText="Name" sortBy="#{property.name.toUpperCase()}" filterBy="#{property.name}" 
                             filterMatchMode="contains" styleClass="tableColWidth20">
@@ -71,6 +73,10 @@
                     </p:column>
                 </p:dataTable>
     
+                <p:commandButton id="duplicateButton" icon="ui-icon-copy" value="Duplicate" title="Duplicate selected" 
+                    style="float: right; margin-top: 1em;" disabled="#{empty propertyManager.selectedProperties}" 
+                    oncomplete="adjustTableHeight();" 
+                    update=":propertiesForm:propertiesTable" actionListener="#{propertyManager.duplicate}" />
                 <p:commandButton id="exportButton" icon="ui-icon-disk" value="Export" title="Export" 
                     style="float: right; margin-top: 1em;" oncomplete="PF('exportProperties').show();" 
                     disabled="#{empty propertyManager.properties}" update=":exportPropForm:exportProperties" 
