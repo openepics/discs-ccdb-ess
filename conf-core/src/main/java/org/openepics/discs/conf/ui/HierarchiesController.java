@@ -42,6 +42,7 @@ import javax.annotation.PostConstruct;
 import javax.ejb.EJBException;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
@@ -50,6 +51,8 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
+
+import joptsimple.internal.Strings;
 
 import org.apache.commons.io.FilenameUtils;
 import org.openepics.discs.conf.dl.annotations.SignalsLoader;
@@ -87,6 +90,7 @@ import org.openepics.discs.conf.ui.common.AbstractExcelSingleFileImportUI;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
 import org.openepics.discs.conf.ui.common.HierarchyBuilder;
 import org.openepics.discs.conf.ui.common.UIException;
+import org.openepics.discs.conf.util.AppProperties;
 import org.openepics.discs.conf.util.BlobStore;
 import org.openepics.discs.conf.util.BuiltInDataType;
 import org.openepics.discs.conf.util.Conversion;
@@ -125,14 +129,15 @@ import com.google.common.io.ByteStreams;
 @Named
 @ViewScoped
 public class HierarchiesController extends AbstractExcelSingleFileImportUI implements Serializable {
-    private static final long serialVersionUID = 2743408661782529373L;
+    private static final long       serialVersionUID = 2743408661782529373L;
 
-    private static final String MULTILINE_DELIMITER = "(\\r\\n)|\\r|\\n";
-    private static final String CANNOT_PASTE_INTO_ROOT =
+    private static final String     MULTILINE_DELIMITER = "(\\r\\n)|\\r|\\n";
+    private static final String     CANNOT_PASTE_INTO_ROOT =
                                                 "The following installation slots cannot be made hierarchy roots:";
-    private static final String CANNOT_PASTE_INTO_SLOT =
+    private static final String     CANNOT_PASTE_INTO_SLOT =
             "The following containers cannot become children of installation slot:";
-    private static final int PRELOAD_LIMIT = 3;
+    private static final int        PRELOAD_LIMIT = 3;
+    private static final String     NAMING_APPLICATION_URL = "namingAppURL";
 
     @Inject private transient SlotEJB slotEJB;
     @Inject private transient SlotPairEJB slotPairEJB;
@@ -146,6 +151,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
     @Inject private transient DataLoaderHandler dataLoaderHandler;
     @Inject @SignalsLoader private transient DataLoader signalsDataLoader;
+
+    @Inject private AppProperties properties;
 
     private enum ActiveTab {
         INCLUDES, POWERS, CONTROLS
@@ -832,6 +839,28 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
                 selectedNodes = null;
                 clearRelatedInformation();
             }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /** This method builds an URL to the naming application and also redirects the user there.
+     *
+     * @param slotName the name of the slot to redirect to
+     */
+    public void redirectToNaming(final String slotName) {
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(slotName));
+        final String namingUrl = Preconditions.checkNotNull(properties.getProperty(NAMING_APPLICATION_URL));
+        Preconditions.checkState(!Strings.isNullOrEmpty(namingUrl));
+
+        final StringBuilder redirectionUrl = new StringBuilder(namingUrl);
+        if (redirectionUrl.charAt(redirectionUrl.length() - 1) != '/') {
+            redirectionUrl.append('/');
+        }
+        redirectionUrl.append(slotName);
+        try {
+            ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
+            externalContext.redirect(redirectionUrl.toString().trim());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

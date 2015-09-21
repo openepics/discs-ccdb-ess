@@ -96,95 +96,101 @@
                                              selectionMode="multiple" selection="#{hierarchiesController.selectedIncludesNodes}" 
                                              scrollable="true" scrollWidth="auto" rowStyleClass="treeRows" 
                                              style="width: 35em;" widgetVar="hierarchyWidget" nodeVar="slotNode">
-                                         <p:ajax event="select" listener="#{hierarchiesController.onNodeSelect}" 
-                                             update=":hierarchies:relationsTable :hierarchies:deleteButton :hierarchies:downButton 
-                                                     :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton 
-                                                     :hierarchies:installationDetails :hierarchies:slotAttributes 
-                                                     :hierarchies:addRelationship :hierarchies:clipboardOperations" 
-                                             oncomplete="resizeEmptyColumnInHierarchies();hierarchiesResizeAttributes();clearRelatedFilters();" />
-                                         <p:ajax event="unselect" listener="#{hierarchiesController.onNodeUnselect}" 
-                                             update=":hierarchies:relationsTable :hierarchies:deleteButton :hierarchies:downButton 
-                                                     :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton 
-                                                     :hierarchies:installationDetails :hierarchies:slotAttributes 
-                                                     :hierarchies:addRelationship" 
-                                             oncomplete="resizeEmptyColumnInHierarchies();clearRelatedFilters();" />
-                                         <p:ajax event="expand" listener="#{hierarchiesController.onContainsExpand}" />
-                
-                                         <p:column id="name" headerText="Name">
-                                             <h:outputText value="" rendered="#{installationSlot.hostingSlot}" 
-                                                 style="display:inline-block; vertical-align:bottom !important" 
-                                                 styleClass="ui-icon ui-icon-wrench" />
-                                             <h:outputText value="" rendered="#{!installationSlot.hostingSlot}" 
-                                                 style="display:inline-block; vertical-align:bottom !important" 
-                                                 styleClass="ui-icon ui-icon-folder-collapsed" />
-                                             <h:outputText value="#{installationSlot.name}" 
+                                        <p:ajax event="select" listener="#{hierarchiesController.onNodeSelect}" 
+                                            update=":hierarchies:relationsTable :hierarchies:deleteButton :hierarchies:downButton 
+                                                    :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton 
+                                                    :hierarchies:installationDetails :hierarchies:slotAttributes 
+                                                    :hierarchies:addRelationship :hierarchies:clipboardOperations" 
+                                            oncomplete="resizeEmptyColumnInHierarchies();hierarchiesResizeAttributes();clearRelatedFilters();" />
+                                        <p:ajax event="unselect" listener="#{hierarchiesController.onNodeUnselect}" 
+                                            update=":hierarchies:relationsTable :hierarchies:deleteButton :hierarchies:downButton 
+                                                    :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton 
+                                                    :hierarchies:installationDetails :hierarchies:slotAttributes 
+                                                    :hierarchies:addRelationship" 
+                                            oncomplete="resizeEmptyColumnInHierarchies();clearRelatedFilters();" />
+                                        <p:ajax event="expand" listener="#{hierarchiesController.onContainsExpand}" />
+
+                                        <p:column id="name" headerText="Name">
+                                            <h:outputText value="" rendered="#{installationSlot.hostingSlot}" 
+                                                style="display:inline-block; vertical-align:bottom !important" 
+                                                styleClass="ui-icon ui-icon-wrench" />
+                                            <h:outputText value="" rendered="#{!installationSlot.hostingSlot}" 
+                                                style="display:inline-block; vertical-align:bottom !important" 
+                                                styleClass="ui-icon ui-icon-folder-collapsed" />
+                                            <h:outputText value="#{installationSlot.name}" 
                                                 title="#{installationSlot.description}#{installationSlot.hostingSlot ? ' ('.concat(installationSlot.deviceTypeName).concat(')') : ''}" />
-                                             <h:outputText value="" rendered="#{installationSlot.inClipboard or 
+                                            <h:commandLink rendered="#{installationSlot.hostingSlot}" target="_blank" 
+                                                    actionListener="#{hierarchiesController.redirectToNaming(installationSlot.name)}">
+                                                <h:outputText value="" rendered="#{installationSlot.hostingSlot}" 
+                                                    style="display:inline-block; vertical-align:bottom !important; margin-left: 1ex;" 
+                                                    styleClass="ui-icon ui-icon-extlink" />
+                                            </h:commandLink>
+                                            <h:outputText value="" rendered="#{installationSlot.inClipboard or
                                                                                 (hierarchiesController.cliboardOperation == 'COPY' 
-                                                                                    and hierarchiesController.isAncestorNodeInClipboard(slotNode))}" 
-                                                 style="display:inline-block; vertical-align:bottom !important; float: right; right: 1.2em; position: relative;" 
-                                                 styleClass="ui-icon ui-icon-clipboard" />
-                                             <h:outputText value="" rendered="#{hierarchiesController.cliboardOperation == 'COPY' 
+                                                                                and hierarchiesController.isAncestorNodeInClipboard(slotNode))}" 
+                                                style="display:inline-block; vertical-align:bottom !important; float: right; right: 1.2em; position: relative;" 
+                                                styleClass="ui-icon ui-icon-clipboard" />
+                                            <h:outputText value="" rendered="#{hierarchiesController.cliboardOperation == 'COPY' 
                                                                                 and (installationSlot.inClipboard 
                                                                                     or hierarchiesController.isAncestorNodeInClipboard(slotNode))}" 
-                                                 style="display:inline-block; vertical-align:bottom !important; float: right; position: relative; right: 0; bottom: 0.15em; opacity: 0.7;" 
-                                                 styleClass="ui-icon ui-icon-clipboard" />
-                                         </p:column>
-                                     </p:treeTable>                                
+                                                style="display:inline-block; vertical-align:bottom !important; float: right; position: relative; right: 0; bottom: 0.15em; opacity: 0.7;" 
+                                                styleClass="ui-icon ui-icon-clipboard" />
+                                        </p:column>
+                                    </p:treeTable>                                
                                 </p:tab>
                                 <p:tab id="CONTROLS" title="Controls">
                                     <p:treeTable id="controlsTree" value="#{hierarchiesController.controlsRoot}" var="ctrlSlot" 
                                              selectionMode="multiple" selection="#{hierarchiesController.selectedControlsNodes}" 
                                              scrollable="true" scrollWidth="auto" rowStyleClass="treeRows" 
                                              style="width: 35em;"  widgetVar="ctrlWidget">
-                                         <p:ajax event="select" listener="#{hierarchiesController.onNodeSelect}" 
-                                             update=":hierarchies:relationsTable :hierarchies:installationDetails 
-                                                     :hierarchies:slotAttributes :hierarchies:addRelationship" 
-                                             oncomplete="resizeEmptyColumnInHierarchies();hierarchiesResizeAttributes();clearRelatedFilters();" />
-                                         <p:ajax event="unselect" listener="#{hierarchiesController.onNodeUnselect}" 
-                                             update=":hierarchies:relationsTable :hierarchies:installationDetails 
-                                                     :hierarchies:slotAttributes :hierarchies:addRelationship" 
-                                             oncomplete="resizeEmptyColumnInHierarchies();clearRelatedFilters();" />
-                                         <p:ajax event="expand" listener="#{hierarchiesController.onControlsExpand}" />
-                
-                                         <p:column id="ctrlName" headerText="Name">
-                                             <h:outputText value="" rendered="#{ctrlSlot.hostingSlot}" 
-                                                 style="display:inline-block; vertical-align:bottom !important" 
-                                                 styleClass="ui-icon ui-icon-wrench" />
-                                             <h:outputText value="" rendered="#{!ctrlSlot.hostingSlot}" 
-                                                 style="display:inline-block; vertical-align:bottom !important" 
-                                                 styleClass="ui-icon ui-icon-folder-collapsed" />
-                                             <h:outputText value="#{ctrlSlot.name}" 
+                                        <p:ajax event="select" listener="#{hierarchiesController.onNodeSelect}" 
+                                                update=":hierarchies:relationsTable :hierarchies:installationDetails 
+                                                        :hierarchies:slotAttributes :hierarchies:addRelationship" 
+                                                oncomplete="resizeEmptyColumnInHierarchies();hierarchiesResizeAttributes();clearRelatedFilters();" />
+                                        <p:ajax event="unselect" listener="#{hierarchiesController.onNodeUnselect}" 
+                                                update=":hierarchies:relationsTable :hierarchies:installationDetails 
+                                                        :hierarchies:slotAttributes :hierarchies:addRelationship" 
+                                                oncomplete="resizeEmptyColumnInHierarchies();clearRelatedFilters();" />
+                                        <p:ajax event="expand" listener="#{hierarchiesController.onControlsExpand}" />
+                                        
+                                        <p:column id="ctrlName" headerText="Name">
+                                            <h:outputText value="" rendered="#{ctrlSlot.hostingSlot}" 
+                                                style="display:inline-block; vertical-align:bottom !important" 
+                                                styleClass="ui-icon ui-icon-wrench" />
+                                            <h:outputText value="" rendered="#{!ctrlSlot.hostingSlot}" 
+                                                style="display:inline-block; vertical-align:bottom !important" 
+                                                styleClass="ui-icon ui-icon-folder-collapsed" />
+                                            <h:outputText value="#{ctrlSlot.name}" 
                                                 title="#{ctrlSlot.description}#{ctrlSlot.hostingSlot ? ' ('.concat(ctrlSlot.deviceTypeName).concat(')') : ''}" />
-                                         </p:column>
-                                     </p:treeTable>                                
+                                        </p:column>
+                                    </p:treeTable>                                
                                 </p:tab>
                                 <p:tab id="POWERS" title="Powers">
                                     <p:treeTable id="powersTree" value="#{hierarchiesController.powersRoot}" var="powerSlot" 
                                              selectionMode="multiple" selection="#{hierarchiesController.selectedPowersNodes}" 
                                              scrollable="true" scrollWidth="auto" rowStyleClass="treeRows" 
                                              style="width: 35em;"  widgetVar="powersWidget">
-                                         <p:ajax event="select" listener="#{hierarchiesController.onNodeSelect}" 
-                                             update=":hierarchies:relationsTable :hierarchies:installationDetails 
-                                                     :hierarchies:slotAttributes :hierarchies:addRelationship" 
-                                             oncomplete="resizeEmptyColumnInHierarchies();hierarchiesResizeAttributes();clearRelatedFilters();" />
-                                         <p:ajax event="unselect" listener="#{hierarchiesController.onNodeUnselect}" 
-                                             update=":hierarchies:relationsTable :hierarchies:installationDetails 
-                                                     :hierarchies:slotAttributes :hierarchies:addRelationship" 
-                                             oncomplete="resizeEmptyColumnInHierarchies();clearRelatedFilters();" />
-                                         <p:ajax event="expand" listener="#{hierarchiesController.onPowersExpand}" />
-                
-                                         <p:column id="powersName" headerText="Name">
-                                             <h:outputText value="" rendered="#{powerSlot.hostingSlot}" 
-                                                 style="display:inline-block; vertical-align:bottom !important" 
-                                                 styleClass="ui-icon ui-icon-wrench" />
-                                             <h:outputText value="" rendered="#{!powerSlot.hostingSlot}" 
-                                                 style="display:inline-block; vertical-align:bottom !important" 
-                                                 styleClass="ui-icon ui-icon-folder-collapsed" />
-                                             <h:outputText value="#{powerSlot.name}" 
+                                        <p:ajax event="select" listener="#{hierarchiesController.onNodeSelect}" 
+                                                update=":hierarchies:relationsTable :hierarchies:installationDetails 
+                                                        :hierarchies:slotAttributes :hierarchies:addRelationship" 
+                                                oncomplete="resizeEmptyColumnInHierarchies();hierarchiesResizeAttributes();clearRelatedFilters();" />
+                                        <p:ajax event="unselect" listener="#{hierarchiesController.onNodeUnselect}" 
+                                                update=":hierarchies:relationsTable :hierarchies:installationDetails 
+                                                        :hierarchies:slotAttributes :hierarchies:addRelationship" 
+                                                oncomplete="resizeEmptyColumnInHierarchies();clearRelatedFilters();" />
+                                        <p:ajax event="expand" listener="#{hierarchiesController.onPowersExpand}" />
+
+                                        <p:column id="powersName" headerText="Name">
+                                            <h:outputText value="" rendered="#{powerSlot.hostingSlot}" 
+                                                style="display:inline-block; vertical-align:bottom !important" 
+                                                styleClass="ui-icon ui-icon-wrench" />
+                                            <h:outputText value="" rendered="#{!powerSlot.hostingSlot}" 
+                                                style="display:inline-block; vertical-align:bottom !important" 
+                                                styleClass="ui-icon ui-icon-folder-collapsed" />
+                                            <h:outputText value="#{powerSlot.name}" 
                                                 title="#{powerSlot.description}#{powerSlot.hostingSlot ? ' ('.concat(powerSlot.deviceTypeName).concat(')') : ''}" />
-                                         </p:column>
-                                     </p:treeTable>                                
+                                        </p:column>
+                                    </p:treeTable>                                
                                 </p:tab>
                             </p:tabView>
 
