@@ -226,7 +226,7 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
             }
 
             final ComponentType compType = slotToRename.getComponentType();
-            if (compType.getName().equals(SlotEJB.ROOT_COMPONENT_TYPE)) {
+            if (SlotEJB.ROOT_COMPONENT_TYPE.equals(compType.getName())) {
                 result.addRowMessage(ErrorMessage.NOT_AUTHORIZED, AbstractDataLoader.HDR_OPERATION);
                 return;
             }

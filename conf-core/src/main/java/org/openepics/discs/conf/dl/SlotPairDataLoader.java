@@ -43,6 +43,7 @@ import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotRelation;
 import org.openepics.discs.conf.ent.SlotRelationName;
+import org.openepics.discs.conf.util.Utility;
 
 /**
  * Implementation of data loader for slot pairs.
@@ -112,7 +113,7 @@ public class SlotPairDataLoader extends AbstractDataLoader implements DataLoader
         childrenSlots = slotEJB.findSlotByNameContainingString(childString);
         parentSlot = slotEJB.findByName(parentString);
 
-        if (childrenSlots == null || childrenSlots.isEmpty()) {
+        if (Utility.isNullOrEmpty(childrenSlots)) {
             result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_CHILD);
         }
 

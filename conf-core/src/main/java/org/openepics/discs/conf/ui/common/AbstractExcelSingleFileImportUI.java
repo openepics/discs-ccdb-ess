@@ -32,6 +32,7 @@ import org.openepics.discs.conf.dl.common.ExcelImportFileReader;
 import org.openepics.discs.conf.dl.common.ValidationMessage;
 import org.openepics.discs.conf.export.ExportTable;
 import org.openepics.discs.conf.ui.export.ExportSimpleTableDialog;
+import org.openepics.discs.conf.util.Utility;
 import org.primefaces.event.FileUploadEvent;
 
 import com.google.common.base.Preconditions;
@@ -73,7 +74,7 @@ public abstract class AbstractExcelSingleFileImportUI implements ExcelSingleFile
         @Override
         protected void addData(ExportTable exportTable) {
             final List<ValidationMessage> filteredMessages = loaderResult.getFilteredMessages();
-            final List<ValidationMessage> exportData = filteredMessages == null || filteredMessages.isEmpty()
+            final List<ValidationMessage> exportData = Utility.isNullOrEmpty(filteredMessages)
                     ? loaderResult.getMessages() : filteredMessages;
             for (final ValidationMessage message : exportData) {
                 exportTable.addDataRow(message.getRow(), message.getColumn(), message.getMessage().toString());
@@ -137,8 +138,9 @@ public abstract class AbstractExcelSingleFileImportUI implements ExcelSingleFile
             int deleteRows = 0;
             int renameRows = 0;
 
-            for (Pair<Integer, List<String>> row : inputRows) {
-                switch(row.getRight().get(0)) {
+            for (final Pair<Integer, List<String>> row : inputRows) {
+                final String command = row.getRight().get(0);
+                switch(command) {
                     // TODO add all commands to statistics
                     case DataLoader.CMD_CREATE:
                     case DataLoader.CMD_CREATE_DEVICE:
@@ -162,7 +164,7 @@ public abstract class AbstractExcelSingleFileImportUI implements ExcelSingleFile
                         ++renameRows;
                         break;
                 }
-                if (row.getRight().get(0).equals(DataLoader.CMD_END)) {
+                if (DataLoader.CMD_END.equals(command)) {
                     break;
                 }
                 ++dataRows;

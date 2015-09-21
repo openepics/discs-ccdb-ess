@@ -925,7 +925,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     }
 
     public boolean isNodesDeletable() {
-        if (selectedNodes == null) {
+        if (Utility.isNullOrEmpty(selectedNodes)) {
             return false;
         }
         for (final TreeNode node : selectedNodes) {
@@ -1088,7 +1088,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         final Slot modifiedSlot = selectedSlotView.getSlot();
         modifiedSlot.setName(name);
         modifiedSlot.setDescription(description);
-        if (modifiedSlot.isHostingSlot() && installationRecords == null) {
+        if (modifiedSlot.isHostingSlot() && Utility.isNullOrEmpty(installationRecords)) {
             modifiedSlot.setComponentType(deviceType);
         }
         slotEJB.save(modifiedSlot);
@@ -1840,7 +1840,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      */
     @Override
     public void handleImportFileUpload(FileUploadEvent event) {
-        if (event.getComponent().getClientId().equals("importSignalsForm:singleFileDLUploadCtl")) {
+        if ("importSignalsForm:singleFileDLUploadCtl".equals(event.getComponent().getClientId())) {
             // this handler is shared between AbstractExcelSingleFileImportUI and Artifact loading
             super.handleImportFileUpload(event);
         } else {

@@ -141,9 +141,6 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
     private Class<T> propertyValueClass;
     private Class<S> artifactClass;
 
-    // TODO remove
-    protected T propertyValueInstance;
-
     protected String entityName;
 
     protected void resetFields() {
@@ -165,7 +162,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
      */
     public void addNewPropertyValue() {
         try {
-            propertyValueInstance = propertyValueClass.newInstance();
+            final T propertyValueInstance = propertyValueClass.newInstance();
             propertyValueInstance.setInRepository(false);
             propertyValueInstance.setProperty(property);
             propertyValueInstance.setPropValue(propertyValue);
@@ -525,7 +522,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
             }
         }
 
-        if (parentProperties == null) {
+        if (Utility.isNullOrEmpty(parentProperties)) {
             return false;
         }
 

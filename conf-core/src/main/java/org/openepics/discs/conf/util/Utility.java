@@ -121,7 +121,7 @@ public class Utility {
      * @return {@link List} containing slot names from root slot to current slot
      */
     public static List<String> buildSlotPath(Slot slot) {
-        if (slot.getComponentType().getName().equals(SlotEJB.ROOT_COMPONENT_TYPE)) {
+        if (SlotEJB.ROOT_COMPONENT_TYPE.equals(slot.getComponentType().getName())) {
             return new ArrayList<>();
         } else {
             final List<String> list = new ArrayList<>();

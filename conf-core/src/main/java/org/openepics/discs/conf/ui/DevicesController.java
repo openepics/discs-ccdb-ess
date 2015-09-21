@@ -131,12 +131,12 @@ public class DevicesController
 
         @Override
         protected void addData(ExportTable exportTable) {
-            final List<DeviceView> exportData = filteredDevices == null || filteredDevices.isEmpty() ? devices
+            final List<DeviceView> exportData = Utility.isNullOrEmpty(filteredDevices) ? devices
                     : filteredDevices;
             for (final DeviceView deviceInstance : exportData) {
                 exportTable.addDataRow(deviceInstance.getDevice().getComponentType().getName(),
                         deviceInstance.getInventoryId(),
-                        deviceInstance.getInstalledIn().equals("-") ? null : deviceInstance.getInstalledIn(),
+                        "-".equals(deviceInstance.getInstalledIn()) ? null : deviceInstance.getInstalledIn(),
                         deviceInstance.getInstallationTimestamp());
             }
         }
@@ -367,7 +367,7 @@ public class DevicesController
     private Device createNewDevice(String deviceSerailNo) {
         return createNewDevice(deviceSerailNo, selectedComponentType);
     }
-            
+
     private Device createNewDevice(String deviceSerailNo, final ComponentType componentType) {
         final Device newDevice = new Device(deviceSerailNo);
         newDevice.setComponentType(componentType);
@@ -505,7 +505,7 @@ public class DevicesController
 
     public void duplicate() {
         Preconditions.checkState(!Utility.isNullOrEmpty(selectedDevices));
-            
+
         for (final DeviceView deviceView : selectedDevices) {
             final Device deviceToCopy = deviceView.getDevice();
             final String newDeviceSerial = Utility.findFreeName(deviceToCopy.getSerialNumber(), deviceEJB);
@@ -518,7 +518,7 @@ public class DevicesController
         }
         prepareDevicesForDisplay(null);
     }
-    
+
     private void copyArtifactsFromSource(final Device newCopy, final Device copySource) {
         for (final DeviceArtifact artifact : copySource.getDeviceArtifactList()) {
             if (!artifact.isInternal()) {
@@ -529,7 +529,7 @@ public class DevicesController
             }
         }
     }
-        
+
     private void transferValuesFromSource(final Device newCopy, final Device copySource) {
         for (final DevicePropertyValue pv : newCopy.getDevicePropertyList()) {
             if (pv.getProperty().getValueUniqueness() == PropertyValueUniqueness.NONE) {
@@ -540,7 +540,7 @@ public class DevicesController
             }
         }
     }
-    
+
     private DevicePropertyValue getPropertyValue(final Device device, final String pvName) {
         for (final DevicePropertyValue pv : device.getDevicePropertyList()) {
             if (pv.getProperty().getName().equals(pvName)) {
@@ -549,7 +549,7 @@ public class DevicesController
         }
         return null;
     }
-        
+
     /** @return The list of all {@link Device} instances to display to the the user */
     public List<DeviceView> getDevices() {
         return devices;

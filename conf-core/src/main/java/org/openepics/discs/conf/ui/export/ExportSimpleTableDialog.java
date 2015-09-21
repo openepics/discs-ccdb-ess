@@ -62,7 +62,7 @@ public abstract class ExportSimpleTableDialog {
         final String mimeType;
         final String fileName;
 
-        if (fileFormat.equals(ExportTable.FILE_FORMAT_EXCEL)) {
+        if (ExportTable.FILE_FORMAT_EXCEL.equals(fileFormat)) {
             exportTable = new ExcelExportTable();
             mimeType = ExportTable.MIME_TYPE_EXCEL;
             fileName = getFileName() + ".xlsx";

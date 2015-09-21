@@ -101,7 +101,8 @@ public class SlotsAndSlotPairsDataLoader implements Serializable {
     private void checkForRelationConsistency(final List<Slot> newSlots, final Set<Slot> newSlotPairChildren,
             DataLoaderResult loaderResult) {
         for (Slot newSlot : newSlots) {
-            if (!newSlotPairChildren.contains(newSlot) && !newSlot.getComponentType().getName().equals(SlotEJB.ROOT_COMPONENT_TYPE)) {
+            if (!newSlotPairChildren.contains(newSlot) &&
+                    !SlotEJB.ROOT_COMPONENT_TYPE.equals(newSlot.getComponentType().getName())) {
                 loaderResult.addOrphanSlotMessage(newSlot.getName());
             }
         }

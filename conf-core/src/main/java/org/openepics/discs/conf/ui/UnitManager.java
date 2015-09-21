@@ -107,7 +107,7 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
 
         @Override
         protected void addData(ExportTable exportTable) {
-            final List<UnitView> exportData = filteredUnits == null || filteredUnits.isEmpty() ? unitViews
+            final List<UnitView> exportData = Utility.isNullOrEmpty(filteredUnits) ? unitViews
                     : filteredUnits;
             for (final UnitView unit : exportData) {
                 exportTable.addDataRow(unit.getName(), unit.getDescription(), unit.getSymbol());

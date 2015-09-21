@@ -110,8 +110,7 @@ public class DataTypeManager extends AbstractExcelSingleFileImportUI implements 
 
         @Override
         protected void addData(ExportTable exportTable) {
-            final List<UserEnumerationView> exportData = filteredDataTypesViews == null
-                    || filteredDataTypesViews.isEmpty()
+            final List<UserEnumerationView> exportData = Utility.isNullOrEmpty(filteredDataTypesViews)
                                 ? dataTypeViews
                                 : filteredDataTypesViews;
             for (final UserEnumerationView enumeration : exportData) {

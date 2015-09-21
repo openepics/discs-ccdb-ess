@@ -129,7 +129,7 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
 
         @Override
         protected void addData(ExportTable exportTable) {
-            final List<Property> exportData = filteredProperties == null || filteredProperties.isEmpty() ? properties
+            final List<Property> exportData = Utility.isNullOrEmpty(filteredProperties) ? properties
                     : filteredProperties;
             for (final Property prop : exportData) {
                 final String unitName = prop.getUnit() != null ? prop.getUnit().getName() : null;

@@ -128,7 +128,7 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
 
         @Override
         protected void addData(ExportTable exportTable) {
-            final List<ComponentType> exportData = filteredDeviceTypes == null || filteredDeviceTypes.isEmpty()
+            final List<ComponentType> exportData = Utility.isNullOrEmpty(filteredDeviceTypes)
                     ? deviceTypes
                     : filteredDeviceTypes;
             for (final ComponentType devType : exportData) {
