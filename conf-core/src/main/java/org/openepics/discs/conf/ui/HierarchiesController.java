@@ -138,6 +138,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             "The following containers cannot become children of installation slot:";
     private static final int        PRELOAD_LIMIT = 3;
     private static final String     NAMING_APPLICATION_URL = "namingAppURL";
+    /** The device page part of the URL containing all the required parameters already. */
+    private static final String     NAMING_DEVICE_PAGE = "devices.xhtml?i=2&deviceName=";
 
     @Inject private transient SlotEJB slotEJB;
     @Inject private transient SlotPairEJB slotPairEJB;
@@ -874,7 +876,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         if (redirectionUrl.charAt(redirectionUrl.length() - 1) != '/') {
             redirectionUrl.append('/');
         }
-        redirectionUrl.append(slotName);
+        redirectionUrl.append(NAMING_DEVICE_PAGE).append(slotName);
         try {
             ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
             externalContext.redirect(redirectionUrl.toString().trim());
