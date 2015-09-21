@@ -239,12 +239,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             attributeKinds = Utility.buildAttributeKinds();
             relationshipTypes = buildRelationshipTypeList();
 
-            final String slotId = ((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().
-                    getRequest()).getParameter("id");
-            if (slotId != null) {
-                selectNode(Long.parseLong(slotId));
-            }
-        } catch(Exception e) {
+            navigateToUrlSelctedSlot();
+        } catch (Exception e) {
             throw new UIException("Hierarchies display initialization fialed: " + e.getMessage(), e);
         }
     }
@@ -323,6 +319,27 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             for (final TreeNode node : selectedNodes) {
                 node.setSelected(false);
             }
+        }
+    }
+
+    private void navigateToUrlSelctedSlot() {
+        // navigate to slot based on ID or name
+        final String slotIdStr = ((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().
+                getRequest()).getParameter("id");
+        Long slotId = null;
+
+        if (slotIdStr != null) {
+            slotId = Long.parseLong(slotIdStr);
+        } else {
+            final String slotName = ((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().
+                    getRequest()).getParameter("name");
+            if (slotName != null) {
+                slotId = getSlotIdFromName(slotName);
+            }
+        }
+
+        if (slotId != null) {
+            selectNode(slotId);
         }
     }
 
@@ -864,6 +881,24 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Returns the database id of an installation {@link Slot} based on its name.
+     *
+     * @param slotName the name of the installation slot to search for
+     * @return the {@link Long} containing the database id of the installation slot, <code>null</code> if such
+     * slot was not found or if it is not an installation slot.
+     *
+     */
+    private Long getSlotIdFromName(final String slotName) {
+        if (Strings.isNullOrEmpty(slotName)) {
+            return null;
+        }
+
+        final Slot slot = slotEJB.findByName(slotName);
+
+        return (slot == null || !slot.isHostingSlot()) ? null : slot.getId();
     }
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
