@@ -34,6 +34,7 @@
  */
 package org.openepics.discs.conf.util;
 
+import com.google.common.base.Preconditions;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -41,6 +42,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import javax.annotation.Nullable;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
@@ -154,23 +156,63 @@ public class Utility {
         return attributeKinds;
     }
 
+    /**
+     * Converts an {@link Optional} object into a stream.
+     * @param <T> the class of the object
+     * @param optional The {@link Optional} object to convert to a stream
+     * @return a {@link Stream} of an {@link Optional} object or an empty stream
+     */
     public static <T> Stream<T> optionalToStream(Optional<T> optional) {
         return optional.map(Stream::of).orElse(Stream.empty());
     }
 
-    public static <T> Stream<T> nullableToStream(T object) {
+    /**
+     * Converts an object into a stream.
+     * @param <T> the class of the object
+     * @param object the object to convert to a stream
+     * @return a {@link Stream} of an object or an empty stream, if the object was <code>null</code>
+     */
+    public static <T> Stream<T> nullableToStream(@Nullable T object) {
         return object != null ? Stream.of(object) : Stream.empty();
     }
 
-    public static boolean isNullOrEmpty(final Collection<?> collection) {
+    /**
+     * Checks whether a {@link Collection} is <code>null</code> or empty.
+     * @param collection the collection to test
+     * @return <code>true</code> if collection is <code>null</code> or empty, <code>false</code> otherwise
+     */
+    public static boolean isNullOrEmpty(final @Nullable Collection<?> collection) {
         return collection == null || collection.isEmpty();
     }
 
-    public static boolean isNullOrEmpty(final Map<?, ?> map) {
+    /**
+     * Checks whether a {@link Map} is <code>null</code> or empty.
+     * @param amp the map to test
+     * @return <code>true</code> if map is <code>null</code> or empty, <code>false</code> otherwise
+     */
+    public static boolean isNullOrEmpty(final @Nullable Map<?, ?> map) {
         return map == null || map.isEmpty();
     }
 
+    /**
+     * Find a next available name given a candidate. If a candidate ends with an underscore and a number (e.g.:
+     * someName_3), then the method returns the first name "someName_&lt;X&gt;" where X &gt; 3 and the name is not
+     * already used in CCDB.
+     * <p>
+     * If the name does not end with a number, then the _ and a number is appended to it and again the method returns
+     * the first name that is not used. The methods starts to search for non-used names at number 1.
+     * </p>
+     * <p>
+     * Please note that the method does not check whether the name is valid in regards to the currently active naming
+     * system.
+     * </p>
+     * @param candidateName the candidate name
+     * @param dao The DAO object to use for testing the name candidates
+     * @return an non-existing name based on the candidate
+     */
     public static String findFreeName(final String candidateName, ReadOnlyDAO<?> dao) {
+        Preconditions.checkNotNull(candidateName);
+        Preconditions.checkNotNull(dao);
         final String nameRoot;
         int numPostfix;
         if (candidateName.matches(".*_(\\d)*$")) {
@@ -187,6 +229,4 @@ public class Utility {
         }
         return nameRoot + "_" + numPostfix;
     }
-
-
 }

@@ -34,6 +34,9 @@ import org.openepics.discs.conf.util.DeleteOnCloseFileInputStream;
 
 import com.google.common.collect.Lists;
 
+/**
+ * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
+ */
 public class CSVExportTable implements ExportTable {
 
     private static final String SEPARATOR = ",";
@@ -43,6 +46,7 @@ public class CSVExportTable implements ExportTable {
     final private List<String> fileLines;
     final SimpleDateFormat timestampFormatter;
 
+    /** Constructs a CSV file exporter. */
     public CSVExportTable() {
         headerAdded = false;
         timestampFormatter = new SimpleDateFormat(Conversion.DATE_TIME_FORMAT);

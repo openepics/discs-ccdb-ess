@@ -74,7 +74,7 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
     @Inject private transient DataLoaderHandler dataLoaderHandler;
     @Inject @UnitsLoader private transient DataLoader unitsDataLoader;
 
-    private List<UnitView> unitViews;
+    private transient List<UnitView> unitViews;
     private transient List<UnitView> filteredUnits;
     private transient List<UnitView> selectedUnits;
     private transient List<UnitView> usedUnits;
@@ -291,6 +291,9 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
         }
     }
 
+    /**
+     * The method creates a new copy of the currently selected {@link Unit}(s)
+     */
     public void duplicate() {
         Preconditions.checkState(!Utility.isNullOrEmpty(selectedUnits));
 

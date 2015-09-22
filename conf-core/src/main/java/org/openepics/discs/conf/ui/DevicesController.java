@@ -92,7 +92,7 @@ public class DevicesController
     private ComponentType selectedComponentType;
     private List<ComponentType> availableDeviceTypes;
 
-    private List<DeviceView> devices;
+    private transient List<DeviceView> devices;
     private transient List<DeviceView> filteredDevices;
     private transient List<DeviceView> selectedDevices;
     private transient List<DeviceView> usedDevices;
@@ -503,6 +503,9 @@ public class DevicesController
         devices = listBuilder.build();
     }
 
+    /**
+     * The method creates a new copy of the currently selected {@link Device}(s)
+     */
     public void duplicate() {
         Preconditions.checkState(!Utility.isNullOrEmpty(selectedDevices));
 

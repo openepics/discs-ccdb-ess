@@ -75,7 +75,7 @@ public class DataTypeManager extends AbstractExcelSingleFileImportUI implements 
     @Inject private transient DataLoaderHandler dataLoaderHandler;
     @Inject @DataTypeLoader private transient DataLoader enumsDataLoader;
 
-    private List<UserEnumerationView> dataTypeViews;
+    private transient List<UserEnumerationView> dataTypeViews;
     private transient List<UserEnumerationView> filteredDataTypesViews;
     private transient List<UserEnumerationView> selectedEnums;
     private transient List<UserEnumerationView> usedEnums;
@@ -393,6 +393,9 @@ public class DataTypeManager extends AbstractExcelSingleFileImportUI implements 
         return (selectedEnums != null) && (selectedEnums.size() == 1);
     }
 
+    /**
+     * The method creates a new copy of the currently selected user enumeration(s)
+     */
     public void duplicate() {
         Preconditions.checkState(!Utility.isNullOrEmpty(selectedEnums));
 

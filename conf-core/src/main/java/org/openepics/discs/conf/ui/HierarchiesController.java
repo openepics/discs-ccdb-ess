@@ -147,14 +147,14 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     @Inject private transient SlotRelationEJB slotRelationEJB;
     @Inject private transient ComptypeEJB comptypeEJB;
     @Inject private transient PropertyEJB propertyEJB;
-    @Inject private TagEJB tagEJB;
-    @Inject private BlobStore blobStore;
+    @Inject private transient TagEJB tagEJB;
+    @Inject private transient BlobStore blobStore;
     @Inject private Names names;
 
     @Inject private transient DataLoaderHandler dataLoaderHandler;
     @Inject @SignalsLoader private transient DataLoader signalsDataLoader;
 
-    @Inject private AppProperties properties;
+    @Inject private transient AppProperties properties;
 
     private enum ActiveTab {
         INCLUDES, POWERS, CONTROLS
@@ -179,13 +179,13 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     private transient List<Device> uninstalledDevices;
     private transient List<Device> filteredUninstalledDevices;
     private transient List<InstallationView> installationRecords;
-    private InstallationView selectedInstallationView;
+    private transient InstallationView selectedInstallationView;
     private Device deviceToInstall;
 
     // ---- variables for hierarchies and tabs --------
-    private HierarchyBuilder hierarchyBuilder;
-    private HierarchyBuilder powersHierarchyBuilder;
-    private HierarchyBuilder controlsHierarchyBuilder;
+    private transient HierarchyBuilder hierarchyBuilder;
+    private transient HierarchyBuilder powersHierarchyBuilder;
+    private transient HierarchyBuilder controlsHierarchyBuilder;
     private TreeNode rootNode;
     private TreeNode powersRootNode;
     private TreeNode controlsRootNode;
@@ -193,7 +193,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     /** <code>selectedSlot</code> is only initialized when there is only one node in the tree selected */
     private Slot selectedSlot;
     /** <code>selectedSlotView</code> is only initialized when there is only one node in the tree selected */
-    private SlotView selectedSlotView;
+    private transient SlotView selectedSlotView;
     private ActiveTab activeTab;
     private transient List<TreeNode> clipboardNodes;
     private transient List<SlotView> pasteErrors;
@@ -213,14 +213,14 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     private transient Set<String> nameList;
 
     // ------ variables for attribute manipulation ------
-    private EntityAttributeView selectedAttribute;
+    private transient EntityAttributeView selectedAttribute;
     private String artifactDescription;
     private String artifactURI;
     private String artifactName;
     private boolean isArtifactInternal;
     private boolean isArtifactBeingModified;
     private Property property;
-    private Value propertyValue;
+    private transient Value propertyValue;
     private transient List<String> enumSelections;
     private transient List<Property> filteredProperties;
     private PropertyValueUIElement propertyValueUIElement;
@@ -776,11 +776,11 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      */
     private List<Slot> getPathToRoot(final Long id) {
         final List<Slot> path = Lists.newArrayList();
-        final Slot rootNode = slotEJB.getRootNode();
+        final Slot rootSlot = slotEJB.getRootNode();
         Slot slot = slotEJB.findById(id);
         path.add(slot);
 
-        while (!rootNode.equals(slot)) {
+        while (!rootSlot.equals(slot)) {
             final List<SlotPair> parents = slot.getPairsInWhichThisSlotIsAChildList();
             boolean containsParentFound = false;
             for (final SlotPair pair : parents) {
@@ -854,6 +854,10 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         }
     }
 
+    /**
+     * The event is triggered when the hierarchy tab is changed.
+     * @param event the event
+     */
     public void onTabChange(TabChangeEvent event) {
         if (activeTab == ActiveTab.INCLUDES) {
             initHierarchy(powersRootNode, SlotRelationName.POWERS, powersHierarchyBuilder);
@@ -924,6 +928,11 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         return (slot == null || !slot.isHostingSlot()) ? null : slot.getId();
     }
 
+    /**
+     * Calculates the CSS class name for the slot in question.
+     * @param slot the {@link Slot} to calculate the CSS class name for
+     * @return the name of the CSS class
+     */
     public String calcNameClass(final SlotView slot) {
         Preconditions.checkNotNull(slot);
         if (!slot.isHostingSlot()) {
@@ -1251,6 +1260,9 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         return resultList;
     }
 
+    /**
+     * This method places the currently selected tree nodes into the clipboard and marks for moving.
+     */
     public void cutTreeNodes() {
         Preconditions.checkState(isIncludesActive());
         Preconditions.checkState(!selectedNodes.isEmpty());
@@ -1260,6 +1272,9 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         selectedNodes.clear();
     }
 
+    /**
+     * This method places the currently selected tree nodes into the clipboard and marks for copying.
+     */
     public void copyTreeNodes() {
         Preconditions.checkState(isIncludesActive());
         Preconditions.checkState(!selectedNodes.isEmpty());
@@ -1273,6 +1288,11 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         return clipboardOperation;
     }
 
+    /**
+     * This method tells whether a parent of the {@link TreeNode} is in the clipboard.
+     * @param node the {@link TreeNode} to check for
+     * @return <code>true</code> if the node's parent is in the clipboard, <code>false</code> otherwise
+     */
     public boolean isAncestorNodeInClipboard(final TreeNode node) {
         if (Utility.isNullOrEmpty(clipboardNodes) || (node == null) || node.equals(rootNode)) {
             return false;
@@ -1352,6 +1372,10 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         }
     }
 
+    /**
+     * This method is called when the user selects the "Paste" action. The method either moves the nodes that are
+     * in the clipboard, or creates new copies.
+     */
     public void pasteTreeNodes() {
         Preconditions.checkState(isIncludesActive());
         Preconditions.checkState(!isClipboardEmpty());
@@ -1718,8 +1742,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
     private void refreshAllPropertyValues() {
         final List<SlotPropertyValue> propertyValues = selectedSlot.getSlotPropertyList();
-        for (SlotPropertyValue propertyValue : propertyValues) {
-            refreshAttributeList(selectedSlot, propertyValue);
+        for (final SlotPropertyValue propValue : propertyValues) {
+            refreshAttributeList(selectedSlot, propValue);
         }
     }
 

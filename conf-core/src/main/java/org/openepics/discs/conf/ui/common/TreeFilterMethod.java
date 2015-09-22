@@ -24,14 +24,18 @@ import javax.annotation.Nullable;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.Slot;
 
+/**
+ * This interface implements the method to be used for filtering the hierarchy tree.
+ * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
+ */
 public interface TreeFilterMethod {
-    /**  
+    /**
      * @param filterValue the valuer to check against
      * @param installationSlotType the type of the installation the candidate must match
      * @param candidate the candidate to check for match (the match is in the name)
-     * @return <code>true</code>, if the <code>candidate</code> matches the <code>filterValue</code>, or if either 
+     * @return <code>true</code>, if the <code>candidate</code> matches the <code>filterValue</code>, or if either
      * <code>candidate</code> or <code>filterValue</code> are <code>null</code>.
      */
-    public boolean matches(@Nullable String filterValue, @Nullable ComponentType installationSlotType, 
+    public boolean matches(@Nullable String filterValue, @Nullable ComponentType installationSlotType,
             @Nullable Slot candidate);
 }

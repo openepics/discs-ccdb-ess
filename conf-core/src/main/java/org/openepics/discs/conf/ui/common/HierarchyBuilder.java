@@ -40,7 +40,6 @@ import com.google.common.base.Strings;
 
 /**
  * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
- *
  */
 public class HierarchyBuilder {
     private int preloadLimit;
@@ -53,6 +52,15 @@ public class HierarchyBuilder {
 
     private TreeFilterMethod filterMethod;
 
+    /**
+     * Constructs a new hierarchy builder.
+     * @param preloadLimit the limit after which the builds the entire tree. If this value is e.g. 3, then the
+     * builder will only create nodes for level one and create stubs for level 2. When the user actually expands the
+     * node at level 1, it will build the tree for the expanded node at level 2, but again create stubs for level 3. But
+     * when the node at level 3 is expanded the builds then build the entire for the expanded node.
+     * @param installationEJB the DAO to use to read the installation configuration for each node
+     * @param slotEJB the DAO to use to get the {@link Slot} information
+     */
     public HierarchyBuilder(int preloadLimit, InstallationEJB installationEJB, SlotEJB slotEJB) {
         this.relationship = SlotRelationName.CONTAINS;
         this.preloadLimit = preloadLimit;

@@ -48,6 +48,8 @@ public abstract class AbstractComptypeAttributesController
     private ExcelSingleFileImportUI excelSingleFileImportUI;
 
     private class ExcelSingleFileImportUI extends AbstractExcelSingleFileImportUI {
+
+        /** Construct the file import UI for the device type data loader. */
         public ExcelSingleFileImportUI() {
             super.init();
         }
@@ -67,6 +69,7 @@ public abstract class AbstractComptypeAttributesController
         }
     }
 
+    /** Initialize the object to import the device type file. */
     public void init() {
         excelSingleFileImportUI = new ExcelSingleFileImportUI();
     }

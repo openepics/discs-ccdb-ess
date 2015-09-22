@@ -52,7 +52,7 @@ public class DBTableEntityTypeSecurityPolicy extends AbstractEnityTypeSecurityPo
 
     @PersistenceContext private transient EntityManager em;
 
-    @Inject private HttpServletRequest servletRequest;
+    @Inject private transient HttpServletRequest servletRequest;
 
     /** Default no-params constructor */
     public DBTableEntityTypeSecurityPolicy() {}

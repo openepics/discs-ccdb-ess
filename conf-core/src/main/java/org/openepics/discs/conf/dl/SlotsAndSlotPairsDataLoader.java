@@ -49,7 +49,7 @@ import org.openepics.discs.conf.ent.Slot;
 public class SlotsAndSlotPairsDataLoader implements Serializable {
     private static final long serialVersionUID = 6772985623823412436L;
 
-    @Resource private EJBContext context;
+    @Resource private transient EJBContext context;
     @Inject @SlotPairLoader transient private DataLoader slotPairDataLoader;
     @Inject @SlotsLoader transient private DataLoader slotsDataLoader;
 

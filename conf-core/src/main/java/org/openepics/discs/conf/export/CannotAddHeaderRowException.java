@@ -19,6 +19,9 @@
  */
 package org.openepics.discs.conf.export;
 
+/**
+ * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
+ */
 public class CannotAddHeaderRowException extends RuntimeException {
     private static final long serialVersionUID = -6959901582547421260L;
 

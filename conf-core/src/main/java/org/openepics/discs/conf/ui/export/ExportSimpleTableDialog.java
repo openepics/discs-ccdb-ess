@@ -25,6 +25,13 @@ import org.openepics.discs.conf.export.ExportTable;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 
+/**
+ * An abstract class that implements common methods for exporting a simple table into an Excel or CSV format.
+ * The class provides support for an Export data dialog, which behaves the same whenever user wants to export tabular
+ * data. The implementing classes just need to implement methods that fill the file with the actual data.
+ * 
+ * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
+ */
 public abstract class ExportSimpleTableDialog {
     private String fileFormat;
     private boolean includeHeaderRow;

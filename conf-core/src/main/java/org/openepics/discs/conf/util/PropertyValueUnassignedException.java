@@ -21,28 +21,44 @@ package org.openepics.discs.conf.util;
 
 /**
  * Signals, that the entity does not have the property value assigned.
- * 
+ *
  * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  */
 public class PropertyValueUnassignedException extends RuntimeException {
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 6810749085522329211L;
 
+    /**
+     * @see RuntimeException#RuntimeException()
+     */
     public PropertyValueUnassignedException() {
         super();
     }
-    
+
+    /**
+     * @param message the message
+     * @see RuntimeException#RuntimeException(String)
+     */
     public PropertyValueUnassignedException(String message) {
         super(message);
     }
-    
-    public PropertyValueUnassignedException(String message, Throwable t) {
-        super(message, t);
+
+    /**
+     * @param message the message
+     * @param cause the cause
+     * @see RuntimeException#RuntimeException(String, Throwable)
+     */
+    public PropertyValueUnassignedException(String message, Throwable cause) {
+        super(message, cause);
     }
-    
-    public PropertyValueUnassignedException(Throwable t) {
-        super(t);
+
+    /**
+     * @param cause the cause
+     * @see RuntimeException#RuntimeException(Throwable)
+     */
+    public PropertyValueUnassignedException(Throwable cause) {
+        super(cause);
     }
 }

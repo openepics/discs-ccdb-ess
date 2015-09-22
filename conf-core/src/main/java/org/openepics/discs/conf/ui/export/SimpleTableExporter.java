@@ -19,6 +19,11 @@
  */
 package org.openepics.discs.conf.ui.export;
 
+/**
+ * The interface to get a simple table export dialog.
+ * 
+ * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
+ */
 public interface SimpleTableExporter {
 
     /** @return the actual implementation of the simple table exporter for the data type managed by the bean */

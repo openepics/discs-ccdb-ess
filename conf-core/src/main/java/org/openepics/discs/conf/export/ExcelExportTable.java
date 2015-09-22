@@ -37,6 +37,10 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.openepics.discs.conf.util.DeleteOnCloseFileInputStream;
 
+/**
+ * The class implements exporting the a single table into an Excel file.
+ * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
+ */
 public class ExcelExportTable implements ExportTable {
 
     private Workbook wb;
@@ -45,6 +49,7 @@ public class ExcelExportTable implements ExportTable {
     private CellStyle timestampStyle;
     private int rowNumber;
 
+    /** Constructs an Excel file exporter. */
     public ExcelExportTable() {
         rowNumber = 0;
     }

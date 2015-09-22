@@ -346,6 +346,9 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
         }
     }
 
+    /**
+     * The method creates a new copy of the currently selected {@link Property}(ies)
+     */
     public void duplicate() {
         Preconditions.checkState(!Utility.isNullOrEmpty(selectedProperties));
 

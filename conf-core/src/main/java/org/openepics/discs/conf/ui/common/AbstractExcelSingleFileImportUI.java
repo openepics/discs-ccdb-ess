@@ -82,6 +82,7 @@ public abstract class AbstractExcelSingleFileImportUI implements ExcelSingleFile
         }
     }
 
+    /** Initializes the object with the actual data loader. */
     public void init() {
         setDataLoader();
     }

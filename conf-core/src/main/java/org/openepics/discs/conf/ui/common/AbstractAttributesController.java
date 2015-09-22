@@ -503,7 +503,6 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
     }
 
     private boolean isPropertyValueInherited(EntityAttributeView attributeView) {
-        final PropertyValue propertyValue = (PropertyValue) attributeView.getEntity();
         List<ComptypePropertyValue> parentProperties = null;
         ConfigurationEntity parentEntity = attributeView.getParentEntity();
         if (parentEntity != null) {
@@ -526,7 +525,8 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
             return false;
         }
 
-        final String propertyName = propertyValue.getProperty().getName();
+        final PropertyValue propValue = (PropertyValue) attributeView.getEntity();
+        final String propertyName = propValue.getProperty().getName();
         for (final PropertyValue inheritedPropVal : parentProperties) {
             if (propertyName.equals(inheritedPropVal.getProperty().getName())) {
                 return true;

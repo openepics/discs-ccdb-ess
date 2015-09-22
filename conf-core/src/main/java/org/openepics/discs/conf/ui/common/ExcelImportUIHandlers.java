@@ -54,7 +54,14 @@ public interface ExcelImportUIHandlers {
             dataRows = createRows = updateRows = deleteRows = renameRows = 0;
         }
 
-
+        /**
+         * Creates a new statistics object with the following parameters.
+         * @param dataRows the number of rows processed
+         * @param createRows the number of rows with the CREATE command
+         * @param updateRows the number of rows with the UPDATE command
+         * @param deleteRows the number of rows with the DELETE command
+         * @param renameRows the number of rows with the RENAME command
+         */
         public ImportFileStatistics(int dataRows, int createRows, int updateRows, int deleteRows, int renameRows) {
             this.dataRows = dataRows;
             this.createRows = createRows;
