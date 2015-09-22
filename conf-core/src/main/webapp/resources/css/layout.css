@@ -1,4 +1,4 @@
-/* 
+/*
     Document   : Layout
     Created on : Oct 16, 2013, 3:48:17 PM
     Author     : Vasu V <vuppala@frib.msu.org>
@@ -11,7 +11,7 @@
 
 body {
     font-size: 12px;
-    font-family: Verdana, "Verdana CE",  Arial, "Arial CE", "Lucida Grande CE", lucida, "Helvetica CE", sans-serif; 
+    font-family: Verdana, "Verdana CE",  Arial, "Arial CE", "Lucida Grande CE", lucida, "Helvetica CE", sans-serif;
 }
 
 .footer-message {
@@ -24,7 +24,7 @@ body {
 }
 
 /* for all of primefaces components */
-.ui-widget, 
+.ui-widget,
 .ui-widget .ui-widget {
     font-size: 12px;
 }
@@ -106,7 +106,7 @@ body {
 }
 
 .dialog-grid-panel {
-	text-align: left; 
+	text-align: left;
 	width: 100%;
 }
 
@@ -126,7 +126,7 @@ body {
 }
 
 .menu {
-    background-color: transparent; 
+    background-color: transparent;
 }
 
 .alignTop {
@@ -177,7 +177,7 @@ body {
 }
 
 .boxf {
-    margin: 0px; 
+    margin: 0px;
     padding: 10px;
     border: 0px solid #000000;
     color: black;
@@ -192,12 +192,12 @@ body {
 #top {
     position: relative;
     color: black;
-    padding: 2px; 
+    padding: 2px;
     margin-bottom: 1em;
 }
 
 #content {
-    margin: 0; 
+    margin: 0;
     width: 100%;
 }
 
@@ -210,9 +210,9 @@ body {
 
 .title {
     font-family: Georgia, "Times New Roman", Times, serif;
-    font-size: 24px; 
+    font-size: 24px;
     font-style: normal;
-    font-weight: bold;     
+    font-weight: bold;
 }
 
 a {
@@ -230,9 +230,9 @@ a {
 
 
 .titlebar, .titlebar>tbody>tr, .titlebar>tbody>tr>td {
-    padding: 0px !important; 
+    padding: 0px !important;
     width: 100%;
-    /* background-image: url('../images/header-bg.png'); 
+    /* background-image: url('../images/header-bg.png');
     background-repeat: repeat; */
     background: rgb(206,220,231); /* Old browsers */
     background: -moz-linear-gradient(left,  rgba(206,220,231,1) 0%, rgba(89,106,114,1) 100%); /* FF3.6+ */
@@ -246,11 +246,11 @@ a {
 
 .borderlessPanelGrid>tr, .borderlessPanelGrid>td {
     border: none !important;
-} 
+}
 
 .devicesView tr, .devicesView td {
     border: none !important;
-} 
+}
 
 
 .devicesView .ui-datatable .ui-datatable-data tr, .devicesView .ui-datatable .ui-datatable-data-empty tr, .devicesView .ui-datatable .ui-datatable-data td, .devicesView .ui-datatable .ui-datatable-data-empty td{
@@ -318,4 +318,18 @@ a {
 
 .ui-datatable .ui-column-filter {
 	max-width: 90% !important;
+}
+
+.nameApproved {
+}
+
+.namePending {
+    color: crimson;
+}
+
+.nameMissing {
+    text-decoration: line-through;
+}
+
+.nameContainer {
 }

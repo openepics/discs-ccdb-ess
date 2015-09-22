@@ -63,6 +63,10 @@ public interface AppProperties {
     public static final char OPER_LOGIN = 'l';
     public static final char OPER_LOGOUT = 'o';
 
+    public static final String BLOB_STORE_PROPERTY_NAME = "BlobStoreRoot";
+    public static final String NAMING_APPLICATION_URL = "namingAppURL";
+    public static final String NAMING_DETECT_STATUS = "detectNamingStatus";
+
     /**
      * Retrieves the string property with the given key-name
      *

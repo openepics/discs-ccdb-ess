@@ -123,6 +123,9 @@ public class ComptypeEJB extends DAO<ComponentType> {
      * selected device type name, description, tags, artifacts and properties
      * into new device type. If property has set universally unique value,
      * copied property value is set to null.
+     *
+     * @param selectedDeviceType the device type to create copy of
+     * @param newName the name of the newly created copy
      */
     public void duplicate(final ComponentType selectedDeviceType, final String newName) {
         ComponentType newDeviceType = new ComponentType(newName);

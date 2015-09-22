@@ -41,7 +41,6 @@ import javax.inject.Inject;
 @Stateless
 public class BlobStore {
     private static final Logger LOGGER = Logger.getLogger(BlobStore.class.getCanonicalName());
-    private static final String BLOB_STORE_PROPERTY_NAME = "BlobStoreRoot";
 
     private String blobStoreRoot = "/var/confmgr";
 
@@ -55,7 +54,7 @@ public class BlobStore {
     /** Initializes the {@link BlobStore} bean */
     @PostConstruct
     public void init() {
-        final String storeRoot = appProps.getProperty(BLOB_STORE_PROPERTY_NAME);
+        final String storeRoot = appProps.getProperty(AppProperties.BLOB_STORE_PROPERTY_NAME);
 
         if (storeRoot != null && !storeRoot.isEmpty()) {
             blobStoreRoot = storeRoot;

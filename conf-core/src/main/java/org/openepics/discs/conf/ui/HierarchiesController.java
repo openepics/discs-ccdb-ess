@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
@@ -137,7 +138,6 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     private static final String     CANNOT_PASTE_INTO_SLOT =
             "The following containers cannot become children of installation slot:";
     private static final int        PRELOAD_LIMIT = 3;
-    private static final String     NAMING_APPLICATION_URL = "namingAppURL";
     /** The device page part of the URL containing all the required parameters already. */
     private static final String     NAMING_DEVICE_PAGE = "devices.xhtml?i=2&deviceName=";
 
@@ -164,6 +164,10 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         COPY, CUT
     }
 
+    private enum NamingStatus {
+        APPROVED, PENDING, MISSING
+    }
+
     private transient List<EntityAttributeView> attributes;
     private transient List<EntityAttributeView> filteredAttributes;
     private transient List<SelectItem> attributeKinds;
@@ -172,9 +176,9 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     private transient List<SelectItem> relationshipTypes;
     private transient HashSet<Long> selectedNodeIds;
     private transient HashSet<Long> displayedAttributeNodeIds;
-    private List<Device> uninstalledDevices;
-    private List<Device> filteredUninstalledDevices;
-    private List<InstallationView> installationRecords;
+    private transient List<Device> uninstalledDevices;
+    private transient List<Device> filteredUninstalledDevices;
+    private transient List<InstallationView> installationRecords;
     private InstallationView selectedInstallationView;
     private Device deviceToInstall;
 
@@ -185,17 +189,18 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     private TreeNode rootNode;
     private TreeNode powersRootNode;
     private TreeNode controlsRootNode;
-    private List<TreeNode> selectedNodes;
+    private transient List<TreeNode> selectedNodes;
     /** <code>selectedSlot</code> is only initialized when there is only one node in the tree selected */
     private Slot selectedSlot;
     /** <code>selectedSlotView</code> is only initialized when there is only one node in the tree selected */
     private SlotView selectedSlotView;
     private ActiveTab activeTab;
-    private List<TreeNode> clipboardNodes;
-    private List<SlotView> pasteErrors;
+    private transient List<TreeNode> clipboardNodes;
+    private transient List<SlotView> pasteErrors;
     private ClipboardOperations clipboardOperation;
     private String pasteErrorReason;
-    private List<TreeNode> nodesToDelete;
+    private transient List<TreeNode> nodesToDelete;
+    private boolean detectNamingStatus;
 
     // variables from the installation slot / containers editing merger.
     private String name;
@@ -205,6 +210,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     private ComponentType deviceType;
     private transient List<String> namesForAutoComplete;
     private boolean isNewInstallationSlot;
+    private transient Set<String> nameList;
 
     // ------ variables for attribute manipulation ------
     private EntityAttributeView selectedAttribute;
@@ -237,7 +243,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             activeTab = ActiveTab.INCLUDES;
 
             initHierarchies();
-            fillNamesAutocomplete();
+            initNamemingInformation();
             attributeKinds = Utility.buildAttributeKinds();
             relationshipTypes = buildRelationshipTypeList();
 
@@ -264,8 +270,11 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         return immutableListBuilder.build();
     }
 
-    private void fillNamesAutocomplete() {
-        namesForAutoComplete = ImmutableList.copyOf(names.getAllNames());
+    private void initNamemingInformation() {
+        nameList = names.getAllNames();
+        final String namingStatus = properties.getProperty(AppProperties.NAMING_DETECT_STATUS);
+        detectNamingStatus = namingStatus == null ? false : "TRUE".equals(namingStatus.toUpperCase());
+        namesForAutoComplete = ImmutableList.copyOf(nameList);
     }
 
     private void saveSlotAndRefresh(final Slot slot) {
@@ -342,6 +351,18 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
         if (slotId != null) {
             selectNode(slotId);
+        }
+    }
+
+    private NamingStatus getNamingStatus(final String name) {
+        if (!detectNamingStatus) {
+            return NamingStatus.APPROVED;
+        }
+
+        if (nameList.contains(name)) {
+            return NamingStatus.APPROVED;
+        } else {
+            return NamingStatus.MISSING;
         }
     }
 
@@ -869,7 +890,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      */
     public void redirectToNaming(final String slotName) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(slotName));
-        final String namingUrl = Preconditions.checkNotNull(properties.getProperty(NAMING_APPLICATION_URL));
+        final String namingUrl = Preconditions.checkNotNull(properties.getProperty(AppProperties.NAMING_APPLICATION_URL));
         Preconditions.checkState(!Strings.isNullOrEmpty(namingUrl));
 
         final StringBuilder redirectionUrl = new StringBuilder(namingUrl);
@@ -901,6 +922,23 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         final Slot slot = slotEJB.findByName(slotName);
 
         return (slot == null || !slot.isHostingSlot()) ? null : slot.getId();
+    }
+
+    public String calcNameClass(final SlotView slot) {
+        Preconditions.checkNotNull(slot);
+        if (!slot.isHostingSlot()) {
+            return "nameContainer";
+        }
+
+        switch (getNamingStatus(slot.getName())) {
+            case MISSING:
+                return "nameMissing";
+            case PENDING:
+                return "namePending";
+            case APPROVED:
+            default:
+                return "nameApproved";
+        }
     }
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *

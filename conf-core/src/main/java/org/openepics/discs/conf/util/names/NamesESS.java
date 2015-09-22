@@ -19,8 +19,8 @@
  */
 package org.openepics.discs.conf.util.names;
 
-import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.ejb.Stateless;
 import javax.enterprise.inject.Alternative;
@@ -39,16 +39,11 @@ public class NamesESS implements Names {
 
     @Override
     public Set<String> getAllNames() {
-        final Set<String> names = new HashSet<String>();
-
         try {
             final NamesClient client = new NamesClient();
-            for (DeviceNameElement element : client.getNamesResource().getAllDeviceNames()) {
-                names.add(element.getName());
-            }
+            return client.getAllDeviceNames().stream().map(DeviceNameElement::getName).collect(Collectors.toSet());
         } catch (RuntimeException e) {
             throw new RuntimeException("There was an error retriving data from the naming service.", e);
         }
-        return names;
     }
 }
