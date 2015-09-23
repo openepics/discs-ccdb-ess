@@ -716,7 +716,6 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
         Preconditions.checkNotNull(selectedDeviceTypes);
         Preconditions.checkState(!selectedDeviceTypes.isEmpty());
 
-        filteredDialogTypes = Lists.newArrayList();
         usedDeviceTypes = Lists.newArrayList();
         for (final ComponentType deviceTypeToDelete : selectedDeviceTypes) {
             if (comptypeEJB.isComponentTypeUsed(deviceTypeToDelete)) {
