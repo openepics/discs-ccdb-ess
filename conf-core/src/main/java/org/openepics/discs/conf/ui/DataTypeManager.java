@@ -346,10 +346,11 @@ public class DataTypeManager extends AbstractExcelSingleFileImportUI implements 
             while (scanner.hasNext()) {
                 String enumVal = scanner.nextLine().replaceAll("\\u00A0", " ").trim();
                 if (!enumVal.isEmpty()) {
-                    if (!enumVal.matches("^\\w*$")) {
+                    if (!enumVal.matches("^[\\w\\-_]*$")) {
                         throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
                                 Utility.MESSAGE_SUMMARY_ERROR,
-                                "Enumeration value can only contain alphanumerical characters: " + enumVal));
+                                "Enumeration value can only contain alphanumerical characters, hyphens and "
+                                        + "underscores: " + enumVal));
                     }
                     // ignore multiple definitions of the same value
                     if (!definitions.contains(enumVal)) {
