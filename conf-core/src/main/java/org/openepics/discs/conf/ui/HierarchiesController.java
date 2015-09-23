@@ -1777,7 +1777,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         final SlotPropertyValue selectedPropertyValue = (SlotPropertyValue) selectedAttribute.getEntity();
         property = selectedPropertyValue.getProperty();
         propertyValue = selectedPropertyValue.getPropValue();
-        propertyNameChangeDisabled = selectedSlot.isHostingSlot();
+        propertyNameChangeDisabled = selectedPropertyValue.getSlot().isHostingSlot();
         propertyValueUIElement = Conversion.getUIElementFromProperty(property);
 
         if (Conversion.getBuiltInDataType(property.getDataType()) == BuiltInDataType.USER_DEFINED_ENUM) {

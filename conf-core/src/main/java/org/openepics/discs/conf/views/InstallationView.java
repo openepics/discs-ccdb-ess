@@ -37,14 +37,19 @@ public class InstallationView {
     private InstallationRecord record;
     private Slot slot;
 
-    /** Constructs a new installation view with the {@link Slot} information and installation record information. */
+    /** Constructs a new installation view with the {@link Slot} information and installation record information.
+     * @param slot the slot to create the view for
+     * @param installationRecord the installation record if installed
+     */
     public InstallationView(final Slot slot, @Nullable final InstallationRecord installationRecord) {
         Preconditions.checkNotNull(slot);
         this.slot = slot;
         this.record = installationRecord;
     }
 
-    /** Constructs a new installation view with the {@link Slot} information and no installation record information. */
+    /** Constructs a new installation view with the {@link Slot} information and no installation record information.
+     * @param slot the slot to create the view for
+     */
     public InstallationView(final Slot slot) {
         this(slot, null);
     }

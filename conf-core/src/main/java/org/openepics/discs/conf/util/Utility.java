@@ -187,7 +187,7 @@ public class Utility {
 
     /**
      * Checks whether a {@link Map} is <code>null</code> or empty.
-     * @param amp the map to test
+     * @param map the map to test
      * @return <code>true</code> if map is <code>null</code> or empty, <code>false</code> otherwise
      */
     public static boolean isNullOrEmpty(final @Nullable Map<?, ?> map) {
