@@ -9,15 +9,13 @@
                 <h:outputText value="#{dialogTitle}" />
             </f:facet>
             <h:outputText value="There are conflicts with existing #{entity}:" />
-            <p:scrollPanel mode="native" style="width: 100%; height: 6em; font-family: monospace; white-space: pre; margin-botton: 1ex;">
+            <p:scrollPanel mode="native" style="width: 100%; height: 6em; font-family: monospace; white-space: pre; margin-bottom: 1.2em;">
                 <h:outputText value="#{entityListing}" />
             </p:scrollPanel>
-            <br />
-            <br />
 
             <p:commandButton value="Abort" styleClass="dialogButton" onclick="PF('#{widgetName}').hide();PF('#{relatedDialog}').show();" />
-            <p:commandButton value="Proceed" styleClass="dialogButton" ajax="true" update="#{formToUpdate}" 
-                    oncomplete="PF('#{widgetName}').hide();PF('#{relatedDialog}').hide();#{saveActions}" 
+            <p:commandButton value="Proceed" styleClass="dialogButton" ajax="true" update="#{formToUpdate}"
+                    oncomplete="PF('#{widgetName}').hide();PF('#{relatedDialog}').hide();#{saveActions}"
                     action="#{controller[submitHandler]}" />
         </p:dialog>
     </h:form>

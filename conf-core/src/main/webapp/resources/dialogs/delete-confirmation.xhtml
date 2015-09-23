@@ -1,23 +1,21 @@
 <ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:p="http://primefaces.org/ui"
-	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:h="http://java.sun.com/jsf/html">
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html">
 
-	<h:form id="#{formId}">
-		<p:dialog widgetVar="#{widgetName}" id="#{widgetName}" modal="true" resizable="false" dynamic="true"
-			closable="false">
-			<f:facet name="header">
-				<h:outputText value="#{dialogTitle}" />
-			</f:facet>
-			<h:outputText value="Are you sure you want to delete #{empty entityType ? 'this entity' : entityType}?" 
-                    style="margin-botton: 1ex;"/>
-			<br />
-            <br />
+    <h:form id="#{formId}">
+        <p:dialog widgetVar="#{widgetName}" id="#{widgetName}" modal="true" resizable="false" dynamic="true"
+                closable="false">
+            <f:facet name="header">
+                <h:outputText value="#{dialogTitle}" />
+            </f:facet>
+            <h:outputText value="Are you sure you want to delete #{empty entityType ? 'this entity' : entityType}?"
+                    style="display: block; margin-bottom: 1.2em;"/>
 
-			<p:commandButton value="No" styleClass="dialogButton" onclick="PF('#{widgetName}').hide(); #{resetFilter}" />
-			<p:commandButton value="Yes" styleClass="dialogButton" ajax="true" update="#{formToUpdate}" 
-                    oncomplete="PF('#{widgetName}').hide(); #{resizeContent} #{resetFilter}" 
+            <p:commandButton value="No" styleClass="dialogButton" onclick="PF('#{widgetName}').hide(); #{resetFilter}" />
+            <p:commandButton value="Yes" styleClass="dialogButton" ajax="true" update="#{formToUpdate}"
+                    oncomplete="PF('#{widgetName}').hide(); #{resizeContent} #{resetFilter}"
                     action="#{controller[submitHandler]}" />
-		</p:dialog>
-	</h:form>
+        </p:dialog>
+    </h:form>
 </ui:composition>
