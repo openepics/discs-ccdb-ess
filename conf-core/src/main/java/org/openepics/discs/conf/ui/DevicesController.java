@@ -286,6 +286,8 @@ public class DevicesController
             availableDeviceTypes = null;
             filteredDevices = null;
             selectedDevices = null;
+            attributes = null;
+            filteredAttributes = null;
         }
      }
 
