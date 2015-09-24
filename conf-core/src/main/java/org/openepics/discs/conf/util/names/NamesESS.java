@@ -48,7 +48,7 @@ public class NamesESS implements Names {
             final NamesClient client = new NamesClient();
             return client.getAllDeviceNames().stream().map(DeviceNameElement::getName).collect(Collectors.toSet());
         } catch (RuntimeException e) {
-            LOGGER.log(Level.SEVERE, "There was an error retriving data from the naming service:\n" + e.getMessage());
+            LOGGER.log(Level.SEVERE, "There was an error retriving data from the naming service.", e);
             return new HashSet<>();
         }
     }
