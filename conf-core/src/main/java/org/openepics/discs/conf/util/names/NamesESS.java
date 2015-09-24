@@ -19,7 +19,10 @@
  */
 package org.openepics.discs.conf.util.names;
 
+import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import javax.ejb.Stateless;
@@ -37,13 +40,16 @@ import org.openepics.names.jaxb.DeviceNameElement;
 public class NamesESS implements Names {
     private static final long serialVersionUID = -7527895029962617807L;
 
+    private static final Logger LOGGER = Logger.getLogger(NamesESS.class.getCanonicalName());
+
     @Override
     public Set<String> getAllNames() {
         try {
             final NamesClient client = new NamesClient();
             return client.getAllDeviceNames().stream().map(DeviceNameElement::getName).collect(Collectors.toSet());
         } catch (RuntimeException e) {
-            throw new RuntimeException("There was an error retriving data from the naming service.", e);
+            LOGGER.log(Level.SEVERE, "There was an error retriving data from the naming service:\n" + e.getMessage());
+            return new HashSet<>();
         }
     }
 }
