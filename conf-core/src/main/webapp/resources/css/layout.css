@@ -254,15 +254,20 @@ a {
 
 
 .devicesView .ui-datatable .ui-datatable-data tr, .devicesView .ui-datatable .ui-datatable-data-empty tr, .devicesView .ui-datatable .ui-datatable-data td, .devicesView .ui-datatable .ui-datatable-data-empty td{
-  border:1px solid !important;
+    border:1px solid !important;
+}
+
+.menubar .ui-menuitem-text {
+    font-size: larger;
+    font-weight: bolder;
 }
 
 .menu-selected, .menu-selected > .ui-menuitem-text, .menu-selected > a > .ui-menuitem-text {
-	text-decoration: underline;
+    text-decoration: underline;
 }
 
 .dialog-labels-width-1 {
-	width: 18ex;
+    width: 18ex;
 }
 
 .dialog-labels-width-2 {

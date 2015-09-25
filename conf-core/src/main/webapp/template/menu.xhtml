@@ -1,8 +1,8 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
-    xmlns:ui="http://java.sun.com/jsf/facelets" 
-    xmlns:f="http://java.sun.com/jsf/core" 
-    xmlns:p="http://primefaces.org/ui" 
-    xmlns:rc="http://java.sun.com/jsf/composite/comps" 
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:rc="http://java.sun.com/jsf/composite/comps"
     xmlns:h="http://java.sun.com/jsf/html"
     xmlns:fn="http://java.sun.com/jsp/jstl/functions">
 
@@ -22,99 +22,99 @@
 
         <p:menubar id="mainMenu" styleClass="menubar">
 
-            <p:menuitem value="Home" title="The main application view" url="/" 
+            <p:menuitem value="Home" title="The main application view" url="/"
                 rendered="#{not fn:endsWith(request.requestURL,'home.xhtml')}" icon="ui-icon-home" />
-            <p:submenu label="Home" icon="ui-icon-home" rendered="#{fn:endsWith(request.requestURL,'home.xhtml')}" 
-                    styleClass="#{fn:endsWith(request.requestURL,'home.xhtml') ? 'menu-selected' : ''}" >
+            <p:submenu label="Home" icon="ui-icon-home" rendered="#{fn:endsWith(request.requestURL,'home.xhtml')}"
+                    styleClass="menu-selected">
                 <p:menuitem value="View" title="View Home Screen" styleClass="noClickEvent" url="/" />
 
-                <p:menuitem value="Import" update=":importSlotsForm" styleClass="noClickEvent" 
-                    oncomplete="PF('importSlots').show();" title="Import Slots and Slot Pairs" 
-                    actionListener="#{slotManager.prepareImportPopup()}" 
+                <p:menuitem value="Import" update=":importSlotsForm" styleClass="noClickEvent"
+                    oncomplete="PF('importSlots').show();" title="Import Slots and Slot Pairs"
+                    actionListener="#{slotManager.prepareImportPopup()}"
                     disabled="#{true or         !securityPolicy.getUIHint('SLOT')}" />
 
-                <p:menuitem value="Import signals" update=":importSignalsForm" styleClass="noClickEvent" 
-                    oncomplete="PF('importSignals').show();" title="Import signals" 
-                    actionListener="#{hierarchiesController.prepareImportPopup()}" 
+                <p:menuitem value="Import signals" update=":importSignalsForm" styleClass="noClickEvent"
+                    oncomplete="PF('importSignals').show();" title="Import signals"
+                    actionListener="#{hierarchiesController.prepareImportPopup()}"
                     disabled="#{!securityPolicy.getUIHint('SIGNALS')}" />
             </p:submenu>
 
-            <p:menuitem value="Devices" title="View device instances" url="/devices.xhtml" 
+            <p:menuitem value="Devices" title="View device instances" url="/devices.xhtml"
                 rendered="#{not fn:endsWith(request.requestURL,'devices.xhtml')}" icon="ui-icon-gear" />
-            <p:submenu label="Devices" icon="ui-icon-gear"  rendered="#{fn:endsWith(request.requestURL,'devices.xhtml')}" 
-                    styleClass="#{fn:endsWith(request.requestURL,'devices.xhtml') ? 'menu-selected' : ''}">
+            <p:submenu label="Devices" icon="ui-icon-gear"  rendered="#{fn:endsWith(request.requestURL,'devices.xhtml')}"
+                    styleClass="menu-selected">
                 <p:menuitem value="View" title="View Device Instances" styleClass="noClickEvent" url="/devices.xhtml" />
 
-                <p:menuitem value="Import" update=":importDevicesForm" styleClass="noClickEvent" 
-                    oncomplete="PF('importDevices').show();" title="Import Device Instances" 
-                    actionListener="#{devicesController.prepareImportPopup()}" 
+                <p:menuitem value="Import" update=":importDevicesForm" styleClass="noClickEvent"
+                    oncomplete="PF('importDevices').show();" title="Import Device Instances"
+                    actionListener="#{devicesController.prepareImportPopup()}"
                     disabled="#{!securityPolicy.getUIHint('DEVICE')}" />
             </p:submenu>
 
-            <p:menuitem value="Device types" title="View device types" url="/device-types.xhtml" 
+            <p:menuitem value="Device types" title="View device types" url="/device-types.xhtml"
                 rendered="#{not fn:endsWith(request.requestURL,'device-types.xhtml')}" icon="ui-icon-wrench" />
-            <p:submenu label="Device types" icon="ui-icon-wrench" rendered="#{fn:endsWith(request.requestURL,'device-types.xhtml')}" 
-                    styleClass="#{fn:endsWith(request.requestURL,'device-types.xhtml') ? 'menu-selected' : ''}">
+            <p:submenu label="Device types" icon="ui-icon-wrench" rendered="#{fn:endsWith(request.requestURL,'device-types.xhtml')}"
+                    styleClass="menu-selected">
                 <p:menuitem value="View" title="View Device Types" styleClass="noClickEvent" url="/device-types.xhtml" />
 
-                <p:menuitem value="Import" update=":importCompTypesForm" styleClass="noClickEvent" 
-                    oncomplete="PF('importCompTypes').show();" title="Import Device Types" 
-                    actionListener="#{componentTypeManager.prepareImportPopup()}" 
+                <p:menuitem value="Import" update=":importCompTypesForm" styleClass="noClickEvent"
+                    oncomplete="PF('importCompTypes').show();" title="Import Device Types"
+                    actionListener="#{componentTypeManager.prepareImportPopup()}"
                     disabled="#{!securityPolicy.getUIHint('COMPONENT_TYPE')}" />
             </p:submenu>
 
-            <p:menuitem value="Properties" title="View property definitions" url="/properties.xhtml" 
+            <p:menuitem value="Properties" title="View property definitions" url="/properties.xhtml"
                 rendered="#{not fn:endsWith(request.requestURL,'properties.xhtml')}" icon="ui-icon-contact" />
-            <p:submenu label="Properties" icon="ui-icon-contact" rendered="#{fn:endsWith(request.requestURL,'properties.xhtml')}" 
-                    styleClass="#{fn:endsWith(request.requestURL,'properties.xhtml') ? 'menu-selected' : ''}">
+            <p:submenu label="Properties" icon="ui-icon-contact" rendered="#{fn:endsWith(request.requestURL,'properties.xhtml')}"
+                    styleClass="menu-selected">
                 <p:menuitem value="View" title="View Properties" styleClass="noClickEvent" url="/properties.xhtml" />
 
-                <p:menuitem value="Import" update=":importPropertiesForm" styleClass="noClickEvent" 
-                    oncomplete="PF('importProperties').show();" title="Import Properties" 
-                    actionListener="#{propertyManager.prepareImportPopup()}" 
+                <p:menuitem value="Import" update=":importPropertiesForm" styleClass="noClickEvent"
+                    oncomplete="PF('importProperties').show();" title="Import Properties"
+                    actionListener="#{propertyManager.prepareImportPopup()}"
                     disabled="#{!securityPolicy.getUIHint('PROPERTY')}" />
             </p:submenu>
 
-            <p:menuitem value="Enumerations" title="View user defined enumerations" url="/enums.xhtml" 
+            <p:menuitem value="Enumerations" title="View user defined enumerations" url="/enums.xhtml"
                 rendered="#{not fn:endsWith(request.requestURL,'enums.xhtml')}" icon="ui-icon-radio-off" />
-            <p:submenu label="Enumerations" icon="ui-icon-radio-off" rendered="#{fn:endsWith(request.requestURL,'enums.xhtml')}" 
-                    styleClass="#{fn:endsWith(request.requestURL,'enums.xhtml') ? 'menu-selected' : ''}">
-                <p:menuitem value="View" title="View User Defined Enumerations" styleClass="noClickEvent" 
+            <p:submenu label="Enumerations" icon="ui-icon-radio-off" rendered="#{fn:endsWith(request.requestURL,'enums.xhtml')}"
+                    styleClass="menu-selected">
+                <p:menuitem value="View" title="View User Defined Enumerations" styleClass="noClickEvent"
                         url="/enums.xhtml" />
 
-                <p:menuitem value="Import" update=":importEnumsForm" 
-                    oncomplete="PF('importEnums').show();" title="Import Enumerations" styleClass="noClickEvent" 
-                    actionListener="#{dataTypeManager.prepareImportPopup()}" 
+                <p:menuitem value="Import" update=":importEnumsForm"
+                    oncomplete="PF('importEnums').show();" title="Import Enumerations" styleClass="noClickEvent"
+                    actionListener="#{dataTypeManager.prepareImportPopup()}"
                     disabled="#{!securityPolicy.getUIHint('DATA_TYPE')}" />
             </p:submenu>
 
-            <p:menuitem value="Units" title="View units" url="units.xhtml" 
+            <p:menuitem value="Units" title="View units" url="units.xhtml"
                 rendered="#{not fn:endsWith(request.requestURL,'units.xhtml')}" icon="ui-icon-folder-open" />
             <p:submenu label="Units" icon="ui-icon-folder-open" rendered="#{fn:endsWith(request.requestURL,'units.xhtml')}"
-                    styleClass="#{fn:endsWith(request.requestURL,'units.xhtml') ? 'menu-selected' : ''}">
+                    styleClass="menu-selected">
                 <p:menuitem value="View" title="View Units" styleClass="noClickEvent" url="/units.xhtml" />
 
-                <p:menuitem value="Import" update=":importUnitsForm" 
-                    oncomplete="PF('importUnits').show();" title="Import Units" styleClass="noClickEvent" 
-                    actionListener="#{unitManager.prepareImportPopup()}" 
+                <p:menuitem value="Import" update=":importUnitsForm"
+                    oncomplete="PF('importUnits').show();" title="Import Units" styleClass="noClickEvent"
+                    actionListener="#{unitManager.prepareImportPopup()}"
                     disabled="#{!securityPolicy.getUIHint('UNIT')}" />
             </p:submenu>
 
-            <p:menuitem value="Log" icon="ui-icon-script" title="View Audit Log" url="/log.xhtml" 
+            <p:menuitem value="Log" icon="ui-icon-script" title="View Audit Log" url="/log.xhtml"
                 styleClass="#{fn:endsWith(request.requestURL,'log.xhtml') ? 'menu-selected' : ''}" />
 
             <p:submenu label="Templates" icon="ui-icon-calculator">
-                <p:menuitem value="Devices" title="Download device instances import Excel template" 
+                <p:menuitem value="Devices" title="Download device instances import Excel template"
                     url="/resources/import-templates/ccdb_devices.xlsx" />
-                <p:menuitem value="Device types" title="Download device types import Excel template" 
+                <p:menuitem value="Device types" title="Download device types import Excel template"
                     url="/resources/import-templates/ccdb_device_types.xlsx" />
-                <p:menuitem value="Properties" title="Download properties import Excel template" 
+                <p:menuitem value="Properties" title="Download properties import Excel template"
                     url="/resources/import-templates/ccdb_properties.xlsx" />
-                <p:menuitem value="Enumerations" title="Download enumerations import Excel template" 
+                <p:menuitem value="Enumerations" title="Download enumerations import Excel template"
                     url="/resources/import-templates/ccdb_enumerations.xlsx" />
-                <p:menuitem value="Units" title="Download units import Excel template" 
+                <p:menuitem value="Units" title="Download units import Excel template"
                     url="/resources/import-templates/ccdb_units.xlsx" />
-                <p:menuitem value="Signals list" title="Download signals list import Excel template" 
+                <p:menuitem value="Signals list" title="Download signals list import Excel template"
                     url="/resources/import-templates/ccdb_signals_list.xlsx" />
             </p:submenu>
 
