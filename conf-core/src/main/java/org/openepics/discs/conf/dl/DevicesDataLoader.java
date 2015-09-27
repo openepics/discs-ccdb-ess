@@ -83,7 +83,7 @@ public class DevicesDataLoader extends AbstractEntityWithPropertiesDataLoader<De
 
     @Override
     protected @Nullable Integer getUniqueColumnIndex() {
-        return Integer.valueOf(COL_INDEX_SERIAL);
+        return COL_INDEX_SERIAL;
     }
 
     @Override
@@ -193,5 +193,4 @@ public class DevicesDataLoader extends AbstractEntityWithPropertiesDataLoader<De
         // the devices template starts with data in row 10 (0 based == 9)
         return 9;
     }
-
 }

@@ -47,7 +47,7 @@ public abstract class AbstractDataLoader implements DataLoader {
     protected static final String HDR_OPERATION = "OPERATION";
     protected static final int COL_INDEX_OPERATION = 0;
 
-    public static final int DEFAULT_EXCEL_TAMPLATE_DATA_START_ROW = 5;
+    public static final int DEFAULT_EXCEL_TAMPLATE_DATA_START_ROW = 8;
 
     /** The {@link DataLoaderResult} contains error information and state for the error loading process */
     protected DataLoaderResult result = new DataLoaderResult();
@@ -131,6 +131,8 @@ public abstract class AbstractDataLoader implements DataLoader {
                     case DataLoader.CMD_UPDATE_DEVICE:
                     case DataLoader.CMD_UPDATE_PROPERTY:
                     case DataLoader.CMD_UPDATE_DEVICE_TYPE:
+                    case DataLoader.CMD_UPDATE_ENTITY:
+                    case DataLoader.CMD_UPDATE_RELATION:
                         handleUpdate(command);
                         ++updateRows;
                         break;
@@ -138,6 +140,9 @@ public abstract class AbstractDataLoader implements DataLoader {
                     case DataLoader.CMD_DELETE_DEVICE:
                     case DataLoader.CMD_DELETE_PROPERTY:
                     case DataLoader.CMD_DELETE_DEVICE_TYPE:
+                    case DataLoader.CMD_DELETE_ENTITY:
+                    case DataLoader.CMD_DELETE_RELATION:
+                    case DataLoader.CMD_UNINSTALL:
                         handleDelete(command);
                         ++deleteRows;
                         break;
@@ -149,6 +154,9 @@ public abstract class AbstractDataLoader implements DataLoader {
                     case DataLoader.CMD_CREATE_DEVICE:
                     case DataLoader.CMD_CREATE_DEVICE_TYPE:
                     case DataLoader.CMD_CREATE_PROPERTY:
+                    case DataLoader.CMD_CREATE_ENTITY:
+                    case DataLoader.CMD_CREATE_RELATION:
+                    case DataLoader.CMD_INSTALL:
                         handleCreate(command);
                         ++createRows;
                         break;

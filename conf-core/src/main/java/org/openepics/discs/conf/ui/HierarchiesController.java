@@ -57,6 +57,7 @@ import joptsimple.internal.Strings;
 
 import org.apache.commons.io.FilenameUtils;
 import org.openepics.discs.conf.dl.annotations.SignalsLoader;
+import org.openepics.discs.conf.dl.annotations.SlotsLoader;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.ejb.ComptypeEJB;
 import org.openepics.discs.conf.ejb.InstallationEJB;
@@ -153,6 +154,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
     @Inject private transient DataLoaderHandler dataLoaderHandler;
     @Inject @SignalsLoader private transient DataLoader signalsDataLoader;
+    @Inject @SlotsLoader private transient DataLoader slotsDataLoader;
 
     @Inject private transient AppProperties properties;
 
@@ -166,6 +168,10 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
     private enum NamingStatus {
         APPROVED, PENDING, MISSING
+    }
+
+    private enum ImportType {
+        SLOTS, SIGNALS
     }
 
     private transient List<EntityAttributeView> attributes;
@@ -201,6 +207,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     private String pasteErrorReason;
     private transient List<TreeNode> nodesToDelete;
     private boolean detectNamingStatus;
+    private ImportType importType;
 
     // variables from the installation slot / containers editing merger.
     private String name;
@@ -877,7 +884,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     @Override
     public void doImport() {
         try (InputStream inputStream = new ByteArrayInputStream(importData)) {
-            setLoaderResult(dataLoaderHandler.loadData(inputStream, signalsDataLoader));
+            setLoaderResult(dataLoaderHandler.loadData(inputStream, dataLoader));
             if (selectedNodes != null && !selectedNodes.isEmpty()) {
                 unselectAllTreeNodes();
                 selectedNodes = null;
@@ -948,6 +955,18 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             default:
                 return "nameApproved";
         }
+    }
+
+    public void prepareImportSignalPopup() {
+        importType = importType.SIGNALS;
+        dataLoader = signalsDataLoader;
+        prepareImportPopup();
+    }
+
+    public void prepareImportSlotPopup() {
+        importType = ImportType.SLOTS;
+        dataLoader = slotsDataLoader;
+        prepareImportPopup();
     }
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *

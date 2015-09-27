@@ -108,7 +108,7 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
 
     @Override
     protected @Nullable Integer getUniqueColumnIndex() {
-        return Integer.valueOf(COL_INDEX_NAME);
+        return COL_INDEX_NAME;
     }
 
     @Override
@@ -281,11 +281,5 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
         mapBuilder.put(HDR_UNIQUE, COL_INDEX_UNIQUE);
 
         indicies = mapBuilder.build();
-    }
-
-    @Override
-    public int getImportDataStartIndex() {
-        // index of the first import data Excel row is 9 (0 based 8)
-        return 8;
     }
 }

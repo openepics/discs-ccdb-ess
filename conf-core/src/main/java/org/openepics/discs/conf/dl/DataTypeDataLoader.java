@@ -107,12 +107,6 @@ public class DataTypeDataLoader extends AbstractDataLoader implements DataLoader
     }
 
     @Override
-    public int getImportDataStartIndex() {
-        // start of the import data in Excel row 9 (0 based = 8)
-        return 8;
-    }
-
-    @Override
     protected void handleUpdate(String actualCommand) {
         final DataType modifiedEnum = dataTypeEJB.findByName(nameFld);
         final List<String> enumValues = parseEnumDefinitions();

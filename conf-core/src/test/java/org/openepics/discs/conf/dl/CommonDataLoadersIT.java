@@ -56,7 +56,7 @@ public class CommonDataLoadersIT {
 
     @Inject @UnitsLoader private DataLoader unitsDataLoader;
     @Inject @PropertiesLoader private DataLoader propertiesDataLoader;
-    @Inject private SlotsAndSlotPairsDataLoaderHelper dataLoaderHelper;
+    @Inject private SlotsDataLoaderHelper dataLoaderHelper;
     @Inject private DataLoaderHandler dataLoaderHandler;
     @Inject private TestUtility testUtility;
 
@@ -116,7 +116,7 @@ public class CommonDataLoadersIT {
         // TODO check and fix / delete
         // expectedValidationMessages.add(new ValidationMessage(ErrorMessage.DUPLICATES_IN_HEADER, 1, HDR_ACENPOS));
 
-        final DataLoaderResult loaderResult = dataLoaderHelper.importSlotsAndSlotPairs(slotsImportFileName, null);
+        final DataLoaderResult loaderResult = dataLoaderHelper.importSlots(slotsImportFileName);
 
         Assert.assertEquals(expectedValidationMessages, loaderResult.getMessages());
     }
@@ -144,7 +144,7 @@ public class CommonDataLoadersIT {
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.SHOULD_BE_BOOLEAN_VALUE, 8, HDR_IS_HOSTING_SLOT));
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.SHOULD_BE_NUMERIC_VALUE, 9, HDR_BLP));
 
-        final DataLoaderResult loaderResult = dataLoaderHelper.importSlotsAndSlotPairs(slotsImportFileName, null);
+        final DataLoaderResult loaderResult = dataLoaderHelper.importSlots(slotsImportFileName);
 
         Assert.assertEquals(expectedValidationMessages, loaderResult.getMessages());
     }

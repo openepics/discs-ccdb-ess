@@ -37,36 +37,27 @@ import org.openepics.discs.conf.util.TestUtility;
  * @author <a href="mailto:andraz.pozar@cosylab.com">Andraž Požar</a>
  *
  */
-public class SlotsAndSlotPairsDataLoaderHelper {
+public class SlotsDataLoaderHelper {
 
-    @Inject private SlotsAndSlotPairsDataLoader slotsAndSlotPairDataLoader;
+    @Inject private SlotsDataLoader slotsDataLoader;
 
     final static int NUM_OF_SLOTS_IF_FAILURE = 1;
     final static int NUM_OF_SLOTS_IF_SUCCESS = 156;
     final static int NUM_OF_SLOT_PAIRS_IF_FAILURE = 0;
     final static int NUM_OF_SLOT_PAIRS_IF_SUCCESS = 155;
 
-    public DataLoaderResult importSlotsAndSlotPairs(final String slotsImportFileName, final String slotPairsImportFileName) throws IOException {
+    public DataLoaderResult importSlots(final String slotsImportFileName) throws IOException {
         List<Pair<Integer, List<String>>> slotsFileInputRows = null;
-        List<Pair<Integer, List<String>>> slotPairsFileInputRows = null;
 
         if (slotsImportFileName != null) {
             final InputStream slotDataStream = this.getClass().getResourceAsStream(TestUtility.DATALOADERS_PATH + slotsImportFileName);
             slotsFileInputRows = ExcelImportFileReader.importExcelFile(slotDataStream,
-                    AbstractDataLoader.DEFAULT_EXCEL_TAMPLATE_DATA_START_ROW, SlotsDataLoader.DATA_WIDTH);
+                    AbstractDataLoader.DEFAULT_EXCEL_TAMPLATE_DATA_START_ROW, slotsDataLoader.getDataWidth());
             slotDataStream.close();
         } else {
             slotsFileInputRows = null;
         }
 
-        if (slotPairsImportFileName != null) {
-            final InputStream slotPairDataStream = this.getClass().getResourceAsStream(TestUtility.DATALOADERS_PATH + slotPairsImportFileName);
-            slotPairsFileInputRows = ExcelImportFileReader.importExcelFile(slotPairDataStream,
-                    AbstractDataLoader.DEFAULT_EXCEL_TAMPLATE_DATA_START_ROW, SlotPairDataLoader.DATA_WIDTH);
-            slotPairDataStream.close();
-        } else {
-            slotPairsFileInputRows = null;
-        }
-        return slotsAndSlotPairDataLoader.loadDataToDatabase(slotsFileInputRows, slotPairsFileInputRows, slotsImportFileName, slotPairsImportFileName);
+        return slotsDataLoader.loadDataToDatabase(slotsFileInputRows, null);
     }
 }

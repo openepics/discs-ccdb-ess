@@ -92,7 +92,7 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
 
     @Override
     protected Integer getUniqueColumnIndex() {
-        return Integer.valueOf(COL_INDEX_NAME);
+        return COL_INDEX_NAME;
     }
 
     @Override
@@ -206,11 +206,4 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
     public int getDataWidth() {
         return 4;
     }
-
-    @Override
-    public int getImportDataStartIndex() {
-        // the new template starts with data in row 9 (0 based == 8)
-        return 8;
-    }
 }
-

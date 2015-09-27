@@ -229,4 +229,34 @@ public class Utility {
         }
         return nameRoot + "_" + numPostfix;
     }
+
+    /**
+     * @param name The name of the slot relationship
+     * @return the {@link SlotRelationName} corresponding to the name, <code>null</code> if such enumeration constant
+     * does not exist.
+     */
+    public @Nullable SlotRelationName getRelationByName(final String name) {
+        try {
+            Preconditions.checkNotNull(name);
+            return SlotRelationName.valueOf(name);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
+
+    /**
+     * @param inverseName the inverse name of the relationship
+     * @return the {@link SlotRelationName} corresponding to the inverse name, <code>null</code> if enumeration
+     * constant with such an inverse name does not exist.
+     */
+    public @Nullable SlotRelationName getRelationBasedOnInverseName(final String inverseName) {
+        Preconditions.checkNotNull(inverseName);
+        final String ucInverseName = inverseName.toUpperCase();
+        for (final SlotRelationName slotRelationName : SlotRelationName.values()) {
+            if (ucInverseName.equals(slotRelationName.inverseName().toUpperCase())) {
+                return slotRelationName;
+            }
+        }
+        return null;
+    }
 }

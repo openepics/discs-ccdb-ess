@@ -56,7 +56,7 @@ import org.openepics.discs.conf.util.TestUtility;
 @ApplyScriptAfter(value= "truncate_database.sql")
 public class SlotsDataLoaderIT {
 
-    @Inject private SlotsAndSlotPairsDataLoaderHelper dataLoaderHelper;
+    @Inject private SlotsDataLoaderHelper dataLoaderHelper;
     @Inject private SlotEJB slotEJB;
     @Inject private TestUtility testUtility;
 
@@ -86,10 +86,10 @@ public class SlotsDataLoaderIT {
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 5, HDR_CTYPE));
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 6, HDR_IS_HOSTING_SLOT));
 
-        final DataLoaderResult loaderResult = dataLoaderHelper.importSlotsAndSlotPairs(slotsImportFileName, null);
+        final DataLoaderResult loaderResult = dataLoaderHelper.importSlots(slotsImportFileName);
 
         Assert.assertEquals(expectedValidationMessages, loaderResult.getMessages());
-        Assert.assertEquals(SlotsAndSlotPairsDataLoaderHelper.NUM_OF_SLOTS_IF_FAILURE, slotEJB.findAll().size());
+        Assert.assertEquals(SlotsDataLoaderHelper.NUM_OF_SLOTS_IF_FAILURE, slotEJB.findAll().size());
     }
 
     @Test
@@ -100,10 +100,10 @@ public class SlotsDataLoaderIT {
         expectedValidationMessages.add(new ValidationMessage(slotsImportFileName));
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, 4, HDR));
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, 5, HDR));
-        final DataLoaderResult loaderResult = dataLoaderHelper.importSlotsAndSlotPairs(slotsImportFileName, null);
+        final DataLoaderResult loaderResult = dataLoaderHelper.importSlots(slotsImportFileName);
 
         Assert.assertEquals(expectedValidationMessages, loaderResult.getMessages());
-        Assert.assertEquals(SlotsAndSlotPairsDataLoaderHelper.NUM_OF_SLOTS_IF_FAILURE, slotEJB.findAll().size());
+        Assert.assertEquals(SlotsDataLoaderHelper.NUM_OF_SLOTS_IF_FAILURE, slotEJB.findAll().size());
     }
 
     @Test
@@ -120,9 +120,9 @@ public class SlotsDataLoaderIT {
         orphanValidationMessage_2.setOrphanSlotName("Accelerator-System");
         expectedValidationMessages.add(orphanValidationMessage_2);
 
-        final DataLoaderResult loaderResult = dataLoaderHelper.importSlotsAndSlotPairs(slotsImportFileName, null);
+        final DataLoaderResult loaderResult = dataLoaderHelper.importSlots(slotsImportFileName);
 
         Assert.assertEquals(expectedValidationMessages, loaderResult.getMessages());
-        Assert.assertEquals(SlotsAndSlotPairsDataLoaderHelper.NUM_OF_SLOTS_IF_FAILURE, slotEJB.findAll().size());
+        Assert.assertEquals(SlotsDataLoaderHelper.NUM_OF_SLOTS_IF_FAILURE, slotEJB.findAll().size());
     }
 }

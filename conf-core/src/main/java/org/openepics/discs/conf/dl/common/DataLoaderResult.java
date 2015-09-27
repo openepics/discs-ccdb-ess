@@ -68,7 +68,7 @@ public class DataLoaderResult {
     /** clears the state of the data result */
     public void clear() {
         rowError = error = false;
-        messages = new ArrayList<ValidationMessage>();
+        messages = new ArrayList<>();
     }
 
     /** @return the messages of this report */

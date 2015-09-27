@@ -26,7 +26,7 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 
 import org.openepics.discs.conf.auditlog.Audit;
-import org.openepics.discs.conf.dl.SlotsAndSlotPairsDataLoader;
+import org.openepics.discs.conf.dl.SlotsDataLoader;
 import org.openepics.discs.conf.ent.AlignmentArtifact;
 import org.openepics.discs.conf.ent.AlignmentPropertyValue;
 import org.openepics.discs.conf.ent.Artifact;
@@ -137,7 +137,7 @@ public class SlotEJB extends DAO<Slot> {
      *
      * @param newSlot the Container or Installation slot to be added
      * @param parentSlot its parent. <code>null</code> if the container is a new root.
-     * @param fromDataLoader is data being imported via {@link SlotsAndSlotPairsDataLoader}. If it is slot pair should
+     * @param fromDataLoader is data being imported via {@link SlotsDataLoader}. If it is slot pair should
      *          never be created since it is separately created from data loader.
      */
     @CRUDOperation(operation=EntityTypeOperation.CREATE)

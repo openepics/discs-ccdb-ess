@@ -42,18 +42,29 @@ public interface DataLoader {
     public static final String CMD_CREATE_DEVICE = "CREATE DEVICE";
     public static final String CMD_CREATE_PROPERTY = "CREATE PROPERTY";
     public static final String CMD_CREATE_DEVICE_TYPE = "CREATE DEVICE TYPE";
+    public static final String CMD_CREATE_ENTITY = "CREATE ENTITY";
+    public static final String CMD_CREATE_RELATION = "CREATE RELATION";
+    public static final String CMD_INSTALL = "INSTALL";
 
     public static final String CMD_UPDATE_DEVICE = "UPDATE DEVICE";
     public static final String CMD_UPDATE_PROPERTY = "UPDATE PROPERTY";
     public static final String CMD_UPDATE_DEVICE_TYPE = "UPDATE DEVICE TYPE";
+    public static final String CMD_UPDATE_ENTITY = "UPDATE ENTITY";
+    public static final String CMD_UPDATE_RELATION = "UPDATE RELATION";
 
     public static final String CMD_DELETE_DEVICE = "DELETE DEVICE";
     public static final String CMD_DELETE_PROPERTY = "DELETE PROPERTY";
     public static final String CMD_DELETE_DEVICE_TYPE = "DELETE DEVICE TYPE";
+    public static final String CMD_DELETE_ENTITY = "DELETE ENTITY";
+    public static final String CMD_DELETE_RELATION = "DELETE RELATION";
+    public static final String CMD_UNINSTALL = "UNINSTALL";
 
     public static final String PROP_TYPE_DEV_TYPE = "DEVICE TYPE";
     public static final String PROP_TYPE_DEV_INSTANCE = "DEVICE INSTANCE";
     public static final String PROP_TYPE_SLOT = "SLOT";
+
+    public static final String ENTITY_TYPE_SLOT = "SLOT";
+    public static final String ENTITY_TYPE_CONTAINER = "CONTAINER";
 
     /**
      * Saves data read from input file to the database

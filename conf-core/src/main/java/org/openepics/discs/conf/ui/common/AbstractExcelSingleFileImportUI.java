@@ -142,23 +142,30 @@ public abstract class AbstractExcelSingleFileImportUI implements ExcelSingleFile
             for (final Pair<Integer, List<String>> row : inputRows) {
                 final String command = row.getRight().get(0);
                 switch(command) {
-                    // TODO add all commands to statistics
                     case DataLoader.CMD_CREATE:
                     case DataLoader.CMD_CREATE_DEVICE:
                     case DataLoader.CMD_CREATE_PROPERTY:
                     case DataLoader.CMD_CREATE_DEVICE_TYPE:
+                    case DataLoader.CMD_CREATE_ENTITY:
+                    case DataLoader.CMD_CREATE_RELATION:
+                    case DataLoader.CMD_INSTALL:
                         ++createRows;
                         break;
                     case DataLoader.CMD_UPDATE:
                     case DataLoader.CMD_UPDATE_DEVICE:
                     case DataLoader.CMD_UPDATE_PROPERTY:
                     case DataLoader.CMD_UPDATE_DEVICE_TYPE:
+                    case DataLoader.CMD_UPDATE_ENTITY:
+                    case DataLoader.CMD_UPDATE_RELATION:
                         ++updateRows;
                         break;
                     case DataLoader.CMD_DELETE:
                     case DataLoader.CMD_DELETE_DEVICE:
                     case DataLoader.CMD_DELETE_PROPERTY:
                     case DataLoader.CMD_DELETE_DEVICE_TYPE:
+                    case DataLoader.CMD_DELETE_ENTITY:
+                    case DataLoader.CMD_DELETE_RELATION:
+                    case DataLoader.CMD_UNINSTALL:
                         ++deleteRows;
                         break;
                     case DataLoader.CMD_RENAME:

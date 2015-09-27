@@ -26,16 +26,14 @@
                 rendered="#{not fn:endsWith(request.requestURL,'home.xhtml')}" icon="ui-icon-home" />
             <p:submenu label="Home" icon="ui-icon-home" rendered="#{fn:endsWith(request.requestURL,'home.xhtml')}"
                     styleClass="menu-selected">
-                <p:menuitem value="View" title="View Home Screen" styleClass="noClickEvent" url="/" />
+                <p:menuitem value="View" title="View Home Screen" url="/" />
 
-                <p:menuitem value="Import" update=":importSlotsForm" styleClass="noClickEvent"
-                    oncomplete="PF('importSlots').show();" title="Import Slots and Slot Pairs"
-                    actionListener="#{slotManager.prepareImportPopup()}"
-                    disabled="#{true or         !securityPolicy.getUIHint('SLOT')}" />
+                <p:menuitem value="Import" update=":importSlotsForm" oncomplete="PF('importSlots').show();"
+                            title="Import slots" actionListener="#{hierarchiesController.prepareImportSlotPopup()}"
+                    disabled="#{!securityPolicy.getUIHint('SLOT')}" />
 
-                <p:menuitem value="Import signals" update=":importSignalsForm" styleClass="noClickEvent"
-                    oncomplete="PF('importSignals').show();" title="Import signals"
-                    actionListener="#{hierarchiesController.prepareImportPopup()}"
+                <p:menuitem value="Import signals" update=":importSignalsForm" title="Import signals"
+                    oncomplete="PF('importSignals').show();" actionListener="#{hierarchiesController.prepareImportSignalPopup()}"
                     disabled="#{!securityPolicy.getUIHint('SIGNALS')}" />
             </p:submenu>
 
@@ -43,11 +41,10 @@
                 rendered="#{not fn:endsWith(request.requestURL,'devices.xhtml')}" icon="ui-icon-gear" />
             <p:submenu label="Devices" icon="ui-icon-gear"  rendered="#{fn:endsWith(request.requestURL,'devices.xhtml')}"
                     styleClass="menu-selected">
-                <p:menuitem value="View" title="View Device Instances" styleClass="noClickEvent" url="/devices.xhtml" />
+                <p:menuitem value="View" title="View Device Instances" url="/devices.xhtml" />
 
-                <p:menuitem value="Import" update=":importDevicesForm" styleClass="noClickEvent"
-                    oncomplete="PF('importDevices').show();" title="Import Device Instances"
-                    actionListener="#{devicesController.prepareImportPopup()}"
+                <p:menuitem value="Import" update=":importDevicesForm" oncomplete="PF('importDevices').show();"
+                    title="Import Device Instances" actionListener="#{devicesController.prepareImportPopup()}"
                     disabled="#{!securityPolicy.getUIHint('DEVICE')}" />
             </p:submenu>
 
@@ -55,11 +52,10 @@
                 rendered="#{not fn:endsWith(request.requestURL,'device-types.xhtml')}" icon="ui-icon-wrench" />
             <p:submenu label="Device types" icon="ui-icon-wrench" rendered="#{fn:endsWith(request.requestURL,'device-types.xhtml')}"
                     styleClass="menu-selected">
-                <p:menuitem value="View" title="View Device Types" styleClass="noClickEvent" url="/device-types.xhtml" />
+                <p:menuitem value="View" title="View Device Types" url="/device-types.xhtml" />
 
-                <p:menuitem value="Import" update=":importCompTypesForm" styleClass="noClickEvent"
-                    oncomplete="PF('importCompTypes').show();" title="Import Device Types"
-                    actionListener="#{componentTypeManager.prepareImportPopup()}"
+                <p:menuitem value="Import" update=":importCompTypesForm" oncomplete="PF('importCompTypes').show();"
+                    title="Import Device Types" actionListener="#{componentTypeManager.prepareImportPopup()}"
                     disabled="#{!securityPolicy.getUIHint('COMPONENT_TYPE')}" />
             </p:submenu>
 
@@ -67,11 +63,10 @@
                 rendered="#{not fn:endsWith(request.requestURL,'properties.xhtml')}" icon="ui-icon-contact" />
             <p:submenu label="Properties" icon="ui-icon-contact" rendered="#{fn:endsWith(request.requestURL,'properties.xhtml')}"
                     styleClass="menu-selected">
-                <p:menuitem value="View" title="View Properties" styleClass="noClickEvent" url="/properties.xhtml" />
+                <p:menuitem value="View" title="View Properties" url="/properties.xhtml" />
 
-                <p:menuitem value="Import" update=":importPropertiesForm" styleClass="noClickEvent"
-                    oncomplete="PF('importProperties').show();" title="Import Properties"
-                    actionListener="#{propertyManager.prepareImportPopup()}"
+                <p:menuitem value="Import" update=":importPropertiesForm" oncomplete="PF('importProperties').show();"
+                    title="Import Properties" actionListener="#{propertyManager.prepareImportPopup()}"
                     disabled="#{!securityPolicy.getUIHint('PROPERTY')}" />
             </p:submenu>
 
@@ -79,12 +74,10 @@
                 rendered="#{not fn:endsWith(request.requestURL,'enums.xhtml')}" icon="ui-icon-radio-off" />
             <p:submenu label="Enumerations" icon="ui-icon-radio-off" rendered="#{fn:endsWith(request.requestURL,'enums.xhtml')}"
                     styleClass="menu-selected">
-                <p:menuitem value="View" title="View User Defined Enumerations" styleClass="noClickEvent"
-                        url="/enums.xhtml" />
+                <p:menuitem value="View" title="View User Defined Enumerations" url="/enums.xhtml" />
 
-                <p:menuitem value="Import" update=":importEnumsForm"
-                    oncomplete="PF('importEnums').show();" title="Import Enumerations" styleClass="noClickEvent"
-                    actionListener="#{dataTypeManager.prepareImportPopup()}"
+                <p:menuitem value="Import" update=":importEnumsForm" oncomplete="PF('importEnums').show();"
+                    title="Import Enumerations" actionListener="#{dataTypeManager.prepareImportPopup()}"
                     disabled="#{!securityPolicy.getUIHint('DATA_TYPE')}" />
             </p:submenu>
 
@@ -92,11 +85,10 @@
                 rendered="#{not fn:endsWith(request.requestURL,'units.xhtml')}" icon="ui-icon-folder-open" />
             <p:submenu label="Units" icon="ui-icon-folder-open" rendered="#{fn:endsWith(request.requestURL,'units.xhtml')}"
                     styleClass="menu-selected">
-                <p:menuitem value="View" title="View Units" styleClass="noClickEvent" url="/units.xhtml" />
+                <p:menuitem value="View" title="View Units" url="/units.xhtml" />
 
-                <p:menuitem value="Import" update=":importUnitsForm"
-                    oncomplete="PF('importUnits').show();" title="Import Units" styleClass="noClickEvent"
-                    actionListener="#{unitManager.prepareImportPopup()}"
+                <p:menuitem value="Import" update=":importUnitsForm" oncomplete="PF('importUnits').show();"
+                    title="Import Units" actionListener="#{unitManager.prepareImportPopup()}"
                     disabled="#{!securityPolicy.getUIHint('UNIT')}" />
             </p:submenu>
 
@@ -116,6 +108,8 @@
                     url="/resources/import-templates/ccdb_units.xlsx" />
                 <p:menuitem value="Signals list" title="Download signals list import Excel template"
                     url="/resources/import-templates/ccdb_signals_list.xlsx" />
+                <p:menuitem value="Installation slots" title="Download installation slots import Excel template"
+                    url="/resources/import-templates/ccdb_slots.xlsx" />
             </p:submenu>
 
             <p:menuitem value="Help" icon="ui-icon-help" title="Help" url="/" disabled="true" />
@@ -178,13 +172,11 @@
             <ui:param name="widgetName" value="importSignals" />
             <ui:param name="controller" value="#{hierarchiesController}" />
         </ui:include>
-        <ui:include src="../loaders/multiple-files-DL.xhtml">
+        <ui:include src="../loaders/single-file-DL.xhtml">
             <ui:param name="formId" value="importSlotsForm" />
-            <ui:param name="dialogTitle" value="Slots and slot pairs import" />
+            <ui:param name="dialogTitle" value="Slots import" />
             <ui:param name="widgetName" value="importSlots" />
-            <ui:param name="controller" value="#{slotManager}" />
-            <ui:param name="firstFileContents" value="slots" />
-            <ui:param name="secondFileContents" value="slot pairs" />
+            <ui:param name="controller" value="#{hierarchiesController}" />
         </ui:include>
     </h:panelGroup>
 </ui:composition>

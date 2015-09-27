@@ -45,6 +45,8 @@ import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
 
+import com.google.common.collect.ImmutableMap;
+
 /**
  * Implementation of data loader for slots.
  *
@@ -58,28 +60,32 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
 
     private static final Logger LOGGER = Logger.getLogger(SlotsDataLoader.class.getCanonicalName());
 
-    public static final int DATA_WIDTH = 14;  // TODO write proper value
+    private static final String HDR_ENTITY_TYPE = "ENTITY TYPE";
+    private static final String HDR_ENTITY_DEVICE_TYPE = "ENTITY DEVICE TYPE";
+    private static final String HDR_ENTITY_NAME = "ENTITY NAME";
+    private static final String HDR_ENTITY_DESCRIPTION = "ENTITY DESCRIPTION";
+    private static final String HDR_ENTITY_PARENT = "ENTITY PARENT";
+    private static final String HDR_PROP_NAME = "PROPERTY NAME";
+    private static final String HDR_PROP_VALUE = "PROPERTY VALUE";
+    private static final String HDR_RELATION_TYPE = "RELATIONSHIP TYPE";
+    private static final String HDR_RELATION_ENTITY_NAME = "RELATIONSHIP ENTITY NAME";
+    private static final String HDR_INSTALLATION = "INSTALLATION";
 
-    private static final String HDR_NAME = "NAME";
-    private static final String HDR_CTYPE = "CTYPE";
-    private static final String HDR_DESCRIPTION = "DESCRIPTION";
-    private static final String HDR_IS_HOSTING_SLOT = "IS-HOSTING-SLOT";
-    private static final String HDR_ASM_COMMENT = "ASM-COMMENT";
-    private static final String HDR_ASM_POSITION = "ASM-POSITION";
-    private static final String HDR_COMMENT = "COMMENT";
+    private static final int COL_INDEX_ENTITY_TYPE = 1;
+    private static final int COL_INDEX_ENTITY_DEVICE_TYPE = 2;
+    private static final int COL_INDEX_ENTITY_NAME = 3;
+    private static final int COL_INDEX_ENTITY_DESCRIPTION = 4;
+    private static final int COL_INDEX_ENTITY_PARENT = 5;
+    private static final int COL_INDEX_PROP_NAME = 6;
+    private static final int COL_INDEX_PROP_VALUE = 7;
+    private static final int COL_INDEX_RELATION_TYPE = 8;
+    private static final int COL_INDEX_RELATION_ENTITY_NAME = 9;
+    private static final int COL_INDEX_INSTALLATION = 10;
 
-    private static final int COL_INDEX_NAME = -1; // TODO fix
-    private static final int COL_INDEX_CTYPE = -1; // TODO fix
-    private static final int COL_INDEX_DESCRIPTION = -1; // TODO fix
-    private static final int COL_INDEX_IS_HOSTING_SLOT = -1; // TODO fix
-    private static final int COL_INDEX_ASM_COMMENT = -1; // TODO fix
-    private static final int COL_INDEX_ASM_POSITION = -1; // TODO fix
-    private static final int COL_INDEX_COMMENT = -1; // TODO fix
+    private static final Set<String> REQUIRED_COLUMNS = new HashSet<>(Arrays.asList(HDR_ENTITY_TYPE, HDR_ENTITY_NAME));
 
-    private static final Set<String> REQUIRED_COLUMNS = new HashSet<>(Arrays.asList(HDR_IS_HOSTING_SLOT, HDR_CTYPE));
-
-    private String name, description, componentTypeString, asmComment, asmPosition, comment;
-    private Boolean isHosting;
+    private String entityTypeFld, entityDeviceTypeFld, entityNameFld, entityDescriptionFld, entityParentFld;
+    private String propNameFld, propValueFld, relationTypeFld, relationEntityNameFld, installationFld;
 
     private List<Slot> newSlots;
 
@@ -101,140 +107,131 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
 
     @Override
     protected @Nullable Integer getUniqueColumnIndex() {
-        return Integer.valueOf(COL_INDEX_NAME);
+        return COL_INDEX_ENTITY_NAME;
     }
 
     @Override
     protected void assignMembersForCurrentRow() {
-        name               = readCurrentRowCellForHeader(COL_INDEX_NAME);
-        description        = readCurrentRowCellForHeader(COL_INDEX_DESCRIPTION);
-        componentTypeString= readCurrentRowCellForHeader(COL_INDEX_CTYPE);
-        asmComment         = readCurrentRowCellForHeader(COL_INDEX_ASM_COMMENT);
-        asmPosition        = readCurrentRowCellForHeader(COL_INDEX_ASM_POSITION);
-        comment            = readCurrentRowCellForHeader(COL_INDEX_COMMENT);
-
-        @Nullable String isHostingString = readCurrentRowCellForHeader(COL_INDEX_IS_HOSTING_SLOT);
-        isHosting = null;
-        if (isHostingString != null && !isHostingString.equalsIgnoreCase(Boolean.FALSE.toString())
-                && !isHostingString.equalsIgnoreCase(Boolean.TRUE.toString())) {
-            result.addRowMessage(ErrorMessage.SHOULD_BE_BOOLEAN_VALUE, HDR_IS_HOSTING_SLOT);
-        } else {
-            isHosting = isHostingString != null ? Boolean.parseBoolean(isHostingString) : null;
-        }
+        entityTypeFld = readCurrentRowCellForHeader(COL_INDEX_ENTITY_TYPE);
+        entityDeviceTypeFld = readCurrentRowCellForHeader(COL_INDEX_ENTITY_DEVICE_TYPE);
+        entityNameFld = readCurrentRowCellForHeader(COL_INDEX_ENTITY_NAME);
+        entityDescriptionFld = readCurrentRowCellForHeader(COL_INDEX_ENTITY_DESCRIPTION);
+        entityParentFld = readCurrentRowCellForHeader(COL_INDEX_ENTITY_PARENT);
+        propNameFld = readCurrentRowCellForHeader(COL_INDEX_PROP_NAME);
+        propValueFld = readCurrentRowCellForHeader(COL_INDEX_PROP_VALUE);
+        relationTypeFld = readCurrentRowCellForHeader(COL_INDEX_RELATION_TYPE);
+        relationEntityNameFld = readCurrentRowCellForHeader(COL_INDEX_RELATION_ENTITY_NAME);
+        installationFld = readCurrentRowCellForHeader(COL_INDEX_INSTALLATION);
     }
 
     @Override
     protected void handleUpdate(String actualCommand) {
-        @Nullable final ComponentType compType = checkSlotType();
-        if (compType == null) {
-            return;
+        switch (actualCommand) {
+            case DataLoader.CMD_UPDATE_ENTITY:
+                updateSlot();
+                break;
+            case DataLoader.CMD_UPDATE_PROPERTY:
+                updateSlotProperty();
+                break;
+            case DataLoader.CMD_UPDATE_RELATION:
+                updateSlotRelationship();
+                break;
+            default:
+                result.addRowMessage(ErrorMessage.COMMAND_NOT_VALID, HDR_OPERATION);
         }
+    }
 
-        @Nullable Slot slot = slotEJB.findByName(name);
-        if (slot != null) {
-            try {
-                addOrUpdateSlot(slot, compType);
-                // addOrUpdateProperties(slot); TODO handle
-            } catch (EJBTransactionRolledbackException e) {
-                handleLoadingError(LOGGER, e);
-            }
-        } else {
-            result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_NAME);
-        }
+    private void updateSlot() {
+        throw new NotImplementedException();
+    }
+
+    private void updateSlotProperty() {
+        throw new NotImplementedException();
+    }
+
+    private void updateSlotRelationship() {
+        throw new NotImplementedException();
     }
 
     @Override
     protected void handleCreate(String actualCommand) {
-        @Nullable final ComponentType compType = checkSlotType();
-        if (compType == null) {
-            return;
-        }
-
-        @Nullable Slot slot = slotEJB.findByName(name);
-        if (slot == null) {
-            try {
-                slot = new Slot(name, isHosting);
-                addOrUpdateSlot(slot, compType);
-                newSlots.add(slot);
-
-                slotEJB.addSlotToParentWithPropertyDefs(slot, null, true);
-                // addOrUpdateProperties(slot); TODO handle
-            } catch (EJBTransactionRolledbackException e) {
-                handleLoadingError(LOGGER, e);
-            }
-        } else {
-            result.addRowMessage(ErrorMessage.NAME_ALREADY_EXISTS, HDR_NAME);
+        switch (actualCommand) {
+            case DataLoader.CMD_CREATE_ENTITY:
+                createSlot();
+                break;
+            case DataLoader.CMD_CREATE_PROPERTY:
+                createSlotProperty();
+                break;
+            case DataLoader.CMD_CREATE_RELATION:
+                createSlotRelationship();
+                break;
+            case DataLoader.CMD_INSTALL:
+                installIntoSlot();
+                break;
+            default:
+                result.addRowMessage(ErrorMessage.COMMAND_NOT_VALID, HDR_OPERATION);
         }
     }
 
+    private void createSlot() {
+        throw new NotImplementedException();
+    }
+
+    private void createSlotProperty() {
+        throw new NotImplementedException();
+    }
+
+    private void createSlotRelationship() {
+        throw new NotImplementedException();
+    }
+
+    private void installIntoSlot() {
+        throw new NotImplementedException();
+    }
+
     private ComponentType checkSlotType() {
-        @Nullable final ComponentType compType = comptypeEJB.findByName(componentTypeString);
-        if (compType == null) {
-            result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_CTYPE);
-            return null;
-        }
-
-        if (SlotEJB.ROOT_COMPONENT_TYPE.equals(compType.getName())) {
-            result.addRowMessage(ErrorMessage.NOT_AUTHORIZED, AbstractDataLoader.HDR_OPERATION);
-            return null;
-        }
-
-        return compType;
+        throw new NotImplementedException();
     }
 
     @Override
     protected void handleDelete(String actualCommand) {
-        final @Nullable Slot slotToDelete = slotEJB.findByName(name);
-        try {
-            if (slotToDelete == null) {
-                result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_NAME);
-                return;
-            }
-
-            final ComponentType compType = slotToDelete.getComponentType();
-            if (SlotEJB.ROOT_COMPONENT_TYPE.equals(compType.getName())) {
-                result.addRowMessage(ErrorMessage.NOT_AUTHORIZED, AbstractDataLoader.HDR_OPERATION);
-                return;
-            }
-            slotEJB.delete(slotToDelete);
-        } catch (EJBTransactionRolledbackException e) {
-            handleLoadingError(LOGGER, e);
+        switch (actualCommand) {
+            case DataLoader.CMD_DELETE_ENTITY:
+                deleteSlot();
+                break;
+            case DataLoader.CMD_DELETE_PROPERTY:
+                deleteSlotProperty();
+                break;
+            case DataLoader.CMD_DELETE_RELATION:
+                deleteSlotRelationship();
+                break;
+            case DataLoader.CMD_UNINSTALL:
+                uninstallFromSlot();
+                break;
+            default:
+                result.addRowMessage(ErrorMessage.COMMAND_NOT_VALID, HDR_OPERATION);
         }
+    }
+
+      private void deleteSlot() {
+        throw new NotImplementedException();
+    }
+
+    private void deleteSlotProperty() {
+        throw new NotImplementedException();
+    }
+
+    private void deleteSlotRelationship() {
+        throw new NotImplementedException();
+    }
+
+    private void uninstallFromSlot() {
+        throw new NotImplementedException();
     }
 
     @Override
     protected void handleRename() {
-        try {
-            final int startOldNameMarkerIndex = name.indexOf("[");
-            final int endOldNameMarkerIndex = name.indexOf("]");
-            if (startOldNameMarkerIndex == -1 || endOldNameMarkerIndex == -1) {
-                result.addRowMessage(ErrorMessage.RENAME_MISFORMAT, HDR_NAME);
-                return;
-            }
-
-            final String oldName = name.substring(startOldNameMarkerIndex + 1, endOldNameMarkerIndex).trim();
-            final String newName = name.substring(endOldNameMarkerIndex + 1).trim();
-            final Slot slotToRename = slotEJB.findByName(oldName);
-            if (slotToRename == null) {
-                result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_NAME);
-                return;
-
-            }
-            if (slotEJB.findByName(newName) != null) {
-                result.addRowMessage(ErrorMessage.NAME_ALREADY_EXISTS, HDR_NAME);
-                return;
-            }
-
-            final ComponentType compType = slotToRename.getComponentType();
-            if (SlotEJB.ROOT_COMPONENT_TYPE.equals(compType.getName())) {
-                result.addRowMessage(ErrorMessage.NOT_AUTHORIZED, AbstractDataLoader.HDR_OPERATION);
-                return;
-            }
-            slotToRename.setName(newName);
-            slotEJB.save(slotToRename);
-        } catch (EJBTransactionRolledbackException e) {
-            handleLoadingError(LOGGER, e);
-        }
+        result.addRowMessage(ErrorMessage.COMMAND_NOT_VALID, CMD_RENAME);
     }
 
     @SuppressWarnings("unchecked")
@@ -257,6 +254,7 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
         }
     }
 
+    /*
     private void addOrUpdateSlot(Slot slotToAddOrUpdate, ComponentType compType) {
         slotToAddOrUpdate.setComponentType(compType);
         slotToAddOrUpdate.setDescription(description);
@@ -265,15 +263,37 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
         slotToAddOrUpdate.setAssemblyPosition(asmPosition);
         slotToAddOrUpdate.setComment(comment);
     }
+    */
 
     @Override
     public int getDataWidth() {
-       return DATA_WIDTH;
+       return 11;
     }
 
     @Override
     protected void setUpIndexesForFields() {
-        // TODO implement
-        throw new NotImplementedException();
+        final ImmutableMap.Builder<String, Integer> mapBuilder = ImmutableMap.builder();
+
+        mapBuilder.put(HDR_ENTITY_TYPE, COL_INDEX_ENTITY_TYPE);
+        mapBuilder.put(HDR_ENTITY_DEVICE_TYPE, COL_INDEX_ENTITY_DEVICE_TYPE);
+        mapBuilder.put(HDR_ENTITY_NAME, COL_INDEX_ENTITY_NAME);
+        mapBuilder.put(HDR_ENTITY_DESCRIPTION, COL_INDEX_ENTITY_DESCRIPTION);
+        mapBuilder.put(HDR_ENTITY_PARENT, COL_INDEX_ENTITY_PARENT);
+
+        mapBuilder.put(HDR_PROP_NAME, COL_INDEX_PROP_NAME);
+        mapBuilder.put(HDR_PROP_VALUE, COL_INDEX_PROP_VALUE);
+
+        mapBuilder.put(HDR_RELATION_TYPE, COL_INDEX_RELATION_TYPE);
+        mapBuilder.put(HDR_RELATION_ENTITY_NAME, COL_INDEX_RELATION_ENTITY_NAME);
+
+        mapBuilder.put(HDR_INSTALLATION, COL_INDEX_INSTALLATION);
+
+        indicies = mapBuilder.build();
+    }
+
+    @Override
+    public int getImportDataStartIndex() {
+        // index of the first import data Excel row is 10 (0 based 9)
+        return 9;
     }
 }
