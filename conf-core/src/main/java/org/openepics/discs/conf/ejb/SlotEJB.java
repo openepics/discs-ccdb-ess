@@ -309,4 +309,8 @@ public class SlotEJB extends DAO<Slot> {
         return em.createNamedQuery("SlotPair.findRootSlotsForRelation", Slot.class)
                 .setParameter("relation", relation).getResultList();
     }
+
+    public List<Slot> findAllByName(final String name) {
+        return em.createNamedQuery("Slot.findByName", Slot.class).setParameter("name", name).getResultList();
+    }
 }

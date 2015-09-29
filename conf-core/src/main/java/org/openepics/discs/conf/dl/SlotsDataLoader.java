@@ -21,30 +21,44 @@ package org.openepics.discs.conf.dl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
-import javax.ejb.EJBTransactionRolledbackException;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.openepics.discs.conf.dl.annotations.SlotsLoader;
-import org.openepics.discs.conf.dl.common.AbstractDataLoader;
 import org.openepics.discs.conf.dl.common.AbstractEntityWithPropertiesDataLoader;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.dl.common.ErrorMessage;
 import org.openepics.discs.conf.ejb.ComptypeEJB;
 import org.openepics.discs.conf.ejb.DAO;
+import org.openepics.discs.conf.ejb.DeviceEJB;
+import org.openepics.discs.conf.ejb.InstallationEJB;
+import org.openepics.discs.conf.ejb.PropertyEJB;
 import org.openepics.discs.conf.ejb.SlotEJB;
+import org.openepics.discs.conf.ejb.SlotPairEJB;
+import org.openepics.discs.conf.ejb.SlotRelationEJB;
 import org.openepics.discs.conf.ent.ComponentType;
+import org.openepics.discs.conf.ent.Device;
+import org.openepics.discs.conf.ent.InstallationRecord;
+import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.Slot;
+import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
+import org.openepics.discs.conf.ent.SlotRelation;
+import org.openepics.discs.conf.ent.SlotRelationName;
+import org.openepics.discs.conf.util.Conversion;
+import org.openepics.discs.conf.util.Utility;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 
 /**
@@ -59,6 +73,7 @@ import com.google.common.collect.ImmutableMap;
 public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<SlotPropertyValue> implements DataLoader {
 
     private static final Logger LOGGER = Logger.getLogger(SlotsDataLoader.class.getCanonicalName());
+    private static final String LINE_SEPARATOR_PATTERN = "\r\n|\r|\n";
 
     private static final String HDR_ENTITY_TYPE = "ENTITY TYPE";
     private static final String HDR_ENTITY_DEVICE_TYPE = "ENTITY DEVICE TYPE";
@@ -84,13 +99,25 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
 
     private static final Set<String> REQUIRED_COLUMNS = new HashSet<>(Arrays.asList(HDR_ENTITY_TYPE, HDR_ENTITY_NAME));
 
+    private static class RelationshipInfo {
+        SlotRelationName relationship;
+        Slot parent;
+        Slot child;
+    }
+
     private String entityTypeFld, entityDeviceTypeFld, entityNameFld, entityDescriptionFld, entityParentFld;
     private String propNameFld, propValueFld, relationTypeFld, relationEntityNameFld, installationFld;
+    private boolean isHostingSlot;
 
     private List<Slot> newSlots;
 
     @Inject private SlotEJB slotEJB;
     @Inject private ComptypeEJB comptypeEJB;
+    @Inject private PropertyEJB propertyEJB;
+    @Inject private InstallationEJB installationEJB;
+    @Inject private DeviceEJB deviceEjb;
+    @Inject private SlotPairEJB slotPairEJB;
+    @Inject private SlotRelationEJB slotRelationEJB;
 
     @Override
     protected void init() {
@@ -142,15 +169,96 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
     }
 
     private void updateSlot() {
-        throw new NotImplementedException();
+        final Slot workingSlot = getWorkingSlot();
+        if (result.isError()) {
+            return;
+        }
+        if (isHostingSlot) {
+            final ComponentType importType = checkSlotType();
+            if (result.isError()) {
+                return;
+            }
+
+            workingSlot.setDescription(entityDescriptionFld);
+            if (!importType.equals(workingSlot.getComponentType())) {
+                final InstallationRecord activeInstallationRecord =
+                        installationEJB.getActiveInstallationRecordForSlot(workingSlot);
+                if (activeInstallationRecord != null) {
+                    result.addRowMessage(ErrorMessage.INSTALLATION_EXISTING, HDR_ENTITY_DEVICE_TYPE);
+                    return;
+                } else {
+                    workingSlot.setComponentType(importType);
+                }
+            }
+            updateSlotParent(workingSlot);
+            if (result.isError()) {
+                return;
+            }
+        } else {
+            // for container only description can be updated, parent is used to locate the container
+            workingSlot.setDescription(entityDescriptionFld);
+        }
+        slotEJB.save(workingSlot);
     }
 
     private void updateSlotProperty() {
-        throw new NotImplementedException();
+        final Slot workingSlot = getWorkingSlot();
+        final SlotPropertyValue slotPropertyValue =
+                                    (SlotPropertyValue) getPropertyValue(workingSlot, propNameFld, HDR_PROP_NAME);
+        if (result.isError()) {
+            return;
+        }
+
+        if (slotPropertyValue == null) {
+            result.addRowMessage(ErrorMessage.PROPERTY_NOT_FOUND, HDR_PROP_NAME);
+            return;
+        }
+
+        try {
+            final Property property = slotPropertyValue.getProperty();
+            slotPropertyValue.setPropValue(Conversion.stringToValue(propValueFld, property.getDataType()));
+            slotEJB.saveChild(slotPropertyValue);
+        } catch (RuntimeException e) {
+            LOGGER.log(Level.FINE, "Error in property value conversion", e);
+            result.addRowMessage(ErrorMessage.CONVERSION_ERROR, HDR_PROP_VALUE);
+            return;
+        }
     }
 
     private void updateSlotRelationship() {
-        throw new NotImplementedException();
+        // it is not possible to update a relationship
+        result.addRowMessage(ErrorMessage.COMMAND_NOT_VALID);
+    }
+
+    private void updateSlotParent(final Slot slot) {
+        // try to locate the import parent
+        final Slot importParent = getParentSlot(entityParentFld, HDR_ENTITY_PARENT);
+        if (result.isError()) {
+            return;
+        }
+        // get a list of all existing parents
+        final List<Slot> existingParents = slot.getPairsInWhichThisSlotIsAChildList().stream().
+                filter((pair) -> pair.getSlotRelation().getName() == SlotRelationName.CONTAINS).
+                map(SlotPair::getParentSlot).collect(Collectors.toList());
+
+        if (!existingParents.contains(importParent)) {
+            // import parent is not amongst the current parents
+            if (existingParents.size() != 1) {
+                // but we cannot determine which parent to update
+                result.addRowMessage(ErrorMessage.AMBIGUOUS_PARENT_SLOT, HDR_ENTITY_PARENT);
+                return;
+            } else {
+                // we know that the slot has exactly one parent
+                for (final SlotPair slotPair : slot.getPairsInWhichThisSlotIsAChildList()) {
+                    if (slotPair.getSlotRelation().getName() == SlotRelationName.CONTAINS) {
+                        // the correct slot pair was found, let's update it to a new parent
+                        slotPair.setParentSlot(importParent);
+                        slotPairEJB.save(slotPair);
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -174,23 +282,296 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
     }
 
     private void createSlot() {
-        throw new NotImplementedException();
+        if (Strings.isNullOrEmpty(entityDescriptionFld)) {
+            result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, HDR_ENTITY_DESCRIPTION);
+        }
+        isHostingSlot = isHostingSlot();
+        // device type must be defined for installation slots
+        if (isHostingSlot && Strings.isNullOrEmpty(entityDeviceTypeFld)) {
+            result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, HDR_ENTITY_DEVICE_TYPE);
+        }
+        // parent must be defined for installation slots
+        if (isHostingSlot && Strings.isNullOrEmpty(entityParentFld)) {
+            result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, HDR_ENTITY_PARENT);
+        }
+
+        if (!result.isError()) {
+            if (isHostingSlot) {
+                createInstallationSlot();
+            } else {
+                createContainer();
+            }
+        }
     }
 
     private void createSlotProperty() {
-        throw new NotImplementedException();
+        final Slot workingSlot = getWorkingSlot();
+        final SlotPropertyValue slotPropertyValue =
+                                    (SlotPropertyValue) getPropertyValue(workingSlot, propNameFld, HDR_PROP_NAME);
+        if (Strings.isNullOrEmpty(propValueFld)) {
+            result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, HDR_PROP_VALUE);
+        }
+        if (result.isError()) {
+            return;
+        }
+
+        if (slotPropertyValue != null) {
+            // property value found, maybe it is still OK
+            if (!isHostingSlot) {
+                // container must not have such a value
+                result.addRowMessage(ErrorMessage.CREATE_VALUE_EXISTS, HDR_PROP_NAME);
+                return;
+            } else {
+                // installation slot must have value set to null
+                if (slotPropertyValue.getPropValue() != null) {
+                    // value already set
+                    result.addRowMessage(ErrorMessage.CREATE_VALUE_EXISTS, HDR_PROP_NAME);
+                    return;
+                } else {
+                    // add a new value
+                    try {
+                        final Property property = slotPropertyValue.getProperty();
+                        slotPropertyValue.setPropValue(Conversion.stringToValue(propValueFld, property.getDataType()));
+                        slotEJB.saveChild(slotPropertyValue);
+                    } catch (RuntimeException e) {
+                        LOGGER.log(Level.FINE, "Error in property value conversion", e);
+                        result.addRowMessage(ErrorMessage.CONVERSION_ERROR, HDR_PROP_VALUE);
+                        return;
+                    }
+                }
+            }
+        } else {
+            // no property value found
+            if (isHostingSlot) {
+                // this is an error for installation slot
+                result.addRowMessage(ErrorMessage.PROPERTY_NOT_FOUND, HDR_PROP_NAME);
+                return;
+            } else {
+                try {
+                    final Property property = propertyEJB.findByName(propNameFld);
+                    if (property == null) {
+                        result.addRowMessage(ErrorMessage.PROPERTY_NOT_FOUND, HDR_PROP_NAME);
+                    }
+                    final SlotPropertyValue pv = new SlotPropertyValue(false);
+                    pv.setProperty(property);
+                    pv.setSlot(workingSlot);
+                    pv.setPropValue(Conversion.stringToValue(propValueFld, property.getDataType()));
+                    slotEJB.addChild(pv);
+                } catch (RuntimeException e) {
+                    LOGGER.log(Level.FINE, "Error in property value conversion", e);
+                    result.addRowMessage(ErrorMessage.CONVERSION_ERROR, HDR_PROP_VALUE);
+                    return;
+                }
+            }
+        }
     }
 
     private void createSlotRelationship() {
-        throw new NotImplementedException();
+        final Slot workingSlot = getWorkingSlot();
+        final Slot newRelationshipTarget;
+        if (Strings.isNullOrEmpty(relationEntityNameFld)) {
+            // we can set to null, since it will target out anyhow
+            result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, HDR_RELATION_ENTITY_NAME);
+            newRelationshipTarget = null;
+        } else {
+            newRelationshipTarget = getParentSlot(relationEntityNameFld, HDR_RELATION_ENTITY_NAME);
+        }
+        if (Strings.isNullOrEmpty(relationTypeFld)) {
+            result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, HDR_RELATION_TYPE);
+        }
+        if (result.isError()) {
+            return;
+        }
+
+        RelationshipInfo info = determineParentChild(workingSlot, newRelationshipTarget);
+        if (result.isError()) {
+            return;
+        }
+
+        // check relationship restrictions
+        switch (info.relationship) {
+            case CONTAINS:
+                if (info.parent.isHostingSlot() && !info.child.isHostingSlot()) {
+                    result.addRowMessage(ErrorMessage.INSTALL_CANT_CONTAIN_CONTAINER, HDR_RELATION_TYPE);
+                    return;
+                }
+                break;
+            case POWERS:
+                if (!info.parent.isHostingSlot() || !info.child.isHostingSlot()) {
+                    result.addRowMessage(ErrorMessage.POWER_RELATIONSHIP_RESTRICTIONS, HDR_RELATION_TYPE);
+                    return;
+                }
+                break;
+            case CONTROLS:
+                if (!info.parent.isHostingSlot() || !info.child.isHostingSlot()) {
+                    result.addRowMessage(ErrorMessage.CONTROL_RELATIONSHIP_RESTRICTIONS, HDR_RELATION_TYPE);
+                    return;
+                }
+                break;
+            default:
+                break;
+        }
+
+        // create new relationship
+        final SlotRelation relation = slotRelationEJB.findBySlotRelationName(info.relationship);
+        final SlotPair newRelationship = new SlotPair(info.parent, info.child, relation);
+        if ((info.relationship == SlotRelationName.CONTAINS)
+                && slotPairEJB.slotPairCreatesLoop(newRelationship, info.child)) {
+            result.addRowMessage(ErrorMessage.SAME_CHILD_AND_PARENT, HDR_RELATION_ENTITY_NAME);
+            return;
+        }
+
+        slotPairEJB.add(newRelationship);
     }
 
     private void installIntoSlot() {
-        throw new NotImplementedException();
+        final Slot workingSlot = getWorkingSlot();
+        if (Strings.isNullOrEmpty(installationFld)) {
+            result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, HDR_ENTITY_DESCRIPTION);
+        }
+        if (result.isError()) {
+            return;
+        }
+
+        final InstallationRecord record = installationEJB.getActiveInstallationRecordForSlot(workingSlot);
+
+        if (record != null) {
+            result.addRowMessage(ErrorMessage.INSTALLATION_EXISTING, HDR_INSTALLATION);
+            return;
+        }
+
+        final Device device = deviceEjb.findDeviceBySerialNumber(installationFld.trim());
+        if (device == null) {
+            result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_INSTALLATION);
+            return;
+        }
+
+        if (workingSlot.getComponentType() != device.getComponentType()) {
+            result.addRowMessage(ErrorMessage.DEVICE_TYPE_ERROR, HDR_INSTALLATION);
+            return;
+        }
+
+        final Date today = new Date();
+        final InstallationRecord newRecord = new InstallationRecord(Long.toString(today.getTime()), today);
+        newRecord.setSlot(workingSlot);
+        newRecord.setDevice(device);
+        installationEJB.save(newRecord);
     }
 
     private ComponentType checkSlotType() {
-        throw new NotImplementedException();
+        final String deviceTypeName = entityDeviceTypeFld.trim();
+        final ComponentType deviceType = comptypeEJB.findByName(deviceTypeName);
+        if (deviceType == null) {
+            result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_ENTITY_DEVICE_TYPE);
+        }
+        return deviceType;
+    }
+
+    private void createInstallationSlot() {
+        final ComponentType deviceType = checkSlotType();
+        if (deviceType == null) {
+            return;
+        }
+        final Slot parent = getParentSlot(entityParentFld, HDR_ENTITY_PARENT);
+        if (parent == null) {
+            return;
+        }
+        final String newSlotName = entityNameFld.trim();
+        if (!slotEJB.isInstallationSlotNameUnique(newSlotName)) {
+            result.addRowMessage(ErrorMessage.NAME_ALREADY_EXISTS, HDR_ENTITY_NAME);
+            return;
+        }
+
+        final Slot newSlot = new Slot(entityNameFld.trim(), true);
+        newSlot.setComponentType(deviceType);
+        newSlot.setDescription(entityDescriptionFld);
+        slotEJB.addSlotToParentWithPropertyDefs(newSlot, parent, false);
+    }
+
+    private void createContainer() {
+        final Slot parent = getParentSlot(entityParentFld, HDR_ENTITY_PARENT);
+        if (parent == null) {
+            return;
+        }
+        if (parent.isHostingSlot()) {
+            result.addRowMessage(ErrorMessage.INSTALL_CANT_CONTAIN_CONTAINER);
+            return;
+        }
+
+        final Slot newContainer = new Slot(entityNameFld.trim(), false);
+        newContainer.setComponentType(comptypeEJB.findByName(SlotEJB.GRP_COMPONENT_TYPE));
+        newContainer.setDescription(entityDescriptionFld);
+        slotEJB.addSlotToParentWithPropertyDefs(newContainer, parent, false);
+    }
+
+    private Slot getParentSlot(final String parentPath, final String headerName) {
+        // check for "child of root"
+        if ((parentPath == null || parentPath.trim().isEmpty()) && HDR_ENTITY_PARENT.equals(headerName)) {
+            if (isHostingSlot) {
+                result.addRowMessage(ErrorMessage.ORPHAN_SLOT, headerName);
+                return null;
+            } else {
+                return slotEJB.getRootNode();
+            }
+        }
+        final String[] parents = parentPath.split(LINE_SEPARATOR_PATTERN);
+        if (parents.length == 1) {
+            // find parent if only one in the database
+            final List<Slot> parentCandidates = slotEJB.findAllByName(parents[0].trim());
+            if (parentCandidates.isEmpty()) {
+                result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, headerName);
+                return null;
+            }
+            if (parentCandidates.size() > 1) {
+                result.addRowMessage(ErrorMessage.AMBIGUOUS_PARENT_SLOT, headerName);
+                return null;
+            }
+            return parentCandidates.get(0);
+        } else {
+            Slot parent = slotEJB.getRootNode();
+            for (final String parentName : parents) {
+                final String normalizedName = parentName.trim();
+                // ignore empty rows
+                if (!normalizedName.isEmpty()) {
+                    parent = findChildSlot(parent, normalizedName, headerName);
+                    if (parent == null) {
+                        // requested child not found
+                        return null;
+                    }
+                }
+            }
+            return parent;
+        }
+    }
+
+    private Slot findChildSlot(final Slot parent, final String name, final String headerName) {
+        for (final SlotPair slotPair : parent.getPairsInWhichThisSlotIsAParentList()) {
+            if (slotPair.getSlotRelation().getName() == SlotRelationName.CONTAINS
+                    && slotPair.getChildSlot().getName().equals(name)) {
+                return slotPair.getChildSlot();
+            }
+        }
+        result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, headerName);
+        return null;
+    }
+
+    private Slot getWorkingSlot() {
+        isHostingSlot = isHostingSlot();
+        if (isHostingSlot) {
+            // installation slot must be found by its unique name
+            final Slot slot = slotEJB.findByName(entityNameFld);
+            if (slot == null) {
+                result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_ENTITY_NAME);
+            }
+            if (slot.isHostingSlot() != isHostingSlot) {
+                result.addRowMessage(ErrorMessage.VALUE_NOT_IN_DATABASE, HDR_ENTITY_TYPE);
+            }
+            return slot;
+        } else {
+            // container should be located by its parent
+            final Slot parentSlot = getParentSlot(entityParentFld, HDR_ENTITY_PARENT);
+            return findChildSlot(parentSlot, entityNameFld.trim(), HDR_ENTITY_NAME);
+        }
     }
 
     @Override
@@ -213,20 +594,100 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
         }
     }
 
-      private void deleteSlot() {
-        throw new NotImplementedException();
+    private void deleteSlot() {
+        final Slot workingSlot = getWorkingSlot();
+        if (result.isError()) {
+            return;
+        }
+
+        // check that removing this slot will no create any orphans
+        for (final SlotPair slotPair : workingSlot.getPairsInWhichThisSlotIsAParentList()) {
+            if ((slotPair.getSlotRelation().getName() == SlotRelationName.CONTAINS)
+                    && !slotPairEJB.slotHasMoreThanOneContainsRelation(slotPair.getChildSlot())) {
+                result.addRowMessage(ErrorMessage.ORPHAN_CREATED);
+                return;
+            }
+        }
+        slotEJB.delete(workingSlot);
     }
 
     private void deleteSlotProperty() {
-        throw new NotImplementedException();
+        final Slot workingSlot = getWorkingSlot();
+        final SlotPropertyValue slotPropertyValue;
+        if (Strings.isNullOrEmpty(propNameFld)) {
+            result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, HDR_PROP_NAME);
+            // setting to null explicitly - we know it will not be used because of error
+            slotPropertyValue = null;
+        } else {
+            slotPropertyValue =
+                    (SlotPropertyValue) getPropertyValue(workingSlot, propNameFld, HDR_PROP_NAME);
+        }
+        if (result.isError()) {
+            return;
+        }
+
+        if (isHostingSlot) {
+            slotPropertyValue.setPropValue(null);
+            slotEJB.saveChild(slotPropertyValue);
+        } else {
+            slotEJB.deleteChild(slotPropertyValue);
+        }
     }
 
     private void deleteSlotRelationship() {
-        throw new NotImplementedException();
+        final Slot workingSlot = getWorkingSlot();
+        final Slot relationshipTarget = getParentSlot(relationEntityNameFld, HDR_RELATION_ENTITY_NAME);
+        if (Strings.isNullOrEmpty(relationTypeFld)) {
+            result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, HDR_RELATION_TYPE);
+        }
+        if (result.isError()) {
+            return;
+        }
+
+        RelationshipInfo info = determineParentChild(workingSlot, relationshipTarget);
+        if (result.isError()) {
+            return;
+        }
+        for (final SlotPair pair : info.parent.getPairsInWhichThisSlotIsAParentList()) {
+            if ((pair.getSlotRelation().getName() == info.relationship) && pair.getChildSlot().equals(info.child)) {
+                // find the relationship and check whether it can be deleted
+                if ((info.relationship == SlotRelationName.CONTAINS)
+                        && !slotPairEJB.slotHasMoreThanOneContainsRelation(info.child)) {
+                    result.addRowMessage(ErrorMessage.ORPHAN_CREATED, HDR_RELATION_ENTITY_NAME);
+                } else {
+                    slotPairEJB.delete(pair);
+                }
+                return;
+            }
+        }
+        result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_RELATION_ENTITY_NAME);
     }
 
     private void uninstallFromSlot() {
-        throw new NotImplementedException();
+        final Slot workingSlot = getWorkingSlot();
+        if (Strings.isNullOrEmpty(installationFld)) {
+            result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, HDR_ENTITY_DESCRIPTION);
+        }
+        if (result.isError()) {
+            return;
+        }
+
+
+        final InstallationRecord record = installationEJB.getActiveInstallationRecordForSlot(workingSlot);
+
+        if (record == null) {
+            result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_INSTALLATION);
+            return;
+        }
+
+        final Device device = record.getDevice();
+        if (!device.getSerialNumber().equals(installationFld)) {
+            result.addRowMessage(ErrorMessage.VALUE_NOT_IN_DATABASE, HDR_INSTALLATION);
+            return;
+        }
+
+        record.setUninstallDate(new Date());
+        installationEJB.save(record);
     }
 
     @Override
@@ -239,31 +700,6 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
     protected DAO<Slot> getDAO() {
         return slotEJB;
     }
-
-    private Double readCurrentRowCellForHeaderAsDouble(String columnName) {
-        @Nullable String stringValue = readCurrentRowCellForHeader(indicies.get(columnName));
-
-        if (stringValue == null)
-            return null;
-
-        try {
-            return Double.parseDouble(stringValue);
-        } catch (NumberFormatException e) {
-            result.addRowMessage(ErrorMessage.SHOULD_BE_NUMERIC_VALUE, columnName);
-            return null;
-        }
-    }
-
-    /*
-    private void addOrUpdateSlot(Slot slotToAddOrUpdate, ComponentType compType) {
-        slotToAddOrUpdate.setComponentType(compType);
-        slotToAddOrUpdate.setDescription(description);
-        slotToAddOrUpdate.setHostingSlot(isHosting);
-        slotToAddOrUpdate.setAssemblyComment(asmComment);
-        slotToAddOrUpdate.setAssemblyPosition(asmPosition);
-        slotToAddOrUpdate.setComment(comment);
-    }
-    */
 
     @Override
     public int getDataWidth() {
@@ -295,5 +731,31 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
     public int getImportDataStartIndex() {
         // index of the first import data Excel row is 10 (0 based 9)
         return 9;
+    }
+
+    private boolean isHostingSlot() {
+        // entityTypeFld is in REQUIRED_COLUMNS
+        return DataLoader.ENTITY_TYPE_SLOT.equals(entityTypeFld.toUpperCase());
+    }
+
+    private RelationshipInfo determineParentChild(final Slot orignator, final Slot target) {
+        // check if relationship name exists, and set parent and child appropriately
+        final RelationshipInfo info = new RelationshipInfo();
+
+        info.relationship = Utility.getRelationByName(relationTypeFld);
+        if (info.relationship != null) {
+            info.parent = orignator;
+            info.child = target;
+        } else {
+            info.relationship = Utility.getRelationBasedOnInverseName(relationTypeFld);
+            if (info.relationship == null) {
+                result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_RELATION_TYPE);
+                return null;
+            } else {
+                info.parent = target;
+                info.child = orignator;
+            }
+        }
+        return info;
     }
 }
