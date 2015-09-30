@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -619,7 +620,7 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
             return;
         }
 
-        // check that removing this slot will no create any orphans
+        // check that removing this slot will not create any orphans
         for (final SlotPair slotPair : workingSlot.getPairsInWhichThisSlotIsAParentList()) {
             if ((slotPair.getSlotRelation().getName() == SlotRelationName.CONTAINS)
                     && !slotPairEJB.slotHasMoreThanOneContainsRelation(slotPair.getChildSlot())) {
@@ -627,6 +628,23 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
                 return;
             }
         }
+        // remove all relations with parents and children
+        final ListIterator<SlotPair> pairsWithChildren = workingSlot.getPairsInWhichThisSlotIsAParentList().listIterator();
+        // all child relationships are NOT contains
+        while (pairsWithChildren.hasNext()) {
+            final SlotPair pair = pairsWithChildren.next();
+            pairsWithChildren.remove();
+            slotPairEJB.delete(pair);
+        }
+
+        final ListIterator<SlotPair> pairsWithParents = workingSlot.getPairsInWhichThisSlotIsAChildList().listIterator();
+        // all parent relationships need to be removed
+        while (pairsWithParents.hasNext()) {
+            final SlotPair pair = pairsWithParents.next();
+            pairsWithParents.remove();
+            slotPairEJB.delete(pair);
+        }
+
         slotEJB.delete(workingSlot);
     }
 
