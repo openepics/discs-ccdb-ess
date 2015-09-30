@@ -132,7 +132,6 @@ public abstract class AbstractDataLoader implements DataLoader {
                     case DataLoader.CMD_UPDATE_PROPERTY:
                     case DataLoader.CMD_UPDATE_DEVICE_TYPE:
                     case DataLoader.CMD_UPDATE_ENTITY:
-                    case DataLoader.CMD_UPDATE_RELATION:
                         handleUpdate(command);
                         ++updateRows;
                         break;

@@ -156,7 +156,6 @@ public abstract class AbstractExcelSingleFileImportUI implements ExcelSingleFile
                     case DataLoader.CMD_UPDATE_PROPERTY:
                     case DataLoader.CMD_UPDATE_DEVICE_TYPE:
                     case DataLoader.CMD_UPDATE_ENTITY:
-                    case DataLoader.CMD_UPDATE_RELATION:
                         ++updateRows;
                         break;
                     case DataLoader.CMD_DELETE:

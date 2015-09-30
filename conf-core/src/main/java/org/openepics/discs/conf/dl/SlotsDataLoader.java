@@ -164,9 +164,6 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
             case DataLoader.CMD_UPDATE_PROPERTY:
                 updateSlotProperty();
                 break;
-            case DataLoader.CMD_UPDATE_RELATION:
-                updateSlotRelationship();
-                break;
             default:
                 result.addRowMessage(ErrorMessage.COMMAND_NOT_VALID, HDR_OPERATION);
         }
@@ -237,11 +234,6 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
             result.addRowMessage(ErrorMessage.CONVERSION_ERROR, HDR_PROP_VALUE);
             return;
         }
-    }
-
-    private void updateSlotRelationship() {
-        // it is not possible to update a relationship
-        result.addRowMessage(ErrorMessage.COMMAND_NOT_VALID);
     }
 
     private void updateSlotParent(final Slot slot) {

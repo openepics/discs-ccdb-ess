@@ -50,7 +50,6 @@ public interface DataLoader {
     public static final String CMD_UPDATE_PROPERTY = "UPDATE PROPERTY";
     public static final String CMD_UPDATE_DEVICE_TYPE = "UPDATE DEVICE TYPE";
     public static final String CMD_UPDATE_ENTITY = "UPDATE ENTITY";
-    public static final String CMD_UPDATE_RELATION = "UPDATE RELATION";
 
     public static final String CMD_DELETE_DEVICE = "DELETE DEVICE";
     public static final String CMD_DELETE_PROPERTY = "DELETE PROPERTY";
