@@ -42,6 +42,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.base.Preconditions;
 
 /**
  * An Installation Record contains information connects device instances with the installation slots
@@ -106,6 +107,7 @@ public class InstallationRecord extends ConfigurationEntity
      * @param installDate The date of the installation
      */
     public InstallationRecord(String recordNumber, Date installDate) {
+        Preconditions.checkNotNull(installDate);
         this.recordNumber = recordNumber;
         this.installDate = new Date(installDate.getTime());
     }
@@ -122,6 +124,7 @@ public class InstallationRecord extends ConfigurationEntity
         return installDate != null ? new Date(installDate.getTime()) : null;
     }
     public void setInstallDate(Date installDate) {
+        Preconditions.checkNotNull(installDate);
         this.installDate = new Date(installDate.getTime());
     }
 
@@ -130,7 +133,7 @@ public class InstallationRecord extends ConfigurationEntity
         return uninstallDate != null ? new Date(uninstallDate.getTime()) : null;
     }
     public void setUninstallDate(Date uninstallDate) {
-        this.uninstallDate = new Date(uninstallDate.getTime());
+        this.uninstallDate = uninstallDate == null ? null : new Date(uninstallDate.getTime());
     }
 
     public String getNotes() {

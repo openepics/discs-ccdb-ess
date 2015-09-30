@@ -170,12 +170,12 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
 
     private void updateSlot() {
         final Slot workingSlot = getWorkingSlot();
-        if (result.isError()) {
+        if (result.isRowError()) {
             return;
         }
         if (isHostingSlot) {
             final ComponentType importType = checkSlotType();
-            if (result.isError()) {
+            if (result.isRowError()) {
                 return;
             }
 
@@ -191,7 +191,7 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
                 }
             }
             updateSlotParent(workingSlot);
-            if (result.isError()) {
+            if (result.isRowError()) {
                 return;
             }
         } else {
@@ -203,9 +203,19 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
 
     private void updateSlotProperty() {
         final Slot workingSlot = getWorkingSlot();
-        final SlotPropertyValue slotPropertyValue =
-                                    (SlotPropertyValue) getPropertyValue(workingSlot, propNameFld, HDR_PROP_NAME);
-        if (result.isError()) {
+        if (Strings.isNullOrEmpty(propNameFld)) {
+            result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, HDR_PROP_NAME);
+        }
+        if (Strings.isNullOrEmpty(propValueFld)) {
+            result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, HDR_PROP_VALUE);
+        }
+        final SlotPropertyValue slotPropertyValue;
+        if (!result.isRowError()) {
+            slotPropertyValue = (SlotPropertyValue) getPropertyValue(workingSlot, propNameFld, HDR_PROP_NAME);
+        } else {
+            slotPropertyValue = null;
+        }
+        if (result.isRowError()) {
             return;
         }
 
@@ -233,7 +243,7 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
     private void updateSlotParent(final Slot slot) {
         // try to locate the import parent
         final Slot importParent = getParentSlot(entityParentFld, HDR_ENTITY_PARENT);
-        if (result.isError()) {
+        if (result.isRowError()) {
             return;
         }
         // get a list of all existing parents
@@ -295,7 +305,7 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
             result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, HDR_ENTITY_PARENT);
         }
 
-        if (!result.isError()) {
+        if (!result.isRowError()) {
             if (isHostingSlot) {
                 createInstallationSlot();
             } else {
@@ -306,12 +316,19 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
 
     private void createSlotProperty() {
         final Slot workingSlot = getWorkingSlot();
-        final SlotPropertyValue slotPropertyValue =
-                                    (SlotPropertyValue) getPropertyValue(workingSlot, propNameFld, HDR_PROP_NAME);
+        if (Strings.isNullOrEmpty(propNameFld)) {
+            result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, HDR_PROP_NAME);
+        }
         if (Strings.isNullOrEmpty(propValueFld)) {
             result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, HDR_PROP_VALUE);
         }
-        if (result.isError()) {
+        final SlotPropertyValue slotPropertyValue;
+        if (!result.isRowError()) {
+            slotPropertyValue = (SlotPropertyValue) getPropertyValue(workingSlot, propNameFld, HDR_PROP_NAME);
+        } else {
+            slotPropertyValue = null;
+        }
+        if (result.isRowError()) {
             return;
         }
 
@@ -379,12 +396,12 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
         if (Strings.isNullOrEmpty(relationTypeFld)) {
             result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, HDR_RELATION_TYPE);
         }
-        if (result.isError()) {
+        if (result.isRowError()) {
             return;
         }
 
         RelationshipInfo info = determineParentChild(workingSlot, newRelationshipTarget);
-        if (result.isError()) {
+        if (result.isRowError()) {
             return;
         }
 
@@ -429,7 +446,7 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
         if (Strings.isNullOrEmpty(installationFld)) {
             result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, HDR_ENTITY_DESCRIPTION);
         }
-        if (result.isError()) {
+        if (result.isRowError()) {
             return;
         }
 
@@ -562,8 +579,7 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
             final Slot slot = slotEJB.findByName(entityNameFld);
             if (slot == null) {
                 result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_ENTITY_NAME);
-            }
-            if (slot.isHostingSlot() != isHostingSlot) {
+            } else if (slot.isHostingSlot() != isHostingSlot) {
                 result.addRowMessage(ErrorMessage.VALUE_NOT_IN_DATABASE, HDR_ENTITY_TYPE);
             }
             return slot;
@@ -596,7 +612,7 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
 
     private void deleteSlot() {
         final Slot workingSlot = getWorkingSlot();
-        if (result.isError()) {
+        if (result.isRowError()) {
             return;
         }
 
@@ -618,11 +634,14 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
             result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, HDR_PROP_NAME);
             // setting to null explicitly - we know it will not be used because of error
             slotPropertyValue = null;
+        } else if (workingSlot != null) {
+                slotPropertyValue = (SlotPropertyValue) getPropertyValue(workingSlot, propNameFld, HDR_PROP_NAME);
         } else {
-            slotPropertyValue =
-                    (SlotPropertyValue) getPropertyValue(workingSlot, propNameFld, HDR_PROP_NAME);
+            // setting to null explicitly - we know it will not be used because of error
+            slotPropertyValue = null;
         }
-        if (result.isError()) {
+
+        if (result.isRowError()) {
             return;
         }
 
@@ -636,16 +655,23 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
 
     private void deleteSlotRelationship() {
         final Slot workingSlot = getWorkingSlot();
-        final Slot relationshipTarget = getParentSlot(relationEntityNameFld, HDR_RELATION_ENTITY_NAME);
+        final Slot relationshipTarget;
+        if (Strings.isNullOrEmpty(relationEntityNameFld)) {
+            result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, HDR_RELATION_ENTITY_NAME);
+            // setting to null explicitly - we know it will not be used because of error
+            relationshipTarget = null;
+        } else {
+            relationshipTarget = getParentSlot(relationEntityNameFld, HDR_RELATION_ENTITY_NAME);
+        }
         if (Strings.isNullOrEmpty(relationTypeFld)) {
             result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, HDR_RELATION_TYPE);
         }
-        if (result.isError()) {
+        if (result.isRowError()) {
             return;
         }
 
         RelationshipInfo info = determineParentChild(workingSlot, relationshipTarget);
-        if (result.isError()) {
+        if (result.isRowError()) {
             return;
         }
         for (final SlotPair pair : info.parent.getPairsInWhichThisSlotIsAParentList()) {
@@ -668,7 +694,7 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
         if (Strings.isNullOrEmpty(installationFld)) {
             result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, HDR_ENTITY_DESCRIPTION);
         }
-        if (result.isError()) {
+        if (result.isRowError()) {
             return;
         }
 
