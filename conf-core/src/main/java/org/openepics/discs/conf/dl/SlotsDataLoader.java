@@ -79,16 +79,16 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
     private static final Logger LOGGER = Logger.getLogger(SlotsDataLoader.class.getCanonicalName());
     private static final String LINE_SEPARATOR_PATTERN = "\r\n|\r|\n";
 
-    private static final String HDR_ENTITY_TYPE = "ENTITY TYPE";
-    private static final String HDR_ENTITY_DEVICE_TYPE = "ENTITY DEVICE TYPE";
-    private static final String HDR_ENTITY_NAME = "ENTITY NAME";
-    private static final String HDR_ENTITY_DESCRIPTION = "ENTITY DESCRIPTION";
-    private static final String HDR_ENTITY_PARENT = "ENTITY PARENT";
-    private static final String HDR_PROP_NAME = "PROPERTY NAME";
-    private static final String HDR_PROP_VALUE = "PROPERTY VALUE";
-    private static final String HDR_RELATION_TYPE = "RELATIONSHIP TYPE";
-    private static final String HDR_RELATION_ENTITY_NAME = "RELATIONSHIP ENTITY NAME";
-    private static final String HDR_INSTALLATION = "INSTALLATION";
+    protected static final String HDR_ENTITY_TYPE = "ENTITY TYPE";
+    protected static final String HDR_ENTITY_DEVICE_TYPE = "ENTITY DEVICE TYPE";
+    protected static final String HDR_ENTITY_NAME = "ENTITY NAME";
+    protected static final String HDR_ENTITY_DESCRIPTION = "ENTITY DESCRIPTION";
+    protected static final String HDR_ENTITY_PARENT = "ENTITY PARENT";
+    protected static final String HDR_PROP_NAME = "PROPERTY NAME";
+    protected static final String HDR_PROP_VALUE = "PROPERTY VALUE";
+    protected static final String HDR_RELATION_TYPE = "RELATIONSHIP TYPE";
+    protected static final String HDR_RELATION_ENTITY_NAME = "RELATIONSHIP ENTITY NAME";
+    protected static final String HDR_INSTALLATION = "INSTALLATION";
 
     private static final int COL_INDEX_ENTITY_TYPE = 1;
     private static final int COL_INDEX_ENTITY_DEVICE_TYPE = 2;
@@ -405,7 +405,7 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
         switch (info.relationship) {
             case CONTAINS:
                 if (info.parent.isHostingSlot() && !info.child.isHostingSlot()) {
-                    result.addRowMessage(ErrorMessage.INSTALL_CANT_CONTAIN_CONTAINER, HDR_RELATION_TYPE);
+                    result.addRowMessage(ErrorMessage.INSTALL_CANT_CONTAIN_CONTAINER, HDR_RELATION_ENTITY_NAME);
                     return;
                 }
                 break;

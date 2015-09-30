@@ -20,6 +20,8 @@
 package org.openepics.discs.conf.dl;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -35,6 +37,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
+import org.openepics.discs.conf.dl.common.ErrorMessage;
+import org.openepics.discs.conf.dl.common.ValidationMessage;
 import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.util.TestUtility;
 
@@ -70,6 +74,48 @@ public class SlotsDataLoaderIT {
         final String slotsImportFileName = "slots-import-creation.xlsx";
         final DataLoaderResult loaderResult = dataLoaderHelper.importSlots(slotsImportFileName);
         Assert.assertFalse("Errors: " + loaderResult.toString(), loaderResult.isError());
+    }
+
+    @Test
+    @Transactional(TransactionMode.DISABLED)
+    public void slotsImportCreationFails() throws IOException {
+        final String slotsImportFileName = "slots-import-creation-fails.xlsx";
+
+        final List<ValidationMessage> expectedValidationMessages = new ArrayList<>();
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 22, SlotsDataLoader.HDR_ENTITY_TYPE));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 23, SlotsDataLoader.HDR_ENTITY_NAME));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 24, SlotsDataLoader.HDR_ENTITY_DESCRIPTION));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 25, SlotsDataLoader.HDR_ENTITY_DEVICE_TYPE));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, 26, SlotsDataLoader.HDR_ENTITY_DEVICE_TYPE));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 27, SlotsDataLoader.HDR_ENTITY_PARENT));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.NAME_ALREADY_EXISTS, 28, SlotsDataLoader.HDR_ENTITY_NAME));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.INSTALL_CANT_CONTAIN_CONTAINER, 29, null));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.PROPERTY_NOT_FOUND, 30, SlotsDataLoader.HDR_PROP_NAME));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 31, SlotsDataLoader.HDR_PROP_VALUE));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 32, SlotsDataLoader.HDR_PROP_NAME));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.CREATE_VALUE_EXISTS, 33, SlotsDataLoader.HDR_PROP_NAME));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.CREATE_VALUE_EXISTS, 34, SlotsDataLoader.HDR_PROP_NAME));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.CONVERSION_ERROR, 35, SlotsDataLoader.HDR_PROP_VALUE));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.PROPERTY_NOT_FOUND, 36, SlotsDataLoader.HDR_PROP_NAME));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, 37, SlotsDataLoader.HDR_PROP_NAME));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.CONVERSION_ERROR, 38, SlotsDataLoader.HDR_PROP_VALUE));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 39, SlotsDataLoader.HDR_RELATION_TYPE));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 40, SlotsDataLoader.HDR_RELATION_ENTITY_NAME));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.INSTALL_CANT_CONTAIN_CONTAINER, 41, SlotsDataLoader.HDR_RELATION_ENTITY_NAME));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.CONTROL_RELATIONSHIP_RESTRICTIONS, 42, SlotsDataLoader.HDR_RELATION_TYPE));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.POWER_RELATIONSHIP_RESTRICTIONS, 43, SlotsDataLoader.HDR_RELATION_TYPE));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.SAME_CHILD_AND_PARENT, 44, SlotsDataLoader.HDR_RELATION_ENTITY_NAME));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 45, SlotsDataLoader.HDR_ENTITY_PARENT));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, 46, SlotsDataLoader.HDR_ENTITY_PARENT));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.AMBIGUOUS_PARENT_SLOT, 47, SlotsDataLoader.HDR_ENTITY_PARENT));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, 48, SlotsDataLoader.HDR_ENTITY_PARENT));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 49, SlotsDataLoader.HDR_INSTALLATION));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.INSTALLATION_EXISTING, 50, SlotsDataLoader.HDR_INSTALLATION));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, 51, SlotsDataLoader.HDR_INSTALLATION));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.DEVICE_TYPE_ERROR, 52, SlotsDataLoader.HDR_INSTALLATION));
+
+        final DataLoaderResult loaderResult = dataLoaderHelper.importSlots(slotsImportFileName);
+        Assert.assertEquals("Error:\n" + loaderResult.toString(), expectedValidationMessages, loaderResult.getMessages());
     }
 
     /*
