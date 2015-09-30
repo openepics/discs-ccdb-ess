@@ -40,7 +40,7 @@ public enum ErrorMessage {
     SLOT_RELATIONSHIP_NOT_FOUND("This slot relationship does not exist"),
     POWER_RELATIONSHIP_RESTRICTIONS("\"Powers\" slot relationship can only be set up between two installation slots"),
     CONTROL_RELATIONSHIP_RESTRICTIONS("\"Controls\" slot relationship can only be set up between two installation slots"),
-    ORPHAN_SLOT("Newly added slot was not assigned a parent"),
+    ORPHAN_SLOT("Specified slot was not assigned a parent"),
     SAME_CHILD_AND_PARENT("Loop relationship. Child and parent can't be the same slot"),
     PROPERTY_NOT_FOUND("Property with this name was not found"),
     PROPERTY_TYPE_INCORRECT("The command is incorrect for this type of property"),

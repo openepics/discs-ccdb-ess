@@ -48,8 +48,10 @@ import org.openepics.discs.conf.ejb.SlotPairEJB;
 import org.openepics.discs.conf.ejb.SlotRelationEJB;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.Device;
+import org.openepics.discs.conf.ent.EntityWithProperties;
 import org.openepics.discs.conf.ent.InstallationRecord;
 import org.openepics.discs.conf.ent.Property;
+import org.openepics.discs.conf.ent.PropertyValue;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
@@ -58,6 +60,7 @@ import org.openepics.discs.conf.ent.SlotRelationName;
 import org.openepics.discs.conf.util.Conversion;
 import org.openepics.discs.conf.util.Utility;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 
@@ -444,7 +447,7 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
     private void installIntoSlot() {
         final Slot workingSlot = getWorkingSlot();
         if (Strings.isNullOrEmpty(installationFld)) {
-            result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, HDR_ENTITY_DESCRIPTION);
+            result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, HDR_INSTALLATION);
         }
         if (result.isRowError()) {
             return;
@@ -783,5 +786,30 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
             }
         }
         return info;
+    }
+
+    /* This version does not create an error, if the property value was not found.
+     * (non-Javadoc)
+     * @see org.openepics.discs.conf.dl.common.AbstractEntityWithPropertiesDataLoader#getPropertyValue(org.openepics.discs.conf.ent.EntityWithProperties, java.lang.String, java.lang.String)
+     */
+    @Override
+    protected PropertyValue getPropertyValue(EntityWithProperties entity, String propertyName, String propNameHeader) {
+        Preconditions.checkNotNull(propertyName);
+        Preconditions.checkNotNull(propNameHeader);
+        final List<PropertyValue> propertyList = entity.getEntityPropertyList();
+
+        final @Nullable Property property = propertyEJB.findByName(propertyName);
+        if (property == null) {
+            result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, propNameHeader);
+            return null;
+        }
+
+        for (final PropertyValue value : propertyList) {
+            if (value.getProperty().equals(property)) {
+                return value;
+            }
+        }
+
+        return null;
     }
 }
