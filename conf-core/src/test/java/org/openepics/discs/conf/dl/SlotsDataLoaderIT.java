@@ -39,9 +39,13 @@ import org.junit.runner.RunWith;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.dl.common.ErrorMessage;
 import org.openepics.discs.conf.dl.common.ValidationMessage;
+import org.openepics.discs.conf.ejb.InstallationEJB;
 import org.openepics.discs.conf.ejb.SlotEJB;
+import org.openepics.discs.conf.ent.InstallationRecord;
 import org.openepics.discs.conf.ent.Slot;
+import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
+import org.openepics.discs.conf.ent.SlotRelationName;
 import org.openepics.discs.conf.util.TestUtility;
 
 /**
@@ -58,6 +62,7 @@ public class SlotsDataLoaderIT {
 
     @Inject private SlotsDataLoaderHelper dataLoaderHelper;
     @Inject private SlotEJB slotEJB;
+    @Inject private InstallationEJB installationEJB;
     @Inject private TestUtility testUtility;
 
     @Deployment
@@ -165,4 +170,61 @@ public class SlotsDataLoaderIT {
         Assert.assertEquals("Error:\n" + loaderResult.toString(), expectedValidationMessages, loaderResult.getMessages());
     }
 
+    @Test
+    @Transactional(TransactionMode.DISABLED)
+    public void slotsImportDeleteSuccess() throws IOException {
+        final String slotsImportFileName = "slots-import-delete.xlsx";
+        final DataLoaderResult loaderResult = dataLoaderHelper.importSlots(slotsImportFileName);
+
+        Assert.assertFalse("Errors: " + loaderResult.toString(), loaderResult.isError());
+
+        final Slot cntnr3 = slotEJB.findByName("IMPORT_TEST_3");
+        Assert.assertTrue("IMPORT_TEST_3 -> IMPORT_TEST_4 not deleted",
+                cntnr3.getPairsInWhichThisSlotIsAParentList().isEmpty());
+
+        final Slot slot1 = slotEJB.findByName("Slot1");
+        SlotPropertyValue propVal = null;
+        for (final SlotPropertyValue pv : slot1.getSlotPropertyList()) {
+            if ("FIELDPOLY".equals(pv.getProperty().getName())) {
+                propVal = pv;
+                break;
+            }
+        }
+        Assert.assertNotNull("Property value FIELDPOLY not found.", propVal);
+        Assert.assertNull("Property FIELDPOLY still has a value", propVal.getPropValue());
+
+        for (final SlotPair slotPair : slot1.getPairsInWhichThisSlotIsAParentList()) {
+            if (slotPair.getSlotRelation().getName() == SlotRelationName.POWERS) {
+                Assert.fail("POWERS relationship not deleted.");
+            }
+        }
+
+        final Slot cntnr0 = slotEJB.findByName("IMPORT_TEST");
+        Assert.assertTrue("IMPORT_TEST still has properties", cntnr0.getSlotPropertyList().isEmpty());
+
+        final InstallationRecord record = installationEJB.getLastInstallationRecordForSlot(slot1);
+        Assert.assertNotNull(record);
+        Assert.assertNotNull(record.getUninstallDate());
+    }
+
+    @Test
+    @Transactional(TransactionMode.DISABLED)
+    public void slotsImportDeleteFails() throws IOException {
+        final String slotsImportFileName = "slots-import-delete-fails.xlsx";
+
+        final List<ValidationMessage> expectedValidationMessages = new ArrayList<>();
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, 22, SlotsDataLoader.HDR_ENTITY_NAME));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.ORPHAN_CREATED, 23, null));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 24, SlotsDataLoader.HDR_PROP_NAME));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 25, SlotsDataLoader.HDR_RELATION_TYPE));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 26, SlotsDataLoader.HDR_RELATION_ENTITY_NAME));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.ORPHAN_CREATED, 27, SlotsDataLoader.HDR_RELATION_ENTITY_NAME));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, 28, SlotsDataLoader.HDR_RELATION_ENTITY_NAME));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 29, SlotsDataLoader.HDR_INSTALLATION));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, 30, SlotsDataLoader.HDR_INSTALLATION));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.VALUE_NOT_IN_DATABASE, 31, SlotsDataLoader.HDR_INSTALLATION));
+
+        final DataLoaderResult loaderResult = dataLoaderHelper.importSlots(slotsImportFileName);
+        Assert.assertEquals("Error:\n" + loaderResult.toString(), expectedValidationMessages, loaderResult.getMessages());
+    }
 }

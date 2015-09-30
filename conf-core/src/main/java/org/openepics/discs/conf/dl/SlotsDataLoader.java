@@ -427,7 +427,7 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
 
         // create new relationship
         final SlotRelation relation = slotRelationEJB.findBySlotRelationName(info.relationship);
-        final SlotPair newRelationship = new SlotPair(info.parent, info.child, relation);
+        final SlotPair newRelationship = new SlotPair(info.child, info.parent, relation);
         if ((info.relationship == SlotRelationName.CONTAINS)
                 && slotPairEJB.slotPairCreatesLoop(newRelationship, info.child)) {
             result.addRowMessage(ErrorMessage.SAME_CHILD_AND_PARENT, HDR_RELATION_ENTITY_NAME);
@@ -705,7 +705,7 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
     private void uninstallFromSlot() {
         final Slot workingSlot = getWorkingSlot();
         if (Strings.isNullOrEmpty(installationFld)) {
-            result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, HDR_ENTITY_DESCRIPTION);
+            result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, HDR_INSTALLATION);
         }
         if (result.isRowError()) {
             return;
