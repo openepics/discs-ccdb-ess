@@ -40,6 +40,8 @@ import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.dl.common.ErrorMessage;
 import org.openepics.discs.conf.dl.common.ValidationMessage;
 import org.openepics.discs.conf.ejb.SlotEJB;
+import org.openepics.discs.conf.ent.Slot;
+import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.util.TestUtility;
 
 /**
@@ -118,55 +120,49 @@ public class SlotsDataLoaderIT {
         Assert.assertEquals("Error:\n" + loaderResult.toString(), expectedValidationMessages, loaderResult.getMessages());
     }
 
-    /*
     @Test
     @Transactional(TransactionMode.DISABLED)
-    public void slotsImportRequiredFieldsFailureTest() throws IOException {
-        final String slotsImportFileName = "slots-required-fields-failure-test.xlsx";
-        final List<ValidationMessage> expectedValidationMessages = new ArrayList<>();
-        expectedValidationMessages.add(new ValidationMessage(slotsImportFileName));
-        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 4, HDR_NAME));
-        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 5, HDR_CTYPE));
-        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 6, HDR_IS_HOSTING_SLOT));
-
+    public void slotsImportUpdateSuccess() throws IOException {
+        final String slotsImportFileName = "slots-import-update.xlsx";
         final DataLoaderResult loaderResult = dataLoaderHelper.importSlots(slotsImportFileName);
 
-        Assert.assertEquals(expectedValidationMessages, loaderResult.getMessages());
-        Assert.assertEquals(SlotsDataLoaderHelper.NUM_OF_SLOTS_IF_FAILURE, slotEJB.findAll().size());
+        Assert.assertFalse("Errors: " + loaderResult.toString(), loaderResult.isError());
+
+        final Slot slot2 = slotEJB.findByName("Slot2");
+        Assert.assertEquals("BPM2", slot2.getComponentType().getName());
+        Assert.assertEquals("Slot 2 New Desc", slot2.getDescription());
+        final Slot afterParent = slot2.getPairsInWhichThisSlotIsAChildList().get(0).getParentSlot();
+        Assert.assertEquals("IMPORT_TEST_2", afterParent.getName());
+
+        final Slot slot1 = slotEJB.findByName("Slot1");
+        SlotPropertyValue propVal = null;
+        for (final SlotPropertyValue pv : slot1.getSlotPropertyList()) {
+            if ("FIELDPOLY".equals(pv.getProperty().getName())) {
+                propVal = pv;
+                break;
+            }
+        }
+        Assert.assertNotNull("Property value FIELDPOLY not found.", propVal);
+        Assert.assertEquals("NewValue", propVal.getPropValue().toString());
     }
 
     @Test
     @Transactional(TransactionMode.DISABLED)
-    public void slotsImportDeviceType_ROOTFailureTest() throws IOException {
-        final String slotsImportFileName = "slots-root-device-type-failure-test.xlsx";
+    public void slotsImportUpdateFails() throws IOException {
+        final String slotsImportFileName = "slots-import-update-fails.xlsx";
+
         final List<ValidationMessage> expectedValidationMessages = new ArrayList<>();
-        expectedValidationMessages.add(new ValidationMessage(slotsImportFileName));
-        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, 4, HDR));
-        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, 5, HDR));
-        final DataLoaderResult loaderResult = dataLoaderHelper.importSlots(slotsImportFileName);
-
-        Assert.assertEquals(expectedValidationMessages, loaderResult.getMessages());
-        Assert.assertEquals(SlotsDataLoaderHelper.NUM_OF_SLOTS_IF_FAILURE, slotEJB.findAll().size());
-    }
-
-    @Test
-    @Transactional(TransactionMode.DISABLED)
-    public void slotsImportOrphanFailureTest() throws IOException {
-        final String slotsImportFileName = "slots-orphan-failure-test.xlsx";
-        final List<ValidationMessage> expectedValidationMessages = new ArrayList<>();
-
-        final ValidationMessage orphanValidationMessage_1 = new ValidationMessage(ErrorMessage.ORPHAN_SLOT, null, null);
-        orphanValidationMessage_1.setOrphanSlotName("Cooling");
-        expectedValidationMessages.add(orphanValidationMessage_1);
-
-        final ValidationMessage orphanValidationMessage_2 = new ValidationMessage(ErrorMessage.ORPHAN_SLOT, null, null);
-        orphanValidationMessage_2.setOrphanSlotName("Accelerator-System");
-        expectedValidationMessages.add(orphanValidationMessage_2);
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.ORPHAN_SLOT, 22, SlotsDataLoader.HDR_ENTITY_PARENT));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.INSTALLATION_EXISTING, 23, SlotsDataLoader.HDR_ENTITY_DEVICE_TYPE));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, 24, SlotsDataLoader.HDR_ENTITY_NAME));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.VALUE_NOT_IN_DATABASE, 25, SlotsDataLoader.HDR_ENTITY_TYPE));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, 26, SlotsDataLoader.HDR_ENTITY_DEVICE_TYPE));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.AMBIGUOUS_PARENT_SLOT, 27, SlotsDataLoader.HDR_ENTITY_PARENT));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.PROPERTY_NOT_FOUND, 28, SlotsDataLoader.HDR_PROP_NAME));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.CONVERSION_ERROR, 29, SlotsDataLoader.HDR_PROP_VALUE));
 
         final DataLoaderResult loaderResult = dataLoaderHelper.importSlots(slotsImportFileName);
-
-        Assert.assertEquals(expectedValidationMessages, loaderResult.getMessages());
-        Assert.assertEquals(SlotsDataLoaderHelper.NUM_OF_SLOTS_IF_FAILURE, slotEJB.findAll().size());
+        Assert.assertEquals("Error:\n" + loaderResult.toString(), expectedValidationMessages, loaderResult.getMessages());
     }
-    */
+
 }
