@@ -26,7 +26,9 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.openepics.discs.conf.dl.annotations.SlotsLoader;
 import org.openepics.discs.conf.dl.common.AbstractDataLoader;
+import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.dl.common.ExcelImportFileReader;
 import org.openepics.discs.conf.util.TestUtility;
@@ -39,7 +41,7 @@ import org.openepics.discs.conf.util.TestUtility;
  */
 public class SlotsDataLoaderHelper {
 
-    @Inject private SlotsDataLoader slotsDataLoader;
+    @Inject @SlotsLoader private DataLoader slotsDataLoader;
 
     final static int NUM_OF_SLOTS_IF_FAILURE = 1;
     final static int NUM_OF_SLOTS_IF_SUCCESS = 156;

@@ -2,5 +2,7 @@
 <dataset>
   <component_type id="45" modified_at="2014-12-17 10:37:59.625" modified_by="system" version="0" description="_ROOT" name="_ROOT" />
   <component_type id="46" modified_at="2014-12-17 10:37:59.626" modified_by="system" version="0" description="_GRP" name="_GRP" />
+  <component_type id="389" modified_at="2014-11-14 10:20:01.203" modified_by="admin" version="5" name="BPM1"/>
+  <component_type id="391" modified_at="2014-11-14 10:20:01.234" modified_by="admin" version="5" name="BPM2"/>
 </dataset>
 

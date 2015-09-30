@@ -20,8 +20,6 @@
 package org.openepics.discs.conf.dl;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -34,12 +32,9 @@ import org.jboss.arquillian.transaction.api.annotation.Transactional;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
-import org.openepics.discs.conf.dl.common.ErrorMessage;
-import org.openepics.discs.conf.dl.common.ValidationMessage;
 import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.util.TestUtility;
 
@@ -47,24 +42,17 @@ import org.openepics.discs.conf.util.TestUtility;
  * Integration tests for {@link SlotsDataLoader}
  *
  * @author <a href="mailto:andraz.pozar@cosylab.com">Andraž Požar</a>
- *
+ * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  */
-// TODO remove @Ignore after implementation
-@Ignore
 @RunWith(Arquillian.class)
-@UsingDataSet(value= {"unit.xml", "property.xml", "basic_component_types.xml", "component_type.xml", "basic_slot.xml"})
+@UsingDataSet(value= {"unit.xml", "property.xml", "basic_component_types.xml", "component_type.xml", "basic_slot.xml",
+        "basic_comptype_property_value.xml", "device.xml"})
 @ApplyScriptAfter(value= "truncate_database.sql")
 public class SlotsDataLoaderIT {
 
     @Inject private SlotsDataLoaderHelper dataLoaderHelper;
     @Inject private SlotEJB slotEJB;
     @Inject private TestUtility testUtility;
-
-    final static private String HDR_NAME = "NAME";
-    final static private String HDR_CTYPE = "CTYPE";
-    final static private String HDR_IS_HOSTING_SLOT = "IS-HOSTING-SLOT";
-    final static private String HDR_APERTURE = "APERTURE";
-    final static private String HDR = "HEADER";
 
     @Deployment
     public static WebArchive createDeployment() {
@@ -76,6 +64,15 @@ public class SlotsDataLoaderIT {
         testUtility.loginForTests();
     }
 
+    @Test
+    @Transactional(TransactionMode.DISABLED)
+    public void slotsImportSuccess() throws IOException {
+        final String slotsImportFileName = "slots-import-creation.xlsx";
+        final DataLoaderResult loaderResult = dataLoaderHelper.importSlots(slotsImportFileName);
+        Assert.assertFalse("Errors: " + loaderResult.toString(), loaderResult.isError());
+    }
+
+    /*
     @Test
     @Transactional(TransactionMode.DISABLED)
     public void slotsImportRequiredFieldsFailureTest() throws IOException {
@@ -125,4 +122,5 @@ public class SlotsDataLoaderIT {
         Assert.assertEquals(expectedValidationMessages, loaderResult.getMessages());
         Assert.assertEquals(SlotsDataLoaderHelper.NUM_OF_SLOTS_IF_FAILURE, slotEJB.findAll().size());
     }
+    */
 }

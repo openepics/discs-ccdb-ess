@@ -1,3 +1,4 @@
+DELETE FROM installation_record;
 DELETE FROM device_property_value;
 DELETE FROM device;
 DELETE FROM slot_property_value;
