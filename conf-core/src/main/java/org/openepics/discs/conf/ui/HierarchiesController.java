@@ -187,6 +187,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     private transient List<InstallationView> installationRecords;
     private transient InstallationView selectedInstallationView;
     private Device deviceToInstall;
+    private String requestedSlot;
 
     // ---- variables for hierarchies and tabs --------
     private transient HierarchyBuilder hierarchyBuilder;
@@ -344,20 +345,32 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         // navigate to slot based on ID or name
         final String slotIdStr = ((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().
                 getRequest()).getParameter("id");
-        Long slotId = null;
+        Slot slot = null;
+        boolean slotRequested = false;
 
         if (slotIdStr != null) {
-            slotId = Long.parseLong(slotIdStr);
+            try {
+                slotRequested = true;
+                requestedSlot = "id:" + slotIdStr;
+                slot = slotEJB.findById(Long.parseLong(slotIdStr));
+            } catch (NumberFormatException e) {
+                slot = null;
+            }
         } else {
             final String slotName = ((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().
                     getRequest()).getParameter("name");
             if (slotName != null) {
-                slotId = getSlotIdFromName(slotName);
+                slotRequested = true;
+                requestedSlot = slotName;
+                slot = getSlotFromName(slotName);
             }
         }
 
-        if (slotId != null) {
-            selectNode(slotId);
+        if (slot != null) {
+            selectNode(slot);
+        } else if (slotRequested) {
+            RequestContext.getCurrentInstance().update("cannotFindSlotForm:cannotFindSlot");
+            RequestContext.getCurrentInstance().execute("PF('cannotFindSlot').show();");
         }
     }
 
@@ -731,13 +744,13 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     }
 
     /** The function to select a different node in the TreeTable by clicking on the link in the relationship table.
-     * @param id the ID of the slot we want to switch to.
+     * @param slot the slot we want to switch to
      */
-    public void selectNode(final Long id) {
-        Preconditions.checkNotNull(id);
+    public void selectNode(final Slot slot) {
+        Preconditions.checkNotNull(slot);
 
         TreeNode node = rootNode;
-        final List<Slot> pathToRoot = getPathToRoot(id);
+        final List<Slot> pathToRoot = getPathToRoot(slot);
         final ListIterator<Slot> pathIterator = pathToRoot.listIterator(pathToRoot.size());
         // we're not interested in the root node. Skip it.
         pathIterator.previous();
@@ -778,28 +791,29 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
     /** The method generates the path from the requested node to the root of the contains hierarchy. If an element has
      * multiple parents, this method always chooses the first parent it encounters.
-     * @param id the database ID of the slot to find the path for
+     * @param slotOnPath the slot to find the path for
      * @return the path from requested node (first element) to the root of the hierarchy (last element).
      */
-    private List<Slot> getPathToRoot(final Long id) {
+    private List<Slot> getPathToRoot(Slot slot) {
         final List<Slot> path = Lists.newArrayList();
         final Slot rootSlot = slotEJB.getRootNode();
-        Slot slot = slotEJB.findById(id);
-        path.add(slot);
+        Slot slotOnPath = slot;
 
-        while (!rootSlot.equals(slot)) {
-            final List<SlotPair> parents = slot.getPairsInWhichThisSlotIsAChildList();
+        path.add(slotOnPath);
+
+        while (!rootSlot.equals(slotOnPath)) {
+            final List<SlotPair> parents = slotOnPath.getPairsInWhichThisSlotIsAChildList();
             boolean containsParentFound = false;
             for (final SlotPair pair : parents) {
                 if (pair.getSlotRelation().getName() == SlotRelationName.CONTAINS) {
                     containsParentFound = true;
-                    slot = pair.getParentSlot();
-                    path.add(slot);
+                    slotOnPath = pair.getParentSlot();
+                    path.add(slotOnPath);
                     break;
                 }
             }
             if (!containsParentFound) {
-                throw new IllegalStateException("Slot " + slot.getName() + " does not have a CONTAINS parent.");
+                throw new IllegalStateException("Slot " + slotOnPath.getName() + " does not have a CONTAINS parent.");
             }
         }
         return path;
@@ -921,18 +935,16 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      * Returns the database id of an installation {@link Slot} based on its name.
      *
      * @param slotName the name of the installation slot to search for
-     * @return the {@link Long} containing the database id of the installation slot, <code>null</code> if such
-     * slot was not found or if it is not an installation slot.
-     *
+     * @return the installation slot, <code>null</code> if such slot was not found or if it is not an installation slot.
      */
-    private Long getSlotIdFromName(final String slotName) {
+    private Slot getSlotFromName(final String slotName) {
         if (Strings.isNullOrEmpty(slotName)) {
             return null;
         }
 
         final Slot slot = slotEJB.findByName(slotName);
 
-        return (slot == null || !slot.isHostingSlot()) ? null : slot.getId();
+        return (slot == null || !slot.isHostingSlot()) ? null : slot;
     }
 
     /**
@@ -2465,6 +2477,10 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     public List<SlotView> getClipboardSlots() {
         return clipboardNodes == null ? null
                                     : Lists.transform(clipboardNodes, (TreeNode node) -> ((SlotView) node.getData()));
+    }
+
+    public String getRequestedSlot() {
+        return requestedSlot;
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////

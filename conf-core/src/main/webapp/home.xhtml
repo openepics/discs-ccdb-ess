@@ -360,7 +360,7 @@
 
                                 <p:column headerText="Target" sortBy="#{relationship.targetSlotName}"
                                         filterBy="#{relationship.targetSlotName}" filterMatchMode="contains">
-                                    <p:commandLink action="#{hierarchiesController.selectNode(relationship.slot.id)}"
+                                    <p:commandLink action="#{hierarchiesController.selectNode(relationship.slot)}"
                                             rendered="#{hierarchiesController.includesActive}"
                                             update=":hierarchies:relationsTable :hierarchies:deleteButton :hierarchies:downButton
                                                 :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton
@@ -569,6 +569,7 @@
         <ui:include src="/resources/dialogs/slot-pair-loop-notification.xhtml" />
         <ui:include src="/resources/dialogs/add-relationship.xhtml" />
         <ui:include src="/resources/dialogs/uninstall-confirm.xhtml" />
+        <ui:include src="/resources/dialogs/cannot-find-slot.xhtml" />
 
         <script type="text/javascript">
             //<![CDATA[
