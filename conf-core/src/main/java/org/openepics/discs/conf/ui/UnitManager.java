@@ -26,6 +26,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
@@ -52,10 +53,8 @@ import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.views.UnitView;
 import org.primefaces.context.RequestContext;
 
-import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
 /**
@@ -160,14 +159,7 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
     }
 
     private void refreshUnits() {
-        final List<Unit> units = unitEJB.findAllOrdered();
-
-        // transform the list of Unit into a list of UnitView
-        unitViews = ImmutableList.copyOf(Lists.transform(units, new Function<Unit, UnitView>() {
-                                                                        @Override
-                                                                        public UnitView apply(Unit input) {
-                                                                            return new UnitView(input);
-                                                                        }}));
+        unitViews = unitEJB.findAllOrdered().stream().map(UnitView::new).collect(Collectors.toList());
     }
 
     /** This method clears all input fields used in the "Add unit" dialog */

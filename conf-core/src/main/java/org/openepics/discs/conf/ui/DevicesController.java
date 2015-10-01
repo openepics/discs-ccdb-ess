@@ -63,8 +63,6 @@ import org.primefaces.context.RequestContext;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableList.Builder;
 import com.google.common.collect.Lists;
 
 /**
@@ -486,7 +484,7 @@ public class DevicesController
         final List<Device> deviceList = deviceEJB.findAll();
 
         int devTableRowCounter = 0;
-        final Builder<DeviceView> listBuilder = new ImmutableList.Builder<>();
+        devices = Lists.newArrayList();
         // transform the list of Device into an immutable list of DeviceView
         for (final Device dev : deviceList) {
             final InstallationRecord installationRecord = installationEJB.getActiveInstallationRecordForDevice(dev);
@@ -500,9 +498,8 @@ public class DevicesController
                 selectedDevices.add(devView);
             }
             devTableRowCounter++;
-            listBuilder.add(devView);
+            devices.add(devView);
         }
-        devices = listBuilder.build();
     }
 
     /**

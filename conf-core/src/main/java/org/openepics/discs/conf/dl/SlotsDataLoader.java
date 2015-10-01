@@ -364,6 +364,7 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
                     final Property property = propertyEJB.findByName(propNameFld);
                     if (property == null) {
                         result.addRowMessage(ErrorMessage.PROPERTY_NOT_FOUND, HDR_PROP_NAME);
+                        return;
                     }
                     final SlotPropertyValue pv = new SlotPropertyValue(false);
                     pv.setProperty(property);

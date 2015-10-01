@@ -26,6 +26,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
@@ -53,10 +54,7 @@ import org.openepics.discs.conf.views.UserEnumerationView;
 import org.openepics.seds.api.datatypes.SedsEnum;
 import org.openepics.seds.core.Seds;
 
-import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
 import com.google.common.collect.Lists;
@@ -202,26 +200,8 @@ public class DataTypeManager extends AbstractExcelSingleFileImportUI implements 
     private void refreshUserDataTypes() {
         dataTypes = ImmutableList.copyOf(dataTypeEJB.findAll());
 
-        dataTypeViews = ImmutableList.copyOf(
-                    // transform the List<DataType> into a List<UserEnumerationView>
-                    Lists.transform(
-                        // filter returns a Collection, transform works only on Lists
-                        Lists.newArrayList(
-                                // Omit all the built-in data types.
-                                Collections2.filter(dataTypes,
-                                        new Predicate<DataType>() {
-                                            @Override
-                                            public boolean apply(DataType input) {
-                                                return !builtInDataTypeNames.contains(input.getName());
-                                            }
-                                        })
-                        ), new Function<DataType, UserEnumerationView>() {
-                                @Override
-                                public UserEnumerationView apply(DataType input) {
-                                    return new UserEnumerationView(input);
-                                }
-                            }
-                    ));
+        dataTypeViews = dataTypes.stream().filter(dt -> !builtInDataTypeNames.contains(dt.getName()))
+                .map(UserEnumerationView::new).collect(Collectors.toList());
     }
 
     /** This method clears all input fields used in the "Add enumeration" dialog. */
