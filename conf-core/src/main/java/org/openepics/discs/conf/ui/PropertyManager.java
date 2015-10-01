@@ -212,9 +212,10 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
             int propertiesCreated = 0;
             for (final BatchIterator bi = new BatchIterator(batchStartIndex, batchEndIndex, batchLeadingZeros);
                     bi.hasNext();) {
-                final String propertyName = name.replace("{i}", bi.next());
+                final String batchNumber = bi.next();
+                final String propertyName = name.replace("{i}", batchNumber);
                 if (propertyEJB.findByName(propertyName) == null) {
-                    final Property propertyToAdd = createNewProperty(propertyName);
+                    final Property propertyToAdd = createNewProperty(propertyName, batchNumber);
                     propertyEJB.add(propertyToAdd);
                     propertiesCreated++;
                 }
@@ -233,8 +234,13 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
         init();
     }
 
-    private Property createNewProperty(String propertyName) {
-        final Property newProperty = new Property(propertyName, description);
+    private Property createNewProperty(final String propertyName) {
+        // identity replacement
+        return createNewProperty(propertyName, "{i}");
+    }
+
+    private Property createNewProperty(final String propertyName, final String batchNumber) {
+        final Property newProperty = new Property(propertyName, description.replace("{i}", batchNumber));
         newProperty.setDataType(dataType);
         newProperty.setUnit(unit);
         newProperty.setValueUniqueness(valueUniqueness);
