@@ -27,7 +27,7 @@
                     var fieldsetLegendHeight = $('#logsForm\\:logFieldset legend').outerHeight(true);
                     var em = emHeight();
 
-                    var entireTableHeight = fieldsetHeight - fieldsetLegendHeight - 3*em;
+                    var entireTableHeight = fieldsetHeight - fieldsetLegendHeight - 5*em;
                     $('#logsForm\\:logTable').css({"height":entireTableHeight});
 
                     var tableHeaderHeight = $('#logsForm\\:logTable .ui-datatable-scrollable-header').outerHeight(true);
@@ -86,6 +86,10 @@
                     </p:column>
                 </p:dataTable>
 
+                <p:commandButton id="exportButton" icon="ui-icon-disk" value="Export" title="Export" 
+                    style="float: right; margin-top: 1em;" oncomplete="PF('exportLogs').show();" 
+                    disabled="#{empty auditManager.auditRecords}" update=":exportLogsForm:exportLogs" 
+                    actionListener="#{auditManager.simpleTableDialog.prepareTableExportPopup}" />
             </p:fieldset>
 
             <p:overlayPanel id="logOverlayPanel" widgetVar="overlay" dismissable="false" showCloseIcon="true" 
@@ -97,18 +101,26 @@
                     </p:panel>
                 </p:outputPanel>
             </p:overlayPanel>
-
-            <script type="text/javascript">
-                jQuery(document).ready(function() {
-                    removeLogColWidth();
-                    adjustFieldsetHeight('#logsForm\\:logFieldset');
-                    adjustTableHeight();
-                });
-                jQuery(window).resize(function() {
-                    adjustFieldsetHeight('#logsForm\\:logFieldset');
-                    adjustTableHeight();
-                });
-            </script>
         </h:form>
+        <ui:include src="/resources/dialogs/export-table.xhtml">
+            <ui:param name="formId" value="exportLogsForm" />
+            <ui:param name="widgetName" value="exportLogs" />
+            <ui:param name="dialogTitle" value="Export audit log table" />
+            <ui:param name="fileFormatSelection" value="#{auditManager.simpleTableDialog.fileFormat}" />
+            <ui:param name="includeHeader" value="#{auditManager.simpleTableDialog.includeHeaderRow}" />
+            <ui:param name="tableFile" value="#{auditManager.simpleTableDialog.exportedTable}" />
+        </ui:include>
+
+        <script type="text/javascript">
+            jQuery(document).ready(function() {
+                removeLogColWidth();
+                adjustFieldsetHeight('#logsForm\\:logFieldset');
+                adjustTableHeight();
+            });
+            jQuery(window).resize(function() {
+                adjustFieldsetHeight('#logsForm\\:logFieldset');
+                adjustTableHeight();
+            });
+        </script>
     </ui:define>
 </ui:composition>

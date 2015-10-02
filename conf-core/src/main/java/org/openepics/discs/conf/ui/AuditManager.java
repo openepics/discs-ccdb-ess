@@ -36,7 +36,10 @@ import org.openepics.discs.conf.ent.AuditRecord;
 import org.openepics.discs.conf.ent.ConfigurationEntity;
 import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
-
+import org.openepics.discs.conf.export.ExportTable;
+import org.openepics.discs.conf.ui.export.ExportSimpleTableDialog;
+import org.openepics.discs.conf.ui.export.SimpleTableExporter;
+import org.openepics.discs.conf.util.Utility;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
@@ -47,7 +50,7 @@ import com.google.common.collect.ImmutableList.Builder;
  */
 @Named(value = "auditManager")
 @ViewScoped
-public class AuditManager implements Serializable {
+public class AuditManager implements Serializable, SimpleTableExporter {
     private static final long serialVersionUID = 4650841685917081962L;
 
     private static final Logger LOGGER = Logger.getLogger(AuditManager.class.getCanonicalName());
@@ -62,6 +65,38 @@ public class AuditManager implements Serializable {
     private List<SelectItem> entityTypes;
     private String formattedDetails;
 
+    private transient ExportSimpleTableDialog simpleTableExporterDialog;
+
+    private class ExportSimpleAuditTableDialog extends ExportSimpleTableDialog {
+        @Override
+        protected String getTableName() {
+            return "Audit record";
+        }
+
+        @Override
+        protected String getFileName() {
+            return "audit-records";
+        }
+
+        @Override
+        protected void addHeaderRow(ExportTable exportTable) {
+            exportTable.addHeaderRow("Timestamp", "User", "Operation", "Entity name", "Entity type", "Entity ID",
+                    "Change");
+        }
+
+        @Override
+        protected void addData(ExportTable exportTable) {
+            final List<AuditRecord> exportData = Utility.isNullOrEmpty(filteredAuditRecords) ? auditRecords
+                    : filteredAuditRecords;
+            for (final AuditRecord record : exportData) {
+                exportTable.addDataRow(record.getLogTime(), record.getUser(), record.getOper().toString(),
+                        record.getEntityKey(), record.getEntityType().getLabel(), record.getEntityId(),
+                        record.getEntry());
+            }
+        }
+    }
+
+
     /**
      * Creates a new instance of AuditManager
      */
@@ -74,6 +109,7 @@ public class AuditManager implements Serializable {
     @PostConstruct
     public void init() {
         auditRecords = auditRecordEJB.findAllOrdered();
+        simpleTableExporterDialog = new ExportSimpleAuditTableDialog();
         prepareAuditOperations();
         prepareEntityTypes();
     }
@@ -199,5 +235,10 @@ public class AuditManager implements Serializable {
     /** @return the list of audit operations */
     public List<SelectItem> getAuditOperations() {
         return auditOperations;
+    }
+
+    @Override
+    public ExportSimpleTableDialog getSimpleTableDialog() {
+        return simpleTableExporterDialog;
     }
 }
