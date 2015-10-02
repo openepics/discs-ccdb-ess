@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
@@ -203,6 +204,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     private ClipboardOperations clipboardOperation;
     private String pasteErrorReason;
     private transient List<TreeNode> nodesToDelete;
+    private transient List<SlotView> slotsToDelete;
+    private transient List<SlotView> filteredSlotsToDelete;
     private boolean detectNamingStatus;
 
     // variables from the installation slot / containers editing merger.
@@ -988,6 +991,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         for (final TreeNode nodeToDelete : selectedNodes) {
             addSlotToDeleteWithChildren(nodeToDelete);
         }
+        slotsToDelete = nodesToDelete.stream().map(node -> (SlotView) node.getData())
+                            .collect(Collectors.toList());
     }
 
     private void addSlotToDeleteWithChildren(final TreeNode nodeToDelete) {
@@ -2453,9 +2458,19 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     }
 
     public List<SlotView> getSlotsToDelete() {
-        return nodesToDelete == null ? null :
-                                Lists.transform(nodesToDelete, (TreeNode node) -> ((SlotView) node.getData()));
+        return slotsToDelete;
     }
+    public void setSlotsToDelete(List<SlotView> slotsToDelete) {
+        this.slotsToDelete = slotsToDelete;
+    }
+
+    public List<SlotView> getFilteredSlotsToDelete() {
+        return filteredSlotsToDelete;
+    }
+    public void setFilteredSlotsToDelete(List<SlotView> filteredSlotsToDelete) {
+        this.filteredSlotsToDelete = filteredSlotsToDelete;
+    }
+
 
     public int getNumberOfSlotsToDelete() {
         return nodesToDelete != null ? nodesToDelete.size() : 0;

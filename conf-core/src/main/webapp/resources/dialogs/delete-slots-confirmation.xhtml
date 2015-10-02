@@ -5,24 +5,26 @@
 
     <h:form id="#{formId}">
         <p:dialog widgetVar="#{widgetName}" id="#{widgetName}" modal="true" resizable="false" dynamic="true"
-                closable="false" class="dialogWithList" onShow="resizeDeleteList('#{formId}');">
+                onShow="resizeDeleteList('#{formId}');if(PF('#{widgetName}:table')) {PF('#{widgetName}:table').clearFilters();};" 
+                closable="false" class="dialogWithList">
             <f:facet name="header">
                 <h:outputText value="#{dialogTitle}" />
             </f:facet>
-            <h:outputText value="Are you sure you want to delete #{entityType}" style="margin-bottom: 1ex;" />
-            <br />
-            <br />
+            <p:outputPanel style="display: block; width: 30em; margin-bottom: 1.2em;">
+                <h:outputText value="Are you sure you want to delete #{entityType}" />
+            </p:outputPanel>
 
-            <p:dataTable rendered="#{isTableDisplayed}" value="#{slotsToDelete}" var="slot" class="dialogListTable" 
-                    scrollable="true"  style="width: 30em; margin-bottom: 1em;" stickyHeader="true">
-                <p:column headerText="Slot">
+            <p:dataTable widgetVar="#{widgetName}:table" rendered="#{isTableDisplayed}" value="#{slotsToDelete}" 
+                    class="dialogListTable" filteredValue="#{filteredSlotsToDelete}" var="slot" 
+                    scrollable="true" style="width: 30em; margin-bottom: 1em;">
+                <p:column headerText="Slot" filterBy="#{slot.name}" sortBy="#{slot.name}" filterMatchMode="contains">
                     <h:outputText value="#{slot.name}" />
                 </p:column>
             </p:dataTable>
 
             <p:commandButton value="No" styleClass="dialogButton" onclick="PF('#{widgetName}').hide(); #{resetFilter}" />
-            <p:commandButton value="Yes" styleClass="dialogButton" ajax="true" update="#{formToUpdate}" 
-                    oncomplete="PF('#{widgetName}').hide(); #{resetFilter} #{resizeContent}" 
+            <p:commandButton value="Yes" styleClass="dialogButton" ajax="true" update="#{formsToUpdate}" 
+                    oncomplete="PF('#{widgetName}').hide(); #{resetFilter}; #{resizeContent}" 
                     action="#{controller[submitHandler]}" />
         </p:dialog>
     </h:form>

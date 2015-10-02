@@ -398,17 +398,20 @@
                                 <p:ajax event="rowSelect" update=":hierarchies:installDeviceBtn :hierarchies:uninstallDeviceBtn" />
                                 <p:ajax event="rowUnselect" update=":hierarchies:installDeviceBtn :hierarchies:uninstallDeviceBtn" />
 
-                                <p:column headerText="Installation slot" sortBy="#{installationRecord.slotName}">
+                                <p:column headerText="Installation slot" sortBy="#{installationRecord.slotName}" 
+                                        filterBy="#{installationRecord.slotName}">
                                     <h:outputText value="#{installationRecord.slotName}" />
                                 </p:column>
-                                <p:column headerText="Installed device inventory ID">
+                                <p:column headerText="Installed device inventory ID" 
+                                        sortBy="#{installationRecord.deviceInventoryId}" 
+                                        filterBy="#{installationRecord.deviceInventoryId}">
                                     <h:link outcome="deviceManager" value="#{installationRecord.deviceInventoryId}"
                                             class="link" rendered="#{installationRecord.deviceInstalled}">
                                         <f:param name="id" value="#{installationRecord.installationRecord.device.id}" />
                                     </h:link>
                                     <h:outputText value="-" rendered="#{not installationRecord.deviceInstalled}" />
                                 </p:column>
-                                <p:column headerText="Installation timestamp">
+                                <p:column headerText="Installation timestamp" sortBy="#{installationRecord.installDate}">
                                     <h:outputText value="#{installationRecord.installDate}"
                                             rendered="#{installationRecord.deviceInstalled}">
                                         <f:convertDateTime pattern="#{msgs.timestampFormat}" />
@@ -459,7 +462,7 @@
             <ui:param name="widgetName" value="deleteSlots" />
             <ui:param name="controller" value="#{hierarchiesController}" />
             <ui:param name="submitHandler" value="onSlotsDelete" />
-            <ui:param name="formToUpdate" value=":hierarchies:hierarchyTabs:tree :hierarchies:deleteButton
+            <ui:param name="formsToUpdate" value=":hierarchies:hierarchyTabs:tree :hierarchies:deleteButton
                     :hierarchies:slotAttributes :hierarchies:relationsTable :hierarchies:installationDetails
                     :hierarchies:downButton :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton
                     :hierarchies:clipboardOperations" />
@@ -468,6 +471,7 @@
                                                         ? 'the following slots:' : 'selected slot?'}" />
             <ui:param name="isTableDisplayed" value="#{(hierarchiesController.numberOfSlotsToDelete gt 1)}" />
             <ui:param name="slotsToDelete" value="#{hierarchiesController.slotsToDelete}" />
+            <ui:param name="filteredSlotsToDelete" value="#{hierarchiesController.filteredSlotsToDelete}" />
             <ui:param name="resetFilter"
                 value="PF('attributesWidget').clearFilters(); PF('relationshipsWidget').clearFilters(); PF('installationWidget').clearFilters();" />
         </ui:include>
