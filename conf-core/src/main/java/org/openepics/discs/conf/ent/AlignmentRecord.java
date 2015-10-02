@@ -101,7 +101,7 @@ public class AlignmentRecord extends ConfigurationEntity
     @ManyToOne(optional = false)
     private Device device;
 
-    @ManyToMany(cascade=CascadeType.ALL)
+    @ManyToMany(cascade={CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     @JoinTable(name = "alignment_tag",
                joinColumns = { @JoinColumn(name = "alignment_id") },
                inverseJoinColumns = { @JoinColumn(name = "tag_id") })

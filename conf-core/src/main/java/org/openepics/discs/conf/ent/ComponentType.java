@@ -94,7 +94,7 @@ public class ComponentType extends ConfigurationEntity
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentType")
     private List<ComptypeArtifact> comptypeArtifactList = new ArrayList<>();
 
-    @ManyToMany(cascade=CascadeType.ALL)
+    @ManyToMany(cascade={CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     @JoinTable(name = "comptype_tag",
                joinColumns = { @JoinColumn(name = "comptype_id") },
                inverseJoinColumns = { @JoinColumn(name = "tag_id") })

@@ -120,7 +120,7 @@ public class Slot extends ConfigurationEntity implements EntityWithProperties, E
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "slot")
     private List<InstallationRecord> installationRecordList = new ArrayList<>();
 
-    @ManyToMany(cascade=CascadeType.ALL)
+    @ManyToMany(cascade={CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     @JoinTable(name = "slot_tag",
                joinColumns = { @JoinColumn(name = "slot_id") }, inverseJoinColumns = { @JoinColumn(name = "tag_id") })
     private Set<Tag> tags = new HashSet<>();

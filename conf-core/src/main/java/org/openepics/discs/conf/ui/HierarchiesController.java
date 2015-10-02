@@ -1477,8 +1477,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             hierarchyBuilder.expandNode(copySource);
             final SlotView copySourceView = (SlotView) copySource.getData();
             final Slot newCopy = createSlotCopy(copySourceView, parentNode);
-            addAttributesToNewCopy(newCopy, copySourceView.getSlot());
-            copySlotsToParent(copySource.getChildren(), findNodeForSlot(newCopy, parentNode));
+            addAttributesToNewCopy(slotEJB.findById(newCopy.getId()), copySourceView.getSlot());
+            copySlotsToParent(copySource.getChildren(), findNodeForSlot(slotEJB.findById(newCopy.getId()), parentNode));
         }
     }
 
@@ -1516,10 +1516,12 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             copyValuesFromSource(newCopy, copySource);
         }
 
-        newCopy.getTags().addAll(copySource.getTags());
-        copyArtifactsFromSource(newCopy, copySource);
+        copyArtifactsFromSource(slotEJB.findById(newCopy.getId()), copySource);
 
-        slotEJB.save(newCopy);
+        final Slot tagCopy = slotEJB.findById(newCopy.getId());
+        tagCopy.getTags().addAll(copySource.getTags());
+
+        slotEJB.save(tagCopy);
     }
 
     private void transferValuesFromSource(final Slot newCopy, final Slot copySource) {
