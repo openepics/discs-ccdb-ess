@@ -364,7 +364,7 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
             newProp.setDataType(propToCopy.getDataType());
             newProp.setUnit(propToCopy.getUnit());
             newProp.setValueUniqueness(propToCopy.getValueUniqueness());
-            propertyEJB.save(newProp);
+            propertyEJB.add(newProp);
         }
         properties = propertyEJB.findAllOrderedByName();
     }

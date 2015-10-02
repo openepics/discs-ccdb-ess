@@ -385,7 +385,7 @@ public class DataTypeManager extends AbstractExcelSingleFileImportUI implements 
             final String newEnumName = Utility.findFreeName(enumToCopy.getName(), dataTypeEJB);
             final DataType newEnum = new DataType(newEnumName, enumToCopy.getDescription(), enumToCopy.isScalar(),
                     enumToCopy.getDefinition());
-            dataTypeEJB.save(newEnum);
+            dataTypeEJB.add(newEnum);
         }
         refreshUserDataTypes();
     }
