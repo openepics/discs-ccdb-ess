@@ -23,8 +23,27 @@ package org.openepics.discs.conf.ent;
  * An enum used to represent different entity types supported by the database
  *
  * @author <a href="mailto:andraz.pozar@cosylab.com">Andraž Požar</a>
- *
+ * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  */
 public enum EntityType {
-    DEVICE, SLOT, COMPONENT_TYPE, USER, INSTALLATION_RECORD, ALIGNMENT_RECORD, MENU, UNIT, PROPERTY, DATA_TYPE;
+    DEVICE("Device"),
+    SLOT("Slot"),
+    COMPONENT_TYPE("Device type"),
+    USER("User"),
+    INSTALLATION_RECORD("Installation record"),
+    ALIGNMENT_RECORD("Alignment record"),
+    MENU("Menu"),
+    UNIT("Unit"),
+    PROPERTY("Property"),
+    DATA_TYPE("Enumeration");
+
+    private final String label;
+
+    private EntityType(String label) {
+        this.label = label;
+    }
+
+    public String getLabel() {
+        return label;
+    }
 }

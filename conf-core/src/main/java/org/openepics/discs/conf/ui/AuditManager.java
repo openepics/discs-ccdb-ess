@@ -38,7 +38,8 @@ import org.openepics.discs.conf.ent.EntityType;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Lists;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableList.Builder;
 
 /**
  * @author vuppala
@@ -167,21 +168,26 @@ public class AuditManager implements Serializable {
 
     private void prepareAuditOperations() {
         if (auditOperations == null) {
-            auditOperations = Lists.newArrayList();
-            auditOperations.add(new SelectItem("", "Select one"));
+            Builder<SelectItem> builder = ImmutableList.builder();
+            builder.add(new SelectItem("", "Select one"));
             for (EntityTypeOperation operation : EntityTypeOperation.values()) {
-                auditOperations.add(new SelectItem(operation.toString(), operation.toString()));
+                builder.add(new SelectItem(operation.toString(), operation.toString()));
             }
+            auditOperations = builder.build();
         }
     }
 
     private void prepareEntityTypes() {
         if (entityTypes == null) {
-            entityTypes = Lists.newArrayList();
-            entityTypes.add(new SelectItem("", "Select one"));
-            for (EntityType type : EntityType.values()) {
-                entityTypes.add(new SelectItem(type.toString(), type.toString()));
-            }
+            Builder<SelectItem> builder = ImmutableList.builder();
+            builder.add(new SelectItem("", "Select one"));
+            builder.add(new SelectItem(EntityType.SLOT.toString(), EntityType.SLOT.getLabel()));
+            builder.add(new SelectItem(EntityType.COMPONENT_TYPE.toString(), EntityType.COMPONENT_TYPE.getLabel()));
+            builder.add(new SelectItem(EntityType.DEVICE.toString(), EntityType.DEVICE.getLabel()));
+            builder.add(new SelectItem(EntityType.PROPERTY.toString(), EntityType.PROPERTY.getLabel()));
+            builder.add(new SelectItem(EntityType.UNIT.toString(), EntityType.UNIT.getLabel()));
+            builder.add(new SelectItem(EntityType.DATA_TYPE.toString(), EntityType.DATA_TYPE.getLabel()));
+            entityTypes = builder.build();
         }
     }
 
