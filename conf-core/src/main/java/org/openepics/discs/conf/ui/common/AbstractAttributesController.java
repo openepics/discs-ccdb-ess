@@ -527,8 +527,9 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
 
         final PropertyValue propValue = (PropertyValue) attributeView.getEntity();
         final String propertyName = propValue.getProperty().getName();
-        for (final PropertyValue inheritedPropVal : parentProperties) {
-            if (propertyName.equals(inheritedPropVal.getProperty().getName())) {
+        for (final ComptypePropertyValue inheritedPropVal : parentProperties) {
+            if (!inheritedPropVal.isPropertyDefinition()
+                    && propertyName.equals(inheritedPropVal.getProperty().getName())) {
                 return true;
             }
         }

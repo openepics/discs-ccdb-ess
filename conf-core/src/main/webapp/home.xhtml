@@ -366,7 +366,8 @@
                                                 :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton
                                                 :hierarchies:installationDetails :hierarchies:slotAttributes
                                                 :hierarchies:addRelationship :hierarchies:hierarchyTabs:tree"
-                                            oncomplete="hierarchiesResizeAll();scrollSelectedIntoView(getVisibleTree());">
+                                            oncomplete="hierarchiesResizeAll();scrollSelectedIntoView(getVisibleTree());
+                                            PF('relationshipsWidget').clearFilters();PF('attributesWidget').clearFilters();">
                                         <h:outputText value="#{relationship.targetSlotName}"
                                             style="text-decoration: underline;" />
                                     </p:commandLink>

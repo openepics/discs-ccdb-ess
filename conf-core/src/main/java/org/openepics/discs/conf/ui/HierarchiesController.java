@@ -170,10 +170,6 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         APPROVED, PENDING, MISSING
     }
 
-    private enum ImportType {
-        SLOTS, SIGNALS
-    }
-
     private transient List<EntityAttributeView> attributes;
     private transient List<EntityAttributeView> filteredAttributes;
     private transient List<SelectItem> attributeKinds;
@@ -208,7 +204,6 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     private String pasteErrorReason;
     private transient List<TreeNode> nodesToDelete;
     private boolean detectNamingStatus;
-    private ImportType importType;
 
     // variables from the installation slot / containers editing merger.
     private String name;
@@ -251,7 +246,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             activeTab = ActiveTab.INCLUDES;
 
             initHierarchies();
-            initNamemingInformation();
+            initNamingInformation();
             attributeKinds = Utility.buildAttributeKinds();
             relationshipTypes = buildRelationshipTypeList();
 
@@ -278,7 +273,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         return immutableListBuilder.build();
     }
 
-    private void initNamemingInformation() {
+    private void initNamingInformation() {
         nameList = names.getAllNames();
         final String namingStatus = properties.getProperty(AppProperties.NAMING_DETECT_STATUS);
         detectNamingStatus = namingStatus == null ? false : "TRUE".equals(namingStatus.toUpperCase());
@@ -970,13 +965,11 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     }
 
     public void prepareImportSignalPopup() {
-        importType = importType.SIGNALS;
         dataLoader = signalsDataLoader;
         prepareImportPopup();
     }
 
     public void prepareImportSlotPopup() {
-        importType = ImportType.SLOTS;
         dataLoader = slotsDataLoader;
         prepareImportPopup();
     }

@@ -5,7 +5,8 @@
 
     <h:form id="#{formId}">
         <p:dialog widgetVar="#{widgetName}" id="#{widgetName}" modal="true" resizable="false" dynamic="true"
-                closable="false" class="dialogWithList" onShow="resizeDeleteList('#{formId}');">
+                closable="false" class="dialogWithList" 
+                onShow="resizeDeleteList('#{formId}');PF('#{widgetName}:table').clearFilters();">
             <f:facet name="header">
                 <h:outputText value="#{dialogTitle}" />
             </f:facet>
@@ -16,7 +17,7 @@
                     rendered="#{not empty deletePreventionList}" />
             </p:outputPanel>
 
-            <p:dataTable value="#{empty deletePreventionList ? deleteList : deletePreventionList}" 
+            <p:dataTable widgetVar="#{widgetName}:table" value="#{empty deletePreventionList ? deleteList : deletePreventionList}" 
                     class="dialogListTable" filteredValue="#{filteredDialogList}" var="entity" 
                     scrollable="true" style="width: 30em; margin-bottom: 1em;">
                 <p:column headerText="#{entityName}" sortBy="#{entity.name}" filterBy="#{entity.name}" 
