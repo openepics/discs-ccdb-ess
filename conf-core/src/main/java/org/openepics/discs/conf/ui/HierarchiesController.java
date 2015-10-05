@@ -182,6 +182,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     private transient List<Device> uninstalledDevices;
     private transient List<Device> filteredUninstalledDevices;
     private transient List<InstallationView> installationRecords;
+    private transient List<InstallationView> filteredInstallationRecords;
     private transient InstallationView selectedInstallationView;
     private Device deviceToInstall;
     private String requestedSlot;
@@ -2556,6 +2557,15 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     /** @param deviceToInstall the deviceToInstall to set */
     public void setDeviceToInstall(Device deviceToInstall) {
         this.deviceToInstall = deviceToInstall;
+    }
+
+    /** @return installation records for filtering */
+    public List<InstallationView> getFilteredInstallationRecords() {
+        return filteredInstallationRecords;
+    }
+    /** @param filteredInstallationRecords installation records for filtering */
+    public void setFilteredInstallationRecords(List<InstallationView> filteredInstallationRecords) {
+        this.filteredInstallationRecords = filteredInstallationRecords;
     }
 
     /**

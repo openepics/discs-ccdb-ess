@@ -390,10 +390,10 @@
                     <p:column id="installationColumn">
                         <p:fieldset id="installationDetails" legend="Installation">
                             <p:dataTable id="installationTable" value="#{hierarchiesController.installationRecords}"
-                                    var="installationRecord" style="width: 100%;" selectionMode="single"
-                                    selection="#{hierarchiesController.selectedInstallationView}"
+                                    var="installationRecord" style="width: 100%;" widgetVar="installationWidget"
+                                    selectionMode="single" selection="#{hierarchiesController.selectedInstallationView}"
                                     emptyMessage="No element selected." rowKey="#{installationRecord.slotName}"
-                                    widgetVar="installationWidget">
+                                    filteredValue="#{hierarchiesController.filteredInstallationRecords}">
 
                                 <p:ajax event="rowSelect" update=":hierarchies:installDeviceBtn :hierarchies:uninstallDeviceBtn" />
                                 <p:ajax event="rowUnselect" update=":hierarchies:installDeviceBtn :hierarchies:uninstallDeviceBtn" />
