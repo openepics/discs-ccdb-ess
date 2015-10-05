@@ -325,11 +325,16 @@ a {
 	max-width: 90% !important;
 }
 
-.nameApproved {
+.nameActive {
 }
 
-.namePending {
+.nameObsolete {
     color: #40a0c0;
+    font-style: oblique;
+}
+
+.nameDeleted {
+    color: #b84020;
     font-style: oblique;
 }
 

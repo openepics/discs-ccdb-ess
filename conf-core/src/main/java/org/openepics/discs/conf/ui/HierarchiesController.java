@@ -168,7 +168,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     }
 
     private enum NamingStatus {
-        APPROVED, PENDING, MISSING
+        ACTIVE, OBSOLETE, DELETED, MISSING
     }
 
     private transient List<EntityAttributeView> attributes;
@@ -375,7 +375,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
     private NamingStatus getNamingStatus(final String name) {
         if (!detectNamingStatus) {
-            return NamingStatus.APPROVED;
+            return NamingStatus.ACTIVE;
         }
 
         final DeviceNameElement devName = nameList.get(name);
@@ -383,10 +383,12 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             return NamingStatus.MISSING;
         }
         switch (devName.getStatus()) {
-            case "APPROVED":
-                return NamingStatus.APPROVED;
-            case "PENDING":
-                return NamingStatus.PENDING;
+            case "ACTIVE":
+                return NamingStatus.ACTIVE;
+            case "OBSOLETE":
+                return NamingStatus.OBSOLETE;
+            case "DELETED":
+                return NamingStatus.DELETED;
             default:
                 return NamingStatus.MISSING;
         }
@@ -965,13 +967,16 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         }
 
         switch (getNamingStatus(slot.getName())) {
+            case ACTIVE:
+                return "nameActive";
             case MISSING:
                 return "nameMissing";
-            case PENDING:
-                return "namePending";
-            case APPROVED:
+            case OBSOLETE:
+                return "nameObsolete";
+            case DELETED:
+                return "nameDeleted";
             default:
-                return "nameApproved";
+                return "nameMissing";
         }
     }
 
