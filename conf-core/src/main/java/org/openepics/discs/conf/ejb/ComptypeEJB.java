@@ -23,15 +23,19 @@ import java.util.List;
 
 import javax.ejb.Stateless;
 
+import org.openepics.discs.conf.auditlog.Audit;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypeArtifact;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.ConfigurationEntity;
 import org.openepics.discs.conf.ent.Device;
+import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyValue;
 import org.openepics.discs.conf.ent.PropertyValueUniqueness;
 import org.openepics.discs.conf.ent.Slot;
+import org.openepics.discs.conf.security.Authorized;
+import org.openepics.discs.conf.util.CRUDOperation;
 import org.openepics.discs.conf.util.PropertyValueNotUniqueException;
 
 import com.google.common.base.Preconditions;
@@ -119,22 +123,21 @@ public class ComptypeEJB extends DAO<ComponentType> {
     }
 
     /**
-     * This method duplicates selected device types. This method actually copies
-     * selected device type name, description, tags, artifacts and properties
+     * This method takes care of all associated properties when creating a copy.
+     * It actually copies the tags, artifacts and properties
      * into new device type. If property has set universally unique value,
-     * copied property value is set to null.
+     * copied property value is set to <code>null</code>.
      *
-     * @param selectedDeviceType the device type to create copy of
-     * @param newName the name of the newly created copy
+     * @param newDeviceType the newly created device type
+     * @param originalDeviceType the device type to copy the attributes from
      */
-    public void duplicate(final ComponentType selectedDeviceType, final String newName) {
-        ComponentType newDeviceType = new ComponentType(newName);
-        newDeviceType.setDescription(selectedDeviceType.getDescription());
-        add(newDeviceType);
-
-        duplicateProperties(newDeviceType, selectedDeviceType);
-        newDeviceType.getTags().addAll(selectedDeviceType.getTags());
-        duplicateArtifactsFromSource(newDeviceType, selectedDeviceType);
+    @CRUDOperation(operation=EntityTypeOperation.UPDATE)
+    @Audit
+    @Authorized
+    public void addAttributesToDuplicate(final ComponentType newDeviceType, final ComponentType originalDeviceType) {
+        duplicateProperties(newDeviceType, originalDeviceType);
+        newDeviceType.getTags().addAll(originalDeviceType.getTags());
+        duplicateArtifactsFromSource(newDeviceType, originalDeviceType);
 
         save(newDeviceType);
     }

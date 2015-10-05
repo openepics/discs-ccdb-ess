@@ -65,7 +65,7 @@
 
                             <p:commandButton id="duplicateButton" icon="ui-icon-copy" value="Duplicate" title="Duplicate selected"
                                 style="float: right; margin-top: 1em;" disabled="#{empty componentTypeManager.selectedDeviceTypes}"
-                                oncomplete="adjustTableHeights();" update=":deviceTypesForm:deviceTypeTable"
+                                oncomplete="adjustTableHeights();PF('deviceTypeTableVar').clearFilters();" update=":deviceTypesForm:deviceTypeTable"
                                 actionListener="#{componentTypeManager.duplicate}" />
                             <p:commandButton id="exportButton" icon="ui-icon-disk" value="Export" title="Export"
                                 style="float: right; margin-top: 1em;" oncomplete="PF('exportDevTypes').show();"

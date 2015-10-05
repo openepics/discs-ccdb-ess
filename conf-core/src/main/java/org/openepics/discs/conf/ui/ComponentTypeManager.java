@@ -557,7 +557,12 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
 
         for (final ComponentType selectedDeviceType : selectedDeviceTypes) {
             String newName = Utility.findFreeName(selectedDeviceType.getName(), comptypeEJB);
-            comptypeEJB.duplicate(selectedDeviceType, newName);
+            ComponentType newDeviceType = new ComponentType(newName);
+            newDeviceType.setDescription(selectedDeviceType.getDescription());
+            comptypeEJB.add(newDeviceType);
+            newDeviceType = comptypeEJB.findById(newDeviceType.getId());
+
+            comptypeEJB.addAttributesToDuplicate(newDeviceType, selectedDeviceType);
         }
         deviceTypes = comptypeEJB.findAll();
     }
