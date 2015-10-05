@@ -123,18 +123,21 @@ public class ComptypeEJB extends DAO<ComponentType> {
     }
 
     /**
-     * This method takes care of all associated properties when creating a copy.
-     * It actually copies the tags, artifacts and properties
-     * into new device type. If property has set universally unique value,
+     * This method duplicates selected device types. This method actually copies
+     * selected device type description, tags, artifacts and properties
+     * into the new device type. If property has set universally unique value,
      * copied property value is set to <code>null</code>.
      *
      * @param newDeviceType the newly created device type
      * @param originalDeviceType the device type to copy the attributes from
      */
-    @CRUDOperation(operation=EntityTypeOperation.UPDATE)
+    @CRUDOperation(operation=EntityTypeOperation.CREATE)
     @Audit
     @Authorized
-    public void addAttributesToDuplicate(final ComponentType newDeviceType, final ComponentType originalDeviceType) {
+    public void duplicate(final ComponentType newDeviceType, final ComponentType originalDeviceType) {
+        newDeviceType.setDescription(originalDeviceType.getDescription());
+        add(newDeviceType);
+
         duplicateProperties(newDeviceType, originalDeviceType);
         newDeviceType.getTags().addAll(originalDeviceType.getTags());
         duplicateArtifactsFromSource(newDeviceType, originalDeviceType);
@@ -154,7 +157,7 @@ public class ComptypeEJB extends DAO<ComponentType> {
     }
 
     private void duplicateProperties(final ComponentType newDeviceType, final ComponentType copyDeviceType) {
-        for(final ComptypePropertyValue propertyValue : copyDeviceType.getComptypePropertyList()) {
+        for (final ComptypePropertyValue propertyValue : copyDeviceType.getComptypePropertyList()) {
             final Property property = propertyValue.getProperty();
             final ComptypePropertyValue pv = new ComptypePropertyValue();
             pv.setComponentType(newDeviceType);
