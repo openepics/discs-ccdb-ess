@@ -19,11 +19,13 @@
  */
 package org.openepics.discs.conf.util.names;
 
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Set;
-
+import java.util.Map;
 import javax.ejb.Stateless;
 import javax.enterprise.inject.Alternative;
+
+import org.openepics.names.jaxb.DeviceNameElement;
 
 /**
  * @author <a href="mailto:andraz.pozar@cosylab.com">Andraž Požar</a>
@@ -39,8 +41,8 @@ public class NamesForDevelopment implements Names {
      * have to connect to naming server every time.
      */
     @Override
-    public Set<String> getAllNames() {
-        return new HashSet<>();
+    public Map<String, DeviceNameElement> getAllNames() {
+        return new HashMap<>();
     }
 
 }

@@ -35,7 +35,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -107,6 +106,7 @@ import org.openepics.discs.conf.views.EntityAttributeViewKind;
 import org.openepics.discs.conf.views.InstallationView;
 import org.openepics.discs.conf.views.SlotRelationshipView;
 import org.openepics.discs.conf.views.SlotView;
+import org.openepics.names.jaxb.DeviceNameElement;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.NodeExpandEvent;
@@ -216,7 +216,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     private ComponentType deviceType;
     private transient List<String> namesForAutoComplete;
     private boolean isNewInstallationSlot;
-    private transient Set<String> nameList;
+    private transient Map<String, DeviceNameElement> nameList;
 
     // ------ variables for attribute manipulation ------
     private transient EntityAttributeView selectedAttribute;
@@ -280,7 +280,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         nameList = names.getAllNames();
         final String namingStatus = properties.getProperty(AppProperties.NAMING_DETECT_STATUS);
         detectNamingStatus = namingStatus == null ? false : "TRUE".equals(namingStatus.toUpperCase());
-        namesForAutoComplete = ImmutableList.copyOf(nameList);
+        namesForAutoComplete = ImmutableList.copyOf(nameList.keySet());
     }
 
     private void saveSlotAndRefresh(final Slot slot) {
@@ -377,10 +377,17 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             return NamingStatus.APPROVED;
         }
 
-        if (nameList.contains(name)) {
-            return NamingStatus.APPROVED;
-        } else {
+        final DeviceNameElement devName = nameList.get(name);
+        if (devName == null) {
             return NamingStatus.MISSING;
+        }
+        switch (devName.getStatus()) {
+            case "APPROVED":
+                return NamingStatus.APPROVED;
+            case "PENDING":
+                return NamingStatus.PENDING;
+            default:
+                return NamingStatus.MISSING;
         }
     }
 

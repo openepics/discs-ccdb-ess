@@ -19,8 +19,9 @@
  */
 package org.openepics.discs.conf.util.names;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -43,13 +44,14 @@ public class NamesESS implements Names {
     private static final Logger LOGGER = Logger.getLogger(NamesESS.class.getCanonicalName());
 
     @Override
-    public Set<String> getAllNames() {
+    public Map<String, DeviceNameElement> getAllNames() {
         try {
             final NamesClient client = new NamesClient();
-            return client.getAllDeviceNames().stream().map(DeviceNameElement::getName).collect(Collectors.toSet());
+            return client.getAllDeviceNames().stream()
+                    .collect(Collectors.toMap(DeviceNameElement::getName, Function.identity()));
         } catch (RuntimeException e) {
             LOGGER.log(Level.SEVERE, "There was an error retriving data from the naming service.", e);
-            return new HashSet<>();
+            return new HashMap<>();
         }
     }
 }

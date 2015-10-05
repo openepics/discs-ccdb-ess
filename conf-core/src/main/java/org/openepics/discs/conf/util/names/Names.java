@@ -20,11 +20,11 @@
 package org.openepics.discs.conf.util.names;
 
 import java.io.Serializable;
+import java.util.Map;
 import java.util.Set;
 
 import org.openepics.discs.conf.ent.Slot;
-
-
+import org.openepics.names.jaxb.DeviceNameElement;
 
 /**
  * Interface for providing custom implementation to get names used
@@ -39,5 +39,5 @@ public interface Names extends Serializable {
      *
      * @return {@link Set}&lt;{@link String}&gt; of names that can be used for installation {@link Slot} name
      */
-    public Set<String> getAllNames();
+    public Map<String, DeviceNameElement> getAllNames();
 }

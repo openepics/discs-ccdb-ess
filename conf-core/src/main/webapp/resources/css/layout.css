@@ -329,7 +329,8 @@ a {
 }
 
 .namePending {
-    color: crimson;
+    color: #40a0c0;
+    font-style: oblique;
 }
 
 .nameMissing {
