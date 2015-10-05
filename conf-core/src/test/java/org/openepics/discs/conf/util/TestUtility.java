@@ -43,7 +43,8 @@ public class TestUtility {
     /** @return An archive packaging the whole cable application. */
     public static WebArchive createWebArchive() {
 
-        final File[] libraries = Maven.resolver().loadPomFromFile("pom.xml").importRuntimeDependencies().resolve().withTransitivity().asFile();
+        final File[] libraries = Maven.resolver().loadPomFromFile("pom.xml", "jboss").importRuntimeDependencies()
+                                                    .resolve().withTransitivity().asFile();
         final WebArchive war = ShrinkWrap.create(WebArchive.class, "confmgr_test.war")
                                .addAsLibraries(libraries)
                                .addPackages(true,
