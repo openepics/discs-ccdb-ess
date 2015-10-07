@@ -1735,8 +1735,9 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
     /** Prepares a list of a devices that can still be installed into the selected installation slot */
     public void prepareUninstalledDevices() {
-        uninstalledDevices = (selectedSlot == null) || !selectedSlot.isHostingSlot() ? null
-                : installationEJB.getUninstalledDevices(selectedSlot.getComponentType());
+        final Slot slotToFill = selectedInstallationView.getSlot();
+        uninstalledDevices = (slotToFill == null) || !slotToFill.isHostingSlot() ? null
+                : installationEJB.getUninstalledDevices(slotToFill.getComponentType());
         filteredUninstalledDevices = null;
     }
 
@@ -2578,7 +2579,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      * "Install device" dialog.
      */
     public String getInstallationSlotPath() {
-        final String slotPath = Utility.buildSlotPath(selectedSlot).toString();
+        final String slotPath = Utility.buildSlotPath(selectedInstallationView.getSlot()).toString();
         return slotPath.substring(1, slotPath.length() - 1);
     }
 

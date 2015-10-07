@@ -348,7 +348,8 @@
                                 <p:ajax event="rowSelect" update=":hierarchies:deleteRelationship" />
                                 <p:ajax event="rowUnselect" update=":hierarchies:deleteRelationship" />
 
-                                <p:column headerText="Source" sortBy="#{relationship.sourceSlotName}">
+                                <p:column headerText="Source" sortBy="#{relationship.sourceSlotName}" 
+                                        filterBy="#{relationship.sourceSlotName}" filterMatchMode="contains">
                                     <h:outputText value="#{relationship.sourceSlotName}" />
                                 </p:column>
 
@@ -411,7 +412,8 @@
                                     </h:link>
                                     <h:outputText value="-" rendered="#{not installationRecord.deviceInstalled}" />
                                 </p:column>
-                                <p:column headerText="Installation timestamp" sortBy="#{installationRecord.installDate}">
+                                <p:column headerText="Installation timestamp" sortBy="#{installationRecord.installDate}"
+                                        filterBy="#{installationRecord.installDate}" filterMatchMode="contains">
                                     <h:outputText value="#{installationRecord.installDate}"
                                             rendered="#{installationRecord.deviceInstalled}">
                                         <f:convertDateTime pattern="#{msgs.timestampFormat}" />
@@ -450,7 +452,7 @@
             <ui:param name="formId" value="installDeviceForm" />
             <ui:param name="dialogTitle" value="Select device instance" />
             <ui:param name="widgetName" value="installDevice" />
-            <ui:param name="slot" value="#{hierarchiesController.selectedNodeSlot}" />
+            <ui:param name="slot" value="#{hierarchiesController.selectedInstallationView.slot}" />
             <ui:param name="componentToUpdate"
                 value=":hierarchies:slotAttributes :hierarchies:relationsTable :hierarchies:installationDetails" />
         </ui:include>
