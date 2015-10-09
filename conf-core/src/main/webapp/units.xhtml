@@ -27,7 +27,7 @@
 
                 function closeDialogActions(widgetVar) {
                     if (widgetVar != null) PF(widgetVar).hide();
-                    PF('unitsTableVar').filter();
+                    PF('unitsTableVar').clearFilters();
                     removePropColWidth();
                     adjustFieldsetHeight('#unitsForm\\:unitsFieldset');
                     adjustTableHeight();
@@ -35,7 +35,7 @@
                 // ]]>
             </script>
 
-            <p:fieldset id="unitsFieldset" legend="Enumerations">
+            <p:fieldset id="unitsFieldset" legend="Units">
                 <p:dataTable widgetVar="unitsTableVar" var="unit" id="unitsTable" value="#{unitManager.unitViews}" 
                         styleClass="scroll-table" style="width: inherit; overflow-y: hidden;" scrollable="true" 
                         selection="#{unitManager.selectedUnits}" selectionMode="multiple" rowKey="#{unit.unit.id}" 
@@ -58,14 +58,14 @@
                     </p:column>
 
                     <p:column headerText="Symbol" sortBy="#{unit.symbol}" filterBy="#{unit.symbol}" 
-                            styleClass="tableColWidth10">
+                            filterMatchMode="contains" styleClass="tableColWidth10">
                         <h:outputText value="#{unit.symbol}" />
                     </p:column>
                 </p:dataTable>
 
                 <p:commandButton id="duplicateButton" icon="ui-icon-copy" value="Duplicate" title="Duplicate selected" 
                     style="float: right; margin-top: 1em;" disabled="#{empty unitManager.selectedUnits}" 
-                    oncomplete="adjustTableHeight();" 
+                    oncomplete="closeDialogActions(null);" 
                     update=":unitsForm:unitsTable" actionListener="#{unitManager.duplicate}" />
                 <p:commandButton id="exportButton" icon="ui-icon-disk" value="Export" title="Export" 
                     style="float: right; margin-top: 1em;" oncomplete="PF('exportUnits').show();" 
@@ -95,7 +95,7 @@
             <ui:param name="filteredDialogList" value="#{unitManager.filteredDialogUnits}" />
             <ui:param name="submitHandler" value="onDelete" />
             <ui:param name="formsToUpdate" value=":unitsForm:unitsTable :unitsForm:deleteButton :unitsForm:editButton 
-                                                :unitsForm:exportButton" />
+                                                :unitsForm:exportButton :unitsForm:duplicateButton" />
             <ui:param name="closeDialogActions" value="closeDialogActions(null);" />
             <ui:param name="entityType" value="units" />
             <ui:param name="entityName" value="Unit" />

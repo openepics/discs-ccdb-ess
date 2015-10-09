@@ -57,7 +57,8 @@
                     update="grp" resetValues="true" />
             <p:commandButton value="Save" styleClass="dialogButton" action="#{unitManager[submitHandler]}" 
                     oncomplete="if (args &amp;&amp; !args.validationFailed) { closeDialogActions('#{widgetName}');}" 
-                    update=":unitsForm:unitsTable :unitsForm:deleteButton :unitsForm:editButton :unitsForm:exportButton grp" />
+                    update=":unitsForm:unitsTable :unitsForm:deleteButton :unitsForm:editButton :unitsForm:exportButton
+                            :unitsForm:duplicateButton grp" />
         </p:dialog>
 
     </h:form>
