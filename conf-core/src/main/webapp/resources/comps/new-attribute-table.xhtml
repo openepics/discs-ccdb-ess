@@ -17,6 +17,7 @@
                 rowKey="#{attribute.id}" styleClass="scroll-table" style="width: inherit; overflow-y: hidden;"
                 scrollable="true" resizableColumns="true" filteredValue="#{cc.attrs.controllerBean.filteredAttributes}"
                 tableStyle="table-layout: fixed; word-wrap: break-word; width: 100%;" widgetVar="attributesDataTable">
+            <p:ajax event="filter" ignoreAutoUpdate="true" />
             <p:ajax event="rowSelect" update="#{cc.attrs.updateButtons}" />
             <p:ajax event="rowUnselect" update="#{cc.attrs.updateButtons}" />
 

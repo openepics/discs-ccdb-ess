@@ -9,7 +9,7 @@
         <h:form id="deviceTypesForm">
             <script type="text/javascript">
                 // <![CDATA[
-                function adjustTableHeights() {
+                function adjustTableHeights() {                	                    
                     var fieldsetHeight = $('#deviceTypesForm\\:devTypeFieldset').outerHeight(true);
                     var fieldsetLegendHeight = $('#deviceTypesForm\\:devTypeFieldset legend').outerHeight(true);
                     var em = emHeight();
@@ -41,12 +41,12 @@
                                     selection="#{componentTypeManager.selectedDeviceTypes}" liveScroll="true"
                                     selectionMode="multiple" rowKey="#{deviceType.id}" scrollRows="50">
                                 <p:ajax event="filter" ignoreAutoUpdate="true" />
-                                <p:ajax event="rowSelect" oncomplete="adjustTableHeights();"
+                                <p:ajax event="rowSelect" oncomplete="PF('attributesDataTable').filter(); adjustTableHeights();"
                                     listener="#{componentTypeManager.onRowSelect}"
                                     update=":deviceTypesForm:deleteButton :deviceTypesForm:editButton :deviceTypesForm:addButton
                                         :deviceTypesForm:attributesDataTable:attributesDataTable :deviceTypesForm:editAttrButton
                                         :deviceTypesForm:deleteAttrButton :deviceTypesForm:duplicateButton" />
-                                <p:ajax event="rowUnselect" oncomplete="adjustTableHeights();"
+                                <p:ajax event="rowUnselect" oncomplete="PF('attributesDataTable').filter(); adjustTableHeights();"
                                     listener="#{componentTypeManager.onRowSelect}"
                                     update=":deviceTypesForm:deleteButton :deviceTypesForm:editButton :deviceTypesForm:addButton
                                         :deviceTypesForm:attributesDataTable:attributesDataTable :deviceTypesForm:editAttrButton
