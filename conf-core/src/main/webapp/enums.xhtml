@@ -39,7 +39,7 @@
                         selection="#{dataTypeManager.selectedEnums}" selectionMode="multiple" rowKey="#{enum.enumeration.id}" 
                         resizableColumns="true" tableStyle="table-layout: fixed; word-wrap: break-word; width: 100%;" 
                         filteredValue="#{dataTypeManager.filteredDataTypeViews}" liveScroll="true" scrollRows="50">
-                    <p:ajax event="filter" ignoreAutoUpdate="true"/>
+                    <p:ajax event="filter" update=":enumsForm:exportButton"/>
                     <p:ajax event="rowSelect" update=":enumsForm:deleteButton :enumsForm:editButton 
                             :enumsForm:duplicateButton" />
                     <p:ajax event="rowUnselect" update=":enumsForm:deleteButton :enumsForm:editButton 
@@ -67,7 +67,7 @@
                     update=":enumsForm:enumsTable" actionListener="#{dataTypeManager.duplicate}" />
                 <p:commandButton id="exportButton" icon="ui-icon-disk" value="Export" title="Export" 
                     style="float: right; margin-top: 1em;" oncomplete="PF('exportEnums').show();" 
-                    disabled="#{empty dataTypeManager.dataTypeViews}" update=":exportEnumsForm:exportEnums" 
+                    disabled="#{empty dataTypeManager.filteredDataTypeViews}" update=":exportEnumsForm:exportEnums" 
                     actionListener="#{dataTypeManager.simpleTableDialog.prepareTableExportPopup}" />
                 <p:commandButton id="deleteButton" icon="ui-icon-trash" value="Delete" title="Delete" 
                     style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('deleteEnums').show();" 

@@ -106,8 +106,7 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
 
         @Override
         protected void addData(ExportTable exportTable) {
-            final List<UnitView> exportData = Utility.isNullOrEmpty(filteredUnits) ? unitViews
-                    : filteredUnits;
+            final List<UnitView> exportData = filteredUnits;
             for (final UnitView unit : exportData) {
                 exportTable.addDataRow(unit.getName(), unit.getDescription(), unit.getSymbol());
             }
@@ -160,6 +159,8 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
 
     private void refreshUnits() {
         unitViews = unitEJB.findAllOrdered().stream().map(UnitView::new).collect(Collectors.toList());
+        filteredUnits = unitViews;
+        selectedUnits = null;
     }
 
     /** This method clears all input fields used in the "Add unit" dialog */

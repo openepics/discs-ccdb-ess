@@ -108,9 +108,7 @@ public class DataTypeManager extends AbstractExcelSingleFileImportUI implements 
 
         @Override
         protected void addData(ExportTable exportTable) {
-            final List<UserEnumerationView> exportData = Utility.isNullOrEmpty(filteredDataTypesViews)
-                                ? dataTypeViews
-                                : filteredDataTypesViews;
+            final List<UserEnumerationView> exportData = filteredDataTypesViews;
             for (final UserEnumerationView enumeration : exportData) {
                 exportTable.addDataRow(enumeration.getName(), enumeration.getDescription(),
                         enumeration.getDefinitionAsString());
@@ -202,6 +200,8 @@ public class DataTypeManager extends AbstractExcelSingleFileImportUI implements 
 
         dataTypeViews = dataTypes.stream().filter(dt -> !builtInDataTypeNames.contains(dt.getName()))
                 .map(UserEnumerationView::new).collect(Collectors.toList());
+        filteredDataTypesViews = dataTypeViews;
+        selectedEnums = null;
     }
 
     /** This method clears all input fields used in the "Add enumeration" dialog. */
