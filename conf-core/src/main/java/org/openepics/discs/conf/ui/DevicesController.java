@@ -282,9 +282,8 @@ public class DevicesController
             device = null;
             selectedComponentType = null;
             availableDeviceTypes = null;
-            filteredDevices = null;
-            selectedDevices = null;
             attributes = null;
+            selectedAttributes = null;
             filteredAttributes = null;
         }
      }
@@ -519,6 +518,9 @@ public class DevicesController
             deviceEJB.save(newCopy);
         }
         prepareDevicesForDisplay(null);
+        attributes = null;
+        selectedAttributes = null;
+        filteredAttributes = null;
     }
 
     private void copyArtifactsFromSource(final Device newCopy, final Device copySource) {

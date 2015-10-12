@@ -84,7 +84,8 @@
 
                             <p:commandButton id="duplicateButton" icon="ui-icon-copy" value="Duplicate" title="Duplicate selected" 
                                 style="float: right; margin-top: 1em;" disabled="#{empty devicesController.selectedDevices}" 
-                                oncomplete="adjustTableHeights();" update=":devicesForm:devicesTable" 
+                                oncomplete="adjustTableHeights();" update=":devicesForm:devicesTable :devicesForm:duplicateButton
+                                        :devicesForm:editButton :devicesForm:deleteButton :devicesForm:attributesDataTable:attributesDataTable" 
                                 actionListener="#{devicesController.duplicate}" />
                             <p:commandButton id="exportButton" icon="ui-icon-disk" value="Export" title="Export" 
                                 style="float: right; margin-top: 1em;" oncomplete="PF('exportDevices').show();" 
@@ -158,7 +159,8 @@
             <ui:param name="widgetName" value="addDeviceDialog" />
             <ui:param name="dialogTitle" value="Add device" />
             <ui:param name="updateComponents" value=":devicesForm:devicesTable :devicesForm:deleteButton 
-                                                    :devicesForm:editButton :devicesForm:exportButton" />
+                                                    :devicesForm:editButton :devicesForm:exportButton
+                                                    :devicesForm:duplicateButton" />
             <ui:param name="submitHandler" value="onDeviceAdd" />
             <ui:param name="batchCreation" value="true" />
             <ui:param name="saveAction" value="PF('devicesTableVar').clearFilters(); adjustTableHeights();" />
@@ -224,7 +226,8 @@
             <ui:param name="filteredDialogList" value="#{devicesController.filteredDialogDevices}" />
             <ui:param name="submitHandler" value="onDeviceDelete" />
             <ui:param name="formsToUpdate" value=":devicesForm:attributesDataTable:attributesDataTable 
-                                                    :devicesForm:editAttrButton :devicesForm:deleteAttrButton" />
+                                                    :devicesForm:editAttrButton :devicesForm:deleteAttrButton
+                                                    :devicesForm:duplicateButton :devicesForm:deleteButton" />
             <ui:param name="closeDialogActions" value="PF('devicesTableVar').clearFilters(); PF('devicesTableVar').clearFilters(); adjustTableHeights();" />
             <ui:param name="entityType" value="device instances" />
             <ui:param name="entityName" value="Device instance" />
