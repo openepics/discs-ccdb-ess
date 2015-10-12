@@ -64,7 +64,7 @@
                 <p:commandButton id="duplicateButton" icon="ui-icon-copy" value="Duplicate" title="Duplicate selected" 
                     style="float: right; margin-top: 1em;" disabled="#{empty dataTypeManager.selectedEnums}" 
                     oncomplete="closeDialogActions(null);" 
-                    update=":enumsForm:enumsTable" actionListener="#{dataTypeManager.duplicate}" />
+                    update=":enumsForm:enumsTable :enumsForm:deleteButton :enumsForm:editButton" actionListener="#{dataTypeManager.duplicate}" />
                 <p:commandButton id="exportButton" icon="ui-icon-disk" value="Export" title="Export" 
                     style="float: right; margin-top: 1em;" oncomplete="PF('exportEnums').show();" 
                     disabled="#{empty dataTypeManager.filteredDataTypeViews}" update=":exportEnumsForm:exportEnums" 

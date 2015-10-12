@@ -76,7 +76,7 @@
                 <p:commandButton id="duplicateButton" icon="ui-icon-copy" value="Duplicate" title="Duplicate selected" 
                     style="float: right; margin-top: 1em;" disabled="#{empty propertyManager.selectedProperties}" 
                     oncomplete="closeDialogActions(null);" 
-                    update=":propertiesForm:propertiesTable" actionListener="#{propertyManager.duplicate}" />
+                    update=":propertiesForm:propertiesTable :propertiesForm:editButton :propertiesForm:deleteButton" actionListener="#{propertyManager.duplicate}" />
                 <p:commandButton id="exportButton" icon="ui-icon-disk" value="Export" title="Export" 
                     style="float: right; margin-top: 1em;" oncomplete="PF('exportProperties').show();" 
                     disabled="#{empty propertyManager.filteredProperties}" update=":exportPropForm:exportProperties" 
