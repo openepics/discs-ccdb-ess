@@ -26,14 +26,14 @@
                 }
                 function closeDialogActions(widgetVar) {
                     if (widgetVar != null) PF(widgetVar).hide();
-                    PF('enumsTableVar').filter();
+                    PF('enumsTableVar').clearFilters();
                     removePropColWidth();
                     adjustFieldsetHeight('#enumsForm\\:enumsFieldset');
                     adjustTableHeight();
                 }
                 // ]]>
             </script>
-            <p:fieldset id="enumsFieldset" legend="Units">
+            <p:fieldset id="enumsFieldset" legend="Enumerations">
                 <p:dataTable widgetVar="enumsTableVar" var="enum" id="enumsTable" value="#{dataTypeManager.dataTypeViews}" 
                         styleClass="scroll-table" style="width: inherit; overflow-y: hidden;" scrollable="true" 
                         selection="#{dataTypeManager.selectedEnums}" selectionMode="multiple" rowKey="#{enum.enumeration.id}" 
@@ -63,7 +63,7 @@
 
                 <p:commandButton id="duplicateButton" icon="ui-icon-copy" value="Duplicate" title="Duplicate selected" 
                     style="float: right; margin-top: 1em;" disabled="#{empty dataTypeManager.selectedEnums}" 
-                    oncomplete="adjustTableHeight();" 
+                    oncomplete="closeDialogActions(null);" 
                     update=":enumsForm:enumsTable" actionListener="#{dataTypeManager.duplicate}" />
                 <p:commandButton id="exportButton" icon="ui-icon-disk" value="Export" title="Export" 
                     style="float: right; margin-top: 1em;" oncomplete="PF('exportEnums').show();" 
@@ -93,7 +93,8 @@
             <ui:param name="filteredDialogList" value="#{dataTypeManager.filteredDialogEnums}" />
             <ui:param name="submitHandler" value="onDelete" />
             <ui:param name="formsToUpdate" value=":enumsForm:enumsTable :enumsForm:deleteButton 
-                                                :enumsForm:editButton :enumsForm:exportButton" />
+                                                :enumsForm:editButton :enumsForm:exportButton 
+                                                :enumsForm:duplicateButton" />
             <ui:param name="closeDialogActions" value="closeDialogActions(null);" />
             <ui:param name="entityType" value="enumerations" />
             <ui:param name="entityName" value="Enumeration" />
@@ -114,7 +115,8 @@
             <ui:param name="widgetName" value="addEnum" />
             <ui:param name="submitHandler" value="onAdd" />
             <ui:param name="componentToUpdate" value=":enumsForm:enumsTable :enumsForm:deleteButton 
-                                                :enumsForm:editButton :enumsForm:exportButton" />
+                                                :enumsForm:editButton :enumsForm:exportButton 
+                                                :enumsForm:duplicateButton" />
             <ui:param name="closeDialogActions" value="closeDialogActions('addEnum');" />
         </ui:include>
 
