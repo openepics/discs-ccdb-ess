@@ -129,8 +129,7 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
 
         @Override
         protected void addData(ExportTable exportTable) {
-            final List<Property> exportData = Utility.isNullOrEmpty(filteredProperties) ? properties
-                    : filteredProperties;
+            final List<Property> exportData = filteredProperties;
             for (final Property prop : exportData) {
                 final String unitName = prop.getUnit() != null ? prop.getUnit().getName() : null;
                 exportTable.addDataRow(prop.getName(), prop.getDescription(), unitName, prop.getDataType().getName());
@@ -151,6 +150,7 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
             simpleTableExporterDialog = new ExportSimplePropertyTableDialog();
             properties = propertyEJB.findAllOrderedByName();
             selectedProperties = null;
+            filteredProperties = properties;
             resetFields();
         } catch(Exception e) {
             throw new UIException("Device type display initialization fialed: " + e.getMessage(), e);
