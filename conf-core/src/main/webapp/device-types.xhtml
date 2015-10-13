@@ -229,7 +229,7 @@
 
         <ui:include src="/resources/dialogs/property-definition.xhtml" >
             <ui:param name="formId" value="deviceInstancePropertyForm" />
-            <ui:param name="dialogTitle" value="Add new device instance property" />
+            <ui:param name="dialogTitle" value="Add Properties" />
             <ui:param name="widgetName" value="deviceInstanceProperty" />
             <ui:param name="controller" value="#{componentTypeManager}" />
             <ui:param name="resetFilter" value="PF('attributesDataTable').clearFilters(); adjustTableHeights();" />
@@ -259,7 +259,7 @@
 
         <ui:include src="/resources/dialogs/delete-multi-confirmation.xhtml" >
             <ui:param name="formId" value="deleteAttributesForm" />
-            <ui:param name="dialogTitle" value="Delete attributes" />
+            <ui:param name="dialogTitle" value="Delete Properties" />
             <ui:param name="widgetName" value="deleteAttributes" />
             <ui:param name="controller" value="#{componentTypeManager}" />
             <ui:param name="deletePreventionList" value="#{componentTypeManager.nonDeletableAttributes}" />
@@ -276,7 +276,7 @@
         <ui:include src="/resources/dialogs/export-table.xhtml">
             <ui:param name="formId" value="exportDevTypesForm" />
             <ui:param name="widgetName" value="exportDevTypes" />
-            <ui:param name="dialogTitle" value="Export device types table" />
+            <ui:param name="dialogTitle" value="Export Device Types" />
             <ui:param name="fileFormatSelection" value="#{componentTypeManager.simpleTableDialog.fileFormat}" />
             <ui:param name="includeHeader" value="#{componentTypeManager.simpleTableDialog.includeHeaderRow}" />
             <ui:param name="tableFile" value="#{componentTypeManager.simpleTableDialog.exportedTable}" />

@@ -102,7 +102,7 @@
 
         <ui:include src="/resources/dialogs/add-or-modify-enum.xhtml">
             <ui:param name="formId" value="modifyEnumForm" />
-            <ui:param name="dialogTitle" value="Modify enumeration" />
+            <ui:param name="dialogTitle" value="Edit Enumeration" />
             <ui:param name="widgetName" value="modifyEnum" />
             <ui:param name="submitHandler" value="onModify" />
             <ui:param name="componentToUpdate" value=":enumsForm:enumsTable :enumsForm:deleteButton :enumsForm:editButton" />
@@ -123,7 +123,7 @@
         <ui:include src="/resources/dialogs/export-table.xhtml">
             <ui:param name="formId" value="exportEnumsForm" />
             <ui:param name="widgetName" value="exportEnums" />
-            <ui:param name="dialogTitle" value="Export enumerations table" />
+            <ui:param name="dialogTitle" value="Export Enumerations" />
             <ui:param name="fileFormatSelection" value="#{dataTypeManager.simpleTableDialog.fileFormat}" />
             <ui:param name="includeHeader" value="#{dataTypeManager.simpleTableDialog.includeHeaderRow}" />
             <ui:param name="tableFile" value="#{dataTypeManager.simpleTableDialog.exportedTable}" />

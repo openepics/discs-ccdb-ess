@@ -118,7 +118,7 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
 
         @Override
         protected String getFileName() {
-            return "device-types";
+            return "ccdb_device_types";
         }
 
         @Override
