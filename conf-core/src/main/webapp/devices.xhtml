@@ -172,7 +172,8 @@
             <ui:param name="dialogTitle" value="Edit device" />
             <ui:param name="saveAction" value="PF('devicesTableVar').clearFilters(); adjustTableHeights();" />
             <ui:param name="updateComponents" value=":devicesForm:devicesTable :devicesForm:deleteButton 
-                                                    :devicesForm:editButton :devicesForm:exportButton" />
+                                                    :devicesForm:editButton :devicesForm:exportButton
+                                                    :devicesForm:duplicateButton" />
             <ui:param name="submitHandler" value="onDeviceEdit" />
         </ui:include>
 
@@ -227,7 +228,8 @@
             <ui:param name="submitHandler" value="onDeviceDelete" />
             <ui:param name="formsToUpdate" value=":devicesForm:attributesDataTable:attributesDataTable 
                                                     :devicesForm:editAttrButton :devicesForm:deleteAttrButton
-                                                    :devicesForm:duplicateButton :devicesForm:deleteButton" />
+                                                    :devicesForm:duplicateButton :devicesForm:deleteButton
+                                                    :devicesForm:exportButton" />
             <ui:param name="closeDialogActions" value="PF('devicesTableVar').clearFilters(); PF('devicesTableVar').clearFilters(); adjustTableHeights();" />
             <ui:param name="entityType" value="device instances" />
             <ui:param name="entityName" value="Device instance" />
@@ -243,7 +245,9 @@
             <ui:param name="submitHandler" value="deleteAttributes" />
             <ui:param name="filteredDialogList" value="#{devicesController.filteredDialogAttributes}" />
             <ui:param name="formsToUpdate" value=":devicesForm:attributesDataTable:attributesDataTable 
-                                                    :devicesForm:editAttrButton :devicesForm:deleteAttrButton" />
+                                                    :devicesForm:editAttrButton :devicesForm:deleteAttrButton
+                                                    :devicesForm:duplicateButton :devicesForm:exportButton
+                                                    :devicesForm:deleteButton" />
             <ui:param name="closeDialogActions" value="PF('attributesDataTable').clearFilters; adjustTableHeights();" />
             <ui:param name="entityType" value="attributes" />
             <ui:param name="entityName" value="Attribute" />
@@ -258,7 +262,8 @@
             <ui:param name="relatedDialog" value="addDeviceDialog" />
             <ui:param name="controller" value="#{devicesController}" />
             <ui:param name="submitHandler" value="creationProceed" />
-            <ui:param name="formToUpdate" value=":devicesForm:devicesTable :devicesForm:deleteButton :devicesForm:editButton" />
+            <ui:param name="formToUpdate" value=":devicesForm:devicesTable :devicesForm:deleteButton 
+                                                :devicesForm:editButton :devicesForm:duplicateButton" />
             <ui:param name="saveActions" value="adjustTableHeights();" />
         </ui:include>
 

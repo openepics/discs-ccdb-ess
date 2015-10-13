@@ -110,7 +110,11 @@ public abstract class AbstractDeviceAttributesController
     /** @see org.openepics.discs.conf.ui.common.AbstractExcelSingleFileImportUI#getImportFileName() */
     @Override
     public String getImportFileName() {
-        return excelSingleFileImportUI.getImportFileName();
+        if (isArtifactInternal) {
+            return importFileName;
+        } else {
+            return excelSingleFileImportUI.getImportFileName();
+        }
     }
 
     /** @see org.openepics.discs.conf.ui.common.AbstractExcelSingleFileImportUI#getImportedFileStatistics() */

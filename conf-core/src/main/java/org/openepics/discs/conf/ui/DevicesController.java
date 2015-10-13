@@ -19,6 +19,8 @@
  */
 package org.openepics.discs.conf.ui;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -36,6 +38,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.io.FilenameUtils;
 import org.openepics.discs.conf.ejb.ComptypeEJB;
 import org.openepics.discs.conf.ejb.DeviceEJB;
 import org.openepics.discs.conf.ejb.InstallationEJB;
@@ -60,10 +63,12 @@ import org.openepics.discs.conf.views.DeviceView;
 import org.openepics.discs.conf.views.EntityAttributeView;
 import org.openepics.discs.conf.views.EntityAttributeViewKind;
 import org.primefaces.context.RequestContext;
+import org.primefaces.event.FileUploadEvent;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.google.common.io.ByteStreams;
 
 /**
  * Controller bean for manipulation of {@link Device} attributes
@@ -521,6 +526,21 @@ public class DevicesController
         attributes = null;
         selectedAttributes = null;
         filteredAttributes = null;
+    }
+
+    @Override
+    public void handleImportFileUpload(FileUploadEvent event) {
+        // this handler is shared between AbstractExcelSingleFileImportUI and Artifact loading
+        if ("importDevicesForm:singleFileDLUploadCtl".equals(event.getComponent().getClientId())) {
+            super.handleImportFileUpload(event);
+        } else {
+            try (InputStream inputStream = event.getFile().getInputstream()) {
+                importData = ByteStreams.toByteArray(inputStream);
+                importFileName = FilenameUtils.getName(event.getFile().getFileName());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     private void copyArtifactsFromSource(final Device newCopy, final Device copySource) {

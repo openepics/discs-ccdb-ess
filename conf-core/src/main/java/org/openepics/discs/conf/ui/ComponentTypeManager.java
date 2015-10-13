@@ -20,6 +20,8 @@
 
 package org.openepics.discs.conf.ui;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -36,6 +38,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.io.FilenameUtils;
 import org.openepics.discs.conf.ejb.ComptypeEJB;
 import org.openepics.discs.conf.ejb.DAO;
 import org.openepics.discs.conf.ejb.DeviceEJB;
@@ -69,10 +72,12 @@ import org.openepics.discs.conf.views.EntityAttributeViewKind;
 import org.openepics.discs.conf.views.MultiPropertyValueView;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.CellEditEvent;
+import org.primefaces.event.FileUploadEvent;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.google.common.io.ByteStreams;
 
 /**
  * Controller bean for manipulation of {@link ComponentType} attributes
@@ -649,6 +654,21 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
         filteredAttributes = null;
         filteredProperties = null;
         selectedAttributes = null;
+    }
+
+    @Override
+    public void handleImportFileUpload(FileUploadEvent event) {
+        // this handler is shared between AbstractExcelSingleFileImportUI and Artifact loading
+        if ("importCompTypesForm:singleFileDLUploadCtl".equals(event.getComponent().getClientId())) {
+            super.handleImportFileUpload(event);
+        } else {
+            try (InputStream inputStream = event.getFile().getInputstream()) {
+                importData = ByteStreams.toByteArray(inputStream);
+                importFileName = FilenameUtils.getName(event.getFile().getFileName());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     // ---------------------------------------------------------------------------------------------------------

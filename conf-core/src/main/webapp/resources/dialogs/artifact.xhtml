@@ -50,7 +50,7 @@
                             <p:selectBooleanCheckbox id="options" value="#{controller.artifactInternal}" 
                                     disabled="#{controller.artifactBeingModified}">
                                 <p:ajax process="@this" listener="#{controller.artifactTypeChanged}" 
-                                    update="#{formId}:group" />
+                                    update="group" />
                             </p:selectBooleanCheckbox>
                         </p:column>
                     </p:row>
@@ -75,7 +75,7 @@
                         <p:column colspan="2">
                             <h:panelGroup id="uploader">
                                 <p:fileUpload fileUploadListener="#{controller.handleImportFileUpload}" 
-                                    update="#{formId}:uploader #{formId}:uploadFile #{formId}:saveButton" 
+                                    update="uploader uploadFile saveButton" 
                                     mode="advanced" auto="false" fileLimit="1" dragDropSupport="true"
                                     rendered="#{controller.artifactInternal}" 
                                     disabled="#{controller.artifactBeingModified}" />

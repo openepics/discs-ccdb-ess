@@ -2013,9 +2013,9 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      */
     @Override
     public void handleImportFileUpload(FileUploadEvent event) {
+        // this handler is shared between AbstractExcelSingleFileImportUI and Artifact loading
         if ("importSignalsForm:singleFileDLUploadCtl".equals(event.getComponent().getClientId())
                 || "importSlotsForm:singleFileDLUploadCtl".equals(event.getComponent().getClientId())) {
-            // this handler is shared between AbstractExcelSingleFileImportUI and Artifact loading
             super.handleImportFileUpload(event);
         } else {
             try (InputStream inputStream = event.getFile().getInputstream()) {
