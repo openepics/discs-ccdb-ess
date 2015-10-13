@@ -33,7 +33,7 @@
 
             <p:commandButton value="Close" styleClass="dialogButton" onclick="PF('#{widgetName}').hide();" update="grp" 
                     resetValues="true" />
-            <p:commandButton value="Download" styleClass="dialogButton" update="grp" ajax="false" 
+            <p:commandButton value="Export" styleClass="dialogButton" update="grp" ajax="false" 
                         onclick="PrimeFaces.monitorDownload(startDownload, #{widgetName}_stopDownload);">
                 <p:fileDownload value="#{tableFile}" />
             </p:commandButton>

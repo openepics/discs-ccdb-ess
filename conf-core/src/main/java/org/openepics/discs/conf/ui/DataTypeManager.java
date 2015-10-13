@@ -98,7 +98,7 @@ public class DataTypeManager extends AbstractExcelSingleFileImportUI implements 
 
         @Override
         protected String getFileName() {
-            return "enums";
+            return "ccdb_enumerations";
         }
 
         @Override

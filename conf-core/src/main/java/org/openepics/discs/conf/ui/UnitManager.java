@@ -96,7 +96,7 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
 
         @Override
         protected String getFileName() {
-            return "units";
+            return "ccdb_units";
         }
 
         @Override

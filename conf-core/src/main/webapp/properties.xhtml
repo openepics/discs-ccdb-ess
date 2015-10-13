@@ -113,7 +113,7 @@
 
         <ui:include src="/resources/dialogs/property.xhtml">
             <ui:param name="formId" value="modifyPropertyForm" />
-            <ui:param name="dialogTitle" value="Modify Property" />
+            <ui:param name="dialogTitle" value="Edit Property" />
             <ui:param name="updateComponents" 
                 value=":propertiesForm:propertiesTable :propertiesForm:deleteButton :propertiesForm:editButton" />
             <ui:param name="widgetName" value="modifyProperty" />
@@ -149,7 +149,7 @@
         <ui:include src="/resources/dialogs/export-table.xhtml">
             <ui:param name="formId" value="exportPropForm" />
             <ui:param name="widgetName" value="exportProperties" />
-            <ui:param name="dialogTitle" value="Export property table" />
+            <ui:param name="dialogTitle" value="Export Properties" />
             <ui:param name="fileFormatSelection" value="#{propertyManager.simpleTableDialog.fileFormat}" />
             <ui:param name="includeHeader" value="#{propertyManager.simpleTableDialog.includeHeaderRow}" />
             <ui:param name="tableFile" value="#{propertyManager.simpleTableDialog.exportedTable}" />

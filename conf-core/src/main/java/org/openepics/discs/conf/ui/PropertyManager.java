@@ -119,7 +119,7 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
 
         @Override
         protected String getFileName() {
-            return "properties";
+            return "ccdb_properties";
         }
 
         @Override

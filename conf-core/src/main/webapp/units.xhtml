@@ -103,14 +103,14 @@
 
         <ui:include src="/resources/dialogs/add-or-modify-unit.xhtml">
             <ui:param name="formId" value="modifyUnitForm" />
-            <ui:param name="dialogTitle" value="Modify unit" />
+            <ui:param name="dialogTitle" value="Edit Unit" />
             <ui:param name="widgetName" value="modifyUnit" />
             <ui:param name="submitHandler" value="onModify" />
         </ui:include>
 
         <ui:include src="/resources/dialogs/add-or-modify-unit.xhtml">
             <ui:param name="formId" value="addUnitForm" />
-            <ui:param name="dialogTitle" value="Add unit" />
+            <ui:param name="dialogTitle" value="Add Unit" />
             <ui:param name="widgetName" value="addUnit" />
             <ui:param name="submitHandler" value="onAdd" />
         </ui:include>
@@ -118,7 +118,7 @@
         <ui:include src="/resources/dialogs/export-table.xhtml">
             <ui:param name="formId" value="exportUnitsForm" />
             <ui:param name="widgetName" value="exportUnits" />
-            <ui:param name="dialogTitle" value="Export units table" />
+            <ui:param name="dialogTitle" value="Export Units" />
             <ui:param name="fileFormatSelection" value="#{unitManager.simpleTableDialog.fileFormat}" />
             <ui:param name="includeHeader" value="#{unitManager.simpleTableDialog.includeHeaderRow}" />
             <ui:param name="tableFile" value="#{unitManager.simpleTableDialog.exportedTable}" />
