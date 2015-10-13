@@ -41,19 +41,19 @@
                                     filteredValue="#{devicesController.filteredDevices}" styleClass="scroll-table" 
                                     tableStyle="table-layout: fixed; word-wrap: break-word; width: 100%;" 
                                     selection="#{devicesController.selectedDevices}" liveScroll="true" 
-                                    selectionMode="multiple" rowKey="#{device.device.id}" emptyMessage="No devices found.">
-                                <p:ajax event="rowSelect" oncomplete="adjustTableHeights();" 
+                                    selectionMode="multiple" rowKey="#{device.device.id}" emptyMessage="No records found.">
+                                <p:ajax event="rowSelect" listener="#{devicesController.onRowSelect}" 
+                                        oncomplete="PF('attributesDataTable').clearFilters(); adjustTableHeights();" 
                                         update=":devicesForm:deleteButton :devicesForm:editButton :devicesForm:addButton 
                                                 :devicesForm:deleteAttrButton :devicesForm:editAttrButton 
                                                 :devicesForm:attributesDataTable:attributesDataTable 
-                                                :devicesForm:duplicateButton" 
-                                        listener="#{devicesController.onRowSelect}" />
-                                <p:ajax event="rowUnselect" oncomplete="adjustTableHeights();" 
+                                                :devicesForm:duplicateButton" />
+                                <p:ajax event="rowUnselect" listener="#{devicesController.onRowSelect}" 
+                                        oncomplete="PF('attributesDataTable').clearFilters(); adjustTableHeights();" 
                                         update=":devicesForm:deleteButton :devicesForm:editButton :devicesForm:addButton 
                                                 :devicesForm:deleteAttrButton :devicesForm:editAttrButton 
                                                 :devicesForm:attributesDataTable:attributesDataTable 
-                                                :devicesForm:duplicateButton" 
-                                        listener="#{devicesController.onRowSelect}" />
+                                                :devicesForm:duplicateButton" />
 
                                 <p:column headerText="Type" sortBy="#{device.device.componentType.name}" 
                                         filterBy="#{device.device.componentType.name}" filterMatchMode="contains">
@@ -67,7 +67,7 @@
                                     <h:outputText value="#{device.inventoryId}" />
                                 </p:column>
 
-                                <p:column headerText="Installed in" sortBy="#{device.installedIn}" 
+                                <p:column headerText="Installation Slot" sortBy="#{device.installedIn}" 
                                         filterBy="#{device.installedIn}" filterMatchMode="contains">
                                     <h:outputLink rendered="#{!empty device.installedSlotId}" 
                                             value="#{request.contextPath}/?id=#{device.installedSlotId}">
@@ -179,7 +179,7 @@
 
         <ui:include src="/resources/dialogs/property-value.xhtml">
             <ui:param name="formId" value="modifyPropertyValueForm" />
-            <ui:param name="dialogTitle" value="Modify device type property" />
+            <ui:param name="dialogTitle" value="Edit property" />
             <ui:param name="widgetName" value="modifyPropertyValue" />
             <ui:param name="resetFilter" value="PF('attributesDataTable').clearFilters(); adjustTableHeights();" />
             <ui:param name="controller" value="#{devicesController}" />
@@ -270,7 +270,7 @@
         <ui:include src="/resources/dialogs/export-table.xhtml">
             <ui:param name="formId" value="exportDevForm" />
             <ui:param name="widgetName" value="exportDevices" />
-            <ui:param name="dialogTitle" value="Export device instances table" />
+            <ui:param name="dialogTitle" value="Export Devices" />
             <ui:param name="fileFormatSelection" value="#{devicesController.simpleTableDialog.fileFormat}" />
             <ui:param name="includeHeader" value="#{devicesController.simpleTableDialog.includeHeaderRow}" />
             <ui:param name="tableFile" value="#{devicesController.simpleTableDialog.exportedTable}" />

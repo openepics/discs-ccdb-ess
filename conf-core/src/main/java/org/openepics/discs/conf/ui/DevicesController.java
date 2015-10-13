@@ -119,12 +119,12 @@ public class DevicesController
     private class ExportSimpleDeviceTableDialog extends ExportSimpleTableDialog {
         @Override
         protected String getTableName() {
-            return "Device instances";
+            return "Devices";
         }
 
         @Override
         protected String getFileName() {
-            return "devices";
+            return "ccdb_devices";
         }
 
         @Override
@@ -429,7 +429,7 @@ public class DevicesController
         selectedAttributes = null;
         filteredAttributes = null;
         Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS, "Deleted " + deletedDevices
-                + " device instances.");
+                + " devices.");
     }
 
     /** Clears the data displayed in the "Add device instance" dialog */
