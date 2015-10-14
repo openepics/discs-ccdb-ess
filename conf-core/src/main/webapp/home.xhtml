@@ -37,28 +37,35 @@
                 function resizeEmptyColumnInHierarchies() {
                     var menusHeight = $('#top').outerHeight(true);
                     var em = emHeight();
+                    var contentHeight = $("#content").outerHeight();
                     var slotAttributesFieldSet = $('#hierarchies\\:slotAttributes').outerHeight(true);
                     var slotRelationsFieldSet = $('#hierarchies\\:relationsTable').outerHeight(true);
-                    var installationDetailsFieldSet = $('#hierarchies\\:installationDetails').parent().outerHeight(true);
+                    var installationDetailsFieldSet = $('#hierarchies\\:installationDetails').outerHeight(true);
 
                     if (installationDetailsFieldSet == null) {
-                        installationDetails = 0;
+                    	installationDetailsFieldSet = 0;
                     }
 
-                    var totalHeight = menusHeight + slotAttributesFieldSet + slotRelationsFieldSet + installationDetailsFieldSet + 4*em;
+                    var totalHeight = menusHeight + slotAttributesFieldSet + slotRelationsFieldSet 
+                                    + installationDetailsFieldSet;                    
 
                     $('#hierarchies\\:hierarchiesEmptyColumn').css({"height":window.innerHeight-totalHeight});
                 }
                 function hierarchiesResizeAttributes() {
-                    var attributesTableHeight = $("#attributesTable .hierarchies-attributes-cell").outerHeight(true);
-                    var attributesTableHeaderHeight = $("#attributesTable .hierarchies-attributes-cell .ui-datatable-scrollable-header").outerHeight(true);
+                    var em = emHeight();
+                    var contentHeight = $("#content").outerHeight(true);
+                    var fieldsetHeight = contentHeight * 0.33;
+                    $("#hierarchies\\:slotAttributes").css({"max-height":fieldsetHeight});
+                    var fieldsetLegentHeight = $('#hierarchies\\:slotAttributes legend').outerHeight(true);
+                    var attributesTableHeight = fieldsetHeight - fieldsetLegentHeight - 3 * em;
+                    var attributesTableHeaderHeight = $("#hierarchies\\:attributesTable .ui-datatable-scrollable-header").outerHeight(true);
                     var attributesTableBodyHeight = attributesTableHeight - attributesTableHeaderHeight;
-                    $('#attributesTable .hierarchies-attributes-cell .ui-datatable-scrollable-body').css({"max-height":attributesTableBodyHeight});
+                    $('#hierarchies\\:attributesTable .ui-datatable-scrollable-body').css({"max-height":attributesTableBodyHeight});
                 }
                 function hierarchiesResizeAll() {
                     resizeHierarchyTrees();
-                    resizeEmptyColumnInHierarchies();
                     hierarchiesResizeAttributes();
+                    resizeEmptyColumnInHierarchies();
                 }
                 function getVisibleTree() {
                     var visibleTreeTable = PF('hierarchyWidget');
@@ -258,10 +265,10 @@
                         </p:fieldset>
                     </p:column>
                     <p:column id="attributesColumn" styleClass="alignTop" >
-                        <p:fieldset id="slotAttributes" legend="Properties">
+                        <p:fieldset id="slotAttributes" legend="Properties" style="max-height: 30%;">
                             <p:dataTable id="attributesTable" class="hierarchies-attributes-cell" emptyMessage="No element selected."
                                     value="#{hierarchiesController.attributes}" var="attribute" scrollable="true"
-                                    style="width: 100%; overflow-y: hidden; max-height: 30%;" resizableColumns="true"
+                                    style="width: 100%; overflow-y: hidden;" resizableColumns="true"
                                     selection="#{hierarchiesController.selectedAttribute}" selectionMode="single"
                                     filteredValue="#{hierarchiesController.filteredAttributes}" rowKey="#{attribute.id}"
                                     widgetVar="attributesWidget">
