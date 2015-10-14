@@ -389,7 +389,7 @@
                                 oncomplete="PF('deleteRelationship').show();" />
                             <p:commandButton value="Add" oncomplete="PF('addSlotRelationship').show()" id="addRelationship"
                                 icon="ui-icon-plus" disabled="#{not hierarchiesController.singleNodeSelected}"
-                                style="margin: 1em 1ex 0 0; float: right;" update=":addSlotRelationshipForm"
+                                style="margin: 1em 1ex 0 0; float: right;" update=":addSlotRelationshipForm:addSlotRelationship"
                                 actionListener="#{hierarchiesController.prepareAddRelationshipPopup}" />
                         </p:fieldset>
                     </p:column>
@@ -517,6 +517,7 @@
             <ui:param name="submitHandler" value="deleteAttribute" />
             <ui:param name="formToUpdate" value=":hierarchies:slotAttributes" />
             <ui:param name="entityType" value="selected attribute" />
+            <ui:param name="resetFilter" value="PF('attributesWidget').clearFilters();" />
         </ui:include>
 
         <ui:include src="/resources/dialogs/property-value.xhtml">
@@ -527,6 +528,7 @@
             <ui:param name="controller" value="#{hierarchiesController}" />
             <ui:param name="submitHandler" value="modifyPropertyValue" />
             <ui:param name="componentToUpdate" value=":hierarchies:slotAttributes" />
+            <ui:param name="resetFilter" value="PF('attributesWidget').clearFilters();" />
         </ui:include>
 
         <ui:include src="/resources/dialogs/property-value.xhtml">
@@ -536,6 +538,7 @@
             <ui:param name="controller" value="#{hierarchiesController}" />
             <ui:param name="submitHandler" value="addNewPropertyValue" />
             <ui:param name="componentToUpdate" value=":hierarchies:slotAttributes" />
+            <ui:param name="resetFilter" value="PF('attributesWidget').clearFilters();" />
         </ui:include>
 
         <ui:include src="/resources/dialogs/tag.xhtml" >
@@ -546,6 +549,7 @@
             <ui:param name="controller" value="#{hierarchiesController}" />
             <ui:param name="submitHandler" value="addNewTag" />
             <ui:param name="componentToUpdate" value=":hierarchies:slotAttributes" />
+            <ui:param name="resetFilter" value="PF('attributesWidget').clearFilters();" />
         </ui:include>
 
         <ui:include src="/resources/dialogs/artifact.xhtml" >
@@ -556,6 +560,7 @@
             <ui:param name="controller" value="#{hierarchiesController}" />
             <ui:param name="submitHandler" value="addNewArtifact" />
             <ui:param name="componentToUpdate" value=":hierarchies:slotAttributes" />
+            <ui:param name="resetFilter" value="PF('attributesWidget').clearFilters();" />
         </ui:include>
 
         <ui:include src="/resources/dialogs/artifact.xhtml">
@@ -566,6 +571,7 @@
             <ui:param name="controller" value="#{hierarchiesController}" />
             <ui:param name="submitHandler" value="modifyArtifact" />
             <ui:param name="componentToUpdate" value=":hierarchies:slotAttributes" />
+            <ui:param name="resetFilter" value="PF('attributesWidget').clearFilters();" />
         </ui:include>
 
         <ui:include src="/resources/dialogs/delete-confirmation.xhtml">
@@ -577,6 +583,7 @@
             <ui:param name="formToUpdate" value=":hierarchies:relationshipTable :hierarchies:deleteRelationship
                     :hierarchies:hierarchyTabs:tree" />
             <ui:param name="entityType" value="selected relationship" />
+            <ui:param name="resetFilter" value="PF('relationshipsWidget').clearFilters();" />
         </ui:include>
 
         <ui:include src="/resources/dialogs/cannot-delete-relationship.xhtml" />

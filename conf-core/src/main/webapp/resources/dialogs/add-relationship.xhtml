@@ -59,7 +59,8 @@
                     resetValues="true" style="margin-top: 1em;" update=":hierarchies:hierarchyTabs:tree" />
             <p:commandButton value="Add" styleClass="dialogButton" id="addButton" style="margin-top: 1em;" 
                     disabled="#{empty hierarchiesController.selectedTreeNodeForRelationshipAdd}" 
-                    action="#{hierarchiesController.onRelationshipAdd}" oncomplete="PF('addSlotRelationship').hide();" 
+                    action="#{hierarchiesController.onRelationshipAdd}" 
+                    oncomplete="PF('addSlotRelationship').hide(); PF('relationshipsWidget').clearFilters();" 
                     update=":hierarchies:relationshipTable :hierarchies:hierarchyTabs:tree" />
         </p:dialog>
     </h:form>
