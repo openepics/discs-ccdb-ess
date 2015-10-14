@@ -70,12 +70,12 @@ public class AuditManager implements Serializable, SimpleTableExporter {
     private class ExportSimpleAuditTableDialog extends ExportSimpleTableDialog {
         @Override
         protected String getTableName() {
-            return "Audit record";
+            return "Log";
         }
 
         @Override
         protected String getFileName() {
-            return "audit-records";
+            return "ccdb_log";
         }
 
         @Override
@@ -206,7 +206,11 @@ public class AuditManager implements Serializable, SimpleTableExporter {
         if (auditOperations == null) {
             Builder<SelectItem> builder = ImmutableList.builder();
             builder.add(new SelectItem("", "Select one"));
-            for (EntityTypeOperation operation : EntityTypeOperation.values()) {
+            EntityTypeOperation[] ops = new EntityTypeOperation[] {
+                    EntityTypeOperation.CREATE,
+                    EntityTypeOperation.UPDATE,
+                    EntityTypeOperation.DELETE };
+            for (EntityTypeOperation operation : ops) {
                 builder.add(new SelectItem(operation.toString(), operation.toString()));
             }
             auditOperations = builder.build();
@@ -218,11 +222,11 @@ public class AuditManager implements Serializable, SimpleTableExporter {
             Builder<SelectItem> builder = ImmutableList.builder();
             builder.add(new SelectItem("", "Select one"));
             builder.add(new SelectItem(EntityType.SLOT.toString(), EntityType.SLOT.getLabel()));
-            builder.add(new SelectItem(EntityType.COMPONENT_TYPE.toString(), EntityType.COMPONENT_TYPE.getLabel()));
             builder.add(new SelectItem(EntityType.DEVICE.toString(), EntityType.DEVICE.getLabel()));
+            builder.add(new SelectItem(EntityType.COMPONENT_TYPE.toString(), EntityType.COMPONENT_TYPE.getLabel()));
             builder.add(new SelectItem(EntityType.PROPERTY.toString(), EntityType.PROPERTY.getLabel()));
-            builder.add(new SelectItem(EntityType.UNIT.toString(), EntityType.UNIT.getLabel()));
             builder.add(new SelectItem(EntityType.DATA_TYPE.toString(), EntityType.DATA_TYPE.getLabel()));
+            builder.add(new SelectItem(EntityType.UNIT.toString(), EntityType.UNIT.getLabel()));
             entityTypes = builder.build();
         }
     }
