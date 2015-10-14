@@ -35,19 +35,27 @@
                     }
                 }
                 function resizeEmptyColumnInHierarchies() {
-                    var menusHeight = $('#top').outerHeight(true);
-                    var em = emHeight();
-                    var contentHeight = $("#content").outerHeight();
+                    var menusHeight = $('#content').offset().top;
                     var slotAttributesFieldSet = $('#hierarchies\\:slotAttributes').outerHeight(true);
                     var slotRelationsFieldSet = $('#hierarchies\\:relationsTable').outerHeight(true);
                     var installationDetailsFieldSet = $('#hierarchies\\:installationDetails').outerHeight(true);
+                    var attributesColumnPadding = $('#hierarchies\\:attributesColumn').outerHeight(true) 
+                                                    - $('#hierarchies\\:attributesColumn').height();
+                    var relationsColumnPadding = $('#hierarchies\\:relationsColumn').outerHeight(true) 
+                                                    - $('#hierarchies\\:relationsColumn').height();
+                    var installationColumnPadding = $('#hierarchies\\:installationColumn').outerHeight(true) 
+                                                    - $('#hierarchies\\:installationColumn').height();
+                    var bodyPadding = $('body').outerHeight(true) - $('body').outerHeight();
 
                     if (installationDetailsFieldSet == null) {
                     	installationDetailsFieldSet = 0;
                     }
 
-                    var totalHeight = menusHeight + slotAttributesFieldSet + slotRelationsFieldSet 
-                                    + installationDetailsFieldSet;                    
+                    var totalHeight = menusHeight + slotAttributesFieldSet + attributesColumnPadding 
+                                                  + slotRelationsFieldSet + relationsColumnPadding
+                                                  + installationDetailsFieldSet + installationColumnPadding
+                                                  + bodyPadding;
+                    totalHeight = Math.round(totalHeight);
 
                     $('#hierarchies\\:hierarchiesEmptyColumn').css({"height":window.innerHeight-totalHeight});
                 }
@@ -63,6 +71,7 @@
                     $('#hierarchies\\:attributesTable .ui-datatable-scrollable-body').css({"max-height":attributesTableBodyHeight});
                 }
                 function hierarchiesResizeAll() {
+                	clearRelatedFilters();
                     resizeHierarchyTrees();
                     hierarchiesResizeAttributes();
                     resizeEmptyColumnInHierarchies();
@@ -96,7 +105,7 @@
                                         :hierarchies:addRelationship :hierarchies:hierarchyTabs:tree
                                         :hierarchies:hierarchyTabs:powersTree :hierarchies:hierarchyTabs:controlsTree
                                         :hierarchies:clipboardOperations"
-                                    oncomplete="resizeHierarchyTrees();clearRelatedFilters();" />
+                                    oncomplete="hierarchiesResizeAll();" />
 
                                 <p:tab id="INCLUDES" title="Contains">
                                     <p:treeTable id="tree" value="#{hierarchiesController.rootNode}" var="installationSlot"
@@ -108,13 +117,13 @@
                                                     :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton
                                                     :hierarchies:installationDetails :hierarchies:slotAttributes
                                                     :hierarchies:addRelationship :hierarchies:clipboardOperations"
-                                            oncomplete="resizeEmptyColumnInHierarchies();hierarchiesResizeAttributes();clearRelatedFilters();" />
+                                            oncomplete="hierarchiesResizeAll();" />
                                         <p:ajax event="unselect" listener="#{hierarchiesController.onNodeUnselect}"
                                             update=":hierarchies:relationsTable :hierarchies:deleteButton :hierarchies:downButton
                                                     :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton
                                                     :hierarchies:installationDetails :hierarchies:slotAttributes
                                                     :hierarchies:addRelationship"
-                                            oncomplete="resizeEmptyColumnInHierarchies();clearRelatedFilters();" />
+                                            oncomplete="hierarchiesResizeAll();" />
                                         <p:ajax event="expand" listener="#{hierarchiesController.onContainsExpand}" />
 
                                         <p:column id="name" headerText="Name">
@@ -153,11 +162,11 @@
                                         <p:ajax event="select" listener="#{hierarchiesController.onNodeSelect}"
                                                 update=":hierarchies:relationsTable :hierarchies:installationDetails
                                                         :hierarchies:slotAttributes :hierarchies:addRelationship"
-                                                oncomplete="resizeEmptyColumnInHierarchies();hierarchiesResizeAttributes();clearRelatedFilters();" />
+                                                oncomplete="hierarchiesResizeAll();" />
                                         <p:ajax event="unselect" listener="#{hierarchiesController.onNodeUnselect}"
                                                 update=":hierarchies:relationsTable :hierarchies:installationDetails
                                                         :hierarchies:slotAttributes :hierarchies:addRelationship"
-                                                oncomplete="resizeEmptyColumnInHierarchies();clearRelatedFilters();" />
+                                                oncomplete="hierarchiesResizeAll();" />
                                         <p:ajax event="expand" listener="#{hierarchiesController.onControlsExpand}" />
 
                                         <p:column id="ctrlName" headerText="Name">
@@ -180,11 +189,11 @@
                                         <p:ajax event="select" listener="#{hierarchiesController.onNodeSelect}"
                                                 update=":hierarchies:relationsTable :hierarchies:installationDetails
                                                         :hierarchies:slotAttributes :hierarchies:addRelationship"
-                                                oncomplete="resizeEmptyColumnInHierarchies();hierarchiesResizeAttributes();clearRelatedFilters();" />
+                                                oncomplete="hierarchiesResizeAll();" />
                                         <p:ajax event="unselect" listener="#{hierarchiesController.onNodeUnselect}"
                                                 update=":hierarchies:relationsTable :hierarchies:installationDetails
                                                         :hierarchies:slotAttributes :hierarchies:addRelationship"
-                                                oncomplete="resizeEmptyColumnInHierarchies();clearRelatedFilters();" />
+                                                oncomplete="hierarchiesResizeAll();" />
                                         <p:ajax event="expand" listener="#{hierarchiesController.onPowersExpand}" />
 
                                         <p:column id="powersName" headerText="Name">
