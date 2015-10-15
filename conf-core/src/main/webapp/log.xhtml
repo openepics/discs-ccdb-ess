@@ -45,11 +45,8 @@
                     <p:ajax event="filter" ignoreAutoUpdate="true"/>
 
                     <p:column headerText="Timestamp" filterBy="#{auditRecord.logTimeFormatted}" 
-                            sortBy="#{auditRecord.logTime}" filterMatchMode="contains">
-                        <h:outputText value="#{auditRecord.logTime}">
-                            <f:convertDateTime pattern="#{msgs.timestampFormat}" />
-                        </h:outputText>
-
+                            sortBy="#{auditRecord.logTimeFormatted}" filterMatchMode="contains">
+                        <h:outputText value="#{auditRecord.logTimeFormatted}" />                            
                     </p:column>
 
                     <p:column headerText="User" sortBy="#{auditRecord.user}" filterBy="#{auditRecord.user}" 

@@ -19,6 +19,7 @@
  */
 package org.openepics.discs.conf.util;
 
+import java.io.IOException;
 import java.io.StringReader;
 import java.text.ParseException;
 import java.text.ParsePosition;
@@ -27,8 +28,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 import java.util.Scanner;
 import java.util.TimeZone;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import javax.json.Json;
@@ -64,19 +68,39 @@ public class Conversion {
 
     private static final String NEW_LINE_REGEX = "(\\r\\n)|\\r|\\n";
     private static final String UNICODE_NON_BREAKING_SPACE = "\\u00A0";
-    private static final String TIMESTAMP_PARSE_ERROR = "Cannot parse timestamp.";
+    private static final String TIMESTAMP_PARSE_ERROR;
 
     /** Format string for acceptable date format (ISO 8601: yyyy-MM-dd). */
-    public static final String DATE_ONLY_FORMAT = "yyyy-MM-dd";
+    public static final String DATE_ONLY_FORMAT;
 
     /** Format string for acceptable time format (HH:mm:ss). HH is a value 00-23. */
-    public static final String TIME_ONLY_FORMAT = "HH:mm:ss";
+    public static final String TIME_ONLY_FORMAT;
 
     /** Format string for acceptable date time format (yyyy-MM-dd HH:mm:ss). HH is a value 00-23. */
-    public static final String DATE_TIME_FORMAT = DATE_ONLY_FORMAT + " " + TIME_ONLY_FORMAT;
+    public static final String DATE_TIME_FORMAT;
 
     /** Format string for displaying date time as a timestamp (yyyy-MM-dd HH:mm:ss.SSS). */
-    public static final String TIMESTAMP_FORMAT = DATE_TIME_FORMAT + ".SSS";
+    public static final String TIMESTAMP_FORMAT;
+
+    private static final Logger LOGGER = Logger.getLogger(Conversion.class.getCanonicalName());
+
+    private static Properties messagesProperties = new Properties();
+
+    private static final String messagesPropertiesFile = "/messages.properties";
+
+    static {
+        try {
+            messagesProperties.load(Conversion.class.getResourceAsStream(messagesPropertiesFile));
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "Could not load messges.properties");
+        }
+        DATE_ONLY_FORMAT = messagesProperties.getProperty("isoDateFormat", "yyyy-MM-dd");
+        TIME_ONLY_FORMAT = messagesProperties.getProperty("isoTimeFormat", "HH:mm:ss");
+        DATE_TIME_FORMAT = messagesProperties.getProperty("isoDateTimeFormat", DATE_ONLY_FORMAT + " " + TIME_ONLY_FORMAT);
+        TIMESTAMP_FORMAT = messagesProperties.getProperty("timestampFormat" , "yyyy-MM-dd HH:mm:ss");
+        TIMESTAMP_PARSE_ERROR = messagesProperties.getProperty("timeStampParseError", "Cannot parse timestamp.");
+    }
+
 
     private Conversion() {
         // utility class
