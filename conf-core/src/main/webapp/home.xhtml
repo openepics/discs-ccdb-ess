@@ -528,6 +528,7 @@
             <ui:param name="formToUpdate" value=":hierarchies:slotAttributes" />
             <ui:param name="entityType" value="selected attribute" />
             <ui:param name="resetFilter" value="PF('attributesWidget').clearFilters();" />
+            <ui:param name="resizeContent" value="hierarchiesResizeAll();" />
         </ui:include>
 
         <ui:include src="/resources/dialogs/property-value.xhtml">
@@ -594,6 +595,7 @@
                     :hierarchies:hierarchyTabs:tree" />
             <ui:param name="entityType" value="selected relationship" />
             <ui:param name="resetFilter" value="PF('relationshipsWidget').clearFilters();" />
+            <ui:param name="resizeContent" value="hierarchiesResizeAll();" />
         </ui:include>
 
         <ui:include src="/resources/dialogs/cannot-delete-relationship.xhtml" />

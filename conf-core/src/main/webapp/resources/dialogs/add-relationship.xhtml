@@ -55,13 +55,14 @@
                 </p:row>
             </p:panelGrid>
 
-            <p:commandButton value="Cancel" styleClass="dialogButton" onclick="PF('addSlotRelationship').hide();" 
+            <p:commandButton value="Cancel" styleClass="dialogButton" 
+                    onclick="PF('addSlotRelationship').hide();" oncomplete="hierarchiesResizeAll();"
                     actionListener="#{hierarchiesController.onRelationshipPopupClose}" 
                     resetValues="true" style="margin-top: 1em;" update=":hierarchies:hierarchyTabs:tree" />
             <p:commandButton value="Add" styleClass="dialogButton" id="addButton" style="margin-top: 1em;" 
                     disabled="#{empty hierarchiesController.selectedTreeNodeForRelationshipAdd}" 
                     action="#{hierarchiesController.onRelationshipAdd}" 
-                    oncomplete="PF('addSlotRelationship').hide(); PF('relationshipsWidget').clearFilters();" 
+                    oncomplete="PF('addSlotRelationship').hide(); hierarchiesResizeAll();" 
                     update=":hierarchies:relationshipTable :hierarchies:hierarchyTabs:tree" />
         </p:dialog>
     </h:form>
