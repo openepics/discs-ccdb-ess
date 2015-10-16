@@ -9,6 +9,7 @@
         <cc:attribute name="controllerBean" required="true" />
         <cc:attribute name="updateButtons" />
         <cc:attribute name="updateTargets" />
+        <cc:attribute name="parentName" />
     </cc:interface>
 
     <cc:implementation>
@@ -21,7 +22,7 @@
             <p:ajax event="rowSelect" update="#{cc.attrs.updateButtons}" />
             <p:ajax event="rowUnselect" update="#{cc.attrs.updateButtons}" />
 
-            <p:column headerText="Parent" sortBy="#{attribute.parent}" filterBy="#{attribute.parent}"
+            <p:column headerText="#{cc.attrs.parentName}" sortBy="#{attribute.parent}" filterBy="#{attribute.parent}"
                     filterMatchMode="contains">
                 <h:outputText value="#{attribute.parent}" />
             </p:column>

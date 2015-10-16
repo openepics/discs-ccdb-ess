@@ -88,7 +88,8 @@
                         <p:fieldset legend="Properties" id="propFieldset">
                             <rc:new-attribute-table id="attributesDataTable" controllerBean="#{componentTypeManager}"
                                 updateTargets=":modifyPropertyValueForm :modifyArtifactForm"
-                                updateButtons=":deviceTypesForm:editAttrButton :deviceTypesForm:deleteAttrButton" />
+                                updateButtons=":deviceTypesForm:editAttrButton :deviceTypesForm:deleteAttrButton"
+                                parentName="Device Type" />
 
                             <p:commandButton id="deleteAttrButton" value="Delete" icon="ui-icon-trash"
                                 style="float: right; margin-top: 1em;" oncomplete="PF('deleteAttributes').show()"
