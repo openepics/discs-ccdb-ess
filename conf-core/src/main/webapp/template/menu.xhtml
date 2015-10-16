@@ -112,7 +112,10 @@
                     url="/resources/import-templates/ccdb_slots.xlsx" />
             </p:submenu>
 
-            <p:menuitem value="Help" icon="ui-icon-help" title="Help" url="/" disabled="true" />
+            <p:submenu label="Help" icon="ui-icon-help">
+                <p:menuitem value="CCDB conventions" title="Download CCDB conventions" 
+                    url="/resources/help_docs/ccdb_conventions.pdf" target="_blank"/>
+            </p:submenu>
 
             <f:facet name="options">
                 <rc:logincomp ajax="false" />
