@@ -37,14 +37,14 @@
                     disabled="#{!securityPolicy.getUIHint('SIGNALS')}" />
             </p:submenu>
 
-            <p:menuitem value="Devices" title="View device instances" url="/devices.xhtml"
+            <p:menuitem value="Devices" title="View devices" url="/devices.xhtml"
                 rendered="#{not fn:endsWith(request.requestURL,'devices.xhtml')}" icon="ui-icon-gear" />
             <p:submenu label="Devices" icon="ui-icon-gear"  rendered="#{fn:endsWith(request.requestURL,'devices.xhtml')}"
                     styleClass="menu-selected">
-                <p:menuitem value="View" title="View Device Instances" url="/devices.xhtml" />
+                <p:menuitem value="View" title="View Devices" url="/devices.xhtml" />
 
                 <p:menuitem value="Import" update=":importDevicesForm" oncomplete="PF('importDevices').show();"
-                    title="Import Device Instances" actionListener="#{devicesController.prepareImportPopup()}"
+                    title="Import Devices" actionListener="#{devicesController.prepareImportPopup()}"
                     disabled="#{!securityPolicy.getUIHint('DEVICE')}" />
             </p:submenu>
 
@@ -96,7 +96,7 @@
                 styleClass="#{fn:endsWith(request.requestURL,'log.xhtml') ? 'menu-selected' : ''}" />
 
             <p:submenu label="Templates" icon="ui-icon-calculator">
-                <p:menuitem value="Devices" title="Download device instances import Excel template"
+                <p:menuitem value="Devices" title="Download devices import Excel template"
                     url="/resources/import-templates/ccdb_devices.xlsx" />
                 <p:menuitem value="Device types" title="Download device types import Excel template"
                     url="/resources/import-templates/ccdb_device_types.xlsx" />

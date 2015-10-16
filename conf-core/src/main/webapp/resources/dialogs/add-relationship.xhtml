@@ -4,7 +4,7 @@
                 xmlns:h="http://java.sun.com/jsf/html">
 
     <h:form id="addSlotRelationshipForm">
-        <p:dialog widgetVar="addSlotRelationship" id="addSlotRelationship" modal="true" width="35em" resizable="false" 
+        <p:dialog widgetVar="addSlotRelationship" id="addSlotRelationship" modal="true" width="45em" resizable="false" 
                 closable="false" dynamic="true">
             <f:facet name="header">
                 <h:outputText value="Add relationship to #{hierarchiesController.selectedNodeSlot.name}" />
@@ -31,11 +31,12 @@
                 <p:row>
                     <p:column>
                         <p:tree value="#{hierarchiesController.rootNode}" id="relationshipTree" dynamic="true" 
-                                selectionMode="single" var="slotView" style="width: 100%; max-height: 200px; overflow: auto;"
+                                selectionMode="single" var="slotView" style="width: 100%; height: 18em; overflow: auto;"
                                 selection="#{hierarchiesController.selectedTreeNodeForRelationshipAdd}">
-                            <p:ajax event="select" update=":addSlotRelationshipForm:relationshipTypeSelect :addSlotRelationshipForm:addButton" 
-                                listener="#{hierarchiesController.slotForRelationshipChanged}" />
-                            <p:ajax event="unselect" update=":addSlotRelationshipForm:relationshipTypeSelect :addSlotRelationshipForm:addButton" />
+                            <p:ajax event="select" listener="#{hierarchiesController.slotForRelationshipChanged}" 
+                                update=":addSlotRelationshipForm:relationshipTypeSelect :addSlotRelationshipForm:addButton" />
+                            <p:ajax event="unselect" 
+                                update=":addSlotRelationshipForm:relationshipTypeSelect :addSlotRelationshipForm:addButton" />
                             <p:ajax event="expand" listener="#{hierarchiesController.onContainsExpand}" />
 
                             <p:treeNode>

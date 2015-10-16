@@ -17,7 +17,8 @@
             <p:dataTable widgetVar="#{widgetName}:table" rendered="#{isTableDisplayed}" value="#{slotsToDelete}" 
                     class="dialogListTable" filteredValue="#{filteredSlotsToDelete}" var="slot" 
                     scrollable="true" style="width: 30em; margin-bottom: 1em;">
-                <p:column headerText="Slot" filterBy="#{slot.name}" sortBy="#{slot.name}" filterMatchMode="contains">
+                <p:column headerText="Container/Slot" filterBy="#{slot.name}" sortBy="#{slot.name}" 
+                        filterMatchMode="contains">
                     <h:outputText value="#{slot.name}" />
                 </p:column>
             </p:dataTable>

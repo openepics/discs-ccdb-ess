@@ -69,16 +69,22 @@ public class Conversion {
     private static final String UNICODE_NON_BREAKING_SPACE = "\\u00A0";
     private static final String TIMESTAMP_PARSE_ERROR;
 
-    /** Format string for acceptable date format (ISO 8601: yyyy-MM-dd). */
+    /** Format string for acceptable date format. Read from properties file. Default is ISO 8601: yyyy-MM-dd. */
     public static final String DATE_ONLY_FORMAT;
 
-    /** Format string for acceptable time format (HH:mm:ss). HH is a value 00-23. */
+    /** Format string for acceptable time format. Read from properties file.
+     * Default is HH:mm:ss, HH is a value 00-23.
+     */
     public static final String TIME_ONLY_FORMAT;
 
-    /** Format string for acceptable date time format (yyyy-MM-dd HH:mm:ss). HH is a value 00-23. */
+    /** Format string for acceptable date time format. Read from properties file.
+     * Default is yyyy-MM-dd HH:mm:ss, HH is a value 00-23.
+     */
     public static final String DATE_TIME_FORMAT;
 
-    /** Format string for displaying date time as a timestamp (yyyy-MM-dd HH:mm:ss.SSS). */
+    /** Format string for displaying date time as a timestamp. Read from properties file.
+     * Default is yyyy-MM-dd HH:mm:ss.SSS.
+     */
     public static final String TIMESTAMP_FORMAT;
 
     private static final Logger LOGGER = Logger.getLogger(Conversion.class.getCanonicalName());
@@ -96,7 +102,7 @@ public class Conversion {
         DATE_ONLY_FORMAT = messagesProperties.getProperty("isoDateFormat", "yyyy-MM-dd");
         TIME_ONLY_FORMAT = messagesProperties.getProperty("isoTimeFormat", "HH:mm:ss");
         DATE_TIME_FORMAT = messagesProperties.getProperty("isoDateTimeFormat", DATE_ONLY_FORMAT + " " + TIME_ONLY_FORMAT);
-        TIMESTAMP_FORMAT = messagesProperties.getProperty("timestampFormat" , "yyyy-MM-dd HH:mm:ss");
+        TIMESTAMP_FORMAT = messagesProperties.getProperty("timestampFormat" , "yyyy-MM-dd HH:mm:ss.SSS");
         TIMESTAMP_PARSE_ERROR = messagesProperties.getProperty("timeStampParseError", "Cannot parse timestamp.");
     }
 

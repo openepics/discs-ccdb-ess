@@ -629,7 +629,7 @@ public class DevicesController
                                                     ? null : selectedDevices.get(0).getDevice();
             if (existingDevice != null && !existingDevice.equals(editedDevice)) {
                 throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                            Utility.MESSAGE_SUMMARY_ERROR, "Device instance with this inventory ID already exists."));
+                            Utility.MESSAGE_SUMMARY_ERROR, "Device with this inventory ID already exists."));
             }
         }
     }

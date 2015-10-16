@@ -122,7 +122,7 @@
                                             update=":hierarchies:relationsTable :hierarchies:deleteButton :hierarchies:downButton
                                                     :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton
                                                     :hierarchies:installationDetails :hierarchies:slotAttributes
-                                                    :hierarchies:addRelationship"
+                                                    :hierarchies:addRelationship :hierarchies:clipboardOperations"
                                             oncomplete="hierarchiesResizeAll();" />
                                         <p:ajax event="expand" listener="#{hierarchiesController.onContainsExpand}" />
 
@@ -275,9 +275,9 @@
                     </p:column>
                     <p:column id="attributesColumn" styleClass="alignTop" >
                         <p:fieldset id="slotAttributes" legend="Properties" style="max-height: 30%;">
-                            <p:dataTable id="attributesTable" class="hierarchies-attributes-cell" emptyMessage="No element selected."
-                                    value="#{hierarchiesController.attributes}" var="attribute" scrollable="true"
-                                    style="width: 100%; overflow-y: hidden;" resizableColumns="true"
+                            <p:dataTable id="attributesTable" class="hierarchies-attributes-cell" var="attribute" 
+                                    emptyMessage="No records found." value="#{hierarchiesController.attributes}" 
+                                    scrollable="true" style="width: 100%; overflow-y: hidden;" resizableColumns="true"
                                     selection="#{hierarchiesController.selectedAttribute}" selectionMode="single"
                                     filteredValue="#{hierarchiesController.filteredAttributes}" rowKey="#{attribute.id}"
                                     widgetVar="attributesWidget">
@@ -356,7 +356,7 @@
                         <p:fieldset id="relationsTable" legend="Relationships">
                             <p:dataTable value="#{hierarchiesController.relationships}" id="relationshipTable"
                                     style="width: 100%; overflow-y: hidden; max-height: 324px;" var="relationship"
-                                    emptyMessage="No element selected." scrollable="true" class="hierarchies-attributes-cell"
+                                    emptyMessage="No records found." scrollable="true" class="hierarchies-attributes-cell"
                                     filteredValue="#{hierarchiesController.filteredRelationships}"
                                     selectionMode="single" rowKey="#{relationship.slotPair.id}"
                                     selection="#{hierarchiesController.selectedRelationship}"
@@ -409,17 +409,17 @@
                             <p:dataTable id="installationTable" value="#{hierarchiesController.installationRecords}"
                                     var="installationRecord" style="width: 100%;" widgetVar="installationWidget"
                                     selectionMode="single" selection="#{hierarchiesController.selectedInstallationView}"
-                                    emptyMessage="No element selected." rowKey="#{installationRecord.slotName}"
+                                    emptyMessage="No records found." rowKey="#{installationRecord.slotName}"
                                     filteredValue="#{hierarchiesController.filteredInstallationRecords}">
 
                                 <p:ajax event="rowSelect" update=":hierarchies:installDeviceBtn :hierarchies:uninstallDeviceBtn" />
                                 <p:ajax event="rowUnselect" update=":hierarchies:installDeviceBtn :hierarchies:uninstallDeviceBtn" />
 
-                                <p:column headerText="Installation slot" sortBy="#{installationRecord.slotName}" 
+                                <p:column headerText="Container/Slot" sortBy="#{installationRecord.slotName}" 
                                         filterBy="#{installationRecord.slotName}">
                                     <h:outputText value="#{installationRecord.slotName}" />
                                 </p:column>
-                                <p:column headerText="Installed device inventory ID" 
+                                <p:column headerText="Inventory ID" 
                                         sortBy="#{installationRecord.deviceInventoryId}" 
                                         filterBy="#{installationRecord.deviceInventoryId}">
                                     <h:link outcome="deviceManager" value="#{installationRecord.deviceInventoryId}"
@@ -428,7 +428,7 @@
                                     </h:link>
                                     <h:outputText value="-" rendered="#{not installationRecord.deviceInstalled}" />
                                 </p:column>
-                                <p:column headerText="Installation timestamp" sortBy="#{installationRecord.installDate}"
+                                <p:column headerText="Timestamp" sortBy="#{installationRecord.installDate}"
                                         filterBy="#{installationRecord.installDate}" filterMatchMode="contains">
                                     <h:outputText value="#{installationRecord.installDate}"
                                             rendered="#{installationRecord.deviceInstalled}">
@@ -466,7 +466,7 @@
 
         <ui:include src="/resources/dialogs/install-device.xhtml">
             <ui:param name="formId" value="installDeviceForm" />
-            <ui:param name="dialogTitle" value="Select device instance" />
+            <ui:param name="dialogTitle" value="Select device" />
             <ui:param name="widgetName" value="installDevice" />
             <ui:param name="slot" value="#{hierarchiesController.selectedInstallationView.slot}" />
             <ui:param name="componentToUpdate"
@@ -476,7 +476,8 @@
         <ui:include src="/resources/dialogs/delete-slots-confirmation.xhtml" >
             <ui:param name="formId" value="deleteSlotsForm" />
             <ui:param name="dialogTitle" value="#{hierarchiesController.numberOfSlotsToDelete gt 1
-                                                        ? 'Delete slots' : 'Delete slot'}" />
+                                                        ? 'Delete Containers/Slots' 
+                                                        : 'Delete Container/Slot'}" />
             <ui:param name="widgetName" value="deleteSlots" />
             <ui:param name="controller" value="#{hierarchiesController}" />
             <ui:param name="submitHandler" value="onSlotsDelete" />
