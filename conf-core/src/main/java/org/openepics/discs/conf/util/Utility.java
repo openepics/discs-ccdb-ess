@@ -148,11 +148,21 @@ public class Utility {
     public static List<SelectItem> buildAttributeKinds() {
         List<SelectItem> attributeKinds = Lists.newArrayList();
         attributeKinds.add(new SelectItem("", "Select one", "", false, false, true));
-        for (EntityAttributeViewKind kind : EntityAttributeViewKind.values()) {
-            if (kind != EntityAttributeViewKind.UNKNOWN_PROPERTY) {
-                attributeKinds.add(new SelectItem(kind, kind.toString()));
-            }
-        }
+        EntityAttributeViewKind[] displayedKinds = new EntityAttributeViewKind[] {
+                EntityAttributeViewKind.DEVICE_TYPE_PROPERTY,
+                EntityAttributeViewKind.DEVICE_TYPE_ARTIFACT,
+                EntityAttributeViewKind.DEVICE_TYPE_TAG,
+                EntityAttributeViewKind.INSTALL_SLOT_PROPERTY,
+                EntityAttributeViewKind.INSTALL_SLOT_ARTIFACT,
+                EntityAttributeViewKind.INSTALL_SLOT_TAG,
+                EntityAttributeViewKind.DEVICE_PROPERTY,
+                EntityAttributeViewKind.DEVICE_ARTIFACT,
+                EntityAttributeViewKind.DEVICE_TAG,
+                EntityAttributeViewKind.ARTIFACT,
+                EntityAttributeViewKind.PROPERTY,
+                EntityAttributeViewKind.TAG,
+        };
+        for (EntityAttributeViewKind kind : displayedKinds) attributeKinds.add(new SelectItem(kind, kind.toString()));
         return attributeKinds;
     }
 
