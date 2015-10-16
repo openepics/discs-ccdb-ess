@@ -84,10 +84,7 @@
 
                             <p:commandButton id="duplicateButton" icon="ui-icon-copy" value="Duplicate" title="Duplicate selected" 
                                 style="float: right; margin-top: 1em;" disabled="#{empty devicesController.selectedDevices}" 
-                                oncomplete="PF('devicesTableVar').clearFilters(); PF('attributesDataTable').clearFilters(); adjustTableHeights();" 
-                                update=":devicesForm:devicesTable :devicesForm:duplicateButton :devicesForm:editButton 
-                                  :devicesForm:deleteButton :devicesForm:attributesDataTable:attributesDataTable" 
-                                actionListener="#{devicesController.duplicate}" />
+                                oncomplete="PF('duplicateDialog').show();" update=":duplicateForm:duplicateDialog" />                
                             <p:commandButton id="exportButton" icon="ui-icon-disk" value="Export" title="Export" 
                                 style="float: right; margin-top: 1em;" oncomplete="PF('exportDevices').show();" 
                                 disabled="#{empty devicesController.devices}" update=":exportDevForm:exportDevices" 
@@ -237,6 +234,18 @@
             <ui:param name="entityName" value="Device" />
         </ui:include>
 
+        <ui:include src="/resources/dialogs/duplicate-confirmation.xhtml" >
+            <ui:param name="formId" value="duplicateForm" />
+            <ui:param name="controller" value="#{devicesController}" />
+            <ui:param name="duplicateList" value="#{devicesController.selectedDevices}" />            
+            <ui:param name="formsToUpdate" value=":devicesForm:devicesTable :devicesForm:duplicateButton :devicesForm:editButton 
+                                  :devicesForm:deleteButton :devicesForm:attributesDataTable:attributesDataTable" />
+            <ui:param name="closeDialogActions" value="PF('devicesTableVar').clearFilters(); PF('attributesDataTable').clearFilters();
+                adjustTableHeights();" />
+            <ui:param name="entityType" value="devices" />
+            <ui:param name="entityName" value="Device" />
+        </ui:include>
+
         <ui:include src="/resources/dialogs/delete-multi-confirmation.xhtml" >
             <ui:param name="formId" value="deleteAttributesForm" />
             <ui:param name="dialogTitle" value="Delete Properties" />
@@ -251,7 +260,7 @@
                                                     :devicesForm:duplicateButton :devicesForm:exportButton
                                                     :devicesForm:deleteButton" />
             <ui:param name="closeDialogActions" value="PF('attributesDataTable').clearFilters(); adjustTableHeights();" />
-            <ui:param name="entityType" value="attributes" />
+            <ui:param name="entityType" value="properties" />
             <ui:param name="entityName" value="Property" />
         </ui:include>
 

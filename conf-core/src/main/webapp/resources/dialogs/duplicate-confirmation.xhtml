@@ -1,0 +1,32 @@
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html">
+            
+    <h:form id="#{formId}">
+        <p:dialog widgetVar="duplicateDialog" id="duplicateDialog" modal="true" resizable="false" dynamic="true"
+                closable="false" class="dialogWithList" 
+                onShow="resizeDeleteList('#{formId}');PF('duplicateDialog:table').clearFilters();">
+            <f:facet name="header">
+                <h:outputText value="Duplicate" />
+            </f:facet>
+            <p:outputPanel style="display: block; width: 30em; margin-bottom: 1.2em;">
+                <h:outputText value="Are you sure you want to duplicate selected #{entityType}?" />                
+            </p:outputPanel>
+
+            <p:dataTable widgetVar="duplicateDialog:table" value="#{duplicateList}" class="dialogListTable"
+                  var="entity" scrollable="true" style="width: 30em; margin-bottom: 1em;">
+                <p:column headerText="#{entityName}" sortBy="#{entity.name}" filterBy="#{entity.name}" 
+                        filterMatchMode="contains">
+                    <h:outputText value="#{entity.name}" />
+                </p:column>
+            </p:dataTable>
+
+            <p:commandButton value="No" styleClass="dialogButton" 
+                onclick="PF('duplicateDialog').hide(); #{closeDialogActions}" />
+            <p:commandButton value="Yes" styleClass="dialogButton" ajax="true" update="#{formsToUpdate}" 
+                oncomplete="PF('duplicateDialog').hide(); #{closeDialogActions}" 
+                action="#{controller.duplicate}" />
+        </p:dialog>
+    </h:form>
+</ui:composition>

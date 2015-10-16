@@ -63,8 +63,7 @@
 
                 <p:commandButton id="duplicateButton" icon="ui-icon-copy" value="Duplicate" title="Duplicate selected" 
                     style="float: right; margin-top: 1em;" disabled="#{empty dataTypeManager.selectedEnums}" 
-                    oncomplete="closeDialogActions(null);" 
-                    update=":enumsForm:enumsTable :enumsForm:deleteButton :enumsForm:editButton" actionListener="#{dataTypeManager.duplicate}" />
+                    oncomplete="PF('duplicateDialog').show();" update=":duplicateForm:duplicateDialog" />                       
                 <p:commandButton id="exportButton" icon="ui-icon-disk" value="Export" title="Export" 
                     style="float: right; margin-top: 1em;" oncomplete="PF('exportEnums').show();" 
                     disabled="#{empty dataTypeManager.filteredDataTypeViews}" update=":exportEnumsForm:exportEnums" 
@@ -95,6 +94,16 @@
             <ui:param name="formsToUpdate" value=":enumsForm:enumsTable :enumsForm:deleteButton 
                                                 :enumsForm:editButton :enumsForm:exportButton 
                                                 :enumsForm:duplicateButton" />
+            <ui:param name="closeDialogActions" value="closeDialogActions(null);" />
+            <ui:param name="entityType" value="enumerations" />
+            <ui:param name="entityName" value="Enumeration" />
+        </ui:include>
+        
+        <ui:include src="/resources/dialogs/duplicate-confirmation.xhtml" >
+            <ui:param name="formId" value="duplicateForm" />
+            <ui:param name="controller" value="#{dataTypeManager}" />
+            <ui:param name="duplicateList" value="#{dataTypeManager.selectedEnums}" />            
+            <ui:param name="formsToUpdate" value=":enumsForm:enumsTable :enumsForm:deleteButton :enumsForm:editButton :enumsForm:duplicateButton" />
             <ui:param name="closeDialogActions" value="closeDialogActions(null);" />
             <ui:param name="entityType" value="enumerations" />
             <ui:param name="entityName" value="Enumeration" />

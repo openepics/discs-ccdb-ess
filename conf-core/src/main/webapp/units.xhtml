@@ -64,9 +64,8 @@
                 </p:dataTable>
 
                 <p:commandButton id="duplicateButton" icon="ui-icon-copy" value="Duplicate" title="Duplicate selected" 
-                    style="float: right; margin-top: 1em;" disabled="#{empty unitManager.selectedUnits}" 
-                    oncomplete="closeDialogActions(null);" 
-                    update=":unitsForm:unitsTable :unitsForm:editButton :unitsForm:deleteButton" actionListener="#{unitManager.duplicate}" />
+                    style="float: right; margin-top: 1em;" disabled="#{empty unitManager.selectedUnits}"
+                    oncomplete="PF('duplicateDialog').show();" update=":duplicateForm:duplicateDialog" />                    
                 <p:commandButton id="exportButton" icon="ui-icon-disk" value="Export" title="Export" 
                     style="float: right; margin-top: 1em;" oncomplete="PF('exportUnits').show();" 
                     disabled="#{empty unitManager.filteredUnits}" update=":exportUnitsForm:exportUnits" 
@@ -100,7 +99,17 @@
             <ui:param name="entityType" value="units" />
             <ui:param name="entityName" value="Unit" />
         </ui:include>
-
+        
+        <ui:include src="/resources/dialogs/duplicate-confirmation.xhtml" >
+            <ui:param name="formId" value="duplicateForm" />
+            <ui:param name="controller" value="#{unitManager}" />
+            <ui:param name="duplicateList" value="#{unitManager.selectedUnits}" />            
+            <ui:param name="formsToUpdate" value=":unitsForm:unitsTable :unitsForm:editButton :unitsForm:deleteButton :unitsForm:duplicateButton" />
+            <ui:param name="closeDialogActions" value="closeDialogActions(null);" />
+            <ui:param name="entityType" value="units" />
+            <ui:param name="entityName" value="Unit" />
+        </ui:include>
+                    
         <ui:include src="/resources/dialogs/add-or-modify-unit.xhtml">
             <ui:param name="formId" value="modifyUnitForm" />
             <ui:param name="dialogTitle" value="Edit Unit" />
