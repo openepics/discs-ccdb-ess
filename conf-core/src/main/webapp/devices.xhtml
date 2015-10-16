@@ -159,7 +159,7 @@
         <ui:include src="/resources/dialogs/device-add-or-modify-dialog.xhtml">
             <ui:param name="formId" value="deviceAddForm" />
             <ui:param name="widgetName" value="addDeviceDialog" />
-            <ui:param name="dialogTitle" value="Add device" />
+            <ui:param name="dialogTitle" value="Add Device" />
             <ui:param name="updateComponents" value=":devicesForm:devicesTable :devicesForm:deleteButton 
                                                     :devicesForm:editButton :devicesForm:exportButton
                                                     :devicesForm:duplicateButton" />
@@ -171,7 +171,7 @@
         <ui:include src="/resources/dialogs/device-add-or-modify-dialog.xhtml">
             <ui:param name="formId" value="deviceEditForm" />
             <ui:param name="widgetName" value="editDeviceDialog" />
-            <ui:param name="dialogTitle" value="Edit device" />
+            <ui:param name="dialogTitle" value="Edit Device" />
             <ui:param name="saveAction" value="PF('devicesTableVar').clearFilters(); adjustTableHeights();" />
             <ui:param name="updateComponents" value=":devicesForm:devicesTable :devicesForm:deleteButton 
                                                     :devicesForm:editButton :devicesForm:exportButton
@@ -181,7 +181,7 @@
 
         <ui:include src="/resources/dialogs/property-value.xhtml">
             <ui:param name="formId" value="modifyPropertyValueForm" />
-            <ui:param name="dialogTitle" value="Edit property" />
+            <ui:param name="dialogTitle" value="Edit Property" />
             <ui:param name="widgetName" value="modifyPropertyValue" />
             <ui:param name="resetFilter" value="PF('attributesDataTable').clearFilters(); adjustTableHeights();" />
             <ui:param name="controller" value="#{devicesController}" />
@@ -221,7 +221,7 @@
 
         <ui:include src="/resources/dialogs/delete-multi-confirmation.xhtml" >
             <ui:param name="formId" value="deleteDevicesForm" />
-            <ui:param name="dialogTitle" value="Delete devices" />
+            <ui:param name="dialogTitle" value="Delete Devices" />
             <ui:param name="widgetName" value="deleteDevices" />
             <ui:param name="controller" value="#{devicesController}" />
             <ui:param name="deletePreventionList" value="#{devicesController.usedDevices}" />
@@ -239,7 +239,7 @@
 
         <ui:include src="/resources/dialogs/delete-multi-confirmation.xhtml" >
             <ui:param name="formId" value="deleteAttributesForm" />
-            <ui:param name="dialogTitle" value="Delete attributes" />
+            <ui:param name="dialogTitle" value="Delete Properties" />
             <ui:param name="widgetName" value="deleteAttributes" />
             <ui:param name="controller" value="#{devicesController}" />
             <ui:param name="deletePreventionList" value="#{devicesController.nonDeletableAttributes}" />
@@ -252,12 +252,12 @@
                                                     :devicesForm:deleteButton" />
             <ui:param name="closeDialogActions" value="PF('attributesDataTable').clearFilters(); adjustTableHeights();" />
             <ui:param name="entityType" value="attributes" />
-            <ui:param name="entityName" value="Attribute" />
+            <ui:param name="entityName" value="Property" />
         </ui:include>
 
         <ui:include src="/resources/dialogs/batch-creation-conflict.xhtml">
             <ui:param name="formId" value="batchConflictForm" />
-            <ui:param name="dialogTitle" value="Conflicting devices" />
+            <ui:param name="dialogTitle" value="Conflicting Devices" />
             <ui:param name="widgetName" value="batchConflict" />
             <ui:param name="entity" value="devices" />
             <ui:param name="entityListing" value="#{devicesController.batchSerialConflicts}" />
