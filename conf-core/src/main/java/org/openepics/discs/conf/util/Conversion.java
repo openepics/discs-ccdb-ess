@@ -19,7 +19,6 @@
  */
 package org.openepics.discs.conf.util;
 
-import java.io.IOException;
 import java.io.StringReader;
 import java.text.ParseException;
 import java.text.ParsePosition;
@@ -91,7 +90,7 @@ public class Conversion {
     static {
         try {
             messagesProperties.load(Conversion.class.getResourceAsStream(messagesPropertiesFile));
-        } catch (IOException e) {
+        } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Could not load messges.properties");
         }
         DATE_ONLY_FORMAT = messagesProperties.getProperty("isoDateFormat", "yyyy-MM-dd");

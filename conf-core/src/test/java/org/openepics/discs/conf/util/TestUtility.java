@@ -62,6 +62,7 @@ public class TestUtility {
                                             "org.openepics.discs.conf.valueconverters",
                                             "org.openepics.discs.conf.views")
                                .addAsResource("test-persistence.xml", "META-INF/persistence.xml")
+                               .addAsResource("messages.properties", "/messages.properties")
                                .addAsWebInfResource("beans.xml")
                                .addAsWebInfResource("jboss-web.xml")
                                .addAsWebInfResource("web.xml");
