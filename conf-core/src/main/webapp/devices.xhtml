@@ -84,8 +84,9 @@
 
                             <p:commandButton id="duplicateButton" icon="ui-icon-copy" value="Duplicate" title="Duplicate selected" 
                                 style="float: right; margin-top: 1em;" disabled="#{empty devicesController.selectedDevices}" 
-                                oncomplete="adjustTableHeights();" update=":devicesForm:devicesTable :devicesForm:duplicateButton
-                                        :devicesForm:editButton :devicesForm:deleteButton :devicesForm:attributesDataTable:attributesDataTable" 
+                                oncomplete="PF('devicesTableVar').clearFilters(); PF('attributesDataTable').clearFilters(); adjustTableHeights();" 
+                                update=":devicesForm:devicesTable :devicesForm:duplicateButton :devicesForm:editButton 
+                                  :devicesForm:deleteButton :devicesForm:attributesDataTable:attributesDataTable" 
                                 actionListener="#{devicesController.duplicate}" />
                             <p:commandButton id="exportButton" icon="ui-icon-disk" value="Export" title="Export" 
                                 style="float: right; margin-top: 1em;" oncomplete="PF('exportDevices').show();" 
@@ -230,7 +231,7 @@
                                                     :devicesForm:editAttrButton :devicesForm:deleteAttrButton
                                                     :devicesForm:duplicateButton :devicesForm:deleteButton
                                                     :devicesForm:exportButton" />
-            <ui:param name="closeDialogActions" value="PF('devicesTableVar').clearFilters(); PF('devicesTableVar').clearFilters(); adjustTableHeights();" />
+            <ui:param name="closeDialogActions" value="PF('devicesTableVar').clearFilters(); adjustTableHeights();" />
             <ui:param name="entityType" value="devices" />
             <ui:param name="entityName" value="Device" />
         </ui:include>
@@ -248,7 +249,7 @@
                                                     :devicesForm:editAttrButton :devicesForm:deleteAttrButton
                                                     :devicesForm:duplicateButton :devicesForm:exportButton
                                                     :devicesForm:deleteButton" />
-            <ui:param name="closeDialogActions" value="PF('attributesDataTable').clearFilters; adjustTableHeights();" />
+            <ui:param name="closeDialogActions" value="PF('attributesDataTable').clearFilters(); adjustTableHeights();" />
             <ui:param name="entityType" value="attributes" />
             <ui:param name="entityName" value="Attribute" />
         </ui:include>
