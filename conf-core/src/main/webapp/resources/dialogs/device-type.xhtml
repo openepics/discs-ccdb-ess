@@ -4,8 +4,7 @@
     xmlns:h="http://java.sun.com/jsf/html">
 
     <h:form id="#{formId}">
-        <p:dialog widgetVar="#{widgetName}" id="#{widgetName}" modal="true" resizable="false" closable="false" 
-                width="530">
+        <p:dialog widgetVar="#{widgetName}" id="#{widgetName}" modal="true" resizable="false" closable="false">
             <f:facet name="header">
                 <h:outputText value="#{dialogTitle}" />
             </f:facet>
@@ -15,7 +14,7 @@
                 <p:outputLabel for="deviceTypeName" value="Name:" />
                 <h:panelGroup>
                     <p:inputText id="deviceTypeName" value="#{componentTypeManager.name}" required="true" 
-                            requiredMessage="Please enter a name" />
+                            requiredMessage="Please enter a name" style="width: 100%;"/>
                     <p:message for="deviceTypeName" />
                 </h:panelGroup>
 

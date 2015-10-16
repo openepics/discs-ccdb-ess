@@ -22,7 +22,8 @@
                     <p:column>
                         <p:inputText id="unitName" value="#{unitManager.name}" required="true" 
                             validator="#{unitManager.nameValidator}" requiredMessage="Please enter a name" 
-                            disabled="#{unitManager.modifiedUnitInUse and not unitManager.unitAdd}" />
+                            disabled="#{unitManager.modifiedUnitInUse and not unitManager.unitAdd}"
+                            style="width: 100%;" />
                         <p:message for="unitName" />
                     </p:column>
                 </p:row>
@@ -47,7 +48,8 @@
                     <p:column>
                         <p:inputText id="unitSymbol" value="#{unitManager.symbol}" required="true" 
                             requiredMessage="Please enter a symbol" 
-                            disabled="#{unitManager.modifiedUnitInUse and not unitManager.unitAdd}" />
+                            disabled="#{unitManager.modifiedUnitInUse and not unitManager.unitAdd}"
+                            style="width: 100%;" />
                         <p:message for="unitSymbol" />
                     </p:column>
                 </p:row>

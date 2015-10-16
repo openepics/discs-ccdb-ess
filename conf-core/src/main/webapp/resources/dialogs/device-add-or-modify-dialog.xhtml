@@ -18,7 +18,8 @@
                             value="#{devicesController.deviceTypeSelection}" 
                             requiredMessage="Please select a device type." 
                             disabled="#{not batchCreation and 
-                                not empty devicesController.selectedDevices.get(0).installationTimestamp}">
+                                not empty devicesController.selectedDevices.get(0).installationTimestamp}"
+                                style="width: 100%;">
                         <f:selectItem itemLabel="&lt;Select type&gt;" itemValue="" noSelectionOption="true" />
                         <f:selectItems value="#{devicesController.availableDeviceTypes}" var="dtype" 
                             itemLabel="#{dtype.name}" itemValue="#{dtype.id}" />
@@ -30,7 +31,7 @@
                 <h:panelGroup>
                     <p:inputText id="devInventoryId" value="#{devicesController.serialNumber}" 
                         required="true" requiredMessage="Please enter an inventory ID" 
-                        validator="#{devicesController.newDeviceSerialNoValidator}" />
+                        validator="#{devicesController.newDeviceSerialNoValidator}" style="width: 100%;"/>
                     <p:message for="devInventoryId" />
                 </h:panelGroup>
                 
