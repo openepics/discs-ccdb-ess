@@ -298,16 +298,22 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
 
     @Override
     protected void filterProperties() {
-        final List<Property> propertyCandidates = propertyEJB.findAllOrderedByName();
-
-        for (final ComptypePropertyValue comptypePropertyValue : compType.getComptypePropertyList()) {
-            final Property currentProperty = comptypePropertyValue.getProperty();
-            // in modify dialog the 'property' is set to the property of the current value
-            if (!currentProperty.equals(property)) {
-                propertyCandidates.remove(currentProperty);
-            }
+        if (selectedDeviceTypes == null || selectedDeviceTypes.isEmpty()) {
+            filteredProperties = null;
+            return;
         }
 
+        final List<Property> propertyCandidates = propertyEJB.findAllOrderedByName();
+
+        for (ComponentType compType : selectedDeviceTypes) {
+            for (final ComptypePropertyValue comptypePropertyValue : compType.getComptypePropertyList()) {
+                final Property currentProperty = comptypePropertyValue.getProperty();
+                // in modify dialog the 'property' is set to the property of the current value
+                if (!currentProperty.equals(property)) {
+                    propertyCandidates.remove(currentProperty);
+                }
+            }
+        }
         filteredProperties = propertyCandidates;
     }
 
