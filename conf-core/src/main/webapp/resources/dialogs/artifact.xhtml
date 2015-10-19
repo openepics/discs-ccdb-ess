@@ -11,16 +11,16 @@
             </f:facet>
             <h:panelGroup id="group" style="display: block">
                 <p:panelGrid id="grp" styleClass="dialog-grid-panel noBorders" style="margin-bottom: 1ex;">
-                    <p:row rendered="#{!controller.artifactInternal}">
+                    <p:row>
                         <p:column class="alignRight dialog-labels-width-2" style="padding-top: 0.5em;">
                             <h:panelGroup id="artifactNameLabel">
-                                <p:outputLabel for="artifactName" value="Name" />
+                                <p:outputLabel for="artifactName" value="Name" rendered="#{!controller.artifactInternal}"/>
                             </h:panelGroup>
                         </p:column>
                         <p:column>
                             <h:panelGroup style="width: 100%" id="artifactNameValue">
                                 <p:inputText id="artifactName" maxlength="254" required="true" 
-                                    requiredMessage="Please enter a description" 
+                                    requiredMessage="Please enter a description" rendered="#{!controller.artifactInternal}"
                                     value="#{controller.artifactName}" style="width: 100%;"/>
                                 <br />
                                 <p:message for="artifactName" />
@@ -50,7 +50,7 @@
                             <p:selectBooleanCheckbox id="options" value="#{controller.artifactInternal}" 
                                     disabled="#{controller.artifactBeingModified}">
                                 <p:ajax process="@this" listener="#{controller.artifactTypeChanged}" 
-                                    update="group" />
+                                    update="artifactNameLabel artifactNameValue urlLabel urlValue uploader uploadFile" />
                             </p:selectBooleanCheckbox>
                         </p:column>
                     </p:row>
@@ -77,8 +77,7 @@
                                 <p:fileUpload fileUploadListener="#{controller.handleImportFileUpload}" 
                                     update="uploader uploadFile saveButton" 
                                     mode="advanced" auto="false" fileLimit="1" dragDropSupport="true"
-                                    rendered="#{controller.artifactInternal}" 
-                                    disabled="#{controller.artifactBeingModified}" />
+                                    rendered="#{controller.artifactInternal and not controller.artifactBeingModified}" />
                             </h:panelGroup>
                             <h:panelGroup id="uploadFile">
                                 <h:panelGroup rendered="#{not empty controller.importFileName}">
