@@ -161,6 +161,7 @@ public class ComptypeEJB extends DAO<ComponentType> {
             final Property property = propertyValue.getProperty();
             final ComptypePropertyValue pv = new ComptypePropertyValue();
             pv.setComponentType(newDeviceType);
+            pv.setPropertyDefinition(propertyValue.isDefinitionTargetDevice() || propertyValue.isDefinitionTargetSlot());
             pv.setProperty(property);
             pv.setDefinitionTargetDevice(propertyValue.isDefinitionTargetDevice());
             pv.setDefinitionTargetSlot(propertyValue.isDefinitionTargetSlot());
