@@ -17,7 +17,7 @@
                     </p:column>
                     <p:column>
                         <h:panelGroup>
-                            <p:selectOneMenu id="compTypeSelect" value="#{hierarchiesController.deviceType}" 
+                            <p:selectOneMenu id="compTypeSelect" style="width: 100%;" value="#{hierarchiesController.deviceType}" 
                                     converter="#{componentTypeConverter}" rendered="true" required="true" 
                                     requiredMessage="Please select a device type" 
                                     disabled="#{not hierarchiesController.newInstallationSlot 
@@ -36,8 +36,8 @@
                         <p:outputLabel for="slotName" value="#{hierarchiesController.installationSlot ? 'Installation slot' : 'Container'} name:" />
                     </p:column>
                     <p:column>
-                        <h:panelGroup>
-                            <p:autoComplete id="slotName" value="#{hierarchiesController.name}" 
+                        <h:panelGroup style="width: 100%">
+                            <p:autoComplete id="slotName" style="width: 100%;" inputStyle="width: 100%;" value="#{hierarchiesController.name}" 
                                 completeMethod="#{hierarchiesController.nameAutocompleteText}" 
                                 validator="#{hierarchiesController.validateInstallationSlot}" 
                                 required="true" requiredMessage="Please enter an installation slot name" />
@@ -65,7 +65,7 @@
                         <p:outputLabel for="parent" value="Parent:" />
                     </p:column>
                     <p:column>
-                        <p:inputText id="parent" value="#{hierarchiesController.selectedNodeSlot.name}" disabled="true" />
+                        <p:inputText id="parent" style="width: 100%;" value="#{hierarchiesController.selectedNodeSlot.name}" disabled="true" />
                     </p:column>
                 </p:row>
             </p:panelGrid>

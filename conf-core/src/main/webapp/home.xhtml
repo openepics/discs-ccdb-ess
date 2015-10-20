@@ -467,7 +467,7 @@
 
         <ui:include src="/resources/dialogs/install-device.xhtml">
             <ui:param name="formId" value="installDeviceForm" />
-            <ui:param name="dialogTitle" value="Select device" />
+            <ui:param name="dialogTitle" value="Select Device" />
             <ui:param name="widgetName" value="installDevice" />
             <ui:param name="slot" value="#{hierarchiesController.selectedInstallationView.slot}" />
             <ui:param name="componentToUpdate"
@@ -508,7 +508,7 @@
             <ui:param name="formId" value="editSlotForm" />
             <ui:param name="widgetName" value="editSlotDialog" />
             <ui:param name="dialogTitle" value="Edit #{hierarchiesController.selectedNodeSlot.hostingSlot
-                                                    ? 'installation slot' : 'container'}" />
+                                                    ? 'Installation Slot' : 'Container'}" />
             <ui:param name="submitHandler" value="onSlotModify" />
         </ui:include>
 
@@ -516,13 +516,13 @@
             <ui:param name="formId" value="addSlotForm" />
             <ui:param name="widgetName" value="addSlotDialog" />
             <ui:param name="dialogTitle" value="Add #{hierarchiesController.installationSlot
-                                                    ? 'installation slot' : 'container'}" />
+                                                    ? 'Installation Slot' : 'Container'}" />
             <ui:param name="submitHandler" value="onSlotAdd" />
         </ui:include>
 
         <ui:include src="/resources/dialogs/delete-confirmation.xhtml">
             <ui:param name="formId" value="deleteAttributeForm" />
-            <ui:param name="dialogTitle" value="Delete attribute" />
+            <ui:param name="dialogTitle" value="Delete Property" />
             <ui:param name="widgetName" value="deleteAttribute" />
             <ui:param name="controller" value="#{hierarchiesController}" />
             <ui:param name="submitHandler" value="deleteAttribute" />
@@ -534,8 +534,7 @@
 
         <ui:include src="/resources/dialogs/property-value.xhtml">
             <ui:param name="formId" value="modifyPropertyValueForm" />
-            <ui:param name="dialogTitle" value="Modify #{hierarchiesController.selectedNodeSlot.hostingSlot
-                                                    ? 'installation slot' : 'container'} property" />
+            <ui:param name="dialogTitle" value="Edit Property" />
             <ui:param name="widgetName" value="modifyPropertyValue" />
             <ui:param name="controller" value="#{hierarchiesController}" />
             <ui:param name="submitHandler" value="modifyPropertyValue" />
@@ -545,7 +544,7 @@
 
         <ui:include src="/resources/dialogs/property-value.xhtml">
             <ui:param name="formId" value="addPropertyValueForm" />
-            <ui:param name="dialogTitle" value="Add new container property" />
+            <ui:param name="dialogTitle" value="Add Property" />
             <ui:param name="widgetName" value="addPropertyValue" />
             <ui:param name="controller" value="#{hierarchiesController}" />
             <ui:param name="submitHandler" value="addNewPropertyValue" />
@@ -555,8 +554,7 @@
 
         <ui:include src="/resources/dialogs/tag.xhtml" >
             <ui:param name="formId" value="containerTagForm" />
-            <ui:param name="dialogTitle" value="Add new #{hierarchiesController.selectedNodeSlot.hostingSlot
-                                                    ? 'installation slot' : 'container'} tag" />
+            <ui:param name="dialogTitle" value="Add Tag" />
             <ui:param name="widgetName" value="containerTag" />
             <ui:param name="controller" value="#{hierarchiesController}" />
             <ui:param name="submitHandler" value="addNewTag" />
@@ -566,8 +564,7 @@
 
         <ui:include src="/resources/dialogs/artifact.xhtml" >
             <ui:param name="formId" value="addArtifactForm" />
-            <ui:param name="dialogTitle" value="Add new #{hierarchiesController.selectedNodeSlot.hostingSlot
-                                                    ? 'installation slot' : 'container'} artifact" />
+            <ui:param name="dialogTitle" value="Add Artifact" />
             <ui:param name="widgetName" value="addArtifact" />
             <ui:param name="controller" value="#{hierarchiesController}" />
             <ui:param name="submitHandler" value="addNewArtifact" />
@@ -577,8 +574,7 @@
 
         <ui:include src="/resources/dialogs/artifact.xhtml">
             <ui:param name="formId" value="modifyArtifactForm" />
-            <ui:param name="dialogTitle" value="Modify #{hierarchiesController.selectedNodeSlot.hostingSlot
-                                                    ? 'installation slot' : 'container'} artifact" />
+            <ui:param name="dialogTitle" value="Edit Artifact" />
             <ui:param name="widgetName" value="modifyArtifact" />
             <ui:param name="controller" value="#{hierarchiesController}" />
             <ui:param name="submitHandler" value="modifyArtifact" />
@@ -588,7 +584,7 @@
 
         <ui:include src="/resources/dialogs/delete-confirmation.xhtml">
             <ui:param name="formId" value="deleteRelationshipForm" />
-            <ui:param name="dialogTitle" value="Delete relationship" />
+            <ui:param name="dialogTitle" value="Delete Relationship" />
             <ui:param name="widgetName" value="deleteRelationship" />
             <ui:param name="controller" value="#{hierarchiesController}" />
             <ui:param name="submitHandler" value="onRelationshipDelete" />

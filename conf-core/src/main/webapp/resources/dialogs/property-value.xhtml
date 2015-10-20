@@ -16,7 +16,7 @@
                 <p:outputLabel for="propertySelect" value="Property:" />
                 <h:outputText value="#{controller.property.name}" rendered="#{controller.propertyNameChangeDisabled}" />
                 <h:panelGroup rendered="#{!controller.propertyNameChangeDisabled}">
-                    <p:selectOneMenu id="propertySelect" value="#{controller.property}" var="prop" converter="#{propertyConverter}" 
+                    <p:selectOneMenu id="propertySelect" style="width: 100%;" value="#{controller.property}" var="prop" converter="#{propertyConverter}" 
                             rendered="true" required="true" requiredMessage="Please select a property"
                             disabled="#{controller.propertyNameChangeDisabled}" valueChangeListener="#{controller.propertyChangeListener}">
                         <p:ajax update=":#{formId}:propertyUnit :#{formId}:propertyDataType :#{formId}:valueInputGroup"/>
