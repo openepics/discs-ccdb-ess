@@ -89,6 +89,7 @@
                 function clearRelatedFilters() {
                     PF('attributesWidget').clearFilters();
                     PF('relationshipsWidget').clearFilters();
+                    PF('installationWidget').clearFilters();                    
                 }
             // ]]>
             </script>
@@ -416,7 +417,7 @@
                                 <p:ajax event="rowUnselect" update=":hierarchies:installDeviceBtn :hierarchies:uninstallDeviceBtn" />
 
                                 <p:column headerText="Container/Slot" sortBy="#{installationRecord.slotName}" 
-                                        filterBy="#{installationRecord.slotName}">
+                                        filterBy="#{installationRecord.slotName}" filterMatchMode="contains">
                                     <h:outputText value="#{installationRecord.slotName}" />
                                 </p:column>
                                 <p:column headerText="Inventory ID" 
