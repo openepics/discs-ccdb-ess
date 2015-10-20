@@ -434,6 +434,10 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
     public void updateToggle() {
         final List<MultiPropertyValueView> pvList = selectionPropertyValuesFiltered == null
                                                         ? filteredPropertyValues : selectionPropertyValuesFiltered;
+        if (pvList.isEmpty()) {
+            selectAllRows = false;
+            return;
+        }
         for (final MultiPropertyValueView pv : pvList) {
             if (!pv.isSelected()) {
                 selectAllRows = false;
@@ -453,7 +457,7 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
         } else {
             selectAllFiltered(pvList);
         }
-        selectAllRows = !selectAllRows;
+        if (!pvList.isEmpty()) selectAllRows = !selectAllRows;
     }
 
     private void selectAllFiltered(final List<MultiPropertyValueView> pvList) {
