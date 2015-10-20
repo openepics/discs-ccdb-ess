@@ -2272,8 +2272,6 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         } else {
             RequestContext.getCurrentInstance().execute("PF('cantDeleteRelation').show();");
         }
-        prepareAddRelationshipPopup();
-        onRelationshipPopupClose();
     }
 
     private boolean canRelationshipBeDeleted() {
