@@ -2295,23 +2295,14 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         selectedTreeNodeForRelationshipAdd = null;
         selectedRelationship = null;
         selectedRelationshipType = SlotRelationName.CONTAINS.toString();
-    }
 
-    /**
-     * Called when slot to be in relationship selected from tree of installation slots is changed.
-     * This method is needed to modify relationship types drop down menu so that if user selects
-     * container slot the only relationship that can be created is "contained in".
-     */
-    public void slotForRelationshipChanged() {
-        if (((SlotView)selectedTreeNodeForRelationshipAdd.getData()).isHostingSlot()) {
+        // modify relationship types drop down menu
+        if (selectedSlot.isHostingSlot()) {
             relationshipTypesForDialog = ImmutableList.copyOf(slotRelationBySlotRelationStringName.keySet().iterator());
-            if (selectedRelationshipType == null) {
-                selectedRelationshipType = SlotRelationName.CONTAINS.toString();
-            }
+
         } else {
             relationshipTypesForDialog = ImmutableList.of(SlotRelationName.CONTAINS.toString(),
-                                                            SlotRelationName.CONTAINS.inverseName());
-            selectedRelationshipType = SlotRelationName.CONTAINS.toString();
+                    SlotRelationName.CONTAINS.inverseName());
         }
     }
 
