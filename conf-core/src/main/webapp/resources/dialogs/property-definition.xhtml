@@ -12,13 +12,13 @@
             <p:panel style="margin-bottom: 2ex; border: 0;">
                 <p:dataTable id="propertySelect" value="#{controller.filteredProperties}" var="prop" 
                         selection="#{controller.selectedProperties}" rowKey="#{prop.id}" scrollable="true" 
-                        scrollHeight="200" tableStyle="width: 52em; table-layout: auto;" widgetVar="propSelectTable" 
+                        scrollHeight="350" tableStyle="width: 66em; table-layout: auto;" widgetVar="propSelectTable" 
                         filteredValue="#{controller.selectionPropertiesFiltered}">
                     <p:column selectionMode="multiple" style="width: 2em;" />
                     <p:column headerText="Property" style="width: 20em;" sortBy="#{prop.name}" filterBy="#{prop.name}">
                         <h:outputText value="#{prop.name}" />
                     </p:column>
-                    <p:column headerText="Description" style="width: 16em;" sortBy="#{prop.description}" 
+                    <p:column headerText="Description" style="width: 30em;" sortBy="#{prop.description}" 
                             filterBy="#{prop.description}" filterMatchMode="contains">
                         <h:outputText value="#{prop.description}" />
                     </p:column>
