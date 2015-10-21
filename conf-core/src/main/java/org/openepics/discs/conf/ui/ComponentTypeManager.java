@@ -451,13 +451,12 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
     public void handleToggleAll() {
         final List<MultiPropertyValueView> pvList = selectionPropertyValuesFiltered == null
                 ? filteredPropertyValues : selectionPropertyValuesFiltered;
-        updateToggle(); // calc the correct state
+        if (pvList.isEmpty()) return;
         if (selectAllRows) {
-            unselectAllFiltered(pvList);
-        } else {
             selectAllFiltered(pvList);
+        } else {
+            unselectAllFiltered(pvList);
         }
-        if (!pvList.isEmpty()) selectAllRows = !selectAllRows;
     }
 
     private void selectAllFiltered(final List<MultiPropertyValueView> pvList) {

@@ -5,7 +5,7 @@
 
     <h:form id="#{formId}">
         <p:remoteCommand name="updateToggle" actionListener="#{componentTypeManager.updateToggle()}" 
-            update=":#{formId}:propertySelect" />
+            update=":#{formId}:propertySelect:toggleAll" />
         <p:dialog widgetVar="#{widgetName}" id="#{widgetName}" modal="true" resizable="false" closable="false" 
                 dynamic="true" styleClass="property-selection">
             <f:facet name="header">
@@ -24,7 +24,8 @@
                         <f:facet name="header">
                             <p:selectBooleanCheckbox id="toggleAll" value="#{componentTypeManager.selectAllRows}">
                                 <p:ajax listener="#{componentTypeManager.handleToggleAll}" 
-                                    update=":#{formId}:propertySelect" />
+                                    update=":#{formId}:propertySelect" 
+                                    oncomplete="updateToggle();"/>
                             </p:selectBooleanCheckbox>
                         </f:facet>
                         <p:selectBooleanCheckbox value="#{prop.selected}">
