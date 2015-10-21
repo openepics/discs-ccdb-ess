@@ -486,7 +486,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
      */
     public boolean canEdit(EntityAttributeView attributeView) {
         final Object attribute = attributeView.getEntity();
-        return (attribute instanceof PropertyValue && !(attribute instanceof ComptypePropertyValue))
+        return (attribute instanceof PropertyValue && !(attribute instanceof ComptypePropertyValue) && !(attribute instanceof SlotPropertyValue))
                     || (attribute instanceof Artifact && !(attribute instanceof ComptypeArtifact));
     }
 

@@ -50,6 +50,8 @@ import org.openepics.discs.conf.ent.DeviceArtifact;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ent.InstallationRecord;
 import org.openepics.discs.conf.ent.PropertyValueUniqueness;
+import org.openepics.discs.conf.ent.Slot;
+import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.ent.Tag;
 import org.openepics.discs.conf.export.ExportTable;
 import org.openepics.discs.conf.ui.common.AbstractDeviceAttributesController;
@@ -230,13 +232,6 @@ public class DevicesController
             final Device attrDevice = deviceEJB.findById(deviceView.getDevice().getId());
             final ComponentType parent = attrDevice.getComponentType();
 
-            for (final ComptypePropertyValue parentProp : parent.getComptypePropertyList()) {
-                if (parentProp.getPropValue() != null) {
-                    attributes.add(new EntityAttributeView(parentProp, EntityAttributeViewKind.DEVICE_TYPE_PROPERTY,
-                                                                attrDevice, deviceEJB));
-                }
-            }
-
             for (final ComptypeArtifact parentArtifact : parent.getComptypeArtifactList()) {
                 attributes.add(new EntityAttributeView(parentArtifact, EntityAttributeViewKind.DEVICE_TYPE_ARTIFACT,
                                                                 attrDevice, deviceEJB));
@@ -260,6 +255,21 @@ public class DevicesController
             for (final Tag tagAttr : attrDevice.getTags()) {
                 attributes.add(new EntityAttributeView(tagAttr, EntityAttributeViewKind.DEVICE_TAG,
                                                                 attrDevice, deviceEJB));
+            }
+
+            final InstallationRecord installationRecord = installationEJB.getActiveInstallationRecordForDevice(attrDevice);
+            final Slot slot = installationRecord != null ? installationRecord.getSlot() : null;
+
+            if (slot != null) {
+                for (final SlotPropertyValue value : slot.getSlotPropertyList()) {
+                    attributes.add(new EntityAttributeView(value, EntityAttributeViewKind.INSTALL_SLOT_PROPERTY,
+                                                                    attrDevice, deviceEJB));
+                }
+            } else {
+                for (final ComptypePropertyValue parentProp : parent.getComptypePropertyList()) {
+                    attributes.add(new EntityAttributeView(parentProp, EntityAttributeViewKind.DEVICE_TYPE_PROPERTY,
+                                                                    attrDevice, deviceEJB));
+                }
             }
         }
     }
@@ -740,5 +750,15 @@ public class DevicesController
     /** @param filteredDialogDevices the filteredDialogDevices to set */
     public void setFilteredDialogDevices(List<DeviceView> filteredDialogDevices) {
         this.filteredDialogDevices = filteredDialogDevices;
+    }
+
+    /**
+     *  Prevents deletion of installation slot properties in this view only.     *
+     */
+    @Override
+    protected boolean canDelete(EntityAttributeView attributeView) {
+        if (EntityAttributeViewKind.DEVICE_TYPE_PROPERTY.equals(attributeView.getKind())) return false;
+        if (EntityAttributeViewKind.INSTALL_SLOT_PROPERTY.equals(attributeView.getKind())) return false;
+        return super.canDelete(attributeView);
     }
 }
