@@ -33,8 +33,9 @@
                                 listener="#{componentTypeManager.rowSelectListener(prop)}"/>
                         </p:selectBooleanCheckbox>
                     </p:column>
-                    <p:column headerText="Property" style="width: 20em;" sortBy="#{prop.name}" filterBy="#{prop.name}">
-                        <h:outputText value="#{prop.name}" />
+                    <p:column headerText="Property" style="width: 20em;" sortBy="#{prop.name}"
+                            filterBy="#{prop.name}" filterMatchMode="contains">
+                        <h:outputText value="#{prop.name}"/>
                     </p:column>
                     <p:column headerText="Description" style="width: 30em;" sortBy="#{prop.description}" 
                             filterBy="#{prop.description}" filterMatchMode="contains">
