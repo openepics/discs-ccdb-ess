@@ -86,7 +86,7 @@ public class SlotRelation extends ConfigurationEntity {
      * </ul>
      */
     public String getNameAsString() {
-        return name.toString().toLowerCase();
+        return name.toString();
     }
 
     /**
@@ -100,7 +100,7 @@ public class SlotRelation extends ConfigurationEntity {
     }
 
     public String getIname() {
-        return iname;
+        return name.inverseName();
     }
 
     public String getDescription() {

@@ -19,8 +19,6 @@
  */
 package org.openepics.discs.conf.ent;
 
-import org.openepics.discs.conf.util.UnhandledCaseException;
-
 /**
  * System defined slot relation types
  *
@@ -29,29 +27,28 @@ import org.openepics.discs.conf.util.UnhandledCaseException;
  */
 public enum SlotRelationName {
     /** Slot contains another slot */
-    CONTAINS,
-    /** Slot powers another slot */
-    POWERS,
+    CONTAINS("Contains", "Contained in"),
     /** Slot controls another slot */
-    CONTROLS;
+    CONTROLS("Controls", "Controlled by"),
+    /** Slot powers another slot */
+    POWERS("Powers", "Powered by");
+
+    private String name, inverseName;
+
+    private SlotRelationName(String name, String inverseName) {
+        this.name = name;
+        this.inverseName = inverseName;
+    }
 
     /**
      * @return the name of the inverse slot relation. E.g.: "contained in" for "contains" relation.
      */
     public String inverseName() {
-        switch(this) {
-        case CONTAINS:
-            return "contained in";
-        case CONTROLS:
-            return "controlled by";
-        case POWERS:
-            return "powered by";
-        }
-        throw new UnhandledCaseException();
+        return inverseName;
     }
 
     @Override
     public String toString() {
-        return name().toLowerCase();
+        return name;
     }
 }

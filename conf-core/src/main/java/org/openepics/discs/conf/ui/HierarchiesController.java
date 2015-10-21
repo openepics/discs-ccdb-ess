@@ -913,11 +913,10 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     public void doImport() {
         try (InputStream inputStream = new ByteArrayInputStream(importData)) {
             setLoaderResult(dataLoaderHandler.loadData(inputStream, dataLoader));
-            if (selectedNodes != null && !selectedNodes.isEmpty()) {
-                unselectAllTreeNodes();
-                selectedNodes = null;
-                clearRelatedInformation();
-            }
+            selectedNodes = null;
+            initHierarchies();
+            initNamingInformation();
+            clearRelatedInformation();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
