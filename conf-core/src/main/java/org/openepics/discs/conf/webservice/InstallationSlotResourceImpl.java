@@ -98,7 +98,7 @@ public class InstallationSlotResourceImpl implements InstallationSlotResource {
 
         final InstallationSlot installationSlot = new InstallationSlot();
         installationSlot.setName(slot.getName());
-        installationSlot.setDesription(slot.getDescription());
+        installationSlot.setDescription(slot.getDescription());
         installationSlot.setDeviceType(DeviceTypeResourceImpl.getDeviceType(slot.getComponentType()));
 
         installationSlot.setParents(

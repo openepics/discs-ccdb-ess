@@ -38,7 +38,7 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 @XmlSeeAlso({PropertyValue.class})
 public class InstallationSlot {
     private String name;
-    private String desription;
+    private String description;
 
     @XmlElement private DeviceType deviceType;
 
@@ -75,8 +75,8 @@ public class InstallationSlot {
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 
-    public String getDesription() { return desription; }
-    public void setDesription(String desription) { this.desription = desription; }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
 
     public DeviceType getDeviceType() { return deviceType; }
     public void setDeviceType(DeviceType deviceType) { this.deviceType = deviceType; }
