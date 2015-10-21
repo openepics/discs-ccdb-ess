@@ -27,10 +27,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -265,7 +266,12 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         immutableListBuilder.add(new SelectItem("", "Select one"));
 
         final List<SlotRelation> slotRelations = slotRelationEJB.findAll();
-        slotRelationBySlotRelationStringName = new HashMap<>();
+        slotRelations.sort(new Comparator<SlotRelation>() {
+            @Override
+            public int compare(SlotRelation o1, SlotRelation o2) {
+                return o1.getNameAsString().compareTo(o2.getNameAsString());
+            }});
+        slotRelationBySlotRelationStringName = new LinkedHashMap<>();
         for (final SlotRelation slotRelation : slotRelations) {
             immutableListBuilder.add(new SelectItem(slotRelation.getNameAsString(), slotRelation.getNameAsString()));
             immutableListBuilder.add(new SelectItem(slotRelation.getIname(), slotRelation.getIname()));
