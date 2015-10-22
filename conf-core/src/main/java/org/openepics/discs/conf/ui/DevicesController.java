@@ -262,12 +262,13 @@ public class DevicesController
 
             if (slot != null) {
                 for (final SlotPropertyValue value : slot.getSlotPropertyList()) {
-                    attributes.add(new EntityAttributeView(value, EntityAttributeViewKind.INSTALL_SLOT_PROPERTY,
+                    attributes.add(new EntityAttributeView(value, slot.isHostingSlot()
+                            ? EntityAttributeViewKind.INSTALL_SLOT_PROPERTY : EntityAttributeViewKind.CONTAINER_SLOT_PROPERTY,
                                                                     attrDevice, deviceEJB));
                 }
             } else {
                 for (final ComptypePropertyValue parentProp : parent.getComptypePropertyList()) {
-                    attributes.add(new EntityAttributeView(parentProp, EntityAttributeViewKind.DEVICE_TYPE_PROPERTY,
+                    attributes.add(new EntityAttributeView(parentProp, EntityAttributeViewKind.getPropertyValueKind(parentProp),
                                                                     attrDevice, deviceEJB));
                 }
             }
@@ -758,6 +759,8 @@ public class DevicesController
     @Override
     protected boolean canDelete(EntityAttributeView attributeView) {
         if (EntityAttributeViewKind.DEVICE_TYPE_PROPERTY.equals(attributeView.getKind())) return false;
+        if (EntityAttributeViewKind.DEVICE_TYPE_TAG.equals(attributeView.getKind())) return false;
+        if (EntityAttributeViewKind.DEVICE_TYPE_ARTIFACT.equals(attributeView.getKind())) return false;
         if (EntityAttributeViewKind.INSTALL_SLOT_PROPERTY.equals(attributeView.getKind())) return false;
         return super.canDelete(attributeView);
     }

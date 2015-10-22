@@ -19,6 +19,8 @@
  */
 package org.openepics.discs.conf.views;
 
+import org.openepics.discs.conf.ent.ComptypePropertyValue;
+
 /**
  * @author <a href="mailto:andraz.pozar@cosylab.com">Andraž Požar</a>
  *
@@ -54,5 +56,16 @@ public enum EntityAttributeViewKind {
     @Override
     public String toString() {
         return text;
+    }
+
+
+    public static EntityAttributeViewKind getPropertyValueKind(ComptypePropertyValue property) {
+        if (property.isDefinitionTargetSlot()) {
+            return EntityAttributeViewKind.INSTALL_SLOT_PROPERTY;
+        } else if (property.isDefinitionTargetDevice()) {
+            return EntityAttributeViewKind.DEVICE_PROPERTY;
+        } else {
+            return EntityAttributeViewKind.DEVICE_TYPE_PROPERTY;
+        }
     }
 }

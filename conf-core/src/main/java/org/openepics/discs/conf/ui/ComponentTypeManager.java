@@ -270,7 +270,7 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
             final ComponentType freshComponentType = comptypeEJB.findById(selectedMember.getId());
 
             for (final ComptypePropertyValue prop : freshComponentType.getComptypePropertyList()) {
-                attributes.add(new EntityAttributeView(prop, getPropertyValueKind(prop), freshComponentType,
+                attributes.add(new EntityAttributeView(prop, EntityAttributeViewKind.getPropertyValueKind(prop), freshComponentType,
                                                         comptypeEJB));
             }
 
@@ -283,16 +283,6 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
                 attributes.add(new EntityAttributeView(tagAttr, EntityAttributeViewKind.DEVICE_TYPE_TAG,
                                                             freshComponentType, comptypeEJB));
             }
-        }
-    }
-
-    private EntityAttributeViewKind getPropertyValueKind(final ComptypePropertyValue prop) {
-        if (prop.isDefinitionTargetSlot()) {
-            return EntityAttributeViewKind.INSTALL_SLOT_PROPERTY;
-        } else if (prop.isDefinitionTargetDevice()) {
-            return EntityAttributeViewKind.DEVICE_PROPERTY;
-        } else {
-            return EntityAttributeViewKind.DEVICE_TYPE_PROPERTY;
         }
     }
 
