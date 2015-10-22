@@ -33,48 +33,43 @@
                         $('#hierarchies\\:hierarchyTabs\\:powersTree .ui-treetable-scrollable-body').css({"height":window.innerHeight-totalMenusHeight});
                         $('#hierarchies\\:hierarchyTabs\\:controlsTree .ui-treetable-scrollable-body').css({"height":window.innerHeight-totalMenusHeight});
                     }
-                }
-                function resizeEmptyColumnInHierarchies() {
-                    var menusHeight = $('#content').offset().top;
-                    var slotAttributesFieldSet = $('#hierarchies\\:slotAttributes').outerHeight(true);
-                    var slotRelationsFieldSet = $('#hierarchies\\:relationsTable').outerHeight(true);
-                    var installationDetailsFieldSet = $('#hierarchies\\:installationDetails').outerHeight(true);
-                    var attributesColumnPadding = $('#hierarchies\\:attributesColumn').outerHeight(true) 
-                                                    - $('#hierarchies\\:attributesColumn').height();
-                    var relationsColumnPadding = $('#hierarchies\\:relationsColumn').outerHeight(true) 
-                                                    - $('#hierarchies\\:relationsColumn').height();
-                    var installationColumnPadding = $('#hierarchies\\:installationColumn').outerHeight(true) 
-                                                    - $('#hierarchies\\:installationColumn').height();
-                    var bodyPadding = $('body').outerHeight(true) - $('body').outerHeight();
-
-                    if (installationDetailsFieldSet == null) {
-                    	installationDetailsFieldSet = 0;
-                    }
-
-                    var totalHeight = menusHeight + slotAttributesFieldSet + attributesColumnPadding 
-                                                  + slotRelationsFieldSet + relationsColumnPadding
-                                                  + installationDetailsFieldSet + installationColumnPadding
-                                                  + bodyPadding;
-                    totalHeight = Math.round(totalHeight);
-
-                    $('#hierarchies\\:hierarchiesEmptyColumn').css({"height":window.innerHeight-totalHeight});
-                }
+                }           
                 function hierarchiesResizeAttributes() {
-                    var em = emHeight();
-                    var contentHeight = $("#content").outerHeight(true);
-                    var fieldsetHeight = contentHeight * 0.33;
-                    $("#hierarchies\\:slotAttributes").css({"max-height":fieldsetHeight});
-                    var fieldsetLegentHeight = $('#hierarchies\\:slotAttributes legend').outerHeight(true);
-                    var attributesTableHeight = fieldsetHeight - fieldsetLegentHeight - 3 * em;
-                    var attributesTableHeaderHeight = $("#hierarchies\\:attributesTable .ui-datatable-scrollable-header").outerHeight(true);
-                    var attributesTableBodyHeight = attributesTableHeight - attributesTableHeaderHeight;
-                    $('#hierarchies\\:attributesTable .ui-datatable-scrollable-body').css({"max-height":attributesTableBodyHeight});
+                    var em = emHeight();                    
+                    var contentHeight = window.innerHeight - $('#content').offset().top - 7.5*em;
+                    var remainingHeight = contentHeight;
+                   
+                    var add1 = $('#hierarchies\\:slotAttributes legend').outerHeight(true) + $("#hierarchies\\:attributesTable_head").outerHeight(true) + 3*em;
+                    var add2 = $('#hierarchies\\:relationsTable legend').outerHeight(true) + $("#hierarchies\\:relationshipTable_head").outerHeight(true) + 3*em;
+                    var add3 = $('#hierarchies\\:installationDetails legend').outerHeight(true) + $("#hierarchies\\:installationTable_head").outerHeight(true) + 3*em;
+                    
+                    height1 = $("#hierarchies\\:attributesTable_data").outerHeight(true) + add1 + 0.5*em;
+                    height2 = $("#hierarchies\\:relationshipTable_data").outerHeight(true) + add2 + 0.5*em;
+                    height3 = $("#hierarchies\\:installationTable_data").outerHeight(true) + add3 + 0.5*em;
+
+                    height3 = Math.min(height3, remainingHeight * 0.33);
+                    remainingHeight -=  height3;
+
+                    height2 = Math.min(height2, remainingHeight * 0.5);
+                    remainingHeight -=  height2;
+
+                    height1 = Math.min(height1, remainingHeight);
+                    remainingHeight -=  height1;
+
+                    $("#hierarchies\\:slotAttributes").css({"height":height1});
+                    $("#hierarchies\\:relationsTable").css({"height":height2});
+                    $("#hierarchies\\:installationDetails").css({"height":height3});
+                      
+                    $("#hierarchies\\:attributesTable .ui-datatable-scrollable-body").css({"height":height1-add1});
+                    $("#hierarchies\\:relationshipTable .ui-datatable-scrollable-body").css({"height":height2-add2});
+                    $("#hierarchies\\:installationTable .ui-datatable-scrollable-body").css({"height":height3-add3});               
+                    $('#hierarchies\\:hierarchiesEmptyColumn').css({"height":remainingHeight});                
                 }
+
                 function hierarchiesResizeAll() {
                 	clearRelatedFilters();
                     resizeHierarchyTrees();
-                    hierarchiesResizeAttributes();
-                    resizeEmptyColumnInHierarchies();
+                    hierarchiesResizeAttributes();                    
                 }
                 function getVisibleTree() {
                     var visibleTreeTable = PF('hierarchyWidget');
@@ -275,16 +270,17 @@
                         </p:fieldset>
                     </p:column>
                     <p:column id="attributesColumn" styleClass="alignTop" >
-                        <p:fieldset id="slotAttributes" legend="Properties" style="max-height: 30%;">
+                        <p:fieldset id="slotAttributes" legend="Properties">
                             <p:dataTable id="attributesTable" class="hierarchies-attributes-cell" var="attribute" 
                                     emptyMessage="No records found." value="#{hierarchiesController.attributes}" 
-                                    scrollable="true" style="width: 100%; overflow-y: hidden;" resizableColumns="true"
+                                    scrollable="true" style="width: 100%"
                                     selection="#{hierarchiesController.selectedAttribute}" selectionMode="single"
                                     filteredValue="#{hierarchiesController.filteredAttributes}" rowKey="#{attribute.id}"
                                     widgetVar="attributesWidget">
                                 <p:ajax event="rowSelect" update=":hierarchies:deleteAttrButton :hierarchies:editAttrButton" />
                                 <p:ajax event="rowUnselect" update=":hierarchies:deleteAttrButton :hierarchies:editAttrButton" />
-
+                                <p:ajax event="filter" oncomplete="hierarchiesResizeAttributes();"/>
+                
                                 <p:column headerText="Entity" sortBy="#{attribute.parent}" filterBy="#{attribute.parent}"
                                         filterMatchMode="contains" >
                                     <h:outputText value="#{attribute.parent}" />
@@ -356,7 +352,7 @@
                     <p:column id="relationsColumn" styleClass="alignTop">
                         <p:fieldset id="relationsTable" legend="Relationships">
                             <p:dataTable value="#{hierarchiesController.relationships}" id="relationshipTable"
-                                    style="width: 100%; overflow-y: hidden; max-height: 324px;" var="relationship"
+                                    style="width: 100%" var="relationship"
                                     emptyMessage="No records found." scrollable="true" class="hierarchies-attributes-cell"
                                     filteredValue="#{hierarchiesController.filteredRelationships}"
                                     selectionMode="single" rowKey="#{relationship.slotPair.id}"
@@ -364,7 +360,8 @@
                                     widgetVar="relationshipsWidget">
                                 <p:ajax event="rowSelect" update=":hierarchies:deleteRelationship" />
                                 <p:ajax event="rowUnselect" update=":hierarchies:deleteRelationship" />
-
+                                <p:ajax event="filter" oncomplete="hierarchiesResizeAttributes();"/>
+                                
                                 <p:column headerText="Source" sortBy="#{relationship.sourceSlotName}" 
                                         filterBy="#{relationship.sourceSlotName}" filterMatchMode="contains">
                                     <h:outputText value="#{relationship.sourceSlotName}" />
@@ -411,11 +408,13 @@
                                     var="installationRecord" style="width: 100%;" widgetVar="installationWidget"
                                     selectionMode="single" selection="#{hierarchiesController.selectedInstallationView}"
                                     emptyMessage="No records found." rowKey="#{installationRecord.slotName}"
-                                    filteredValue="#{hierarchiesController.filteredInstallationRecords}">
+                                    filteredValue="#{hierarchiesController.filteredInstallationRecords}"
+                                    scrollable="true" class="hierarchies-attributes-cell">
 
                                 <p:ajax event="rowSelect" update=":hierarchies:installDeviceBtn :hierarchies:uninstallDeviceBtn" />
                                 <p:ajax event="rowUnselect" update=":hierarchies:installDeviceBtn :hierarchies:uninstallDeviceBtn" />
-
+                                <p:ajax event="filter" oncomplete="hierarchiesResizeAttributes();"/>
+                                
                                 <p:column headerText="Container/Slot" sortBy="#{installationRecord.slotName}" 
                                         filterBy="#{installationRecord.slotName}" filterMatchMode="contains">
                                     <h:outputText value="#{installationRecord.slotName}" />
