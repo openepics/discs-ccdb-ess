@@ -232,6 +232,13 @@ public class DevicesController
             final Device attrDevice = deviceEJB.findById(deviceView.getDevice().getId());
             final ComponentType parent = attrDevice.getComponentType();
 
+            for (final ComptypePropertyValue parentProp : parent.getComptypePropertyList()) {
+                if (parentProp.getPropValue() != null) {
+                    attributes.add(new EntityAttributeView(parentProp, EntityAttributeViewKind.DEVICE_TYPE_PROPERTY,
+                                                                attrDevice, deviceEJB));
+                }
+            }
+
             for (final ComptypeArtifact parentArtifact : parent.getComptypeArtifactList()) {
                 attributes.add(new EntityAttributeView(parentArtifact, EntityAttributeViewKind.DEVICE_TYPE_ARTIFACT,
                                                                 attrDevice, deviceEJB));
@@ -268,7 +275,8 @@ public class DevicesController
                 }
             } else {
                 for (final ComptypePropertyValue parentProp : parent.getComptypePropertyList()) {
-                    attributes.add(new EntityAttributeView(parentProp, EntityAttributeViewKind.getPropertyValueKind(parentProp),
+                    if (parentProp.isDefinitionTargetSlot())
+                        attributes.add(new EntityAttributeView(parentProp, EntityAttributeViewKind.INSTALL_SLOT_PROPERTY,
                                                                     attrDevice, deviceEJB));
                 }
             }
@@ -758,10 +766,9 @@ public class DevicesController
      */
     @Override
     protected boolean canDelete(EntityAttributeView attributeView) {
-        if (EntityAttributeViewKind.DEVICE_TYPE_PROPERTY.equals(attributeView.getKind())) return false;
-        if (EntityAttributeViewKind.DEVICE_TYPE_TAG.equals(attributeView.getKind())) return false;
-        if (EntityAttributeViewKind.DEVICE_TYPE_ARTIFACT.equals(attributeView.getKind())) return false;
+        if (EntityAttributeViewKind.CONTAINER_SLOT_PROPERTY.equals(attributeView.getKind())) return false;
         if (EntityAttributeViewKind.INSTALL_SLOT_PROPERTY.equals(attributeView.getKind())) return false;
+        if (EntityAttributeViewKind.DEVICE_TYPE_PROPERTY.equals(attributeView.getKind())) return false;
         return super.canDelete(attributeView);
     }
 }

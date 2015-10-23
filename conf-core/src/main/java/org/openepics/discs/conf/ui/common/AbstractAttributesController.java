@@ -504,7 +504,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
 
     private boolean isPropertyValueInherited(EntityAttributeView attributeView) {
         List<ComptypePropertyValue> parentProperties = null;
-        ConfigurationEntity parentEntity = attributeView.getParentEntity();
+        ConfigurationEntity parentEntity = attributeView.getParentEntity();        
         if (parentEntity != null) {
             if (parentEntity instanceof Slot) {
                 if (((Slot) parentEntity).isHostingSlot()) {
@@ -512,7 +512,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
                 } else {
                     return false;
                 }
-            } else if (parentEntity instanceof Device) {
+            } else if (parentEntity instanceof Device) {                
                 parentProperties = ((Device) parentEntity).getComponentType().getComptypePropertyList();
             } else if (parentEntity instanceof ComponentType) {
                 return false;
@@ -527,8 +527,10 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
 
         final PropertyValue propValue = (PropertyValue) attributeView.getEntity();
         final String propertyName = propValue.getProperty().getName();
-        for (final ComptypePropertyValue inheritedPropVal : parentProperties) {
-            if (!inheritedPropVal.isPropertyDefinition()
+        for (final ComptypePropertyValue inheritedPropVal : parentProperties) {            
+            if (inheritedPropVal.isPropertyDefinition() && (
+                    (inheritedPropVal.isDefinitionTargetDevice() && parentEntity instanceof Device) ||
+                    (inheritedPropVal.isDefinitionTargetSlot() && parentEntity instanceof Slot) )
                     && propertyName.equals(inheritedPropVal.getProperty().getName())) {
                 return true;
             }
