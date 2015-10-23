@@ -33,8 +33,14 @@
                         $('#hierarchies\\:hierarchyTabs\\:powersTree .ui-treetable-scrollable-body').css({"height":window.innerHeight-totalMenusHeight});
                         $('#hierarchies\\:hierarchyTabs\\:controlsTree .ui-treetable-scrollable-body').css({"height":window.innerHeight-totalMenusHeight});
                     }
-                }           
+                }  
+                var resizeAttributes = 0;
+                         
                 function hierarchiesResizeAttributes() {
+                    if (resizeAttributes == 0) return;
+                    resizeAttributes--;
+                    if (resizeAttributes != 0) return;
+                    
                     var em = emHeight();                    
                     var contentHeight = window.innerHeight - $('#content').offset().top - 7.5*em;
                     var remainingHeight = contentHeight;
@@ -69,7 +75,10 @@
                 function hierarchiesResizeAll() {
                 	clearRelatedFilters();
                     resizeHierarchyTrees();
-                    hierarchiesResizeAttributes();                    
+                    $("#hierarchies\\:attributesTable .ui-datatable-scrollable-body").css({"height":0});
+                    $("#hierarchies\\:relationshipTable .ui-datatable-scrollable-body").css({"height":0});
+                    $("#hierarchies\\:installationTable .ui-datatable-scrollable-body").css({"height":0});               
+                    resizeAttributes = 3; // after three filter events the attributes get resized                    
                 }
                 function getVisibleTree() {
                     var visibleTreeTable = PF('hierarchyWidget');
@@ -402,7 +411,7 @@
                     </p:column>
                 </p:row>
                 <p:row>
-                    <p:column id="installationColumn">
+                    <p:column id="installationColumn" styleClass="alignTop">
                         <p:fieldset id="installationDetails" legend="Installation">
                             <p:dataTable id="installationTable" value="#{hierarchiesController.installationRecords}"
                                     var="installationRecord" style="width: 100%;" widgetVar="installationWidget"
@@ -604,12 +613,16 @@
             //<![CDATA[
             jQuery(window).resize(function() {
                 hierarchiesResizeAll();
+                resizeAttributes = 1;
+                hierarchiesResizeAttributes();
                 scrollSelectedIntoView(PF('hierarchyWidget'));
-                setRightColumnWidths();
+                setRightColumnWidths();                
             });
 
             jQuery(document).ready(function() {
                 hierarchiesResizeAll();
+                resizeAttributes = 1;
+                hierarchiesResizeAttributes();
                 scrollSelectedIntoView(PF('hierarchyWidget'));
                 setRightColumnWidths();
             });
