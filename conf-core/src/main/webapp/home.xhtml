@@ -364,8 +364,8 @@
                                     style="width: 100%" var="relationship"
                                     emptyMessage="No records found." scrollable="true" class="hierarchies-attributes-cell"
                                     filteredValue="#{hierarchiesController.filteredRelationships}"
-                                    selectionMode="single" rowKey="#{relationship.slotPair.id}"
-                                    selection="#{hierarchiesController.selectedRelationship}"
+                                    selectionMode="multiple" rowKey="#{relationship.slotPair.id}"
+                                    selection="#{hierarchiesController.selectedRelationships}"
                                     widgetVar="relationshipsWidget">
                                 <p:ajax event="rowSelect" update=":hierarchies:deleteRelationship" />
                                 <p:ajax event="rowUnselect" update=":hierarchies:deleteRelationship" />
@@ -401,7 +401,7 @@
                             </p:dataTable>
 
                             <p:commandButton id="deleteRelationship" value="Delete" icon="ui-icon-trash"
-                                style="margin-top: 1em; float: right;" disabled="#{empty hierarchiesController.selectedRelationship}"
+                                style="margin-top: 1em; float: right;" disabled="#{empty hierarchiesController.selectedRelationships}"
                                 oncomplete="PF('deleteRelationship').show();" />
                             <p:commandButton value="Add" oncomplete="PF('addSlotRelationship').show()" id="addRelationship"
                                 icon="ui-icon-plus" disabled="#{not hierarchiesController.singleNodeSelected}"
