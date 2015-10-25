@@ -216,6 +216,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     private String description;
     /** Used in "add child to parent" operations. This usually reflects the <code>selectedNode</code>. */
     private boolean isInstallationSlot;
+    private boolean hasDevice;
     private ComponentType deviceType;
     private String parentName;
     private transient List<String> namesForAutoComplete;
@@ -1238,6 +1239,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         description = selectedSlotView.getDescription();
         deviceType = selectedSlotView.getSlot().getComponentType();
         parentName = selectedSlotView.getParentNode().getName();
+        hasDevice = installationEJB.getActiveInstallationRecordForSlot(selectedSlotView.getSlot()) != null;
     }
 
     /** Prepares fields that are used in pop up for adding a new container */
@@ -1258,6 +1260,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         description = null;
         deviceType = null;
         parentName = getSelectedNodeSlot().getName();
+        hasDevice = false;
     }
 
     /** Called to save modified installation slot / container information */
@@ -1265,7 +1268,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         final Slot modifiedSlot = selectedSlotView.getSlot();
         modifiedSlot.setName(name);
         modifiedSlot.setDescription(description);
-        if (modifiedSlot.isHostingSlot() && Utility.isNullOrEmpty(installationRecords)) {
+        if (modifiedSlot.isHostingSlot() && installationEJB.getActiveInstallationRecordForSlot(modifiedSlot) == null) {
             modifiedSlot.setComponentType(deviceType);
         }
         slotEJB.save(modifiedSlot);
@@ -2079,8 +2082,13 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      * @throws ValidatorException validation failed
      */
     public void validateInstallationSlot(FacesContext ctx, UIComponent component, Object value) {
-        if (isInstallationSlot && !slotEJB.isInstallationSlotNameUnique(value.toString())) {
-            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
+        if (isNewInstallationSlot) {
+            if (!slotEJB.isInstallationSlotNameUnique(value.toString()))
+                throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
+                    "The installation slot name must be unique."));
+        } else if (isInstallationSlot)
+            if (!name.equals(value.toString()) && !slotEJB.isInstallationSlotNameUnique(value.toString())) {
+                throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
                     "The installation slot name must be unique."));
         }
     }
@@ -2676,6 +2684,11 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     /** @return the parentSlotSlot */
     public String getParentName() {
         return parentName;
+    }
+
+    /** @return hasDevice */
+    public boolean getHasDevice() {
+        return hasDevice;
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////

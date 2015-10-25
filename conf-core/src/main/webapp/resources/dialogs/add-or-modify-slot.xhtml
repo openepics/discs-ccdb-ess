@@ -21,7 +21,7 @@
                                     converter="#{componentTypeConverter}" rendered="true" required="true" 
                                     requiredMessage="Please select a device type" 
                                     disabled="#{not hierarchiesController.newInstallationSlot 
-                                            and not empty hierarchiesController.installationRecords}">
+                                            and hierarchiesController.hasDevice}">
                                 <f:selectItem itemLabel="Select One" itemValue="" noSelectionOption="true" />
                                 <f:selectItems value="#{componentTypeManager.deviceTypes}" var="deviceType" 
                                     itemLabel="#{deviceType.name}" itemValue="#{deviceType}" />
