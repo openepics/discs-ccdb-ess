@@ -51,7 +51,7 @@
                         <p:commandButton id="installButton" styleClass="dialogButton" title="Install" label="Install" 
                             disabled="#{empty hierarchiesController.deviceToInstall}" value="Install" 
                             action="#{hierarchiesController.installDevice()}" update="#{componentToUpdate} :#{formId}" 
-                            oncomplete="PF('#{widgetName}').hide(); resizeEmptyColumnInHierarchies();" />
+                            oncomplete="PF('#{widgetName}').hide();hierarchiesResizeAll();" />
                     </p:column>
                 </p:row>
             </p:panelGrid>

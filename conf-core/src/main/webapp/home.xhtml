@@ -415,7 +415,7 @@
                         <p:fieldset id="installationDetails" legend="Installation">
                             <p:dataTable id="installationTable" value="#{hierarchiesController.installationRecords}"
                                     var="installationRecord" style="width: 100%;" widgetVar="installationWidget"
-                                    selectionMode="single" selection="#{hierarchiesController.selectedInstallationView}"
+                                    selectionMode="multiple" selection="#{hierarchiesController.selectedInstallationViews}"
                                     emptyMessage="No records found." rowKey="#{installationRecord.slotName}"
                                     filteredValue="#{hierarchiesController.filteredInstallationRecords}"
                                     scrollable="true" class="hierarchies-attributes-cell">
@@ -451,14 +451,12 @@
                                     value="Install" ajax="true"
                                     actionListener="#{hierarchiesController.prepareUninstalledDevices}"
                                     style="margin-top: 1em; float: right;" update=":hierarchies:installationDetails"
-                                    disabled="#{empty hierarchiesController.selectedInstallationView or
-                                            hierarchiesController.selectedInstallationView.deviceInstalled}"
+                                    disabled="#{!hierarchiesController.canInstall()}"
                                     oncomplete="PF('installDevice').show();" />
                             <p:commandButton title="Uninstall selected device" label="Uninstall" value="Uninstall"
                                 type="button" onclick="PF('uninstallConfirm').show();" id="uninstallDeviceBtn"
                                 style="margin: 1em 1ex 0 0; float: right;" update=":hierarchies:installationDetails"
-                                disabled="#{empty hierarchiesController.selectedInstallationView or
-                                            not hierarchiesController.selectedInstallationView.deviceInstalled}" />
+                                disabled="#{!hierarchiesController.canUninstall()}" />
                         </p:fieldset>
                     </p:column>
                 </p:row>
@@ -477,7 +475,7 @@
             <ui:param name="formId" value="installDeviceForm" />
             <ui:param name="dialogTitle" value="Select Device" />
             <ui:param name="widgetName" value="installDevice" />
-            <ui:param name="slot" value="#{hierarchiesController.selectedInstallationView.slot}" />
+            <ui:param name="slot" value="#{hierarchiesController.selectedInstallationViews.get(0).slot}" />
             <ui:param name="componentToUpdate"
                 value=":hierarchies:slotAttributes :hierarchies:relationsTable :hierarchies:installationDetails" />
         </ui:include>
