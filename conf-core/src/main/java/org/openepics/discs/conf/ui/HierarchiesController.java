@@ -1316,7 +1316,6 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
         clipboardOperation = ClipboardOperations.CUT;
         putSelectedNodesOntoClipboard();
-        selectedNodes.clear();
     }
 
     /**
@@ -1328,7 +1327,6 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
         clipboardOperation = ClipboardOperations.COPY;
         putSelectedNodesOntoClipboard();
-        selectedNodes.clear();
     }
 
     public ClipboardOperations getCliboardOperation() {
@@ -1363,7 +1361,6 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         // 2. We put the selected nodes into the clipboard
         for (final TreeNode node : selectedNodes) {
             clipboardNodes.add(node);
-            node.setSelected(false);
         }
 
         // 3. We remove all the nodes that have their parents in the clipboard
