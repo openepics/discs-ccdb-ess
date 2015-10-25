@@ -224,7 +224,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     private transient Map<String, DeviceNameElement> nameList;
 
     // ------ variables for attribute manipulation ------
-    private transient EntityAttributeView selectedAttribute;
+    private transient List<EntityAttributeView> selectedAttributes;
+    private transient EntityAttributeView downloadAttribute;
     private String artifactDescription;
     private String artifactURI;
     private String artifactName;
@@ -698,8 +699,12 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
                 removeRelatedRelationships(unselectedSlot);
                 removeRelatedInstallationRecord(unselectedSlot);
                 iter.remove();
-                if ((selectedAttribute != null) && selectedAttribute.getParent().equals(unselectedSlot.getName())) {
-                    selectedAttribute = null;
+                if (selectedAttributes != null) {
+                    Iterator<EntityAttributeView> i = selectedAttributes.iterator();
+                    while (i.hasNext()) {
+                        EntityAttributeView selectedAttribute = i.next();
+                        if (selectedAttribute.getParent().equals(unselectedSlot.getName())) i.remove();
+                    }
                 }
                 if ((selectedRelationship!= null)
                         && selectedRelationship.getSourceSlotName().equals(unselectedSlot.getName())) {
@@ -748,7 +753,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         installationRecords = null;
         selectedSlotView = null;
         selectedSlot = null;
-        selectedAttribute = null;
+        selectedAttributes = null;
         selectedRelationship = null;
         selectedInstallationView = null;
         selectedNodeIds = null;
@@ -1687,52 +1692,56 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     }
 
     /** @return <code>true</code> if the attribute "Delete" button can be enabled, <code>false</code> otherwise */
-    public boolean canDeleteAttribute() {
-        if (selectedAttribute == null) {
+    public boolean canDeleteAttributes() {
+        if (selectedAttributes == null || selectedAttributes.size() == 0) {
             return false;
         }
-        switch (selectedAttribute.getKind()) {
-            case ARTIFACT:
-            case CONTAINER_SLOT_ARTIFACT:
-            case CONTAINER_SLOT_TAG:
-            case CONTAINER_SLOT_PROPERTY:
-            case INSTALL_SLOT_ARTIFACT:
-            case INSTALL_SLOT_TAG:
-                return true;
-            default:
-                return false;
-        }
+        for (EntityAttributeView selectedAttribute : selectedAttributes)
+            switch (selectedAttribute.getKind()) {
+                case ARTIFACT:
+                case CONTAINER_SLOT_ARTIFACT:
+                case CONTAINER_SLOT_TAG:
+                case CONTAINER_SLOT_PROPERTY:
+                case INSTALL_SLOT_ARTIFACT:
+                case INSTALL_SLOT_TAG:
+                    continue;
+                default:
+                    return false;
+            }
+        return true;
     }
 
     /** The handler called from the "Delete confirmation" dialog. This actually deletes an attribute */
-    public void deleteAttribute() {
-        Preconditions.checkNotNull(selectedAttribute);
-        final Slot slot = slotEJB.findByName(selectedAttribute.getParent());
-        switch (selectedAttribute.getKind()) {
-            case INSTALL_SLOT_ARTIFACT:
-            case CONTAINER_SLOT_ARTIFACT:
-            case CONTAINER_SLOT_PROPERTY:
-                slotEJB.deleteChild(selectedAttribute.getEntity());
-                refreshSlot(slot);
-                break;
-            case INSTALL_SLOT_TAG:
-            case CONTAINER_SLOT_TAG:
-                slot.getTags().remove(selectedAttribute.getEntity());
-                saveSlotAndRefresh(slot);
-                break;
-            default:
-                throw new RuntimeException("Trying to delete an attribute that cannot be removed on home screen.");
+    public void deleteAttributes() {
+        Preconditions.checkNotNull(selectedAttributes);
+        for (EntityAttributeView selectedAttribute : selectedAttributes) {
+            final Slot slot = slotEJB.findByName(selectedAttribute.getParent());
+            switch (selectedAttribute.getKind()) {
+                case INSTALL_SLOT_ARTIFACT:
+                case CONTAINER_SLOT_ARTIFACT:
+                case CONTAINER_SLOT_PROPERTY:
+                    slotEJB.deleteChild(selectedAttribute.getEntity());
+                    refreshSlot(slot);
+                    break;
+                case INSTALL_SLOT_TAG:
+                case CONTAINER_SLOT_TAG:
+                    slot.getTags().remove(selectedAttribute.getEntity());
+                    saveSlotAndRefresh(slot);
+                    break;
+                default:
+                    throw new RuntimeException("Trying to delete an attribute that cannot be removed on home screen.");
+            }
+            attributes.remove(selectedAttribute);
         }
-        attributes.remove(selectedAttribute);
-        selectedAttribute = null;
+        selectedAttributes = null;
     }
 
     /** @return <code>true</code> if the attribute "Edit" button can be enables, <code>false</code> otherwise */
     public boolean canEditAttribute() {
-        if (selectedAttribute == null) {
+        if (selectedAttributes == null || selectedAttributes.size() != 1) {
             return false;
         }
-        switch (selectedAttribute.getKind()) {
+        switch (selectedAttributes.get(0).getKind()) {
             case CONTAINER_SLOT_ARTIFACT:
             case CONTAINER_SLOT_PROPERTY:
             case INSTALL_SLOT_ARTIFACT:
@@ -1745,10 +1754,10 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
     /** Prepares the information for the "Edit" attribute dialog. */
     public void prepareModifyAttributePopup() {
-        Preconditions.checkNotNull(selectedAttribute);
-        if (selectedAttribute.getEntity() instanceof SlotPropertyValue) {
+        Preconditions.checkNotNull(selectedAttributes);
+        if (selectedAttributes.get(0).getEntity() instanceof SlotPropertyValue) {
             prepareModifyPropertyValuePopup();
-        } else if (selectedAttribute.getEntity() instanceof SlotArtifact) {
+        } else if (selectedAttributes.get(0).getEntity() instanceof SlotArtifact) {
             prepareModifyArtifactPopup();
         } else {
             throw new UnhandledCaseException();
@@ -1774,7 +1783,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         property = null;
         propertyValue = null;
         enumSelections = null;
-        selectedAttribute = null;
+        selectedAttributes = null;
         propertyValueUIElement = PropertyValueUIElement.NONE;
         filterProperties();
     }
@@ -1783,7 +1792,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     public void addNewPropertyValue() {
         try {
             final SlotPropertyValue slotValueInstance = new SlotPropertyValue(false);
-            selectedAttribute = null;
+            selectedAttributes = null;
             slotValueInstance.setProperty(property);
             slotValueInstance.setPropValue(propertyValue);
             slotValueInstance.setPropertiesParent(selectedSlot);
@@ -1816,7 +1825,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
     /** The handler called to save a new value of the {@link SlotPropertyValue} after modification */
     public void modifyPropertyValue() {
-        final SlotPropertyValue selectedPropertyValue = (SlotPropertyValue) selectedAttribute.getEntity();
+        final SlotPropertyValue selectedPropertyValue = (SlotPropertyValue) selectedAttributes.get(0).getEntity();
         selectedPropertyValue.setProperty(property);
         selectedPropertyValue.setPropValue(propertyValue);
 
@@ -1841,7 +1850,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     }
 
     private void prepareModifyPropertyValuePopup() {
-        final SlotPropertyValue selectedPropertyValue = (SlotPropertyValue) selectedAttribute.getEntity();
+        final SlotPropertyValue selectedPropertyValue = (SlotPropertyValue) selectedAttributes.get(0).getEntity();
         property = selectedPropertyValue.getProperty();
         propertyValue = selectedPropertyValue.getPropValue();
         propertyNameChangeDisabled = selectedPropertyValue.getSlot().isHostingSlot();
@@ -1906,7 +1915,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
     /** Adds new {@link Tag} to parent {@link ConfigurationEntity} */
     public void addNewTag() {
-        selectedAttribute = null;
+        selectedAttributes = null;
         final String normalizedTag = tag.trim();
         Tag existingTag = tagEJB.findById(normalizedTag);
         if (existingTag == null) {
@@ -1969,7 +1978,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      */
     public void addNewArtifact() throws IOException {
         Preconditions.checkNotNull(selectedSlot);
-        selectedAttribute = null;
+        selectedAttributes = null;
         if (importData != null) {
             artifactURI = blobStore.storeFile(new ByteArrayInputStream(importData));
         }
@@ -1993,7 +2002,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     }
 
     private void prepareModifyArtifactPopup() {
-        final SlotArtifact selectedArtifact = (SlotArtifact) selectedAttribute.getEntity();
+        final SlotArtifact selectedArtifact = (SlotArtifact) selectedAttributes.get(0).getEntity();
         if (selectedArtifact.isInternal()) {
             importFileName = selectedArtifact.getName();
             artifactName = null;
@@ -2013,7 +2022,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
     /** Modifies the selected artifact properties */
     public void modifyArtifact() {
-        final SlotArtifact selectedArtifact = (SlotArtifact) selectedAttribute.getEntity();
+        final SlotArtifact selectedArtifact = (SlotArtifact) selectedAttributes.get(0).getEntity();
         selectedArtifact.setDescription(artifactDescription);
         selectedArtifact.setUri(artifactURI);
         if (!selectedArtifact.isInternal()) {
@@ -2062,11 +2071,11 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      * @throws FileNotFoundException Thrown if file was not found on file system
      */
     public StreamedContent getDownloadFile() throws FileNotFoundException {
-        final Artifact selectedArtifact = (Artifact) selectedAttribute.getEntity();
-        final String filePath = blobStore.getBlobStoreRoot() + File.separator + selectedArtifact.getUri();
+        final Artifact downloadArtifact = (Artifact) downloadAttribute.getEntity();
+        final String filePath = blobStore.getBlobStoreRoot() + File.separator + downloadArtifact.getUri();
         final String contentType = FacesContext.getCurrentInstance().getExternalContext().getMimeType(filePath);
 
-        return new DefaultStreamedContent(new FileInputStream(filePath), contentType, selectedArtifact.getName());
+        return new DefaultStreamedContent(new FileInputStream(filePath), contentType, downloadArtifact.getName());
     }
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -2615,13 +2624,22 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         return attributeKinds;
     }
 
-    /** @return the selectedAttribute */
-    public EntityAttributeView getSelectedAttribute() {
-        return selectedAttribute;
+    /** @return the selectedAttributes */
+    public List<EntityAttributeView> getSelectedAttributes() {
+        return selectedAttributes;
     }
-    /** @param selectedAttribute the selectedAttribute to set */
-    public void setSelectedAttribute(EntityAttributeView selectedAttribute) {
-        this.selectedAttribute = selectedAttribute;
+    /** @param selectedAttributes the selectedAttributes to set */
+    public void setSelectedAttributes(List<EntityAttributeView> selectedAttributes) {
+        this.selectedAttributes = selectedAttributes;
+    }
+
+    /** @return the downloadAttribute */
+    public EntityAttributeView getDownloadAttribute() {
+        return downloadAttribute;
+    }
+    /** @param downloadAttribute the downloadAttribute to set */
+    public void setDownloadAttribute(EntityAttributeView downloadAttribute) {
+        this.downloadAttribute = downloadAttribute;
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2705,7 +2723,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     }
     /** @param propertyValue the propertyValue to set */
     public void setPropertyValue(String propertyValue) {
-        final DataType dataType = selectedAttribute != null ? selectedAttribute.getType() : property.getDataType();
+        final DataType dataType = selectedAttributes != null ? selectedAttributes.get(0).getType() : property.getDataType();
         this.propertyValue = Conversion.stringToValue(propertyValue, dataType);
     }
 

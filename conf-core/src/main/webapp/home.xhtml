@@ -283,7 +283,7 @@
                             <p:dataTable id="attributesTable" class="hierarchies-attributes-cell" var="attribute" 
                                     emptyMessage="No records found." value="#{hierarchiesController.attributes}" 
                                     scrollable="true" style="width: 100%"
-                                    selection="#{hierarchiesController.selectedAttribute}" selectionMode="single"
+                                    selection="#{hierarchiesController.selectedAttributes}" selectionMode="multiple"
                                     filteredValue="#{hierarchiesController.filteredAttributes}" rowKey="#{attribute.id}"
                                     widgetVar="attributesWidget">
                                 <p:ajax event="rowSelect" update=":hierarchies:deleteAttrButton :hierarchies:editAttrButton" />
@@ -308,7 +308,7 @@
                                     <h:outputText value="#{!empty attribute.value ? attribute.value : '-'}" rendered="#{not attribute.hasURL}" />
                                     <p:commandLink ajax="false" title="Download" rendered="#{attribute.hasFile}" style="margin-left: 1ex;">
                                         <h:outputText styleClass="ui-icon ui-icon-arrowthick-1-s" style="display: inline-block !important; margin-right: 6px;" />
-                                        <f:setPropertyActionListener value="#{attribute}" target="#{hierarchiesController.selectedAttribute}" />
+                                        <f:setPropertyActionListener value="#{attribute}" target="#{hierarchiesController.downloadAttribute}" />
                                         <p:fileDownload value="#{hierarchiesController.downloadFile}" />
                                     </p:commandLink>
                                 </p:column>
@@ -336,7 +336,7 @@
 
                             <p:commandButton id="deleteAttrButton" value="Delete" icon="ui-icon-trash"
                                 style="float: right; margin-top: 1em;" oncomplete="PF('deleteAttribute').show();"
-                                disabled="#{!hierarchiesController.canDeleteAttribute()}" />
+                                disabled="#{!hierarchiesController.canDeleteAttributes()}" />
                             <p:commandButton id="editAttrButton" value="Edit" icon="ui-icon-pencil"
                                 action="#{hierarchiesController.prepareModifyAttributePopup}"
                                 style="float: right; margin: 1em 1ex 0 0;" update=":modifyPropertyValueForm :modifyArtifactForm"
@@ -533,7 +533,7 @@
             <ui:param name="dialogTitle" value="Delete Property" />
             <ui:param name="widgetName" value="deleteAttribute" />
             <ui:param name="controller" value="#{hierarchiesController}" />
-            <ui:param name="submitHandler" value="deleteAttribute" />
+            <ui:param name="submitHandler" value="deleteAttributes" />
             <ui:param name="formToUpdate" value=":hierarchies:slotAttributes" />
             <ui:param name="entityType" value="selected attribute" />
             <ui:param name="resetFilter" value="PF('attributesWidget').clearFilters();" />
