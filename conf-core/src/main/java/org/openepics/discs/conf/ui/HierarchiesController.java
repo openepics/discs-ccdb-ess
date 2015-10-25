@@ -217,6 +217,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     /** Used in "add child to parent" operations. This usually reflects the <code>selectedNode</code>. */
     private boolean isInstallationSlot;
     private ComponentType deviceType;
+    private String parentName;
     private transient List<String> namesForAutoComplete;
     private boolean isNewInstallationSlot;
     private transient Map<String, DeviceNameElement> nameList;
@@ -1236,6 +1237,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         name = selectedSlotView.getName();
         description = selectedSlotView.getDescription();
         deviceType = selectedSlotView.getSlot().getComponentType();
+        parentName = selectedSlotView.getParentNode().getName();
     }
 
     /** Prepares fields that are used in pop up for adding a new container */
@@ -1255,6 +1257,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         name = null;
         description = null;
         deviceType = null;
+        parentName = getSelectedNodeSlot().getName();
     }
 
     /** Called to save modified installation slot / container information */
@@ -2668,6 +2671,11 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     /** @return the isNewInstallationSlot */
     public boolean isNewInstallationSlot() {
         return isNewInstallationSlot;
+    }
+
+    /** @return the parentSlotSlot */
+    public String getParentName() {
+        return parentName;
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
