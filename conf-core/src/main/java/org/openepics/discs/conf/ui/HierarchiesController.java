@@ -196,6 +196,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     private TreeNode powersRootNode;
     private TreeNode controlsRootNode;
     private transient List<TreeNode> selectedNodes;
+    private transient List<TreeNode> savedIncludesSelectedNodes;
     /** <code>selectedSlot</code> is only initialized when there is only one node in the tree selected */
     private Slot selectedSlot;
     /** <code>selectedSlotView</code> is only initialized when there is only one node in the tree selected */
@@ -894,14 +895,27 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      * @param event the event
      */
     public void onTabChange(TabChangeEvent event) {
+        ActiveTab newActiveTab = ActiveTab.valueOf(event.getTab().getId());
         if (activeTab == ActiveTab.INCLUDES) {
             initHierarchy(powersRootNode, SlotRelationName.POWERS, powersHierarchyBuilder);
             initHierarchy(controlsRootNode, SlotRelationName.CONTROLS, controlsHierarchyBuilder);
+            savedIncludesSelectedNodes = selectedNodes;
         }
-        activeTab = ActiveTab.valueOf(event.getTab().getId());
+        activeTab = newActiveTab;
         unselectAllTreeNodes();
         selectedNodes = null;
         clearRelatedInformation();
+
+        if (newActiveTab == ActiveTab.INCLUDES) {
+            selectedNodes = savedIncludesSelectedNodes;
+            savedIncludesSelectedNodes = null;
+            if (selectedNodes != null) {
+                for (final TreeNode node : selectedNodes) {
+                    node.setSelected(true);
+                }
+            }
+            onNodeSelect(null);
+        }
     }
 
     @Override
@@ -1130,7 +1144,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
                                                     slotRelationEJB.findBySlotRelationName(name));
         }
         int order = 0;
-        for (final Slot levelOne : new HashSet<Slot>(levelOneSlots)) {
+        for (final Slot levelOne : levelOneSlots) {
             final SlotView levelOneView = new SlotView(levelOne, rootSlotView, ++order, slotEJB);
             levelOneView.setLevel(1);
             final TreeNode newLevelOneNode = new DefaultTreeNode(levelOneView, root);
