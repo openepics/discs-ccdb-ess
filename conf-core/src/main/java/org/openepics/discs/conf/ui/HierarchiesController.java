@@ -1246,7 +1246,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         name = selectedSlotView.getName();
         description = selectedSlotView.getDescription();
         deviceType = selectedSlotView.getSlot().getComponentType();
-        parentName = selectedSlotView.getParentNode().getName();
+        parentName = selectedSlotView.getParentNode().getParentNode() == null ? "" : selectedSlotView.getParentNode().getName();
         hasDevice = installationEJB.getActiveInstallationRecordForSlot(selectedSlotView.getSlot()) != null;
     }
 
