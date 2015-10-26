@@ -140,6 +140,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
                                                 "The following installation slots cannot be made hierarchy roots:";
     private static final String     CANNOT_PASTE_INTO_SLOT =
             "The following containers cannot become children of installation slot:";
+    private static final String     CANNOT_PASTE_INTO_SELF =
+            "The following containers cannot become children of themselves:";
     private static final int        PRELOAD_LIMIT = 3;
     /** The device page part of the URL containing all the required parameters already. */
     private static final String     NAMING_DEVICE_PAGE = "devices.xhtml?i=2&deviceName=";
@@ -1442,6 +1444,20 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
                 pasteErrors.add(slotView);
             }
         }
+
+        if (pasteErrors.size() == 0 && selectedSlot != null) {
+            pasteErrorReason = CANNOT_PASTE_INTO_SELF;
+            TreeNode current = selectedNodes.get(0);
+            while (current != null) {
+                for (final TreeNode node : clipboardNodes) {
+                    if (node.equals(current)) {
+                        pasteErrors.add((SlotView)node.getData());
+                    }
+                }
+                current = current.getParent();
+            }
+        }
+
     }
 
     /**
