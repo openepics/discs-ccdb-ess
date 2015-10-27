@@ -31,6 +31,7 @@ import com.google.common.base.Objects;
  */
 public class SlotRelationshipView {
 
+    private final String id;
     private final String sourceSlotName;
     private final String relationshipName;
     private final String targetSlotName;
@@ -60,6 +61,16 @@ public class SlotRelationshipView {
         }
 
         this.slotPair = slotPair;
+        this.id = slotPair.getId().toString();
+    }
+
+    public SlotRelationshipView(String id, Slot sourceSlot, Slot targetSlot, String relationshipName) {
+        this.sourceSlotName = sourceSlot.getName();
+        this.targetSlotName = targetSlot.getName();
+        this.targetSlot = targetSlot;
+        this.relationshipName = relationshipName;
+        slotPair = null;
+        this.id = id;
     }
 
     public String getRelationshipName() {
@@ -80,5 +91,9 @@ public class SlotRelationshipView {
 
     public String getSourceSlotName() {
         return sourceSlotName;
+    }
+
+    public String getId() {
+        return id;
     }
 }

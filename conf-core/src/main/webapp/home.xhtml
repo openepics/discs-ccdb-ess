@@ -109,6 +109,7 @@
                                         :hierarchies:installationDetails :hierarchies:slotAttributes
                                         :hierarchies:addRelationship :hierarchies:hierarchyTabs:tree
                                         :hierarchies:hierarchyTabs:powersTree :hierarchies:hierarchyTabs:controlsTree
+                                        :hierarchies:hierarchyTabs:connectsTree
                                         :hierarchies:clipboardOperations"
                                     oncomplete="hierarchiesResizeAll();" />
 
@@ -210,6 +211,33 @@
                                                 styleClass="ui-icon ui-icon-folder-collapsed" />
                                             <h:outputText value="#{powerSlot.name}"
                                                 title="#{powerSlot.description}#{powerSlot.hostingSlot ? ' ('.concat(powerSlot.deviceTypeName).concat(')') : ''}" />
+                                        </p:column>
+                                    </p:treeTable>
+                                </p:tab>
+                                <p:tab id="CONNECTS" title="Connects">
+                                    <p:treeTable id="connectsTree" value="#{hierarchiesController.connectsRoot}" var="connectsSlot"
+                                             selectionMode="multiple" selection="#{hierarchiesController.selectedConnectsNodes}"
+                                             scrollable="true" scrollWidth="auto" rowStyleClass="treeRows"
+                                             style="width: 35em;"  widgetVar="connectsWidget">
+                                        <p:ajax event="select" listener="#{hierarchiesController.onNodeSelect}"
+                                                update=":hierarchies:relationsTable :hierarchies:installationDetails
+                                                        :hierarchies:slotAttributes :hierarchies:addRelationship"
+                                                oncomplete="hierarchiesResizeAll();" />
+                                        <p:ajax event="unselect" listener="#{hierarchiesController.onNodeUnselect}"
+                                                update=":hierarchies:relationsTable :hierarchies:installationDetails
+                                                        :hierarchies:slotAttributes :hierarchies:addRelationship"
+                                                oncomplete="hierarchiesResizeAll();" />
+                                        <p:ajax event="expand" listener="#{hierarchiesController.onConnectsExpand}" />
+
+                                        <p:column id="connectsName" headerText="Name">
+                                            <h:outputText value="" rendered="#{connectsSlot.hostingSlot}"
+                                                style="display:inline-block; vertical-align:bottom !important"
+                                                styleClass="ui-icon ui-icon-wrench" />
+                                            <h:outputText value="" rendered="#{!connectsSlot.hostingSlot}"
+                                                style="display:inline-block; vertical-align:bottom !important"
+                                                styleClass="ui-icon ui-icon-folder-collapsed" />
+                                            <h:outputText value="#{connectsSlot.name}"
+                                                title="#{connectsSlot.description}#{connectsSlot.hostingSlot ? ' ('.concat(connectsSlot.deviceTypeName).concat(')') : ''}" />
                                         </p:column>
                                     </p:treeTable>
                                 </p:tab>
@@ -364,7 +392,7 @@
                                     style="width: 100%" var="relationship"
                                     emptyMessage="No records found." scrollable="true" class="hierarchies-attributes-cell"
                                     filteredValue="#{hierarchiesController.filteredRelationships}"
-                                    selectionMode="multiple" rowKey="#{relationship.slotPair.id}"
+                                    selectionMode="multiple" rowKey="#{relationship.id}"
                                     selection="#{hierarchiesController.selectedRelationships}"
                                     widgetVar="relationshipsWidget">
                                 <p:ajax event="rowSelect" update=":hierarchies:deleteRelationship" />

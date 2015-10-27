@@ -61,6 +61,7 @@ import org.openepics.discs.conf.dl.annotations.SignalsLoader;
 import org.openepics.discs.conf.dl.annotations.SlotsLoader;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.ejb.ComptypeEJB;
+import org.openepics.discs.conf.ejb.ConnectsEJB;
 import org.openepics.discs.conf.ejb.InstallationEJB;
 import org.openepics.discs.conf.ejb.PropertyEJB;
 import org.openepics.discs.conf.ejb.SlotEJB;
@@ -92,6 +93,7 @@ import org.openepics.discs.conf.ui.common.AbstractAttributesController;
 import org.openepics.discs.conf.ui.common.AbstractExcelSingleFileImportUI;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
 import org.openepics.discs.conf.ui.common.HierarchyBuilder;
+import org.openepics.discs.conf.ui.common.ConnectsHierarchyBuilder;
 import org.openepics.discs.conf.ui.common.UIException;
 import org.openepics.discs.conf.util.AppProperties;
 import org.openepics.discs.conf.util.BlobStore;
@@ -148,6 +150,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
     @Inject private transient SlotEJB slotEJB;
     @Inject private transient SlotPairEJB slotPairEJB;
+    @Inject private transient ConnectsEJB connectsEJB;
     @Inject private transient InstallationEJB installationEJB;
     @Inject private transient SlotRelationEJB slotRelationEJB;
     @Inject private transient ComptypeEJB comptypeEJB;
@@ -163,7 +166,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     @Inject private transient AppProperties properties;
 
     private enum ActiveTab {
-        INCLUDES, POWERS, CONTROLS
+        INCLUDES, POWERS, CONTROLS, CONNECTS,
     }
 
     private enum ClipboardOperations {
@@ -194,9 +197,11 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     private transient HierarchyBuilder hierarchyBuilder;
     private transient HierarchyBuilder powersHierarchyBuilder;
     private transient HierarchyBuilder controlsHierarchyBuilder;
+    private transient ConnectsHierarchyBuilder connectsHierarchyBuilder;
     private TreeNode rootNode;
     private TreeNode powersRootNode;
     private TreeNode controlsRootNode;
+    private TreeNode connectsRootNode;
     private transient List<TreeNode> selectedNodes;
     private transient List<TreeNode> savedIncludesSelectedNodes;
     /** <code>selectedSlot</code> is only initialized when there is only one node in the tree selected */
@@ -624,6 +629,11 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
                 relationships.add(new SlotRelationshipView(slotPair, slot));
             }
         }
+
+        final List<Slot> connectedSlots = connectsEJB.getSlotConnects(slot);
+        for (final Slot targetSlot : connectedSlots) {
+            relationships.add(new SlotRelationshipView(slot.getId()+"c"+targetSlot.getId(), slot, targetSlot, "Connects"));
+        }
     }
 
     private void removeRelatedRelationships(final Slot slot) {
@@ -903,6 +913,18 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     }
 
     /**
+     * Builds the part of the tree under the expanded node if that is necessary.
+     *
+     * @param event Event triggered on node expand action
+     */
+    public void onConnectsExpand(NodeExpandEvent event) {
+        final TreeNode expandedNode = event.getTreeNode();
+        if (expandedNode != null) {
+            connectsHierarchyBuilder.expandNode(expandedNode);
+        }
+    }
+
+    /**
      * The event is triggered when the hierarchy tab is changed.
      * @param event the event
      */
@@ -911,6 +933,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         if (activeTab == ActiveTab.INCLUDES) {
             initHierarchy(powersRootNode, SlotRelationName.POWERS, powersHierarchyBuilder);
             initHierarchy(controlsRootNode, SlotRelationName.CONTROLS, controlsHierarchyBuilder);
+            connectsHierarchyBuilder.initHierarchy(selectedNodes, connectsRootNode);
             savedIncludesSelectedNodes = selectedNodes;
         }
         activeTab = newActiveTab;
@@ -1138,6 +1161,10 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         controlsHierarchyBuilder.setRelationship(SlotRelationName.CONTROLS);
         // initializing root node prevents NPE in initial page display
         controlsRootNode = new DefaultTreeNode(new SlotView(slotEJB.getRootNode(), null, 1, slotEJB), null);
+
+        connectsHierarchyBuilder = new ConnectsHierarchyBuilder(connectsEJB);
+        // initializing root node prevents NPE in initial page display
+        connectsRootNode = new DefaultTreeNode(new SlotView(slotEJB.getRootNode(), null, 1, slotEJB), null);
     }
 
     private void initHierarchy(final TreeNode root, final SlotRelationName name, final HierarchyBuilder builder) {
@@ -2351,6 +2378,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     private boolean canRelationshipBeDeleted() {
         if (selectedRelationships == null || selectedRelationships.size() == 0) return false;
         for (SlotRelationshipView selectedRelationship : selectedRelationships) {
+            if (selectedRelationship.getSlotPair() == null) return false;
             if (selectedRelationship.getSlotPair().getSlotRelation().getName() == SlotRelationName.CONTAINS
                 && !slotPairEJB.slotHasMoreThanOneContainsRelation(selectedRelationship.getSlotPair().getChildSlot())) return false;
         }
@@ -2488,6 +2516,12 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         return controlsRootNode;
     }
 
+    /** @return The root node of the <code>CONNECTS</code> hierarchy tree. */
+    public TreeNode getConnectsRoot() {
+        return connectsRootNode;
+    }
+
+
     public void setSelectedIncludesNodes(TreeNode[] nodes) {
         if (activeTab == ActiveTab.INCLUDES) {
             selectedNodes = nodes == null ? null : Lists.newArrayList(nodes);
@@ -2518,6 +2552,17 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
     public TreeNode[] getSelectedPowersNodes() {
         return ((selectedNodes == null) || (activeTab != ActiveTab.POWERS))
+                ? null : selectedNodes.toArray(new TreeNode[] {});
+    }
+
+    public void setSelectedConnectsNodes(TreeNode[] nodes) {
+        if (activeTab == ActiveTab.CONNECTS) {
+            selectedNodes = nodes == null ? null : Lists.newArrayList(nodes);
+        }
+    }
+
+    public TreeNode[] getSelectedConnectsNodes() {
+        return ((selectedNodes == null) || (activeTab != ActiveTab.CONNECTS))
                 ? null : selectedNodes.toArray(new TreeNode[] {});
     }
 
