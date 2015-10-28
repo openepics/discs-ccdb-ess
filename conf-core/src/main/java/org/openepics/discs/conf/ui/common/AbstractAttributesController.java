@@ -52,6 +52,7 @@ import org.openepics.discs.conf.ent.ConfigurationEntity;
 import org.openepics.discs.conf.ent.DataType;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
+import org.openepics.discs.conf.ent.EntityWithProperties;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyValue;
 import org.openepics.discs.conf.ent.Slot;
@@ -327,7 +328,12 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
     }
 
     protected void deletePropertyValue(final T propValueToDelete) {
-        dao.deleteChild(propValueToDelete);
+        if (!isPropertyValueInherited(propValueToDelete)) {
+            dao.deleteChild(propValueToDelete);
+        } else {
+            propValueToDelete.setPropValue(null);
+            dao.saveChild(propValueToDelete);
+        }
     }
 
     private void deleteArtifact(final S artifactToDelete) throws IOException {
@@ -369,7 +375,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
         if (attributeToModify.getEntity() instanceof PropertyValue) {
             propertyNameChangeDisabled = attributeToModify.getEntity() instanceof DevicePropertyValue
                     || attributeToModify.getEntity() instanceof SlotPropertyValue
-                    || isPropertyValueInherited(attributeToModify);
+                    || isPropertyValueInherited(selectedPropertyValue);
         }
 
         propertyValueUIElement = Conversion.getUIElementFromProperty(property);
@@ -499,12 +505,12 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
         final Object attribute = attributeView.getEntity();
         return (attribute instanceof Artifact && !(attribute instanceof ComptypeArtifact))
                 || (attribute instanceof Tag && attributeView.getKind() != EntityAttributeViewKind.DEVICE_TYPE_TAG)
-                || (attribute instanceof PropertyValue && !isPropertyValueInherited(attributeView));
+                || (attribute instanceof PropertyValue &&  ( ((PropertyValue)attribute).getPropValue() != null || !isPropertyValueInherited((PropertyValue)attribute) )  );
     }
 
-    private boolean isPropertyValueInherited(EntityAttributeView attributeView) {
+    private boolean isPropertyValueInherited(PropertyValue propValue) {
         List<ComptypePropertyValue> parentProperties = null;
-        ConfigurationEntity parentEntity = attributeView.getParentEntity();        
+        EntityWithProperties parentEntity = propValue.getPropertiesParent();
         if (parentEntity != null) {
             if (parentEntity instanceof Slot) {
                 if (((Slot) parentEntity).isHostingSlot()) {
@@ -512,7 +518,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
                 } else {
                     return false;
                 }
-            } else if (parentEntity instanceof Device) {                
+            } else if (parentEntity instanceof Device) {
                 parentProperties = ((Device) parentEntity).getComponentType().getComptypePropertyList();
             } else if (parentEntity instanceof ComponentType) {
                 return false;
@@ -525,9 +531,8 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
             return false;
         }
 
-        final PropertyValue propValue = (PropertyValue) attributeView.getEntity();
         final String propertyName = propValue.getProperty().getName();
-        for (final ComptypePropertyValue inheritedPropVal : parentProperties) {            
+        for (final ComptypePropertyValue inheritedPropVal : parentProperties) {
             if (inheritedPropVal.isPropertyDefinition() && (
                     (inheritedPropVal.isDefinitionTargetDevice() && parentEntity instanceof Device) ||
                     (inheritedPropVal.isDefinitionTargetSlot() && parentEntity instanceof Slot) )
