@@ -191,6 +191,7 @@ public class DevicesController
 
     @Override
     protected void setArtifactParent(DeviceArtifact child) {
+        device = deviceEJB.findById(device.getId());
         child.setDevice(device);
     }
 
