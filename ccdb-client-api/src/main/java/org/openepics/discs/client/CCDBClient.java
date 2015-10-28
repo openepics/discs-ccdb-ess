@@ -32,12 +32,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
 import org.openepics.discs.client.impl.CCDBClientConfigException;
@@ -91,6 +88,9 @@ public class CCDBClient {
         baseUrl = getProperty(properties, PROPERTY_NAME_BASE_URL);
         username = getProperty(properties, PROPERTY_NAME_USERNAME);
         password = getProperty(properties, PROPERTY_NAME_PASSWORD);
+        LOGGER.log(Level.FINE, PROPERTY_NAME_BASE_URL + ": " + baseUrl);
+        LOGGER.log(Level.FINE, PROPERTY_NAME_USERNAME + ": " + username);
+        LOGGER.log(Level.FINE, PROPERTY_NAME_PASSWORD + ": " + password);
     }
 
     /**
@@ -216,13 +216,13 @@ public class CCDBClient {
     /**
      * Gets a property from a {@link Properties} or if not found, looks into system properties
      *
-     * @param custom
+     * @param defaults
      * @param key
-     * @return
+     * @return the property value
      */
-    private static String getProperty(final Properties custom, final String key) {
-        final String customPropValue = custom.getProperty(key);
-        final String propValue = customPropValue != null ? customPropValue : System.getProperties().getProperty(key);
+    private static String getProperty(final Properties defaults, final String key) {
+        final String defaultPropValue = defaults.getProperty(key);
+        final String propValue = System.getProperties().getProperty(key, defaultPropValue);
 
         if (propValue == null) {
             throw new CCDBClientConfigException("CCDB Client property not found: " + key);
@@ -230,16 +230,16 @@ public class CCDBClient {
 
         return propValue;
     }
-    
+
     /* FACTORY METHODS */
     public DeviceTypeResource createDeviceTypeResource() {
         return new DeviceTypeClient(this);
     }
-    
+
     public InstallationSlotNameResource createInstallationSlotNameResource() {
         return new InstallationSlotNameClient(this);
     }
-    
+
     public InstallationSlotResource createInstallationSlotResource() {
         return new InstallationSlotClient(this);
     }
