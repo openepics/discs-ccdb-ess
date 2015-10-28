@@ -35,6 +35,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -295,9 +296,9 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     }
 
     private void initNamingInformation() {
-        nameList = names.getAllNames();
         final String namingStatus = properties.getProperty(AppProperties.NAMING_DETECT_STATUS);
         detectNamingStatus = namingStatus == null ? false : "TRUE".equals(namingStatus.toUpperCase());
+        nameList = detectNamingStatus ? names.getAllNames() : new HashMap<>();
         namesForAutoComplete = ImmutableList.copyOf(nameList.keySet());
     }
 
