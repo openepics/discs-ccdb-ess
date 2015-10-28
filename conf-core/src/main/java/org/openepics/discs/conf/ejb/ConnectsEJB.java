@@ -20,9 +20,11 @@
 package org.openepics.discs.conf.ejb;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
@@ -30,6 +32,7 @@ import org.openepics.cable.client.CableDBClient;
 import org.openepics.cable.jaxb.CableElement;
 import org.openepics.cable.jaxb.CableResource;
 import org.openepics.discs.conf.ent.Slot;
+import org.openepics.discs.conf.util.AppProperties;
 
 /**
  * Service for CableDB
@@ -40,18 +43,24 @@ import org.openepics.discs.conf.ent.Slot;
 @Stateless
 public class ConnectsEJB {
     @Inject private transient SlotEJB slotEJB;
-
+    @Inject private transient AppProperties properties;
 
     private List<CableElement> cables = null;
+    private boolean cableDBStatus = false;
 
-    private List<CableElement> getCables()
+    @PostConstruct
+    public void init()
     {
-        if (cables == null) {
+        final String cableDBStatusStr = properties.getProperty(AppProperties.CABLEDB_STATUS);
+        cableDBStatus = cableDBStatusStr == null ? false : "TRUE".equals(cableDBStatusStr.toUpperCase());
+
+        if (cableDBStatus) {
             CableDBClient c = new CableDBClient(null);
             CableResource cr = c.createCableResource();
             cables = cr.getAllCables();
+        } else {
+            cables = Arrays.asList();
         }
-        return cables;
     }
 
     /**
@@ -59,7 +68,6 @@ public class ConnectsEJB {
      * @return The list of all {@link Slot}s to which the slot is connected.
      */
     public List<Slot> getSlotConnects(Slot slot) {
-        List<CableElement> cables = getCables();
         String n1 = slot.getName();
         List<Slot> connects = new ArrayList<>();
         HashSet<String> uniqueEndpoints = new HashSet<String>();
