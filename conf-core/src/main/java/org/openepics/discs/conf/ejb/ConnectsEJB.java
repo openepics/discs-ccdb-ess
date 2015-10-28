@@ -20,6 +20,7 @@
 package org.openepics.discs.conf.ejb;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.ejb.Stateless;
@@ -61,20 +62,23 @@ public class ConnectsEJB {
         List<CableElement> cables = getCables();
         String n1 = slot.getName();
         List<Slot> connects = new ArrayList<>();
+        HashSet<String> uniqueEndpoints = new HashSet<String>();
 
         for (CableElement cable : cables) {
+            String n2;
             if (n1.equals(cable.getEndpointA().getDevice())) {
-                connects.addAll(slotEJB.findAllByName(cable.getEndpointB().getDevice()));
-            }
-            if (n1.equals(cable.getEndpointB().getDevice())) {
-                connects.addAll(slotEJB.findAllByName(cable.getEndpointA().getDevice()));
-            }
-        }
-        return connects;
+                n2 = cable.getEndpointB().getDevice();
+            } else if (n1.equals(cable.getEndpointB().getDevice())) {
+                n2 = cable.getEndpointA().getDevice();
+            } else continue;
 
-        /*if (slot.getName().equals("LEBT-01:Ctrl-Box-01")) {
-            return slotEJB.findAllByName("LEBT-01:PBI-NPM-02");
+            if (!uniqueEndpoints.contains(n2)) {
+                connects.addAll(slotEJB.findAllByName(n2));
+                uniqueEndpoints.add(n2);
+            }
         }
-        return null;*/
+        uniqueEndpoints.clear();
+
+        return connects;
     }
 }
