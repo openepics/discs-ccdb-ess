@@ -2635,7 +2635,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         return selectedInstallationViews;
     }
 
-    /** @param selectedInstallationView the selectedInstallationView to set */
+    /** @param selectedInstallationViews the selectedInstallationViews to set */
     public void setSelectedInstallationViews(List<InstallationView> selectedInstallationViews) {
         this.selectedInstallationViews = selectedInstallationViews;
     }
