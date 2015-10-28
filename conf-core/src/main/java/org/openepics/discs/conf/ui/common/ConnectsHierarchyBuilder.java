@@ -43,6 +43,10 @@ public class ConnectsHierarchyBuilder {
 
     public void initHierarchy(List<TreeNode> selectedNodes, TreeNode rootNode) {
         List<TreeNode> children = rootNode.getChildren();
+        if (selectedNodes == null) {
+            return;
+        }
+
         children.clear();
         for (TreeNode node : selectedNodes) {
             TreeNode c = new DefaultTreeNode(node.getData(), rootNode);
