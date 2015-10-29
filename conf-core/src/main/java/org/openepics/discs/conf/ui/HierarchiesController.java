@@ -1168,6 +1168,14 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         connectsRootNode = new DefaultTreeNode(new SlotView(slotEJB.getRootNode(), null, 1, slotEJB), null);
     }
 
+    /**
+     * @return cableDBStatus
+     */
+    public boolean getCableDBStatus()
+    {
+        return connectsEJB.getCableDBStatus();
+    }
+
     private void initHierarchy(final TreeNode root, final SlotRelationName name, final HierarchyBuilder builder) {
         root.getChildren().clear();
         final SlotView rootSlotView = (SlotView) root.getData();

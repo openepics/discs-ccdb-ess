@@ -89,4 +89,11 @@ public class ConnectsEJB {
 
         return connects;
     }
+
+    /**
+     * @return the cableDBStatus
+     */
+    public boolean getCableDBStatus() {
+        return cableDBStatus;
+    }
 }

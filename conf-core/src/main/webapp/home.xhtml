@@ -214,7 +214,7 @@
                                         </p:column>
                                     </p:treeTable>
                                 </p:tab>
-                                <p:tab id="CONNECTS" title="Connects">
+                                <p:tab id="CONNECTS" title="Connects" rendered="#{hierarchiesController.cableDBStatus}">
                                     <p:treeTable id="connectsTree" value="#{hierarchiesController.connectsRoot}" var="connectsSlot"
                                              selectionMode="multiple" selection="#{hierarchiesController.selectedConnectsNodes}"
                                              scrollable="true" scrollWidth="auto" rowStyleClass="treeRows"
