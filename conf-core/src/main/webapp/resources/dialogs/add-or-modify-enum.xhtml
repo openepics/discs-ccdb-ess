@@ -9,45 +9,46 @@
             <f:facet name="header">
                 <h:outputText value="#{dialogTitle}" />
             </f:facet>
-            <p:panelGrid id="grp" styleClass="dialog-grid-panel noBorders">
-                <p:row>
-                    <p:column styleClass="alignRight alignMiddle dialog-labels-width-2">
-                        <p:outputLabel for="enumName" value="Name:" />
-                    </p:column>
-                    <p:column>
-                        <p:inputText id="enumName" value="#{dataTypeManager.name}" required="true" 
-                            requiredMessage="Please enter a name" validator="#{dataTypeManager.nameValidator}"
-                            style="width: 100%;" />
-                        <p:message for="enumName"/>
-                    </p:column>
-                </p:row>
-                
-                <p:row>
-                    <p:column styleClass="alignRight dialog-labels-width-2" style="padding-top: 0.5em;">
-                        <p:outputLabel for="enumDesc" value="Description:" />
-                    </p:column>
-                    <p:column>
-                        <p:inputTextarea id="enumDesc" rows="5" style="width: 100%; height: 7em; overflow-y: scroll;" 
-                            maxlength="254" required="true" requiredMessage="Please enter a description" 
-                            value="#{dataTypeManager.description}" />
-                        <br/>
-                        <p:message for="enumDesc"/>
-                    </p:column>
-                </p:row>
-
-                <p:row>
-                    <p:column styleClass="alignRight dialog-labels-width-2" style="padding-top: 0.5em;">
-                        <p:outputLabel for="enumDef" value="Definition:" />
-                    </p:column>
-                    <p:column>
-                        <p:inputTextarea id="enumDef" rows="5" style="width: 100%; height: 7em; overflow-y: scroll;" 
-                            required="true" validator="#{dataTypeManager.enumValidator}"
-                            requiredMessage="Please enter a definition" value="#{dataTypeManager.definition}" />
-                        <br/>
-                        <p:message for="enumDef"/>
-                    </p:column>
-                </p:row>
-            </p:panelGrid>
+            <div class="ui-fluid">
+                <p:panelGrid id="grp" styleClass="dialog-grid-panel noBorders">
+                    <p:row>
+                        <p:column styleClass="alignRight alignMiddle dialog-labels-width-2">
+                            <p:outputLabel for="enumName" value="Name:" />
+                        </p:column>
+                        <p:column>
+                            <p:inputText id="enumName" value="#{dataTypeManager.name}" required="true" 
+                                requiredMessage="Please enter a name" validator="#{dataTypeManager.nameValidator}"/>
+                            <p:message for="enumName"/>
+                        </p:column>
+                    </p:row>
+                    
+                    <p:row>
+                        <p:column styleClass="alignRight dialog-labels-width-2" style="padding-top: 0.5em;">
+                            <p:outputLabel for="enumDesc" value="Description:" />
+                        </p:column>
+                        <p:column>
+                            <p:inputTextarea id="enumDesc" rows="5" style="height: 7em; overflow-y: scroll;" 
+                                maxlength="254" required="true" requiredMessage="Please enter a description" 
+                                value="#{dataTypeManager.description}" />
+                            <br/>
+                            <p:message for="enumDesc"/>
+                        </p:column>
+                    </p:row>
+    
+                    <p:row>
+                        <p:column styleClass="alignRight dialog-labels-width-2" style="padding-top: 0.5em;">
+                            <p:outputLabel for="enumDef" value="Definition:" />
+                        </p:column>
+                        <p:column>
+                            <p:inputTextarea id="enumDef" rows="5" style="height: 7em; overflow-y: scroll;" 
+                                required="true" validator="#{dataTypeManager.enumValidator}"
+                                requiredMessage="Please enter a definition" value="#{dataTypeManager.definition}" />
+                            <br/>
+                            <p:message for="enumDef"/>
+                        </p:column>
+                    </p:row>
+                </p:panelGrid>
+            </div>
             
             <p:commandButton value="Cancel" styleClass="dialogButton" onclick="PF('#{widgetName}').hide();" 
                     update="grp" resetValues="true" />

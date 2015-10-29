@@ -9,15 +9,17 @@
             <f:facet name="header">
                 <h:outputText value="#{dialogTitle}" />
             </f:facet>
-            <p:panelGrid id="grp" styleClass="dialog-grid-panel noBorders" columns="2" style="margin-bottom: 1ex;" 
-                    columnClasses="alignMiddle alignRight dialog-labels-width-2">
-                <p:outputLabel for="tag" value="Tag:" />
-                <h:panelGroup>
-                    <p:autoComplete id="tag" value="#{controller.tag}" completeMethod="#{controller.tagAutocompleteText}" 
-                            required="true" requiredMessage="Please enter tag" style="width: 100%" />
-                    <p:message for="tag" />
-                </h:panelGroup>               
-            </p:panelGrid>
+            <div class="ui-fluid">
+                <p:panelGrid id="grp" styleClass="dialog-grid-panel noBorders" columns="2" 
+                        columnClasses="alignMiddle alignRight dialog-labels-width-2">
+                    <p:outputLabel for="tag" value="Tag:" />
+                    <h:panelGroup>
+                        <p:autoComplete id="tag" value="#{controller.tag}" completeMethod="#{controller.tagAutocompleteText}" 
+                                required="true" requiredMessage="Please enter tag"/>
+                        <p:message for="tag" />
+                    </h:panelGroup>               
+                </p:panelGrid>
+            </div>
 
             <p:commandButton value="Cancel" styleClass="dialogButton" onclick="PF('#{widgetName}').hide();#{resetFilter}" 
                     update="grp" resetValues="true" />

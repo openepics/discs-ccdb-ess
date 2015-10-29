@@ -8,25 +8,27 @@
             <f:facet name="header">
                 <h:outputText value="#{dialogTitle}" />
             </f:facet>
-            <p:panelGrid id="grp" styleClass="dialog-grid-panel noBorders" columns="2" style="margin-bottom: 1ex;" 
-                    columnClasses="alignRight dialog-labels-width-1">
-
-                <p:outputLabel for="deviceTypeName" value="Name:" />
-                <h:panelGroup>
-                    <p:inputText id="deviceTypeName" value="#{componentTypeManager.name}" required="true" 
-                            requiredMessage="Please enter a name" style="width: 100%;"/>
-                    <p:message for="deviceTypeName" />
-                </h:panelGroup>
-
-                <p:outputLabel for="deviceTypeDesc" value="Description:" />
-                <h:panelGroup>
-                    <p:inputTextarea id="deviceTypeDesc" rows="5" cols="60" maxlength="254" required="true" 
-                        requiredMessage="Please enter a description" value="#{componentTypeManager.description}" />
-                    <br/>
-                    <p:message for="deviceTypeDesc" />
-                </h:panelGroup>
-            </p:panelGrid>
-
+            <div class="ui-fluid">
+                <p:panelGrid id="grp" styleClass="dialog-grid-panel noBorders" columns="2" 
+                        columnClasses="alignRight dialog-labels-width-1">
+    
+                    <p:outputLabel for="deviceTypeName" value="Name:" />
+                    <h:panelGroup>
+                        <p:inputText id="deviceTypeName" value="#{componentTypeManager.name}" required="true" 
+                                requiredMessage="Please enter a name"/>
+                        <p:message for="deviceTypeName" />
+                    </h:panelGroup>
+    
+                    <p:outputLabel for="deviceTypeDesc" value="Description:" />
+                    <h:panelGroup>
+                        <p:inputTextarea id="deviceTypeDesc" rows="5" cols="60" maxlength="254" required="true" 
+                            requiredMessage="Please enter a description" value="#{componentTypeManager.description}" />
+                        <br/>
+                        <p:message for="deviceTypeDesc" />
+                    </h:panelGroup>
+                </p:panelGrid>
+            </div>
+            
             <p:commandButton value="Cancel" styleClass="dialogButton" onclick="PF('#{widgetName}').hide();" update="grp" 
                     resetValues="true" />
             <p:commandButton value="Save" styleClass="dialogButton" update=":deviceTypesForm:exportButton grp" 

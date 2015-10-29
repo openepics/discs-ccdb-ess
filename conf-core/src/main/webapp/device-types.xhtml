@@ -67,7 +67,7 @@
                                 style="float: right; margin-top: 1em;" disabled="#{empty componentTypeManager.selectedDeviceTypes}"
                                 oncomplete="PF('duplicateDialog').show();" update=":duplicateForm:duplicateDialog" />                           
                             <p:commandButton id="exportButton" icon="ui-icon-disk" value="Export" title="Export"
-                                style="float: right; margin-top: 1em;" oncomplete="PF('exportDevTypes').show();"
+                                style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('exportDevTypes').show();"
                                 disabled="#{empty componentTypeManager.deviceTypes}" update=":exportDevTypesForm:exportDevTypes"
                                 actionListener="#{componentTypeManager.simpleTableDialog.prepareTableExportPopup}" />
                             <p:commandButton id="deleteButton" icon="ui-icon-trash" value="Delete" title="Delete"
@@ -91,7 +91,7 @@
                                 parentName="Device Type" />
 
                             <p:commandButton id="deleteAttrButton" value="Delete" icon="ui-icon-trash"
-                                style="float: right; margin-top: 1em;" oncomplete="PF('deleteAttributes').show()"
+                                style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('deleteAttributes').show()"
                                 update=":deleteAttributesForm:deleteAttributes"
                                 actionListener="#{componentTypeManager.checkAttributesForDeletion()}"
                                 disabled="#{empty componentTypeManager.selectedAttributes}" />

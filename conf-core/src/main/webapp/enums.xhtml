@@ -65,7 +65,7 @@
                     style="float: right; margin-top: 1em;" disabled="#{empty dataTypeManager.selectedEnums}" 
                     oncomplete="PF('duplicateDialog').show();" update=":duplicateForm:duplicateDialog" />                       
                 <p:commandButton id="exportButton" icon="ui-icon-disk" value="Export" title="Export" 
-                    style="float: right; margin-top: 1em;" oncomplete="PF('exportEnums').show();" 
+                    style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('exportEnums').show();" 
                     disabled="#{empty dataTypeManager.filteredDataTypeViews}" update=":exportEnumsForm:exportEnums" 
                     actionListener="#{dataTypeManager.simpleTableDialog.prepareTableExportPopup}" />
                 <p:commandButton id="deleteButton" icon="ui-icon-trash" value="Delete" title="Delete" 
