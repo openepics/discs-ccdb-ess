@@ -1174,15 +1174,14 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         rootSlotView.setLevel(0);
 
         final List<Slot> levelOneSlots;
-        if (isSingleNodeSelected()) {
-            // find root nodes for the selected sub-tree
-            levelOneSlots = Lists.newArrayList();
-            findRelationRootsForSelectedNode(selectedNodes.get(0), levelOneSlots, name);
-        } else {
-            // find all roots
-            levelOneSlots = slotEJB.findRootSlotsForRelation(
-                                                    slotRelationEJB.findBySlotRelationName(name));
+
+        // find root nodes for the selected sub-tree
+        levelOneSlots = Lists.newArrayList();
+        if (selectedNodes != null) {
+            for (TreeNode selectedNode : selectedNodes)
+                findRelationRootsForSelectedNode(selectedNode, levelOneSlots, name);
         }
+
         int order = 0;
         for (final Slot levelOne : levelOneSlots) {
             final SlotView levelOneView = new SlotView(levelOne, rootSlotView, ++order, slotEJB);
@@ -1199,13 +1198,12 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         if (!nodeSlotView.isInitialzed()) {
             hierarchyBuilder.rebuildSubTree(node);
         }
-
         final List<SlotPair> relations = nodeSlot.getPairsInWhichThisSlotIsAParentList();
         for (final SlotPair relationCandidate : relations) {
             if (relationCandidate.getSlotRelation().getName() == slotRelationName) {
-                rootSlots.add(nodeSlot);
-                // We must continue the search even after finding this root, since the node may
-                // also CONTAIN some children that may CONTROL/POWER some other slot.
+                if (!rootSlots.contains(nodeSlot))
+                        rootSlots.add(nodeSlot);
+                break;
             }
         }
         // this node is not a root

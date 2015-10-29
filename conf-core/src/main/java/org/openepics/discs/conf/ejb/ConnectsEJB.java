@@ -25,7 +25,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
-import javax.ejb.Stateless;
+import javax.ejb.Singleton;
 import javax.inject.Inject;
 
 import org.openepics.cable.client.CableDBClient;
@@ -40,7 +40,7 @@ import org.openepics.discs.conf.util.AppProperties;
  * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovic</a>
  *
  */
-@Stateless
+@Singleton
 public class ConnectsEJB {
     @Inject private transient SlotEJB slotEJB;
     @Inject private transient AppProperties properties;
