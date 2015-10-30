@@ -98,7 +98,7 @@ public class InstallationSlot {
 
     public List<String> getControlledBy() { return controlledBy; }
     public void setControlledBy(List<String> controlledBy) { this.controlledBy = controlledBy; }
-    
+
     public List<PropertyValue> getProperties() { return properties; }
-    public void setProperties(List<PropertyValue> properties) { this.properties = properties; }   
+    public void setProperties(List<PropertyValue> properties) { this.properties = properties; }
 }
