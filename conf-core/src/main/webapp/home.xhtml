@@ -49,7 +49,7 @@
                     var add2 = $('#hierarchies\\:relationsTable legend').outerHeight(true) + $("#hierarchies\\:relationshipTable_head").outerHeight(true) + 3*em;
                     var add3 = $('#hierarchies\\:installationDetails legend').outerHeight(true) + $("#hierarchies\\:installationTable_head").outerHeight(true) + 3*em;
                     
-                    height1 = $("#hierarchies\\:attributesTable_data").outerHeight(true) + add1 + 0.5*em;
+                    /*height1 = $("#hierarchies\\:attributesTable_data").outerHeight(true) + add1 + 0.5*em;
                     height2 = $("#hierarchies\\:relationshipTable_data").outerHeight(true) + add2 + 0.5*em;
                     height3 = $("#hierarchies\\:installationTable_data").outerHeight(true) + add3 + 0.5*em;
 
@@ -60,7 +60,9 @@
                     remainingHeight -=  height2;
 
                     height1 = Math.min(height1, remainingHeight);
-                    remainingHeight -=  height1;
+                    remainingHeight -=  height1;*/
+
+                    height1 = height2 = height3 = remainingHeight*0.33;
 
                     $("#hierarchies\\:slotAttributes").css({"height":height1});
                     $("#hierarchies\\:relationsTable").css({"height":height2});
