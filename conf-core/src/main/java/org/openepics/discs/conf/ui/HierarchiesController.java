@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
@@ -934,7 +935,11 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         if (activeTab == ActiveTab.INCLUDES) {
             initHierarchy(powersRootNode, SlotRelationName.POWERS, powersHierarchyBuilder);
             initHierarchy(controlsRootNode, SlotRelationName.CONTROLS, controlsHierarchyBuilder);
-            connectsHierarchyBuilder.initHierarchy(selectedNodes, connectsRootNode);
+            if (selectedNodes != null && selectedNodes.size() > 0) {
+                connectsHierarchyBuilder.initHierarchy(selectedNodes, connectsRootNode);
+            } else {
+                connectsHierarchyBuilder.initHierarchy(Arrays.asList(rootNode), connectsRootNode);
+            }
             savedIncludesSelectedNodes = selectedNodes;
         }
         activeTab = newActiveTab;
@@ -1188,6 +1193,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         if (selectedNodes != null) {
             for (TreeNode selectedNode : selectedNodes)
                 findRelationRootsForSelectedNode(selectedNode, levelOneSlots, name);
+        } else {
+            findRelationRootsForSelectedNode(rootNode, levelOneSlots, name);
         }
 
         int order = 0;
