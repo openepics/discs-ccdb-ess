@@ -104,7 +104,7 @@
                 <p:row>
                     <p:column rowspan="4" id="treeColumn">
                         <p:fieldset id="treeFieldSet" legend="Slots">
-                            <p:tabView scrollable="true" id="hierarchyTabs" style="width: 35em;">
+                            <p:tabView scrollable="true" id="hierarchyTabs" style="width: 40em;">
                                 <p:ajax event="tabChange" listener="#{hierarchiesController.onTabChange}"
                                     update=":hierarchies:relationsTable :hierarchies:deleteButton :hierarchies:downButton
                                         :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton
@@ -119,7 +119,7 @@
                                     <p:treeTable id="tree" value="#{hierarchiesController.rootNode}" var="installationSlot"
                                              selectionMode="multiple" selection="#{hierarchiesController.selectedIncludesNodes}"
                                              scrollable="true" scrollWidth="auto" rowStyleClass="treeRows"
-                                             style="width: 35em;" widgetVar="hierarchyWidget" nodeVar="slotNode">
+                                             style="width: 40em;" widgetVar="hierarchyWidget" nodeVar="slotNode">
                                         <p:ajax event="select" listener="#{hierarchiesController.onNodeSelect}"
                                             update=":hierarchies:relationsTable :hierarchies:deleteButton :hierarchies:downButton
                                                     :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton
@@ -166,7 +166,7 @@
                                     <p:treeTable id="controlsTree" value="#{hierarchiesController.controlsRoot}" var="ctrlSlot"
                                              selectionMode="multiple" selection="#{hierarchiesController.selectedControlsNodes}"
                                              scrollable="true" scrollWidth="auto" rowStyleClass="treeRows"
-                                             style="width: 35em;"  widgetVar="ctrlWidget">
+                                             style="width: 40em;"  widgetVar="ctrlWidget">
                                         <p:ajax event="select" listener="#{hierarchiesController.onNodeSelect}"
                                                 update=":hierarchies:relationsTable :hierarchies:installationDetails
                                                         :hierarchies:slotAttributes :hierarchies:addRelationship"
@@ -193,7 +193,7 @@
                                     <p:treeTable id="powersTree" value="#{hierarchiesController.powersRoot}" var="powerSlot"
                                              selectionMode="multiple" selection="#{hierarchiesController.selectedPowersNodes}"
                                              scrollable="true" scrollWidth="auto" rowStyleClass="treeRows"
-                                             style="width: 35em;"  widgetVar="powersWidget">
+                                             style="width: 40em;"  widgetVar="powersWidget">
                                         <p:ajax event="select" listener="#{hierarchiesController.onNodeSelect}"
                                                 update=":hierarchies:relationsTable :hierarchies:installationDetails
                                                         :hierarchies:slotAttributes :hierarchies:addRelationship"
@@ -220,7 +220,7 @@
                                     <p:treeTable id="connectsTree" value="#{hierarchiesController.connectsRoot}" var="connectsSlot"
                                              selectionMode="multiple" selection="#{hierarchiesController.selectedConnectsNodes}"
                                              scrollable="true" scrollWidth="auto" rowStyleClass="treeRows"
-                                             style="width: 35em;"  widgetVar="connectsWidget">
+                                             style="width: 40em;"  widgetVar="connectsWidget">
                                         <p:ajax event="select" listener="#{hierarchiesController.onNodeSelect}"
                                                 update=":hierarchies:relationsTable :hierarchies:installationDetails
                                                         :hierarchies:slotAttributes :hierarchies:addRelationship"
@@ -244,8 +244,19 @@
                                     </p:treeTable>
                                 </p:tab>
                             </p:tabView>
-
-                            <p:menuButton value="C/P" id="clipboardOperations" style="float: right; margin-top: 1em;"
+                            <p:menuButton value="+/-" id="expandColapseOp" style="float: right; margin-top: 1em;">
+                                <p:menuitem value="Expand" id="expandButton" icon="ui-icon-plus"
+                                    title="Expand selected items"
+                                    action="#{hierarchiesController.expandTreeNodes}" oncomplete="hierarchiesResizeAll();"                                   
+                                    update=":hierarchies:hierarchyTabs:tree :hierarchies:hierarchyTabs:controlsTree :hierarchies:hierarchyTabs:powersTree
+                                       :hierarchies:hierarchyTabs:connectsTree" />
+                                <p:menuitem value="Collapse" id="collapseButton" icon="ui-icon-minus"
+                                    title="Collapse selected items"
+                                    action="#{hierarchiesController.collapseTreeNodes}" oncomplete="hierarchiesResizeAll();"                                    
+                                    update=":hierarchies:hierarchyTabs:tree :hierarchies:hierarchyTabs:controlsTree :hierarchies:hierarchyTabs:powersTree
+                                       :hierarchies:hierarchyTabs:connectsTree" />                            
+                            </p:menuButton>
+                            <p:menuButton value="C/P" id="clipboardOperations" style="float: right; margin: 1em 1ex 0 0;"
                                 disabled="#{not hierarchiesController.includesActive}">
                                 <p:menuitem value="Copy" id="copyButton" icon="ui-icon-copy"
                                     title="Put selected items to clipboard for copying"

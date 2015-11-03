@@ -32,7 +32,7 @@ import com.google.common.collect.Lists;
 /**
  * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  */
-public class ConnectsHierarchyBuilder {
+public class ConnectsHierarchyBuilder implements HierarchyBuilder {
 
     ConnectsEJB connectsEJB;
 
@@ -40,6 +40,7 @@ public class ConnectsHierarchyBuilder {
         this.connectsEJB = connectsEJB;
     }
 
+    @Override
     public void expandNode(TreeNode expandedNode) {
     }
 

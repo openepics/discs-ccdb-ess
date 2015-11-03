@@ -94,8 +94,9 @@ import org.openepics.discs.conf.ent.values.Value;
 import org.openepics.discs.conf.ui.common.AbstractAttributesController;
 import org.openepics.discs.conf.ui.common.AbstractExcelSingleFileImportUI;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
-import org.openepics.discs.conf.ui.common.HierarchyBuilder;
+import org.openepics.discs.conf.ui.common.EntityHierarchyBuilder;
 import org.openepics.discs.conf.ui.common.ConnectsHierarchyBuilder;
+import org.openepics.discs.conf.ui.common.HierarchyBuilder;
 import org.openepics.discs.conf.ui.common.UIException;
 import org.openepics.discs.conf.util.AppProperties;
 import org.openepics.discs.conf.util.BlobStore;
@@ -196,9 +197,9 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     private String requestedSlot;
 
     // ---- variables for hierarchies and tabs --------
-    private transient HierarchyBuilder hierarchyBuilder;
-    private transient HierarchyBuilder powersHierarchyBuilder;
-    private transient HierarchyBuilder controlsHierarchyBuilder;
+    private transient EntityHierarchyBuilder hierarchyBuilder;
+    private transient EntityHierarchyBuilder powersHierarchyBuilder;
+    private transient EntityHierarchyBuilder controlsHierarchyBuilder;
     private transient ConnectsHierarchyBuilder connectsHierarchyBuilder;
     private TreeNode rootNode;
     private TreeNode powersRootNode;
@@ -828,7 +829,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         updateDisplayedSlotInformation();
     }
 
-    /** The method generates the path from the requested node to the root of the contains hierarchy. If an element has
+    /** The method generates the paćth from the requested node to the root of the contains hierarchy. If an element has
      * multiple parents, this method always chooses the first parent it encounters.
      * @param slotOnPath the slot to find the path for
      * @return the path from requested node (first element) to the root of the hierarchy (last element).
@@ -1050,6 +1051,60 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         prepareImportPopup();
     }
 
+    public void expandTreeNodes()
+    {
+        HierarchyBuilder hb;
+        TreeNode root;
+        switch (activeTab) {
+            case CONTROLS: hb = controlsHierarchyBuilder; root = controlsRootNode; break;
+            case POWERS: hb = powersHierarchyBuilder; root = powersRootNode; break;
+            case CONNECTS: hb = connectsHierarchyBuilder; root = connectsRootNode; break;
+            default: case INCLUDES: hb = hierarchyBuilder; root = rootNode; break;
+        }
+
+        if (selectedNodes == null) {
+            expandOrCollapseNode(root, true, hb);
+        } else {
+            for (TreeNode n : selectedNodes) {
+                expandOrCollapseNode(n, true, hb);
+            }
+        }
+    }
+
+    public void collapseTreeNodes()
+    {
+        HierarchyBuilder hb;
+        TreeNode root;
+        switch (activeTab) {
+            case CONTROLS: hb = controlsHierarchyBuilder; root = controlsRootNode; break;
+            case POWERS: hb = powersHierarchyBuilder; root = powersRootNode; break;
+            case CONNECTS: hb = connectsHierarchyBuilder; root = connectsRootNode; break;
+            default: case INCLUDES: hb = hierarchyBuilder; root = rootNode; break;
+        }
+
+        if (selectedNodes == null) {
+            expandOrCollapseNode(root, false, null);
+        } else {
+            for (TreeNode n : selectedNodes) {
+                expandOrCollapseNode(n, false, null);
+            }
+        }
+    }
+
+    private void expandOrCollapseNode(TreeNode root, boolean expand, HierarchyBuilder hb)
+    {
+        if (expand) {
+            if (!((SlotView)root.getData()).isInitialzed()) {
+                hb.expandNode(root);
+            }
+        }
+        root.setExpanded(expand);
+        for (TreeNode node : root.getChildren()) {
+            expandOrCollapseNode(node, expand, hb);
+        }
+    }
+
+
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      * Above: Callback methods called from the main UI screen. E.g.: methods that are called when user user selects
      *        a line in a table.
@@ -1153,17 +1208,17 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     }
 
     private void initHierarchies() {
-        hierarchyBuilder = new HierarchyBuilder(PRELOAD_LIMIT, installationEJB, slotEJB);
+        hierarchyBuilder = new EntityHierarchyBuilder(PRELOAD_LIMIT, installationEJB, slotEJB);
         rootNode = new DefaultTreeNode(new SlotView(slotEJB.getRootNode(), null, 1, slotEJB), null);
         hierarchyBuilder.rebuildSubTree(rootNode);
 
         // for POWERS and CONTROLS hierarchies, the trees will be rebuild dynamically based on user selection
-        powersHierarchyBuilder = new HierarchyBuilder(PRELOAD_LIMIT, installationEJB, slotEJB);
+        powersHierarchyBuilder = new EntityHierarchyBuilder(PRELOAD_LIMIT, installationEJB, slotEJB);
         powersHierarchyBuilder.setRelationship(SlotRelationName.POWERS);
         // initializing root node prevents NPE in initial page display
         powersRootNode = new DefaultTreeNode(new SlotView(slotEJB.getRootNode(), null, 1, slotEJB), null);
 
-        controlsHierarchyBuilder = new HierarchyBuilder(PRELOAD_LIMIT, installationEJB, slotEJB);
+        controlsHierarchyBuilder = new EntityHierarchyBuilder(PRELOAD_LIMIT, installationEJB, slotEJB);
         controlsHierarchyBuilder.setRelationship(SlotRelationName.CONTROLS);
         // initializing root node prevents NPE in initial page display
         controlsRootNode = new DefaultTreeNode(new SlotView(slotEJB.getRootNode(), null, 1, slotEJB), null);
@@ -1181,7 +1236,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         return connectsEJB.getCableDBStatus();
     }
 
-    private void initHierarchy(final TreeNode root, final SlotRelationName name, final HierarchyBuilder builder) {
+    private void initHierarchy(final TreeNode root, final SlotRelationName name, final EntityHierarchyBuilder builder) {
         root.getChildren().clear();
         final SlotView rootSlotView = (SlotView) root.getData();
         rootSlotView.setLevel(0);
@@ -1204,6 +1259,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             final TreeNode newLevelOneNode = new DefaultTreeNode(levelOneView, root);
             builder.rebuildSubTree(newLevelOneNode);
         }
+        rootSlotView.setInitialzed(true);
     }
 
     private void findRelationRootsForSelectedNode(final TreeNode node, final List<Slot> rootSlots,
