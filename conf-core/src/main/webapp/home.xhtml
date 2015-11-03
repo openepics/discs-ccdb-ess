@@ -40,38 +40,31 @@
                     if (resizeAttributes == 0) return;
                     resizeAttributes--;
                     if (resizeAttributes != 0) return;
+
+                    var em = emHeight();
+                    var contentHeight = window.innerHeight - $('#content').offset().top;
                     
-                    var em = emHeight();                    
-                    var contentHeight = window.innerHeight - $('#content').offset().top - 7.5*em;
-                    var remainingHeight = contentHeight;
-                   
-                    var add1 = $('#hierarchies\\:slotAttributes legend').outerHeight(true) + $("#hierarchies\\:attributesTable_head").outerHeight(true) + 3*em;
-                    var add2 = $('#hierarchies\\:relationsTable legend').outerHeight(true) + $("#hierarchies\\:relationshipTable_head").outerHeight(true) + 3*em;
-                    var add3 = $('#hierarchies\\:installationDetails legend').outerHeight(true) + $("#hierarchies\\:installationTable_head").outerHeight(true) + 3*em;
+                    var attrHeight = contentHeight / 3 - $('#hierarchies\\:slotAttributes legend').outerHeight(true);
+                    $('#hierarchies\\:slotAttributes').css({"height": attrHeight});
+                    var attrBodyHeight = attrHeight - $('#hierarchies\\:slotAttributes legend').outerHeight(true) 
+                        - $('#hierarchies\\:attributesTable .ui-datatable-scrollable-header').outerHeight() 
+                        - $('#hierarchies\\:addAttrButton').outerHeight(true);
+                    $('#hierarchies\\:attributesTable .ui-datatable-scrollable-body').css({"height": attrBodyHeight});
+
                     
-                    /*height1 = $("#hierarchies\\:attributesTable_data").outerHeight(true) + add1 + 0.5*em;
-                    height2 = $("#hierarchies\\:relationshipTable_data").outerHeight(true) + add2 + 0.5*em;
-                    height3 = $("#hierarchies\\:installationTable_data").outerHeight(true) + add3 + 0.5*em;
+                    var relHeight = contentHeight / 3 - $('#hierarchies\\:relationsTable legend').outerHeight(true);
+                    $('#hierarchies\\:relationsTable').css({"height": relHeight});
+                    var relBodyHeight = relHeight - $('#hierarchies\\:relationsTable legend').outerHeight(true) 
+                            - $('#hierarchies\\:relationshipTable .ui-datatable-scrollable-header').outerHeight() 
+                            - $('#hierarchies\\:addRelationship').outerHeight(true);
+                    $('#hierarchies\\:relationshipTable .ui-datatable-scrollable-body').css({"height": relBodyHeight});
 
-                    height3 = Math.min(height3, remainingHeight * 0.33);
-                    remainingHeight -=  height3;
-
-                    height2 = Math.min(height2, remainingHeight * 0.5);
-                    remainingHeight -=  height2;
-
-                    height1 = Math.min(height1, remainingHeight);
-                    remainingHeight -=  height1;*/
-
-                    height1 = height2 = height3 = remainingHeight*0.33;
-
-                    $("#hierarchies\\:slotAttributes").css({"height":height1});
-                    $("#hierarchies\\:relationsTable").css({"height":height2});
-                    $("#hierarchies\\:installationDetails").css({"height":height3});
-                      
-                    $("#hierarchies\\:attributesTable .ui-datatable-scrollable-body").css({"height":height1-add1});
-                    $("#hierarchies\\:relationshipTable .ui-datatable-scrollable-body").css({"height":height2-add2});
-                    $("#hierarchies\\:installationTable .ui-datatable-scrollable-body").css({"height":height3-add3});               
-                    $('#hierarchies\\:hierarchiesEmptyColumn').css({"height":remainingHeight});                
+                    var instHeight = contentHeight / 3 - $('#hierarchies\\:installationColumn legend').outerHeight(true);
+                    $('#hierarchies\\:installationDetails').css({"height": instHeight});
+                    var instBodyHeight = instHeight - $('#hierarchies\\:installationColumn legend').outerHeight(true) 
+                        - $('#hierarchies\\:installationTable .ui-datatable-scrollable-header').outerHeight() 
+                        - $('#hierarchies\\:uninstallDeviceBtn').outerHeight(true);
+                    $('#hierarchies\\:installationTable .ui-datatable-scrollable-body').css({"height": attrBodyHeight});
                 }
 
                 function hierarchiesResizeAll() {
@@ -101,7 +94,7 @@
             </script>
             <p:growl showDetail="true" globalOnly="true" autoUpdate="true" />
             <p:panelGrid id="hierarchiesContainer" style="width: 100%;" styleClass="noBorders">
-                <p:row>
+                <p:row style="height: 33%;">
                     <p:column rowspan="4" id="treeColumn">
                         <p:fieldset id="treeFieldSet" legend="Slots">
                             <p:tabView scrollable="true" id="hierarchyTabs" style="width: 40em;">
@@ -398,7 +391,7 @@
 
                     </p:column>
                 </p:row>
-                <p:row>
+                <p:row style="height: 33%;">
                     <p:column id="relationsColumn" styleClass="alignTop">
                         <p:fieldset id="relationsTable" legend="Relationships">
                             <p:dataTable value="#{hierarchiesController.relationships}" id="relationshipTable"
@@ -451,7 +444,7 @@
                         </p:fieldset>
                     </p:column>
                 </p:row>
-                <p:row>
+                <p:row style="height: 33%;">
                     <p:column id="installationColumn" styleClass="alignTop">
                         <p:fieldset id="installationDetails" legend="Installation">
                             <p:dataTable id="installationTable" value="#{hierarchiesController.installationRecords}"
@@ -499,14 +492,6 @@
                                 style="margin: 1em 1ex 0 0; float: right;" update=":hierarchies:installationDetails"
                                 disabled="#{!hierarchiesController.canUninstall()}" />
                         </p:fieldset>
-                    </p:column>
-                </p:row>
-                <p:row>
-                    <!--
-                    Added row with 100% width to fill in the space below other tables and to push tables
-                    close together
-                      -->
-                    <p:column id="hierarchiesEmptyColumn">
                     </p:column>
                 </p:row>
             </p:panelGrid>
