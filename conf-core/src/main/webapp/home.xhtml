@@ -105,8 +105,8 @@
                                         :hierarchies:addRelationship :hierarchies:hierarchyTabs:tree
                                         :hierarchies:hierarchyTabs:powersTree :hierarchies:hierarchyTabs:controlsTree
                                         :hierarchies:hierarchyTabs:connectsTree
-                                        :hierarchies:clipboardOperations"
-                                    oncomplete="hierarchiesResizeAll();" />
+                                        :hierarchies:clipboardOperations"                                    
+                                    onstart="PF('statusDialog').show()" oncomplete="PF('statusDialog').hide(); hierarchiesResizeAll();" />
 
                                 <p:tab id="INCLUDES" title="Contains">
                                     <p:treeTable id="tree" value="#{hierarchiesController.rootNode}" var="installationSlot"
