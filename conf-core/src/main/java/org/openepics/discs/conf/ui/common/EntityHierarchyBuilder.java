@@ -41,7 +41,7 @@ import com.google.common.base.Strings;
 /**
  * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  */
-public class EntityHierarchyBuilder implements HierarchyBuilder {
+public class EntityHierarchyBuilder extends HierarchyBuilder {
     private int preloadLimit;
     private String filterValue;
     private SlotRelationName relationship;

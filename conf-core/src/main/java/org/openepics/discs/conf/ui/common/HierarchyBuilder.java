@@ -19,9 +19,14 @@
  */
 package org.openepics.discs.conf.ui.common;
 
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
+import org.openepics.discs.conf.views.SlotView;
 import org.primefaces.model.TreeNode;
 
-public interface HierarchyBuilder {
+public abstract class HierarchyBuilder {
 
     /** This method is called when the user expands the tree node in the UI. If the tree node is still not initialized
      * (its subtree only contains the stub to show expansion mark), then the subtree is initialized, and the node is
@@ -29,5 +34,46 @@ public interface HierarchyBuilder {
      * @param node the {@link TreeNode} to add children to.
      */
     public abstract void expandNode(TreeNode node);
+
+    public void removeRedundantRoots(TreeNode root) {
+        final Set<Long> levelOneIds = new HashSet<>();
+        for (TreeNode node : root.getChildren()) {
+            levelOneIds.add(((SlotView)node.getData()).getId());
+        }
+
+        // find redundant roots
+        final Set<Long> visited = new HashSet<>();
+        for (TreeNode levelOne : root.getChildren()) {
+            removeRedundantRoots(levelOne, levelOneIds, visited);
+        }
+
+        // remove them
+        Iterator<TreeNode> i = root.getChildren().iterator();
+        while (i.hasNext()) {
+            TreeNode n = i.next();
+            if (!levelOneIds.contains(((SlotView)n.getData()).getId())) {
+                i.remove();
+            }
+        }
+    }
+
+    private void removeRedundantRoots(TreeNode node, Set<Long> levelOne, Set<Long> visited) {
+        final SlotView nodeSlotView = (SlotView) node.getData();
+        expandNode(node);
+
+        if (visited.contains(nodeSlotView.getId())) return;
+        visited.add(nodeSlotView.getId());
+
+        if (nodeSlotView.getLevel() > 1) {
+            if (levelOne.contains(nodeSlotView.getId())) {
+                levelOne.remove(nodeSlotView.getId());
+                // after removal, we still need to visit the subtree of this node
+            }
+        }
+        for (TreeNode child : node.getChildren()) {
+            removeRedundantRoots(child, levelOne, visited);
+        }
+    }
+
 
 }

@@ -35,7 +35,7 @@ import com.google.common.collect.Lists;
 /**
  * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  */
-public class ConnectsHierarchyBuilder implements HierarchyBuilder {
+public class ConnectsHierarchyBuilder extends HierarchyBuilder {
 
     ConnectsEJB connectsEJB;
     SlotEJB slotEJB;
@@ -112,12 +112,10 @@ public class ConnectsHierarchyBuilder implements HierarchyBuilder {
             SlotView nodeView = new SlotView(node, rootSlotView, 1, slotEJB);
             nodeView.setLevel(1);
             TreeNode c = new DefaultTreeNode(nodeView, root);
-            /*List<Slot> slots = connectsEJB.getSlotConnects(node);
-            for (Slot slot : slots) {
-                new DefaultTreeNode(new SlotView(slot, nodeView, 1, null), c);
-            }*/
             expandNode(c);
         }
+
+        removeRedundantRoots(root);
 
         rootSlotView.setInitialzed(true);
     }

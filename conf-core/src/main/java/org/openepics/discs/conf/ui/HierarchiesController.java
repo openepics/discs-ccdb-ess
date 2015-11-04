@@ -1255,51 +1255,20 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
 
         // build the tree
-        final Set<Long> levelOneIds = new HashSet<>();
         int order = 0;
         for (final Slot levelOne : levelOneSlots) {
             final SlotView levelOneView = new SlotView(levelOne, rootSlotView, ++order, slotEJB);
             levelOneView.setLevel(1);
             final TreeNode newLevelOneNode = new DefaultTreeNode(levelOneView, root);
             builder.expandNode(newLevelOneNode);
-            levelOneIds.add(levelOneView.getId());
+
         }
 
-        // find redundant roots
-        final Set<Long> visited = new HashSet<>();
-        for (TreeNode levelOne : root.getChildren()) {
-            removeRedundantRoots(levelOne, levelOneIds, visited, builder);
-        }
-
-        // remove them
-        Iterator<TreeNode> i = root.getChildren().iterator();
-        while (i.hasNext()) {
-            TreeNode n = i.next();
-            if (!levelOneIds.contains(((SlotView)n.getData()).getId())) {
-                i.remove();
-            }
-        }
+        builder.removeRedundantRoots(root);
 
         rootSlotView.setInitialzed(true);
     }
 
-    private void removeRedundantRoots(TreeNode node, Set<Long> levelOne, Set<Long> visited, HierarchyBuilder hierarchyBuilder) {
-        final SlotView nodeSlotView = (SlotView) node.getData();
-        hierarchyBuilder.expandNode(node);
-
-        if (visited.contains(nodeSlotView.getId())) return;
-        visited.add(nodeSlotView.getId());
-
-        if (nodeSlotView.getLevel() > 1) {
-            if (levelOne.contains(nodeSlotView.getId())) {
-                levelOne.remove(nodeSlotView.getId());
-                // after removal, we still need to visit the subtree of this node
-            }
-        }
-        for (TreeNode child : node.getChildren()) {
-            removeRedundantRoots(child, levelOne, visited, hierarchyBuilder);
-        }
-    }
 
     private void findRelationRootsForSelectedNode(final TreeNode node, final List<Slot> rootSlots,
             final SlotRelationName slotRelationName) {
