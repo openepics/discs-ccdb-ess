@@ -1224,7 +1224,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         // initializing root node prevents NPE in initial page display
         controlsRootNode = new DefaultTreeNode(new SlotView(slotEJB.getRootNode(), null, 1, slotEJB), null);
 
-        connectsHierarchyBuilder = new ConnectsHierarchyBuilder(connectsEJB);
+        connectsHierarchyBuilder = new ConnectsHierarchyBuilder(connectsEJB, slotEJB);
         // initializing root node prevents NPE in initial page display
         connectsRootNode = new DefaultTreeNode(new SlotView(slotEJB.getRootNode(), null, 1, slotEJB), null);
     }

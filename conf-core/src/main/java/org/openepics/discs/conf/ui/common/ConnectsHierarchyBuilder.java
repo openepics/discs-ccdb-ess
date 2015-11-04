@@ -19,14 +19,17 @@
  */
 package org.openepics.discs.conf.ui.common;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openepics.discs.conf.ejb.ConnectsEJB;
+import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.views.SlotView;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
 /**
@@ -35,18 +38,63 @@ import com.google.common.collect.Lists;
 public class ConnectsHierarchyBuilder implements HierarchyBuilder {
 
     ConnectsEJB connectsEJB;
+    SlotEJB slotEJB;
 
-    public ConnectsHierarchyBuilder(ConnectsEJB connectsEJB) {
+    public ConnectsHierarchyBuilder(ConnectsEJB connectsEJB, SlotEJB slotEJB) {
         this.connectsEJB = connectsEJB;
+        this.slotEJB = slotEJB;
     }
 
     @Override
-    public void expandNode(TreeNode expandedNode) {
+    public void expandNode(TreeNode node) {
+        final SlotView slotView = (SlotView) node.getData();
+        if (!slotView.isInitialzed()) {
+            List<Long> parentIds = new ArrayList<Long>();
+            TreeNode parent = node;
+            while (parent != null) {
+                parentIds.add(((SlotView)parent.getData()).getId());
+                parent = parent.getParent();
+            }
+
+            rebuildSubTree(node, parentIds, false);
+        }
     }
 
-    public void initHierarchy(List<TreeNode> selectedNodes, TreeNode rootNode) {
-        List<TreeNode> children = rootNode.getChildren();
-        children.clear();
+    public void rebuildSubTree(final TreeNode node, List<Long> parentIds, boolean onlyHasChildren) {
+        Preconditions.checkNotNull(node);
+        // 1. Remove all existing children
+        node.getChildren().clear();
+        final SlotView parentSlotView = (SlotView) node.getData();
+        final Slot parentSlot = parentSlotView.getSlot();
+
+        parentIds.add(parentSlotView.getId());
+
+        List<Slot> slots = connectsEJB.getSlotConnects(parentSlot);
+        int order = 1;
+        for (Slot child : slots) {
+            if (parentIds.contains(child.getId())) continue;
+            if (onlyHasChildren) {
+                new DefaultTreeNode(null, node);
+                return;
+            }
+          //  new DefaultTreeNode(new SlotView(slot, nodeView, 1, null), c);
+            final SlotView childSlotView = new SlotView(child, parentSlotView, order++, slotEJB);
+            childSlotView.setLevel(parentSlotView.getLevel() + 1);
+            childSlotView.setInitialzed(false);
+            childSlotView.setDeletable(true);
+            final TreeNode addedTreeNode = new DefaultTreeNode(childSlotView, node);
+            addedTreeNode.setExpanded(false);
+
+
+            rebuildSubTree(addedTreeNode, parentIds, true);
+        }
+        parentSlotView.setInitialzed(true);
+    }
+
+    public void initHierarchy(List<TreeNode> selectedNodes, TreeNode root) {
+        root.getChildren().clear();
+        final SlotView rootSlotView = (SlotView) root.getData();
+        rootSlotView.setLevel(0);
 
         if (selectedNodes == null) {
             return;
@@ -61,13 +109,17 @@ public class ConnectsHierarchyBuilder implements HierarchyBuilder {
             findRelationRootsForSelectedNode(selectedNode, levelOneSlots);
 
         for (Slot node : levelOneSlots) {
-            SlotView nodeView = new SlotView(node, (SlotView)rootNode.getData(), 1, null);
-            TreeNode c = new DefaultTreeNode(nodeView, rootNode);
-            List<Slot> slots = connectsEJB.getSlotConnects(node);
+            SlotView nodeView = new SlotView(node, rootSlotView, 1, slotEJB);
+            nodeView.setLevel(1);
+            TreeNode c = new DefaultTreeNode(nodeView, root);
+            /*List<Slot> slots = connectsEJB.getSlotConnects(node);
             for (Slot slot : slots) {
                 new DefaultTreeNode(new SlotView(slot, nodeView, 1, null), c);
-            }
+            }*/
+            expandNode(c);
         }
+
+        rootSlotView.setInitialzed(true);
     }
 
 
