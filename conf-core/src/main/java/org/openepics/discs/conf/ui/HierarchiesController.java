@@ -38,7 +38,6 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Scanner;
-import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -868,6 +867,9 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      */
     public void onNodeSelect(NodeSelectEvent event) {
         updateDisplayedSlotInformation();
+        if (activeTab == ActiveTab.INCLUDES) {
+            removeTreeData();
+        }
     }
 
     /**
@@ -878,6 +880,9 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     public void onNodeUnselect(NodeUnselectEvent event) {
         // in the callback, the selectedNodes no longer contains the unselected node
         updateDisplayedSlotInformation();
+        if (activeTab == ActiveTab.INCLUDES) {
+            removeTreeData();
+        }
     }
 
     /**
@@ -935,14 +940,26 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     public void onTabChange(TabChangeEvent event) {
         ActiveTab newActiveTab = ActiveTab.valueOf(event.getTab().getId());
         if (activeTab == ActiveTab.INCLUDES) {
-            initHierarchy(powersRootNode, SlotRelationName.POWERS, powersHierarchyBuilder);
-            initHierarchy(controlsRootNode, SlotRelationName.CONTROLS, controlsHierarchyBuilder);
-            if (selectedNodes != null && selectedNodes.size() > 0) {
-                connectsHierarchyBuilder.initHierarchy(selectedNodes, connectsRootNode);
-            } else {
-                connectsHierarchyBuilder.initHierarchy(Arrays.asList(rootNode), connectsRootNode);
-            }
             savedIncludesSelectedNodes = selectedNodes;
+        }
+        if (newActiveTab == ActiveTab.POWERS) {
+            if (!((SlotView)powersRootNode.getData()).isInitialzed()) {
+                initHierarchy(powersRootNode, SlotRelationName.POWERS, powersHierarchyBuilder);
+            }
+        }
+        if (newActiveTab == ActiveTab.CONTROLS) {
+            if (!((SlotView)controlsRootNode.getData()).isInitialzed()) {
+                initHierarchy(controlsRootNode, SlotRelationName.CONTROLS, controlsHierarchyBuilder);
+            }
+        }
+        if (newActiveTab == ActiveTab.CONNECTS) {
+            if (!((SlotView)connectsRootNode.getData()).isInitialzed()) {
+                if (savedIncludesSelectedNodes != null && savedIncludesSelectedNodes.size() > 0) {
+                    connectsHierarchyBuilder.initHierarchy(savedIncludesSelectedNodes, connectsRootNode);
+                } else {
+                    connectsHierarchyBuilder.initHierarchy(Arrays.asList(rootNode), connectsRootNode);
+                }
+            }
         }
         activeTab = newActiveTab;
         unselectAllTreeNodes();
@@ -950,6 +967,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         clearRelatedInformation();
 
         if (newActiveTab == ActiveTab.INCLUDES) {
+
+
             selectedNodes = savedIncludesSelectedNodes;
             savedIncludesSelectedNodes = null;
             if (selectedNodes != null) {
@@ -959,6 +978,17 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             }
             onNodeSelect(null);
         }
+    }
+
+    private void removeTreeData()
+    {
+        // remove other trees
+        ((SlotView)controlsRootNode.getData()).setInitialzed(false);
+        controlsRootNode.getChildren().clear();
+        ((SlotView)powersRootNode.getData()).setInitialzed(false);
+        powersRootNode.getChildren().clear();
+        ((SlotView)connectsRootNode.getData()).setInitialzed(false);
+        connectsRootNode.getChildren().clear();
     }
 
     @Override
@@ -1246,8 +1276,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
         // find root nodes for the selected sub-tree
         levelOneSlots = Lists.newArrayList();
-        if (selectedNodes != null) {
-            for (TreeNode selectedNode : selectedNodes)
+        if (savedIncludesSelectedNodes != null) {
+            for (TreeNode selectedNode : savedIncludesSelectedNodes)
                 findRelationRootsForSelectedNode(selectedNode, levelOneSlots, name);
         } else {
             findRelationRootsForSelectedNode(rootNode, levelOneSlots, name);
