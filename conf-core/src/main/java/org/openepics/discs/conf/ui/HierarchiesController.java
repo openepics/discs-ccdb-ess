@@ -38,6 +38,7 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -1236,7 +1237,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         return connectsEJB.getCableDBStatus();
     }
 
-    private void initHierarchy(final TreeNode root, final SlotRelationName name, final EntityHierarchyBuilder builder) {
+    private void initHierarchy(final TreeNode root, final SlotRelationName name, final HierarchyBuilder builder) {
         root.getChildren().clear();
         final SlotView rootSlotView = (SlotView) root.getData();
         rootSlotView.setLevel(0);
@@ -1252,14 +1253,52 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             findRelationRootsForSelectedNode(rootNode, levelOneSlots, name);
         }
 
+
+        // build the tree
+        final Set<Long> levelOneIds = new HashSet<>();
         int order = 0;
         for (final Slot levelOne : levelOneSlots) {
             final SlotView levelOneView = new SlotView(levelOne, rootSlotView, ++order, slotEJB);
             levelOneView.setLevel(1);
             final TreeNode newLevelOneNode = new DefaultTreeNode(levelOneView, root);
-            builder.rebuildSubTree(newLevelOneNode);
+            builder.expandNode(newLevelOneNode);
+            levelOneIds.add(levelOneView.getId());
         }
+
+        // find redundant roots
+        final Set<Long> visited = new HashSet<>();
+        for (TreeNode levelOne : root.getChildren()) {
+            removeRedundantRoots(levelOne, levelOneIds, visited, builder);
+        }
+
+        // remove them
+        Iterator<TreeNode> i = root.getChildren().iterator();
+        while (i.hasNext()) {
+            TreeNode n = i.next();
+            if (!levelOneIds.contains(((SlotView)n.getData()).getId())) {
+                i.remove();
+            }
+        }
+
         rootSlotView.setInitialzed(true);
+    }
+
+    private void removeRedundantRoots(TreeNode node, Set<Long> levelOne, Set<Long> visited, HierarchyBuilder hierarchyBuilder) {
+        final SlotView nodeSlotView = (SlotView) node.getData();
+        hierarchyBuilder.expandNode(node);
+
+        if (visited.contains(nodeSlotView.getId())) return;
+        visited.add(nodeSlotView.getId());
+
+        if (nodeSlotView.getLevel() > 1) {
+            if (levelOne.contains(nodeSlotView.getId())) {
+                levelOne.remove(nodeSlotView.getId());
+                // after removal, we still need to visit the subtree of this node
+            }
+        }
+        for (TreeNode child : node.getChildren()) {
+            removeRedundantRoots(child, levelOne, visited, hierarchyBuilder);
+        }
     }
 
     private void findRelationRootsForSelectedNode(final TreeNode node, final List<Slot> rootSlots,
