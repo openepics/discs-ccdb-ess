@@ -37,6 +37,7 @@ import org.primefaces.model.TreeNode;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 
 /**
  * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
@@ -298,4 +299,54 @@ public class EntityHierarchyBuilder extends HierarchyBuilder {
             }
         }
     }
+
+    public void initHierarchy(final List<TreeNode> selectedNodes, final TreeNode root) {
+        final SlotView rootSlotView = (SlotView) root.getData();
+        if (rootSlotView.isInitialzed()) return;
+
+        root.getChildren().clear();
+        rootSlotView.setLevel(0);
+
+        final List<Slot> levelOneSlots;
+
+        // find root nodes for the selected sub-tree
+        levelOneSlots = Lists.newArrayList();
+        for (TreeNode selectedNode : selectedNodes)
+            findRelationRootsForSelectedNode(selectedNode, levelOneSlots);
+
+
+        // build the tree
+        int order = 0;
+        for (final Slot levelOne : levelOneSlots) {
+            final SlotView levelOneView = new SlotView(levelOne, rootSlotView, ++order, slotEJB);
+            levelOneView.setLevel(1);
+            final TreeNode newLevelOneNode = new DefaultTreeNode(levelOneView, root);
+            expandNode(newLevelOneNode);
+
+        }
+
+        removeRedundantRoots(root);
+
+        rootSlotView.setInitialzed(true);
+    }
+
+
+    private void findRelationRootsForSelectedNode(final TreeNode node, final List<Slot> rootSlots) {
+        final SlotView nodeSlotView = (SlotView) node.getData();
+        final Slot nodeSlot = nodeSlotView.getSlot();
+
+        final List<SlotPair> relations = nodeSlot.getPairsInWhichThisSlotIsAParentList();
+        for (final SlotPair relationCandidate : relations) {
+            if (relationCandidate.getSlotRelation().getName() == relationship) {
+                if (!rootSlots.contains(nodeSlot))
+                        rootSlots.add(nodeSlot);
+                break;
+            }
+        }
+        // this node is not a root
+        for (final TreeNode childNode : node.getChildren()) {
+            findRelationRootsForSelectedNode(childNode, rootSlots);
+        }
+    }
+
 }

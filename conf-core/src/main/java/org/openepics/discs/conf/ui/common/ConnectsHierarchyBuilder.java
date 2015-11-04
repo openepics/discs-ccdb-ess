@@ -92,8 +92,10 @@ public class ConnectsHierarchyBuilder extends HierarchyBuilder {
     }
 
     public void initHierarchy(List<TreeNode> selectedNodes, TreeNode root) {
-        root.getChildren().clear();
         final SlotView rootSlotView = (SlotView) root.getData();
+        if (rootSlotView.isInitialzed()) return;
+
+        root.getChildren().clear();
         rootSlotView.setLevel(0);
 
         if (selectedNodes == null) {

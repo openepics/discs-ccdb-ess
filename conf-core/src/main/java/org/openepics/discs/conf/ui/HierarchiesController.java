@@ -939,36 +939,35 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      */
     public void onTabChange(TabChangeEvent event) {
         ActiveTab newActiveTab = ActiveTab.valueOf(event.getTab().getId());
+
+
         if (activeTab == ActiveTab.INCLUDES) {
             savedIncludesSelectedNodes = selectedNodes;
         }
-        if (newActiveTab == ActiveTab.POWERS) {
-            if (!((SlotView)powersRootNode.getData()).isInitialzed()) {
-                initHierarchy(powersRootNode, SlotRelationName.POWERS, powersHierarchyBuilder);
+
+        final List<TreeNode> masterNodes = savedIncludesSelectedNodes != null && savedIncludesSelectedNodes.size() > 0
+                ? savedIncludesSelectedNodes : Arrays.asList(rootNode);
+
+        if (activeTab == ActiveTab.INCLUDES) {
+            // we need to expand the nodes virtually for the following searches
+            for (TreeNode n : masterNodes) {
+                expandOrCollapseNode(n, true, hierarchyBuilder, false);
             }
         }
-        if (newActiveTab == ActiveTab.CONTROLS) {
-            if (!((SlotView)controlsRootNode.getData()).isInitialzed()) {
-                initHierarchy(controlsRootNode, SlotRelationName.CONTROLS, controlsHierarchyBuilder);
-            }
+
+        switch (newActiveTab) {
+            case POWERS: powersHierarchyBuilder.initHierarchy(masterNodes, powersRootNode); break;
+            case CONTROLS: controlsHierarchyBuilder.initHierarchy(masterNodes, controlsRootNode); break;
+            case CONNECTS: connectsHierarchyBuilder.initHierarchy(masterNodes, connectsRootNode); break;
+            default:break;
         }
-        if (newActiveTab == ActiveTab.CONNECTS) {
-            if (!((SlotView)connectsRootNode.getData()).isInitialzed()) {
-                if (savedIncludesSelectedNodes != null && savedIncludesSelectedNodes.size() > 0) {
-                    connectsHierarchyBuilder.initHierarchy(savedIncludesSelectedNodes, connectsRootNode);
-                } else {
-                    connectsHierarchyBuilder.initHierarchy(Arrays.asList(rootNode), connectsRootNode);
-                }
-            }
-        }
+
         activeTab = newActiveTab;
         unselectAllTreeNodes();
         selectedNodes = null;
         clearRelatedInformation();
 
         if (newActiveTab == ActiveTab.INCLUDES) {
-
-
             selectedNodes = savedIncludesSelectedNodes;
             savedIncludesSelectedNodes = null;
             if (selectedNodes != null) {
@@ -1094,10 +1093,10 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         }
 
         if (selectedNodes == null) {
-            expandOrCollapseNode(root, true, hb);
+            expandOrCollapseNode(root, true, hb, true);
         } else {
             for (TreeNode n : selectedNodes) {
-                expandOrCollapseNode(n, true, hb);
+                expandOrCollapseNode(n, true, hb, true);
             }
         }
     }
@@ -1114,24 +1113,24 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         }
 
         if (selectedNodes == null) {
-            expandOrCollapseNode(root, false, null);
+            expandOrCollapseNode(root, false, null, true);
         } else {
             for (TreeNode n : selectedNodes) {
-                expandOrCollapseNode(n, false, null);
+                expandOrCollapseNode(n, false, null, true);
             }
         }
     }
 
-    private void expandOrCollapseNode(TreeNode root, boolean expand, HierarchyBuilder hb)
+    private void expandOrCollapseNode(TreeNode root, boolean expand, HierarchyBuilder hb, boolean show)
     {
         if (expand) {
             if (!((SlotView)root.getData()).isInitialzed()) {
                 hb.expandNode(root);
             }
         }
-        root.setExpanded(expand);
+        if (show) root.setExpanded(expand);
         for (TreeNode node : root.getChildren()) {
-            expandOrCollapseNode(node, expand, hb);
+            expandOrCollapseNode(node, expand, hb, show);
         }
     }
 
@@ -1267,59 +1266,6 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         return connectsEJB.getCableDBStatus();
     }
 
-    private void initHierarchy(final TreeNode root, final SlotRelationName name, final HierarchyBuilder builder) {
-        root.getChildren().clear();
-        final SlotView rootSlotView = (SlotView) root.getData();
-        rootSlotView.setLevel(0);
-
-        final List<Slot> levelOneSlots;
-
-        // find root nodes for the selected sub-tree
-        levelOneSlots = Lists.newArrayList();
-        if (savedIncludesSelectedNodes != null) {
-            for (TreeNode selectedNode : savedIncludesSelectedNodes)
-                findRelationRootsForSelectedNode(selectedNode, levelOneSlots, name);
-        } else {
-            findRelationRootsForSelectedNode(rootNode, levelOneSlots, name);
-        }
-
-
-        // build the tree
-        int order = 0;
-        for (final Slot levelOne : levelOneSlots) {
-            final SlotView levelOneView = new SlotView(levelOne, rootSlotView, ++order, slotEJB);
-            levelOneView.setLevel(1);
-            final TreeNode newLevelOneNode = new DefaultTreeNode(levelOneView, root);
-            builder.expandNode(newLevelOneNode);
-
-        }
-
-        builder.removeRedundantRoots(root);
-
-        rootSlotView.setInitialzed(true);
-    }
-
-
-    private void findRelationRootsForSelectedNode(final TreeNode node, final List<Slot> rootSlots,
-            final SlotRelationName slotRelationName) {
-        final SlotView nodeSlotView = (SlotView) node.getData();
-        final Slot nodeSlot = nodeSlotView.getSlot();
-        if (!nodeSlotView.isInitialzed()) {
-            hierarchyBuilder.rebuildSubTree(node);
-        }
-        final List<SlotPair> relations = nodeSlot.getPairsInWhichThisSlotIsAParentList();
-        for (final SlotPair relationCandidate : relations) {
-            if (relationCandidate.getSlotRelation().getName() == slotRelationName) {
-                if (!rootSlots.contains(nodeSlot))
-                        rootSlots.add(nodeSlot);
-                break;
-            }
-        }
-        // this node is not a root
-        for (final TreeNode childNode : node.getChildren()) {
-            findRelationRootsForSelectedNode(childNode, rootSlots, slotRelationName);
-        }
-    }
 
     /** The action event to be called when the user presses the "move up" action button. This action moves the current
      * container/installation slot up one space, if that is possible.
