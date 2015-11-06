@@ -1822,6 +1822,12 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
                 case INSTALL_SLOT_ARTIFACT:
                 case INSTALL_SLOT_TAG:
                     continue;
+                case INSTALL_SLOT_PROPERTY:
+                    if (selectedAttribute.getValue() != null) {
+                        continue;
+                    } else {
+                        return false;
+                    }
                 default:
                     return false;
             }
@@ -1844,6 +1850,14 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
                 case CONTAINER_SLOT_TAG:
                     slot.getTags().remove(selectedAttribute.getEntity());
                     saveSlotAndRefresh(slot);
+                    break;
+                case INSTALL_SLOT_PROPERTY:
+                    SlotPropertyValue prop = ((SlotPropertyValue)selectedAttribute.getEntity());
+                    prop.setPropValue(null);
+                    slotEJB.saveChild(prop);
+                    refreshSlot(slot);
+                    final SlotPropertyValue freshPropertyValue = slotEJB.refreshPropertyValue(prop);
+                    refreshAttributeList(slot, freshPropertyValue);
                     break;
                 default:
                     throw new RuntimeException("Trying to delete an attribute that cannot be removed on home screen.");
