@@ -144,13 +144,12 @@ body {
 
 .hierarchies-attributes-cell .ui-datatable-scrollable-body {
 	margin-right: 0 !important;
-	overflow-y: scroll;
-	max-height: 276px;
+	overflow-y: auto;	
 	overflow-x: hidden;
 }
 
 .scroll-table .ui-datatable-scrollable-body {
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 
 .installation-details .ui-widget-content {
@@ -340,4 +339,12 @@ a {
 }
 
 .nameContainer {
+}
+
+.ui-fieldset-content, .ui-datatable-tablewrapper, .ui-tabs-panel, .ui-datatable-scrollable {
+	height: 100%
+}
+
+#hierarchies\:hierarchyTabs .ui-tabs-panels {
+	height: calc(100% - 3em)	
 }

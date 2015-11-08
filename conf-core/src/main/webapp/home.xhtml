@@ -7,73 +7,9 @@
     <ui:define name="content">
         <h:form id="hierarchies">
             <script type="text/javascript">
-                //<![CDATA[
-                function setRightColumnWidths() {
-                    var em = emHeight();
-                    var rightColumnsWidth = $('#hierarchies').outerWidth() - $('#hierarchies\\:treeColumn').outerWidth(true) - 2*em;
-                    $('#hierarchies\\:attributesColumn').css({"max-width":rightColumnsWidth});
-                    $('#hierarchies\\:relationsColumn').css({"max-width":rightColumnsWidth});
-                    $('#hierarchies\\:installationColumn').css({"max-width":rightColumnsWidth});
-                    $('#hierarchies\\:hierarchiesEmptyColumn').css({"max-width":rightColumnsWidth});
-                }
-                function resizeHierarchyTrees() {
-                    var menusHeight = $('#top').outerHeight(true);
-                    var columnNameHeight = $('#hierarchies\\:hierarchyTabs\\:tree\\:name').outerHeight(true);
-                    columnNameHeight = Math.max(columnNameHeight,
-                                $('#hierarchies\\:hierarchyTabs\\:powersTree\\:powersName').outerHeight(true));
-                    columnNameHeight = Math.max(columnNameHeight,
-                            $('#hierarchies\\:hierarchyTabs\\:controlsTree\\:ctrlName').outerHeight(true));
-                    var headerHeight = columnNameHeight
-                                        + $('#hierarchies\\:treeFieldSet legend').outerHeight(true)
-                                        + $('#hierarchies\\:hierarchyTabs div.ui-tabs-navscroller').outerHeight(true);
-                    if (headerHeight != null) {
-                        var em = emHeight();
-                        var totalMenusHeight = menusHeight + headerHeight + 7.5*em;
-                        $('#hierarchies\\:hierarchyTabs\\:tree .ui-treetable-scrollable-body').css({"height":window.innerHeight-totalMenusHeight});
-                        $('#hierarchies\\:hierarchyTabs\\:powersTree .ui-treetable-scrollable-body').css({"height":window.innerHeight-totalMenusHeight});
-                        $('#hierarchies\\:hierarchyTabs\\:controlsTree .ui-treetable-scrollable-body').css({"height":window.innerHeight-totalMenusHeight});
-                    }
-                }  
-                var resizeAttributes = 0;
-                         
-                function hierarchiesResizeAttributes() {
-                    if (resizeAttributes == 0) return;
-                    resizeAttributes--;
-                    if (resizeAttributes != 0) return;
-
-                    var em = emHeight();
-                    var contentHeight = window.innerHeight - $('#content').offset().top;
-                    
-                    var attrHeight = contentHeight / 3 - $('#hierarchies\\:slotAttributes legend').outerHeight(true);
-                    $('#hierarchies\\:slotAttributes').css({"height": attrHeight});
-                    var attrBodyHeight = attrHeight - $('#hierarchies\\:slotAttributes legend').outerHeight(true) 
-                        - $('#hierarchies\\:attributesTable .ui-datatable-scrollable-header').outerHeight() 
-                        - $('#hierarchies\\:addAttrButton').outerHeight(true);
-                    $('#hierarchies\\:attributesTable .ui-datatable-scrollable-body').css({"height": attrBodyHeight});
-
-                    
-                    var relHeight = contentHeight / 3 - $('#hierarchies\\:relationsTable legend').outerHeight(true);
-                    $('#hierarchies\\:relationsTable').css({"height": relHeight});
-                    var relBodyHeight = relHeight - $('#hierarchies\\:relationsTable legend').outerHeight(true) 
-                            - $('#hierarchies\\:relationshipTable .ui-datatable-scrollable-header').outerHeight() 
-                            - $('#hierarchies\\:addRelationship').outerHeight(true);
-                    $('#hierarchies\\:relationshipTable .ui-datatable-scrollable-body').css({"height": relBodyHeight});
-
-                    var instHeight = contentHeight / 3 - $('#hierarchies\\:installationColumn legend').outerHeight(true);
-                    $('#hierarchies\\:installationDetails').css({"height": instHeight});
-                    var instBodyHeight = instHeight - $('#hierarchies\\:installationColumn legend').outerHeight(true) 
-                        - $('#hierarchies\\:installationTable .ui-datatable-scrollable-header').outerHeight() 
-                        - $('#hierarchies\\:uninstallDeviceBtn').outerHeight(true);
-                    $('#hierarchies\\:installationTable .ui-datatable-scrollable-body').css({"height": attrBodyHeight});
-                }
-
+                //<![CDATA[                         
                 function hierarchiesResizeAll() {
                 	clearRelatedFilters();
-                    resizeHierarchyTrees();
-                    $("#hierarchies\\:attributesTable .ui-datatable-scrollable-body").css({"height":0});
-                    $("#hierarchies\\:relationshipTable .ui-datatable-scrollable-body").css({"height":0});
-                    $("#hierarchies\\:installationTable .ui-datatable-scrollable-body").css({"height":0});               
-                    resizeAttributes = 3; // after three filter events the attributes get resized                    
                 }
                 function getVisibleTree() {
                     var visibleTreeTable = PF('hierarchyWidget');
@@ -93,11 +29,12 @@
             // ]]>
             </script>
             <p:growl showDetail="true" globalOnly="true" autoUpdate="true" />
-            <p:panelGrid id="hierarchiesContainer" style="width: 100%;" styleClass="noBorders">
-                <p:row style="height: 33%;">
+            <p:panelGrid id="hierarchiesContainer" styleClass="noBorders">
+                <p:row>
                     <p:column rowspan="4" id="treeColumn">
-                        <p:fieldset id="treeFieldSet" legend="Slots">
-                            <p:tabView scrollable="true" id="hierarchyTabs" style="width: 40em;">
+                        <p:fieldset id="treeFieldSet" legend="Slots" style="box-sizing: border-box; height: calc(100vh - 7em)">
+                        <div style="height: calc(100% - 3em)">
+                            <p:tabView id="hierarchyTabs" style="width: 40em; height: 100%">
                                 <p:ajax event="tabChange" listener="#{hierarchiesController.onTabChange}"
                                     update=":hierarchies:relationsTable :hierarchies:deleteButton :hierarchies:downButton
                                         :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton
@@ -108,11 +45,11 @@
                                         :hierarchies:clipboardOperations"                                    
                                     onstart="PF('statusDialog').show()" oncomplete="PF('statusDialog').hide(); hierarchiesResizeAll();" />
 
-                                <p:tab id="INCLUDES" title="Contains">
+                                <p:tab id="INCLUDES" title="Contains" style="height: 100%">
                                     <p:treeTable id="tree" value="#{hierarchiesController.rootNode}" var="installationSlot"
                                              selectionMode="multiple" selection="#{hierarchiesController.selectedIncludesNodes}"
-                                             scrollable="true" scrollWidth="auto" rowStyleClass="treeRows"
-                                             style="width: 40em;" widgetVar="hierarchyWidget" nodeVar="slotNode">
+                                             scrollable="true" scrollWidth="100%" scrollHeight="100%" rowStyleClass="treeRows"
+                                             widgetVar="hierarchyWidget" nodeVar="slotNode">
                                         <p:ajax event="select" listener="#{hierarchiesController.onNodeSelect}"
                                             update=":hierarchies:relationsTable :hierarchies:deleteButton :hierarchies:downButton
                                                     :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton
@@ -155,11 +92,11 @@
                                         </p:column>
                                     </p:treeTable>
                                 </p:tab>
-                                <p:tab id="CONTROLS" title="Controls">
+                                <p:tab id="CONTROLS" title="Controls" style="height: 100%">
                                     <p:treeTable id="controlsTree" value="#{hierarchiesController.controlsRoot}" var="ctrlSlot"
                                              selectionMode="multiple" selection="#{hierarchiesController.selectedControlsNodes}"
-                                             scrollable="true" scrollWidth="auto" rowStyleClass="treeRows"
-                                             style="width: 40em;"  widgetVar="ctrlWidget">
+                                             scrollable="true" scrollWidth="100%" scrollHeight="100%" rowStyleClass="treeRows"
+                                             widgetVar="ctrlWidget">
                                         <p:ajax event="select" listener="#{hierarchiesController.onNodeSelect}"
                                                 update=":hierarchies:relationsTable :hierarchies:installationDetails
                                                         :hierarchies:slotAttributes :hierarchies:addRelationship"
@@ -182,11 +119,11 @@
                                         </p:column>
                                     </p:treeTable>
                                 </p:tab>
-                                <p:tab id="POWERS" title="Powers">
+                                <p:tab id="POWERS" title="Powers" style="height: 100%">
                                     <p:treeTable id="powersTree" value="#{hierarchiesController.powersRoot}" var="powerSlot"
                                              selectionMode="multiple" selection="#{hierarchiesController.selectedPowersNodes}"
-                                             scrollable="true" scrollWidth="auto" rowStyleClass="treeRows"
-                                             style="width: 40em;"  widgetVar="powersWidget">
+                                             scrollable="true" scrollWidth="100%" scrollHeight="100%" rowStyleClass="treeRows"
+                                             widgetVar="powersWidget">
                                         <p:ajax event="select" listener="#{hierarchiesController.onNodeSelect}"
                                                 update=":hierarchies:relationsTable :hierarchies:installationDetails
                                                         :hierarchies:slotAttributes :hierarchies:addRelationship"
@@ -237,6 +174,7 @@
                                     </p:treeTable>
                                 </p:tab>
                             </p:tabView>
+                        </div>
                             <p:menuButton value="+/-" id="expandColapseOp" style="float: right; margin-top: 1em;">
                                 <p:menuitem value="Expand" id="expandButton" icon="ui-icon-plus"
                                     title="Expand selected items"
@@ -313,16 +251,16 @@
                         </p:fieldset>
                     </p:column>
                     <p:column id="attributesColumn" styleClass="alignTop" >
-                        <p:fieldset id="slotAttributes" legend="Properties">
+                        <p:fieldset id="slotAttributes" legend="Properties" style="box-sizing: border-box; height: calc(33.33vh - 2.8em)">
+                        <div style="height: calc(100% - 3em)">
                             <p:dataTable id="attributesTable" class="hierarchies-attributes-cell" var="attribute" 
                                     emptyMessage="No records found." value="#{hierarchiesController.attributes}" 
-                                    scrollable="true" style="width: 100%"
+                                    scrollable="true" scrollWidth="100%" scrollHeight="100%"
                                     selection="#{hierarchiesController.selectedAttributes}" selectionMode="multiple"
                                     filteredValue="#{hierarchiesController.filteredAttributes}" rowKey="#{attribute.id}"
                                     widgetVar="attributesWidget">
                                 <p:ajax event="rowSelect" update=":hierarchies:deleteAttrButton :hierarchies:editAttrButton" />
-                                <p:ajax event="rowUnselect" update=":hierarchies:deleteAttrButton :hierarchies:editAttrButton" />
-                                <p:ajax event="filter" oncomplete="hierarchiesResizeAttributes();"/>
+                                <p:ajax event="rowUnselect" update=":hierarchies:deleteAttrButton :hierarchies:editAttrButton" />                                
                 
                                 <p:column headerText="Entity" sortBy="#{attribute.parent}" filterBy="#{attribute.parent}"
                                         filterMatchMode="contains" >
@@ -367,7 +305,7 @@
                                     <h:outputText value="#{attribute.type.name}" />
                                 </p:column>
                             </p:dataTable>
-
+                        </div>
                             <p:commandButton id="deleteAttrButton" value="Delete" icon="ui-icon-trash"
                                 style="float: right; margin-top: 1em;" oncomplete="PF('deleteAttribute').show();"
                                 disabled="#{!hierarchiesController.canDeleteAttributes()}" />
@@ -388,22 +326,22 @@
                                         update=":addArtifactForm:addArtifact" />
                             </p:menuButton>
                         </p:fieldset>
-
                     </p:column>
                 </p:row>
-                <p:row style="height: 33%;">
+                <p:row>
                     <p:column id="relationsColumn" styleClass="alignTop">
-                        <p:fieldset id="relationsTable" legend="Relationships">
+                        <p:fieldset id="relationsTable" legend="Relationships" style="box-sizing: border-box; height: calc(33.33vh - 2.8em)">
+                        <div style="height: calc(100% - 3em)">
                             <p:dataTable value="#{hierarchiesController.relationships}" id="relationshipTable"
-                                    style="width: 100%" var="relationship"
-                                    emptyMessage="No records found." scrollable="true" class="hierarchies-attributes-cell"
+                                    var="relationship" emptyMessage="No records found."
+                                    scrollable="true" scrollWidth="100%" scrollHeight="100%" 
+                                    class="hierarchies-attributes-cell"
                                     filteredValue="#{hierarchiesController.filteredRelationships}"
                                     selectionMode="multiple" rowKey="#{relationship.id}"
                                     selection="#{hierarchiesController.selectedRelationships}"
                                     widgetVar="relationshipsWidget">
                                 <p:ajax event="rowSelect" update=":hierarchies:deleteRelationship" />
-                                <p:ajax event="rowUnselect" update=":hierarchies:deleteRelationship" />
-                                <p:ajax event="filter" oncomplete="hierarchiesResizeAttributes();"/>
+                                <p:ajax event="rowUnselect" update=":hierarchies:deleteRelationship" />                                
                                 
                                 <p:column headerText="Source" sortBy="#{relationship.sourceSlotName}" 
                                         filterBy="#{relationship.sourceSlotName}" filterMatchMode="contains">
@@ -433,6 +371,7 @@
                                         rendered="#{not hierarchiesController.includesActive}" />
                                 </p:column>
                             </p:dataTable>
+                         </div>
 
                             <p:commandButton id="deleteRelationship" value="Delete" icon="ui-icon-trash"
                                 style="margin-top: 1em; float: right;" disabled="#{empty hierarchiesController.selectedRelationships}"
@@ -444,19 +383,19 @@
                         </p:fieldset>
                     </p:column>
                 </p:row>
-                <p:row style="height: 33%;">
+                <p:row>
                     <p:column id="installationColumn" styleClass="alignTop">
-                        <p:fieldset id="installationDetails" legend="Installation">
+                        <p:fieldset id="installationDetails" legend="Installation"  style="box-sizing: border-box; height: calc(33.33vh - 2.8em)">
+                        <div style="height: calc(100% - 3em)">
                             <p:dataTable id="installationTable" value="#{hierarchiesController.installationRecords}"
-                                    var="installationRecord" style="width: 100%;" widgetVar="installationWidget"
+                                    var="installationRecord" widgetVar="installationWidget"
                                     selectionMode="multiple" selection="#{hierarchiesController.selectedInstallationViews}"
                                     emptyMessage="No records found." rowKey="#{installationRecord.slotName}"
                                     filteredValue="#{hierarchiesController.filteredInstallationRecords}"
-                                    scrollable="true" class="hierarchies-attributes-cell">
+                                    scrollable="true" scrollWidth="100%" scrollHeight="100%" class="hierarchies-attributes-cell">
 
                                 <p:ajax event="rowSelect" update=":hierarchies:installDeviceBtn :hierarchies:uninstallDeviceBtn" />
-                                <p:ajax event="rowUnselect" update=":hierarchies:installDeviceBtn :hierarchies:uninstallDeviceBtn" />
-                                <p:ajax event="filter" oncomplete="hierarchiesResizeAttributes();"/>
+                                <p:ajax event="rowUnselect" update=":hierarchies:installDeviceBtn :hierarchies:uninstallDeviceBtn" />                                
                                 
                                 <p:column headerText="Container/Slot" sortBy="#{installationRecord.slotName}" 
                                         filterBy="#{installationRecord.slotName}" filterMatchMode="contains">
@@ -481,6 +420,7 @@
                                             rendered="#{not installationRecord.deviceInstalled}" />
                                 </p:column>
                             </p:dataTable>
+                            </div>
                             <p:commandButton title="Install device to the selected slot" id="installDeviceBtn"
                                     value="Install" ajax="true"
                                     actionListener="#{hierarchiesController.prepareUninstalledDevices}"
@@ -637,18 +577,12 @@
             //<![CDATA[
             jQuery(window).resize(function() {
                 hierarchiesResizeAll();
-                resizeAttributes = 1;
-                hierarchiesResizeAttributes();
                 scrollSelectedIntoView(PF('hierarchyWidget'));
-                setRightColumnWidths();                
             });
 
             jQuery(document).ready(function() {
                 hierarchiesResizeAll();
-                resizeAttributes = 1;
-                hierarchiesResizeAttributes();
                 scrollSelectedIntoView(PF('hierarchyWidget'));
-                setRightColumnWidths();
             });
             // PrimeFaces Shift-select workaround. Event is triggered on the last node. This is not a propert solution!
             PrimeFaces.widget.TreeTable.prototype.selectNodesInRange = function(node) {
