@@ -252,60 +252,60 @@
                     </p:column>
                     <p:column id="attributesColumn" styleClass="alignTop" >
                         <p:fieldset id="slotAttributes" legend="Properties" style="box-sizing: border-box; height: calc(33.33vh - 2.8em)">
-                        <div style="height: calc(100% - 3em)">
-                            <p:dataTable id="attributesTable" class="hierarchies-attributes-cell" var="attribute" 
-                                    emptyMessage="No records found." value="#{hierarchiesController.attributes}" 
-                                    scrollable="true" scrollWidth="100%" scrollHeight="100%"
-                                    selection="#{hierarchiesController.selectedAttributes}" selectionMode="multiple"
-                                    filteredValue="#{hierarchiesController.filteredAttributes}" rowKey="#{attribute.id}"
-                                    widgetVar="attributesWidget">
-                                <p:ajax event="rowSelect" update=":hierarchies:deleteAttrButton :hierarchies:editAttrButton" />
-                                <p:ajax event="rowUnselect" update=":hierarchies:deleteAttrButton :hierarchies:editAttrButton" />                                
-                
-                                <p:column headerText="Entity" sortBy="#{attribute.parent}" filterBy="#{attribute.parent}"
-                                        filterMatchMode="contains" >
-                                    <h:outputText value="#{attribute.parent}" />
-                                </p:column>
-
-                                <p:column headerText="Name" sortBy="#{attribute.name}" filterBy="#{attribute.name}"
-                                        filterMatchMode="contains">
-                                    <h:outputText value="#{attribute.name}" />
-                                </p:column>
-
-                                <p:column headerText="Value" sortBy="#{attribute.value}"
-                                        filterBy="#{attribute.value}" filterMatchMode="contains">
-                                    <h:outputLink rendered="#{attribute.hasURL}" target="_blank" value="#{attribute.value}" title="Go to URL">
-                                        <h:outputText value="#{attribute.value}" style="text-decoration: underline;" />
-                                    </h:outputLink>
-                                    <h:outputText value="#{!empty attribute.value ? attribute.value : '-'}" rendered="#{not attribute.hasURL}" />
-                                    <p:commandLink ajax="false" title="Download" rendered="#{attribute.hasFile}" style="margin-left: 1ex;">
-                                        <h:outputText styleClass="ui-icon ui-icon-arrowthick-1-s" style="display: inline-block !important; margin-right: 6px;" />
-                                        <f:setPropertyActionListener value="#{attribute}" target="#{hierarchiesController.downloadAttribute}" />
-                                        <p:fileDownload value="#{hierarchiesController.downloadFile}" />
-                                    </p:commandLink>
-                                </p:column>
-
-                                <p:column headerText="Unit" sortBy="#{attribute.unit.name}" filterBy="#{attribute.unit.name}"
-                                        filterMatchMode="contains">
-                                    <h:outputLink rendered="#{!empty attribute.unit}"
-                                            value="#{request.contextPath}/units.xhtml?id=#{attribute.unit.id}">
-                                        <h:outputText value="#{attribute.unit.name}" style="text-decoration: underline;" />
-                                    </h:outputLink>
-                                    <h:outputText value="-" rendered="#{empty attribute.unit}" />
-                                </p:column>
-
-                                <p:column headerText="Kind" sortBy="#{attribute.kind.toString()}"
-                                        filterBy="#{attribute.kind}" filterMatchMode="exact"
-                                        filterOptions="#{hierarchiesController.attributeKinds}">
-                                    <h:outputText value="#{attribute.kind.toString()}" />
-                                </p:column>
-
-                                <p:column headerText="Data type" sortBy="#{attribute.type.name}"
-                                        filterBy="#{attribute.type.name}" filterMatchMode="contains">
-                                    <h:outputText value="#{attribute.type.name}" />
-                                </p:column>
-                            </p:dataTable>
-                        </div>
+                            <div style="height: calc(100% - 3em)">
+                                <p:dataTable id="attributesTable" class="hierarchies-attributes-cell" var="attribute" 
+                                        emptyMessage="No records found." value="#{hierarchiesController.attributes}" 
+                                        scrollable="true" scrollWidth="100%" scrollHeight="100%"
+                                        selection="#{hierarchiesController.selectedAttributes}" selectionMode="multiple"
+                                        filteredValue="#{hierarchiesController.filteredAttributes}" rowKey="#{attribute.id}"
+                                        widgetVar="attributesWidget">
+                                    <p:ajax event="rowSelect" update=":hierarchies:deleteAttrButton :hierarchies:editAttrButton" />
+                                    <p:ajax event="rowUnselect" update=":hierarchies:deleteAttrButton :hierarchies:editAttrButton" />                                
+                    
+                                    <p:column headerText="Entity" sortBy="#{attribute.parent}" filterBy="#{attribute.parent}"
+                                            filterMatchMode="contains" >
+                                        <h:outputText value="#{attribute.parent}" />
+                                    </p:column>
+    
+                                    <p:column headerText="Name" sortBy="#{attribute.name}" filterBy="#{attribute.name}"
+                                            filterMatchMode="contains">
+                                        <h:outputText value="#{attribute.name}" />
+                                    </p:column>
+    
+                                    <p:column headerText="Value" sortBy="#{attribute.value}"
+                                            filterBy="#{attribute.value}" filterMatchMode="contains">
+                                        <h:outputLink rendered="#{attribute.hasURL}" target="_blank" value="#{attribute.value}" title="Go to URL">
+                                            <h:outputText value="#{attribute.value}" style="text-decoration: underline;" />
+                                        </h:outputLink>
+                                        <h:outputText value="#{!empty attribute.value ? attribute.value : '-'}" rendered="#{not attribute.hasURL}" />
+                                        <p:commandLink ajax="false" title="Download" rendered="#{attribute.hasFile}" style="margin-left: 1ex;">
+                                            <h:outputText styleClass="ui-icon ui-icon-arrowthick-1-s" style="display: inline-block !important; margin-right: 6px;" />
+                                            <f:setPropertyActionListener value="#{attribute}" target="#{hierarchiesController.downloadAttribute}" />
+                                            <p:fileDownload value="#{hierarchiesController.downloadFile}" />
+                                        </p:commandLink>
+                                    </p:column>
+    
+                                    <p:column headerText="Unit" sortBy="#{attribute.unit.name}" filterBy="#{attribute.unit.name}"
+                                            filterMatchMode="contains">
+                                        <h:outputLink rendered="#{!empty attribute.unit}"
+                                                value="#{request.contextPath}/units.xhtml?id=#{attribute.unit.id}">
+                                            <h:outputText value="#{attribute.unit.name}" style="text-decoration: underline;" />
+                                        </h:outputLink>
+                                        <h:outputText value="-" rendered="#{empty attribute.unit}" />
+                                    </p:column>
+    
+                                    <p:column headerText="Kind" sortBy="#{attribute.kind.toString()}"
+                                            filterBy="#{attribute.kind}" filterMatchMode="exact"
+                                            filterOptions="#{hierarchiesController.attributeKinds}">
+                                        <h:outputText value="#{attribute.kind.toString()}" />
+                                    </p:column>
+    
+                                    <p:column headerText="Data type" sortBy="#{attribute.type.name}"
+                                            filterBy="#{attribute.type.name}" filterMatchMode="contains">
+                                        <h:outputText value="#{attribute.type.name}" />
+                                    </p:column>
+                                </p:dataTable>
+                            </div>
                             <p:commandButton id="deleteAttrButton" value="Delete" icon="ui-icon-trash"
                                 style="float: right; margin-top: 1em;" oncomplete="PF('deleteAttribute').show();"
                                 disabled="#{!hierarchiesController.canDeleteAttributes()}" />
@@ -331,47 +331,47 @@
                 <p:row>
                     <p:column id="relationsColumn" styleClass="alignTop">
                         <p:fieldset id="relationsTable" legend="Relationships" style="box-sizing: border-box; height: calc(33.33vh - 2.8em)">
-                        <div style="height: calc(100% - 3em)">
-                            <p:dataTable value="#{hierarchiesController.relationships}" id="relationshipTable"
-                                    var="relationship" emptyMessage="No records found."
-                                    scrollable="true" scrollWidth="100%" scrollHeight="100%" 
-                                    class="hierarchies-attributes-cell"
-                                    filteredValue="#{hierarchiesController.filteredRelationships}"
-                                    selectionMode="multiple" rowKey="#{relationship.id}"
-                                    selection="#{hierarchiesController.selectedRelationships}"
-                                    widgetVar="relationshipsWidget">
-                                <p:ajax event="rowSelect" update=":hierarchies:deleteRelationship" />
-                                <p:ajax event="rowUnselect" update=":hierarchies:deleteRelationship" />                                
-                                
-                                <p:column headerText="Source" sortBy="#{relationship.sourceSlotName}" 
-                                        filterBy="#{relationship.sourceSlotName}" filterMatchMode="contains">
-                                    <h:outputText value="#{relationship.sourceSlotName}" />
-                                </p:column>
-
-                                <p:column headerText="Relationship" sortBy="#{relationship.relationshipName}"
-                                        filterOptions="#{hierarchiesController.relationshipTypes}"
-                                        filterBy="#{relationship.relationshipName}" filterMatchMode="exact">
-                                    <h:outputText value="#{relationship.relationshipName}" />
-                                </p:column>
-
-                                <p:column headerText="Target" sortBy="#{relationship.targetSlotName}"
-                                        filterBy="#{relationship.targetSlotName}" filterMatchMode="contains">
-                                    <p:commandLink action="#{hierarchiesController.selectNode(relationship.slot)}"
-                                            rendered="#{hierarchiesController.includesActive}"
-                                            update=":hierarchies:relationsTable :hierarchies:deleteButton :hierarchies:downButton
-                                                :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton
-                                                :hierarchies:installationDetails :hierarchies:slotAttributes
-                                                :hierarchies:addRelationship :hierarchies:hierarchyTabs:tree"
-                                            oncomplete="hierarchiesResizeAll();scrollSelectedIntoView(getVisibleTree());
-                                            PF('relationshipsWidget').clearFilters();PF('attributesWidget').clearFilters();">
+                            <div style="height: calc(100% - 3em)">
+                                <p:dataTable value="#{hierarchiesController.relationships}" id="relationshipTable"
+                                        var="relationship" emptyMessage="No records found."
+                                        scrollable="true" scrollWidth="100%" scrollHeight="100%" 
+                                        class="hierarchies-attributes-cell"
+                                        filteredValue="#{hierarchiesController.filteredRelationships}"
+                                        selectionMode="multiple" rowKey="#{relationship.id}"
+                                        selection="#{hierarchiesController.selectedRelationships}"
+                                        widgetVar="relationshipsWidget">
+                                    <p:ajax event="rowSelect" update=":hierarchies:deleteRelationship" />
+                                    <p:ajax event="rowUnselect" update=":hierarchies:deleteRelationship" />                                
+                                    
+                                    <p:column headerText="Source" sortBy="#{relationship.sourceSlotName}" 
+                                            filterBy="#{relationship.sourceSlotName}" filterMatchMode="contains">
+                                        <h:outputText value="#{relationship.sourceSlotName}" />
+                                    </p:column>
+    
+                                    <p:column headerText="Relationship" sortBy="#{relationship.relationshipName}"
+                                            filterOptions="#{hierarchiesController.relationshipTypes}"
+                                            filterBy="#{relationship.relationshipName}" filterMatchMode="exact">
+                                        <h:outputText value="#{relationship.relationshipName}" />
+                                    </p:column>
+    
+                                    <p:column headerText="Target" sortBy="#{relationship.targetSlotName}"
+                                            filterBy="#{relationship.targetSlotName}" filterMatchMode="contains">
+                                        <p:commandLink action="#{hierarchiesController.selectNode(relationship.slot)}"
+                                                rendered="#{hierarchiesController.includesActive}"
+                                                update=":hierarchies:relationsTable :hierarchies:deleteButton :hierarchies:downButton
+                                                    :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton
+                                                    :hierarchies:installationDetails :hierarchies:slotAttributes
+                                                    :hierarchies:addRelationship :hierarchies:hierarchyTabs:tree"
+                                                oncomplete="hierarchiesResizeAll();scrollSelectedIntoView(getVisibleTree());
+                                                PF('relationshipsWidget').clearFilters();PF('attributesWidget').clearFilters();">
+                                            <h:outputText value="#{relationship.targetSlotName}"
+                                                style="text-decoration: underline;" />
+                                        </p:commandLink>
                                         <h:outputText value="#{relationship.targetSlotName}"
-                                            style="text-decoration: underline;" />
-                                    </p:commandLink>
-                                    <h:outputText value="#{relationship.targetSlotName}"
-                                        rendered="#{not hierarchiesController.includesActive}" />
-                                </p:column>
-                            </p:dataTable>
-                         </div>
+                                            rendered="#{not hierarchiesController.includesActive}" />
+                                    </p:column>
+                                </p:dataTable>
+                            </div>
 
                             <p:commandButton id="deleteRelationship" value="Delete" icon="ui-icon-trash"
                                 style="margin-top: 1em; float: right;" disabled="#{empty hierarchiesController.selectedRelationships}"
@@ -386,40 +386,40 @@
                 <p:row>
                     <p:column id="installationColumn" styleClass="alignTop">
                         <p:fieldset id="installationDetails" legend="Installation"  style="box-sizing: border-box; height: calc(33.33vh - 2.8em)">
-                        <div style="height: calc(100% - 3em)">
-                            <p:dataTable id="installationTable" value="#{hierarchiesController.installationRecords}"
-                                    var="installationRecord" widgetVar="installationWidget"
-                                    selectionMode="multiple" selection="#{hierarchiesController.selectedInstallationViews}"
-                                    emptyMessage="No records found." rowKey="#{installationRecord.slotName}"
-                                    filteredValue="#{hierarchiesController.filteredInstallationRecords}"
-                                    scrollable="true" scrollWidth="100%" scrollHeight="100%" class="hierarchies-attributes-cell">
-
-                                <p:ajax event="rowSelect" update=":hierarchies:installDeviceBtn :hierarchies:uninstallDeviceBtn" />
-                                <p:ajax event="rowUnselect" update=":hierarchies:installDeviceBtn :hierarchies:uninstallDeviceBtn" />                                
-                                
-                                <p:column headerText="Container/Slot" sortBy="#{installationRecord.slotName}" 
-                                        filterBy="#{installationRecord.slotName}" filterMatchMode="contains">
-                                    <h:outputText value="#{installationRecord.slotName}" />
-                                </p:column>
-                                <p:column headerText="Inventory ID" 
-                                        sortBy="#{installationRecord.deviceInventoryId}" 
-                                        filterBy="#{installationRecord.deviceInventoryId}">
-                                    <h:link outcome="deviceManager" value="#{installationRecord.deviceInventoryId}"
-                                            class="link" rendered="#{installationRecord.deviceInstalled}">
-                                        <f:param name="id" value="#{installationRecord.installationRecord.device.id}" />
-                                    </h:link>
-                                    <h:outputText value="-" rendered="#{not installationRecord.deviceInstalled}" />
-                                </p:column>
-                                <p:column headerText="Timestamp" sortBy="#{installationRecord.installDate}"
-                                        filterBy="#{installationRecord.installDate}" filterMatchMode="contains">
-                                    <h:outputText value="#{installationRecord.installDate}"
-                                            rendered="#{installationRecord.deviceInstalled}">
-                                        <f:convertDateTime pattern="#{msgs.timestampFormat}" />
-                                    </h:outputText>
-                                    <h:outputText value="Not installed"
-                                            rendered="#{not installationRecord.deviceInstalled}" />
-                                </p:column>
-                            </p:dataTable>
+                            <div style="height: calc(100% - 3em)">
+                                <p:dataTable id="installationTable" value="#{hierarchiesController.installationRecords}"
+                                        var="installationRecord" widgetVar="installationWidget"
+                                        selectionMode="multiple" selection="#{hierarchiesController.selectedInstallationViews}"
+                                        emptyMessage="No records found." rowKey="#{installationRecord.slotName}"
+                                        filteredValue="#{hierarchiesController.filteredInstallationRecords}"
+                                        scrollable="true" scrollWidth="100%" scrollHeight="100%" class="hierarchies-attributes-cell">
+    
+                                    <p:ajax event="rowSelect" update=":hierarchies:installDeviceBtn :hierarchies:uninstallDeviceBtn" />
+                                    <p:ajax event="rowUnselect" update=":hierarchies:installDeviceBtn :hierarchies:uninstallDeviceBtn" />                                
+                                    
+                                    <p:column headerText="Container/Slot" sortBy="#{installationRecord.slotName}" 
+                                            filterBy="#{installationRecord.slotName}" filterMatchMode="contains">
+                                        <h:outputText value="#{installationRecord.slotName}" />
+                                    </p:column>
+                                    <p:column headerText="Inventory ID" 
+                                            sortBy="#{installationRecord.deviceInventoryId}" 
+                                            filterBy="#{installationRecord.deviceInventoryId}">
+                                        <h:link outcome="deviceManager" value="#{installationRecord.deviceInventoryId}"
+                                                class="link" rendered="#{installationRecord.deviceInstalled}">
+                                            <f:param name="id" value="#{installationRecord.installationRecord.device.id}" />
+                                        </h:link>
+                                        <h:outputText value="-" rendered="#{not installationRecord.deviceInstalled}" />
+                                    </p:column>
+                                    <p:column headerText="Timestamp" sortBy="#{installationRecord.installDate}"
+                                            filterBy="#{installationRecord.installDate}" filterMatchMode="contains">
+                                        <h:outputText value="#{installationRecord.installDate}"
+                                                rendered="#{installationRecord.deviceInstalled}">
+                                            <f:convertDateTime pattern="#{msgs.timestampFormat}" />
+                                        </h:outputText>
+                                        <h:outputText value="Not installed"
+                                                rendered="#{not installationRecord.deviceInstalled}" />
+                                    </p:column>
+                                </p:dataTable>
                             </div>
                             <p:commandButton title="Install device to the selected slot" id="installDeviceBtn"
                                     value="Install" ajax="true"
