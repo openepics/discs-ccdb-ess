@@ -165,18 +165,16 @@
 
             <p:commandButton value="Close" type="button" styleClass="dialogButton" onclick="PF('resultDialog').hide();" 
                     style="margin-top: 1ex;">
-                <p:ajax disabled="#{not fn:endsWith(request.requestURL,'devices.xhtml')}" update=":devicesForm:devicesTable :devicesForm:attributesDataTable" 
-                    oncomplete="adjustFieldsetHeight('#devicesForm\\:deviceFieldset');adjustFieldsetHeight('#devicesForm\\:propFieldset');removePropColWidth();adjustTableHeights();" />
+                <p:ajax disabled="#{not fn:endsWith(request.requestURL,'devices.xhtml')}" update=":devicesForm:devicesTable :devicesForm:attributesDataTable"/>
                 <p:ajax disabled="#{not fn:endsWith(request.requestURL,'device-types.xhtml')}" 
-                    update=":deviceTypesForm:deviceTypeTable" 
-                    oncomplete="adjustFieldsetHeight('#deviceTypesForm\\:devTypeFieldset');adjustFieldsetHeight('#deviceTypesForm\\:propFieldset');removePropColWidth();adjustTableHeights();" />
+                    update=":deviceTypesForm:deviceTypeTable"/>
                 <p:ajax disabled="#{not fn:endsWith(request.requestURL,'properties.xhtml')}" 
                     update=":propertiesForm:propertiesTable" 
-                    oncomplete="adjustFieldsetHeight('#propertiesForm\\:propertiesFieldset');removePropColWidth();adjustTableHeight();" />
+                    oncomplete="adjustFieldsetHeight('#propertiesForm\\:propertiesFieldset');" />
                 <p:ajax disabled="#{not fn:endsWith(request.requestURL,'enums.xhtml')}" update=":enumsForm:enumsTable"
-                    oncomplete="adjustFieldsetHeight('#enumsForm\\:enumsFieldset');removePropColWidth();adjustTableHeight();" />
+                    oncomplete="adjustFieldsetHeight('#enumsForm\\:enumsFieldset');" />
                 <p:ajax disabled="#{not fn:endsWith(request.requestURL,'units.xhtml')}" update=":unitsForm:unitsTable" 
-                    oncomplete="adjustFieldsetHeight('#unitsForm\\:unitsFieldset');removePropColWidth();adjustTableHeight();" />
+                    oncomplete="adjustFieldsetHeight('#unitsForm\\:unitsFieldset');" />
                 <p:ajax disabled="#{not fn:endsWith(request.requestURL,'home.xhtml')}" 
                     update=":hierarchies:hierarchyTabs :hierarchies:slotAttributes :hierarchies:relationsTable 
                             :hierarchies:installationDetails" oncomplete="hierarchiesResizeAll();" />

@@ -148,10 +148,6 @@ body {
 	overflow-x: hidden;
 }
 
-.scroll-table .ui-datatable-scrollable-body {
-    overflow-y: auto;
-}
-
 .installation-details .ui-widget-content {
 	padding: 0 !important;
 }
@@ -341,10 +337,14 @@ a {
 .nameContainer {
 }
 
-.ui-fieldset-content, .ui-datatable-tablewrapper, .ui-tabs-panel, .ui-datatable-scrollable {
-	height: 100%
+.ui-fieldset-content {
+	height: calc(100% - 2em);
+}
+
+.ui-datatable-tablewrapper, .ui-tabs-panel, .ui-datatable-scrollable {
+	height: 100%;
 }
 
 #hierarchies\:hierarchyTabs .ui-tabs-panels {
-	height: calc(100% - 3em)	
+	height: calc(100% - 3em);
 }
