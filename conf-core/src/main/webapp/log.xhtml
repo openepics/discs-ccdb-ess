@@ -7,81 +7,53 @@
 
     <ui:define name="content">
         <h:form id="logsForm">
-            <script type="text/javascript">
-                //<![CDATA[
-                function resizeLogPanel() {
-                    var dialogHeight = $('#logsForm\\:logOverlayPanel')[0].clientHeight;
-                    var contentHeight = $('#logsForm\\:contentPanel')[0].clientHeight;
-                    if (contentHeight > dialogHeight) {
-                        contentHeight = dialogHeight - 16;
-                        $('#logsForm\\:contentPanel').css({"max-height":contentHeight});
-                    }
-                }
-
-                function removeLogColWidth() {
-                    $('#logsForm\\:logTable table thead th').css('width', '');
-                }
-
-                function adjustTableHeight() {
-                    var fieldsetHeight = $('#logsForm\\:logFieldset').outerHeight(true);
-                    var fieldsetLegendHeight = $('#logsForm\\:logFieldset legend').outerHeight(true);
-                    var em = emHeight();
-
-                    var entireTableHeight = fieldsetHeight - fieldsetLegendHeight - 5*em;
-                    $('#logsForm\\:logTable').css({"height":entireTableHeight});
-
-                    var tableHeaderHeight = $('#logsForm\\:logTable .ui-datatable-scrollable-header').outerHeight(true);
-                    $('#logsForm\\:logTable .ui-datatable-scrollable-body').css({"height":entireTableHeight - tableHeaderHeight});
-                }
-                // ]]>
-            </script>
-
-            <p:fieldset legend="Log" style="padding-bottom: 1em;" id="logFieldset">
-
-                <p:dataTable widgetVar="logTableVar" var="auditRecord" id="logTable" value="#{auditManager.auditRecords}" 
-                        styleClass="scroll-table" style="width: inherit; overflow-y: hidden;" scrollable="true" 
-                        resizableColumns="true" tableStyle="table-layout: fixed; word-wrap: break-word; width: 100%;" 
-                        filteredValue="#{auditManager.filteredAuditRecords}" liveScroll="true" scrollRows="50">
-                    <p:ajax event="filter" ignoreAutoUpdate="true"/>
-
-                    <p:column headerText="Timestamp" filterBy="#{auditRecord.logTimeFormatted}" 
-                            sortBy="#{auditRecord.logTimeFormatted}" filterMatchMode="contains">
-                        <h:outputText value="#{auditRecord.logTimeFormatted}" />                            
-                    </p:column>
-
-                    <p:column headerText="User" sortBy="#{auditRecord.user}" filterBy="#{auditRecord.user}" 
-                             filterMatchMode="contains">
-                        <h:outputText value="#{auditRecord.user}" />
-                    </p:column>
-
-                    <p:column headerText="Operation" sortBy="#{auditRecord.oper}" filterBy="#{auditRecord.oper}" 
-                            filterMatchMode="exact" filterOptions="#{auditManager.auditOperations}">
-                        <h:outputText value="#{auditRecord.oper}" />
-                    </p:column>
-
-                    <p:column headerText="Entity Name" sortBy="#{auditRecord.entityKey}" filterBy="#{auditRecord.entityKey}" 
-                             filterMatchMode="contains">
-                        <h:outputText value="#{auditRecord.entityKey}" />
-                    </p:column>
-
-                    <p:column headerText="Entity Type" sortBy="#{auditRecord.entityType}" filterBy="#{auditRecord.entityType}" 
-                            filterMatchMode="exact" filterOptions="#{auditManager.entityTypes}">
-                        <h:outputText value="#{auditRecord.entityType.label}" />
-                    </p:column>
-
-                    <p:column headerText="Entity ID" sortBy="#{auditRecord.entityId}" filterBy="#{auditRecord.entityId}" 
-                            filterMatchMode="contains">
-                        <h:outputText value="#{auditRecord.entityId}" />
-                    </p:column>
-
-                    <p:column headerText="Change" sortBy="#{auditRecord.entry}" filterBy="#{auditRecord.entry}" filterMatchMode="contains">
-                        <p:commandLink id="logDetails" update=":logsForm:logDetailsPanel" action="#{auditManager.handleDetails()}" 
-                                oncomplete="PF('overlay').show('#{component.clientId}');resizeLogPanel();">
-                            <f:setPropertyActionListener target="#{auditManager.displayRecord}" value="#{auditRecord}" />
-                            <h:outputText value="#{auditRecord.entry.length() lt 46 ? auditRecord.entry : auditRecord.entry.substring(0,45).concat('...')}" />
-                        </p:commandLink>
-                    </p:column>
-                </p:dataTable>
+            <p:fieldset legend="Log" id="logFieldset" style="box-sizing: border-box; height: calc(100vh - 7em);">
+                <div style="height: calc(100% - 3em)">
+                    <p:dataTable widgetVar="logTableVar" var="auditRecord" id="logTable" value="#{auditManager.auditRecords}" 
+                            scrollable="true" scrollWidth="100%" scrollHeight="100%" 
+                            resizableColumns="true" tableStyle="word-wrap: break-word;" 
+                            filteredValue="#{auditManager.filteredAuditRecords}" liveScroll="true" scrollRows="50">
+                        <p:ajax event="filter" ignoreAutoUpdate="true"/>
+    
+                        <p:column headerText="Timestamp" filterBy="#{auditRecord.logTimeFormatted}" 
+                                sortBy="#{auditRecord.logTimeFormatted}" filterMatchMode="contains">
+                            <h:outputText value="#{auditRecord.logTimeFormatted}" />                            
+                        </p:column>
+    
+                        <p:column headerText="User" sortBy="#{auditRecord.user}" filterBy="#{auditRecord.user}" 
+                                 filterMatchMode="contains">
+                            <h:outputText value="#{auditRecord.user}" />
+                        </p:column>
+    
+                        <p:column headerText="Operation" sortBy="#{auditRecord.oper}" filterBy="#{auditRecord.oper}" 
+                                filterMatchMode="exact" filterOptions="#{auditManager.auditOperations}">
+                            <h:outputText value="#{auditRecord.oper}" />
+                        </p:column>
+    
+                        <p:column headerText="Entity Name" sortBy="#{auditRecord.entityKey}" filterBy="#{auditRecord.entityKey}" 
+                                 filterMatchMode="contains">
+                            <h:outputText value="#{auditRecord.entityKey}" />
+                        </p:column>
+    
+                        <p:column headerText="Entity Type" sortBy="#{auditRecord.entityType}" filterBy="#{auditRecord.entityType}" 
+                                filterMatchMode="exact" filterOptions="#{auditManager.entityTypes}">
+                            <h:outputText value="#{auditRecord.entityType.label}" />
+                        </p:column>
+    
+                        <p:column headerText="Entity ID" sortBy="#{auditRecord.entityId}" filterBy="#{auditRecord.entityId}" 
+                                filterMatchMode="contains">
+                            <h:outputText value="#{auditRecord.entityId}" />
+                        </p:column>
+    
+                        <p:column headerText="Change" sortBy="#{auditRecord.entry}" filterBy="#{auditRecord.entry}" filterMatchMode="contains">
+                            <p:commandLink id="logDetails" update=":logsForm:logDetailsPanel" action="#{auditManager.handleDetails()}" 
+                                    oncomplete="PF('overlay').show('#{component.clientId}');resizeLogPanel();">
+                                <f:setPropertyActionListener target="#{auditManager.displayRecord}" value="#{auditRecord}" />
+                                <h:outputText value="#{auditRecord.entry.length() lt 46 ? auditRecord.entry : auditRecord.entry.substring(0,45).concat('...')}" />
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </div>
 
                 <p:commandButton id="exportButton" icon="ui-icon-disk" value="Export" title="Export" 
                     style="float: right; margin-top: 1em;" oncomplete="PF('exportLogs').show();" 
@@ -107,17 +79,5 @@
             <ui:param name="includeHeader" value="#{auditManager.simpleTableDialog.includeHeaderRow}" />
             <ui:param name="tableFile" value="#{auditManager.simpleTableDialog.exportedTable}" />
         </ui:include>
-
-        <script type="text/javascript">
-            jQuery(document).ready(function() {
-                removeLogColWidth();
-                adjustFieldsetHeight('#logsForm\\:logFieldset');
-                adjustTableHeight();
-            });
-            jQuery(window).resize(function() {
-                adjustFieldsetHeight('#logsForm\\:logFieldset');
-                adjustTableHeight();
-            });
-        </script>
     </ui:define>
 </ui:composition>

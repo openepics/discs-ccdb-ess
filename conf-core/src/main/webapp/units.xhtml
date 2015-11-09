@@ -9,59 +9,42 @@
         <h:form id="unitsForm">
             <script type="text/javascript">
                 // <![CDATA[
-                function removePropColWidth() {
-                    $('#unitsForm\\:unitsTable table thead th').css('width', '');
-                }
-
-                function adjustTableHeight() {
-                    var fieldsetHeight = $('#unitsForm\\:unitsFieldset').outerHeight(true);
-                    var fieldsetLegendHeight = $('#unitsForm\\:unitsFieldset legend').outerHeight(true);
-                    var em = emHeight();
-                    
-                    var entireTableHeight = fieldsetHeight - fieldsetLegendHeight - 5*em;
-                    $('#unitsForm\\:unitsTable').css({"height":entireTableHeight});
-                    
-                    var tableHeaderHeight = $('#unitsForm\\:unitsTable .ui-datatable-scrollable-header').outerHeight(true);
-                    $('#unitsForm\\:unitsTable .ui-datatable-scrollable-body').css({"height":entireTableHeight - tableHeaderHeight});
-                }
-
                 function closeDialogActions(widgetVar) {
                     if (widgetVar != null) PF(widgetVar).hide();
-                    PF('unitsTableVar').clearFilters();
-                    removePropColWidth();
-                    adjustFieldsetHeight('#unitsForm\\:unitsFieldset');
-                    adjustTableHeight();
+                    PF('unitsTableVar').clearFilters();                    
                 }
                 // ]]>
             </script>
 
-            <p:fieldset id="unitsFieldset" legend="Units">
-                <p:dataTable widgetVar="unitsTableVar" var="unit" id="unitsTable" value="#{unitManager.unitViews}" 
-                        styleClass="scroll-table" style="width: inherit; overflow-y: hidden;" scrollable="true" 
-                        selection="#{unitManager.selectedUnits}" selectionMode="multiple" rowKey="#{unit.unit.id}" 
-                        resizableColumns="true" tableStyle="table-layout: fixed; word-wrap: break-word; width: 100%;" 
-                        filteredValue="#{unitManager.filteredUnits}" liveScroll="true" scrollRows="50">
-                    <p:ajax event="filter" update="unitsForm:exportButton" />
-                    <p:ajax event="rowSelect" update=":unitsForm:deleteButton :unitsForm:editButton 
-                            :unitsForm:duplicateButton" />
-                    <p:ajax event="rowUnselect" update=":unitsForm:deleteButton :unitsForm:editButton 
-                            :unitsForm:duplicateButton" />
-
-                    <p:column headerText="Name" sortBy="#{unit.name.toUpperCase()}" filterBy="#{unit.name}"
-                            filterMatchMode="contains" styleClass="tableColWidth30">
-                        <h:outputText value="#{unit.name}" />
-                    </p:column>
-   
-                    <p:column headerText="Description" sortBy="#{unit.description}" filterBy="#{unit.description}" 
-                            filterStyle="width: 20em;" filterMatchMode="contains" styleClass="tableColWidth60">
-                        <h:outputText value="#{unit.description}" />
-                    </p:column>
-
-                    <p:column headerText="Symbol" sortBy="#{unit.symbol}" filterBy="#{unit.symbol}" 
-                            filterMatchMode="contains" styleClass="tableColWidth10">
-                        <h:outputText value="#{unit.symbol}" />
-                    </p:column>
-                </p:dataTable>
+            <p:fieldset id="unitsFieldset" legend="Units" style="box-sizing: border-box; height: calc(100vh - 7em);">
+                <div style="height: calc(100% - 3em)">
+                    <p:dataTable widgetVar="unitsTableVar" var="unit" id="unitsTable" value="#{unitManager.unitViews}" 
+                            scrollable="true" scrollWidth="100%" scrollHeight="100%" 
+                            selection="#{unitManager.selectedUnits}" selectionMode="multiple" rowKey="#{unit.unit.id}" 
+                            resizableColumns="true" tableStyle="word-wrap: break-word;" 
+                            filteredValue="#{unitManager.filteredUnits}" liveScroll="true" scrollRows="50">
+                        <p:ajax event="filter" update="unitsForm:exportButton" />
+                        <p:ajax event="rowSelect" update=":unitsForm:deleteButton :unitsForm:editButton 
+                                :unitsForm:duplicateButton" />
+                        <p:ajax event="rowUnselect" update=":unitsForm:deleteButton :unitsForm:editButton 
+                                :unitsForm:duplicateButton" />
+    
+                        <p:column headerText="Name" sortBy="#{unit.name.toUpperCase()}" filterBy="#{unit.name}"
+                                filterMatchMode="contains" styleClass="tableColWidth30">
+                            <h:outputText value="#{unit.name}" />
+                        </p:column>
+       
+                        <p:column headerText="Description" sortBy="#{unit.description}" filterBy="#{unit.description}" 
+                                filterStyle="width: 20em;" filterMatchMode="contains" styleClass="tableColWidth60">
+                            <h:outputText value="#{unit.description}" />
+                        </p:column>
+    
+                        <p:column headerText="Symbol" sortBy="#{unit.symbol}" filterBy="#{unit.symbol}" 
+                                filterMatchMode="contains" styleClass="tableColWidth10">
+                            <h:outputText value="#{unit.symbol}" />
+                        </p:column>
+                    </p:dataTable>
+                </div>
 
                 <p:commandButton id="duplicateButton" icon="ui-icon-copy" value="Duplicate" title="Duplicate selected" 
                     style="float: right; margin-top: 1em;" disabled="#{empty unitManager.selectedUnits}"
@@ -132,18 +115,5 @@
             <ui:param name="includeHeader" value="#{unitManager.simpleTableDialog.includeHeaderRow}" />
             <ui:param name="tableFile" value="#{unitManager.simpleTableDialog.exportedTable}" />
         </ui:include>
-        <script type="text/javascript">
-            // <![CDATA[
-            jQuery(document).ready(function() {
-                adjustFieldsetHeight('#unitsForm\\:unitsFieldset');
-                removePropColWidth();
-                adjustTableHeight();
-            });
-            jQuery(window).resize(function() {
-                adjustFieldsetHeight('#unitsForm\\:unitsFieldset');
-                adjustTableHeight();
-            });
-            // ]]>
-        </script>
     </ui:define>
 </ui:composition>

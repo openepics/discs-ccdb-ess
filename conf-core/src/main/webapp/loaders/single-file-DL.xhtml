@@ -169,12 +169,9 @@
                 <p:ajax disabled="#{not fn:endsWith(request.requestURL,'device-types.xhtml')}" 
                     update=":deviceTypesForm:deviceTypeTable"/>
                 <p:ajax disabled="#{not fn:endsWith(request.requestURL,'properties.xhtml')}" 
-                    update=":propertiesForm:propertiesTable" 
-                    oncomplete="adjustFieldsetHeight('#propertiesForm\\:propertiesFieldset');" />
-                <p:ajax disabled="#{not fn:endsWith(request.requestURL,'enums.xhtml')}" update=":enumsForm:enumsTable"
-                    oncomplete="adjustFieldsetHeight('#enumsForm\\:enumsFieldset');" />
-                <p:ajax disabled="#{not fn:endsWith(request.requestURL,'units.xhtml')}" update=":unitsForm:unitsTable" 
-                    oncomplete="adjustFieldsetHeight('#unitsForm\\:unitsFieldset');" />
+                    update=":propertiesForm:propertiesTable"/>
+                <p:ajax disabled="#{not fn:endsWith(request.requestURL,'enums.xhtml')}" update=":enumsForm:enumsTable"/>
+                <p:ajax disabled="#{not fn:endsWith(request.requestURL,'units.xhtml')}" update=":unitsForm:unitsTable"/>
                 <p:ajax disabled="#{not fn:endsWith(request.requestURL,'home.xhtml')}" 
                     update=":hierarchies:hierarchyTabs :hierarchies:slotAttributes :hierarchies:relationsTable 
                             :hierarchies:installationDetails" oncomplete="hierarchiesResizeAll();" />

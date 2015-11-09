@@ -8,58 +8,42 @@
     <ui:define name="content">
         <h:form id="enumsForm">
             <script type="text/javascript">
-                // <![CDATA[
-                function removePropColWidth() {
-                    $('#enumsForm\\:enumsTable table thead th').css('width', '');
-                }
-
-                function adjustTableHeight() {
-                    var fieldsetHeight = $('#enumsForm\\:enumsFieldset').outerHeight(true);
-                    var fieldsetLegendHeight = $('#enumsForm\\:enumsFieldset legend').outerHeight(true);
-                    var em = emHeight();
-                    
-                    var entireTableHeight = fieldsetHeight - fieldsetLegendHeight - 5*em;
-                    $('#enumsForm\\:enumsTable').css({"height":entireTableHeight});
-                    
-                    var tableHeaderHeight = $('#enumsForm\\:enumsTable .ui-datatable-scrollable-header').outerHeight(true);
-                    $('#enumsForm\\:enumsTable .ui-datatable-scrollable-body').css({"height":entireTableHeight - tableHeaderHeight});
-                }
+                // <![CDATA[              
                 function closeDialogActions(widgetVar) {
                     if (widgetVar != null) PF(widgetVar).hide();
                     PF('enumsTableVar').clearFilters();
-                    removePropColWidth();
-                    adjustFieldsetHeight('#enumsForm\\:enumsFieldset');
-                    adjustTableHeight();
                 }
                 // ]]>
             </script>
-            <p:fieldset id="enumsFieldset" legend="Enumerations">
-                <p:dataTable widgetVar="enumsTableVar" var="enum" id="enumsTable" value="#{dataTypeManager.dataTypeViews}" 
-                        styleClass="scroll-table" style="width: inherit; overflow-y: hidden;" scrollable="true" 
-                        selection="#{dataTypeManager.selectedEnums}" selectionMode="multiple" rowKey="#{enum.enumeration.id}" 
-                        resizableColumns="true" tableStyle="table-layout: fixed; word-wrap: break-word; width: 100%;" 
-                        filteredValue="#{dataTypeManager.filteredDataTypeViews}" liveScroll="true" scrollRows="50">
-                    <p:ajax event="filter" update=":enumsForm:exportButton"/>
-                    <p:ajax event="rowSelect" update=":enumsForm:deleteButton :enumsForm:editButton 
-                            :enumsForm:duplicateButton" />
-                    <p:ajax event="rowUnselect" update=":enumsForm:deleteButton :enumsForm:editButton 
-                            :enumsForm:duplicateButton" />
-
-                    <p:column headerText="Name" sortBy="#{enum.name}" filterBy="#{enum.name}" width="10%" 
-                            filterMatchMode="contains">
-                        <h:outputText value="#{enum.name}" />
-                    </p:column>
-
-                    <p:column headerText="Description" sortBy="#{enum.description}" filterBy="#{enum.description}" 
-                            width="30%" filterStyle="width: 20em;" filterMatchMode="contains">
-                        <h:outputText value="#{enum.description}" />
-                    </p:column>
-
-                    <p:column headerText="Definition" sortBy="#{enum.definitionAsString}" style="width: 50%;" 
-                            filterBy="#{enum.definitionAsString}" filterMatchMode="contains">
-                        <h:outputText value="#{enum.definitionAsString}" />
-                    </p:column>
-                </p:dataTable>
+            <p:fieldset id="enumsFieldset" legend="Enumerations" style="box-sizing: border-box; height: calc(100vh - 7em);">
+                <div style="height: calc(100% - 3em)">
+                    <p:dataTable widgetVar="enumsTableVar" var="enum" id="enumsTable" value="#{dataTypeManager.dataTypeViews}" 
+                            scrollable="true" scrollWidth="100%" scrollHeight="100%" 
+                            selection="#{dataTypeManager.selectedEnums}" selectionMode="multiple" rowKey="#{enum.enumeration.id}" 
+                            resizableColumns="true" tableStyle="word-wrap: break-word;" 
+                            filteredValue="#{dataTypeManager.filteredDataTypeViews}" liveScroll="true" scrollRows="50">
+                        <p:ajax event="filter" update=":enumsForm:exportButton"/>
+                        <p:ajax event="rowSelect" update=":enumsForm:deleteButton :enumsForm:editButton 
+                                :enumsForm:duplicateButton" />
+                        <p:ajax event="rowUnselect" update=":enumsForm:deleteButton :enumsForm:editButton 
+                                :enumsForm:duplicateButton" />
+    
+                        <p:column headerText="Name" sortBy="#{enum.name}" filterBy="#{enum.name}" width="10%" 
+                                filterMatchMode="contains">
+                            <h:outputText value="#{enum.name}" />
+                        </p:column>
+    
+                        <p:column headerText="Description" sortBy="#{enum.description}" filterBy="#{enum.description}" 
+                                width="30%" filterStyle="width: 20em;" filterMatchMode="contains">
+                            <h:outputText value="#{enum.description}" />
+                        </p:column>
+    
+                        <p:column headerText="Definition" sortBy="#{enum.definitionAsString}" style="width: 50%;" 
+                                filterBy="#{enum.definitionAsString}" filterMatchMode="contains">
+                            <h:outputText value="#{enum.definitionAsString}" />
+                        </p:column>
+                    </p:dataTable>
+                </div>
 
                 <p:commandButton id="duplicateButton" icon="ui-icon-copy" value="Duplicate" title="Duplicate selected" 
                     style="float: right; margin-top: 1em;" disabled="#{empty dataTypeManager.selectedEnums}" 
@@ -137,17 +121,5 @@
             <ui:param name="includeHeader" value="#{dataTypeManager.simpleTableDialog.includeHeaderRow}" />
             <ui:param name="tableFile" value="#{dataTypeManager.simpleTableDialog.exportedTable}" />
         </ui:include>
-
-        <script type="text/javascript">
-            jQuery(document).ready(function() {
-                removePropColWidth();
-                adjustFieldsetHeight('#enumsForm\\:enumsFieldset');
-                adjustTableHeight();
-            });
-            jQuery(window).resize(function() {
-                adjustFieldsetHeight('#enumsForm\\:enumsFieldset');
-                adjustTableHeight();
-            });
-        </script>
     </ui:define>
 </ui:composition>

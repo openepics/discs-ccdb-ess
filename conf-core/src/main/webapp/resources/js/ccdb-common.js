@@ -17,14 +17,6 @@ function adjustFooterPosition() {
     $('.footer-message').css({"left":(window.innerWidth-footerWidth)/2});
 }
 
-function adjustFieldsetHeight(selector) {
-    var menusHeight = $('#top').outerHeight(true);
-    var em = emHeight();
-
-    var totalMenusHeight = menusHeight + 4*em;
-    $(selector).css({"height":window.innerHeight-totalMenusHeight});
-}
-
 function startDownload() {
     PF('statusDialog').show();
 }
