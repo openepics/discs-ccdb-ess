@@ -149,8 +149,8 @@
                                 <p:tab id="CONNECTS" title="Connects" rendered="#{hierarchiesController.cableDBStatus}">
                                     <p:treeTable id="connectsTree" value="#{hierarchiesController.connectsRoot}" var="connectsSlot"
                                              selectionMode="multiple" selection="#{hierarchiesController.selectedConnectsNodes}"
-                                             scrollable="true" scrollWidth="auto" rowStyleClass="treeRows"
-                                             style="width: 40em;"  widgetVar="connectsWidget">
+                                             scrollable="true" scrollWidth="100%" scrollHeight="100%" rowStyleClass="treeRows"
+                                             widgetVar="connectsWidget">
                                         <p:ajax event="select" listener="#{hierarchiesController.onNodeSelect}"
                                                 update=":hierarchies:relationsTable :hierarchies:installationDetails
                                                         :hierarchies:slotAttributes :hierarchies:addRelationship"

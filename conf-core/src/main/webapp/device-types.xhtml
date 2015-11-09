@@ -9,7 +9,7 @@
         <h:form id="deviceTypesForm">
             <p:panelGrid styleClass="noBorders">
                 <p:row>
-                    <p:column style="width: 35%; min-width: 20em;">
+                    <p:column style="width: 35vw; min-width: 20em;">
                         <p:fieldset legend="Device type" id="devTypeFieldset" style="box-sizing: border-box; height: calc(100vh - 7em)">
                             <div style="height: calc(100% - 3em)">
                                 <p:dataTable id="deviceTypeTable" widgetVar="deviceTypeTableVar" var="deviceType"
@@ -63,7 +63,7 @@
                                 oncomplete="PF('addDeviceType').show();" />
                         </p:fieldset>
                     </p:column>
-                    <p:column style="width: 65%; min-width: 30em;">
+                    <p:column style="width: 65vw; min-width: 30em;">
                         <p:fieldset legend="Properties" id="propFieldset" style="box-sizing: border-box; height: calc(100vh - 7em)">
                             <div style="height: calc(100% - 3em)">
                                 <rc:new-attribute-table id="attributesDataTable" controllerBean="#{componentTypeManager}"

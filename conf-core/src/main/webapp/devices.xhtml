@@ -10,7 +10,7 @@
         <h:form id="devicesForm">
             <p:panelGrid styleClass="noBorders noPaddingLeft">
                 <p:row>
-                    <p:column style="width: 50%; vertical-align: top;">
+                    <p:column style="width: 50vw; vertical-align: top;">
                         <p:fieldset id="deviceFieldset" legend="Devices" style="box-sizing: border-box; height: calc(100vh - 7em)">
                             <div style="height: calc(100% - 3em)">
                                 <p:dataTable id="devicesTable" var="device" widgetVar="devicesTableVar" style="overflow: hidden" 
@@ -83,7 +83,7 @@
                                 oncomplete="PF('addDeviceDialog').show();" update=":deviceAddForm:addDeviceDialog" />
                         </p:fieldset>
                     </p:column>            
-                    <p:column style="width: 50%; vertical-align: top;">
+                    <p:column style="width: 50vw; vertical-align: top;">
                         <p:fieldset id="propFieldset" legend="Properties" style="box-sizing: border-box; height: calc(100vh - 7em)">
                             <div style="height: calc(100% - 3em)">
                                 <rc:new-attribute-table id="attributesDataTable" controllerBean="#{devicesController}" 
