@@ -57,6 +57,10 @@ body {
     padding-left: 0 !important;
 }
 
+.noPadding, .noPadding>tbody>tr>td {
+    padding: 0 !important;
+}
+
 .ui-growl {
     position:absolute;
     top: 0%;
@@ -347,4 +351,8 @@ a {
 
 #hierarchies\:hierarchyTabs .ui-tabs-panels {
 	height: calc(100% - 3em);
+}
+
+legend {
+	position: relative;
 }

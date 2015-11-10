@@ -44,53 +44,83 @@
                                         :hierarchies:hierarchyTabs:connectsTree
                                         :hierarchies:clipboardOperations"                                    
                                     onstart="PF('statusDialog').show()" oncomplete="PF('statusDialog').hide(); hierarchiesResizeAll();" />
-
                                 <p:tab id="INCLUDES" title="Contains" style="height: 100%">
-                                    <p:treeTable id="tree" value="#{hierarchiesController.rootNode}" var="installationSlot"
-                                             selectionMode="multiple" selection="#{hierarchiesController.selectedIncludesNodes}"
-                                             scrollable="true" scrollWidth="100%" scrollHeight="100%" rowStyleClass="treeRows"
-                                             widgetVar="hierarchyWidget" nodeVar="slotNode">
-                                        <p:ajax event="select" listener="#{hierarchiesController.onNodeSelect}"
-                                            update=":hierarchies:relationsTable :hierarchies:deleteButton :hierarchies:downButton
-                                                    :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton
-                                                    :hierarchies:installationDetails :hierarchies:slotAttributes
-                                                    :hierarchies:addRelationship :hierarchies:clipboardOperations"
-                                            oncomplete="hierarchiesResizeAll();" />
-                                        <p:ajax event="unselect" listener="#{hierarchiesController.onNodeUnselect}"
-                                            update=":hierarchies:relationsTable :hierarchies:deleteButton :hierarchies:downButton
-                                                    :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton
-                                                    :hierarchies:installationDetails :hierarchies:slotAttributes
-                                                    :hierarchies:addRelationship :hierarchies:clipboardOperations"
-                                            oncomplete="hierarchiesResizeAll();" />
-                                        <p:ajax event="expand" listener="#{hierarchiesController.onContainsExpand}" />
-
-                                        <p:column id="name" headerText="Name" style="white-space: normal;">
-                                            <h:outputText value="" rendered="#{installationSlot.hostingSlot}"
-                                                style="display:inline-block; vertical-align:bottom !important"
-                                                styleClass="ui-icon ui-icon-wrench" />
-                                            <h:outputText value="" rendered="#{!installationSlot.hostingSlot}"
-                                                style="display:inline-block; vertical-align:bottom !important"
-                                                styleClass="ui-icon ui-icon-folder-collapsed" />
-                                            <h:outputText value="#{installationSlot.name}" styleClass="#{hierarchiesController.calcNameClass(installationSlot)}"
-                                                title="#{installationSlot.description}#{installationSlot.hostingSlot ? ' ('.concat(installationSlot.deviceTypeName).concat(')') : ''}" />
-                                            <h:commandLink rendered="#{installationSlot.hostingSlot}" target="_blank"
-                                                    actionListener="#{hierarchiesController.redirectToNaming(installationSlot.name)}">
+                                    <p:panelGrid styleClass="ui-panelgrid-blank noPadding">
+                                        <p:row>
+                                            <p:column style="width:100%;">
+                                                <p:inputText id="filterContainsTree" value="#{hierarchiesController.filterContainsTree}" 
+                                                    style="box-sizing: border-box; width:100%"/>
+                                            </p:column>
+                                            <p:column>
+                                               <p:commandButton id="filterContainsTreeButton" icon="ui-icon-search" title="Filter"
+                                                   actionListener="#{hierarchiesController.filterContainsTree()}" 
+                                                    oncomplete="hierarchiesResizeAll();"
+                                                    update=":hierarchies:relationsTable :hierarchies:deleteButton :hierarchies:downButton
+                                                        :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton
+                                                        :hierarchies:installationDetails :hierarchies:slotAttributes
+                                                        :hierarchies:addRelationship :hierarchies:hierarchyTabs:tree                                                        
+                                                        :hierarchies:clipboardOperations"/>
+                                            </p:column>   
+                                            <p:column>
+                                               <p:commandButton id="clearFilterContainsTreeButton" icon=" ui-icon-circle-close" title="Clear filter"
+                                                   actionListener="#{hierarchiesController.clearFilterContainsTree()}" 
+                                                    oncomplete="hierarchiesResizeAll();"
+                                                    update="hierarchies:hierarchyTabs:filterContainsTree :hierarchies:relationsTable :hierarchies:deleteButton :hierarchies:downButton
+                                                        :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton
+                                                        :hierarchies:installationDetails :hierarchies:slotAttributes
+                                                        :hierarchies:addRelationship :hierarchies:hierarchyTabs:tree                                                        
+                                                        :hierarchies:clipboardOperations"/>
+                                            </p:column>                                                           
+                                        </p:row>
+                                    </p:panelGrid>
+                                    
+                                    <div style="height: calc(100% - 2em)">
+                                        <p:treeTable id="tree" value="#{hierarchiesController.rootNode}" var="installationSlot"
+                                                 selectionMode="multiple" selection="#{hierarchiesController.selectedIncludesNodes}"
+                                                 scrollable="true" scrollWidth="100%" scrollHeight="100%" rowStyleClass="treeRows"
+                                                 widgetVar="hierarchyWidget" nodeVar="slotNode">
+                                            <p:ajax event="select" listener="#{hierarchiesController.onNodeSelect}"
+                                                update=":hierarchies:relationsTable :hierarchies:deleteButton :hierarchies:downButton
+                                                        :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton
+                                                        :hierarchies:installationDetails :hierarchies:slotAttributes
+                                                        :hierarchies:addRelationship :hierarchies:clipboardOperations"
+                                                oncomplete="hierarchiesResizeAll();" />
+                                            <p:ajax event="unselect" listener="#{hierarchiesController.onNodeUnselect}"
+                                                update=":hierarchies:relationsTable :hierarchies:deleteButton :hierarchies:downButton
+                                                        :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton
+                                                        :hierarchies:installationDetails :hierarchies:slotAttributes
+                                                        :hierarchies:addRelationship :hierarchies:clipboardOperations"
+                                                oncomplete="hierarchiesResizeAll();" />
+                                            <p:ajax event="expand" listener="#{hierarchiesController.onContainsExpand}" />
+    
+                                            <p:column id="name" headerText="Name" style="white-space: normal;">
                                                 <h:outputText value="" rendered="#{installationSlot.hostingSlot}"
-                                                    style="display:inline-block; vertical-align:bottom !important; margin-left: 1ex;"
-                                                    styleClass="ui-icon ui-icon-extlink" />
-                                            </h:commandLink>
-                                            <h:outputText value="" rendered="#{installationSlot.inClipboard or
-                                                                                (hierarchiesController.cliboardOperation == 'COPY'
-                                                                                and hierarchiesController.isAncestorNodeInClipboard(slotNode))}"
-                                                style="display:inline-block; vertical-align:bottom !important; float: right; right: 1.2em; position: relative;"
-                                                styleClass="ui-icon ui-icon-clipboard" />
-                                            <h:outputText value="" rendered="#{hierarchiesController.cliboardOperation == 'COPY'
-                                                                                and (installationSlot.inClipboard
-                                                                                    or hierarchiesController.isAncestorNodeInClipboard(slotNode))}"
-                                                style="display:inline-block; vertical-align:bottom !important; float: right; position: relative; right: 0; bottom: 0.15em; opacity: 0.7;"
-                                                styleClass="ui-icon ui-icon-clipboard" />
-                                        </p:column>
-                                    </p:treeTable>
+                                                    style="display:inline-block; vertical-align:bottom !important"
+                                                    styleClass="ui-icon ui-icon-wrench" />
+                                                <h:outputText value="" rendered="#{!installationSlot.hostingSlot}"
+                                                    style="display:inline-block; vertical-align:bottom !important"
+                                                    styleClass="ui-icon ui-icon-folder-collapsed" />
+                                                <h:outputText value="#{installationSlot.name}" styleClass="#{hierarchiesController.calcNameClass(installationSlot)}"
+                                                    title="#{installationSlot.description}#{installationSlot.hostingSlot ? ' ('.concat(installationSlot.deviceTypeName).concat(')') : ''}" />
+                                                <h:commandLink rendered="#{installationSlot.hostingSlot}" target="_blank"
+                                                        actionListener="#{hierarchiesController.redirectToNaming(installationSlot.name)}">
+                                                    <h:outputText value="" rendered="#{installationSlot.hostingSlot}"
+                                                        style="display:inline-block; vertical-align:bottom !important; margin-left: 1ex;"
+                                                        styleClass="ui-icon ui-icon-extlink" />
+                                                </h:commandLink>
+                                                <h:outputText value="" rendered="#{installationSlot.inClipboard or
+                                                                                    (hierarchiesController.cliboardOperation == 'COPY'
+                                                                                    and hierarchiesController.isAncestorNodeInClipboard(slotNode))}"
+                                                    style="display:inline-block; vertical-align:bottom !important; float: right; right: 1.2em; position: relative;"
+                                                    styleClass="ui-icon ui-icon-clipboard" />
+                                                <h:outputText value="" rendered="#{hierarchiesController.cliboardOperation == 'COPY'
+                                                                                    and (installationSlot.inClipboard
+                                                                                        or hierarchiesController.isAncestorNodeInClipboard(slotNode))}"
+                                                    style="display:inline-block; vertical-align:bottom !important; float: right; position: relative; right: 0; bottom: 0.15em; opacity: 0.7;"
+                                                    styleClass="ui-icon ui-icon-clipboard" />
+                                            </p:column>
+                                        </p:treeTable>                                            
+                                    </div>                                    
                                 </p:tab>
                                 <p:tab id="CONTROLS" title="Controls" style="height: 100%">
                                     <p:treeTable id="controlsTree" value="#{hierarchiesController.controlsRoot}" var="ctrlSlot"

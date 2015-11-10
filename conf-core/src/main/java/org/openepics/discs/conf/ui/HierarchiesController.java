@@ -97,6 +97,7 @@ import org.openepics.discs.conf.ui.common.DataLoaderHandler;
 import org.openepics.discs.conf.ui.common.EntityHierarchyBuilder;
 import org.openepics.discs.conf.ui.common.ConnectsHierarchyBuilder;
 import org.openepics.discs.conf.ui.common.HierarchyBuilder;
+import org.openepics.discs.conf.ui.common.TreeFilterContains;
 import org.openepics.discs.conf.ui.common.UIException;
 import org.openepics.discs.conf.util.AppProperties;
 import org.openepics.discs.conf.util.BlobStore;
@@ -255,6 +256,9 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     private String selectedRelationshipType;
     private List<String> relationshipTypesForDialog;
     private Map<String, SlotRelation> slotRelationBySlotRelationStringName;
+
+
+    private String filterContainsTree;
 
     /** Java EE post construct life-cycle method. */
     @Override
@@ -1239,6 +1243,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
     private void initHierarchies() {
         hierarchyBuilder = new EntityHierarchyBuilder(PRELOAD_LIMIT, installationEJB, slotEJB);
+        hierarchyBuilder.setFilterMethod(new TreeFilterContains());
         rootNode = new DefaultTreeNode(new SlotView(slotEJB.getRootNode(), null, 1, slotEJB), null);
         hierarchyBuilder.rebuildSubTree(rootNode);
 
@@ -2995,5 +3000,31 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     /** @param selectedTreeNodeForRelationshipAdd the selectedTreeNodeForRelationshipAdd to set */
     public void setSelectedTreeNodeForRelationshipAdd(TreeNode selectedTreeNodeForRelationshipAdd) {
         this.selectedTreeNodeForRelationshipAdd = selectedTreeNodeForRelationshipAdd;
+    }
+
+    /**
+     * @return the filterContainsTree
+     */
+    public String getFilterContainsTree() {
+        return filterContainsTree;
+    }
+
+    /**
+     * @param filterContainsTree the filterContainsTree to set
+     */
+    public void setFilterContainsTree(String filterContainsTree) {
+        this.filterContainsTree = filterContainsTree;
+    }
+
+    public void clearFilterContainsTree() {
+        filterContainsTree = null;
+        filterContainsTree();
+    }
+
+    public void filterContainsTree() {
+        hierarchyBuilder.setFilterValue(filterContainsTree);
+        hierarchyBuilder.applyFilter(rootNode);
+        unselectAllTreeNodes();
+        selectedNodes = null;
     }
 }

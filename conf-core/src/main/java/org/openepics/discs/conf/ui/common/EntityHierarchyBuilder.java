@@ -19,8 +19,11 @@
  */
 package org.openepics.discs.conf.ui.common;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Set;
 
 import javax.annotation.Nullable;
 
@@ -50,6 +53,7 @@ public class EntityHierarchyBuilder extends HierarchyBuilder {
     private final SlotView fakeSlotView;
     private final InstallationEJB installationEJB;
     private final SlotEJB slotEJB;
+    private Set<Long> expandedNodes = Collections.emptySet();
 
     private TreeFilterMethod filterMethod;
 
@@ -127,28 +131,17 @@ public class EntityHierarchyBuilder extends HierarchyBuilder {
      * @see #expandNode(TreeNode)
      */
     public void rebuildSubTree(final TreeNode node) {
+        expandedNodes = Collections.singleton(((SlotView)node.getData()).getId());
+        rebuildSubTreeInternal(node);
+        expandedNodes = Collections.emptySet();
+    }
+
+    private void rebuildSubTreeInternal(final TreeNode node) {
         Preconditions.checkNotNull(node);
         // 1. Remove all existing children
         node.getChildren().clear();
-        final SlotView parentSlotView = (SlotView) node.getData();
-        final Slot parentSlot = parentSlotView.getSlot();
 
-        // 2. Get all back-end children
-        // 3. Iterate through all the children
-        for (SlotPair pair : parentSlot.getPairsInWhichThisSlotIsAParentList()) {
-            final Slot child = pair.getChildSlot();
-            final SlotRelationName pairRelationName = pair.getSlotRelation().getName();
-            // 4. If relationship type is what is defined in builder or CONTAINS (but only for children of containers)
-            // 4.a   If parent is a container or child matches the filter
-            if ((!parentSlot.isHostingSlot() && (pairRelationName == SlotRelationName.CONTAINS))
-                    || ((child.isHostingSlot() && (pairRelationName == relationship))
-                        && isSlotAcceptedByFilter(child))) {
-                // 4.b   Add the child
-                final SlotView childSlotView = new SlotView(child, parentSlotView, pair.getSlotOrder(), slotEJB);
-                addChildToParent(node, childSlotView);
-            }
-        }
-        parentSlotView.setInitialzed(true);
+        handleNodeSubtree(node);
     }
 
     /** <p>
@@ -223,6 +216,8 @@ public class EntityHierarchyBuilder extends HierarchyBuilder {
         final SlotView slotView = (SlotView) node.getData();
         final boolean isSlotContainer = !slotView.isHostingSlot();
 
+        if (expandedNodes.contains(slotView.getId())) node.setExpanded(true);
+
         boolean includesFilteredNodes = false;
 
         // See if the added node needs to be marked "expandable".
@@ -247,10 +242,10 @@ public class EntityHierarchyBuilder extends HierarchyBuilder {
                     //                      for each added child, it checks whether its tree contains any of the nodes
                     //                      that are accepted by the filter. If the child (and it's subtree) does not
                     //                      contain any such nodes, this tree is pruned from the current node.
-                    if (!isFilteringApplied() || isSlotContainer) {
+                    if (!isFilteringApplied() || !childSlot.isHostingSlot()) {
                         includesFilteredNodes = true;
                         // the parent we're adding to can no longer be deleted
-                        if (slotView.getLevel() >= preloadLimit) {
+                        if (slotView.getLevel() >= preloadLimit || expandedNodes.contains(slotView.getId())) {
                             // add this child properly!
                             slotView.setInitialzed(true);
                             final SlotView childSlotView = new SlotView(childSlot, slotView, pair.getSlotOrder(),
@@ -348,5 +343,26 @@ public class EntityHierarchyBuilder extends HierarchyBuilder {
             findRelationRootsForSelectedNode(childNode, rootSlots);
         }
     }
+
+    public void applyFilter(TreeNode root)
+    {
+        expandedNodes = new HashSet<Long>();
+        collectExpandedNodes(root);
+        expandedNodes.add(((SlotView)root.getData()).getId());
+        rebuildSubTreeInternal(root);
+        expandedNodes = Collections.emptySet();
+    }
+
+    private void collectExpandedNodes(TreeNode node) {
+        if (node.isExpanded()) {
+            SlotView modelSlotView = (SlotView)node.getData();
+            expandedNodes.add(modelSlotView.getId());
+        }
+        for (TreeNode child : node.getChildren()) {
+            collectExpandedNodes(child);
+        }
+    }
+
+
 
 }
