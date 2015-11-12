@@ -3,11 +3,7 @@
     xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/beans_1_0.xsd">
     <alternatives>
         <class>org.openepics.discs.conf.util.AppPropertiesGlassfish</class>
-         <class>org.openepics.discs.conf.util.names.NamesForDevelopment</class>
-        <!-- 
-        To get list of names from naming convention tool, replace upper
-        alternative with custom implementation of org.openepics.discs.conf.util.names.Names interface
-         --> 
+        <class>org.openepics.discs.conf.util.names.NamesESS</class>       
     </alternatives>
 
     <interceptors>

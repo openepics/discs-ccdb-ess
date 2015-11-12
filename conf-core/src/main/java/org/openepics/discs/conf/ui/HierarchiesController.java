@@ -46,7 +46,6 @@ import javax.annotation.PostConstruct;
 import javax.ejb.EJBException;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
-import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
@@ -260,6 +259,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
     private String filterContainsTree;
 
+    private String namingRedirectionUrl;
+
     /** Java EE post construct life-cycle method. */
     @Override
     @PostConstruct
@@ -306,6 +307,21 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         detectNamingStatus = namingStatus == null ? false : "TRUE".equals(namingStatus.toUpperCase());
         nameList = detectNamingStatus ? names.getAllNames() : new HashMap<>();
         namesForAutoComplete = ImmutableList.copyOf(nameList.keySet());
+
+        final String namingUrl = Preconditions.checkNotNull(properties.getProperty(AppProperties.NAMING_APPLICATION_URL));
+
+
+        if (Strings.isNullOrEmpty(namingUrl)) {
+            namingRedirectionUrl = null;
+        } else {
+            final StringBuilder redirectionUrl = new StringBuilder(namingUrl);
+            if (redirectionUrl.charAt(redirectionUrl.length() - 1) != '/') {
+                redirectionUrl.append('/');
+            }
+            redirectionUrl.append(NAMING_DEVICE_PAGE);
+            namingRedirectionUrl = redirectionUrl.toString();
+            System.out.println("Naming url: "+namingRedirectionUrl);
+        }
     }
 
     private void saveSlotAndRefresh(final Slot slot) {
@@ -416,6 +432,12 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             default:
                 return NamingStatus.MISSING;
         }
+    }
+
+    public boolean linkToNaming(final SlotView slot) {
+        if (namingRedirectionUrl == null) return false;
+        if (!detectNamingStatus) return true;
+        return NamingStatus.ACTIVE.equals(getNamingStatus(slot.getName()));
     }
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -1007,28 +1029,6 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             initHierarchies();
             initNamingInformation();
             clearRelatedInformation();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /** This method builds an URL to the naming application and also redirects the user there.
-     *
-     * @param slotName the name of the slot to redirect to
-     */
-    public void redirectToNaming(final String slotName) {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(slotName));
-        final String namingUrl = Preconditions.checkNotNull(properties.getProperty(AppProperties.NAMING_APPLICATION_URL));
-        Preconditions.checkState(!Strings.isNullOrEmpty(namingUrl));
-
-        final StringBuilder redirectionUrl = new StringBuilder(namingUrl);
-        if (redirectionUrl.charAt(redirectionUrl.length() - 1) != '/') {
-            redirectionUrl.append('/');
-        }
-        redirectionUrl.append(NAMING_DEVICE_PAGE).append(slotName);
-        try {
-            ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
-            externalContext.redirect(redirectionUrl.toString().trim());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -3026,5 +3026,12 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         hierarchyBuilder.applyFilter(rootNode);
         unselectAllTreeNodes();
         selectedNodes = null;
+    }
+
+    /**
+     * @return the namingRedirectionUrl
+     */
+    public String getNamingRedirectionUrl() {
+        return namingRedirectionUrl;
     }
 }

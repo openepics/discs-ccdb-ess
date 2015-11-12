@@ -102,12 +102,12 @@
                                                     styleClass="ui-icon ui-icon-folder-collapsed" />
                                                 <h:outputText value="#{installationSlot.name}" styleClass="#{hierarchiesController.calcNameClass(installationSlot)}"
                                                     title="#{installationSlot.description}#{installationSlot.hostingSlot ? ' ('.concat(installationSlot.deviceTypeName).concat(')') : ''}" />
-                                                <h:commandLink rendered="#{installationSlot.hostingSlot}" target="_blank"
-                                                        actionListener="#{hierarchiesController.redirectToNaming(installationSlot.name)}">
-                                                    <h:outputText value="" rendered="#{installationSlot.hostingSlot}"
+                                                <p:link rendered="#{installationSlot.hostingSlot and hierarchiesController.linkToNaming(installationSlot)}" target="_blank" 
+                                                        href="#{hierarchiesController.namingRedirectionUrl}#{installationSlot.name}" title="Open in Naming Service">
+                                                    <h:outputText value="" rendered="#{installationSlot.hostingSlot}" 
                                                         style="display:inline-block; vertical-align:bottom !important; margin-left: 1ex;"
-                                                        styleClass="ui-icon ui-icon-extlink" />
-                                                </h:commandLink>
+                                                        styleClass="ui-icon ui-icon-extlink"/>
+                                                </p:link>
                                                 <h:outputText value="" rendered="#{installationSlot.inClipboard or
                                                                                     (hierarchiesController.cliboardOperation == 'COPY'
                                                                                     and hierarchiesController.isAncestorNodeInClipboard(slotNode))}"
