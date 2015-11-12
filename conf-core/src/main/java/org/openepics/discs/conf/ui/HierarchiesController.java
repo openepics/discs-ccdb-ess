@@ -436,7 +436,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
     public boolean linkToNaming(final SlotView slot) {
         if (namingRedirectionUrl == null) return false;
-        if (!detectNamingStatus) return true;
+        if (!detectNamingStatus) return false;
         return NamingStatus.ACTIVE.equals(getNamingStatus(slot.getName()));
     }
 
