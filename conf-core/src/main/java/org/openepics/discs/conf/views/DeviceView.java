@@ -64,9 +64,8 @@ public class DeviceView {
         }
     }
 
-    /** Empty constructor somehow used by Primefaces filtering. */
-    public DeviceView()
-    {
+    /** Default constructor creating empty view object */
+    public DeviceView() {
         device = null;
         inventoryId = null;
         installedIn = null;

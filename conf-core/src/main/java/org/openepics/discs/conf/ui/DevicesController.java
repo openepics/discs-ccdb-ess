@@ -271,8 +271,7 @@ public class DevicesController
 
             if (slot != null) {
                 for (final SlotPropertyValue value : slot.getSlotPropertyList()) {
-                    attributes.add(new EntityAttributeView(value, slot.isHostingSlot()
-                            ? EntityAttributeViewKind.INSTALL_SLOT_PROPERTY : EntityAttributeViewKind.CONTAINER_SLOT_PROPERTY,
+                    attributes.add(new EntityAttributeView(value, EntityAttributeViewKind.INSTALL_SLOT_PROPERTY,
                                                                     attrDevice, deviceEJB));
                 }
             } else {
