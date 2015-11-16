@@ -308,8 +308,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         nameList = detectNamingStatus ? names.getAllNames() : new HashMap<>();
         namesForAutoComplete = ImmutableList.copyOf(nameList.keySet());
 
-        final String namingUrl = Preconditions.checkNotNull(properties.getProperty(AppProperties.NAMING_APPLICATION_URL));
-
+        final String namingUrl = properties.getProperty(AppProperties.NAMING_APPLICATION_URL);
 
         if (Strings.isNullOrEmpty(namingUrl)) {
             namingRedirectionUrl = null;
@@ -320,7 +319,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             }
             redirectionUrl.append(NAMING_DEVICE_PAGE);
             namingRedirectionUrl = redirectionUrl.toString();
-            System.out.println("Naming url: "+namingRedirectionUrl);
+            System.out.println("Naming url: " + namingRedirectionUrl);
         }
     }
 
@@ -354,22 +353,6 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
                 updateTreeWithFreshSlot(nodeChild, freshSlot, rebuildAffectedSlots);
             }
         }
-    }
-
-    /**
-     * @param slot the {@link Slot} to check for
-     * @return <code>true</code> if the {@link Slot} belongs to one of the <code>selectedNodes</code>,
-     * <code>false</code> otherwise
-     */
-    private boolean isSlotNodeSelected(final Slot slot) {
-        if (selectedNodes != null && !selectedNodes.isEmpty()) {
-            for (final TreeNode node : selectedNodes) {
-                if (((SlotView) node.getData()).getSlot().equals(slot)) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     private void unselectAllTreeNodes() {
@@ -1087,45 +1070,67 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
     public void expandTreeNodes()
     {
-        HierarchyBuilder hb;
-        TreeNode root;
+        final HierarchyBuilder hb;
+        final TreeNode root;
         switch (activeTab) {
-            case CONTROLS: hb = controlsHierarchyBuilder; root = controlsRootNode; break;
-            case POWERS: hb = powersHierarchyBuilder; root = powersRootNode; break;
-            case CONNECTS: hb = connectsHierarchyBuilder; root = connectsRootNode; break;
-            default: case INCLUDES: hb = hierarchyBuilder; root = rootNode; break;
+            case CONTROLS:
+                hb = controlsHierarchyBuilder;
+                root = controlsRootNode;
+                break;
+            case POWERS:
+                hb = powersHierarchyBuilder;
+                root = powersRootNode;
+                break;
+            case CONNECTS:
+                hb = connectsHierarchyBuilder;
+                root = connectsRootNode;
+                break;
+            case INCLUDES:
+            default:
+                hb = hierarchyBuilder;
+                root = rootNode;
+                break;
         }
 
         if (selectedNodes == null) {
             expandOrCollapseNode(root, true, hb, true);
         } else {
-            for (TreeNode n : selectedNodes) {
-                expandOrCollapseNode(n, true, hb, true);
+            for (final TreeNode node : selectedNodes) {
+                expandOrCollapseNode(node, true, hb, true);
             }
         }
     }
 
     public void collapseTreeNodes()
     {
-        HierarchyBuilder hb;
-        TreeNode root;
+        final TreeNode root;
         switch (activeTab) {
-            case CONTROLS: hb = controlsHierarchyBuilder; root = controlsRootNode; break;
-            case POWERS: hb = powersHierarchyBuilder; root = powersRootNode; break;
-            case CONNECTS: hb = connectsHierarchyBuilder; root = connectsRootNode; break;
-            default: case INCLUDES: hb = hierarchyBuilder; root = rootNode; break;
+            case CONTROLS:
+                root = controlsRootNode;
+                break;
+            case POWERS:
+                root = powersRootNode;
+                break;
+            case CONNECTS:
+                root = connectsRootNode;
+                break;
+            case INCLUDES:
+            default:
+                root = rootNode;
+                break;
         }
 
         if (selectedNodes == null) {
             expandOrCollapseNode(root, false, null, true);
         } else {
-            for (TreeNode n : selectedNodes) {
-                expandOrCollapseNode(n, false, null, true);
+            for (final TreeNode node : selectedNodes) {
+                expandOrCollapseNode(node, false, null, true);
             }
         }
     }
 
-    private void expandOrCollapseNode(TreeNode root, boolean expand, HierarchyBuilder hb, boolean show)
+    private void expandOrCollapseNode(final TreeNode root, final boolean expand, final HierarchyBuilder hb,
+            final boolean show)
     {
         if (expand) {
             if (!((SlotView)root.getData()).isInitialzed()) {
@@ -1133,11 +1138,10 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             }
         }
         if (show) root.setExpanded(expand);
-        for (TreeNode node : root.getChildren()) {
+        for (final TreeNode node : root.getChildren()) {
             expandOrCollapseNode(node, expand, hb, show);
         }
     }
-
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      * Above: Callback methods called from the main UI screen. E.g.: methods that are called when user user selects
