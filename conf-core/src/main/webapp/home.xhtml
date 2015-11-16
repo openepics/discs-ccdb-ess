@@ -144,8 +144,14 @@
                                             <h:outputText value="" rendered="#{!ctrlSlot.hostingSlot}"
                                                 style="display:inline-block; vertical-align:bottom !important"
                                                 styleClass="ui-icon ui-icon-folder-collapsed" />
-                                            <h:outputText value="#{ctrlSlot.name}"
+                                            <h:outputText value="#{ctrlSlot.name}" styleClass="#{hierarchiesController.calcNameClass(ctrlSlot)}"
                                                 title="#{ctrlSlot.description}#{ctrlSlot.hostingSlot ? ' ('.concat(ctrlSlot.deviceTypeName).concat(')') : ''}" />
+                                            <p:link rendered="#{ctrlSlot.hostingSlot and hierarchiesController.linkToNaming(ctrlSlot)}" target="_blank" 
+                                                    href="#{hierarchiesController.namingRedirectionUrl}#{ctrlSlot.name}" title="Open in Naming Service">
+                                                <h:outputText value="" rendered="#{ctrlSlot.hostingSlot}" 
+                                                    style="display:inline-block; vertical-align:bottom !important; margin-left: 1ex;"
+                                                    styleClass="ui-icon ui-icon-extlink"/>
+                                            </p:link>
                                         </p:column>
                                     </p:treeTable>
                                 </p:tab>
@@ -171,8 +177,14 @@
                                             <h:outputText value="" rendered="#{!powerSlot.hostingSlot}"
                                                 style="display:inline-block; vertical-align:bottom !important"
                                                 styleClass="ui-icon ui-icon-folder-collapsed" />
-                                            <h:outputText value="#{powerSlot.name}"
+                                            <h:outputText value="#{powerSlot.name}" styleClass="#{hierarchiesController.calcNameClass(powerSlot)}"
                                                 title="#{powerSlot.description}#{powerSlot.hostingSlot ? ' ('.concat(powerSlot.deviceTypeName).concat(')') : ''}" />
+                                            <p:link rendered="#{powerSlot.hostingSlot and hierarchiesController.linkToNaming(powerSlot)}" target="_blank" 
+                                                    href="#{hierarchiesController.namingRedirectionUrl}#{powerSlot.name}" title="Open in Naming Service">
+                                                <h:outputText value="" rendered="#{powerSlot.hostingSlot}" 
+                                                    style="display:inline-block; vertical-align:bottom !important; margin-left: 1ex;"
+                                                    styleClass="ui-icon ui-icon-extlink"/>
+                                            </p:link>    
                                         </p:column>
                                     </p:treeTable>
                                 </p:tab>
@@ -198,8 +210,14 @@
                                             <h:outputText value="" rendered="#{!connectsSlot.hostingSlot}"
                                                 style="display:inline-block; vertical-align:bottom !important"
                                                 styleClass="ui-icon ui-icon-folder-collapsed" />
-                                            <h:outputText value="#{connectsSlot.name}"
+                                            <h:outputText value="#{connectsSlot.name}" styleClass="#{hierarchiesController.calcNameClass(connectsSlot)}"
                                                 title="#{connectsSlot.description}#{connectsSlot.hostingSlot ? ' ('.concat(connectsSlot.deviceTypeName).concat(')') : ''}" />
+                                            <p:link rendered="#{connectsSlot.hostingSlot and hierarchiesController.linkToNaming(connectsSlot)}" target="_blank" 
+                                                    href="#{hierarchiesController.namingRedirectionUrl}#{connectsSlot.name}" title="Open in Naming Service">
+                                                <h:outputText value="" rendered="#{connectsSlot.hostingSlot}" 
+                                                    style="display:inline-block; vertical-align:bottom !important; margin-left: 1ex;"
+                                                    styleClass="ui-icon ui-icon-extlink"/>
+                                            </p:link>  
                                         </p:column>
                                     </p:treeTable>
                                 </p:tab>
