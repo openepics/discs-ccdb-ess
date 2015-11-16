@@ -64,6 +64,17 @@ public class DeviceView {
         }
     }
 
+    /** Empty constructor somehow used by Primefaces filtering. */
+    public DeviceView()
+    {
+        device = null;
+        inventoryId = null;
+        installedIn = null;
+        installedSlotId = null;
+        installationTimestamp = null;
+        installationDate = null;
+    }
+
     /** @return the inventoryId */
     public String getInventoryId() {
         return inventoryId;
