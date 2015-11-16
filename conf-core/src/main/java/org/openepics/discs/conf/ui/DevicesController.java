@@ -36,6 +36,7 @@ import javax.faces.validator.ValidatorException;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.persistence.PersistenceException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.FilenameUtils;
@@ -565,12 +566,18 @@ public class DevicesController
 
     private void copyArtifactsFromSource(final Device newCopy, final Device copySource) {
         for (final DeviceArtifact artifact : copySource.getDeviceArtifactList()) {
-            if (!artifact.isInternal()) {
-                final DeviceArtifact newArtifact = new DeviceArtifact(artifact.getName(), false, artifact.getDescription(),
-                        artifact.getUri());
-                newArtifact.setDevice(newCopy);
-                deviceEJB.addChild(newArtifact);
+            String uri = artifact.getUri();
+            if (artifact.isInternal()) {
+                try {
+                    uri = blobStore.storeFile(blobStore.retreiveFile(uri));
+                } catch (IOException e) {
+                    throw new PersistenceException(e);
+                }
             }
+            final DeviceArtifact newArtifact = new DeviceArtifact(artifact.getName(), artifact.isInternal(), artifact.getDescription(),
+                        uri);
+            newArtifact.setDevice(newCopy);
+            deviceEJB.addChild(newArtifact);
         }
     }
 

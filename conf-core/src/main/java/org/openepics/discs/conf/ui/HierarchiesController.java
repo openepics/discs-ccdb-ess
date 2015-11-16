@@ -53,6 +53,7 @@ import javax.faces.validator.ValidatorException;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.persistence.PersistenceException;
 import javax.servlet.http.HttpServletRequest;
 
 import joptsimple.internal.Strings;
@@ -1707,12 +1708,19 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
     private void copyArtifactsFromSource(final Slot newCopy, final Slot copySource) {
         for (final SlotArtifact artifact : copySource.getSlotArtifactList()) {
-            if (!artifact.isInternal()) {
-                final SlotArtifact newArtifact = new SlotArtifact(artifact.getName(), false, artifact.getDescription(),
-                                                                    artifact.getUri());
-                newArtifact.setSlot(newCopy);
-                slotEJB.addChild(newArtifact);
+            String uri = artifact.getUri();
+            if (artifact.isInternal()) {
+                try {
+                    uri = blobStore.storeFile(blobStore.retreiveFile(uri));
+                } catch (IOException e) {
+                    throw new PersistenceException(e);
+                }
             }
+
+            final SlotArtifact newArtifact = new SlotArtifact(artifact.getName(), artifact.isInternal(), artifact.getDescription(),
+                                                                    artifact.getUri());
+            newArtifact.setSlot(newCopy);
+            slotEJB.addChild(newArtifact);
         }
     }
 

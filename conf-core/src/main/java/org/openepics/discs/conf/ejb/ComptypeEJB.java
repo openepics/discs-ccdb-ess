@@ -19,9 +19,12 @@
  */
 package org.openepics.discs.conf.ejb;
 
+import java.io.IOException;
 import java.util.List;
 
 import javax.ejb.Stateless;
+import javax.inject.Inject;
+import javax.persistence.PersistenceException;
 
 import org.openepics.discs.conf.auditlog.Audit;
 import org.openepics.discs.conf.ent.ComponentType;
@@ -35,6 +38,7 @@ import org.openepics.discs.conf.ent.PropertyValue;
 import org.openepics.discs.conf.ent.PropertyValueUniqueness;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.security.Authorized;
+import org.openepics.discs.conf.util.BlobStore;
 import org.openepics.discs.conf.util.CRUDOperation;
 import org.openepics.discs.conf.util.PropertyValueNotUniqueException;
 
@@ -50,9 +54,13 @@ import com.google.common.base.Preconditions;
 
 @Stateless
 public class ComptypeEJB extends DAO<ComponentType> {
+    @Inject private BlobStore blobStore;
+
+
     /**
      * @return A list of all device types ordered by name.
-     */    public List<ComponentType> findComponentTypeOrderedByName() {
+     */
+    public List<ComponentType> findComponentTypeOrderedByName() {
         return em.createNamedQuery("ComponentType.findAllOrdered", ComponentType.class).getResultList();
     }
 
@@ -147,12 +155,19 @@ public class ComptypeEJB extends DAO<ComponentType> {
 
     private void duplicateArtifactsFromSource(final ComponentType newDeviceType, final ComponentType copyDeviceType) {
         for (final ComptypeArtifact artifact : copyDeviceType.getComptypeArtifactList()) {
-            if (!artifact.isInternal()) {
-                ComptypeArtifact newArtifact = new ComptypeArtifact(artifact.getName(),
-                        false, artifact.getDescription(), artifact.getUri());
-                newArtifact.setComponentType(newDeviceType);
-                addChild(newArtifact);
+            String uri = artifact.getUri();
+            if (artifact.isInternal()) {
+                try {
+                    uri = blobStore.storeFile(blobStore.retreiveFile(uri));
+                } catch (IOException e) {
+                    throw new PersistenceException(e);
+                }
             }
+            ComptypeArtifact newArtifact = new ComptypeArtifact(artifact.getName(),
+                        artifact.isInternal(), artifact.getDescription(), artifact.getUri());
+            newArtifact.setComponentType(newDeviceType);
+            addChild(newArtifact);
+
         }
     }
 
