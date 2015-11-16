@@ -15,7 +15,8 @@
             </p:outputPanel>
 
             <p:dataTable widgetVar="duplicateDialog:table" value="#{duplicateList}" class="dialogListTable"
-                  var="entity" scrollable="true" style="width: 30em; margin-bottom: 1em;">
+                  var="entity" scrollable="true" style="width: 30em; margin-bottom: 1em;" 
+                  filteredValue="#{filteredDuplicateList}">
                 <p:column headerText="#{entityName}" sortBy="#{entity.name}" filterBy="#{entity.name}" 
                         filterMatchMode="contains">
                     <h:outputText value="#{entity.name}" />

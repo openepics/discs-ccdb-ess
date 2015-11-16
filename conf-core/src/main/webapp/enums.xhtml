@@ -86,7 +86,8 @@
         <ui:include src="/resources/dialogs/duplicate-confirmation.xhtml" >
             <ui:param name="formId" value="duplicateForm" />
             <ui:param name="controller" value="#{dataTypeManager}" />
-            <ui:param name="duplicateList" value="#{dataTypeManager.selectedEnums}" />            
+            <ui:param name="duplicateList" value="#{dataTypeManager.selectedEnums}" />
+            <ui:param name="filteredDuplicateList" value="#{dataTypeManager.filteredDataTypeViews}" />
             <ui:param name="formsToUpdate" value=":enumsForm:enumsTable :enumsForm:deleteButton :enumsForm:editButton :enumsForm:duplicateButton" />
             <ui:param name="closeDialogActions" value="closeDialogActions(null);" />
             <ui:param name="entityType" value="enumerations" />

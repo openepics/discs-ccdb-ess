@@ -146,7 +146,8 @@
         <ui:include src="/resources/dialogs/duplicate-confirmation.xhtml" >
             <ui:param name="formId" value="duplicateForm" />
             <ui:param name="controller" value="#{componentTypeManager}" />
-            <ui:param name="duplicateList" value="#{componentTypeManager.selectedDeviceTypes}" />            
+            <ui:param name="duplicateList" value="#{componentTypeManager.selectedDeviceTypes}" />
+            <ui:param name="filteredDuplicateList" value="#{componentTypeManager.filteredDeviceTypes}" />
             <ui:param name="formsToUpdate" value=":deviceTypesForm:deviceTypeTable" />
             <ui:param name="closeDialogActions" value="PF('deviceTypeTableVar').clearFilters(); PF('attributesDataTable').clearFilters();" />
             <ui:param name="entityType" value="device types" />

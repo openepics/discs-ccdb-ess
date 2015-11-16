@@ -11,7 +11,7 @@
             //<![CDATA[                        
             function closeDialogActions(widgetVar) {
                 if (widgetVar != null) PF(widgetVar).hide();
-                PF('propertiesTableVar').filter();                
+                PF('propertiesTableVar').clearFilters();                
             }
             // ]]>
         </script>
@@ -96,7 +96,8 @@
         <ui:include src="/resources/dialogs/duplicate-confirmation.xhtml" >
             <ui:param name="formId" value="duplicateForm" />
             <ui:param name="controller" value="#{propertyManager}" />
-            <ui:param name="duplicateList" value="#{propertyManager.selectedProperties}" />            
+            <ui:param name="duplicateList" value="#{propertyManager.selectedProperties}" />
+            <ui:param name="filteredDuplicateList" value="#{propertyManager.filteredProperties}" />
             <ui:param name="formsToUpdate" value=":propertiesForm:propertiesTable :propertiesForm:editButton :propertiesForm:deleteButton" />
             <ui:param name="closeDialogActions" value="closeDialogActions(null);" />
             <ui:param name="entityType" value="properties" />

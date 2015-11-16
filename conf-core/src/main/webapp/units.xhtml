@@ -86,7 +86,8 @@
         <ui:include src="/resources/dialogs/duplicate-confirmation.xhtml" >
             <ui:param name="formId" value="duplicateForm" />
             <ui:param name="controller" value="#{unitManager}" />
-            <ui:param name="duplicateList" value="#{unitManager.selectedUnits}" />            
+            <ui:param name="duplicateList" value="#{unitManager.selectedUnits}" />
+            <ui:param name="filteredDuplicateList" value="#{unitManager.filteredUnits}" />
             <ui:param name="formsToUpdate" value=":unitsForm:unitsTable :unitsForm:editButton :unitsForm:deleteButton :unitsForm:duplicateButton" />
             <ui:param name="closeDialogActions" value="closeDialogActions(null);" />
             <ui:param name="entityType" value="units" />
