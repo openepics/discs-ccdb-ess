@@ -73,10 +73,6 @@ public class SlotRelationshipView {
         this.id = id;
     }
 
-    public String getName() {
-        return getTargetSlotName();
-    }
-
     public String getRelationshipName() {
         return relationshipName;
     }

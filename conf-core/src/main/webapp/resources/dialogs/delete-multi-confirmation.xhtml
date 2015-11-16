@@ -11,7 +11,7 @@
                 <h:outputText value="#{dialogTitle}" />
             </f:facet>
             <p:outputPanel style="display: block; width: 30em; margin-bottom: 1.2em;">
-                <h:outputText value="Are you sure you want to delete selected #{entityType}?" 
+                <h:outputText value="#{empty message?'Are you sure you want to delete selected ' += entityType += '?':message}" 
                     rendered="#{empty deletePreventionList}" />
                 <h:outputText value="The selected #{entityType} cannot be deleted, because the following #{entityType} are in use:" 
                     rendered="#{not empty deletePreventionList}" />
@@ -20,9 +20,10 @@
             <p:dataTable widgetVar="#{widgetName}:table" value="#{empty deletePreventionList ? deleteList : deletePreventionList}" 
                     class="dialogListTable" filteredValue="#{filteredDialogList}" var="entity" 
                     scrollable="true" style="width: 30em; margin-bottom: 1em;">
-                <p:column headerText="#{entityName}" sortBy="#{entity.name}" filterBy="#{entity.name}" 
+                <p:column headerText="#{entityName}" sortBy="#{entity[empty entityProperty ? 'name' : entityProperty]}" 
+                            filterBy="#{entity[empty entityProperty ? 'name' : entityProperty]}" 
                         filterMatchMode="contains">
-                    <h:outputText value="#{entity.name}" />
+                    <h:outputText value="#{entity[empty entityProperty ? 'name' : entityProperty]}" />
                 </p:column>
             </p:dataTable>
 
