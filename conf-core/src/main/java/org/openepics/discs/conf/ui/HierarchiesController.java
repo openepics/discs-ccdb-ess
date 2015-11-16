@@ -285,6 +285,9 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         Builder<SelectItem> immutableListBuilder = ImmutableList.builder();
         immutableListBuilder.add(new SelectItem("", "Select one"));
 
+        if (getCableDBStatus()) {
+            immutableListBuilder.add(new SelectItem(connectsEJB.getRelationshipName(), connectsEJB.getRelationshipName()));
+        }
         final List<SlotRelation> slotRelations = slotRelationEJB.findAll();
         slotRelations.sort(new Comparator<SlotRelation>() {
             @Override
@@ -645,7 +648,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
         final List<Slot> connectedSlots = connectsEJB.getSlotConnects(slot);
         for (final Slot targetSlot : connectedSlots) {
-            relationships.add(new SlotRelationshipView(slot.getId()+"c"+targetSlot.getId(), slot, targetSlot, "Connects"));
+            relationships.add(new SlotRelationshipView(slot.getId()+"c"+targetSlot.getId(), slot, targetSlot, connectsEJB.getRelationshipName()));
         }
     }
 

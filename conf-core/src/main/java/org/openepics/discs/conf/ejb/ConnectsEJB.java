@@ -96,4 +96,9 @@ public class ConnectsEJB {
     public boolean getCableDBStatus() {
         return cableDBStatus;
     }
+
+    public String getRelationshipName()
+    {
+        return "Connects";
+    }
 }
