@@ -292,7 +292,7 @@
                                     <p:ajax event="rowSelect" update=":hierarchies:deleteAttrButton :hierarchies:editAttrButton" />
                                     <p:ajax event="rowUnselect" update=":hierarchies:deleteAttrButton :hierarchies:editAttrButton" />                                
                     
-                                    <p:column headerText="Entity" sortBy="#{attribute.parent}" filterBy="#{attribute.parent}"
+                                    <p:column headerText="Container/Slot" sortBy="#{attribute.parent}" filterBy="#{attribute.parent}"
                                             filterMatchMode="contains" >
                                         <h:outputText value="#{attribute.parent}" />
                                     </p:column>
