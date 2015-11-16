@@ -80,7 +80,7 @@
                                     <p:fileUpload fileUploadListener="#{controller.handleImportFileUpload}" 
                                         update="uploader uploadFile saveButton" 
                                         mode="advanced" auto="false" fileLimit="1" dragDropSupport="true"
-                                        rendered="#{controller.artifactInternal and not controller.artifactBeingModified}" />
+                                        rendered="#{controller.artifactInternal}" />
                                 </h:panelGroup>
                                 <h:panelGroup id="uploadFile">
                                     <h:panelGroup rendered="#{not empty controller.importFileName}">

@@ -2168,9 +2168,17 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         RequestContext.getCurrentInstance().execute("PF('modifyArtifact').show();");
     }
 
-    /** Modifies the selected artifact properties */
-    public void modifyArtifact() {
+    /** Modifies the selected artifact properties
+     * @throws IOException */
+    public void modifyArtifact() throws IOException {
         final SlotArtifact selectedArtifact = (SlotArtifact) selectedAttributes.get(0).getEntity();
+
+        if (importData != null) { // replace the imported data
+            blobStore.deleteFile(selectedArtifact.getUri());
+            artifactURI = blobStore.storeFile(new ByteArrayInputStream(importData));
+            selectedArtifact.setName(importFileName); // only if new file uploaded
+        }
+
         selectedArtifact.setDescription(artifactDescription);
         selectedArtifact.setUri(artifactURI);
         if (!selectedArtifact.isInternal()) {

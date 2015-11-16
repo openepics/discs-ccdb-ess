@@ -440,17 +440,26 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
         }
     }
 
-    /** Modifies {@link Artifact} */
+    /** Modifies {@link Artifact}
+     * @throws IOException */
     @SuppressWarnings("unchecked")
-    public void modifyArtifact() {
+    public void modifyArtifact() throws IOException {
         Preconditions.checkNotNull(attributeToModify);
 
         final S selectedArtifact = (S) attributeToModify.getEntity();
+
+        if (importData != null) { // replace the imported data
+            blobStore.deleteFile(selectedArtifact.getUri());
+            artifactURI = blobStore.storeFile(new ByteArrayInputStream(importData));
+            selectedArtifact.setName(importFileName); // only if new file uploaded
+        }
+
         selectedArtifact.setDescription(artifactDescription);
         selectedArtifact.setUri(artifactURI);
         if (!selectedArtifact.isInternal()) {
             selectedArtifact.setName(artifactName);
         }
+
 
         try {
             dao.saveChild(selectedArtifact);
