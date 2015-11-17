@@ -19,13 +19,13 @@
                         <p:column>
                             <h:panelGroup>
                                 <p:selectOneMenu id="compTypeSelect" value="#{hierarchiesController.deviceType}" 
-                                        converter="#{componentTypeConverter}" rendered="true" required="true" 
+                                        rendered="true" required="true" 
                                         requiredMessage="Please select a device type" 
                                         disabled="#{not hierarchiesController.newInstallationSlot 
                                                 and hierarchiesController.hasDevice}">
                                     <f:selectItem itemLabel="Select One" itemValue="" noSelectionOption="true" />
-                                    <f:selectItems value="#{componentTypeManager.deviceTypes}" var="deviceType" 
-                                        itemLabel="#{deviceType.name}" itemValue="#{deviceType}" />
+                                    <f:selectItems value="#{devicesController.availableDeviceTypes}" var="deviceType" 
+                                        itemLabel="#{deviceType.name}" itemValue="#{deviceType.id}" />
                                 </p:selectOneMenu>
                                 <p:message for="compTypeSelect"/>
                             </h:panelGroup>

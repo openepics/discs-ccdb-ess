@@ -71,7 +71,6 @@ import org.openepics.discs.conf.ejb.SlotPairEJB;
 import org.openepics.discs.conf.ejb.SlotRelationEJB;
 import org.openepics.discs.conf.ejb.TagEJB;
 import org.openepics.discs.conf.ent.Artifact;
-import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypeArtifact;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.ConfigurationEntity;
@@ -228,7 +227,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     /** Used in "add child to parent" operations. This usually reflects the <code>selectedNode</code>. */
     private boolean isInstallationSlot;
     private boolean hasDevice;
-    private ComponentType deviceType;
+    private Long deviceType;
     private String parentName;
     private transient List<String> namesForAutoComplete;
     private boolean isNewInstallationSlot;
@@ -1344,7 +1343,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         isInstallationSlot = selectedSlotView.isHostingSlot();
         name = selectedSlotView.getName();
         description = selectedSlotView.getDescription();
-        deviceType = selectedSlotView.getSlot().getComponentType();
+        deviceType = selectedSlotView.getSlot().getComponentType().getId();
         parentName = selectedSlotView.getParentNode().getParentNode() == null ? "" : selectedSlotView.getParentNode().getName();
         hasDevice = installationEJB.getActiveInstallationRecordForSlot(selectedSlotView.getSlot()) != null;
     }
@@ -1376,7 +1375,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         modifiedSlot.setName(name);
         modifiedSlot.setDescription(description);
         if (modifiedSlot.isHostingSlot() && installationEJB.getActiveInstallationRecordForSlot(modifiedSlot) == null) {
-            modifiedSlot.setComponentType(deviceType);
+            modifiedSlot.setComponentType(comptypeEJB.findById(deviceType));
         }
         slotEJB.save(modifiedSlot);
         selectedSlotView.setSlot(modifiedSlot);
@@ -1388,7 +1387,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         final Slot newSlot = new Slot(name, isInstallationSlot);
         newSlot.setDescription(description);
         if (isInstallationSlot) {
-            newSlot.setComponentType(deviceType);
+            newSlot.setComponentType(comptypeEJB.findById(deviceType));
         } else {
             newSlot.setComponentType(comptypeEJB.findByName(SlotEJB.GRP_COMPONENT_TYPE));
         }
@@ -2865,11 +2864,11 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     }
 
     /** @return the deviceType */
-    public ComponentType getDeviceType() {
+    public Long getDeviceType() {
         return deviceType;
     }
     /** @param deviceType the deviceType to set */
-    public void setDeviceType(ComponentType deviceType) {
+    public void setDeviceType(Long deviceType) {
         this.deviceType = deviceType;
     }
 
