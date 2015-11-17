@@ -211,11 +211,13 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
     }
 
     /**
-     * @return <code>true</code> if the <code>selectedUnit</code> is used in some {@link Property},
-     * <code>false</code> otherwise.
+     * @return string of properties using that unit or <code>null</code> otherwise.
      */
-    public boolean isModifiedUnitInUse() {
-        return (unitToModify != null) && unitEJB.isUnitUsed(unitToModify.getUnit());
+    public String getModifiedUnitUsedBy() {
+        if (unitToModify == null) return null;
+        List<Property> usedBy = unitEJB.findProperties(unitToModify.getUnit(), 2);
+        if (usedBy.isEmpty()) return null;
+        return usedBy.get(0).getName() + (usedBy.size() > 1 ? ", ..." : "");
     }
 
     /** @return <code>true</code> if a single {@link Unit} is selected, <code>false</code> otherwise */

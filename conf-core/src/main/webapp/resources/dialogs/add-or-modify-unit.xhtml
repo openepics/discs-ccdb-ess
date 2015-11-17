@@ -11,9 +11,9 @@
             </f:facet>
             <div class="ui-fluid">
                 <p:panelGrid id="grp" styleClass="dialog-grid-panel noBorders">
-                    <p:row rendered="#{unitManager.modifiedUnitInUse and not unitManager.unitAdd}">
+                    <p:row rendered="#{not empty unitManager.modifiedUnitUsedBy and not unitManager.unitAdd}">
                         <p:column colspan="2" style="text-align: center; font-weight: bold;">
-                            <h:outputText value="The unit is already in use." />
+                            <h:outputText value="The unit is already in use by: #{unitManager.modifiedUnitUsedBy}." />
                         </p:column>
                     </p:row>
                     <p:row>
@@ -23,7 +23,7 @@
                         <p:column>
                             <p:inputText id="unitName" value="#{unitManager.name}" required="true" 
                                 validator="#{unitManager.nameValidator}" requiredMessage="Please enter a name" 
-                                disabled="#{unitManager.modifiedUnitInUse and not unitManager.unitAdd}"/>
+                                disabled="#{not empty unitManager.modifiedUnitUsedBy and not unitManager.unitAdd}"/>
                             <p:message for="unitName" />
                         </p:column>
                     </p:row>
@@ -48,7 +48,7 @@
                         <p:column>
                             <p:inputText id="unitSymbol" value="#{unitManager.symbol}" required="true" 
                                 requiredMessage="Please enter a symbol" 
-                                disabled="#{unitManager.modifiedUnitInUse and not unitManager.unitAdd}"/>
+                                disabled="#{not empty unitManager.modifiedUnitUsedBy and not unitManager.unitAdd}"/>
                             <p:message for="unitSymbol" />
                         </p:column>
                     </p:row>

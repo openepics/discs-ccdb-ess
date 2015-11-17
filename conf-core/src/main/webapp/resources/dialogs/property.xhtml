@@ -35,9 +35,9 @@
                         </p:column>
                     </p:row>
     
-                    <p:row rendered="#{propertyManager.propertyUsed}">
+                    <p:row rendered="#{not empty propertyManager.propertyUsedBy}">
                         <p:column colspan="2" style="text-align: center; font-weight: bold;">
-                            Property is already in use.
+                            Property is already in use by: #{propertyManager.propertyUsedBy}.
                         </p:column>
                     </p:row>
     
@@ -48,7 +48,7 @@
                         <p:column>
                             <p:selectOneMenu id="propertyDataType" value="#{propertyManager.dataType}" var="dt" 
                                     converter="#{dataTypeConverter}" required="true" requiredMessage="Please select data type" 
-                                    disabled="#{propertyManager.propertyUsed}">
+                                    disabled="#{not empty propertyManager.propertyUsedBy}">
                                 <p:ajax update=":#{formId}:propertyUnit" listener="#{propertyManager.setIsUnitComboEnabled}" />
                                 <f:selectItem itemLabel="Select One" itemValue="" noSelectionOption="true" />
                                 <f:selectItems value="#{dataTypeManager.dataTypes}" var="dataType" 
@@ -67,7 +67,7 @@
                         </p:column>
                         <p:column>
                             <p:selectOneMenu id="propertyUnit" value="#{propertyManager.unit}" var="u" converter="#{unitConverter}"  
-                                    disabled="#{not propertyManager.unitComboEnabled or propertyManager.propertyUsed}">
+                                    disabled="#{not propertyManager.unitComboEnabled or not empty propertyManager.propertyUsedBy}">
                                 <f:selectItem itemLabel="Select One" itemValue="" noSelectionOption="true" />
                                 <f:selectItems value="#{unitManager.unitViews}" var="unitView" 
                                     itemLabel="#{unitView.name}" itemValue="#{unitView.unit}" />
@@ -85,7 +85,7 @@
                         <p:column>
                             <p:selectOneMenu id="valueUniqueness" value="#{propertyManager.valueUniqueness}" 
                                     required="true" requiredMessage="Please select value uniqueness" 
-                                    disabled="#{propertyManager.propertyUsed}">
+                                    disabled="#{not empty propertyManager.propertyUsedBy}">
                                 <f:selectItems value="#{propertyManager.uniqunessValues}" />
                             </p:selectOneMenu>
                             <p:message for="valueUniqueness" />

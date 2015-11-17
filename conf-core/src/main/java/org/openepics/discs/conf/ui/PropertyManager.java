@@ -101,7 +101,7 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
     private Unit unit;
     private Property propertyToModify;
     private boolean unitComboEnabled;
-    private boolean isPropertyUsed;
+    private String propertyUsedBy;
     private PropertyValueUniqueness valueUniqueness;
 
     // ---- batch property creation
@@ -268,7 +268,7 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
     /** Prepares the data to be used in the "Add new property" dialog */
     public void prepareAddPopup() {
         resetFields();
-        isPropertyUsed = false;
+        propertyUsedBy = null;
         RequestContext.getCurrentInstance().update("addPropertyForm:addProperty");
     }
 
@@ -276,13 +276,16 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
     public void prepareModifyPopup() {
         Preconditions.checkState(isSinglePropertySelected());
 
-        propertyToModify = selectedProperties.get(0).findProperty(propertyEJB);
+        PropertyView view = selectedProperties.get(0);
+        propertyToModify = view.findProperty(propertyEJB);
         name = propertyToModify.getName();
         description = propertyToModify.getDescription();
         dataType = propertyToModify.getDataType();
         unit = propertyToModify.getUnit();
         valueUniqueness = propertyToModify.getValueUniqueness();
-        isPropertyUsed = propertyEJB.isPropertyUsed(propertyToModify);
+
+        initUsedBy(view);
+        propertyUsedBy = view.getUsedBy();
         setIsUnitComboEnabled();
         RequestContext.getCurrentInstance().update("modifyPropertyForm:modifyProperty");
     }
@@ -302,13 +305,21 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
 
         usedProperties = Lists.newArrayList();
         for (final PropertyView propToDelete : selectedProperties) {
-            List<? extends PropertyValue> propertyValues = propertyEJB.findPropertyValues(propToDelete.findProperty(propertyEJB), 2);
-            if (!propertyValues.isEmpty()) {
-                EntityWithProperties parent = propertyValues.get(0).getPropertiesParent();
-                propToDelete.setUsedBy((parent instanceof NamedEntity ? ((NamedEntity)parent).getName() : "other")+(propertyValues.size()>1 ? ", ..." : ""));
+            if (initUsedBy(propToDelete)) {
                 usedProperties.add(propToDelete);
             }
         }
+    }
+
+    private boolean initUsedBy(PropertyView prop) {
+        List<? extends PropertyValue> propertyValues = propertyEJB.findPropertyValues(prop.findProperty(propertyEJB), 2);
+        if (propertyValues.isEmpty()) {
+            prop.setUsedBy(null);
+            return false;
+        }
+        EntityWithProperties parent = propertyValues.get(0).getPropertiesParent();
+        prop.setUsedBy((parent instanceof NamedEntity ? ((NamedEntity)parent).getName() : "other")+(propertyValues.size()>1 ? ", ..." : ""));
+        return true;
     }
 
     /** Called when the user clicks the "trash can" icon in the UI */
@@ -472,11 +483,10 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
     }
 
     /**
-     * @return <code>true</code> if the property is already used in some {@link PropertyValue},
-     * <code>false</code> otherwise.
+     * @return name of the places where the property is used or <code>null</code> otherwise.
      */
-    public boolean isPropertyUsed() {
-        return isPropertyUsed;
+    public String getPropertyUsedBy() {
+        return propertyUsedBy;
     }
 
     /** @return the valueUniqueness */
