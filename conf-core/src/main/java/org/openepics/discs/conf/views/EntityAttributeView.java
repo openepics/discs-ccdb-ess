@@ -60,6 +60,7 @@ public class EntityAttributeView {
     private boolean isBuiltIn;
     private Object entity;
     final private ReadOnlyDAO<? extends ConfigurationEntity> dao;
+    private final String usedBy;
 
     /** Construct a new UI view object based on the database entity
      * @param entity the database entity
@@ -68,7 +69,7 @@ public class EntityAttributeView {
      * @param dao the EJB to handle the entities associated with this view object
      */
     public EntityAttributeView(Object entity, EntityAttributeViewKind kind, @Nullable NamedEntity parent,
-            ReadOnlyDAO<? extends ConfigurationEntity> dao) {
+            ReadOnlyDAO<? extends ConfigurationEntity> dao, String usedBy) {
         Preconditions.checkNotNull(kind);
         this.entity = entity;
         this.kind = kind;
@@ -78,6 +79,7 @@ public class EntityAttributeView {
             this.parentId = parent.getId();
         }
         this.dao = dao;
+        this.usedBy = usedBy;
     }
 
     private void setParameters() {
@@ -175,5 +177,12 @@ public class EntityAttributeView {
 
     public ConfigurationEntity getParentEntity() {
         return (dao != null) && (parentId != null) ? dao.findById(parentId) : null;
+    }
+
+    /**
+     * @return the usedBy
+     */
+    public String getUsedBy() {
+        return usedBy;
     }
 }

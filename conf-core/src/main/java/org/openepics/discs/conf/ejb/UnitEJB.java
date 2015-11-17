@@ -54,4 +54,12 @@ public class UnitEJB extends DAO<Unit> {
         return !em.createNamedQuery("Property.findByUnit", Property.class).setParameter("unit", unit).getResultList()
                         .isEmpty();
     }
+
+    /**
+     * @param unit unit to check
+     * @return the list of properties, where the unit is used
+     */
+    public List<Property> findProperties(Unit unit, int maxResults) {
+        return em.createNamedQuery("Property.findByUnit", Property.class).setParameter("unit", unit).setMaxResults(maxResults).getResultList();
+    }
 }

@@ -25,6 +25,10 @@
                         filterMatchMode="contains">
                     <h:outputText value="#{entity[empty entityProperty ? 'name' : entityProperty]}" />
                 </p:column>
+                <p:column rendered="#{not empty deletePreventionList}" headerText="Used by" sortBy="#{entity.usedBy}" 
+                            filterBy="#{entity.usedBy}" filterMatchMode="contains">
+                    <h:outputText value="#{entity.usedBy}" />
+                </p:column>
             </p:dataTable>
 
             <p:commandButton value="#{empty deletePreventionList ? 'No' : 'Close'}" styleClass="dialogButton" 

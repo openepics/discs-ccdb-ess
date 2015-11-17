@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJBException;
@@ -67,6 +68,7 @@ import org.openepics.discs.conf.util.PropertyValueNotUniqueException;
 import org.openepics.discs.conf.util.PropertyValueUIElement;
 import org.openepics.discs.conf.util.UnhandledCaseException;
 import org.openepics.discs.conf.util.Utility;
+import org.openepics.discs.conf.views.ComponentTypeView;
 import org.openepics.discs.conf.views.EntityAttributeView;
 import org.openepics.discs.conf.views.EntityAttributeViewKind;
 import org.openepics.discs.conf.views.MultiPropertyValueView;
@@ -105,11 +107,11 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
     private transient List<MultiPropertyValueView> selectionPropertyValuesFiltered;
     private boolean selectAllRows;
 
-    private List<ComponentType> deviceTypes;
-    private List<ComponentType> filteredDeviceTypes;
-    private List<ComponentType> selectedDeviceTypes;
-    private List<ComponentType> usedDeviceTypes;
-    private List<ComponentType> filteredDialogTypes;
+    private List<ComponentTypeView> deviceTypes;
+    private List<ComponentTypeView> filteredDeviceTypes;
+    private List<ComponentTypeView> selectedDeviceTypes;
+    private List<ComponentTypeView> usedDeviceTypes;
+    private List<ComponentTypeView> filteredDialogTypes;
     private String name;
     private String description;
 
@@ -133,10 +135,10 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
 
         @Override
         protected void addData(ExportTable exportTable) {
-            final List<ComponentType> exportData = Utility.isNullOrEmpty(filteredDeviceTypes)
+            final List<ComponentTypeView> exportData = Utility.isNullOrEmpty(filteredDeviceTypes)
                     ? deviceTypes
                     : filteredDeviceTypes;
-            for (final ComponentType devType : exportData) {
+            for (final ComponentTypeView devType : exportData) {
                 exportTable.addDataRow(devType.getName(), devType.getDescription());
             }
         }
@@ -150,7 +152,7 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
         try {
             super.init();
             simpleTableExporterDialog = new ExportSimpleDevTypeTableDialog();
-            deviceTypes = comptypeEJB.findAll();
+            reloadDeviceTypes();
             setArtifactClass(ComptypeArtifact.class);
             setPropertyValueClass(ComptypePropertyValue.class);
             setDao(comptypeEJB);
@@ -159,7 +161,7 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
             if (!Strings.isNullOrEmpty(deviceTypeIdStr)) {
                 final long deviceTypeId = Long.parseLong(deviceTypeIdStr);
                 int elementPosition = 0;
-                for (final ComponentType deviceType : deviceTypes) {
+                for (final ComponentTypeView deviceType : deviceTypes) {
                     if (deviceType.getId() == deviceTypeId) {
                         RequestContext.getCurrentInstance().execute("selectEntityInTable(" + elementPosition
                                 + ", 'deviceTypeTableVar');");
@@ -174,6 +176,10 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
         } catch(Exception e) {
             throw new UIException("Device type display initialization fialed: " + e.getMessage(), e);
         }
+    }
+
+    private void reloadDeviceTypes() {
+        deviceTypes = comptypeEJB.findAll().stream().map(ComponentTypeView::new).collect(Collectors.toList());
     }
 
     @Override
@@ -265,23 +271,23 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
         Preconditions.checkNotNull(selectedDeviceTypes);
         attributes = new ArrayList<>();
 
-        for (final ComponentType selectedMember : selectedDeviceTypes) {
+        for (final ComponentTypeView selectedMember : selectedDeviceTypes) {
             // refresh the component type from database. This refreshes all related collections as well.
             final ComponentType freshComponentType = comptypeEJB.findById(selectedMember.getId());
 
             for (final ComptypePropertyValue prop : freshComponentType.getComptypePropertyList()) {
                 attributes.add(new EntityAttributeView(prop, EntityAttributeViewKind.getPropertyValueKind(prop), freshComponentType,
-                                                        comptypeEJB));
+                                                        comptypeEJB, ""));
             }
 
             for (final ComptypeArtifact art : freshComponentType.getComptypeArtifactList()) {
                 attributes.add(new EntityAttributeView(art, EntityAttributeViewKind.DEVICE_TYPE_ARTIFACT,
-                                                            freshComponentType, comptypeEJB));
+                                                            freshComponentType, comptypeEJB, ""));
             }
 
             for (final Tag tagAttr : freshComponentType.getTags()) {
                 attributes.add(new EntityAttributeView(tagAttr, EntityAttributeViewKind.DEVICE_TYPE_TAG,
-                                                            freshComponentType, comptypeEJB));
+                                                            freshComponentType, comptypeEJB, ""));
             }
         }
     }
@@ -295,8 +301,8 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
 
         final List<Property> propertyCandidates = propertyEJB.findAllOrderedByName();
 
-        for (ComponentType compType : selectedDeviceTypes) {
-            for (final ComptypePropertyValue comptypePropertyValue : compType.getComptypePropertyList()) {
+        for (ComponentTypeView compType : selectedDeviceTypes) {
+            for (final ComptypePropertyValue comptypePropertyValue : compType.findComponentType(comptypeEJB).getComptypePropertyList()) {
                 final Property currentProperty = comptypePropertyValue.getProperty();
                 // in modify dialog the 'property' is set to the property of the current value
                 if (!currentProperty.equals(property)) {
@@ -561,12 +567,12 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
     public void duplicate() {
         Preconditions.checkState(!Utility.isNullOrEmpty(selectedDeviceTypes));
 
-        for (final ComponentType selectedDeviceType : selectedDeviceTypes) {
+        for (final ComponentTypeView selectedDeviceType : selectedDeviceTypes) {
             String newName = Utility.findFreeName(selectedDeviceType.getName(), comptypeEJB);
             ComponentType newDeviceType = new ComponentType(newName);
-            comptypeEJB.duplicate(newDeviceType, selectedDeviceType);
+            comptypeEJB.duplicate(newDeviceType, selectedDeviceType.findComponentType(comptypeEJB));
         }
-        deviceTypes = comptypeEJB.findAll();
+        reloadDeviceTypes();
     }
 
     /** This method returns a String representation of the property value.
@@ -707,7 +713,7 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
                 throw e;
             }
         } finally {
-            deviceTypes = comptypeEJB.findAll();
+            reloadDeviceTypes();
         }
     }
 
@@ -736,7 +742,7 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
             }
         } finally {
             compType = comptypeEJB.findById(compType.getId());
-            deviceTypes = comptypeEJB.findAll();
+            reloadDeviceTypes();
         }
     }
 
@@ -749,8 +755,10 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
         Preconditions.checkState(!selectedDeviceTypes.isEmpty());
 
         usedDeviceTypes = Lists.newArrayList();
-        for (final ComponentType deviceTypeToDelete : selectedDeviceTypes) {
-            if (comptypeEJB.isComponentTypeUsed(deviceTypeToDelete)) {
+        for (final ComponentTypeView deviceTypeToDelete : selectedDeviceTypes) {
+            List<String> usedBy = comptypeEJB.findWhereIsComponentTypeUsed(deviceTypeToDelete.findComponentType(comptypeEJB), 2);
+            if (!usedBy.isEmpty()) {
+                deviceTypeToDelete.setUsedBy(usedBy.get(0) + (usedBy.size()>1 ? ", ..." : ""));
                 usedDeviceTypes.add(deviceTypeToDelete);
             }
         }
@@ -764,7 +772,7 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
         Preconditions.checkState(usedDeviceTypes.isEmpty());
 
         int deletedDeviceTypes = 0;
-        for (final ComponentType deviceTypeToDelete : selectedDeviceTypes) {
+        for (final ComponentTypeView deviceTypeToDelete : selectedDeviceTypes) {
             final ComponentType freshEntity = comptypeEJB.findById(deviceTypeToDelete.getId());
             freshEntity.getTags().clear();
             comptypeEJB.delete(freshEntity);
@@ -773,7 +781,7 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
         Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
                 "Deleted " + deletedDeviceTypes + " device types.");
         clearDeviceTypeRelatedInformation();
-        deviceTypes = comptypeEJB.findAll();
+        reloadDeviceTypes();
     }
 
     /** @return <code>true</code> if a single device type is selected , <code>false</code> otherwise */
@@ -784,22 +792,22 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
     @Override
     public void doImport() {
         super.doImport();
-        deviceTypes = comptypeEJB.findAll();
+        reloadDeviceTypes();
     }
 
     // -------------------- Getters and Setters ---------------------------------------
 
     /** @return the selectedDeviceTypes */
-    public List<ComponentType> getSelectedDeviceTypes() {
+    public List<ComponentTypeView> getSelectedDeviceTypes() {
         return selectedDeviceTypes;
     }
     /** @param selectedDeviceTypes the selectedDeviceTypes to set */
-    public void setSelectedDeviceTypes(List<ComponentType> selectedDeviceTypes) {
+    public void setSelectedDeviceTypes(List<ComponentTypeView> selectedDeviceTypes) {
         this.selectedDeviceTypes = selectedDeviceTypes;
     }
 
     /** @return the {@link List} of used device types */
-    public List<ComponentType> getUsedDeviceTypes() {
+    public List<ComponentTypeView> getUsedDeviceTypes() {
         return usedDeviceTypes;
     }
 
@@ -824,16 +832,16 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
     }
 
     /** @return The list of filtered device types used by the PrimeFaces filter field. */
-    public List<ComponentType> getFilteredDeviceTypes() {
+    public List<ComponentTypeView> getFilteredDeviceTypes() {
         return filteredDeviceTypes;
     }
     /** @param filteredDeviceTypes The list of filtered device types used by the PrimeFaces filter field. */
-    public void setFilteredDeviceTypes(List<ComponentType> filteredDeviceTypes) {
+    public void setFilteredDeviceTypes(List<ComponentTypeView> filteredDeviceTypes) {
         this.filteredDeviceTypes = filteredDeviceTypes;
     }
 
     /** @return The list of all device types in the database. */
-    public List<ComponentType> getDeviceTypes() {
+    public List<ComponentTypeView> getDeviceTypes() {
         return deviceTypes;
     }
 
@@ -843,12 +851,12 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
     }
 
     /** @return the filteredDialogTypes */
-    public List<ComponentType> getFilteredDialogTypes() {
+    public List<ComponentTypeView> getFilteredDialogTypes() {
         return filteredDialogTypes;
     }
 
     /** @param filteredDialogTypes the filteredDialogTypes to set */
-    public void setFilteredDialogTypes(List<ComponentType> filteredDialogTypes) {
+    public void setFilteredDialogTypes(List<ComponentTypeView> filteredDialogTypes) {
         this.filteredDialogTypes = filteredDialogTypes;
     }
 }

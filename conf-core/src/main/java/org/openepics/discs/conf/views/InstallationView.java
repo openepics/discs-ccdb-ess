@@ -36,6 +36,7 @@ import com.google.common.base.Preconditions;
 public class InstallationView {
     private InstallationRecord record;
     private Slot slot;
+    private final String usedBy = "";
 
     /** Constructs a new installation view with the {@link Slot} information and installation record information.
      * @param slot the slot to create the view for
@@ -84,5 +85,12 @@ public class InstallationView {
 
     public boolean isDeviceInstalled() {
         return record != null;
+    }
+
+    /**
+     * @return the usedBy
+     */
+    public String getUsedBy() {
+        return usedBy;
     }
 }

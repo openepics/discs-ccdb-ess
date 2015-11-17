@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
@@ -41,6 +42,8 @@ import org.openepics.discs.conf.dl.annotations.PropertiesLoader;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.ejb.PropertyEJB;
 import org.openepics.discs.conf.ent.DataType;
+import org.openepics.discs.conf.ent.EntityWithProperties;
+import org.openepics.discs.conf.ent.NamedEntity;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyValue;
 import org.openepics.discs.conf.ent.PropertyValueUniqueness;
@@ -55,6 +58,7 @@ import org.openepics.discs.conf.util.BatchIterator;
 import org.openepics.discs.conf.util.BatchSaveStage;
 import org.openepics.discs.conf.util.BuiltInDataType;
 import org.openepics.discs.conf.util.Utility;
+import org.openepics.discs.conf.views.PropertyView;
 import org.primefaces.context.RequestContext;
 
 import com.google.common.base.Preconditions;
@@ -85,11 +89,11 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
     @Inject private transient DataLoaderHandler dataLoaderHandler;
     @Inject @PropertiesLoader private transient DataLoader propertiesDataLoader;
 
-    private List<Property> properties;
-    private List<Property> filteredProperties;
-    private List<Property> selectedProperties;
-    private List<Property> usedProperties;
-    private List<Property> filteredDialogProperties;
+    private List<PropertyView> properties;
+    private List<PropertyView> filteredProperties;
+    private List<PropertyView> selectedProperties;
+    private List<PropertyView> usedProperties;
+    private List<PropertyView> filteredDialogProperties;
 
     private String name;
     private String description;
@@ -129,8 +133,8 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
 
         @Override
         protected void addData(ExportTable exportTable) {
-            final List<Property> exportData = filteredProperties;
-            for (final Property prop : exportData) {
+            final List<PropertyView> exportData = filteredProperties;
+            for (final PropertyView prop : exportData) {
                 final String unitName = prop.getUnit() != null ? prop.getUnit().getName() : null;
                 exportTable.addDataRow(prop.getName(), prop.getDescription(), unitName, prop.getDataType().getName());
             }
@@ -148,7 +152,7 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
         super.init();
         try {
             simpleTableExporterDialog = new ExportSimplePropertyTableDialog();
-            properties = propertyEJB.findAllOrderedByName();
+            properties = propertyEJB.findAllOrderedByName().stream().map(PropertyView::new).collect(Collectors.toList());
             selectedProperties = null;
             filteredProperties = properties;
             resetFields();
@@ -272,7 +276,7 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
     public void prepareModifyPopup() {
         Preconditions.checkState(isSinglePropertySelected());
 
-        propertyToModify = selectedProperties.get(0);
+        propertyToModify = selectedProperties.get(0).findProperty(propertyEJB);
         name = propertyToModify.getName();
         description = propertyToModify.getDescription();
         dataType = propertyToModify.getDataType();
@@ -297,8 +301,11 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
         Preconditions.checkState(!selectedProperties.isEmpty());
 
         usedProperties = Lists.newArrayList();
-        for (final Property propToDelete : selectedProperties) {
-            if (propertyEJB.isPropertyUsed(propToDelete)) {
+        for (final PropertyView propToDelete : selectedProperties) {
+            List<? extends PropertyValue> propertyValues = propertyEJB.findPropertyValues(propToDelete.findProperty(propertyEJB), 2);
+            if (!propertyValues.isEmpty()) {
+                EntityWithProperties parent = propertyValues.get(0).getPropertiesParent();
+                propToDelete.setUsedBy((parent instanceof NamedEntity ? ((NamedEntity)parent).getName() : "other")+(propertyValues.size()>1 ? ", ..." : ""));
                 usedProperties.add(propToDelete);
             }
         }
@@ -312,8 +319,8 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
         Preconditions.checkState(usedProperties.isEmpty());
 
         int deletedProperties = 0;
-        for (Property propertyToDelete : selectedProperties) {
-            propertyEJB.delete(propertyToDelete);
+        for (PropertyView propertyToDelete : selectedProperties) {
+            propertyEJB.delete(propertyToDelete.findProperty(propertyEJB));
             ++deletedProperties;
         }
 
@@ -325,20 +332,17 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
     }
 
     /** @return The list of filtered properties used by the PrimeFaces filter field */
-    public List<Property> getFilteredProperties() {
+    public List<PropertyView> getFilteredProperties() {
         return filteredProperties;
     }
 
     /** @param filteredObjects The list of filtered properties used by the PrimeFaces filter field */
-    public void setFilteredProperties(List<Property> filteredObjects) {
+    public void setFilteredProperties(List<PropertyView> filteredObjects) {
         this.filteredProperties = filteredObjects;
     }
 
     /** @return The list of all properties in the database ordered by name */
-    public List<Property> getProperties() {
-        if (properties == null) {
-            properties = propertyEJB.findAllOrderedByName();
-        }
+    public List<PropertyView> getProperties() {
         return properties;
     }
 
@@ -358,7 +362,7 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
     public void duplicate() {
         Preconditions.checkState(!Utility.isNullOrEmpty(selectedProperties));
 
-        for (final Property propToCopy : selectedProperties) {
+        for (final PropertyView propToCopy : selectedProperties) {
             final String newPropName = Utility.findFreeName(propToCopy.getName(), propertyEJB);
             final Property newProp = new Property(newPropName, propToCopy.getDescription());
             newProp.setDataType(propToCopy.getDataType());
@@ -366,7 +370,7 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
             newProp.setValueUniqueness(propToCopy.getValueUniqueness());
             propertyEJB.add(newProp);
         }
-        properties = propertyEJB.findAllOrderedByName();
+        properties = propertyEJB.findAllOrderedByName().stream().map(PropertyView::new).collect(Collectors.toList());
     }
 
     /** @return The name of the property the user is working on. Used by UI */
@@ -438,16 +442,16 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
     }
 
     /** @return The {@link List} of {@link Property} selected in the table */
-    public List<Property> getSelectedProperties() {
+    public List<PropertyView> getSelectedProperties() {
         return selectedProperties;
     }
     /** @param selectedProperties The {@link List} of {@link Property} selected in the table */
-    public void setSelectedProperties(List<Property> selectedProperties) {
+    public void setSelectedProperties(List<PropertyView> selectedProperties) {
         this.selectedProperties = selectedProperties;
     }
 
     /** @return the {@link List} of {@link Property} definitions that are used in some property value */
-    public List<Property> getUsedProperties() {
+    public List<PropertyView> getUsedProperties() {
         return usedProperties;
     }
 
@@ -593,12 +597,12 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
     }
 
     /** @return the filteredDialogProperties */
-    public List<Property> getFilteredDialogProperties() {
+    public List<PropertyView> getFilteredDialogProperties() {
         return filteredDialogProperties;
     }
 
     /** @param filteredDialogProperties the filteredDialogProperties to set */
-    public void setFilteredDialogProperties(List<Property> filteredDialogProperties) {
+    public void setFilteredDialogProperties(List<PropertyView> filteredDialogProperties) {
         this.filteredDialogProperties = filteredDialogProperties;
     }
 }

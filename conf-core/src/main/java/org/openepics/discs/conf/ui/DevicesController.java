@@ -237,33 +237,33 @@ public class DevicesController
             for (final ComptypePropertyValue parentProp : parent.getComptypePropertyList()) {
                 if (parentProp.getPropValue() != null) {
                     attributes.add(new EntityAttributeView(parentProp, EntityAttributeViewKind.DEVICE_TYPE_PROPERTY,
-                                                                attrDevice, deviceEJB));
+                                                                attrDevice, deviceEJB, parent.getName()));
                 }
             }
 
             for (final ComptypeArtifact parentArtifact : parent.getComptypeArtifactList()) {
                 attributes.add(new EntityAttributeView(parentArtifact, EntityAttributeViewKind.DEVICE_TYPE_ARTIFACT,
-                                                                attrDevice, deviceEJB));
+                                                                attrDevice, deviceEJB, parent.getName()));
             }
 
             for (final Tag parentTag : parent.getTags()) {
                 attributes.add(new EntityAttributeView(parentTag, EntityAttributeViewKind.DEVICE_TYPE_TAG,
-                                                                attrDevice, deviceEJB));
+                                                                attrDevice, deviceEJB, parent.getName()));
             }
 
             for (final DevicePropertyValue propVal : attrDevice.getDevicePropertyList()) {
                 attributes.add(new EntityAttributeView(propVal, EntityAttributeViewKind.DEVICE_PROPERTY,
-                                                                attrDevice, deviceEJB));
+                                                                attrDevice, deviceEJB, parent.getName()));
             }
 
             for (final DeviceArtifact artf : attrDevice.getDeviceArtifactList()) {
                 attributes.add(new EntityAttributeView(artf, EntityAttributeViewKind.DEVICE_ARTIFACT,
-                                                                attrDevice, deviceEJB));
+                                                                attrDevice, deviceEJB, ""));
             }
 
             for (final Tag tagAttr : attrDevice.getTags()) {
                 attributes.add(new EntityAttributeView(tagAttr, EntityAttributeViewKind.DEVICE_TAG,
-                                                                attrDevice, deviceEJB));
+                                                                attrDevice, deviceEJB, ""));
             }
 
             final InstallationRecord installationRecord = installationEJB.getActiveInstallationRecordForDevice(attrDevice);
@@ -272,13 +272,13 @@ public class DevicesController
             if (slot != null) {
                 for (final SlotPropertyValue value : slot.getSlotPropertyList()) {
                     attributes.add(new EntityAttributeView(value, EntityAttributeViewKind.INSTALL_SLOT_PROPERTY,
-                                                                    attrDevice, deviceEJB));
+                                                                    attrDevice, deviceEJB, slot.getName() + ", " + parent.getName()));
                 }
             } else {
                 for (final ComptypePropertyValue parentProp : parent.getComptypePropertyList()) {
                     if (parentProp.isDefinitionTargetSlot())
                         attributes.add(new EntityAttributeView(parentProp, EntityAttributeViewKind.INSTALL_SLOT_PROPERTY,
-                                                                    attrDevice, deviceEJB));
+                                                                    attrDevice, deviceEJB, parent.getName()));
                 }
             }
         }

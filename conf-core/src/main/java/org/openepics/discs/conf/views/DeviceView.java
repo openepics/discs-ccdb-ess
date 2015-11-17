@@ -40,6 +40,8 @@ public class DeviceView {
     private final String installationDate;
     private final Date installationTimestamp;
 
+    private String usedBy;
+
     private Device device;
 
     /** Creates a new immutable instance of the DeviceView object to be used in UI.
@@ -58,9 +60,11 @@ public class DeviceView {
         installationTimestamp = installationDate;
         if (installationDate == null) {
             this.installationDate = "-";
+            usedBy = "";
         } else {
             final SimpleDateFormat timestampFormatter = new SimpleDateFormat(Conversion.DATE_TIME_FORMAT);
             this.installationDate = timestampFormatter.format(installationDate);
+            usedBy = installedIn;
         }
     }
 
@@ -116,5 +120,12 @@ public class DeviceView {
     /** @return the installationTimestamp */
     public Date getInstallationTimestamp() {
         return installationTimestamp;
+    }
+
+    /**
+     * @return the usedBy
+     */
+    public String getUsedBy() {
+        return usedBy;
     }
 }

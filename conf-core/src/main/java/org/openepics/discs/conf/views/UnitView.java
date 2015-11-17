@@ -34,6 +34,8 @@ public class UnitView {
 
     private final Unit unit;
 
+    private String usedBy;
+
     /** Constructs a new immutable view of the {@link Unit}
      * @param unit the {@link Unit} to base the view on
      */
@@ -64,4 +66,20 @@ public class UnitView {
     public Unit getUnit() {
         return unit;
     }
+
+    /**
+     * @return the usedBy
+     */
+    public String getUsedBy() {
+        return usedBy;
+    }
+
+    /**
+     * @param usedBy the usedBy to set
+     */
+    public void setUsedBy(String usedBy) {
+        this.usedBy = usedBy;
+    }
+
+
 }

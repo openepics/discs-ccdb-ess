@@ -233,7 +233,9 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
 
         usedUnits = Lists.newArrayList();
         for (final UnitView unitToDelete : selectedUnits) {
-            if (unitEJB.isUnitUsed(unitToDelete.getUnit())) {
+            List<Property> properties = unitEJB.findProperties(unitToDelete.getUnit(), 2);
+            if (!properties.isEmpty()) {
+                unitToDelete.setUsedBy(properties.get(0).getName()+(properties.size()>1 ? ", ..." : ""));
                 usedUnits.add(unitToDelete);
             }
         }

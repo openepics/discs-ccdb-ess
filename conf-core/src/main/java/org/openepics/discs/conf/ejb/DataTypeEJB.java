@@ -83,19 +83,35 @@ public class DataTypeEJB extends DAO<DataType> {
 
         valuesWithDataType = em.createNamedQuery("ComptypePropertyValue.findByDataType", ComptypePropertyValue.class)
                 .setParameter("dataType", dataType).setMaxResults(1).getResultList();
+
         if (valuesWithDataType.isEmpty()) {
             valuesWithDataType = em.createNamedQuery("SlotPropertyValue.findByDataType", SlotPropertyValue.class)
                     .setParameter("dataType", dataType).setMaxResults(1).getResultList();
-            if (valuesWithDataType.isEmpty()) {
-                valuesWithDataType = em.createNamedQuery("DevicePropertyValue.findByDataType",
-                                        DevicePropertyValue.class).setParameter("dataType", dataType).setMaxResults(1)
-                                        .getResultList();
-                if (valuesWithDataType.isEmpty()) {
-                    return !em.createNamedQuery("AlignmentPropertyValue.findByDataType", AlignmentPropertyValue.class)
-                            .setParameter("dataType", dataType).setMaxResults(1).getResultList().isEmpty();
-                }
-            }
         }
-        return true;
+        if (valuesWithDataType.isEmpty()) {
+            valuesWithDataType = em.createNamedQuery("DevicePropertyValue.findByDataType", DevicePropertyValue.class)
+                    .setParameter("dataType", dataType).setMaxResults(1).getResultList();
+        }
+        if (valuesWithDataType.isEmpty()) {
+            valuesWithDataType = em.createNamedQuery("AlignmentPropertyValue.findByDataType", AlignmentPropertyValue.class)
+                    .setParameter("dataType", dataType).setMaxResults(1).getResultList();
+        }
+        return !valuesWithDataType.isEmpty();
     }
+
+    /**
+     * The method returns list of {@link Property} in the database where a data type is used.
+     *
+     * @param dataType
+     *              the data type to check for
+     * @param maxResults
+     *              maximum number of properties to return
+     * @return the list of properties, where the data type is used
+     */
+    public List<Property> findProperties(final DataType dataType, int maxResults) {
+        Preconditions.checkNotNull(dataType);
+        return em.createNamedQuery("Property.findByDataType", Property.class)
+                    .setParameter("dataType", dataType).setMaxResults(maxResults).getResultList();
+    }
+
 }

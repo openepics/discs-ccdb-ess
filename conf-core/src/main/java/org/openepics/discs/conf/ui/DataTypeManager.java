@@ -42,6 +42,7 @@ import org.openepics.discs.conf.dl.annotations.DataTypeLoader;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.ejb.DataTypeEJB;
 import org.openepics.discs.conf.ent.DataType;
+import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.export.ExportTable;
 import org.openepics.discs.conf.ui.common.AbstractExcelSingleFileImportUI;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
@@ -259,7 +260,9 @@ public class DataTypeManager extends AbstractExcelSingleFileImportUI implements 
 
         usedEnums = Lists.newArrayList();
         for (final UserEnumerationView enumToDelete : selectedEnums) {
-            if (dataTypeEJB.isDataTypeUsed(enumToDelete.getEnumeration(), true)) {
+            List<Property> properties = dataTypeEJB.findProperties(enumToDelete.getEnumeration(), 2);
+            if (!properties.isEmpty()) {
+                enumToDelete.setUsedBy(properties.get(0).getName()+(properties.size()>1 ? ", ..." : ""));
                 usedEnums.add(enumToDelete);
             }
         }

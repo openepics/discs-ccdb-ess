@@ -36,6 +36,7 @@ public class UserEnumerationView {
     private final List<String> definition;
     private final String definitionString;
     private final DataType enumeration;
+    private String usedBy;
 
     /**
      *  Creates an new view object that will expose the user enumeration to the UI layer.
@@ -93,5 +94,19 @@ public class UserEnumerationView {
 
         defString.append(']');
         return defString.toString();
+    }
+
+    /**
+     * @return the usedBy
+     */
+    public String getUsedBy() {
+        return usedBy;
+    }
+
+    /**
+     * @param usedBy the usedBy to set
+     */
+    public void setUsedBy(String usedBy) {
+        this.usedBy = usedBy;
     }
 }

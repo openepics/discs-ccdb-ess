@@ -21,6 +21,7 @@ package org.openepics.discs.conf.ejb;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -30,7 +31,6 @@ import org.openepics.discs.conf.auditlog.Audit;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypeArtifact;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
-import org.openepics.discs.conf.ent.ConfigurationEntity;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.Property;
@@ -43,6 +43,7 @@ import org.openepics.discs.conf.util.CRUDOperation;
 import org.openepics.discs.conf.util.PropertyValueNotUniqueException;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 
 /**
  * DAO Service for accessing Component Types ( {@link ComponentType} )
@@ -104,30 +105,31 @@ public class ComptypeEJB extends DAO<ComponentType> {
      * @param compType the device type to search for
      * @return <code>true</code> if the device type is used in the database, <code>false</code> otherwise
      */
-    public boolean isComponentTypeUsed(final ComponentType compType) {
-        List<? extends ConfigurationEntity> entitiesWithComponentType =
-                em.createNamedQuery("Slot.findByComponentType", Slot.class).setParameter("componentType", compType)
-                    .setMaxResults(1).getResultList();
-        if (entitiesWithComponentType.isEmpty()) {
-            entitiesWithComponentType = em.createNamedQuery("Device.findByComponentType", Device.class)
-                        .setParameter("componentType", compType).setMaxResults(1).getResultList();
-            if (entitiesWithComponentType.isEmpty()) {
-                // utility join table, not part of the model, native query needs to be used.
-                long uses = ((Number)
-                        em.createNativeQuery("SELECT COUNT(1) FROM filter_by_type WHERE type_id = ? LIMIT 1;")
-                            .setParameter(1, compType.getId()).getSingleResult()).longValue();
-                if (uses == 0) {
-                    // two columns need to be checked with as single query. Native query needs to be used.
-                    uses = ((Number)
-                            em.createNativeQuery("SELECT COUNT(1) FROM comptype_asm "
-                                    + "WHERE child_type = ? OR parent_type = ? LIMIT 1")
-                                    .setParameter(1, compType.getId()).setParameter(2, compType.getId())
-                                    .getSingleResult()).longValue();
-                    return (uses != 0);
-                }
-            }
-        }
-        return true;
+    public List<String> findWhereIsComponentTypeUsed(final ComponentType compType, int maxResults) {
+        List<String> usedBy = Lists.newArrayList();
+
+        List<Slot> slots = em.createNamedQuery("Slot.findByComponentType", Slot.class).setParameter("componentType", compType)
+                .setMaxResults(maxResults).getResultList();
+        usedBy.addAll(slots.stream().map(Slot::getName).collect(Collectors.toList()));
+
+        List<Device> devices = em.createNamedQuery("Device.findByComponentType", Device.class)
+                .setParameter("componentType", compType).setMaxResults(maxResults).getResultList();
+        usedBy.addAll(devices.stream().map(Device::getName).collect(Collectors.toList()));
+
+
+        // utility join table, not part of the model, native query needs to be used.
+        long uses = ((Number)em.createNativeQuery("SELECT COUNT(1) FROM filter_by_type WHERE type_id = ? LIMIT 1;")
+                    .setParameter(1, compType.getId()).getSingleResult()).longValue();
+        if (uses>0) usedBy.add("filter_by_type");
+
+
+        // two columns need to be checked with as single query. Native query needs to be used.
+        uses = ((Number)em.createNativeQuery("SELECT COUNT(1) FROM comptype_asm "
+                + "WHERE child_type = ? OR parent_type = ? LIMIT 1")
+                .setParameter(1, compType.getId()).setParameter(2, compType.getId())
+                .getSingleResult()).longValue();
+        if (uses>0) usedBy.add("comptype_asm");
+        return usedBy;
     }
 
     /**

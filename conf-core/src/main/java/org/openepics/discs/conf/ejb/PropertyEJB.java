@@ -29,6 +29,8 @@ import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyValue;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
 
+import com.google.common.collect.Lists;
+
 /**
  * DAO Service for accesing {@link Property} entities
  *
@@ -69,6 +71,22 @@ public class PropertyEJB extends DAO<Property> {
                 .setMaxResults(1).getResultList();
 
         return !typePropertyValues.isEmpty();
+    }
+
+    public List<? extends PropertyValue> findPropertyValues(Property property, int maxResults)
+    {
+        List<PropertyValue> propertyValues = Lists.newArrayList();
+        propertyValues.addAll(em.createQuery("SELECT pv FROM ComptypePropertyValue pv "
+                + "WHERE pv.property = :property", ComptypePropertyValue.class).setParameter("property", property)
+                .setMaxResults(maxResults).getResultList());
+        propertyValues.addAll(em.createQuery("SELECT pv FROM SlotPropertyValue pv "
+                + "WHERE pv.property = :property", SlotPropertyValue.class).setParameter("property", property)
+                .setMaxResults(maxResults).getResultList());
+        propertyValues.addAll(em.createQuery("SELECT pv FROM DevicePropertyValue pv "
+                + "WHERE pv.property = :property", DevicePropertyValue.class).setParameter("property", property)
+                .setMaxResults(maxResults).getResultList());
+        return propertyValues;
+
     }
 
     @Override

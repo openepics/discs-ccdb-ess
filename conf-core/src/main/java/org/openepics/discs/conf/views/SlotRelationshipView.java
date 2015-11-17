@@ -37,6 +37,7 @@ public class SlotRelationshipView {
     private final String targetSlotName;
     private final Slot targetSlot;
     private final SlotPair slotPair;
+    private final String usedBy = "";
 
     /** Constructs a new slot pair UI view object for the selected {@link Slot} object. The method checks that the
      * <code>selectedSlot</code> is either a parent or a child in the <code>slotPair</code> relationship object.
@@ -95,5 +96,12 @@ public class SlotRelationshipView {
 
     public String getId() {
         return id;
+    }
+
+    /**
+     * @return the usedBy
+     */
+    public String getUsedBy() {
+        return usedBy;
     }
 }
