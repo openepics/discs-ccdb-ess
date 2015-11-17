@@ -1379,6 +1379,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         }
         slotEJB.save(modifiedSlot);
         selectedSlotView.setSlot(modifiedSlot);
+        clearRelatedInformation();
+        updateDisplayedSlotInformation();
     }
 
     /** Called to add a new installation slot / container to the database */

@@ -472,7 +472,7 @@
                             <p:commandButton title="Install device to the selected slot" id="installDeviceBtn"
                                     value="Install" ajax="true"
                                     actionListener="#{hierarchiesController.prepareUninstalledDevices}"
-                                    style="margin-top: 1em; float: right;" update=":hierarchies:installationDetails"
+                                    style="margin-top: 1em; float: right;" update=":hierarchies:installationDetails :installDeviceForm :installDeviceForm:installDevice"
                                     disabled="#{!hierarchiesController.canInstall()}"
                                     oncomplete="PF('installDevice').show();" />
                             <p:commandButton title="Uninstall selected device" label="Uninstall" value="Uninstall"
