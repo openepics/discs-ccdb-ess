@@ -299,7 +299,7 @@
                         </p:fieldset>
                     </p:column>
                     <p:column id="attributesColumn" styleClass="alignTop" >
-                        <p:fieldset id="slotAttributes" legend="Properties" style="box-sizing: border-box; height: calc(33.33vh - 2.8em)">
+                        <p:fieldset id="slotAttributes" legend="Properties" style="box-sizing: border-box; height: calc(33.33vh - 4em)">
                             <div style="height: calc(100% - 3em)">
                                 <p:dataTable id="attributesTable" class="hierarchies-attributes-cell" var="attribute" 
                                         emptyMessage="No records found." value="#{hierarchiesController.attributes}" 
@@ -374,11 +374,12 @@
                                         update=":addArtifactForm:addArtifact" />
                             </p:menuButton>
                         </p:fieldset>
+                        <p:spacer height="20" />
                     </p:column>
                 </p:row>
                 <p:row>
                     <p:column id="relationsColumn" styleClass="alignTop">
-                        <p:fieldset id="relationsTable" legend="Relationships" style="box-sizing: border-box; height: calc(33.33vh - 2.8em)">
+                        <p:fieldset id="relationsTable" legend="Relationships" style="box-sizing: border-box; height: calc(33.33vh - 4em)">
                             <div style="height: calc(100% - 3em)">
                                 <p:dataTable value="#{hierarchiesController.relationships}" id="relationshipTable"
                                         var="relationship" emptyMessage="No records found."
@@ -429,11 +430,12 @@
                                 style="margin: 1em 1ex 0 0; float: right;" update=":addSlotRelationshipForm:addSlotRelationship"
                                 actionListener="#{hierarchiesController.prepareAddRelationshipPopup}" />
                         </p:fieldset>
+                        <p:spacer height="20" />
                     </p:column>
                 </p:row>
                 <p:row>
                     <p:column id="installationColumn" styleClass="alignTop">
-                        <p:fieldset id="installationDetails" legend="Installation"  style="box-sizing: border-box; height: calc(33.33vh - 2.8em)">
+                        <p:fieldset id="installationDetails" legend="Installation"  style="box-sizing: border-box; height: calc(33.33vh - 4em)">
                             <div style="height: calc(100% - 3em)">
                                 <p:dataTable id="installationTable" value="#{hierarchiesController.installationRecords}"
                                         var="installationRecord" widgetVar="installationWidget"
@@ -445,7 +447,7 @@
                                     <p:ajax event="rowSelect" update=":hierarchies:installDeviceBtn :hierarchies:uninstallDeviceBtn" />
                                     <p:ajax event="rowUnselect" update=":hierarchies:installDeviceBtn :hierarchies:uninstallDeviceBtn" />                                
                                     
-                                    <p:column headerText="Container/Slot" sortBy="#{installationRecord.slotName}" 
+                                    <p:column headerText="Slot" sortBy="#{installationRecord.slotName}" 
                                             filterBy="#{installationRecord.slotName}" filterMatchMode="contains">
                                         <h:outputText value="#{installationRecord.slotName}" />
                                     </p:column>
@@ -464,21 +466,21 @@
                                                 rendered="#{installationRecord.deviceInstalled}">
                                             <f:convertDateTime pattern="#{msgs.timestampFormat}" />
                                         </h:outputText>
-                                        <h:outputText value="Not installed"
+                                        <h:outputText value="-"
                                                 rendered="#{not installationRecord.deviceInstalled}" />
                                     </p:column>
                                 </p:dataTable>
                             </div>
+                            <p:commandButton title="Uninstall selected device" label="Uninstall" value="Uninstall"
+                                type="button" onclick="PF('uninstallConfirm').show();" id="uninstallDeviceBtn"
+                                style="margin-top: 1em; float: right;" update=":hierarchies:installationDetails"
+                                disabled="#{!hierarchiesController.canUninstall()}" />
                             <p:commandButton title="Install device to the selected slot" id="installDeviceBtn"
                                     value="Install" ajax="true"
                                     actionListener="#{hierarchiesController.prepareUninstalledDevices}"
-                                    style="margin-top: 1em; float: right;" update=":hierarchies:installationDetails :installDeviceForm :installDeviceForm:installDevice"
+                                    style="margin: 1em 1ex 0 0; float: right;" update=":hierarchies:installationDetails :installDeviceForm :installDeviceForm:installDevice"
                                     disabled="#{!hierarchiesController.canInstall()}"
-                                    oncomplete="PF('installDevice').show();" />
-                            <p:commandButton title="Uninstall selected device" label="Uninstall" value="Uninstall"
-                                type="button" onclick="PF('uninstallConfirm').show();" id="uninstallDeviceBtn"
-                                style="margin: 1em 1ex 0 0; float: right;" update=":hierarchies:installationDetails"
-                                disabled="#{!hierarchiesController.canUninstall()}" />
+                                    oncomplete="PF('installDevice').show();" />                            
                         </p:fieldset>
                     </p:column>
                 </p:row>
