@@ -29,15 +29,22 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.openepics.discs.conf.ejb.ComptypeEJB;
+import org.openepics.discs.conf.ejb.InstallationEJB;
 import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.ComponentType;
+import org.openepics.discs.conf.ent.ComptypePropertyValue;
+import org.openepics.discs.conf.ent.DevicePropertyValue;
+import org.openepics.discs.conf.ent.InstallationRecord;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotPair;
+import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.ent.SlotRelationName;
 import org.openepics.discs.conf.jaxb.InstallationSlot;
+import org.openepics.discs.conf.jaxb.PropertyKind;
 import org.openepics.discs.conf.jaxb.PropertyValue;
 import org.openepics.discs.conf.jaxrs.InstallationSlotResource;
+import org.openepics.discs.conf.util.UnhandledCaseException;
 
 /**
  * An implementation of the InstallationSlotResource interface.
@@ -47,6 +54,7 @@ import org.openepics.discs.conf.jaxrs.InstallationSlotResource;
 public class InstallationSlotResourceImpl implements InstallationSlotResource {
     @Inject private SlotEJB slotEJB;
     @Inject private ComptypeEJB compTypeEJB;
+    @Inject private InstallationEJB installationEJB;
 
     @FunctionalInterface
     private interface RelatedSlotExtractor {
@@ -92,7 +100,7 @@ public class InstallationSlotResourceImpl implements InstallationSlotResource {
     }
 
     private InstallationSlot createInstallationSlot(final Slot slot) {
-        if (slot==null) {
+        if (slot == null) {
             return null;
         }
 
@@ -144,13 +152,19 @@ public class InstallationSlotResourceImpl implements InstallationSlotResource {
     }
 
     private List<PropertyValue> getPropertyValues(final Slot slot) {
-        return Stream.concat(
-                slot.getComponentType().getComptypePropertyList().stream().
-                        filter(propValue -> !propValue.isPropertyDefinition()).
-                        map(propValue -> createPropertyValue(propValue)),
-                slot.getSlotPropertyList().stream().
-                        map(propValue -> createPropertyValue(propValue))).
-                collect(Collectors.toList());
+        final InstallationRecord record = installationEJB.getActiveInstallationRecordForSlot(slot);
+
+        final Stream<? extends PropertyValue> externalProps = Stream.concat(
+                            slot.getComponentType().getComptypePropertyList().stream().
+                                filter(propValue -> !propValue.isPropertyDefinition()).
+                                map(propValue -> createPropertyValue(propValue)),
+                            record == null ? Stream.empty() :
+                                record.getDevice().getDevicePropertyList().stream().
+                                    map(propValue -> createPropertyValue(propValue)));
+
+        return Stream.concat(slot.getSlotPropertyList().stream().map(propValue -> createPropertyValue(propValue)),
+                                externalProps).
+                        collect(Collectors.toList());
     }
 
     private PropertyValue createPropertyValue(final org.openepics.discs.conf.ent.PropertyValue slotPropertyValue) {
@@ -160,6 +174,15 @@ public class InstallationSlotResourceImpl implements InstallationSlotResource {
         propertyValue.setDataType(parentProperty.getDataType() != null ? parentProperty.getDataType().getName() : null);
         propertyValue.setUnit(parentProperty.getUnit() != null ? parentProperty.getUnit().getName() : null);
         propertyValue.setValue(Objects.toString(slotPropertyValue.getPropValue()));
+        if (slotPropertyValue instanceof ComptypePropertyValue) {
+            propertyValue.setPropertyKind(PropertyKind.TYPE);
+        } else if (slotPropertyValue instanceof SlotPropertyValue) {
+            propertyValue.setPropertyKind(PropertyKind.SLOT);
+        } else if (slotPropertyValue instanceof DevicePropertyValue) {
+            propertyValue.setPropertyKind(PropertyKind.DEVICE);
+        } else {
+            throw new UnhandledCaseException();
+        }
         return propertyValue;
     }
 }
