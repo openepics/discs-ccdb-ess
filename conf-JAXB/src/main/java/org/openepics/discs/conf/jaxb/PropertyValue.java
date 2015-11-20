@@ -25,6 +25,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * This is data transfer object representing a CCDB property value for JSON and XML serialization.
  *
  * @author <a href="mailto:sunil.sah@cosylab.com">Sunil Sah</a>
+ * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  */
 @XmlRootElement(name = "propertyValue")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -33,18 +34,22 @@ public class PropertyValue {
     private String value;
     private String dataType;
     private String unit;
+    private PropertyKind propertyKind;
 
     public PropertyValue() { }
 
     public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public void setName(final String name) { this.name = name; }
 
     public String getValue() { return value; }
-    public void setValue(String value) { this.value = value; }
+    public void setValue(final String value) { this.value = value; }
 
     public String getDataType() { return dataType; }
-    public void setDataType(String dataType) { this.dataType = dataType; }
+    public void setDataType(final String dataType) { this.dataType = dataType; }
 
     public String getUnit() { return unit; }
-    public void setUnit(String unit) { this.unit = unit; }
+    public void setUnit(final String unit) { this.unit = unit; }
+
+    public PropertyKind getPropertyKind() { return propertyKind; }
+    public void setPropertyKind(final PropertyKind propertyKind) { this.propertyKind = propertyKind; }
 }
