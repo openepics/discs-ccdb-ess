@@ -3043,10 +3043,6 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         this.filterContainsTree = filterContainsTree;
     }
 
-    public void clearFilterContainsTree() {
-        filterContainsTree = null;
-        filterContainsTree();
-    }
 
     public void filterContainsTree() {
         hierarchyBuilder.setFilterValue(filterContainsTree);

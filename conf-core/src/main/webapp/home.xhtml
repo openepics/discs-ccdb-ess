@@ -45,35 +45,15 @@
                                         :hierarchies:clipboardOperations"                                    
                                     onstart="PF('statusDialog').show()" oncomplete="PF('statusDialog').hide(); hierarchiesResizeAll();" />
                                 <p:tab id="INCLUDES" title="Contains" style="height: 100%">
-                                    <p:panelGrid styleClass="ui-panelgrid-blank noPadding">
-                                        <p:row>
-                                            <p:column style="width:100%;">
-                                                <p:inputText id="filterContainsTree" value="#{hierarchiesController.filterContainsTree}" 
-                                                    style="box-sizing: border-box; width:100%"/>
-                                            </p:column>
-                                            <p:column>
-                                               <p:commandButton id="filterContainsTreeButton" icon="ui-icon-search" title="Filter"
-                                                   actionListener="#{hierarchiesController.filterContainsTree()}" 
-                                                    oncomplete="hierarchiesResizeAll();"
-                                                    update=":hierarchies:relationsTable :hierarchies:deleteButton :hierarchies:downButton
+                                    <p:inputText id="filterContainsTree" value="#{hierarchiesController.filterContainsTree}"
+                                                 style="box-sizing: border-box; width:100%">
+                                        <p:ajax event="keyup" delay="1000" listener="#{hierarchiesController.filterContainsTree()}"
+                                         update=":hierarchies:relationsTable :hierarchies:deleteButton :hierarchies:downButton
                                                         :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton
                                                         :hierarchies:installationDetails :hierarchies:slotAttributes
                                                         :hierarchies:addRelationship :hierarchies:hierarchyTabs:tree                                                        
-                                                        :hierarchies:clipboardOperations"/>
-                                            </p:column>   
-                                            <p:column>
-                                               <p:commandButton id="clearFilterContainsTreeButton" icon=" ui-icon-circle-close" title="Clear filter"
-                                                   actionListener="#{hierarchiesController.clearFilterContainsTree()}" 
-                                                    oncomplete="hierarchiesResizeAll();"
-                                                    update="hierarchies:hierarchyTabs:filterContainsTree :hierarchies:relationsTable :hierarchies:deleteButton :hierarchies:downButton
-                                                        :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton
-                                                        :hierarchies:installationDetails :hierarchies:slotAttributes
-                                                        :hierarchies:addRelationship :hierarchies:hierarchyTabs:tree                                                        
-                                                        :hierarchies:clipboardOperations"/>
-                                            </p:column>                                                           
-                                        </p:row>
-                                    </p:panelGrid>
-                                    
+                                                        :hierarchies:clipboardOperations"/>                                                 
+                                    </p:inputText>
                                     <div style="height: calc(100% - 2em)">
                                         <p:treeTable id="tree" value="#{hierarchiesController.rootNode}" var="installationSlot"
                                                  selectionMode="multiple" selection="#{hierarchiesController.selectedIncludesNodes}"
