@@ -19,6 +19,7 @@
  */
 package org.openepics.discs.conf.ui.common;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -136,12 +137,12 @@ public class EntityHierarchyBuilder extends HierarchyBuilder {
         expandedNodes = Collections.emptySet();
     }
 
-    private void rebuildSubTreeInternal(final TreeNode node) {
+    private boolean rebuildSubTreeInternal(final TreeNode node) {
         Preconditions.checkNotNull(node);
         // 1. Remove all existing children
         node.getChildren().clear();
 
-        handleNodeSubtree(node);
+        return handleNodeSubtree(node);
     }
 
     /** <p>
@@ -295,9 +296,9 @@ public class EntityHierarchyBuilder extends HierarchyBuilder {
         }
     }
 
-    public void initHierarchy(final List<TreeNode> selectedNodes, final TreeNode root) {
+    public List<TreeNode> initHierarchy(final List<TreeNode> selectedNodes, final TreeNode root) {
         final SlotView rootSlotView = (SlotView) root.getData();
-        if (rootSlotView.isInitialzed()) return;
+        if (rootSlotView.isInitialzed()) return new ArrayList<>(root.getChildren());
 
         root.getChildren().clear();
         rootSlotView.setLevel(0);
@@ -323,6 +324,8 @@ public class EntityHierarchyBuilder extends HierarchyBuilder {
         removeRedundantRoots(root);
 
         rootSlotView.setInitialzed(true);
+
+        return new ArrayList<>(root.getChildren());
     }
 
 
@@ -344,12 +347,20 @@ public class EntityHierarchyBuilder extends HierarchyBuilder {
         }
     }
 
-    public void applyFilter(TreeNode root)
+    public void applyFilter(TreeNode root, List<TreeNode> children)
     {
         expandedNodes = new HashSet<Long>();
-        collectExpandedNodes(root);
-        expandedNodes.add(((SlotView)root.getData()).getId());
-        rebuildSubTreeInternal(root);
+        for (TreeNode n : children) {
+            collectExpandedNodes(n);
+            expandedNodes.add(((SlotView)n.getData()).getId());
+        }
+        for (TreeNode n : children) {
+            if (rebuildSubTreeInternal(n) || isSlotAcceptedByFilter(((SlotView)n.getData()).getSlot())) {
+                root.getChildren().add(n);
+            } else {
+                root.getChildren().remove(n);
+            }
+        }
         expandedNodes = Collections.emptySet();
     }
 

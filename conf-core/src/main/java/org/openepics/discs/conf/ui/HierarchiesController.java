@@ -205,6 +205,10 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     private TreeNode powersRootNode;
     private TreeNode controlsRootNode;
     private TreeNode connectsRootNode;
+    private List<TreeNode> powersChildren;
+    private List<TreeNode> controlsChildren;
+    private List<TreeNode> connectsChildren;
+
     private transient List<TreeNode> selectedNodes;
     private transient List<TreeNode> savedIncludesSelectedNodes;
     /** <code>selectedSlot</code> is only initialized when there is only one node in the tree selected */
@@ -258,6 +262,9 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
 
     private String filterContainsTree;
+    private String filterControlsTree;
+    private String filterPowersTree;
+    private String filterConnectsTree;
 
     private String namingRedirectionUrl;
 
@@ -964,6 +971,9 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
                 ? savedIncludesSelectedNodes : Arrays.asList(rootNode);
 
         if (activeTab == ActiveTab.INCLUDES) {
+            // we need to clear the filter temporarily
+            hierarchyBuilder.setFilterValue(null);
+            hierarchyBuilder.applyFilter(rootNode, new ArrayList<>(rootNode.getChildren()));
             // we need to expand the nodes virtually for the following searches
             for (TreeNode n : masterNodes) {
                 expandOrCollapseNode(n, true, hierarchyBuilder, false);
@@ -971,9 +981,17 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         }
 
         switch (newActiveTab) {
-            case POWERS: powersHierarchyBuilder.initHierarchy(masterNodes, powersRootNode); break;
-            case CONTROLS: controlsHierarchyBuilder.initHierarchy(masterNodes, controlsRootNode); break;
-            case CONNECTS: connectsHierarchyBuilder.initHierarchy(masterNodes, connectsRootNode); break;
+            case POWERS:
+                powersHierarchyBuilder.setFilterValue(null);
+                filterPowersTree = null;
+                powersChildren = powersHierarchyBuilder.initHierarchy(masterNodes, powersRootNode);
+            break;
+            case CONTROLS:
+                controlsHierarchyBuilder.setFilterValue(null);
+                filterControlsTree = null;
+                controlsChildren = controlsHierarchyBuilder.initHierarchy(masterNodes, controlsRootNode); break;
+            case CONNECTS:
+                connectsChildren = connectsHierarchyBuilder.initHierarchy(masterNodes, connectsRootNode); break;
             default:break;
         }
 
@@ -983,14 +1001,24 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         clearRelatedInformation();
 
         if (newActiveTab == ActiveTab.INCLUDES) {
-            selectedNodes = savedIncludesSelectedNodes;
+            hierarchyBuilder.setFilterValue(filterContainsTree);
+            hierarchyBuilder.applyFilter(rootNode, new ArrayList<>(rootNode.getChildren()));
+
+            selectedNodes = new ArrayList<TreeNode>();
+            reselectNodes(rootNode, savedIncludesSelectedNodes.stream().map(n -> ((SlotView)n.getData()).getId()).collect(Collectors.toList()));
             savedIncludesSelectedNodes = null;
-            if (selectedNodes != null) {
-                for (final TreeNode node : selectedNodes) {
-                    node.setSelected(true);
-                }
-            }
+
             onNodeSelect(null);
+        }
+    }
+
+    public void reselectNodes(TreeNode node, List<Long> selectedNodes) {
+        if (selectedNodes.contains(((SlotView)node.getData()).getId())) {
+            node.setSelected(true);
+            this.selectedNodes.add(node);
+        }
+        for (TreeNode n : node.getChildren()) {
+            reselectNodes(n, selectedNodes);
         }
     }
 
@@ -1260,11 +1288,13 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         // for POWERS and CONTROLS hierarchies, the trees will be rebuild dynamically based on user selection
         powersHierarchyBuilder = new EntityHierarchyBuilder(PRELOAD_LIMIT, installationEJB, slotEJB);
         powersHierarchyBuilder.setRelationship(SlotRelationName.POWERS);
+        powersHierarchyBuilder.setFilterMethod(new TreeFilterContains());
         // initializing root node prevents NPE in initial page display
         powersRootNode = new DefaultTreeNode(new SlotView(slotEJB.getRootNode(), null, 1, slotEJB), null);
 
         controlsHierarchyBuilder = new EntityHierarchyBuilder(PRELOAD_LIMIT, installationEJB, slotEJB);
         controlsHierarchyBuilder.setRelationship(SlotRelationName.CONTROLS);
+        controlsHierarchyBuilder.setFilterMethod(new TreeFilterContains());
         // initializing root node prevents NPE in initial page display
         controlsRootNode = new DefaultTreeNode(new SlotView(slotEJB.getRootNode(), null, 1, slotEJB), null);
 
@@ -3043,18 +3073,84 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         this.filterContainsTree = filterContainsTree;
     }
 
-
-    public void filterContainsTree() {
-        hierarchyBuilder.setFilterValue(filterContainsTree);
-        hierarchyBuilder.applyFilter(rootNode);
-        unselectAllTreeNodes();
-        selectedNodes = null;
-    }
-
     /**
      * @return the namingRedirectionUrl
      */
     public String getNamingRedirectionUrl() {
         return namingRedirectionUrl;
     }
+
+    /**
+     * @return the filterControlsTree
+     */
+    public String getFilterControlsTree() {
+        return filterControlsTree;
+    }
+
+    /**
+     * @param filterControlsTree the filterControlsTree to set
+     */
+    public void setFilterControlsTree(String filterControlsTree) {
+        this.filterControlsTree = filterControlsTree;
+    }
+
+    /**
+     * @return the filterPowersTree
+     */
+    public String getFilterPowersTree() {
+        return filterPowersTree;
+    }
+
+    /**
+     * @param filterPowersTree the filterPowersTree to set
+     */
+    public void setFilterPowersTree(String filterPowersTree) {
+        this.filterPowersTree = filterPowersTree;
+    }
+
+    /**
+     * @return the filterConnectsTree
+     */
+    public String getFilterConnectsTree() {
+        return filterConnectsTree;
+    }
+
+    /**
+     * @param filterConnectsTree the filterConnectsTree to set
+     */
+    public void setFilterConnectsTree(String filterConnectsTree) {
+        this.filterConnectsTree = filterConnectsTree;
+    }
+
+    public void filterContainsTree() {
+        hierarchyBuilder.setFilterValue(filterContainsTree);
+        hierarchyBuilder.applyFilter(rootNode, new ArrayList<>(rootNode.getChildren()));
+        unselectAllTreeNodes();
+        selectedNodes = null;
+    }
+
+    public void filterControlsTree() {
+        System.out.println("controls filter: "+filterControlsTree);
+        controlsHierarchyBuilder.setFilterValue(filterControlsTree);
+        controlsHierarchyBuilder.applyFilter(controlsRootNode, controlsChildren);
+        unselectAllTreeNodes();
+        selectedNodes = null;
+    }
+
+    public void filterPowersTree() {
+        System.out.println("powers filter: "+filterControlsTree);
+        powersHierarchyBuilder.setFilterValue(filterPowersTree);
+        powersHierarchyBuilder.applyFilter(powersRootNode,powersChildren);
+        unselectAllTreeNodes();
+        selectedNodes = null;
+    }
+
+    public void filterConnectsTree() {
+        System.out.println("connects filter: "+filterControlsTree);
+     /*   connectsHierarchyBuilder.setFilterValue(filterContainsTree);
+        connectsHierarchyBuilder.applyFilter(rootNode);
+        unselectAllTreeNodes();
+        selectedNodes = null;*/
+    }
+
 }

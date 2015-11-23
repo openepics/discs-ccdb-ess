@@ -91,15 +91,15 @@ public class ConnectsHierarchyBuilder extends HierarchyBuilder {
         parentSlotView.setInitialzed(true);
     }
 
-    public void initHierarchy(List<TreeNode> selectedNodes, TreeNode root) {
+    public List<TreeNode> initHierarchy(List<TreeNode> selectedNodes, TreeNode root) {
         final SlotView rootSlotView = (SlotView) root.getData();
-        if (rootSlotView.isInitialzed()) return;
+        if (rootSlotView.isInitialzed()) return new ArrayList<>(root.getChildren());
 
         root.getChildren().clear();
         rootSlotView.setLevel(0);
 
         if (selectedNodes == null) {
-            return;
+            return new ArrayList<>(0);
         }
 
         final List<Slot> levelOneSlots;
@@ -120,6 +120,8 @@ public class ConnectsHierarchyBuilder extends HierarchyBuilder {
         removeRedundantRoots(root);
 
         rootSlotView.setInitialzed(true);
+
+        return new ArrayList<>(root.getChildren());
     }
 
 

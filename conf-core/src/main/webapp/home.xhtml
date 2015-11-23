@@ -103,103 +103,138 @@
                                     </div>                                    
                                 </p:tab>
                                 <p:tab id="CONTROLS" title="Controls" style="height: 100%">
-                                    <p:treeTable id="controlsTree" value="#{hierarchiesController.controlsRoot}" var="ctrlSlot"
-                                             selectionMode="multiple" selection="#{hierarchiesController.selectedControlsNodes}"
-                                             scrollable="true" scrollWidth="100%" scrollHeight="100%" rowStyleClass="treeRows"
-                                             widgetVar="ctrlWidget">
-                                        <p:ajax event="select" listener="#{hierarchiesController.onNodeSelect}"
-                                                update=":hierarchies:relationsTable :hierarchies:installationDetails
-                                                        :hierarchies:slotAttributes :hierarchies:addRelationship"
-                                                oncomplete="hierarchiesResizeAll();" />
-                                        <p:ajax event="unselect" listener="#{hierarchiesController.onNodeUnselect}"
-                                                update=":hierarchies:relationsTable :hierarchies:installationDetails
-                                                        :hierarchies:slotAttributes :hierarchies:addRelationship"
-                                                oncomplete="hierarchiesResizeAll();" />
-                                        <p:ajax event="expand" listener="#{hierarchiesController.onControlsExpand}" />
-
-                                        <p:column id="ctrlName" headerText="Name">
-                                            <h:outputText value="" rendered="#{ctrlSlot.hostingSlot}"
-                                                style="display:inline-block; vertical-align:bottom !important"
-                                                styleClass="ui-icon ui-icon-wrench" />
-                                            <h:outputText value="" rendered="#{!ctrlSlot.hostingSlot}"
-                                                style="display:inline-block; vertical-align:bottom !important"
-                                                styleClass="ui-icon ui-icon-folder-collapsed" />
-                                            <h:outputText value="#{ctrlSlot.name}" styleClass="#{hierarchiesController.calcNameClass(ctrlSlot)}"
-                                                title="#{ctrlSlot.description}#{ctrlSlot.hostingSlot ? ' ('.concat(ctrlSlot.deviceTypeName).concat(')') : ''}" />
-                                            <p:link rendered="#{ctrlSlot.hostingSlot and hierarchiesController.linkToNaming(ctrlSlot)}" target="_blank" 
-                                                    href="#{hierarchiesController.namingRedirectionUrl}#{ctrlSlot.name}" title="Open in Naming Service">
-                                                <h:outputText value="" rendered="#{ctrlSlot.hostingSlot}" 
-                                                    style="display:inline-block; vertical-align:bottom !important; margin-left: 1ex;"
-                                                    styleClass="ui-icon ui-icon-extlink"/>
-                                            </p:link>
-                                        </p:column>
-                                    </p:treeTable>
+                                    <p:inputText id="filterControlsTree" value="#{hierarchiesController.filterControlsTree}"
+                                                 style="box-sizing: border-box; width:100%">
+                                        <p:ajax event="keyup" delay="1000" listener="#{hierarchiesController.filterControlsTree()}"
+                                         update=":hierarchies:relationsTable :hierarchies:deleteButton :hierarchies:downButton
+                                                        :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton
+                                                        :hierarchies:installationDetails :hierarchies:slotAttributes
+                                                        :hierarchies:addRelationship :hierarchies:hierarchyTabs:controlsTree                                                        
+                                                        :hierarchies:clipboardOperations"/>                                                 
+                                    </p:inputText>
+                                    <div style="height: calc(100% - 2em)">
+                                        <p:treeTable id="controlsTree" value="#{hierarchiesController.controlsRoot}" var="ctrlSlot"
+                                                 selectionMode="multiple" selection="#{hierarchiesController.selectedControlsNodes}"
+                                                 scrollable="true" scrollWidth="100%" scrollHeight="100%" rowStyleClass="treeRows"
+                                                 widgetVar="ctrlWidget">
+                                                 
+                                            <p:ajax event="select" listener="#{hierarchiesController.onNodeSelect}"
+                                                    update=":hierarchies:relationsTable :hierarchies:installationDetails
+                                                            :hierarchies:slotAttributes :hierarchies:addRelationship"
+                                                    oncomplete="hierarchiesResizeAll();" />
+                                            <p:ajax event="unselect" listener="#{hierarchiesController.onNodeUnselect}"
+                                                    update=":hierarchies:relationsTable :hierarchies:installationDetails
+                                                            :hierarchies:slotAttributes :hierarchies:addRelationship"
+                                                    oncomplete="hierarchiesResizeAll();" />
+                                            <p:ajax event="expand" listener="#{hierarchiesController.onControlsExpand}" />
+    
+                                            <p:column id="ctrlName" headerText="Name">
+                                                <h:outputText value="" rendered="#{ctrlSlot.hostingSlot}"
+                                                    style="display:inline-block; vertical-align:bottom !important"
+                                                    styleClass="ui-icon ui-icon-wrench" />
+                                                <h:outputText value="" rendered="#{!ctrlSlot.hostingSlot}"
+                                                    style="display:inline-block; vertical-align:bottom !important"
+                                                    styleClass="ui-icon ui-icon-folder-collapsed" />
+                                                <h:outputText value="#{ctrlSlot.name}" styleClass="#{hierarchiesController.calcNameClass(ctrlSlot)}"
+                                                    title="#{ctrlSlot.description}#{ctrlSlot.hostingSlot ? ' ('.concat(ctrlSlot.deviceTypeName).concat(')') : ''}" />
+                                                <p:link rendered="#{ctrlSlot.hostingSlot and hierarchiesController.linkToNaming(ctrlSlot)}" target="_blank" 
+                                                        href="#{hierarchiesController.namingRedirectionUrl}#{ctrlSlot.name}" title="Open in Naming Service">
+                                                    <h:outputText value="" rendered="#{ctrlSlot.hostingSlot}" 
+                                                        style="display:inline-block; vertical-align:bottom !important; margin-left: 1ex;"
+                                                        styleClass="ui-icon ui-icon-extlink"/>
+                                                </p:link>
+                                            </p:column>
+                                        </p:treeTable>
+                                    </div>
                                 </p:tab>
                                 <p:tab id="POWERS" title="Powers" style="height: 100%">
-                                    <p:treeTable id="powersTree" value="#{hierarchiesController.powersRoot}" var="powerSlot"
-                                             selectionMode="multiple" selection="#{hierarchiesController.selectedPowersNodes}"
-                                             scrollable="true" scrollWidth="100%" scrollHeight="100%" rowStyleClass="treeRows"
-                                             widgetVar="powersWidget">
-                                        <p:ajax event="select" listener="#{hierarchiesController.onNodeSelect}"
-                                                update=":hierarchies:relationsTable :hierarchies:installationDetails
-                                                        :hierarchies:slotAttributes :hierarchies:addRelationship"
-                                                oncomplete="hierarchiesResizeAll();" />
-                                        <p:ajax event="unselect" listener="#{hierarchiesController.onNodeUnselect}"
-                                                update=":hierarchies:relationsTable :hierarchies:installationDetails
-                                                        :hierarchies:slotAttributes :hierarchies:addRelationship"
-                                                oncomplete="hierarchiesResizeAll();" />
-                                        <p:ajax event="expand" listener="#{hierarchiesController.onPowersExpand}" />
-
-                                        <p:column id="powersName" headerText="Name">
-                                            <h:outputText value="" rendered="#{powerSlot.hostingSlot}"
-                                                style="display:inline-block; vertical-align:bottom !important"
-                                                styleClass="ui-icon ui-icon-wrench" />
-                                            <h:outputText value="" rendered="#{!powerSlot.hostingSlot}"
-                                                style="display:inline-block; vertical-align:bottom !important"
-                                                styleClass="ui-icon ui-icon-folder-collapsed" />
-                                            <h:outputText value="#{powerSlot.name}" styleClass="#{hierarchiesController.calcNameClass(powerSlot)}"
-                                                title="#{powerSlot.description}#{powerSlot.hostingSlot ? ' ('.concat(powerSlot.deviceTypeName).concat(')') : ''}" />
-                                            <p:link rendered="#{powerSlot.hostingSlot and hierarchiesController.linkToNaming(powerSlot)}" target="_blank" 
-                                                    href="#{hierarchiesController.namingRedirectionUrl}#{powerSlot.name}" title="Open in Naming Service">
-                                                <h:outputText value="" rendered="#{powerSlot.hostingSlot}" 
-                                                    style="display:inline-block; vertical-align:bottom !important; margin-left: 1ex;"
-                                                    styleClass="ui-icon ui-icon-extlink"/>
-                                            </p:link>    
-                                        </p:column>
-                                    </p:treeTable>
+                                    <p:inputText id="filterPowersTree" value="#{hierarchiesController.filterPowersTree}"
+                                                 style="box-sizing: border-box; width:100%">
+                                        <p:ajax event="keyup" delay="1000" listener="#{hierarchiesController.filterPowersTree()}"
+                                         update=":hierarchies:relationsTable :hierarchies:deleteButton :hierarchies:downButton
+                                                        :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton
+                                                        :hierarchies:installationDetails :hierarchies:slotAttributes
+                                                        :hierarchies:addRelationship :hierarchies:hierarchyTabs:powersTree                                                        
+                                                        :hierarchies:clipboardOperations"/>                                                 
+                                    </p:inputText>
+                                
+                                    <div style="height: calc(100% - 2em)">
+                                        <p:treeTable id="powersTree" value="#{hierarchiesController.powersRoot}" var="powerSlot"
+                                                 selectionMode="multiple" selection="#{hierarchiesController.selectedPowersNodes}"
+                                                 scrollable="true" scrollWidth="100%" scrollHeight="100%" rowStyleClass="treeRows"
+                                                 widgetVar="powersWidget">
+                                            <p:ajax event="select" listener="#{hierarchiesController.onNodeSelect}"
+                                                    update=":hierarchies:relationsTable :hierarchies:installationDetails
+                                                            :hierarchies:slotAttributes :hierarchies:addRelationship"
+                                                    oncomplete="hierarchiesResizeAll();" />
+                                            <p:ajax event="unselect" listener="#{hierarchiesController.onNodeUnselect}"
+                                                    update=":hierarchies:relationsTable :hierarchies:installationDetails
+                                                            :hierarchies:slotAttributes :hierarchies:addRelationship"
+                                                    oncomplete="hierarchiesResizeAll();" />
+                                            <p:ajax event="expand" listener="#{hierarchiesController.onPowersExpand}" />
+    
+                                            <p:column id="powersName" headerText="Name">
+                                                <h:outputText value="" rendered="#{powerSlot.hostingSlot}"
+                                                    style="display:inline-block; vertical-align:bottom !important"
+                                                    styleClass="ui-icon ui-icon-wrench" />
+                                                <h:outputText value="" rendered="#{!powerSlot.hostingSlot}"
+                                                    style="display:inline-block; vertical-align:bottom !important"
+                                                    styleClass="ui-icon ui-icon-folder-collapsed" />
+                                                <h:outputText value="#{powerSlot.name}" styleClass="#{hierarchiesController.calcNameClass(powerSlot)}"
+                                                    title="#{powerSlot.description}#{powerSlot.hostingSlot ? ' ('.concat(powerSlot.deviceTypeName).concat(')') : ''}" />
+                                                <p:link rendered="#{powerSlot.hostingSlot and hierarchiesController.linkToNaming(powerSlot)}" target="_blank" 
+                                                        href="#{hierarchiesController.namingRedirectionUrl}#{powerSlot.name}" title="Open in Naming Service">
+                                                    <h:outputText value="" rendered="#{powerSlot.hostingSlot}" 
+                                                        style="display:inline-block; vertical-align:bottom !important; margin-left: 1ex;"
+                                                        styleClass="ui-icon ui-icon-extlink"/>
+                                                </p:link>    
+                                            </p:column>
+                                        </p:treeTable>
+	                               </div>
                                 </p:tab>
                                 <p:tab id="CONNECTS" title="Connects" rendered="#{hierarchiesController.cableDBStatus}">
-                                    <p:treeTable id="connectsTree" value="#{hierarchiesController.connectsRoot}" var="connectsSlot"
-                                             selectionMode="multiple" selection="#{hierarchiesController.selectedConnectsNodes}"
-                                             scrollable="true" scrollWidth="100%" scrollHeight="100%" rowStyleClass="treeRows"
-                                             widgetVar="connectsWidget">
-                                        <p:ajax event="select" listener="#{hierarchiesController.onNodeSelect}"
-                                                update=":hierarchies:relationsTable :hierarchies:installationDetails
-                                                        :hierarchies:slotAttributes :hierarchies:addRelationship"
-                                                oncomplete="hierarchiesResizeAll();" />
-                                        <p:ajax event="unselect" listener="#{hierarchiesController.onNodeUnselect}"
-                                                update=":hierarchies:relationsTable :hierarchies:installationDetails
-                                                        :hierarchies:slotAttributes :hierarchies:addRelationship"
-                                                oncomplete="hierarchiesResizeAll();" />
-                                        <p:ajax event="expand" listener="#{hierarchiesController.onConnectsExpand}" />
-
-                                        <p:column id="connectsName" headerText="Name">
-                                            <h:outputText value="" rendered="#{connectsSlot.hostingSlot}"
-                                                style="display:inline-block; vertical-align:bottom !important"
-                                                styleClass="ui-icon ui-icon-wrench" />
-                                            <h:outputText value="" rendered="#{!connectsSlot.hostingSlot}"
-                                                style="display:inline-block; vertical-align:bottom !important"
-                                                styleClass="ui-icon ui-icon-folder-collapsed" />
-                                            <h:outputText value="#{connectsSlot.name}" styleClass="#{hierarchiesController.calcNameClass(connectsSlot)}"
-                                                title="#{connectsSlot.description}#{connectsSlot.hostingSlot ? ' ('.concat(connectsSlot.deviceTypeName).concat(')') : ''}" />
-                                            <p:link rendered="#{connectsSlot.hostingSlot and hierarchiesController.linkToNaming(connectsSlot)}" target="_blank" 
-                                                    href="#{hierarchiesController.namingRedirectionUrl}#{connectsSlot.name}" title="Open in Naming Service">
-                                                <h:outputText value="" rendered="#{connectsSlot.hostingSlot}" 
-                                                    style="display:inline-block; vertical-align:bottom !important; margin-left: 1ex;"
-                                                    styleClass="ui-icon ui-icon-extlink"/>
-                                            </p:link>  
-                                        </p:column>
-                                    </p:treeTable>
+                                    <p:inputText id="filterConnectsTree" value="#{hierarchiesController.filterConnectsTree}"
+                                                 style="box-sizing: border-box; width:100%" disabled="true">
+                                        <p:ajax event="keyup" delay="1000" listener="#{hierarchiesController.filterConnectsTree()}"
+                                         update=":hierarchies:relationsTable :hierarchies:deleteButton :hierarchies:downButton
+                                                        :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton
+                                                        :hierarchies:installationDetails :hierarchies:slotAttributes
+                                                        :hierarchies:addRelationship :hierarchies:hierarchyTabs:connectsTree                                                        
+                                                        :hierarchies:clipboardOperations"/>                                                 
+                                    </p:inputText>                                
+                                    <div style="height: calc(100% - 2em)">
+                                        <p:treeTable id="connectsTree" value="#{hierarchiesController.connectsRoot}" var="connectsSlot"
+                                                 selectionMode="multiple" selection="#{hierarchiesController.selectedConnectsNodes}"
+                                                 scrollable="true" scrollWidth="100%" scrollHeight="100%" rowStyleClass="treeRows"
+                                                 widgetVar="connectsWidget">
+                                            <p:ajax event="select" listener="#{hierarchiesController.onNodeSelect}"
+                                                    update=":hierarchies:relationsTable :hierarchies:installationDetails
+                                                            :hierarchies:slotAttributes :hierarchies:addRelationship"
+                                                    oncomplete="hierarchiesResizeAll();" />
+                                            <p:ajax event="unselect" listener="#{hierarchiesController.onNodeUnselect}"
+                                                    update=":hierarchies:relationsTable :hierarchies:installationDetails
+                                                            :hierarchies:slotAttributes :hierarchies:addRelationship"
+                                                    oncomplete="hierarchiesResizeAll();" />
+                                            <p:ajax event="expand" listener="#{hierarchiesController.onConnectsExpand}" />
+    
+                                            <p:column id="connectsName" headerText="Name">
+                                                <h:outputText value="" rendered="#{connectsSlot.hostingSlot}"
+                                                    style="display:inline-block; vertical-align:bottom !important"
+                                                    styleClass="ui-icon ui-icon-wrench" />
+                                                <h:outputText value="" rendered="#{!connectsSlot.hostingSlot}"
+                                                    style="display:inline-block; vertical-align:bottom !important"
+                                                    styleClass="ui-icon ui-icon-folder-collapsed" />
+                                                <h:outputText value="#{connectsSlot.name}" styleClass="#{hierarchiesController.calcNameClass(connectsSlot)}"
+                                                    title="#{connectsSlot.description}#{connectsSlot.hostingSlot ? ' ('.concat(connectsSlot.deviceTypeName).concat(')') : ''}" />
+                                                <p:link rendered="#{connectsSlot.hostingSlot and hierarchiesController.linkToNaming(connectsSlot)}" target="_blank" 
+                                                        href="#{hierarchiesController.namingRedirectionUrl}#{connectsSlot.name}" title="Open in Naming Service">
+                                                    <h:outputText value="" rendered="#{connectsSlot.hostingSlot}" 
+                                                        style="display:inline-block; vertical-align:bottom !important; margin-left: 1ex;"
+                                                        styleClass="ui-icon ui-icon-extlink"/>
+                                                </p:link>  
+                                            </p:column>
+                                        </p:treeTable>
+                                    </div>
                                 </p:tab>
                             </p:tabView>
                         </div>
