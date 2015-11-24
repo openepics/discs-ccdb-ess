@@ -352,11 +352,15 @@ public class EntityHierarchyBuilder extends HierarchyBuilder {
         expandedNodes = new HashSet<Long>();
         for (TreeNode n : children) {
             collectExpandedNodes(n);
-            expandedNodes.add(((SlotView)n.getData()).getId());
+            if (n.isExpanded()) {
+                expandedNodes.add(((SlotView)n.getData()).getId());
+            }
         }
         for (TreeNode n : children) {
-            if (rebuildSubTreeInternal(n) || isSlotAcceptedByFilter(((SlotView)n.getData()).getSlot())) {
+            SlotView nv = (SlotView)n.getData();
+            if (rebuildSubTreeInternal(n) || isSlotAcceptedByFilter(nv.getSlot())) {
                 root.getChildren().add(n);
+                n.setExpanded(expandedNodes.contains(nv.getId()));
             } else {
                 root.getChildren().remove(n);
             }
