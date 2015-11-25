@@ -2476,7 +2476,13 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         Preconditions.checkNotNull(selectedSlot);
         Preconditions.checkState((selectedNodes != null) && (selectedNodes.size() == 1));
         // restore the current main selection. The relationship manipulation is done.
-        selectedNodes.get(0).setSelected(true);
+
+        hierarchyBuilder.setFilterValue(filterContainsTree);
+        hierarchyBuilder.applyFilter(rootNode, new ArrayList<>(rootNode.getChildren()));
+        List<Long> selected = Arrays.asList(((SlotView)selectedNodes.get(0).getData()).getId());
+        selectedNodes = new ArrayList<TreeNode>();
+        reselectNodes(rootNode, selected);
+
         // clear the previous dialog selection for the next use
         if (selectedTreeNodeForRelationshipAdd != null) {
             selectedTreeNodeForRelationshipAdd.setSelected(false);
@@ -2522,6 +2528,9 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         // hide the current main selection, since the same data can be used to add new relationships.
         // Will be restored when the user finishes relationship manipulation.
         selectedNodes.get(0).setSelected(false);
+        hierarchyBuilder.setFilterValue(null);
+        hierarchyBuilder.applyFilter(rootNode, new ArrayList<>(rootNode.getChildren()));
+
         // clear the previous dialog selection in case the dialog was already used before
         if (selectedTreeNodeForRelationshipAdd != null) {
             selectedTreeNodeForRelationshipAdd.setSelected(false);

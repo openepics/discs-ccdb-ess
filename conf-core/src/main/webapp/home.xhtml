@@ -283,6 +283,7 @@
                                 update=":hierarchies:hierarchyTabs:tree :hierarchies:downButton :hierarchies:upButton"
                                 disabled="#{not hierarchiesController.singleNodeSelected
                                                 or not hierarchiesController.includesActive
+                                                or not empty hierarchiesController.filterContainsTree
                                                 or hierarchiesController.singleSelectedSlotView.last}"
                                 actionListener="#{hierarchiesController.moveSlotDown()}" />
                             <p:commandButton id="upButton" icon="ui-icon-arrowthick-1-n" value="Up" title="Move up"
@@ -291,6 +292,7 @@
                                 update=":hierarchies:hierarchyTabs:tree :hierarchies:upButton :hierarchies:downButton"
                                 disabled="#{not hierarchiesController.singleNodeSelected
                                                 or not hierarchiesController.includesActive
+                                                or not empty hierarchiesController.filterContainsTree
                                                 or hierarchiesController.singleSelectedSlotView.first}"
                                 actionListener="#{hierarchiesController.moveSlotUp()}" />
                             <p:commandButton id="editButton" icon="ui-icon-pencil" value="Edit" title="Edit"
