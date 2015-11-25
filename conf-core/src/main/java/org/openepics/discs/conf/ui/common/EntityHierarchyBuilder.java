@@ -26,8 +26,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
 
-import javax.annotation.Nullable;
-
 import org.openepics.discs.conf.ejb.InstallationEJB;
 import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.ComponentType;
@@ -40,7 +38,6 @@ import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
 /**
@@ -48,15 +45,12 @@ import com.google.common.collect.Lists;
  */
 public class EntityHierarchyBuilder extends HierarchyBuilder {
     private int preloadLimit;
-    private String filterValue;
+
     private SlotRelationName relationship;
-    private ComponentType desiredDeviceType;
     private final SlotView fakeSlotView;
     private final InstallationEJB installationEJB;
     private final SlotEJB slotEJB;
     private Set<Long> expandedNodes = Collections.emptySet();
-
-    private TreeFilterMethod filterMethod;
 
     /**
      * Constructs a new hierarchy builder.
@@ -78,28 +72,7 @@ public class EntityHierarchyBuilder extends HierarchyBuilder {
         this.fakeSlotView = new SlotView(fakeSlot, null, 1, null);
     }
 
-    public void setFilterMethod(@Nullable TreeFilterMethod filterMethod) {
-        this.filterMethod = filterMethod;
-    }
 
-    public String getFilterValue() {
-        return filterValue;
-    }
-
-    /**
-     * @param filterValue the filter value to set, automatically trimmed if not <code>null</code>.
-     */
-    public void setFilterValue(@Nullable String filterValue) {
-        this.filterValue = filterValue == null? null : filterValue.trim();
-    }
-
-    public void setFilterType(ComponentType deviceType) {
-        this.desiredDeviceType = deviceType;
-    }
-
-    public ComponentType getFilterType() {
-        return desiredDeviceType;
-    }
 
     public SlotRelationName getRelationship() {
         return relationship;
@@ -109,9 +82,6 @@ public class EntityHierarchyBuilder extends HierarchyBuilder {
         this.relationship = relationship;
     }
 
-    private boolean isFilteringApplied() {
-        return filterMethod != null && (!Strings.isNullOrEmpty(filterValue) || (desiredDeviceType != null));
-    }
 
     /* (non-Javadoc)
      * @see org.openepics.discs.conf.ui.common.HierarchyBuilder#expandNode(org.primefaces.model.TreeNode)
@@ -276,15 +246,6 @@ public class EntityHierarchyBuilder extends HierarchyBuilder {
         return includesFilteredNodes;
     }
 
-    /**
-     * @param slot the slot to inspect
-     * @return <code>true</code> if the slot should be added by filter, <code>false</code> otherwise.
-     */
-    private boolean isSlotAcceptedByFilter(Slot slot) {
-        return !slot.isHostingSlot() || (filterMethod == null)
-                || filterMethod.matches(filterValue, desiredDeviceType, slot);
-    }
-
     private void pruneChild(final TreeNode parent, final SlotView slotView) {
         final ListIterator<TreeNode> children = parent.getChildren().listIterator();
         while (children.hasNext()) {
@@ -377,7 +338,4 @@ public class EntityHierarchyBuilder extends HierarchyBuilder {
             collectExpandedNodes(child);
         }
     }
-
-
-
 }

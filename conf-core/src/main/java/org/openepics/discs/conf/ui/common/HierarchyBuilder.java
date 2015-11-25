@@ -23,10 +23,20 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
+import org.openepics.discs.conf.ent.ComponentType;
+import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.views.SlotView;
 import org.primefaces.model.TreeNode;
 
+import com.google.common.base.Strings;
+
 public abstract class HierarchyBuilder {
+
+    private TreeFilterMethod filterMethod;
+    private String filterValue;
+    private ComponentType desiredDeviceType;
 
     /** This method is called when the user expands the tree node in the UI. If the tree node is still not initialized
      * (its subtree only contains the stub to show expansion mark), then the subtree is initialized, and the node is
@@ -75,5 +85,42 @@ public abstract class HierarchyBuilder {
         }
     }
 
+
+    public void setFilterMethod(@Nullable TreeFilterMethod filterMethod) {
+        this.filterMethod = filterMethod;
+    }
+
+    public String getFilterValue() {
+        return filterValue;
+    }
+
+    /**
+     * @param filterValue the filter value to set, automatically trimmed if not <code>null</code>.
+     */
+    public void setFilterValue(@Nullable String filterValue) {
+        this.filterValue = filterValue == null? null : filterValue.trim();
+    }
+
+    public void setFilterType(ComponentType deviceType) {
+        this.desiredDeviceType = deviceType;
+    }
+
+    public ComponentType getFilterType() {
+        return desiredDeviceType;
+    }
+
+
+    protected boolean isFilteringApplied() {
+        return filterMethod != null && (!Strings.isNullOrEmpty(filterValue) || (desiredDeviceType != null));
+    }
+
+    /**
+     * @param slot the slot to inspect
+     * @return <code>true</code> if the slot should be added by filter, <code>false</code> otherwise.
+     */
+    protected boolean isSlotAcceptedByFilter(Slot slot) {
+        return !slot.isHostingSlot() || (filterMethod == null)
+                || filterMethod.matches(filterValue, desiredDeviceType, slot);
+    }
 
 }

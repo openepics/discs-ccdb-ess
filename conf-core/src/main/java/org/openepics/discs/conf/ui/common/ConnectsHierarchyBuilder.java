@@ -20,7 +20,10 @@
 package org.openepics.discs.conf.ui.common;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.openepics.discs.conf.ejb.ConnectsEJB;
 import org.openepics.discs.conf.ejb.SlotEJB;
@@ -36,9 +39,9 @@ import com.google.common.collect.Lists;
  * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  */
 public class ConnectsHierarchyBuilder extends HierarchyBuilder {
-
-    ConnectsEJB connectsEJB;
-    SlotEJB slotEJB;
+    private Set<Long> expandedNodes = Collections.emptySet();
+    private ConnectsEJB connectsEJB;
+    private SlotEJB slotEJB;
 
     public ConnectsHierarchyBuilder(ConnectsEJB connectsEJB, SlotEJB slotEJB) {
         this.connectsEJB = connectsEJB;
@@ -56,16 +59,17 @@ public class ConnectsHierarchyBuilder extends HierarchyBuilder {
                 parent = parent.getParent();
             }
 
-            rebuildSubTree(node, parentIds, false);
+            rebuildSubTree(node, parentIds);
         }
     }
 
-    public void rebuildSubTree(final TreeNode node, List<Long> parentIds, boolean onlyHasChildren) {
+    public boolean rebuildSubTree(final TreeNode node, List<Long> parentIds) {
         Preconditions.checkNotNull(node);
         // 1. Remove all existing children
         node.getChildren().clear();
         final SlotView parentSlotView = (SlotView) node.getData();
         final Slot parentSlot = parentSlotView.getSlot();
+        boolean visibleSubtree = false;
 
         parentIds.add(parentSlotView.getId());
 
@@ -73,22 +77,22 @@ public class ConnectsHierarchyBuilder extends HierarchyBuilder {
         int order = 1;
         for (Slot child : slots) {
             if (parentIds.contains(child.getId())) continue;
-            if (onlyHasChildren) {
-                new DefaultTreeNode(null, node);
-                return;
-            }
-          //  new DefaultTreeNode(new SlotView(slot, nodeView, 1, null), c);
+
             final SlotView childSlotView = new SlotView(child, parentSlotView, order++, slotEJB);
             childSlotView.setLevel(parentSlotView.getLevel() + 1);
-            childSlotView.setInitialzed(false);
+            childSlotView.setInitialzed(true);
             childSlotView.setDeletable(true);
-            final TreeNode addedTreeNode = new DefaultTreeNode(childSlotView, node);
-            addedTreeNode.setExpanded(false);
+            final TreeNode addedTreeNode = new DefaultTreeNode(childSlotView);
 
-
-            rebuildSubTree(addedTreeNode, parentIds, true);
+            if (rebuildSubTree(addedTreeNode, parentIds))
+            {
+                addedTreeNode.setExpanded(expandedNodes.contains(child.getId()));
+                node.getChildren().add(addedTreeNode);
+                visibleSubtree = true;
+            }
         }
         parentSlotView.setInitialzed(true);
+        return visibleSubtree || isSlotAcceptedByFilter(parentSlot);
     }
 
     public List<TreeNode> initHierarchy(List<TreeNode> selectedNodes, TreeNode root) {
@@ -139,5 +143,36 @@ public class ConnectsHierarchyBuilder extends HierarchyBuilder {
         }
     }
 
+    public void applyFilter(TreeNode root, List<TreeNode> children) {
+        expandedNodes = new HashSet<Long>();
+        for (TreeNode n : children) {
+            collectExpandedNodes(n);
+            if (n.isExpanded()) {
+                expandedNodes.add(((SlotView)n.getData()).getId());
+            }
+        }
+        Long rootId = ((SlotView)root.getData()).getId();
+        for (TreeNode n : children) {
+            SlotView nv = (SlotView)n.getData();
+            List<Long> parentIds = new ArrayList<Long>();
+            parentIds.add(rootId);
+            if (rebuildSubTree(n, parentIds) || isSlotAcceptedByFilter(nv.getSlot())) {
+                root.getChildren().add(n);
+                n.setExpanded(expandedNodes.contains(nv.getId()));
+            } else {
+                root.getChildren().remove(n);
+            }
+        }
+        expandedNodes = Collections.emptySet();
+    }
 
+    private void collectExpandedNodes(TreeNode node) {
+        if (node.isExpanded()) {
+            SlotView modelSlotView = (SlotView)node.getData();
+            expandedNodes.add(modelSlotView.getId());
+        }
+        for (TreeNode child : node.getChildren()) {
+            collectExpandedNodes(child);
+        }
+    }
 }

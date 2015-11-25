@@ -991,6 +991,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
                 filterControlsTree = null;
                 controlsChildren = controlsHierarchyBuilder.initHierarchy(masterNodes, controlsRootNode); break;
             case CONNECTS:
+                connectsHierarchyBuilder.setFilterValue(null);
+                filterConnectsTree = null;
                 connectsChildren = connectsHierarchyBuilder.initHierarchy(masterNodes, connectsRootNode); break;
             default:break;
         }
@@ -1299,6 +1301,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         controlsRootNode = new DefaultTreeNode(new SlotView(slotEJB.getRootNode(), null, 1, slotEJB), null);
 
         connectsHierarchyBuilder = new ConnectsHierarchyBuilder(connectsEJB, slotEJB);
+        connectsHierarchyBuilder.setFilterMethod(new TreeFilterContains());
         // initializing root node prevents NPE in initial page display
         connectsRootNode = new DefaultTreeNode(new SlotView(slotEJB.getRootNode(), null, 1, slotEJB), null);
     }
@@ -3139,7 +3142,6 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     }
 
     public void filterControlsTree() {
-        System.out.println("controls filter: "+filterControlsTree);
         controlsHierarchyBuilder.setFilterValue(filterControlsTree);
         controlsHierarchyBuilder.applyFilter(controlsRootNode, controlsChildren);
         unselectAllTreeNodes();
@@ -3147,7 +3149,6 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     }
 
     public void filterPowersTree() {
-        System.out.println("powers filter: "+filterControlsTree);
         powersHierarchyBuilder.setFilterValue(filterPowersTree);
         powersHierarchyBuilder.applyFilter(powersRootNode,powersChildren);
         unselectAllTreeNodes();
@@ -3155,11 +3156,10 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     }
 
     public void filterConnectsTree() {
-        System.out.println("connects filter: "+filterControlsTree);
-     /*   connectsHierarchyBuilder.setFilterValue(filterContainsTree);
-        connectsHierarchyBuilder.applyFilter(rootNode);
+        connectsHierarchyBuilder.setFilterValue(filterConnectsTree);
+        connectsHierarchyBuilder.applyFilter(connectsRootNode, connectsChildren);
         unselectAllTreeNodes();
-        selectedNodes = null;*/
+        selectedNodes = null;
     }
 
 }

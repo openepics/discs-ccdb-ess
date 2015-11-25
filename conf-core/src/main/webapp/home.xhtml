@@ -194,7 +194,7 @@
                                 </p:tab>
                                 <p:tab id="CONNECTS" title="Connects" rendered="#{hierarchiesController.cableDBStatus}">
                                     <p:inputText id="filterConnectsTree" value="#{hierarchiesController.filterConnectsTree}"
-                                                 style="box-sizing: border-box; width:100%" disabled="true">
+                                                 style="box-sizing: border-box; width:100%">
                                         <p:ajax event="keyup" delay="1000" listener="#{hierarchiesController.filterConnectsTree()}"
                                          update=":hierarchies:relationsTable :hierarchies:deleteButton :hierarchies:downButton
                                                         :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton
