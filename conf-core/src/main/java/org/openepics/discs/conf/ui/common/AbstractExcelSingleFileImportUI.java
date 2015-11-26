@@ -137,7 +137,6 @@ public abstract class AbstractExcelSingleFileImportUI implements ExcelSingleFile
             int createRows = 0;
             int updateRows = 0;
             int deleteRows = 0;
-            int renameRows = 0;
 
             for (final Pair<Integer, List<String>> row : inputRows) {
                 final String command = row.getRight().get(0);
@@ -167,16 +166,13 @@ public abstract class AbstractExcelSingleFileImportUI implements ExcelSingleFile
                     case DataLoader.CMD_UNINSTALL:
                         ++deleteRows;
                         break;
-                    case DataLoader.CMD_RENAME:
-                        ++renameRows;
-                        break;
                 }
                 if (DataLoader.CMD_END.equals(command)) {
                     break;
                 }
                 ++dataRows;
             }
-            return new ImportFileStatistics(dataRows, createRows, updateRows, deleteRows, renameRows);
+            return new ImportFileStatistics(dataRows, createRows, updateRows, deleteRows);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

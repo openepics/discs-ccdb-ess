@@ -36,7 +36,6 @@ public interface DataLoader {
     public static final String CMD_CREATE = "CREATE";
     public static final String CMD_UPDATE = "UPDATE";
     public static final String CMD_DELETE = "DELETE";
-    public static final String CMD_RENAME = "RENAME";
     public static final String CMD_END = "END";
 
     public static final String CMD_CREATE_DEVICE = "CREATE DEVICE";

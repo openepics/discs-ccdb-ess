@@ -276,18 +276,18 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
             final ComponentType freshComponentType = comptypeEJB.findById(selectedMember.getId());
 
             for (final ComptypePropertyValue prop : freshComponentType.getComptypePropertyList()) {
-                attributes.add(new EntityAttributeView(prop, EntityAttributeViewKind.getPropertyValueKind(prop), freshComponentType,
-                                                        comptypeEJB, ""));
+                attributes.add(new EntityAttributeView(prop, EntityAttributeViewKind.getPropertyValueKind(prop),
+                                                            freshComponentType, comptypeEJB));
             }
 
             for (final ComptypeArtifact art : freshComponentType.getComptypeArtifactList()) {
                 attributes.add(new EntityAttributeView(art, EntityAttributeViewKind.DEVICE_TYPE_ARTIFACT,
-                                                            freshComponentType, comptypeEJB, ""));
+                                                            freshComponentType, comptypeEJB));
             }
 
             for (final Tag tagAttr : freshComponentType.getTags()) {
                 attributes.add(new EntityAttributeView(tagAttr, EntityAttributeViewKind.DEVICE_TYPE_TAG,
-                                                            freshComponentType, comptypeEJB, ""));
+                                                            freshComponentType, comptypeEJB));
             }
         }
     }

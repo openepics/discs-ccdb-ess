@@ -178,37 +178,6 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
         }
     }
 
-    @Override
-    protected void handleRename() {
-        try {
-            final int startOldNameMarkerIndex = nameFld.indexOf("[");
-            final int endOldNameMarkerIndex = nameFld.indexOf("]");
-            if (startOldNameMarkerIndex == -1 || endOldNameMarkerIndex == -1) {
-                result.addRowMessage(ErrorMessage.RENAME_MISFORMAT, HDR_NAME);
-                return;
-            }
-
-            final String oldName = nameFld.substring(startOldNameMarkerIndex + 1, endOldNameMarkerIndex).trim();
-            final String newName = nameFld.substring(endOldNameMarkerIndex + 1).trim();
-
-            if (propertyByName.containsKey(oldName)) {
-                if (propertyByName.containsKey(newName)) {
-                    result.addRowMessage(ErrorMessage.NAME_ALREADY_EXISTS, HDR_NAME);
-                } else {
-                    final Property propertyToRename = propertyByName.get(oldName);
-                    propertyToRename.setName(newName);
-                    propertyEJB.save(propertyToRename);
-                    propertyByName.remove(oldName);
-                    propertyByName.put(newName, propertyToRename);
-                }
-            } else {
-                result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_NAME);
-            }
-        } catch (EJBTransactionRolledbackException e) {
-            handleLoadingError(LOGGER, e);
-        }
-    }
-
     private void setPropertyUnit(Property property, @Nullable String unit, final boolean inUse) {
         if (unit != null) {
             final Unit newUnit = unitEJB.findByName(unit);

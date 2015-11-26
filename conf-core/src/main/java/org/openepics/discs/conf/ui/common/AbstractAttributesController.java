@@ -441,7 +441,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
     }
 
     /** Modifies {@link Artifact}
-     * @throws IOException */
+     * @throws IOException if attachment file operation has failed. */
     @SuppressWarnings("unchecked")
     public void modifyArtifact() throws IOException {
         Preconditions.checkNotNull(attributeToModify);

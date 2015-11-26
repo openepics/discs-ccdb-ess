@@ -167,42 +167,6 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
     }
 
     @Override
-    protected void handleRename() {
-        try {
-            final int startOldNameMarkerIndex = nameFld.indexOf("[");
-            final int endOldNameMarkerIndex = nameFld.indexOf("]");
-            if ((startOldNameMarkerIndex == -1) || (endOldNameMarkerIndex == -1)) {
-                result.addRowMessage(ErrorMessage.RENAME_MISFORMAT, HDR_NAME);
-                return;
-            }
-
-            final String oldName = nameFld.substring(startOldNameMarkerIndex + 1, endOldNameMarkerIndex).trim();
-            final String newName = nameFld.substring(endOldNameMarkerIndex + 1).trim();
-
-            if (unitByName.containsKey(oldName)) {
-                if (unitByName.containsKey(newName)) {
-                    result.addRowMessage(ErrorMessage.NAME_ALREADY_EXISTS, HDR_NAME);
-                } else {
-                    final Unit unitToRename = unitByName.get(oldName);
-                    // if unit is in use, we cannot modify name or symbol attributes.
-                    if (unitEJB.isUnitUsed(unitToRename)) {
-                        result.addRowMessage(ErrorMessage.MODIFY_IN_USE, HDR_NAME);
-                    } else {
-                        unitToRename.setName(newName);
-                        unitEJB.save(unitToRename);
-                        unitByName.remove(oldName);
-                        unitByName.put(newName, unitToRename);
-                    }
-                }
-            } else {
-                result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_NAME);
-            }
-        } catch (EJBTransactionRolledbackException e) {
-            handleLoadingError(LOGGER, e);
-        }
-    }
-
-    @Override
     public int getDataWidth() {
         return 4;
     }

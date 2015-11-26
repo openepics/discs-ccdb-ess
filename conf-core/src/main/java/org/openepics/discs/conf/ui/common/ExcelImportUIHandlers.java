@@ -37,7 +37,6 @@ public interface ExcelImportUIHandlers {
      * <li>entity to be created</li>
      * <li>entity to be updated</li>
      * <li>entity to be deleted</li>
-     * <li>entity to be renamed</li>
      * </ul>
      *
      * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
@@ -47,11 +46,10 @@ public interface ExcelImportUIHandlers {
         private final int createRows;
         private final int updateRows;
         private final int deleteRows;
-        private final int renameRows;
 
         /** Default constructor with <code>0</code> statistics */
         public ImportFileStatistics() {
-            dataRows = createRows = updateRows = deleteRows = renameRows = 0;
+            dataRows = createRows = updateRows = deleteRows = 0;
         }
 
         /**
@@ -60,14 +58,12 @@ public interface ExcelImportUIHandlers {
          * @param createRows the number of rows with the CREATE command
          * @param updateRows the number of rows with the UPDATE command
          * @param deleteRows the number of rows with the DELETE command
-         * @param renameRows the number of rows with the RENAME command
          */
-        public ImportFileStatistics(int dataRows, int createRows, int updateRows, int deleteRows, int renameRows) {
+        public ImportFileStatistics(int dataRows, int createRows, int updateRows, int deleteRows) {
             this.dataRows = dataRows;
             this.createRows = createRows;
             this.updateRows = updateRows;
             this.deleteRows = deleteRows;
-            this.renameRows = renameRows;
         }
 
         /** @return the dataRows */
@@ -90,14 +86,9 @@ public interface ExcelImportUIHandlers {
             return deleteRows;
         }
 
-        /** @return the renameRows */
-        public int getRenameRows() {
-            return renameRows;
-        }
-
-        /** @return the number of lines actually containing any of the 4 commands */
+        /** @return the number of lines actually containing any of the 3 commands */
         public int getImportRows() {
-            return createRows + updateRows + deleteRows + renameRows;
+            return createRows + updateRows + deleteRows;
         }
     }
 

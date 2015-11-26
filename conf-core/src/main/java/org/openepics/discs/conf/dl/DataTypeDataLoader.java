@@ -23,8 +23,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Logger;
-
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.json.JsonObject;
@@ -54,8 +52,6 @@ import com.google.common.collect.Lists;
 @Stateless
 @DataTypeLoader
 public class DataTypeDataLoader extends AbstractDataLoader implements DataLoader {
-
-    private static final Logger LOGGER = Logger.getLogger(DataTypeDataLoader.class.getCanonicalName());
 
     // Header column name constants
     private static final String HDR_NAME = "NAME";
@@ -131,11 +127,6 @@ public class DataTypeDataLoader extends AbstractDataLoader implements DataLoader
                 dataTypeEJB.delete(enumToDelete);
             }
         }
-    }
-
-    @Override
-    protected void handleRename() {
-        result.addRowMessage(ErrorMessage.COMMAND_NOT_VALID, CMD_RENAME);
     }
 
     @Override

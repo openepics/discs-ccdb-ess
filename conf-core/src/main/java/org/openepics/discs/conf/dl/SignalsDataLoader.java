@@ -31,7 +31,6 @@ import javax.ejb.EJBTransactionRolledbackException;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.openepics.discs.conf.dl.annotations.SignalsLoader;
 import org.openepics.discs.conf.dl.common.AbstractDataLoader;
 import org.openepics.discs.conf.dl.common.DataLoader;
@@ -141,11 +140,6 @@ public class SignalsDataLoader extends AbstractDataLoader implements DataLoader 
         } catch (EJBTransactionRolledbackException e) {
             handleLoadingError(LOGGER, e);
         }
-    }
-
-    @Override
-    protected void handleRename() {
-        throw new NotImplementedException();
     }
 
     @Override

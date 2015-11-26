@@ -525,7 +525,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
                     // found the existing artifact, update it and exit!
                     attributesIter.set(new EntityAttributeView(artifact, slot.isHostingSlot()
                             ? EntityAttributeViewKind.INSTALL_SLOT_ARTIFACT
-                                    : EntityAttributeViewKind.CONTAINER_SLOT_ARTIFACT, slot, slotEJB, ""));
+                                    : EntityAttributeViewKind.CONTAINER_SLOT_ARTIFACT, slot, slotEJB));
                     return;
                 }
 
@@ -548,7 +548,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         //     the last attribute for this parent (no tags), or the very last attribute in the entire table
         attributesIter.add(new EntityAttributeView(artifact, slot.isHostingSlot()
                 ? EntityAttributeViewKind.INSTALL_SLOT_ARTIFACT : EntityAttributeViewKind.CONTAINER_SLOT_ARTIFACT,
-                slot, slotEJB, ""));
+                slot, slotEJB));
     }
 
     private void removeRelatedAttributes(Slot slot) {
@@ -584,7 +584,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
                                                                                         getDevicePropertyList()) {
                 attributes.add(new EntityAttributeView(devicePropertyValue,
                                                             EntityAttributeViewKind.DEVICE_PROPERTY,
-                                                            slot, slotEJB, activeInstallationRecord.getDevice().getName()));
+                                                            slot, slotEJB,
+                                                            activeInstallationRecord.getDevice().getName()));
             }
         }
     }
@@ -602,7 +603,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             attributes.add(new EntityAttributeView(artifact, isHostingSlot
                                                             ? EntityAttributeViewKind.INSTALL_SLOT_ARTIFACT
                                                             : EntityAttributeViewKind.CONTAINER_SLOT_ARTIFACT,
-                                                            slot, slotEJB, ""));
+                                                            slot, slotEJB));
         }
 
         if (activeInstallationRecord != null) {
@@ -627,7 +628,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             attributes.add(new EntityAttributeView(tagInstance, isHostingSlot
                                                             ? EntityAttributeViewKind.INSTALL_SLOT_TAG
                                                             : EntityAttributeViewKind.CONTAINER_SLOT_TAG,
-                                                            slot, slotEJB, ""));
+                                                            slot, slotEJB));
         }
 
         if (activeInstallationRecord != null) {
@@ -2209,7 +2210,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     }
 
     /** Modifies the selected artifact properties
-     * @throws IOException */
+     * @throws IOException if attachment file operation has failed. */
     public void modifyArtifact() throws IOException {
         final SlotArtifact selectedArtifact = (SlotArtifact) selectedAttributes.get(0).getEntity();
 

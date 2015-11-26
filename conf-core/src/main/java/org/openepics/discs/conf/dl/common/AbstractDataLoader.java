@@ -45,15 +45,13 @@ import com.google.common.base.Preconditions;
 public abstract class AbstractDataLoader implements DataLoader {
 
     protected static final String HDR_OPERATION = "OPERATION";
+    /** Constant representing the index of the command (Operation) in the data row */
     protected static final int COL_INDEX_OPERATION = 0;
 
     public static final int DEFAULT_EXCEL_TAMPLATE_DATA_START_ROW = 8;
 
     /** The {@link DataLoaderResult} contains error information and state for the error loading process */
     protected DataLoaderResult result = new DataLoaderResult();
-
-    /** Constant representing the index in the row data of the command field */
-    private static final int COMMAND_INDEX = 0;
 
     /** Contextual data map */
     private Map<String, Object> contextualData;
@@ -102,7 +100,6 @@ public abstract class AbstractDataLoader implements DataLoader {
         int createRows = 0;
         int updateRows = 0;
         int deleteRows = 0;
-        int renameRows = 0;
 
         currentRowData = null;
         for (Pair<Integer, List<String>> row : inputRows) {
@@ -111,7 +108,7 @@ public abstract class AbstractDataLoader implements DataLoader {
             result.setCurrentRowNumber(row.getLeft());
             currentRowData = row.getRight();
 
-            if (DataLoader.CMD_END.equals(currentRowData.get(COMMAND_INDEX))) {
+            if (DataLoader.CMD_END.equals(currentRowData.get(COL_INDEX_OPERATION))) {
                 break;
             } else {
                 ++dataRows;
@@ -145,10 +142,6 @@ public abstract class AbstractDataLoader implements DataLoader {
                         handleDelete(command);
                         ++deleteRows;
                         break;
-                    case DataLoader.CMD_RENAME:
-                        handleRename();
-                        ++renameRows;
-                        break;
                     case DataLoader.CMD_CREATE:
                     case DataLoader.CMD_CREATE_DEVICE:
                     case DataLoader.CMD_CREATE_DEVICE_TYPE:
@@ -164,8 +157,7 @@ public abstract class AbstractDataLoader implements DataLoader {
                 }
             }
         }
-        result.setImportFileStatistics(new
-                            ImportFileStatistics(dataRows, createRows, updateRows, deleteRows, renameRows));
+        result.setImportFileStatistics(new ImportFileStatistics(dataRows, createRows, updateRows, deleteRows));
         return result;
     }
 
@@ -236,17 +228,6 @@ public abstract class AbstractDataLoader implements DataLoader {
 
     /**
      * <p>
-     * Handle a row that contains a <code>RENAME</code> command.
-     * </p>
-     * <p>
-     * <b>Precondition:</b> {@link #assignMembersForCurrentRow()} has been invoked. This gives chance
-     * to the sub-class to extract row data for the call to this method.
-     * </p>
-     */
-    protected abstract void handleRename();
-
-    /**
-     * <p>
      * Handle a row that contains a <code>CREATE</code> command.
      * </p>
      * <p>
@@ -276,7 +257,7 @@ public abstract class AbstractDataLoader implements DataLoader {
     private String checkCommandAndRequiredFields() {
         Preconditions.checkNotNull(indicies);
 
-        final String command = currentRowData.get(COMMAND_INDEX);
+        final String command = currentRowData.get(COL_INDEX_OPERATION);
         if (StringUtils.isEmpty(command)) {
             result.addRowMessage(ErrorMessage.COMMAND_IS_MISSING, HDR_OPERATION);
             return null;
@@ -297,7 +278,7 @@ public abstract class AbstractDataLoader implements DataLoader {
                 }
             } else {
                 if (requiredColumns.contains(columnName) && currentRowData.get(index) == null
-                        && !DataLoader.CMD_RENAME.equals(command) && !DataLoader.CMD_DELETE.equals(command)) {
+                        && !DataLoader.CMD_DELETE.equals(command)) {
                     result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, columnName);
                 }
             }

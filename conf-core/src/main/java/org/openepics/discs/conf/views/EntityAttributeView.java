@@ -69,6 +69,18 @@ public class EntityAttributeView {
      * @param dao the EJB to handle the entities associated with this view object
      */
     public EntityAttributeView(Object entity, EntityAttributeViewKind kind, @Nullable NamedEntity parent,
+            ReadOnlyDAO<? extends ConfigurationEntity> dao) {
+        this(entity, kind, parent, dao, "");
+    }
+
+    /** Construct a new UI view object based on the database entity
+     * @param entity the database entity
+     * @param kind database entity kind {@link EntityAttributeViewKind}
+     * @param parent the named entity parent for this attribute
+     * @param dao the EJB to handle the entities associated with this view object
+     * @param usedBy the name of the entity owning this attribute
+     */
+    public EntityAttributeView(Object entity, EntityAttributeViewKind kind, @Nullable NamedEntity parent,
             ReadOnlyDAO<? extends ConfigurationEntity> dao, String usedBy) {
         Preconditions.checkNotNull(kind);
         this.entity = entity;

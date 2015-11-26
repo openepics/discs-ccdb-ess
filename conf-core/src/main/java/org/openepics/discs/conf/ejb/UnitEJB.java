@@ -57,6 +57,7 @@ public class UnitEJB extends DAO<Unit> {
 
     /**
      * @param unit unit to check
+     * @param maxResults the maximum number of entities returned by the database
      * @return the list of properties, where the unit is used
      */
     public List<Property> findProperties(Unit unit, int maxResults) {

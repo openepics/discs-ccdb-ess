@@ -41,8 +41,7 @@ import com.google.common.base.Preconditions;
  * @author <a href="mailto:miroslav.pavleski@cosylab.com">Miroslav Pavleski</a>
  *
  */
-public abstract class AbstractEntityWithPropertiesDataLoader<S extends PropertyValue> extends AbstractDataLoader
-                                                                                            implements DataLoader {
+public abstract class AbstractEntityWithPropertiesDataLoader<S extends PropertyValue> extends AbstractDataLoader {
     @Inject protected PropertyEJB propertyEJB;
 
     /**

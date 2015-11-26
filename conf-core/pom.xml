@@ -368,6 +368,11 @@
                     </exclusions>
                 </dependency>
                 <dependency>
+                    <groupId>org.openepics</groupId>
+                    <artifactId>names-jaxb</artifactId>
+                    <version>[3.0.2,)</version>
+                </dependency>
+                <dependency>
                     <groupId>org.postgresql</groupId>
                     <artifactId>postgresql</artifactId>
                     <version>9.3-1102-jdbc41</version>

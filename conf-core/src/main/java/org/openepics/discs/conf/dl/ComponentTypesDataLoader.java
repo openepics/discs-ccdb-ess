@@ -188,39 +188,6 @@ public class ComponentTypesDataLoader extends AbstractEntityWithPropertiesDataLo
     }
 
     @Override
-    protected void handleRename() {
-        try {
-            final int startOldNameMarkerIndex = nameFld.indexOf("[");
-            final int endOldNameMarkerIndex = nameFld.indexOf("]");
-            if (startOldNameMarkerIndex == -1 || endOldNameMarkerIndex == -1) {
-                result.addRowMessage(ErrorMessage.RENAME_MISFORMAT, HDR_NAME);
-                return;
-            }
-
-            final String oldName = nameFld.substring(startOldNameMarkerIndex + 1, endOldNameMarkerIndex).trim();
-            final String newName = nameFld.substring(endOldNameMarkerIndex + 1).trim();
-
-            final ComponentType componentTypeToRename = comptypeEJB.findByName(oldName);
-            if (componentTypeToRename != null) {
-                if (SlotEJB.ROOT_COMPONENT_TYPE.equals(componentTypeToRename.getName())) {
-                    result.addRowMessage(ErrorMessage.NOT_AUTHORIZED, AbstractDataLoader.HDR_OPERATION);
-                    return;
-                }
-                if (comptypeEJB.findByName(newName) != null) {
-                    result.addRowMessage(ErrorMessage.NAME_ALREADY_EXISTS, HDR_NAME);
-                } else {
-                    componentTypeToRename.setName(newName);
-                    comptypeEJB.save(componentTypeToRename);
-                }
-            } else {
-                result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_NAME);
-            }
-        } catch (EJBTransactionRolledbackException e) {
-            handleLoadingError(LOGGER, e);
-        }
-    }
-
-    @Override
     public int getDataWidth() {
         return 6;
     }

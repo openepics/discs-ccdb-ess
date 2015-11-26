@@ -68,6 +68,7 @@ public class PropertyView {
     }
 
     /**
+     * @param ejb the Enterprise bean to use to locate the actual property.
      * @return the property
      */
     public Property findProperty(PropertyEJB ejb) {

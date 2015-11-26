@@ -156,11 +156,6 @@ public class DevicesDataLoader extends AbstractEntityWithPropertiesDataLoader<De
         }
     }
 
-    @Override
-    protected void handleRename() {
-        result.addRowMessage(ErrorMessage.COMMAND_NOT_VALID, CMD_RENAME);
-    }
-
     @SuppressWarnings("unchecked")
     @Override
     protected DAO<Device> getDAO() {

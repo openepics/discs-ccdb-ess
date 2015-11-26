@@ -103,6 +103,7 @@ public class ComptypeEJB extends DAO<ComponentType> {
 
     /**
      * @param compType the device type to search for
+     * @param maxResults the maximum number of entities returned by the database
      * @return <code>true</code> if the device type is used in the database, <code>false</code> otherwise
      */
     public List<String> findWhereIsComponentTypeUsed(final ComponentType compType, int maxResults) {

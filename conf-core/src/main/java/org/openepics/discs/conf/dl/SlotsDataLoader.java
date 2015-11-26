@@ -730,11 +730,6 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
         installationEJB.save(record);
     }
 
-    @Override
-    protected void handleRename() {
-        result.addRowMessage(ErrorMessage.COMMAND_NOT_VALID, CMD_RENAME);
-    }
-
     @SuppressWarnings("unchecked")
     @Override
     protected DAO<Slot> getDAO() {

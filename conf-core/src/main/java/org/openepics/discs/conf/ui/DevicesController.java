@@ -258,12 +258,12 @@ public class DevicesController
 
             for (final DeviceArtifact artf : attrDevice.getDeviceArtifactList()) {
                 attributes.add(new EntityAttributeView(artf, EntityAttributeViewKind.DEVICE_ARTIFACT,
-                                                                attrDevice, deviceEJB, ""));
+                                                                attrDevice, deviceEJB));
             }
 
             for (final Tag tagAttr : attrDevice.getTags()) {
                 attributes.add(new EntityAttributeView(tagAttr, EntityAttributeViewKind.DEVICE_TAG,
-                                                                attrDevice, deviceEJB, ""));
+                                                                attrDevice, deviceEJB));
             }
 
             final InstallationRecord installationRecord = installationEJB.getActiveInstallationRecordForDevice(attrDevice);
@@ -272,7 +272,8 @@ public class DevicesController
             if (slot != null) {
                 for (final SlotPropertyValue value : slot.getSlotPropertyList()) {
                     attributes.add(new EntityAttributeView(value, EntityAttributeViewKind.INSTALL_SLOT_PROPERTY,
-                                                                    attrDevice, deviceEJB, slot.getName() + ", " + parent.getName()));
+                                                                    attrDevice, deviceEJB,
+                                                                    slot.getName() + ", " + parent.getName()));
                 }
             } else {
                 for (final ComptypePropertyValue parentProp : parent.getComptypePropertyList()) {
