@@ -90,6 +90,22 @@ public class ConnectsEJB {
         return connects;
     }
 
+    public List<CableElement> getCobles(Slot slot1, Slot slot2) {
+        List<CableElement> r = new ArrayList<CableElement>();
+        String n1 = slot1.getName();
+        String n2 = slot2.getName();
+
+        for (CableElement cable : cables) {
+            if (n1.equals(cable.getEndpointA().getDevice()) && n2.equals(cable.getEndpointB().getDevice())) {
+                r.add(cable);
+            } else if (n1.equals(cable.getEndpointB().getDevice()) && n2.equals(cable.getEndpointA().getDevice())) {
+                r.add(cable);
+            }
+        }
+        return r;
+    }
+
+
     /**
      * @return the cableDBStatus
      */

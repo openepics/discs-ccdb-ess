@@ -45,6 +45,7 @@ public class SlotView {
     private boolean isInClipboard;
     private int level;
     final private SlotEJB slotEJB;
+    private String cableNumber;
 
     /** Simpler constructor, used in the new Hierarchy builder.
      * @param slot the {@link Slot} to create the UI view object for
@@ -157,5 +158,19 @@ public class SlotView {
 
     public void setInClipboard(final boolean isInClipboard) {
         this.isInClipboard = isInClipboard;
+    }
+
+    /**
+     * @return the cableNumber
+     */
+    public String getCableNumber() {
+        return cableNumber;
+    }
+
+    /**
+     * @param cableNumber the cableNumber to set
+     */
+    public void setCableNumber(String cableNumber) {
+        this.cableNumber = cableNumber;
     }
 }

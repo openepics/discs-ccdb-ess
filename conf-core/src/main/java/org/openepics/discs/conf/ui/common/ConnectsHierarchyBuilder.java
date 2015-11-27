@@ -82,6 +82,7 @@ public class ConnectsHierarchyBuilder extends HierarchyBuilder {
             childSlotView.setLevel(parentSlotView.getLevel() + 1);
             childSlotView.setInitialzed(true);
             childSlotView.setDeletable(true);
+            childSlotView.setCableNumber(connectsEJB.getCobles(parentSlot, child).get(0).getNumber());
             final TreeNode addedTreeNode = new DefaultTreeNode(childSlotView);
 
             if (rebuildSubTree(addedTreeNode, parentIds))

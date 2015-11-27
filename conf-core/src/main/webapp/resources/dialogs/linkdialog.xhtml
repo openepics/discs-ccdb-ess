@@ -1,0 +1,44 @@
+<!--
+ Copyright (c) 2015 European Spallation Source
+ Copyright (c) 2015 Cosylab d.d.
+
+ This file is part of Controls Configuration Database.
+
+ Controls Configuration Database is free software: you can redistribute it
+ and/or modify it under the terms of the GNU General Public License as
+ published by the Free Software Foundation, either version 2 of the License,
+ or any newer version.
+
+ This program is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ details.
+
+ You should have received a copy of the GNU General Public License along with
+ this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
+-->
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html">
+    <h:form id="linksForm">
+        <p:dialog id="linksDlg" widgetVar="linksDlg"  modal="true" resizable="false" closable="false"
+                width="400">
+            <f:facet name="header">
+                <h:outputText value="Show #{hierarchiesController.linkSlot.name} in..." />
+            </f:facet>
+            <p:panelGrid id="grp" styleClass="noBorders" columns="1" style="margin-bottom: 1ex;">
+                <h:outputLink rendered="#{hierarchiesController.linkToNaming(hierarchiesController.linkSlot)}" target="_blank" 
+                        value="#{hierarchiesController.namingRedirectionUrl}#{hierarchiesController.linkSlot.name}">
+                    <h:outputText value="Naming Service" style="color: blue; text-decoration: underline;" />
+                </h:outputLink>
+                <h:outputLink rendered="#{not empty hierarchiesController.linkSlot.cableNumber}" target="_blank"
+                        value="#{hierarchiesController.cableRedirectionUrl}#{hierarchiesController.linkSlot.cableNumber}">
+                    <h:outputText value="Cable DB" style="color: blue; text-decoration: underline;" />
+                </h:outputLink>
+            </p:panelGrid>
+            <p:commandButton ajax="true" value="Close" styleClass="dialogButton" onclick="PF('linksDlg').hide();"
+                             update="grp"  />
+        </p:dialog>
+    </h:form>
+</ui:composition>

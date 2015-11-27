@@ -225,13 +225,15 @@
                                                     style="display:inline-block; vertical-align:bottom !important"
                                                     styleClass="ui-icon ui-icon-folder-collapsed" />
                                                 <h:outputText value="#{connectsSlot.name}" styleClass="#{hierarchiesController.calcNameClass(connectsSlot)}"
-                                                    title="#{connectsSlot.description}#{connectsSlot.hostingSlot ? ' ('.concat(connectsSlot.deviceTypeName).concat(')') : ''}" />
-                                                <p:link rendered="#{connectsSlot.hostingSlot and hierarchiesController.linkToNaming(connectsSlot)}" target="_blank" 
-                                                        href="#{hierarchiesController.namingRedirectionUrl}#{connectsSlot.name}" title="Open in Naming Service">
+                                                    title="#{connectsSlot.description}#{connectsSlot.hostingSlot ? ' ('.concat(connectsSlot.deviceTypeName).concat(')') : ''}" />                                                
+                                                <p:commandLink rendered="#{connectsSlot.hostingSlot 
+                                                        and (not empty connectsSlot.cableNumber
+                                                        or hierarchiesController.linkToNaming(connectsSlot))}" update=":linksForm" oncomplete="PF('linksDlg').show()">
                                                     <h:outputText value="" rendered="#{connectsSlot.hostingSlot}" 
                                                         style="display:inline-block; vertical-align:bottom !important; margin-left: 1ex;"
                                                         styleClass="ui-icon ui-icon-extlink"/>
-                                                </p:link>  
+                                                    <f:setPropertyActionListener target="#{hierarchiesController.linkSlot}" value="#{connectsSlot}"/>
+                                                </p:commandLink>
                                             </p:column>
                                         </p:treeTable>
                                     </div>
@@ -652,10 +654,9 @@
         </ui:include>    
         <ui:include src="/resources/dialogs/cannot-delete-relationship.xhtml" />
         <ui:include src="/resources/dialogs/slot-pair-loop-notification.xhtml" />
-        <ui:include src="/resources/dialogs/add-relationship.xhtml" />
-        
+        <ui:include src="/resources/dialogs/add-relationship.xhtml" />        
         <ui:include src="/resources/dialogs/cannot-find-slot.xhtml" />
-
+        <ui:include src="/resources/dialogs/linkdialog.xhtml" />
         <script type="text/javascript">
             //<![CDATA[
             jQuery(window).resize(function() {

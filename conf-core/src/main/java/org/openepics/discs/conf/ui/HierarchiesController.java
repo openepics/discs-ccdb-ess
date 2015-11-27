@@ -151,6 +151,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     /** The device page part of the URL containing all the required parameters already. */
     private static final String     NAMING_DEVICE_PAGE = "devices.xhtml?i=2&deviceName=";
 
+    private static final Object CABLEDB_DEVICE_PAGE = "index.xhtml?cableNumber=";
+
     @Inject private transient SlotEJB slotEJB;
     @Inject private transient SlotPairEJB slotPairEJB;
     @Inject private transient ConnectsEJB connectsEJB;
@@ -267,6 +269,9 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     private String filterConnectsTree;
 
     private String namingRedirectionUrl;
+    private String cableRedirectionUrl;
+
+    private SlotView linkSlot;
 
     /** Java EE post construct life-cycle method. */
     @Override
@@ -430,6 +435,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     public boolean linkToNaming(final SlotView slot) {
         if (namingRedirectionUrl == null) return false;
         if (!detectNamingStatus) return false;
+        if (slot == null) return false;
         return NamingStatus.ACTIVE.equals(getNamingStatus(slot.getName()));
     }
 
@@ -3161,6 +3167,39 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         connectsHierarchyBuilder.applyFilter(connectsRootNode, connectsChildren);
         unselectAllTreeNodes();
         selectedNodes = null;
+    }
+
+    /**
+     * @return the linkSlot
+     */
+    public SlotView getLinkSlot() {
+        return linkSlot;
+    }
+
+    /**
+     * @param linkSlot the linkSlot to set
+     */
+    public void setLinkSlot(SlotView linkSlot) {
+        this.linkSlot = linkSlot;
+    }
+
+    /**
+     * @return the cableRedirectionUrl
+     */
+    public String getCableRedirectionUrl() {
+        if (cableRedirectionUrl == null) {
+            final String cableRedirectionUrl = properties.getProperty(AppProperties.CABLEDB_APPLICATION_URL);
+
+            if (!Strings.isNullOrEmpty(cableRedirectionUrl)) {
+                final StringBuilder redirectionUrl = new StringBuilder(cableRedirectionUrl);
+                if (redirectionUrl.charAt(redirectionUrl.length() - 1) != '/') {
+                    redirectionUrl.append('/');
+                }
+                redirectionUrl.append(CABLEDB_DEVICE_PAGE);
+                this.cableRedirectionUrl = redirectionUrl.toString();
+            }
+        }
+        return cableRedirectionUrl;
     }
 
 }
