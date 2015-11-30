@@ -1,11 +1,11 @@
-/* 
+/*
  * This software is Copyright by the Board of Trustees of Michigan
  *  State University (c) Copyright 2013, 2014.
- *  
+ *
  *  You may use this software under the terms of the GNU public license
  *  (GPL). The terms of this license are described at:
  *    http://www.gnu.org/licenses/gpl.txt
- *  
+ *
  *  Contact Information:
  *       Facility for Rare Isotope Beam
  *       Michigan State University
@@ -16,6 +16,7 @@ package org.openepics.seds.core.datatypes;
 
 import java.util.Arrays;
 import java.util.Objects;
+
 import org.openepics.seds.api.datatypes.SedsAlarm;
 import org.openepics.seds.api.datatypes.SedsControl;
 import org.openepics.seds.api.datatypes.SedsDisplay;
@@ -27,14 +28,17 @@ import org.openepics.seds.util.SedsException;
 class IScalar<T> implements SedsScalar<T> {
 
     private final T value;
+    private final String representation;
     private final SedsAlarm alarm;
     private final SedsDisplay display;
     private final SedsControl control;
     private final SedsTime time;
     private final ScalarType type;
 
-    IScalar(Class<T> type, T value, SedsAlarm alarm, SedsDisplay display, SedsControl control, SedsTime time) {
+    IScalar(Class<T> type, T value, String representation, SedsAlarm alarm, SedsDisplay display, SedsControl control,
+            SedsTime time) {
         this.value = value;
+        this.representation = representation;
         this.alarm = alarm;
         this.control = control;
         this.display = display;
@@ -53,6 +57,11 @@ class IScalar<T> implements SedsScalar<T> {
     @Override
     public T getValue() {
         return value;
+    }
+
+    @Override
+    public String getRepresentation() {
+        return representation != null ? representation : (value != null ? value.toString() : null);
     }
 
     @Override

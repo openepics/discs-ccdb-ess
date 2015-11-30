@@ -1,11 +1,11 @@
-/* 
+/*
  * This software is Copyright by the Board of Trustees of Michigan
  *  State University (c) Copyright 2013, 2014.
- *  
+ *
  *  You may use this software under the terms of the GNU public license
  *  (GPL). The terms of this license are described at:
  *    http://www.gnu.org/licenses/gpl.txt
- *  
+ *
  *  Contact Information:
  *       Facility for Rare Isotope Beam
  *       Michigan State University
@@ -77,6 +77,7 @@ public class Alpha {
                 Seds.newSerializer().serializeSEDS(
                         Seds.newFactory().newScalar(
                                 1234,
+                                "1234",
                                 Seds.newFactory().newAlarm(AlarmType.MAJOR, "noStatus", "simpleAlarm"),
                                 Seds.newFactory().newControl(10d, 100d),
                                 null,
@@ -170,7 +171,7 @@ public class Alpha {
         //----------------------------------------------------------------------
 
         //Writes
-        //----------------------------------------------------------------------   
+        //----------------------------------------------------------------------
         SedsSerializer serializer = Seds.newSerializer();
         SedsWriter writer = Seds.newWriter();
 
@@ -178,7 +179,7 @@ public class Alpha {
         //----------------------------------------------------------------------
 
         //Equality Check
-        //----------------------------------------------------------------------   
+        //----------------------------------------------------------------------
         assertTrue(FileUtil.equalFileContent(output, input, StandardCharsets.UTF_8));
         output.delete();
         //----------------------------------------------------------------------
@@ -199,7 +200,7 @@ public class Alpha {
         //----------------------------------------------------------------------
 
         //Writes
-        //---------------------------------------------------------------------- 
+        //----------------------------------------------------------------------
         Seds.newWriter().write(
                 Seds.newSerializer().serializeSEDS(data),
                 output
@@ -207,7 +208,7 @@ public class Alpha {
         //----------------------------------------------------------------------
 
         //Equality Check
-        //----------------------------------------------------------------------   
+        //----------------------------------------------------------------------
         assertTrue(FileUtil.equalFileContent(output, input, StandardCharsets.UTF_8));
         output.delete();
         //----------------------------------------------------------------------
@@ -222,7 +223,7 @@ public class Alpha {
         Seds.newWriter().write(Seds.newSerializer().serializeSEDS(data), output);
 
         //Equality Check
-        //----------------------------------------------------------------------   
+        //----------------------------------------------------------------------
         assertTrue(FileUtil.equalFileContent(output, input, StandardCharsets.UTF_8));
         output.delete();
         //----------------------------------------------------------------------
@@ -242,7 +243,7 @@ public class Alpha {
         Seds.newWriter().write(Seds.newVTypeConverter().toJSON(vData), output);
 
         //Equality Check
-        //----------------------------------------------------------------------   
+        //----------------------------------------------------------------------
         assertTrue(FileUtil.equalFileContent(output, input, StandardCharsets.UTF_8));
         output.delete();
         //----------------------------------------------------------------------

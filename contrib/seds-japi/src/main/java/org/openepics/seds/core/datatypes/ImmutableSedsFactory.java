@@ -1,11 +1,11 @@
-/* 
+/*
  * This software is Copyright by the Board of Trustees of Michigan
  *  State University (c) Copyright 2013, 2014.
- *  
+ *
  *  You may use this software under the terms of the GNU public license
  *  (GPL). The terms of this license are described at:
  *    http://www.gnu.org/licenses/gpl.txt
- *  
+ *
  *  Contact Information:
  *       Facility for Rare Isotope Beam
  *       Michigan State University
@@ -112,6 +112,7 @@ public class ImmutableSedsFactory implements SedsFactory {
     @Override
     public SedsScalar<Boolean> newScalar(
             Boolean value,
+            String representation,
             SedsAlarm alarm,
             SedsControl control,
             SedsDisplay display,
@@ -120,6 +121,7 @@ public class ImmutableSedsFactory implements SedsFactory {
         return new IScalar<>(
                 Boolean.class,
                 value,
+                representation,
                 alarm,
                 display,
                 control,
@@ -130,6 +132,7 @@ public class ImmutableSedsFactory implements SedsFactory {
     @Override
     public SedsScalar<SedsEnum> newScalar(
             SedsEnum value,
+            String representation,
             SedsAlarm alarm,
             SedsControl control,
             SedsDisplay display,
@@ -138,6 +141,7 @@ public class ImmutableSedsFactory implements SedsFactory {
         return new IScalar<>(
                 SedsEnum.class,
                 value,
+                representation,
                 alarm,
                 display,
                 control,
@@ -148,6 +152,7 @@ public class ImmutableSedsFactory implements SedsFactory {
     @Override
     public SedsScalar<Integer> newScalar(
             Integer value,
+            String representation,
             SedsAlarm alarm,
             SedsControl control,
             SedsDisplay display,
@@ -156,6 +161,7 @@ public class ImmutableSedsFactory implements SedsFactory {
         return new IScalar<>(
                 Integer.class,
                 value,
+                representation,
                 alarm,
                 display,
                 control,
@@ -166,6 +172,7 @@ public class ImmutableSedsFactory implements SedsFactory {
     @Override
     public SedsScalar<Number> newScalar(
             Number value,
+            String representation,
             SedsAlarm alarm,
             SedsControl control,
             SedsDisplay display,
@@ -174,6 +181,7 @@ public class ImmutableSedsFactory implements SedsFactory {
         return new IScalar<>(
                 Number.class,
                 value,
+                representation,
                 alarm,
                 display,
                 control,
@@ -191,6 +199,7 @@ public class ImmutableSedsFactory implements SedsFactory {
     ) {
         return new IScalar<>(
                 String.class,
+                value,
                 value,
                 alarm,
                 display,

@@ -1,11 +1,11 @@
-/* 
+/*
  * This software is Copyright by the Board of Trustees of Michigan
  *  State University (c) Copyright 2013, 2014.
- *  
+ *
  *  You may use this software under the terms of the GNU public license
  *  (GPL). The terms of this license are described at:
  *    http://www.gnu.org/licenses/gpl.txt
- *  
+ *
  *  Contact Information:
  *       Facility for Rare Isotope Beam
  *       Michigan State University
@@ -81,7 +81,7 @@ public class VTypeMapperTest {
 
         obj = new Object[]{
             f.newDisplay(1d, 2d, 10d, 100d, 11d, 12d, null, "units"),
-            ValueFactory.newDisplay((Double) 10d, (Double) 1d, (Double) 11d, "units", null, (Double) 12d, (Double) 2d, (Double) 100d, null, null)
+            ValueFactory.newDisplay(10d, 1d, 11d, "units", null, 12d, 2d, 100d, null, null)
         };
         mappings.put("display", obj);
 
@@ -104,19 +104,19 @@ public class VTypeMapperTest {
         mappings.put("time", obj);
 
         obj = new Object[]{
-            f.newScalar(true, f.newAlarm(AlarmType.fromOrdinal(0), null, "NONE"), null, null, f.newTime(Timestamp.of(1354719441L, 521786982), null)),
+            f.newScalar(true, "TRUE", f.newAlarm(AlarmType.fromOrdinal(0), null, "NONE"), null, null, f.newTime(Timestamp.of(1354719441L, 521786982), null)),
             ValueFactory.newVBoolean(true, alarmNone(), ValueFactory.newTime(Timestamp.of(1354719441L, 521786982)))
         };
         mappings.put("scalar_boolean", obj);
 
         obj = new Object[]{
-            f.newScalar(10, f.newAlarm(AlarmType.fromOrdinal(0), null, "NONE"), null, f.newDisplay(Double.NaN, Double.NaN, Double.NaN, Double.NaN, Double.NaN, Double.NaN, null, ""), f.newTime(Timestamp.of(1354719441L, 521786982), null)),
+            f.newScalar(10, "10", f.newAlarm(AlarmType.fromOrdinal(0), null, "NONE"), null, f.newDisplay(Double.NaN, Double.NaN, Double.NaN, Double.NaN, Double.NaN, Double.NaN, null, ""), f.newTime(Timestamp.of(1354719441L, 521786982), null)),
             ValueFactory.newVInt(10, alarmNone(), ValueFactory.newTime(Timestamp.of(1354719441L, 521786982)), displayNone())
         };
         mappings.put("scalar_integer", obj);
 
         obj = new Object[]{
-            f.newScalar(10L, f.newAlarm(AlarmType.fromOrdinal(0), null, "NONE"), null, f.newDisplay(Double.NaN, Double.NaN, Double.NaN, Double.NaN, Double.NaN, Double.NaN, null, ""), f.newTime(Timestamp.of(1354719441L, 521786982), null)),
+            f.newScalar(10L, "10L", f.newAlarm(AlarmType.fromOrdinal(0), null, "NONE"), null, f.newDisplay(Double.NaN, Double.NaN, Double.NaN, Double.NaN, Double.NaN, Double.NaN, null, ""), f.newTime(Timestamp.of(1354719441L, 521786982), null)),
             ValueFactory.newVNumber(10L, alarmNone(), ValueFactory.newTime(Timestamp.of(1354719441L, 521786982)), ValueFactory.displayNone())
         };
         mappings.put("scalar_number", obj);
@@ -289,7 +289,7 @@ public class VTypeMapperTest {
         System.out.println("toSedsScalarArray<Boolean>");
 
         SedsScalarArray<Boolean> expected = (SedsScalarArray<Boolean>) mappings.get("scalar_array_boolean")[SEDS];
-        SedsScalarArray<Boolean> actual = instance.toSedsScalarArrayBoolean((Object) mappings.get("scalar_array_boolean")[VTYPE]);
+        SedsScalarArray<Boolean> actual = instance.toSedsScalarArrayBoolean(mappings.get("scalar_array_boolean")[VTYPE]);
 
         assertEquals(expected, actual);
     }

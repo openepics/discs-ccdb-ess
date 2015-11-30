@@ -14,6 +14,17 @@
         serialize and deserialize standard data structures to and from JSON.
     </description>
     
+    <distributionManagement>
+        <repository>
+            <id>ess-ics</id>
+            <url>https://artifactory01.esss.lu.se/artifactory/libs-release-local</url>
+        </repository>
+        <snapshotRepository>
+            <id>ess-ics</id>
+            <url>https://artifactory01.esss.lu.se/artifactory/libs-snapshot-local</url>
+        </snapshotRepository>
+    </distributionManagement>
+    
     <licenses>
         <license>
             <name>GNU General Public License (GPL) version 3.0</name>

@@ -1,11 +1,11 @@
-/* 
+/*
  * This software is Copyright by the Board of Trustees of Michigan
  *  State University (c) Copyright 2013, 2014.
- *  
+ *
  *  You may use this software under the terms of the GNU public license
  *  (GPL). The terms of this license are described at:
  *    http://www.gnu.org/licenses/gpl.txt
- *  
+ *
  *  Contact Information:
  *       Facility for Rare Isotope Beam
  *       Michigan State University
@@ -59,6 +59,7 @@ public class SampleSedsFactory {
     public SedsScalar<Boolean> sampleSedsScalarBoolean() {
         SedsScalar<Boolean> obj = Seds.newFactory().newScalar(
                 true,
+                "TRUE",
                 null,
                 null,
                 null,
@@ -70,6 +71,7 @@ public class SampleSedsFactory {
     public SedsScalar<SedsEnum> sampleSedsScalarEnum() {
         return Seds.newFactory().newScalar(
                 Seds.newFactory().newEnum("B", new String[]{"A", "B", "C"}),
+                "Label B",
                 Seds.newFactory().newAlarm(AlarmType.fromOrdinal(2), "3", "sampleAlarm"),
                 null,
                 null,
@@ -78,8 +80,9 @@ public class SampleSedsFactory {
     }
 
     public SedsScalar<Integer> sampleSedsScalarInteger() {
-        return (SedsScalar<Integer>) Seds.newFactory().newScalar(
+        return Seds.newFactory().newScalar(
                 1,
+                "0x1",
                 null,
                 null,
                 null,
@@ -90,6 +93,7 @@ public class SampleSedsFactory {
     public SedsScalar<Number> sampleSedsScalarNumber() {
         SedsScalar<Number> obj = Seds.newFactory().newScalar(
                 3.1415,
+                "3.1415",
                 Seds.newFactory().newAlarm(AlarmType.fromOrdinal(2), "3", "sampleAlarm"),
                 Seds.newFactory().newControl(10.0, 100.0),
                 Seds.newFactory().newDisplay(1d, 2d, 10d, 100d, 11d, 12d, "sampleDisplay", "meters"),
@@ -121,7 +125,7 @@ public class SampleSedsFactory {
     }
 
     public SedsScalarArray<SedsEnum> sampleSedsScalarArrayEnum() {
-        return (SedsScalarArray<SedsEnum>) Seds.newFactory().newScalarArray(
+        return Seds.newFactory().newScalarArray(
                 new SedsEnum[]{
                     Seds.newFactory().newEnum("A", new String[]{"A", "B", "C"}),
                     Seds.newFactory().newEnum("AA", new String[]{"AA", "BB", "CC"})
@@ -204,7 +208,7 @@ public class SampleSedsFactory {
     }
 
     public SedsScalarArray<SedsEnum> sampleDB_SedsScalarArrayEnum() {
-        return (SedsScalarArray<SedsEnum>) Seds.newFactory().newScalarArray(
+        return Seds.newFactory().newScalarArray(
                 new SedsEnum[]{
                     Seds.newFactory().newEnum("A", new String[]{"A", "B", "C"}),
                     Seds.newFactory().newEnum("C", new String[]{"A", "B", "C"}),

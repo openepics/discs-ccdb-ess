@@ -147,7 +147,7 @@
             "required":[
                 "value"
             ],
-            "description":"A singe value with optional metadata.",
+            "description":"A single value with optional metadata.",
             "additionalProperties":false,
             "properties":{
                 "value":{

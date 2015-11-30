@@ -1,11 +1,11 @@
-/* 
+/*
  * This software is Copyright by the Board of Trustees of Michigan
  *  State University (c) Copyright 2013, 2014.
- *  
+ *
  *  You may use this software under the terms of the GNU public license
  *  (GPL). The terms of this license are described at:
  *    http://www.gnu.org/licenses/gpl.txt
- *  
+ *
  *  Contact Information:
  *       Facility for Rare Isotope Beam
  *       Michigan State University
@@ -114,6 +114,7 @@ public interface SedsFactory {
      * Creates a SEDS Scalar (with Boolean data) from the data.
      *
      * @param value {@link SedsScalar#getValue() }
+     * @param representation the string representation. E.g.: "0"/"1", "TRUE"/"FALSE"
      * @param alarm {@link SedsScalar#getAlarm() }
      * @param control {@link SedsScalar#getControl() }
      * @param display {@link SedsScalar#getDisplay() }
@@ -122,6 +123,7 @@ public interface SedsFactory {
      */
     public SedsScalar<Boolean> newScalar(
             Boolean value,
+            String representation,
             SedsAlarm alarm,
             SedsControl control,
             SedsDisplay display,
@@ -132,6 +134,7 @@ public interface SedsFactory {
      * Creates a SEDS Scalar (with SedsEnum data) from the data.
      *
      * @param value {@link SedsScalar#getValue() }
+     * @param representation the string representation
      * @param alarm {@link SedsScalar#getAlarm() }
      * @param control {@link SedsScalar#getControl() }
      * @param display {@link SedsScalar#getDisplay() }
@@ -140,6 +143,7 @@ public interface SedsFactory {
      */
     public SedsScalar<SedsEnum> newScalar(
             SedsEnum value,
+            String representation,
             SedsAlarm alarm,
             SedsControl control,
             SedsDisplay display,
@@ -150,6 +154,7 @@ public interface SedsFactory {
      * Creates a SEDS Scalar (with Integer data) from the data.
      *
      * @param value {@link SedsScalar#getValue() }
+     * @param representation the string representation. E.g.: A hex number
      * @param alarm {@link SedsScalar#getAlarm() }
      * @param control {@link SedsScalar#getControl() }
      * @param display {@link SedsScalar#getDisplay() }
@@ -158,6 +163,7 @@ public interface SedsFactory {
      */
     public SedsScalar<Integer> newScalar(
             Integer value,
+            String representation,
             SedsAlarm alarm,
             SedsControl control,
             SedsDisplay display,
@@ -168,6 +174,7 @@ public interface SedsFactory {
      * Creates a SEDS Scalar (with Number data) from the data.
      *
      * @param value {@link SedsScalar#getValue() }
+     * @param representation the string representation. E.g.: 12.3E-4, 9876543210L
      * @param alarm {@link SedsScalar#getAlarm() }
      * @param control {@link SedsScalar#getControl() }
      * @param display {@link SedsScalar#getDisplay() }
@@ -176,6 +183,7 @@ public interface SedsFactory {
      */
     public SedsScalar<Number> newScalar(
             Number value,
+            String representation,
             SedsAlarm alarm,
             SedsControl control,
             SedsDisplay display,

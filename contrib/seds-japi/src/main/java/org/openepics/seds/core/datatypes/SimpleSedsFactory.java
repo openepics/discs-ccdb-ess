@@ -59,13 +59,13 @@ public class SimpleSedsFactory {
             Object value
     ) {
         if (value instanceof Boolean) {
-            return factory.newScalar((Boolean) value, null, null, null, null);
+            return factory.newScalar((Boolean) value, null, null, null, null, null);
         } else if (value instanceof SedsEnum) {
-            return factory.newScalar((SedsEnum) value, null, null, null, null);
+            return factory.newScalar((SedsEnum) value, null, null, null, null, null);
         } else if (value instanceof Integer) {
-            return factory.newScalar((Integer) value, null, null, null, null);
+            return factory.newScalar((Integer) value, null, null, null, null, null);
         } else if (value instanceof Number) {
-            return factory.newScalar((Number) value, null, null, null, null);
+            return factory.newScalar((Number) value, null, null, null, null, null);
         } else if (value instanceof String) {
             return factory.newScalar((String) value, null, null, null, null);
         } else {

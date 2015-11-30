@@ -1,11 +1,11 @@
-/* 
+/*
  * This software is Copyright by the Board of Trustees of Michigan
  *  State University (c) Copyright 2013, 2014.
- *  
+ *
  *  You may use this software under the terms of the GNU public license
  *  (GPL). The terms of this license are described at:
  *    http://www.gnu.org/licenses/gpl.txt
- *  
+ *
  *  Contact Information:
  *       Facility for Rare Isotope Beam
  *       Michigan State University
@@ -301,6 +301,7 @@ public class VTypeMapper extends AbstractMapper<Alarm, Display, Display, VEnum, 
 
         return factory.newScalar(
                 value.getValue(),
+                value.getValue().toString(),
                 toSedsAlarm(value),
                 toSedsControl(null),
                 toSedsDisplay(null),
@@ -316,6 +317,7 @@ public class VTypeMapper extends AbstractMapper<Alarm, Display, Display, VEnum, 
 
         return factory.newScalar(
                 toSedsEnum(value),
+                value.getValue(),
                 toSedsAlarm(value),
                 toSedsControl(null),
                 toSedsDisplay(null),
@@ -331,6 +333,7 @@ public class VTypeMapper extends AbstractMapper<Alarm, Display, Display, VEnum, 
 
         return factory.newScalar(
                 value.getValue(),
+                value.getValue().toString(),
                 toSedsAlarm(value),
                 toSedsControl(value),
                 toSedsDisplay(value),
@@ -346,6 +349,7 @@ public class VTypeMapper extends AbstractMapper<Alarm, Display, Display, VEnum, 
 
         return factory.newScalar(
                 value.getValue(),
+                value.getValue().toString(),
                 toSedsAlarm(value),
                 toSedsControl(value),
                 toSedsDisplay(value),
@@ -541,7 +545,7 @@ public class VTypeMapper extends AbstractMapper<Alarm, Display, Display, VEnum, 
             } catch (ClassCastException e) {
             }
 
-            //ScalarArray<Boolean>        
+            //ScalarArray<Boolean>
             try {
                 return factory.newScalarArray(
                         ArrayUtil.AsBoxedArray.typeBoolean((List<Boolean>) col),
@@ -550,7 +554,7 @@ public class VTypeMapper extends AbstractMapper<Alarm, Display, Display, VEnum, 
             } catch (ClassCastException e) {
             }
 
-            //ScalarArray<Integer>        
+            //ScalarArray<Integer>
             try {
                 return factory.newScalarArray(
                         (Integer[]) ((List<Integer>) col).toArray(),
@@ -559,7 +563,7 @@ public class VTypeMapper extends AbstractMapper<Alarm, Display, Display, VEnum, 
             } catch (ClassCastException e) {
             }
 
-            //ScalarArray<Number>        
+            //ScalarArray<Number>
             try {
                 return factory.newScalarArray(
                         (Number[]) ((List<Number>) col).toArray(),

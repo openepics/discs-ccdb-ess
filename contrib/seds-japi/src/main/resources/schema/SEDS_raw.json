@@ -171,7 +171,7 @@
             "required":[
                 "value"
             ],
-            "description":"A singe value with optional metadata.",
+            "description":"A single value with optional metadata.",
             "additionalProperties":false,
             "properties":{
                 "value":{
@@ -189,6 +189,9 @@
                             "$ref":"#/definitions/SedsEnum"
                         }
                     ]
+                },
+                "representation":{
+                    "type":"string"
                 },
                 "alarm":{
                     "$ref":"#/definitions/SedsAlarm"

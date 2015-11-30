@@ -1,11 +1,11 @@
-/* 
+/*
  * This software is Copyright by the Board of Trustees of Michigan
  *  State University (c) Copyright 2013, 2014.
- *  
+ *
  *  You may use this software under the terms of the GNU public license
  *  (GPL). The terms of this license are described at:
  *    http://www.gnu.org/licenses/gpl.txt
- *  
+ *
  *  Contact Information:
  *       Facility for Rare Isotope Beam
  *       Michigan State University
@@ -164,6 +164,7 @@ public class JsonMapper extends AbstractMapper<JsonObject, JsonObject, JsonObjec
 
         JsonObject scalar(
                 Object value,
+                String representation,
                 SedsAlarm alarm,
                 SedsControl control,
                 SedsDisplay display,
@@ -171,6 +172,7 @@ public class JsonMapper extends AbstractMapper<JsonObject, JsonObject, JsonObjec
         ) {
             return ValueBuilder.builder()
                     .forcePut("value", value)
+                    .forcePut("representation", representation)
                     .put("alarm", fromSedsAlarm(alarm))
                     .put("control", fromSedsControl(control))
                     .put("display", fromSedsDisplay(display))
@@ -304,6 +306,7 @@ public class JsonMapper extends AbstractMapper<JsonObject, JsonObject, JsonObjec
 
         return factory.newScalar(
                 parser().asBoolean(value, "value"),
+                parser().asString(value, "representation"),
                 toSedsAlarm(parser().asObject(value, "alarm")),
                 toSedsControl(parser().asObject(value, "control")),
                 toSedsDisplay(parser().asObject(value, "display")),
@@ -319,6 +322,7 @@ public class JsonMapper extends AbstractMapper<JsonObject, JsonObject, JsonObjec
 
         return factory.newScalar(
                 toSedsEnum(parser().asObject(value, "value")),
+                parser().asString(value, "representation"),
                 toSedsAlarm(parser().asObject(value, "alarm")),
                 toSedsControl(parser().asObject(value, "control")),
                 toSedsDisplay(parser().asObject(value, "display")),
@@ -334,6 +338,7 @@ public class JsonMapper extends AbstractMapper<JsonObject, JsonObject, JsonObjec
 
         return factory.newScalar(
                 parser().asInteger(value, "value"),
+                parser().asString(value, "representation"),
                 toSedsAlarm(parser().asObject(value, "alarm")),
                 toSedsControl(parser().asObject(value, "control")),
                 toSedsDisplay(parser().asObject(value, "display")),
@@ -349,6 +354,7 @@ public class JsonMapper extends AbstractMapper<JsonObject, JsonObject, JsonObjec
 
         return factory.newScalar(
                 parser().asNumber(value, "value"),
+                parser().asString(value, "representation"),
                 toSedsAlarm(parser().asObject(value, "alarm")),
                 toSedsControl(parser().asObject(value, "control")),
                 toSedsDisplay(parser().asObject(value, "display")),
@@ -504,7 +510,7 @@ public class JsonMapper extends AbstractMapper<JsonObject, JsonObject, JsonObjec
     //--------------------------------------------------------------------------
 
     //Serialize
-    //--------------------------------------------------------------------------    
+    //--------------------------------------------------------------------------
     @Override
     public JsonObject fromSedsAlarm(SedsAlarm alarm) {
         if (alarm == null) {
@@ -581,6 +587,7 @@ public class JsonMapper extends AbstractMapper<JsonObject, JsonObject, JsonObjec
 
         return raw.scalar(
                 value.getValue(),
+                value.getRepresentation(),
                 value.getAlarm(),
                 value.getControl(),
                 value.getDisplay(),
@@ -595,7 +602,8 @@ public class JsonMapper extends AbstractMapper<JsonObject, JsonObject, JsonObjec
         }
 
         return raw.scalar(
-                fromSedsEnum((SedsEnum) value.getValue()),
+                fromSedsEnum(value.getValue()),
+                value.getRepresentation(),
                 value.getAlarm(),
                 value.getControl(),
                 value.getDisplay(),
@@ -611,6 +619,7 @@ public class JsonMapper extends AbstractMapper<JsonObject, JsonObject, JsonObjec
 
         return raw.scalar(
                 value.getValue(),
+                value.getRepresentation(),
                 value.getAlarm(),
                 value.getControl(),
                 value.getDisplay(),
@@ -626,6 +635,7 @@ public class JsonMapper extends AbstractMapper<JsonObject, JsonObject, JsonObjec
 
         return raw.scalar(
                 value.getValue(),
+                value.getRepresentation(),
                 value.getAlarm(),
                 value.getControl(),
                 value.getDisplay(),
@@ -641,6 +651,7 @@ public class JsonMapper extends AbstractMapper<JsonObject, JsonObject, JsonObjec
 
         return raw.scalar(
                 value.getValue(),
+                value.getRepresentation(),
                 value.getAlarm(),
                 value.getControl(),
                 value.getDisplay(),
@@ -655,7 +666,7 @@ public class JsonMapper extends AbstractMapper<JsonObject, JsonObject, JsonObjec
         }
 
         return raw.scalarArray(
-                ArrayUtil.AsJsonArray.typeJson(((SedsScalarArray<Boolean>) value).getValueArray()),
+                ArrayUtil.AsJsonArray.typeJson(value.getValueArray()),
                 value.getAlarm(),
                 value.getControl(),
                 value.getDisplay(),
@@ -670,7 +681,7 @@ public class JsonMapper extends AbstractMapper<JsonObject, JsonObject, JsonObjec
         }
 
         JsonArrayBuilder builder = Json.createArrayBuilder();
-        for (SedsEnum e : (SedsEnum[]) value.getValueArray()) {
+        for (SedsEnum e : value.getValueArray()) {
             JsonValue v = fromSedsEnum(e);
 
             if (v == null) {
@@ -696,7 +707,7 @@ public class JsonMapper extends AbstractMapper<JsonObject, JsonObject, JsonObjec
         }
 
         return raw.scalarArray(
-                ArrayUtil.AsJsonArray.typeJson(((SedsScalarArray<Integer>) value).getValueArray()),
+                ArrayUtil.AsJsonArray.typeJson(value.getValueArray()),
                 value.getAlarm(),
                 value.getControl(),
                 value.getDisplay(),
@@ -711,7 +722,7 @@ public class JsonMapper extends AbstractMapper<JsonObject, JsonObject, JsonObjec
         }
 
         return raw.scalarArray(
-                ArrayUtil.AsJsonArray.typeJson(((SedsScalarArray<Number>) value).getValueArray()),
+                ArrayUtil.AsJsonArray.typeJson(value.getValueArray()),
                 value.getAlarm(),
                 value.getControl(),
                 value.getDisplay(),
@@ -726,7 +737,7 @@ public class JsonMapper extends AbstractMapper<JsonObject, JsonObject, JsonObjec
         }
 
         return raw.scalarArray(
-                ArrayUtil.AsJsonArray.typeJson(((SedsScalarArray<String>) value).getValueArray()),
+                ArrayUtil.AsJsonArray.typeJson(value.getValueArray()),
                 value.getAlarm(),
                 value.getControl(),
                 value.getDisplay(),
@@ -817,7 +828,7 @@ public class JsonMapper extends AbstractMapper<JsonObject, JsonObject, JsonObjec
      */
     public SedsType toSedsType(JsonObject data, SedsMetadata meta) {
         //Meta data
-        //----------------------------------------------------------------------        
+        //----------------------------------------------------------------------
         if (meta == null) {
             return null;
         }
@@ -830,7 +841,7 @@ public class JsonMapper extends AbstractMapper<JsonObject, JsonObject, JsonObjec
         //----------------------------------------------------------------------
 
         //Deserialize
-        //----------------------------------------------------------------------        
+        //----------------------------------------------------------------------
         if (type.equals(SedsAlarm.class)) {
             return toSedsAlarm(data);
         } else if (type.equals(SedsDisplay.class)) {
