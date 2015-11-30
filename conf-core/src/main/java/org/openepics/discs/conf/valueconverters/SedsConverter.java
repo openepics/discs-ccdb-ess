@@ -110,7 +110,12 @@ public class SedsConverter implements AttributeConverter<Value, String> {
             case NUMBER:
                 final Number number = (Number) sedsScalar.getValue();
                 if (number instanceof Double) {
-                    returnValue = new DblValue((Double)number);
+                    if (sedsScalar.getRepresentation() != null) {
+                        returnValue = new DblValue(sedsScalar.getRepresentation());
+                    } else {
+                        returnValue = new DblValue(Double.toString((Double)number));
+                    }
+
                     break;
                 } else if (number instanceof Integer) {
                     returnValue = new IntValue((Integer)number);

@@ -90,9 +90,7 @@ public class DblVectorValue implements Value {
             return false;
         }
         DblVectorValue other = (DblVectorValue) obj;
-        if (dblVectorValue == null) {
-            return other.dblVectorValue == null;
-        }
+        // this.dblVectorValue cannot be null
 
         return dblVectorValue.equals(other.dblVectorValue);
     }

@@ -216,7 +216,7 @@ public class Conversion {
                 convertedValue = new DblVectorValue(Conversion.toDblVector(strValue));
                 break;
             case DOUBLE:
-                convertedValue = new DblValue(Conversion.toDouble(strValue));
+                convertedValue = new DblValue(strValue);
                 break;
             case USER_DEFINED_ENUM:
                 convertedValue = new EnumValue(Conversion.toEnum(strValue, dataType));
@@ -256,7 +256,7 @@ public class Conversion {
         if (value instanceof IntValue) {
             stringValue = Conversion.fromInteger(((IntValue)value).getIntValue());
         } else if (value instanceof DblValue) {
-            stringValue = Conversion.fromDouble(((DblValue)value).getDblValue());
+            stringValue = ((DblValue)value).toString();
         } else if (value instanceof StrValue) {
             stringValue = Conversion.fromString(((StrValue)value).getStrValue());
         } else if (value instanceof TimestampValue) {
@@ -278,10 +278,6 @@ public class Conversion {
 
     private static String toString(String str) {
         return str;
-    }
-
-    private static Double toDouble(String str) {
-        return Double.valueOf(str.trim());
     }
 
     private static Integer toInteger(String str) {
@@ -480,10 +476,6 @@ public class Conversion {
 
     private static String fromString(String value) {
         return value;
-    }
-
-    private static String fromDouble(Double value) {
-        return value.toString();
     }
 
     private static String fromInteger(Integer value) {

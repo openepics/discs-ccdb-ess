@@ -22,6 +22,7 @@ package org.openepics.discs.conf.valueconverters;
 import org.openepics.discs.conf.ent.values.Value;
 import org.openepics.seds.api.io.DBConverter;
 import org.openepics.seds.core.Seds;
+import org.openepics.seds.core.datatypes.ImmutableSedsFactory;
 import org.openepics.seds.core.datatypes.SimpleSedsFactory;
 
 /**
@@ -34,6 +35,7 @@ public abstract class ValueConverter<T extends Value> {
     // we only want the factories to be instantiated once and for all descendants.
     protected static final SimpleSedsFactory SEDS_FACTORY = new SimpleSedsFactory();
     protected static final DBConverter SEDS_DB_CONVERTER = Seds.newDBConverter();
+    protected static final ImmutableSedsFactory I_SEDS_FACTORY = new ImmutableSedsFactory();
 
     /**
      * @return the class of the {@link Value} used in this converter.

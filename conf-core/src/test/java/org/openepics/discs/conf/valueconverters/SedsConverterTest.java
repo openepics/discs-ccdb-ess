@@ -48,7 +48,7 @@ import org.openepics.discs.conf.ent.values.Value;
 public class SedsConverterTest {
 
     private static final String SEDS_INT = "{\"meta\":{\"type\":\"SedsScalar_Integer\","
-            + "\"protocol\":\"SEDSv1\",\"version\":\"1.0.0\"},\"data\":{\"value\":123}}";
+            + "\"protocol\":\"SEDSv1\",\"version\":\"1.0.0\"},\"data\":{\"value\":123,\"representation\":\"123\"}}";
     private static final String SEDS_INT_VECTOR = "{\"meta\":{\"type\":\"SedsScalarArray_Integer\","
             + "\"protocol\":\"SEDSv1\",\"version\":\"1.0.0\"},\"data\":{\"valueArray\":[1,2,3]}}";
     private static final String SEDS_DBL_TABLE = "{\"meta\":{\"type\":\"SedsTable\",\"protocol\":\"SEDSv1\","
@@ -59,11 +59,11 @@ public class SedsConverterTest {
     private static final String SEDS_DBL_VECTOR = "{\"meta\":{\"type\":\"SedsScalarArray_Number\","
             + "\"protocol\":\"SEDSv1\",\"version\":\"1.0.0\"},\"data\":{\"valueArray\":[1.0,2.0,3.0]}}";
     private static final String SEDS_DBL = "{\"meta\":{\"type\":\"SedsScalar_Number\",\"protocol\":\"SEDSv1\","
-            + "\"version\":\"1.0.0\"},\"data\":{\"value\":123.456}}";
+            + "\"version\":\"1.0.0\"},\"data\":{\"value\":123.456,\"representation\":\"123.456\"}}";
     private static final String SEDS_ENUM = "{\"meta\":{\"type\":\"SedsEnum\",\"protocol\":\"SEDSv1\","
             + "\"version\":\"1.0.0\"},\"data\":{\"selected\":\"TEST2\"},\"type\":{\"elements\":[\"TEST2\"]}}";
     private static final String SEDS_STR = "{\"meta\":{\"type\":\"SedsScalar_String\",\"protocol\":\"SEDSv1\","
-            + "\"version\":\"1.0.0\"},\"data\":{\"value\":\"TEST2\"}}";
+            + "\"version\":\"1.0.0\"},\"data\":{\"value\":\"TEST2\",\"representation\":\"TEST2\"}}";
     private static final String SEDS_STR_VECTOR = "{\"meta\":{\"type\":\"SedsScalarArray_String\","
             + "\"protocol\":\"SEDSv1\",\"version\":\"1.0.0\"},\"data\":{\"valueArray\":[\"TEST1\",\"TEST2\",\"TEST3\"]}}";
     private static final String SEDS_TIMESTAMP = "{\"meta\":{\"type\":\"SedsTime\",\"protocol\":\"SEDSv1\","
@@ -72,7 +72,7 @@ public class SedsConverterTest {
     private static final DblTableValue VAL_DBL_TABLE = new DblTableValue(Arrays.asList(Arrays.asList(0.1, 0.2, 0.3),
                     Arrays.asList(1.1, 1.2, 1.3),Arrays.asList(2.1, 2.2, 2.3)));
     private static final DblVectorValue VAL_DBL_VECTOR = new DblVectorValue(Arrays.asList(1.0, 2.0, 3.0));
-    private static final DblValue VAL_DBL = new DblValue(123.456);
+    private static final DblValue VAL_DBL = new DblValue("123.456");
     private static final EnumValue VAL_ENUM = new EnumValue("TEST2");
     private static final IntValue VAL_INT = new IntValue(123);
     private static final IntVectorValue VAL_INT_VECTOR = new IntVectorValue(Arrays.asList(1, 2, 3));

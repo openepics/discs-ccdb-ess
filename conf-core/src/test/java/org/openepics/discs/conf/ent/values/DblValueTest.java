@@ -37,13 +37,13 @@ public class DblValueTest {
 
     @Test
     public void displayToString() {
-        DblValue dblValue = new DblValue(1.0);
+        DblValue dblValue = new DblValue("1.0");
         assertEquals("1.0", dblValue.toString());
     }
 
     @Test
     public void displayAuditLogString() {
-        DblValue dblValue = new DblValue(1.0);
+        DblValue dblValue = new DblValue("1.0");
         assertEquals("1.0", dblValue.auditLogString());
     }
 }

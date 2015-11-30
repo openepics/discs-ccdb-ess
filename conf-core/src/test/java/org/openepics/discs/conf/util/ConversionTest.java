@@ -435,7 +435,7 @@ public class ConversionTest {
 
     @Test
     public void valueToStringDbl() {
-        assertEquals("1.0", Conversion.valueToString(new DblValue(1.0)));
+        assertEquals("1.0", Conversion.valueToString(new DblValue("1.0")));
     }
 
     @Test

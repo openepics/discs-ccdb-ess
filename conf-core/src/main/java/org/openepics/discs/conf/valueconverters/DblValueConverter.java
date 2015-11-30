@@ -35,7 +35,8 @@ public class DblValueConverter extends ValueConverter<DblValue> {
 
     @Override
     public String convertToDatabaseColumn(DblValue attribute) {
-        final SedsScalar<Double> sedsScalar = SEDS_FACTORY.newScalar(attribute.getDblValue());
+        final SedsScalar<Number> sedsScalar = I_SEDS_FACTORY.newScalar(attribute.getDblValue(), attribute.toString(),
+                null, null, null, null);
         return SEDS_DB_CONVERTER.serialize(sedsScalar).toString();
     }
 }

@@ -187,7 +187,7 @@ public class ComptypeEJBIT {
         compValue.setProperty( propertyService.findByName("CURRENT") );
         compValue.setComponentType(compType);
         compValue.setUnit( null );
-        final Value propValue = new DblValue(33.45);
+        final Value propValue = new DblValue("33.45");
         compValue.setPropValue(propValue);
 
         compTypesService.addChild(compValue);

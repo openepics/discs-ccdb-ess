@@ -24,12 +24,15 @@ import com.google.common.base.Preconditions;
  */
 public class DblValue implements Value {
     private final Double dblValue;
+    private final String representation;
 
     /** Constructs a new double precision value
-     * @param dblValue a double precision number
+     * @param dblValue a double precision number in string representation
      */
-    public DblValue(Double dblValue) {
-        this.dblValue = Preconditions.checkNotNull(dblValue);
+    public DblValue(String dblValue) {
+        Preconditions.checkNotNull(dblValue);
+        this.dblValue = Double.valueOf(dblValue);
+        this.representation = dblValue;
     }
 
     public Double getDblValue() {
@@ -38,7 +41,7 @@ public class DblValue implements Value {
 
     @Override
     public String toString() {
-        return dblValue.toString();
+        return representation;
     }
 
     @Override
@@ -46,7 +49,7 @@ public class DblValue implements Value {
         if (dimensions.length > 2) {
             throw new IllegalArgumentException("Invalid number of parameter.");
         }
-        return dblValue.toString();
+        return representation;
     }
 
     @Override
@@ -54,6 +57,7 @@ public class DblValue implements Value {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((dblValue == null) ? 0 : dblValue.hashCode());
+        result = prime * result + ((representation == null) ? 0 : representation.hashCode());
         return result;
     }
 
@@ -66,10 +70,8 @@ public class DblValue implements Value {
             return false;
         }
         DblValue other = (DblValue) obj;
-        if (dblValue == null) {
-            return other.dblValue == null;
-        }
+        // dblValue cannot be null
 
-        return dblValue.equals(other.dblValue);
+        return dblValue.equals(other.dblValue) && representation.equals(other.representation);
     }
 }
