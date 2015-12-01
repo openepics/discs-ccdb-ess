@@ -88,13 +88,13 @@
                                                         style="display:inline-block; vertical-align:bottom !important; margin-left: 1ex;"
                                                         styleClass="ui-icon ui-icon-extlink"/>
                                                 </p:link>
-                                                <h:outputText value="" rendered="#{installationSlot.inClipboard or
+                                                <h:outputText value="" rendered="#{hierarchiesController.clipboardSlots.contains(installationSlot) or
                                                                                     (hierarchiesController.cliboardOperation == 'COPY'
                                                                                     and hierarchiesController.isAncestorNodeInClipboard(slotNode))}"
                                                     style="display:inline-block; vertical-align:bottom !important; float: right; right: 1.2em; position: relative;"
                                                     styleClass="ui-icon ui-icon-clipboard" />
                                                 <h:outputText value="" rendered="#{hierarchiesController.cliboardOperation == 'COPY'
-                                                                                    and (installationSlot.inClipboard
+                                                                                    and (hierarchiesController.clipboardSlots.contains(installationSlot)
                                                                                         or hierarchiesController.isAncestorNodeInClipboard(slotNode))}"
                                                     style="display:inline-block; vertical-align:bottom !important; float: right; position: relative; right: 0; bottom: 0.15em; opacity: 0.7;"
                                                     styleClass="ui-icon ui-icon-clipboard" />

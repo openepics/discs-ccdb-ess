@@ -42,7 +42,6 @@ public class SlotView {
     private boolean isFirst;
     private boolean isLast;
     private boolean isInitialzed;
-    private boolean isInClipboard;
     private int level;
     final private SlotEJB slotEJB;
     private String cableNumber;
@@ -61,7 +60,6 @@ public class SlotView {
         this.isHostingSlot = slot.isHostingSlot();
         this.deviceTypeName = slot.getComponentType().getName();
         this.order = order;
-        this.isInClipboard = false;
         this.slotEJB = slotEJB;
     }
 
@@ -152,14 +150,6 @@ public class SlotView {
         this.level = level;
     }
 
-    public boolean isInClipboard() {
-        return isInClipboard;
-    }
-
-    public void setInClipboard(final boolean isInClipboard) {
-        this.isInClipboard = isInClipboard;
-    }
-
     /**
      * @return the cableNumber
      */
@@ -172,5 +162,14 @@ public class SlotView {
      */
     public void setCableNumber(String cableNumber) {
         this.cableNumber = cableNumber;
+    }
+
+    /**
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof SlotView) return id.equals((((SlotView)obj).id));
+        return false;
     }
 }
