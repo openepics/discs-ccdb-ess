@@ -13,6 +13,13 @@
             0.0,
             10.0
         ],
+        "representationArray":[
+            "3.1415",
+            "-1",
+            "-1000000000",
+            "0",
+            "10"
+        ],
         "alarm":{
             "severity":"MAJOR",
             "status":"3",

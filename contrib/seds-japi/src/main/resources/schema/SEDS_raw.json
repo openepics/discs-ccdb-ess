@@ -214,7 +214,7 @@
             "required":[
                 "valueArray"
             ],
-            "description":"A singe (homogeneous) value array with optional metadata.",
+            "description":"A single (homogeneous) value array with optional metadata.",
             "additionalProperties":false,
             "properties":{
                 "valueArray":{
@@ -275,6 +275,15 @@
                             ]
                         }
                     ]
+                },
+                "representationArray":{
+                    "type":"array",
+                    "items":{
+                        "type":[ 
+                            "string",
+                            "null"
+                        ]
+                    }
                 },
                 "alarm":{
                     "$ref":"#/definitions/SedsAlarm"

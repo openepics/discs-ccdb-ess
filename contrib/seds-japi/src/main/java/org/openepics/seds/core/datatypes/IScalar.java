@@ -89,6 +89,26 @@ class IScalar<T> implements SedsScalar<T> {
         return type;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((alarm == null) ? 0 : alarm.hashCode());
+        result = prime * result + ((control == null) ? 0 : control.hashCode());
+        result = prime * result + ((display == null) ? 0 : display.hashCode());
+        result = prime * result + ((representation == null) ? 0 : representation.hashCode());
+        result = prime * result + ((time == null) ? 0 : time.hashCode());
+        result = prime * result + ((type == null) ? 0 : type.hashCode());
+        result = prime * result + ((value == null) ? 0 : value.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -99,6 +119,9 @@ class IScalar<T> implements SedsScalar<T> {
         }
         final IScalar<?> other = (IScalar<?>) obj;
         if (!Objects.equals(this.value, other.value)) {
+            return false;
+        }
+        if (!Objects.equals(this.representation, other.representation)) {
             return false;
         }
         if (!Objects.equals(this.alarm, other.alarm)) {
@@ -122,7 +145,14 @@ class IScalar<T> implements SedsScalar<T> {
 
     @Override
     public String toString() {
-        return "Scalar{" + "value=" + value + ", alarm=" + alarm + ", control=" + control + ", display=" + display + ", time=" + time + '}';
+        final StringBuilder sb = new StringBuilder(64);
+        sb.append("IScalar [value=").append(value);
+        sb.append(", representation=").append(representation);
+        sb.append(", alarm=").append(alarm);
+        sb.append(", control=").append(control);
+        sb.append(", display=").append(display);
+        sb.append(", time=").append(time).append(']');
+        return sb.toString();
     }
 
 }

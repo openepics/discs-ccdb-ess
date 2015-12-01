@@ -1,11 +1,11 @@
 /*
  * This software is Copyright by the Board of Trustees of Michigan
  *  State University (c) Copyright 2013, 2014.
- *  
+ *
  *  You may use this software under the terms of the GNU public license
  *  (GPL). The terms of this license are described at:
  *    http://www.gnu.org/licenses/gpl.txt
- *  
+ *
  *  Contact Information:
  *       Facility for Rare Isotope Beam
  *       Michigan State University
@@ -45,13 +45,13 @@ import org.openepics.seds.util.TypeUtil;
 public class BaseDBConverter implements DBConverter {
 
     //API Access
-    //--------------------------------------------------------------------------  
+    //--------------------------------------------------------------------------
     private final SedsFactory factory;
     private final JsonMapper mapper;
-    //--------------------------------------------------------------------------  
+    //--------------------------------------------------------------------------
 
     //Constructors
-    //--------------------------------------------------------------------------  
+    //--------------------------------------------------------------------------
     BaseDBConverter(SedsFactory factory, JsonMapper mapper) {
         assertNotNull(factory, SedsFactory.class, "Factory for the DBConverter");
         assertNotNull(mapper, JsonMapper.class, "Mapper (JSON) for the DBConverter");
@@ -59,10 +59,10 @@ public class BaseDBConverter implements DBConverter {
         this.factory = factory;
         this.mapper = mapper;
     }
-    //--------------------------------------------------------------------------  
+    //--------------------------------------------------------------------------
 
     //Raw Layer
-    //--------------------------------------------------------------------------  
+    //--------------------------------------------------------------------------
     private final static String KEY_META = "meta";
     private final static String KEY_RAW = "data";
     private final static String KEY_TYPE = "type";
@@ -84,6 +84,7 @@ public class BaseDBConverter implements DBConverter {
                             .put("elements", parser().asArray(type, "elements"))
                             .build()
                     )
+                    .put("representation", parser().asString(raw, "representation"))
                     .put("alarm", parser().asObject(raw, "alarm"))
                     .put("control", parser().asObject(raw, "control"))
                     .put("display", parser().asObject(raw, "display"))
@@ -149,6 +150,7 @@ public class BaseDBConverter implements DBConverter {
 
             return builder()
                     .put("value", valueField)
+                    .put("representation", value.getRepresentation())
                     .put("alarm", mapper.fromSedsAlarm(value.getAlarm()))
                     .put("control", mapper.fromSedsControl(value.getControl()))
                     .put("display", mapper.fromSedsDisplay(value.getDisplay()))
@@ -290,10 +292,10 @@ public class BaseDBConverter implements DBConverter {
         }
 
     }
-    //--------------------------------------------------------------------------  
+    //--------------------------------------------------------------------------
 
     //Deserialize
-    //--------------------------------------------------------------------------  
+    //--------------------------------------------------------------------------
     private SedsType toSeds(JsonObject meta, JsonObject raw, JsonObject type) {
         if (meta == null || raw == null) {
             return null;
@@ -318,10 +320,10 @@ public class BaseDBConverter implements DBConverter {
 
         return mapper.toSedsType(raw, sedsMeta);
     }
-    //--------------------------------------------------------------------------  
+    //--------------------------------------------------------------------------
 
     //Serialize
-    //--------------------------------------------------------------------------  
+    //--------------------------------------------------------------------------
     private JsonObject toMeta(SedsType value) {
         if (value == null) {
             return null;
@@ -371,10 +373,10 @@ public class BaseDBConverter implements DBConverter {
 
         return null;
     }
-    //--------------------------------------------------------------------------  
+    //--------------------------------------------------------------------------
 
     //API Layer
-    //--------------------------------------------------------------------------  
+    //--------------------------------------------------------------------------
     @Override
     public JsonObject parseMetaComponent(JsonObject value) {
         return parser().asObject(value, KEY_META);
@@ -398,10 +400,10 @@ public class BaseDBConverter implements DBConverter {
                 .put(KEY_TYPE, type)
                 .build();
     }
-    //-------------------------------------------------------------------------- 
+    //--------------------------------------------------------------------------
 
     //API Layer
-    //-------------------------------------------------------------------------- 
+    //--------------------------------------------------------------------------
     @Override
     public JsonObject serialize(SedsType value) {
         if (value == null) {
@@ -427,5 +429,5 @@ public class BaseDBConverter implements DBConverter {
                 parseTypeComponent(value)
         );
     }
-    //-------------------------------------------------------------------------- 
+    //--------------------------------------------------------------------------
 }

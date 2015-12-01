@@ -211,6 +211,7 @@ public class ImmutableSedsFactory implements SedsFactory {
     @Override
     public SedsScalarArray<Boolean> newScalarArray(
             Boolean[] value,
+            String[] representations,
             SedsAlarm alarm,
             SedsControl control,
             SedsDisplay display,
@@ -219,6 +220,7 @@ public class ImmutableSedsFactory implements SedsFactory {
         return new IScalarArray<>(
                 Boolean.class,
                 value,
+                representations,
                 alarm,
                 display,
                 control,
@@ -237,6 +239,7 @@ public class ImmutableSedsFactory implements SedsFactory {
         return new IScalarArray<>(
                 SedsEnum.class,
                 value,
+                null,
                 alarm,
                 display,
                 control,
@@ -247,6 +250,7 @@ public class ImmutableSedsFactory implements SedsFactory {
     @Override
     public SedsScalarArray<Integer> newScalarArray(
             Integer[] value,
+            String[] representations,
             SedsAlarm alarm,
             SedsControl control,
             SedsDisplay display,
@@ -255,6 +259,7 @@ public class ImmutableSedsFactory implements SedsFactory {
         return new IScalarArray<>(
                 Integer.class,
                 value,
+                representations,
                 alarm,
                 display,
                 control,
@@ -265,6 +270,7 @@ public class ImmutableSedsFactory implements SedsFactory {
     @Override
     public SedsScalarArray<Number> newScalarArray(
             Number[] value,
+            String[] representations,
             SedsAlarm alarm,
             SedsControl control,
             SedsDisplay display,
@@ -273,6 +279,7 @@ public class ImmutableSedsFactory implements SedsFactory {
         return new IScalarArray<>(
                 Number.class,
                 value,
+                representations,
                 alarm,
                 display,
                 control,
@@ -290,6 +297,7 @@ public class ImmutableSedsFactory implements SedsFactory {
     ) {
         return new IScalarArray<>(
                 String.class,
+                value,
                 value,
                 alarm,
                 display,

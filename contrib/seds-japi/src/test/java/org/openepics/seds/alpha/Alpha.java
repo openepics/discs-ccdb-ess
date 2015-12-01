@@ -106,6 +106,16 @@ public class Alpha {
                     1.0000,
                     4.57
                 },
+                new String[] {
+                    "-1547157980",
+                    "0x15CEC",
+                    "3.1415",
+                    "1",
+                    "0",
+                    "-1e1",
+                    "1.0000",
+                    "4.57"
+                },
                 factory.newAlarm(
                         AlarmType.MAJOR, //severity
                         "noStatus", //status

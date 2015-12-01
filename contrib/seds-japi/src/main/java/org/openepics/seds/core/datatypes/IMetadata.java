@@ -1,11 +1,11 @@
-/* 
+/*
  * This software is Copyright by the Board of Trustees of Michigan
  *  State University (c) Copyright 2013, 2014.
- *  
+ *
  *  You may use this software under the terms of the GNU public license
  *  (GPL). The terms of this license are described at:
  *    http://www.gnu.org/licenses/gpl.txt
- *  
+ *
  *  Contact Information:
  *       Facility for Rare Isotope Beam
  *       Michigan State University
@@ -15,6 +15,7 @@
 package org.openepics.seds.core.datatypes;
 
 import java.util.Objects;
+
 import org.openepics.seds.api.datatypes.SedsMetadata;
 
 class IMetadata implements SedsMetadata {
@@ -44,6 +45,22 @@ class IMetadata implements SedsMetadata {
         return version;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((protocol == null) ? 0 : protocol.hashCode());
+        result = prime * result + ((type == null) ? 0 : type.hashCode());
+        result = prime * result + ((version == null) ? 0 : version.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -65,9 +82,12 @@ class IMetadata implements SedsMetadata {
         return true;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
     @Override
     public String toString() {
-        return "IMetadata{" + "type=" + type + ", protocol=" + protocol + ", version=" + version + '}';
+        return "IMetadata [type=" + type + ", protocol=" + protocol + ", version=" + version + "]";
     }
 
 }

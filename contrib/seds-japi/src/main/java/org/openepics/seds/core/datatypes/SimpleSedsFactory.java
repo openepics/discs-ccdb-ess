@@ -84,13 +84,13 @@ public class SimpleSedsFactory {
             Object[] value
     ) {
         if (value instanceof Boolean[]) {
-            return factory.newScalarArray((Boolean[]) value, null, null, null, null);
+            return factory.newScalarArray((Boolean[]) value, null, null, null, null, null);
         } else if (value instanceof SedsEnum[]) {
             return factory.newScalarArray((SedsEnum[]) value, null, null, null, null);
         } else if (value instanceof Integer[]) {
-            return factory.newScalarArray((Integer[]) value, null, null, null, null);
+            return factory.newScalarArray((Integer[]) value, null, null, null, null, null);
         } else if (value instanceof Number[]) {
-            return factory.newScalarArray((Number[]) value, null, null, null, null);
+            return factory.newScalarArray((Number[]) value, null, null, null, null, null);
         } else if (value instanceof String[]) {
             return factory.newScalarArray((String[]) value, null, null, null, null);
         } else {
@@ -109,13 +109,13 @@ public class SimpleSedsFactory {
         SedsDisplay display = factory.newDisplay(null, null, 0d, 0d, null, null, null, unit);
 
         if (value instanceof Boolean[]) {
-            return factory.newScalarArray((Boolean[]) value, null, null, display, null);
+            return factory.newScalarArray((Boolean[]) value, null, null, null, display, null);
         } else if (value instanceof SedsEnum[]) {
             return factory.newScalarArray((SedsEnum[]) value, null, null, display, null);
         } else if (value instanceof Integer[]) {
-            return factory.newScalarArray((Integer[]) value, null, null, display, null);
+            return factory.newScalarArray((Integer[]) value, null, null, null, display, null);
         } else if (value instanceof Number[]) {
-            return factory.newScalarArray((Number[]) value, null, null, display, null);
+            return factory.newScalarArray((Number[]) value, null, null, null, display, null);
         } else if (value instanceof String[]) {
             return factory.newScalarArray((String[]) value, null, null, display, null);
         } else {

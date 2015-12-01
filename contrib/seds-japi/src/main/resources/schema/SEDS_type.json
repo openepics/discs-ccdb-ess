@@ -288,6 +288,15 @@
                         }
                     ]
                 },
+                "representationArray":{
+                    "type":"array",
+                    "items":{
+                        "type":[ 
+                            "string",
+                            "null"
+                        ]
+                    }
+                },
                 "alarm":{
                     "$ref":"#/definitions/SedsAlarm"
                 },

@@ -39,6 +39,12 @@
                     1.2,
                     1.3
                 ],
+                "representationArray":[
+                    "1.0",
+                    "1.1",
+                    "1.2",
+                    "1.3"
+                ],
                 "display":{
                     "lowDisplay":0,
                     "highDisplay":0,

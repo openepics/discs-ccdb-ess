@@ -104,7 +104,7 @@ public class VTypeMapperTest {
         mappings.put("time", obj);
 
         obj = new Object[]{
-            f.newScalar(true, "TRUE", f.newAlarm(AlarmType.fromOrdinal(0), null, "NONE"), null, null, f.newTime(Timestamp.of(1354719441L, 521786982), null)),
+            f.newScalar(true, "true", f.newAlarm(AlarmType.fromOrdinal(0), null, "NONE"), null, null, f.newTime(Timestamp.of(1354719441L, 521786982), null)),
             ValueFactory.newVBoolean(true, alarmNone(), ValueFactory.newTime(Timestamp.of(1354719441L, 521786982)))
         };
         mappings.put("scalar_boolean", obj);
@@ -116,7 +116,7 @@ public class VTypeMapperTest {
         mappings.put("scalar_integer", obj);
 
         obj = new Object[]{
-            f.newScalar(10L, "10L", f.newAlarm(AlarmType.fromOrdinal(0), null, "NONE"), null, f.newDisplay(Double.NaN, Double.NaN, Double.NaN, Double.NaN, Double.NaN, Double.NaN, null, ""), f.newTime(Timestamp.of(1354719441L, 521786982), null)),
+            f.newScalar(10L, "10", f.newAlarm(AlarmType.fromOrdinal(0), null, "NONE"), null, f.newDisplay(Double.NaN, Double.NaN, Double.NaN, Double.NaN, Double.NaN, Double.NaN, null, ""), f.newTime(Timestamp.of(1354719441L, 521786982), null)),
             ValueFactory.newVNumber(10L, alarmNone(), ValueFactory.newTime(Timestamp.of(1354719441L, 521786982)), ValueFactory.displayNone())
         };
         mappings.put("scalar_number", obj);
@@ -134,13 +134,13 @@ public class VTypeMapperTest {
         mappings.put("scalar_array_boolean", obj);
 
         obj = new Object[]{
-            f.newScalarArray(new Integer[]{1, 2}, f.newAlarm(AlarmType.fromOrdinal(0), null, "NONE"), null, null, f.newTime(Timestamp.of(1354719441L, 521786982), null)),
+            f.newScalarArray(new Integer[]{1, 2}, null, f.newAlarm(AlarmType.fromOrdinal(0), null, "NONE"), null, null, f.newTime(Timestamp.of(1354719441L, 521786982), null)),
             ValueFactory.newVIntArray(new ArrayInt(new int[]{1, 2}), alarmNone(), ValueFactory.newTime(Timestamp.of(1354719441L, 521786982)), null)
         };
         mappings.put("scalar_array_integer", obj);
 
         obj = new Object[]{
-            f.newScalarArray(new Number[]{1, 2}, f.newAlarm(AlarmType.fromOrdinal(0), null, "NONE"), null, null, f.newTime(Timestamp.of(1354719441L, 521786982), null)),
+            f.newScalarArray(new Number[]{1, 2}, null, f.newAlarm(AlarmType.fromOrdinal(0), null, "NONE"), null, null, f.newTime(Timestamp.of(1354719441L, 521786982), null)),
             ValueFactory.newVNumberArray(new ArrayInt(new int[]{1, 2}), alarmNone(), ValueFactory.newTime(Timestamp.of(1354719441L, 521786982)), null)
         };
         mappings.put("scalar_array_number", obj);
@@ -156,7 +156,7 @@ public class VTypeMapperTest {
         colTypes.add(String.class);
 
         obj = new Object[]{
-            f.newTable(2, 2, new String[]{"numbers", "names"}, new SedsScalarArray[]{f.newScalarArray(new Integer[]{1, 2}, null, null, null, null), f.newScalarArray(new String[]{"A", "B"}, null, null, null, null)}),
+            f.newTable(2, 2, new String[]{"numbers", "names"}, new SedsScalarArray[]{f.newScalarArray(new Integer[]{1, 2}, null, null, null, null, null), f.newScalarArray(new String[]{"A", "B"}, null, null, null, null)}),
             ValueFactory.newVTable(colTypes, Arrays.asList("numbers", "names"), Arrays.asList(new ArrayInt(1, 2), Arrays.asList("A", "B")))
         };
         mappings.put("table", obj);

@@ -10,6 +10,11 @@
             true,
             false,
             true
+        ],
+        "representationArray":[
+            "T",
+            "F",
+            "T"
         ]
     }
 }

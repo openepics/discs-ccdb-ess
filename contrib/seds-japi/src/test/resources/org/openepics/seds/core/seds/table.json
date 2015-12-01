@@ -26,6 +26,12 @@
                     true,
                     false
                 ],
+                "representationArray":[
+                    "T",
+                    "F",
+                    "T",
+                    "F"
+                ],
                 "alarm":{
                     "severity":"NONE",
                     "status":"driver",
@@ -38,6 +44,12 @@
                     2,
                     3,
                     4
+                ],
+                "representationArray":[
+                    "1",
+                    "2",
+                    "3",
+                    "4"
                 ],
                 "alarm":{
                     "severity":"NONE",

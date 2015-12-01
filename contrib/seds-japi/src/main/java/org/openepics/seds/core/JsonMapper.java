@@ -182,6 +182,7 @@ public class JsonMapper extends AbstractMapper<JsonObject, JsonObject, JsonObjec
 
         JsonObject scalarArray(
                 JsonArray value,
+                JsonArray reprsentations,
                 SedsAlarm alarm,
                 SedsControl control,
                 SedsDisplay display,
@@ -189,6 +190,7 @@ public class JsonMapper extends AbstractMapper<JsonObject, JsonObject, JsonObjec
         ) {
             return ValueBuilder.builder()
                     .forcePut("valueArray", value)
+                    .put("representationArray", reprsentations)
                     .put("alarm", fromSedsAlarm(alarm))
                     .put("control", fromSedsControl(control))
                     .put("display", fromSedsDisplay(display))
@@ -385,6 +387,7 @@ public class JsonMapper extends AbstractMapper<JsonObject, JsonObject, JsonObjec
 
         return factory.newScalarArray(
                 ArrayUtil.AsBoxedArray.typeBoolean(parser().asArray(value, "valueArray")),
+                ArrayUtil.AsBoxedArray.typeString(parser().asArray(value, "representationArray")),
                 toSedsAlarm(parser().asObject(value, "alarm")),
                 toSedsControl(parser().asObject(value, "control")),
                 toSedsDisplay(parser().asObject(value, "display")),
@@ -420,6 +423,7 @@ public class JsonMapper extends AbstractMapper<JsonObject, JsonObject, JsonObjec
 
         return factory.newScalarArray(
                 ArrayUtil.AsBoxedArray.typeInteger(parser().asArray(value, "valueArray")),
+                ArrayUtil.AsBoxedArray.typeString(parser().asArray(value, "representationArray")),
                 toSedsAlarm(parser().asObject(value, "alarm")),
                 toSedsControl(parser().asObject(value, "control")),
                 toSedsDisplay(parser().asObject(value, "display")),
@@ -435,6 +439,7 @@ public class JsonMapper extends AbstractMapper<JsonObject, JsonObject, JsonObjec
 
         return factory.newScalarArray(
                 ArrayUtil.AsBoxedArray.typeNumber(parser().asArray(value, "valueArray")),
+                ArrayUtil.AsBoxedArray.typeString(parser().asArray(value, "representationArray")),
                 toSedsAlarm(parser().asObject(value, "alarm")),
                 toSedsControl(parser().asObject(value, "control")),
                 toSedsDisplay(parser().asObject(value, "display")),
@@ -667,6 +672,7 @@ public class JsonMapper extends AbstractMapper<JsonObject, JsonObject, JsonObjec
 
         return raw.scalarArray(
                 ArrayUtil.AsJsonArray.typeJson(value.getValueArray()),
+                ArrayUtil.AsJsonArray.typeJson(value.getRepresentationArray()),
                 value.getAlarm(),
                 value.getControl(),
                 value.getDisplay(),
@@ -693,6 +699,7 @@ public class JsonMapper extends AbstractMapper<JsonObject, JsonObject, JsonObjec
 
         return raw.scalarArray(
                 builder.build(),
+                null,
                 value.getAlarm(),
                 value.getControl(),
                 value.getDisplay(),
@@ -708,6 +715,7 @@ public class JsonMapper extends AbstractMapper<JsonObject, JsonObject, JsonObjec
 
         return raw.scalarArray(
                 ArrayUtil.AsJsonArray.typeJson(value.getValueArray()),
+                ArrayUtil.AsJsonArray.typeJson(value.getRepresentationArray()),
                 value.getAlarm(),
                 value.getControl(),
                 value.getDisplay(),
@@ -723,6 +731,7 @@ public class JsonMapper extends AbstractMapper<JsonObject, JsonObject, JsonObjec
 
         return raw.scalarArray(
                 ArrayUtil.AsJsonArray.typeJson(value.getValueArray()),
+                ArrayUtil.AsJsonArray.typeJson(value.getRepresentationArray()),
                 value.getAlarm(),
                 value.getControl(),
                 value.getDisplay(),
@@ -738,6 +747,7 @@ public class JsonMapper extends AbstractMapper<JsonObject, JsonObject, JsonObjec
 
         return raw.scalarArray(
                 ArrayUtil.AsJsonArray.typeJson(value.getValueArray()),
+                null,
                 value.getAlarm(),
                 value.getControl(),
                 value.getDisplay(),

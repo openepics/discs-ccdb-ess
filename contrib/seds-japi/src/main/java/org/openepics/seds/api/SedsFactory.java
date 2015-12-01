@@ -212,6 +212,7 @@ public interface SedsFactory {
      * Creates a SEDS ScalarArray (with Boolean array data) from the data.
      *
      * @param value {@link SedsScalarArray#getValueArray() }
+     * @param representations {@link SedsScalarArray#getRepresentationArray()}
      * @param alarm {@link SedsScalarArray#getAlarm() }
      * @param display {@link SedsScalarArray#getDisplay() }
      * @param control {@link SedsScalarArray#getControl() }
@@ -220,6 +221,7 @@ public interface SedsFactory {
      */
     public SedsScalarArray<Boolean> newScalarArray(
             Boolean[] value,
+            String[] representations,
             SedsAlarm alarm,
             SedsControl control,
             SedsDisplay display,
@@ -248,6 +250,7 @@ public interface SedsFactory {
      * Creates a SEDS ScalarArray (with Integer array data) from the data.
      *
      * @param value {@link SedsScalarArray#getValueArray() }
+     * @param representations {@link SedsScalarArray#getRepresentationArray()}
      * @param alarm {@link SedsScalarArray#getAlarm() }
      * @param display {@link SedsScalarArray#getDisplay() }
      * @param control {@link SedsScalarArray#getControl() }
@@ -256,6 +259,7 @@ public interface SedsFactory {
      */
     public SedsScalarArray<Integer> newScalarArray(
             Integer[] value,
+            String[] representations,
             SedsAlarm alarm,
             SedsControl control,
             SedsDisplay display,
@@ -266,6 +270,7 @@ public interface SedsFactory {
      * Creates a SEDS ScalarArray (with Number array data) from the data.
      *
      * @param value {@link SedsScalarArray#getValueArray() }
+     * @param representations {@link SedsScalarArray#getRepresentationArray()}
      * @param alarm {@link SedsScalarArray#getAlarm() }
      * @param display {@link SedsScalarArray#getDisplay() }
      * @param control {@link SedsScalarArray#getControl() }
@@ -274,6 +279,7 @@ public interface SedsFactory {
      */
     public SedsScalarArray<Number> newScalarArray(
             Number[] value,
+            String[] representations,
             SedsAlarm alarm,
             SedsControl control,
             SedsDisplay display,

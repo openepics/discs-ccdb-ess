@@ -1,11 +1,11 @@
-/* 
+/*
  * This software is Copyright by the Board of Trustees of Michigan
  *  State University (c) Copyright 2013, 2014.
- *  
+ *
  *  You may use this software under the terms of the GNU public license
  *  (GPL). The terms of this license are described at:
  *    http://www.gnu.org/licenses/gpl.txt
- *  
+ *
  *  Contact Information:
  *       Facility for Rare Isotope Beam
  *       Michigan State University
@@ -15,6 +15,7 @@
 package org.openepics.seds.core.datatypes;
 
 import java.util.Objects;
+
 import org.openepics.seds.api.datatypes.SedsAlarm;
 import org.openepics.seds.util.AlarmType;
 
@@ -45,6 +46,23 @@ class IAlarm implements SedsAlarm {
         return message;
     }
 
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((message == null) ? 0 : message.hashCode());
+        result = prime * result + ((severity == null) ? 0 : severity.hashCode());
+        result = prime * result + ((status == null) ? 0 : status.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -66,9 +84,11 @@ class IAlarm implements SedsAlarm {
         return true;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
     @Override
     public String toString() {
-        return "Alarm{" + "severity=" + severity + ", status=" + status + ", message=" + message + '}';
+        return "IAlarm [severity=" + severity + ", status=" + status + ", message=" + message + "]";
     }
-
 }

@@ -13,6 +13,13 @@
             0.0,
             1.0
         ],
+        "representationArray":[
+            "3.125",
+            "6.25",
+            "1.375",
+            "0.0",
+            "1.0"
+        ],
         "alarm":{
             "severity":"MINOR",
             "message":"LOW"

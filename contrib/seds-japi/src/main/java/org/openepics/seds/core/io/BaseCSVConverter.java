@@ -1,11 +1,11 @@
-/* 
+/*
  * This software is Copyright by the Board of Trustees of Michigan
  *  State University (c) Copyright 2013, 2014.
- *  
+ *
  *  You may use this software under the terms of the GNU public license
  *  (GPL). The terms of this license are described at:
  *    http://www.gnu.org/licenses/gpl.txt
- *  
+ *
  *  Contact Information:
  *       Facility for Rare Isotope Beam
  *       Michigan State University
@@ -100,7 +100,7 @@ class BaseCSVConverter implements CSVConverter {
             //Pre-condition: data is a List
             if (double.class.equals(type) && data instanceof ListDouble) {
                 return Seds.newFactory()
-                        .newScalarArray(ArrayUtil.AsBoxedArray.typeNumber((ListDouble) data), null, null, toDisplay(units), null);
+                        .newScalarArray(ArrayUtil.AsBoxedArray.typeNumber((ListDouble) data), null, null, null, toDisplay(units), null);
             } else if (String.class.equals(type) && data instanceof List) {
                 return Seds.newFactory()
                         .newScalarArray(ArrayUtil.AsBoxedArray.typeString((List<String>) data), null, null, toDisplay(units), null);

@@ -1,11 +1,11 @@
-/* 
+/*
  * This software is Copyright by the Board of Trustees of Michigan
  *  State University (c) Copyright 2013, 2014.
- *  
+ *
  *  You may use this software under the terms of the GNU public license
  *  (GPL). The terms of this license are described at:
  *    http://www.gnu.org/licenses/gpl.txt
- *  
+ *
  *  Contact Information:
  *       Facility for Rare Isotope Beam
  *       Michigan State University
@@ -15,6 +15,7 @@
 package org.openepics.seds.core.datatypes;
 
 import java.util.Objects;
+
 import org.openepics.seds.api.datatypes.SedsTime;
 
 class ITime implements SedsTime {
@@ -44,6 +45,22 @@ class ITime implements SedsTime {
         return userTag;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((nanoSec == null) ? 0 : nanoSec.hashCode());
+        result = prime * result + ((unixSec == null) ? 0 : unixSec.hashCode());
+        result = prime * result + ((userTag == null) ? 0 : userTag.hashCode());
+        return result;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -65,9 +82,12 @@ class ITime implements SedsTime {
         return true;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
     @Override
     public String toString() {
-        return "Time{" + "unixSec=" + unixSec + ", nanoSec=" + nanoSec + ", userTag=" + userTag + '}';
+        return "ITime [unixSec=" + unixSec + ", nanoSec=" + nanoSec + ", userTag=" + userTag + "]";
     }
 
 }

@@ -1,11 +1,11 @@
-/* 
+/*
  * This software is Copyright by the Board of Trustees of Michigan
  *  State University (c) Copyright 2013, 2014.
- *  
+ *
  *  You may use this software under the terms of the GNU public license
  *  (GPL). The terms of this license are described at:
  *    http://www.gnu.org/licenses/gpl.txt
- *  
+ *
  *  Contact Information:
  *       Facility for Rare Isotope Beam
  *       Michigan State University
@@ -40,6 +40,14 @@ public interface SedsScalarArray<T> extends SedsType {
      * @return the value (an array)
      */
     public T[] getValueArray();
+
+    /**
+     * Returns representation of each value returned by the {@link #getValueArray()}. The elements
+     * of he representation array should be returned in the order corresponding the to values array.
+     *
+     * @return The array of string representations of the values
+     */
+    public String[] getRepresentationArray();
 
     /**
      * Alarm metadata linked with the value.

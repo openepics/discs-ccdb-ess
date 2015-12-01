@@ -17,6 +17,7 @@ package org.openepics.seds.core.vtype;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 import org.epics.util.array.ArrayInt;
 import org.epics.util.array.ListInt;
 import org.epics.util.array.ListNumber;
@@ -51,7 +52,9 @@ import org.openepics.seds.util.AlarmType;
 import org.openepics.seds.util.ArrayUtil;
 import org.openepics.seds.util.ScalarType;
 import org.openepics.seds.util.SedsException;
+
 import static org.openepics.seds.util.SedsException.assertNotNull;
+
 import org.openepics.seds.util.TypeUtil;
 
 /**
@@ -409,6 +412,7 @@ public class VTypeMapper extends AbstractMapper<Alarm, Display, Display, VEnum, 
 
         return factory.newScalarArray(
                 ArrayUtil.AsBoxedArray.typeInteger(value.getData()),
+                null,
                 toSedsAlarm(value),
                 toSedsControl(value),
                 toSedsDisplay(value),
@@ -424,6 +428,7 @@ public class VTypeMapper extends AbstractMapper<Alarm, Display, Display, VEnum, 
 
         return factory.newScalarArray(
                 ArrayUtil.AsBoxedArray.typeNumber(value.getData()),
+                null,
                 toSedsAlarm(value),
                 toSedsControl(value),
                 toSedsDisplay(value),
@@ -549,7 +554,7 @@ public class VTypeMapper extends AbstractMapper<Alarm, Display, Display, VEnum, 
             try {
                 return factory.newScalarArray(
                         ArrayUtil.AsBoxedArray.typeBoolean((List<Boolean>) col),
-                        null, null, null, null
+                        null, null, null, null, null
                 );
             } catch (ClassCastException e) {
             }
@@ -558,7 +563,7 @@ public class VTypeMapper extends AbstractMapper<Alarm, Display, Display, VEnum, 
             try {
                 return factory.newScalarArray(
                         (Integer[]) ((List<Integer>) col).toArray(),
-                        null, null, null, null
+                        null, null, null, null, null
                 );
             } catch (ClassCastException e) {
             }
@@ -567,7 +572,7 @@ public class VTypeMapper extends AbstractMapper<Alarm, Display, Display, VEnum, 
             try {
                 return factory.newScalarArray(
                         (Number[]) ((List<Number>) col).toArray(),
-                        null, null, null, null
+                        null, null, null, null, null
                 );
             } catch (ClassCastException e) {
             }
@@ -579,7 +584,7 @@ public class VTypeMapper extends AbstractMapper<Alarm, Display, Display, VEnum, 
             try {
                 return factory.newScalarArray(
                         ArrayUtil.AsBoxedArray.typeInteger((ListInt) col),
-                        null, null, null, null
+                        null, null, null, null, null
                 );
             } catch (ClassCastException e) {
             }
@@ -588,7 +593,7 @@ public class VTypeMapper extends AbstractMapper<Alarm, Display, Display, VEnum, 
             try {
                 return factory.newScalarArray(
                         ArrayUtil.AsBoxedArray.typeNumber((ListNumber) col),
-                        null, null, null, null
+                        null, null, null, null, null
                 );
             } catch (ClassCastException e) {
             }

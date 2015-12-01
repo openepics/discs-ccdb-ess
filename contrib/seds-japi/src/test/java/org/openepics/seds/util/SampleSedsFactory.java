@@ -116,6 +116,7 @@ public class SampleSedsFactory {
     public SedsScalarArray<Boolean> sampleSedsScalarArrayBoolean() {
         SedsScalarArray<Boolean> obj = Seds.newFactory().newScalarArray(
                 new Boolean[]{true, false, true},
+                new String[]{"T", "F", "T"},
                 null,
                 null,
                 null,
@@ -143,6 +144,7 @@ public class SampleSedsFactory {
                 null,
                 null,
                 null,
+                null,
                 Seds.newFactory().newTime(Timestamp.of(1354719441L, 521786982), null)
         );
         return obj;
@@ -151,6 +153,7 @@ public class SampleSedsFactory {
     public SedsScalarArray<Number> sampleSedsScalarArrayNumber() {
         SedsScalarArray<Number> obj = Seds.newFactory().newScalarArray(
                 new Number[]{3.1415, -1, -1000000000, 0, 10},
+                new String[]{"3.1415", "-1", "-1000000000", "0", "10"},
                 Seds.newFactory().newAlarm(AlarmType.fromOrdinal(2), "3", "sampleAlarm"),
                 Seds.newFactory().newControl(10.0, 100.0),
                 Seds.newFactory().newDisplay(1d, 2d, 10d, 100d, 11d, 12d, "sampleDisplay", "meters"),
@@ -178,6 +181,7 @@ public class SampleSedsFactory {
                 new SedsScalarArray[]{
                     Seds.newFactory().newScalarArray(
                             new Boolean[]{true, false, true, false},
+                            new String[]{"T", "F", "T", "F"},
                             Seds.newFactory().newAlarm(AlarmType.NONE, "driver", "msgA"),
                             null,
                             null,
@@ -185,6 +189,7 @@ public class SampleSedsFactory {
                     ),
                     Seds.newFactory().newScalarArray(
                             new Integer[]{1, 2, 3, 4},
+                            null,
                             Seds.newFactory().newAlarm(AlarmType.NONE, "driver", "msgB"),
                             null,
                             Seds.newFactory().newDisplay(null, null, 0d, 0d, null, null, null, "meters"),
