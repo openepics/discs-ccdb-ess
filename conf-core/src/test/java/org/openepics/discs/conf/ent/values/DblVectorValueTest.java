@@ -24,6 +24,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -34,6 +35,7 @@ import org.junit.Test;
 public class DblVectorValueTest {
 
     private List<Double> testValues;
+    private List<String> repValues;
 
     @Before
     public void testValuesInitialization() {
@@ -45,11 +47,14 @@ public class DblVectorValueTest {
         testValues.add(4.4);
         testValues.add(5.5);
         testValues.add(6.6);
+
+        repValues = testValues.stream().map(n -> Double.toString(n)).collect(Collectors.toList());
+
     }
 
     @Test(expected = NullPointerException.class)
     public void dblVectorValue() {
-        DblVectorValue dblVectorValue = new DblVectorValue(null);
+        DblVectorValue dblVectorValue = new DblVectorValue(null, null);
     }
 
     /*
@@ -57,25 +62,25 @@ public class DblVectorValueTest {
      */
     @Test
     public void dblVectorDisplay1() {
-        DblVectorValue dblVectorValue = new DblVectorValue(testValues.subList(0, 1));
+        DblVectorValue dblVectorValue = new DblVectorValue(testValues.subList(0, 1), repValues.subList(0, 1));
         assertEquals("[0.0]", dblVectorValue.toString());
     }
 
     @Test
     public void dblVectorDisplay2() {
-        DblVectorValue dblVectorValue = new DblVectorValue(testValues.subList(0, 2));
+        DblVectorValue dblVectorValue = new DblVectorValue(testValues.subList(0, 2), repValues.subList(0, 2));
         assertEquals("[0.0, 1.1]", dblVectorValue.toString());
     }
 
     @Test
     public void dblVectorDisplay5() {
-        DblVectorValue dblVectorValue = new DblVectorValue(testValues.subList(0, 5));
+        DblVectorValue dblVectorValue = new DblVectorValue(testValues.subList(0, 5), repValues.subList(0, 5));
         assertEquals("[0.0, 1.1, 2.2, 3.3, 4.4]", dblVectorValue.toString());
     }
 
     @Test
     public void dblVectorDisplay7() {
-        DblVectorValue dblVectorValue = new DblVectorValue(testValues);
+        DblVectorValue dblVectorValue = new DblVectorValue(testValues, repValues);
         assertEquals("[0.0, 1.1, 2.2, 3.3, ..., 6.6]", dblVectorValue.toString());
     }
 }

@@ -213,7 +213,8 @@ public class Conversion {
                 convertedValue = new DblTableValue(Conversion.toDblTable(strValue));
                 break;
             case DBL_VECTOR:
-                convertedValue = new DblVectorValue(Conversion.toDblVector(strValue));
+                convertedValue = new DblVectorValue(Conversion.toDblVector(strValue),
+                                        Conversion.toDblVectorRep(strValue));
                 break;
             case DOUBLE:
                 convertedValue = new DblValue(strValue);
@@ -264,7 +265,7 @@ public class Conversion {
         } else if (value instanceof IntVectorValue) {
             stringValue = Conversion.fromIntVector(((IntVectorValue)value).getIntVectorValue());
         } else if (value instanceof DblVectorValue) {
-            stringValue = Conversion.fromDblVector(((DblVectorValue)value).getDblVectorValue());
+            stringValue = Conversion.fromStrVector(((DblVectorValue)value).getRepresentations());
         } else if (value instanceof StrVectorValue) {
             stringValue = Conversion.fromStrVector(((StrVectorValue)value).getStrVectorValue());
         } else if (value instanceof DblTableValue) {
@@ -337,6 +338,20 @@ public class Conversion {
             // replace unicode no-break spaces with normal ones
             while (scanner.hasNext()) {
                 list.add(Double.parseDouble(scanner.next().replaceAll(UNICODE_NON_BREAKING_SPACE, " ").trim()));
+            }
+        }
+        return list;
+    }
+
+    private static List<String> toDblVectorRep(String str) {
+        final List<String> list = new ArrayList<>();
+
+        try (Scanner scanner = new Scanner(str)) {
+            scanner.useDelimiter(Pattern.compile(NEW_LINE_REGEX));
+
+            // replace unicode no-break spaces with normal ones
+            while (scanner.hasNext()) {
+                list.add(scanner.next().replaceAll(UNICODE_NON_BREAKING_SPACE, "").trim());
             }
         }
         return list;
@@ -498,14 +513,6 @@ public class Conversion {
         StringBuilder retStr = new StringBuilder();
         for (Integer number : value) {
             retStr.append(number.intValue()).append('\n');
-        }
-        return retStr.toString();
-    }
-
-    private static String fromDblVector(List<Double> value)  {
-        StringBuilder retStr = new StringBuilder();
-        for (Double number : value) {
-            retStr.append(number.doubleValue()).append('\n');
         }
         return retStr.toString();
     }

@@ -39,8 +39,10 @@ public class DblVectorValueConverter extends ValueConverter<DblVectorValue> {
     @Override
     public String convertToDatabaseColumn(DblVectorValue attribute) {
         final List<Double> dblVector = attribute.getDblVectorValue();
+        final List<String> reps = attribute.getRepresentations();
         final Double[] dblVectorArray = dblVector.toArray(new Double[dblVector.size()]);
-        final SedsScalarArray<Double> sedsScalarArray = SEDS_FACTORY.newScalarArray(dblVectorArray);
+        final String[] reprArray = reps.toArray(new String[reps.size()]);
+        final SedsScalarArray<Number> sedsScalarArray = I_SEDS_FACTORY.newScalarArray(dblVectorArray, reprArray, null, null, null, null);
         return SEDS_DB_CONVERTER.serialize(sedsScalarArray).toString();
     }
 

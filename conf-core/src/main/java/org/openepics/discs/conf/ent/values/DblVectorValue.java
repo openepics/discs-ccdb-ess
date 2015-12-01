@@ -26,12 +26,15 @@ import com.google.common.base.Preconditions;
 public class DblVectorValue implements Value {
 
     private final List<Double> dblVectorValue;
+    private final List<String> representations;
 
     /** Constructs a new vector of double precision values
      * @param dblVectorValue a {@link List} of {@link Double} values
+     * @param representations a {@link List} of double precision numbers in string representation
      */
-    public DblVectorValue(List<Double> dblVectorValue) {
+    public DblVectorValue(List<Double> dblVectorValue, List<String> representations) {
         this.dblVectorValue = Preconditions.checkNotNull(dblVectorValue);
+        this.representations = Preconditions.checkNotNull(representations);
     }
 
     /**
@@ -39,6 +42,10 @@ public class DblVectorValue implements Value {
      */
     public List<Double> getDblVectorValue() {
         return dblVectorValue;
+    }
+
+    public List<String> getRepresentations() {
+        return representations;
     }
 
     @Override

@@ -156,7 +156,7 @@ public class SedsConverter implements AttributeConverter<Value, String> {
                         throw new InvalidDataTypeException("Data type for table not Double.");
                     }
                 }
-                return new DblVectorValue(dblValues);
+                return new DblVectorValue(dblValues, Arrays.asList(sedsScalarArray.getRepresentationArray()));
             case STRING:
                 final List<String> sValues = new ArrayList<String>(
                                                             Arrays.asList((String[])sedsScalarArray.getValueArray()));

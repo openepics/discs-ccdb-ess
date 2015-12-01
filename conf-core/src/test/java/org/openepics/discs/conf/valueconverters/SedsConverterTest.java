@@ -50,14 +50,18 @@ public class SedsConverterTest {
     private static final String SEDS_INT = "{\"meta\":{\"type\":\"SedsScalar_Integer\","
             + "\"protocol\":\"SEDSv1\",\"version\":\"1.0.0\"},\"data\":{\"value\":123,\"representation\":\"123\"}}";
     private static final String SEDS_INT_VECTOR = "{\"meta\":{\"type\":\"SedsScalarArray_Integer\","
-            + "\"protocol\":\"SEDSv1\",\"version\":\"1.0.0\"},\"data\":{\"valueArray\":[1,2,3]}}";
+            + "\"protocol\":\"SEDSv1\",\"version\":\"1.0.0\"},\"data\":{\"valueArray\":[1,2,3],"
+            + "\"representationArray\":[\"1\",\"2\",\"3\"]}}";
     private static final String SEDS_DBL_TABLE = "{\"meta\":{\"type\":\"SedsTable\",\"protocol\":\"SEDSv1\","
             + "\"version\":\"1.0.0\"},\"data\":{\"numRows\":3,\"values\":"
-            + "[{\"valueArray\":[0.1,0.2,0.3]},{\"valueArray\":[1.1,1.2,1.3]},{\"valueArray\":[2.1,2.2,2.3]}]},"
+            + "[{\"valueArray\":[0.1,0.2,0.3],\"representationArray\":[\"0.1\",\"0.2\",\"0.3\"]},"
+            + "{\"valueArray\":[1.1,1.2,1.3],\"representationArray\":[\"1.1\",\"1.2\",\"1.3\"]},"
+            + "{\"valueArray\":[2.1,2.2,2.3],\"representationArray\":[\"2.1\",\"2.2\",\"2.3\"]}]},"
             + "\"type\":{\"numColumns\":3,\"names\":[null,null,null],"
             + "\"columnTypes\":[\"SedsScalarArray_Number\",\"SedsScalarArray_Number\",\"SedsScalarArray_Number\"]}}";
     private static final String SEDS_DBL_VECTOR = "{\"meta\":{\"type\":\"SedsScalarArray_Number\","
-            + "\"protocol\":\"SEDSv1\",\"version\":\"1.0.0\"},\"data\":{\"valueArray\":[1.0,2.0,3.0]}}";
+            + "\"protocol\":\"SEDSv1\",\"version\":\"1.0.0\"},\"data\":{\"valueArray\":[1.0,2.0,3.0],"
+            + "\"representationArray\":[\"1.0\",\"2.0\",\"3.0\"]}}";
     private static final String SEDS_DBL = "{\"meta\":{\"type\":\"SedsScalar_Number\",\"protocol\":\"SEDSv1\","
             + "\"version\":\"1.0.0\"},\"data\":{\"value\":123.456,\"representation\":\"123.456\"}}";
     private static final String SEDS_ENUM = "{\"meta\":{\"type\":\"SedsEnum\",\"protocol\":\"SEDSv1\","
@@ -71,7 +75,8 @@ public class SedsConverterTest {
 
     private static final DblTableValue VAL_DBL_TABLE = new DblTableValue(Arrays.asList(Arrays.asList(0.1, 0.2, 0.3),
                     Arrays.asList(1.1, 1.2, 1.3),Arrays.asList(2.1, 2.2, 2.3)));
-    private static final DblVectorValue VAL_DBL_VECTOR = new DblVectorValue(Arrays.asList(1.0, 2.0, 3.0));
+    private static final DblVectorValue VAL_DBL_VECTOR = new DblVectorValue(Arrays.asList(1.0, 2.0, 3.0),
+                                                                    Arrays.asList("1.0", "2.0", "3.0"));
     private static final DblValue VAL_DBL = new DblValue("123.456");
     private static final EnumValue VAL_ENUM = new EnumValue("TEST2");
     private static final IntValue VAL_INT = new IntValue(123);
