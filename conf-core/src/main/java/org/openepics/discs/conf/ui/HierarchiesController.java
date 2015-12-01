@@ -1179,6 +1179,14 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             if (!((SlotView)root.getData()).isInitialzed()) {
                 hb.expandNode(root);
                 root.setExpanded(show);
+            } else {
+                if (show) {
+                    root.setExpanded(true);
+                }
+            }
+        } else {
+            if (show) {
+                root.setExpanded(false);
             }
         }
         for (final TreeNode node : root.getChildren()) {
