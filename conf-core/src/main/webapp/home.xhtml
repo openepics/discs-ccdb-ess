@@ -493,13 +493,13 @@
                             <p:commandButton title="Uninstall selected device" label="Uninstall" value="Uninstall"
                                 type="button" onclick="PF('uninstallConfirm').show();" id="uninstallDeviceBtn"
                                 style="margin-top: 1em; float: right;" update=":hierarchies:installationDetails"
-                                disabled="#{!hierarchiesController.canUninstall()}" />
+                                disabled="#{!hierarchiesController.canUninstall()}" icon="ui-icon-cancel" />
                             <p:commandButton title="Install device to the selected slot" id="installDeviceBtn"
-                                    value="Install" ajax="true"
+                                    value="Install" ajax="true" icon="ui-icon-check" 
                                     actionListener="#{hierarchiesController.prepareUninstalledDevices}"
-                                    style="margin: 1em 1ex 0 0; float: right;" update=":hierarchies:installationDetails :installDeviceForm :installDeviceForm:installDevice"
-                                    disabled="#{!hierarchiesController.canInstall()}"
-                                    oncomplete="PF('installDevice').show();" />                            
+                                    style="margin: 1em 1ex 0 0; float: right;" oncomplete="PF('installDevice').show();" 
+                                    update=":hierarchies:installationDetails :installDeviceForm :installDeviceForm:installDevice"
+                                    disabled="#{!hierarchiesController.canInstall()}" />
                         </p:fieldset>
                     </p:column>
                 </p:row>
