@@ -3,11 +3,11 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:h="http://java.sun.com/jsf/html">
 
-    <h:form id="addSlotRelationshipForm">
+    <h:form id="addSlotRelationshipForm" rendered="#{not empty empty hierarchiesController.editedRelationshipView}">
         <p:dialog widgetVar="addSlotRelationship" id="addSlotRelationship" modal="true" width="45em" resizable="false" 
                 closable="false" dynamic="true">
             <f:facet name="header">
-                <h:outputText value="Add relationship to #{hierarchiesController.selectedNodeSlot.name}" />
+                <h:outputText value="#{empty hierarchiesController.editedRelationshipView.id ? 'Add' : 'Edit'} relationship to #{hierarchiesController.editedRelationshipView.sourceSlotName}" />
             </f:facet>
             <p:panelGrid id="grid" style="text-align: left" styleClass="dialog-grid-panel noBorders">
                 <p:row>
@@ -19,7 +19,7 @@
                                 </p:column>
                                 <p:column>
                                     <p:selectOneMenu id="relationshipTypeSelect" 
-                                            value="#{hierarchiesController.selectedRelationshipType}">
+                                            value="#{hierarchiesController.editedRelationshipView.relationshipName}">
                                         <f:selectItems value="#{hierarchiesController.relationshipTypesForDialog}" /> 
                                         <p:ajax />
             	                     </p:selectOneMenu>
@@ -32,7 +32,7 @@
                     <p:column>
                         <p:tree value="#{hierarchiesController.rootNode}" id="relationshipTree" dynamic="true" 
                                 selectionMode="single" var="slotView" style="width: 100%; height: 27em; overflow: auto;"
-                                selection="#{hierarchiesController.selectedTreeNodeForRelationshipAdd}">
+                                selection="#{hierarchiesController.editedRelationshipView.targetNode}">
                             <p:ajax event="select" 
                                 update=":addSlotRelationshipForm:relationshipTypeSelect :addSlotRelationshipForm:addButton" />
                             <p:ajax event="unselect" 
@@ -59,11 +59,11 @@
                     onclick="PF('addSlotRelationship').hide();" oncomplete="hierarchiesResizeAll();"
                     actionListener="#{hierarchiesController.onRelationshipPopupClose}" 
                     resetValues="true" style="margin-top: 1em;" update=":hierarchies:hierarchyTabs:tree" />
-            <p:commandButton value="Add" styleClass="dialogButton" id="addButton" style="margin-top: 1em;" 
-                    disabled="#{empty hierarchiesController.selectedTreeNodeForRelationshipAdd}" 
+            <p:commandButton value="#{empty hierarchiesController.editedRelationshipView.id ? 'Add' : 'Save'}" styleClass="dialogButton" id="addButton" style="margin-top: 1em;" 
+                    disabled="#{empty hierarchiesController.editedRelationshipView.targetNode}" 
                     action="#{hierarchiesController.onRelationshipAdd}" 
                     oncomplete="PF('addSlotRelationship').hide(); hierarchiesResizeAll();" 
-                    update=":hierarchies:relationshipTable :hierarchies:hierarchyTabs:tree" />
+                    update=":addSlotRelationshipForm :hierarchies:relationshipTable :hierarchies:editRelationship :hierarchies:hierarchyTabs:tree" />
         </p:dialog>
     </h:form>
 </ui:composition>
