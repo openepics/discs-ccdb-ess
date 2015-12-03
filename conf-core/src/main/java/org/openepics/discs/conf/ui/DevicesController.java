@@ -36,7 +36,6 @@ import javax.faces.validator.ValidatorException;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.persistence.PersistenceException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.FilenameUtils;
@@ -50,7 +49,6 @@ import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.DeviceArtifact;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ent.InstallationRecord;
-import org.openepics.discs.conf.ent.PropertyValueUniqueness;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.ent.Tag;
@@ -532,21 +530,20 @@ public class DevicesController
      */
     public void duplicate() {
         Preconditions.checkState(!Utility.isNullOrEmpty(selectedDevices));
+        try {
+            for (final DeviceView deviceView : selectedDevices) {
+                final Device deviceToCopy =  deviceView.getDevice();
+                final String newDeviceSerial = Utility.findFreeName(deviceToCopy.getSerialNumber(), deviceEJB);
+                final Device newCopy = createNewDevice(newDeviceSerial, deviceToCopy.getComponentType());
 
-        for (final DeviceView deviceView : selectedDevices) {
-            final Device deviceToCopy = deviceView.getDevice();
-            final String newDeviceSerial = Utility.findFreeName(deviceToCopy.getSerialNumber(), deviceEJB);
-            final Device newCopy = createNewDevice(newDeviceSerial, deviceToCopy.getComponentType());
-            deviceEJB.addDeviceAndPropertyDefs(newCopy);
-            transferValuesFromSource(newCopy, deviceToCopy);
-            copyArtifactsFromSource(newCopy, deviceToCopy);
-            newCopy.getTags().addAll(deviceToCopy.getTags());
-            deviceEJB.save(newCopy);
+                deviceEJB.duplicate(newCopy, deviceToCopy);
+            }
+        } finally {
+            prepareDevicesForDisplay(null);
+            attributes = null;
+            selectedAttributes = null;
+            filteredAttributes = null;
         }
-        prepareDevicesForDisplay(null);
-        attributes = null;
-        selectedAttributes = null;
-        filteredAttributes = null;
     }
 
     @Override
@@ -562,43 +559,6 @@ public class DevicesController
                 throw new RuntimeException(e);
             }
         }
-    }
-
-    private void copyArtifactsFromSource(final Device newCopy, final Device copySource) {
-        for (final DeviceArtifact artifact : copySource.getDeviceArtifactList()) {
-            String uri = artifact.getUri();
-            if (artifact.isInternal()) {
-                try {
-                    uri = blobStore.storeFile(blobStore.retreiveFile(uri));
-                } catch (IOException e) {
-                    throw new PersistenceException(e);
-                }
-            }
-            final DeviceArtifact newArtifact = new DeviceArtifact(artifact.getName(), artifact.isInternal(), artifact.getDescription(),
-                        uri);
-            newArtifact.setDevice(newCopy);
-            deviceEJB.addChild(newArtifact);
-        }
-    }
-
-    private void transferValuesFromSource(final Device newCopy, final Device copySource) {
-        for (final DevicePropertyValue pv : newCopy.getDevicePropertyList()) {
-            if (pv.getProperty().getValueUniqueness() == PropertyValueUniqueness.NONE) {
-                final DevicePropertyValue parentPv = getPropertyValue(copySource, pv.getProperty().getName());
-                if (parentPv != null) {
-                    pv.setPropValue(parentPv.getPropValue());
-                }
-            }
-        }
-    }
-
-    private DevicePropertyValue getPropertyValue(final Device device, final String pvName) {
-        for (final DevicePropertyValue pv : device.getDevicePropertyList()) {
-            if (pv.getProperty().getName().equals(pvName)) {
-                return pv;
-            }
-        }
-        return null;
     }
 
     /** @return The list of all {@link Device} instances to display to the the user */
