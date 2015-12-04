@@ -47,7 +47,7 @@
     
                         <p:column headerText="Change" sortBy="#{auditRecord.entry}" filterBy="#{auditRecord.entry}" filterMatchMode="contains">
                             <p:commandLink id="logDetails" update=":logsForm:logDetailsPanel" action="#{auditManager.handleDetails()}" 
-                                    oncomplete="PF('overlay').show('#{component.clientId}');resizeLogPanel();">
+                                    oncomplete="PF('overlay').show('#{component.clientId}');">
                                 <f:setPropertyActionListener target="#{auditManager.displayRecord}" value="#{auditRecord}" />
                                 <h:outputText value="#{auditRecord.entry.length() lt 46 ? auditRecord.entry : auditRecord.entry.substring(0,45).concat('...')}" />
                             </p:commandLink>
@@ -61,8 +61,7 @@
                     actionListener="#{auditManager.simpleTableDialog.prepareTableExportPopup}" />
             </p:fieldset>
 
-            <p:overlayPanel id="logOverlayPanel" widgetVar="overlay" dismissable="false" showCloseIcon="true" 
-                    style="max-width: 50%; max-height:35%;">
+            <p:overlayPanel id="logOverlayPanel" widgetVar="overlay" dismissable="false" showCloseIcon="true">
                 <p:outputPanel id="logDetailsPanel">
                     <p:panel id="contentPanel" rendered="#{not empty auditManager.formattedDetails}" style="overflow: auto;">
                         <h:outputText value="#{auditManager.formattedDetails}" escape="false" 
