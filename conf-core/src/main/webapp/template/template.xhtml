@@ -47,7 +47,7 @@
         
         <h:form id="loginDialogForm">         
             <p:dialog id="loginDialog" widgetVar="loginDialog" modal="true" closable="false" 
-                    visible="#{!loginManager.isLoggedIn()}" resizable="false">
+                    visible="#{!loginManager.isLoggedIn()}" resizable="false" width="26em">
                 <f:facet name="header">
                     <h:outputText value="Sign In" />
                 </f:facet>
@@ -66,9 +66,10 @@
                     </h:panelGroup>
                 </p:panelGrid>
                 <p:separator />
-                <p:commandButton value="Sign In" update=":loginDialogForm :top :content" action="#{loginManager.onLogin}" 
-                        style="float: left" />
+                <p:commandButton id="loginButton" value="Sign In" update=":loginDialogForm :top :content" action="#{loginManager.onLogin}" 
+                        style="float: left" />                
             </p:dialog>
+            <p:blockUI block="loginDialog" trigger="loginButton" />
         </h:form>
 
         <script type="text/javascript">
