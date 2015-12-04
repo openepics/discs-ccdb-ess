@@ -318,7 +318,6 @@ public class DevicesController
             if (!multiDeviceAdd()) {
                 return;
             }
-            RequestContext.getCurrentInstance().execute("PF('addDeviceDialog').hide();");
         } else {
             singleDeviceAdd();
         }
@@ -371,9 +370,9 @@ public class DevicesController
                     devicesCreated++;
                 }
             }
-            RequestContext.getCurrentInstance().execute("PF('devicesTableVar').filter();clearDeviceInstance();");
+            RequestContext.getCurrentInstance().execute("PF('devicesTableVar').filter();");
             Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
-                    "Created " + devicesCreated + " new properties.");
+                    "Created " + devicesCreated + " new devices.");
         }
         return true;
     }
