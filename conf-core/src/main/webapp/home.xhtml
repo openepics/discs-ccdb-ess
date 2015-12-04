@@ -39,7 +39,7 @@
                                     update=":hierarchies:relationsTable :hierarchies:deleteButton :hierarchies:downButton
                                         :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton
                                         :hierarchies:installationDetails :hierarchies:slotAttributes
-                                        :hierarchies:addRelationship :hierarchies:hierarchyTabs:tree
+                                        :hierarchies:addRelationship :hierarchies:editRelationship :hierarchies:hierarchyTabs:tree
                                         :hierarchies:hierarchyTabs:powersTree :hierarchies:hierarchyTabs:controlsTree
                                         :hierarchies:hierarchyTabs:connectsTree
                                         :hierarchies:clipboardOperations"                                    
@@ -51,7 +51,7 @@
                                          update=":hierarchies:relationsTable :hierarchies:deleteButton :hierarchies:downButton
                                                         :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton
                                                         :hierarchies:installationDetails :hierarchies:slotAttributes
-                                                        :hierarchies:addRelationship :hierarchies:hierarchyTabs:tree                                                        
+                                                        :hierarchies:addRelationship :hierarchies:editRelationship :hierarchies:hierarchyTabs:tree                                                        
                                                         :hierarchies:clipboardOperations"/>                                                 
                                     </p:inputText>
                                     <div style="height: calc(100% - 2em)">
@@ -63,13 +63,13 @@
                                                 update=":hierarchies:relationsTable :hierarchies:deleteButton :hierarchies:downButton
                                                         :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton
                                                         :hierarchies:installationDetails :hierarchies:slotAttributes
-                                                        :hierarchies:addRelationship :hierarchies:clipboardOperations"
+                                                        :hierarchies:addRelationship :hierarchies:editRelationship :hierarchies:clipboardOperations"
                                                 oncomplete="hierarchiesResizeAll();" />
                                             <p:ajax event="unselect" listener="#{hierarchiesController.onNodeUnselect}"
                                                 update=":hierarchies:relationsTable :hierarchies:deleteButton :hierarchies:downButton
                                                         :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton
                                                         :hierarchies:installationDetails :hierarchies:slotAttributes
-                                                        :hierarchies:addRelationship :hierarchies:clipboardOperations"
+                                                        :hierarchies:addRelationship :hierarchies:editRelationship :hierarchies:clipboardOperations"
                                                 oncomplete="hierarchiesResizeAll();" />
                                             <p:ajax event="expand" listener="#{hierarchiesController.onContainsExpand}" />
     
@@ -109,7 +109,7 @@
                                          update=":hierarchies:relationsTable :hierarchies:deleteButton :hierarchies:downButton
                                                         :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton
                                                         :hierarchies:installationDetails :hierarchies:slotAttributes
-                                                        :hierarchies:addRelationship :hierarchies:hierarchyTabs:controlsTree                                                        
+                                                        :hierarchies:addRelationship :hierarchies:editRelationship :hierarchies:hierarchyTabs:controlsTree                                                        
                                                         :hierarchies:clipboardOperations"/>                                                 
                                     </p:inputText>
                                     <div style="height: calc(100% - 2em)">
@@ -120,11 +120,11 @@
                                                  
                                             <p:ajax event="select" listener="#{hierarchiesController.onNodeSelect}"
                                                     update=":hierarchies:relationsTable :hierarchies:installationDetails
-                                                            :hierarchies:slotAttributes :hierarchies:addRelationship"
+                                                            :hierarchies:slotAttributes :hierarchies:addRelationship :hierarchies:editRelationship"
                                                     oncomplete="hierarchiesResizeAll();" />
                                             <p:ajax event="unselect" listener="#{hierarchiesController.onNodeUnselect}"
                                                     update=":hierarchies:relationsTable :hierarchies:installationDetails
-                                                            :hierarchies:slotAttributes :hierarchies:addRelationship"
+                                                            :hierarchies:slotAttributes :hierarchies:addRelationship :hierarchies:editRelationship"
                                                     oncomplete="hierarchiesResizeAll();" />
                                             <p:ajax event="expand" listener="#{hierarchiesController.onControlsExpand}" />
     
@@ -154,7 +154,7 @@
                                          update=":hierarchies:relationsTable :hierarchies:deleteButton :hierarchies:downButton
                                                         :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton
                                                         :hierarchies:installationDetails :hierarchies:slotAttributes
-                                                        :hierarchies:addRelationship :hierarchies:hierarchyTabs:powersTree                                                        
+                                                        :hierarchies:addRelationship :hierarchies:editRelationship :hierarchies:hierarchyTabs:powersTree                                                        
                                                         :hierarchies:clipboardOperations"/>                                                 
                                     </p:inputText>
                                 
@@ -165,11 +165,11 @@
                                                  widgetVar="powersWidget">
                                             <p:ajax event="select" listener="#{hierarchiesController.onNodeSelect}"
                                                     update=":hierarchies:relationsTable :hierarchies:installationDetails
-                                                            :hierarchies:slotAttributes :hierarchies:addRelationship"
+                                                            :hierarchies:slotAttributes :hierarchies:addRelationship :hierarchies:editRelationship"
                                                     oncomplete="hierarchiesResizeAll();" />
                                             <p:ajax event="unselect" listener="#{hierarchiesController.onNodeUnselect}"
                                                     update=":hierarchies:relationsTable :hierarchies:installationDetails
-                                                            :hierarchies:slotAttributes :hierarchies:addRelationship"
+                                                            :hierarchies:slotAttributes :hierarchies:addRelationship :hierarchies:editRelationship"
                                                     oncomplete="hierarchiesResizeAll();" />
                                             <p:ajax event="expand" listener="#{hierarchiesController.onPowersExpand}" />
     
@@ -199,7 +199,7 @@
                                          update=":hierarchies:relationsTable :hierarchies:deleteButton :hierarchies:downButton
                                                         :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton
                                                         :hierarchies:installationDetails :hierarchies:slotAttributes
-                                                        :hierarchies:addRelationship :hierarchies:hierarchyTabs:connectsTree                                                        
+                                                        :hierarchies:addRelationship :hierarchies:editRelationship :hierarchies:hierarchyTabs:connectsTree                                                        
                                                         :hierarchies:clipboardOperations"/>                                                 
                                     </p:inputText>                                
                                     <div style="height: calc(100% - 2em)">
@@ -209,11 +209,11 @@
                                                  widgetVar="connectsWidget">
                                             <p:ajax event="select" listener="#{hierarchiesController.onNodeSelect}"
                                                     update=":hierarchies:relationsTable :hierarchies:installationDetails
-                                                            :hierarchies:slotAttributes :hierarchies:addRelationship"
+                                                            :hierarchies:slotAttributes :hierarchies:addRelationship :hierarchies:editRelationship"
                                                     oncomplete="hierarchiesResizeAll();" />
                                             <p:ajax event="unselect" listener="#{hierarchiesController.onNodeUnselect}"
                                                     update=":hierarchies:relationsTable :hierarchies:installationDetails
-                                                            :hierarchies:slotAttributes :hierarchies:addRelationship"
+                                                            :hierarchies:slotAttributes :hierarchies:addRelationship :hierarchies:editRelationship"
                                                     oncomplete="hierarchiesResizeAll();" />
                                             <p:ajax event="expand" listener="#{hierarchiesController.onConnectsExpand}" />
     
@@ -408,8 +408,8 @@
                                         selectionMode="multiple" rowKey="#{relationship.id}"
                                         selection="#{hierarchiesController.selectedRelationships}"
                                         widgetVar="relationshipsWidget">
-                                    <p:ajax event="rowSelect" update=":hierarchies:deleteRelationship" />
-                                    <p:ajax event="rowUnselect" update=":hierarchies:deleteRelationship" />                                
+                                    <p:ajax event="rowSelect" update=":hierarchies:editRelationship :hierarchies:deleteRelationship" />
+                                    <p:ajax event="rowUnselect" update=":hierarchies:editRelationship :hierarchies:deleteRelationship" />                                
                                     
                                     <p:column headerText="Source" sortBy="#{relationship.sourceSlotName}" 
                                             filterBy="#{relationship.sourceSlotName}" filterMatchMode="contains">
@@ -424,12 +424,12 @@
     
                                     <p:column headerText="Target" sortBy="#{relationship.targetSlotName}"
                                             filterBy="#{relationship.targetSlotName}" filterMatchMode="contains">
-                                        <p:commandLink action="#{hierarchiesController.selectNode(relationship.slot)}"
+                                        <p:commandLink action="#{hierarchiesController.selectNode(relationship.targetSlot)}"
                                                 rendered="#{hierarchiesController.includesActive}"
                                                 update=":hierarchies:relationsTable :hierarchies:deleteButton :hierarchies:downButton
                                                     :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton
                                                     :hierarchies:installationDetails :hierarchies:slotAttributes
-                                                    :hierarchies:addRelationship :hierarchies:hierarchyTabs:tree"
+                                                    :hierarchies:addRelationship :hierarchies:editRelationship :hierarchies:hierarchyTabs:tree"
                                                 oncomplete="hierarchiesResizeAll();scrollSelectedIntoView(getVisibleTree());
                                                 PF('relationshipsWidget').clearFilters();PF('attributesWidget').clearFilters();">
                                             <h:outputText value="#{relationship.targetSlotName}"
@@ -444,6 +444,10 @@
                             <p:commandButton id="deleteRelationship" value="Delete" icon="ui-icon-trash"
                                 style="margin-top: 1em; float: right;" disabled="#{empty hierarchiesController.selectedRelationships}"
                                 oncomplete="PF('deleteRelationship').show();" />
+                            <p:commandButton value="Edit" oncomplete="PF('addSlotRelationship').show()" id="editRelationship"
+                                icon="ui-icon-pencil" disabled="#{not hierarchiesController.canRelationshipBeEdited()}"
+                                style="margin: 1em 1ex 0 0; float: right;" update=":addSlotRelationshipForm:addSlotRelationship"
+                                actionListener="#{hierarchiesController.prepareEditRelationshipPopup}" />                                
                             <p:commandButton value="Add" oncomplete="PF('addSlotRelationship').show()" id="addRelationship"
                                 icon="ui-icon-plus" disabled="#{not hierarchiesController.singleNodeSelected}"
                                 style="margin: 1em 1ex 0 0; float: right;" update=":addSlotRelationshipForm:addSlotRelationship"

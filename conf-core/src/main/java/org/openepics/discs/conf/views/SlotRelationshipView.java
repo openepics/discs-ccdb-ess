@@ -22,6 +22,7 @@ package org.openepics.discs.conf.views;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.util.UnhandledCaseException;
+import org.primefaces.model.TreeNode;
 
 import com.google.common.base.Objects;
 
@@ -32,12 +33,14 @@ import com.google.common.base.Objects;
 public class SlotRelationshipView {
 
     private final String id;
+    private final Slot sourceSlot;
     private final String sourceSlotName;
-    private final String relationshipName;
-    private final String targetSlotName;
-    private final Slot targetSlot;
+    private  Slot targetSlot;
+    private String targetSlotName;
+    private String relationshipName;
     private final SlotPair slotPair;
     private final String usedBy = "";
+    private TreeNode targetNode;
 
     /** Constructs a new slot pair UI view object for the selected {@link Slot} object. The method checks that the
      * <code>selectedSlot</code> is either a parent or a child in the <code>slotPair</code> relationship object.
@@ -47,25 +50,32 @@ public class SlotRelationshipView {
      * <code>slotPair</code> object.
      */
     public SlotRelationshipView(SlotPair slotPair, Slot selectedSlot) {
+        sourceSlot = selectedSlot;
+        sourceSlotName = selectedSlot.getName();
+        this.slotPair = slotPair;
+        if (slotPair == null) {
+            id = null;
+            targetSlot = null;
+            targetSlotName = null;
+            return;
+        }
         if (Objects.equal(slotPair.getChildSlot(), selectedSlot)) {
             relationshipName = slotPair.getSlotRelation().getIname();
             targetSlot = slotPair.getParentSlot();
             targetSlotName = slotPair.getParentSlot().getName();
-            sourceSlotName = slotPair.getChildSlot().getName();
         } else if (Objects.equal(slotPair.getParentSlot(), selectedSlot)) {
             relationshipName = slotPair.getSlotRelation().getNameAsString();
             targetSlot = slotPair.getChildSlot();
             targetSlotName = slotPair.getChildSlot().getName();
-            sourceSlotName = slotPair.getParentSlot().getName();
         } else {
             throw new UnhandledCaseException();
         }
 
-        this.slotPair = slotPair;
         this.id = slotPair.getId().toString();
     }
 
     public SlotRelationshipView(String id, Slot sourceSlot, Slot targetSlot, String relationshipName) {
+        this.sourceSlot = sourceSlot;
         this.sourceSlotName = sourceSlot.getName();
         this.targetSlotName = targetSlot.getName();
         this.targetSlot = targetSlot;
@@ -78,12 +88,30 @@ public class SlotRelationshipView {
         return relationshipName;
     }
 
+    public void setRelationshipName(String relationshipName) {
+        this.relationshipName = relationshipName;
+    }
+
     public String getTargetSlotName() {
         return targetSlotName;
     }
 
-    public Slot getSlot() {
+    public Slot getSourceSlot() {
+        return sourceSlot;
+    }
+
+    public Slot getTargetSlot() {
         return targetSlot;
+    }
+
+    public TreeNode getTargetNode() {
+        return targetNode;
+    }
+
+    public void setTargetNode(TreeNode targetNode) {
+        this.targetNode = targetNode;
+        targetSlot = ((SlotView)targetNode.getData()).getSlot();
+        targetSlotName = targetSlot.getName();
     }
 
     public SlotPair getSlotPair() {

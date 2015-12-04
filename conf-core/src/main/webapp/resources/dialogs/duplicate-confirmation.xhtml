@@ -25,8 +25,9 @@
 
             <p:commandButton value="No" styleClass="dialogButton" 
                 onclick="PF('duplicateDialog').hide(); #{closeDialogActions}" />
-            <p:commandButton value="Yes" styleClass="dialogButton" ajax="true" update="#{formsToUpdate}" 
-                oncomplete="PF('duplicateDialog').hide(); #{closeDialogActions}" 
+            <p:commandButton value="Yes" styleClass="dialogButton" ajax="true" update="#{formsToUpdate}"
+                onstart=" PF('duplicateDialog').hide(); PF('statusDialog').show();" 
+                oncomplete="PF('statusDialog').hide(); #{closeDialogActions}" 
                 action="#{controller.duplicate}" />
         </p:dialog>
     </h:form>

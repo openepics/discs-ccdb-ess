@@ -19,21 +19,26 @@
  */
 package org.openepics.discs.conf.ejb;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.persistence.PersistenceException;
 
 import org.openepics.discs.conf.auditlog.Audit;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.Device;
+import org.openepics.discs.conf.ent.DeviceArtifact;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.PropertyValue;
+import org.openepics.discs.conf.ent.PropertyValueUniqueness;
 import org.openepics.discs.conf.ent.values.Value;
 import org.openepics.discs.conf.security.Authorized;
+import org.openepics.discs.conf.util.BlobStore;
 import org.openepics.discs.conf.util.CRUDOperation;
 
 import com.google.common.base.Preconditions;
@@ -47,7 +52,7 @@ import com.google.common.base.Preconditions;
  */
 @Stateless
 public class DeviceEJB extends DAO<Device> {
-
+    @Inject private BlobStore blobStore;
     @Inject private ComptypeEJB componentTypesEJB;
 
     /**
@@ -91,6 +96,52 @@ public class DeviceEJB extends DAO<Device> {
                 addChild(devicePropertyValue);
             }
         }
+    }
+
+    public void duplicate(Device newCopy, Device deviceToCopy) {
+        addDeviceAndPropertyDefs(newCopy);
+        transferValuesFromSource(newCopy, deviceToCopy);
+        copyArtifactsFromSource(newCopy, deviceToCopy);
+        newCopy.getTags().addAll(deviceToCopy.getTags());
+        save(newCopy);
+    }
+
+    private void transferValuesFromSource(final Device newCopy, final Device copySource) {
+        for (final DevicePropertyValue pv : newCopy.getDevicePropertyList()) {
+            if (pv.getProperty().getValueUniqueness() == PropertyValueUniqueness.NONE) {
+                final DevicePropertyValue parentPv = getPropertyValue(copySource, pv.getProperty().getName());
+                if (parentPv != null) {
+                    pv.setPropValue(parentPv.getPropValue());
+                }
+            }
+        }
+    }
+
+    private void copyArtifactsFromSource(final Device newCopy, final Device copySource) {
+        for (final DeviceArtifact artifact : copySource.getDeviceArtifactList()) {
+            String uri = artifact.getUri();
+            if (artifact.isInternal()) {
+                try {
+                    uri = blobStore.storeFile(blobStore.retreiveFile(uri));
+                } catch (IOException e) {
+                    throw new PersistenceException(e);
+                }
+            }
+            final DeviceArtifact newArtifact =
+                    new DeviceArtifact(artifact.getName(), artifact.isInternal(), artifact.getDescription(), uri);
+            newArtifact.setDevice(newCopy);
+            addChild(newArtifact);
+        }
+    }
+
+
+    private DevicePropertyValue getPropertyValue(final Device device, final String pvName) {
+        for (final DevicePropertyValue pv : device.getDevicePropertyList()) {
+            if (pv.getProperty().getName().equals(pvName)) {
+                return pv;
+            }
+        }
+        return null;
     }
 
     @Override
