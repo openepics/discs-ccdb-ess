@@ -72,7 +72,7 @@ public class Unit extends ConfigurationEntity implements NamedEntity {
     @OneToMany(mappedBy = "unit")
     private List<PropertyValue> propertyValuesList;
 
-    protected Unit() {
+    public Unit() {
     }
 
     /**

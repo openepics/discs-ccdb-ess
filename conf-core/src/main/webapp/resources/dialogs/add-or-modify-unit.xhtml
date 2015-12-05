@@ -11,9 +11,9 @@
             </f:facet>
             <div class="ui-fluid">
                 <p:panelGrid id="grp" styleClass="dialog-grid-panel noBorders">
-                    <p:row rendered="#{not empty unitManager.modifiedUnitUsedBy and not unitManager.unitAdd}">
+                    <p:row rendered="#{not empty unitManager.dialogUnit.usedBy}">
                         <p:column colspan="2" style="text-align: center; font-weight: bold;">
-                            <h:outputText value="The unit is already in use by: #{unitManager.modifiedUnitUsedBy}." />
+                            <h:outputText value="The unit is already in use by: #{unitManager.dialogUnit.usedBy}." />
                         </p:column>
                     </p:row>
                     <p:row>
@@ -21,9 +21,9 @@
                             <p:outputLabel for="unitName" value="Name:" />
                         </p:column>
                         <p:column>
-                            <p:inputText id="unitName" value="#{unitManager.name}" required="true" 
-                                validator="#{unitManager.nameValidator}" requiredMessage="Please enter a name" 
-                                disabled="#{not empty unitManager.modifiedUnitUsedBy and not unitManager.unitAdd}"/>
+                            <p:inputText id="unitName" value="#{unitManager.dialogUnit.name}" required="true" 
+                                requiredMessage="Please enter a name" validator="#{unitManager.nameValidator}"
+                                disabled="#{not empty unitManager.dialogUnit.usedBy and not unitManager.dialogUnit.unitAdd}"/>
                             <p:message for="unitName" />
                         </p:column>
                     </p:row>
@@ -35,7 +35,7 @@
                         <p:column>
                             <p:inputTextarea id="unitDesc" rows="5" style="height: 7em; overflow-y: scroll;" 
                                 maxlength="254" required="true" requiredMessage="Please enter a description" 
-                                value="#{unitManager.description}" />
+                                value="#{unitManager.dialogUnit.description}" />
                             <br/>
                             <p:message for="unitDesc" />
                         </p:column>
@@ -46,9 +46,9 @@
                             <p:outputLabel for="unitSymbol" value="Symbol:" />
                         </p:column>
                         <p:column>
-                            <p:inputText id="unitSymbol" value="#{unitManager.symbol}" required="true" 
+                            <p:inputText id="unitSymbol" value="#{unitManager.dialogUnit.symbol}" required="true" 
                                 requiredMessage="Please enter a symbol" 
-                                disabled="#{not empty unitManager.modifiedUnitUsedBy and not unitManager.unitAdd}"/>
+                                disabled="#{not empty unitManager.dialogUnit.usedBy and not unitManager.dialogUnit.unitAdd}"/>
                             <p:message for="unitSymbol" />
                         </p:column>
                     </p:row>
@@ -62,6 +62,6 @@
                     update=":unitsForm:unitsTable :unitsForm:deleteButton :unitsForm:editButton :unitsForm:exportButton
                             :unitsForm:duplicateButton grp" />
         </p:dialog>
-
+        
     </h:form>
 </ui:composition>

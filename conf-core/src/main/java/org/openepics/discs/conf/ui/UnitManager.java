@@ -78,13 +78,10 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
     private transient List<UnitView> selectedUnits;
     private transient List<UnitView> usedUnits;
     private transient List<UnitView> filteredDialogUnits;
-    private transient UnitView unitToModify;
+
+    private UnitView dialogUnit;
 
     // * * * * * * * Add/modify dialog fields * * * * * * *
-    private String name;
-    private String description;
-    private String symbol;
-    private boolean isUnitAdd;
 
     private transient ExportSimpleTableDialog simpleTableExporterDialog;
 
@@ -165,32 +162,27 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
 
     /** This method clears all input fields used in the "Add unit" dialog */
     public void prepareAddPopup() {
-        name = null;
-        description = null;
-        symbol = null;
-        isUnitAdd = true;
-        unitToModify = null;
+        dialogUnit = new UnitView();
     }
 
     /** This method prepares the input fields used in the "Edit unit" dialog */
     public void prepareModifyPopup() {
         Preconditions.checkState(isSingleUnitSelected());
-        unitToModify = selectedUnits.get(0);
-        name = unitToModify.getName();
-        description = unitToModify.getDescription();
-        symbol = unitToModify.getSymbol();
-        isUnitAdd = false;
+        dialogUnit = selectedUnits.get(0);
+        List<Property> usedBy = unitEJB.findProperties(dialogUnit.getUnit(), 2);
+        if (!usedBy.isEmpty()) {
+            dialogUnit.setUsedBy(usedBy.get(0).getName() + (usedBy.size() > 1 ? ", ..." : ""));
+        }
     }
 
     /** Method creates a new unit definition when user presses the "Save" button in the "Add new" dialog  */
     public void onAdd() {
-        Preconditions.checkNotNull(name);
-        Preconditions.checkNotNull(description);
-        Preconditions.checkNotNull(symbol);
+        Preconditions.checkNotNull(dialogUnit);
         selectedUnits = null;
-        final Unit unitToAdd = new Unit(name, symbol, description);
+        final Unit unitToAdd = dialogUnit.getUnit();
         unitEJB.add(unitToAdd);
         refreshUnits();
+        dialogUnit = null;
     }
 
     /**
@@ -198,26 +190,13 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
      * "Modify unit" dialog.
      */
     public void onModify() {
-        Preconditions.checkNotNull(unitToModify);
-        final Unit unitToSave = unitToModify.getUnit();
-        unitToSave.setName(name);
-        unitToSave.setDescription(description);
-        unitToSave.setSymbol(symbol);
+        Preconditions.checkNotNull(dialogUnit);
+        final Unit unitToSave = dialogUnit.getUnit();
         unitEJB.save(unitToSave);
 
         refreshUnits();
         // reset the input fields
-        prepareAddPopup();
-    }
-
-    /**
-     * @return string of properties using that unit or <code>null</code> otherwise.
-     */
-    public String getModifiedUnitUsedBy() {
-        if (unitToModify == null) return null;
-        List<Property> usedBy = unitEJB.findProperties(unitToModify.getUnit(), 2);
-        if (usedBy.isEmpty()) return null;
-        return usedBy.get(0).getName() + (usedBy.size() > 1 ? ", ..." : "");
+        dialogUnit = null;
     }
 
     /** @return <code>true</code> if a single {@link Unit} is selected, <code>false</code> otherwise */
@@ -280,11 +259,13 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
         }
 
         final String unitName = value.toString();
-        final Unit existingUnit = unitEJB.findByName(unitName);
-        if ((isUnitAdd && existingUnit != null)
-                || (!isUnitAdd && (existingUnit != null) && !unitToModify.getUnit().equals(existingUnit))) {
-            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
+
+        if (dialogUnit.isUnitAdd() || !unitName.equals(dialogUnit.getName())) {
+            final Unit existingUnit = unitEJB.findByName(unitName);
+            if (existingUnit != null) {
+                throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
                                                                     "The unit with this name already exists."));
+            }
         }
     }
 
@@ -339,38 +320,6 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
         this.selectedUnits = selectedUnits;
     }
 
-    /** @return the name */
-    public String getName() {
-        return name;
-    }
-    /** @param name the name to set */
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    /** @return the description */
-    public String getDescription() {
-        return description;
-    }
-    /** @param description the description to set */
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    /** @return the symbol */
-    public String getSymbol() {
-        return symbol;
-    }
-    /** @param symbol the symbol to set */
-    public void setSymbol(String symbol) {
-        this.symbol = symbol;
-    }
-
-    /** @return the unitAdd */
-    public boolean isUnitAdd() {
-        return isUnitAdd;
-    }
-
     @Override
     public ExportSimpleTableDialog getSimpleTableDialog() {
         return simpleTableExporterDialog;
@@ -384,5 +333,12 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
     /** @param filteredDialogUnits the filteredDialogUnits to set */
     public void setFilteredDialogUnits(List<UnitView> filteredDialogUnits) {
         this.filteredDialogUnits = filteredDialogUnits;
+    }
+
+    /**
+     * @return the dialogUnit
+     */
+    public UnitView getDialogUnit() {
+        return dialogUnit;
     }
 }
