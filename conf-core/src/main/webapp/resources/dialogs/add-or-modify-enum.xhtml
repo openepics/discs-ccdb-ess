@@ -16,7 +16,7 @@
                             <p:outputLabel for="enumName" value="Name:" />
                         </p:column>
                         <p:column>
-                            <p:inputText id="enumName" value="#{dataTypeManager.name}" required="true" 
+                            <p:inputText id="enumName" value="#{dataTypeManager.dialogEnum.name}" required="true" 
                                 requiredMessage="Please enter a name" validator="#{dataTypeManager.nameValidator}"/>
                             <p:message for="enumName"/>
                         </p:column>
@@ -29,7 +29,7 @@
                         <p:column>
                             <p:inputTextarea id="enumDesc" rows="5" style="height: 7em; overflow-y: scroll;" 
                                 maxlength="254" required="true" requiredMessage="Please enter a description" 
-                                value="#{dataTypeManager.description}" />
+                                value="#{dataTypeManager.dialogEnum.description}" />
                             <br/>
                             <p:message for="enumDesc"/>
                         </p:column>
@@ -41,8 +41,8 @@
                         </p:column>
                         <p:column>
                             <p:inputTextarea id="enumDef" rows="5" style="height: 7em; overflow-y: scroll;" 
-                                required="true" validator="#{dataTypeManager.enumValidator}"
-                                requiredMessage="Please enter a definition" value="#{dataTypeManager.definition}" />
+                                required="true" validator="#{dataTypeManager.dialogEnum.enumValidator}"
+                                requiredMessage="Please enter a definition" value="#{dataTypeManager.dialogEnum.multilineDefinition}" />
                             <br/>
                             <p:message for="enumDef"/>
                         </p:column>

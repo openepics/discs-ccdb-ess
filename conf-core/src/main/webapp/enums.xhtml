@@ -38,9 +38,9 @@
                             <h:outputText value="#{enum.description}" />
                         </p:column>
     
-                        <p:column headerText="Definition" sortBy="#{enum.definitionAsString}" style="width: 50%;" 
-                                filterBy="#{enum.definitionAsString}" filterMatchMode="contains">
-                            <h:outputText value="#{enum.definitionAsString}" />
+                        <p:column headerText="Definition" sortBy="#{enum.displayDefinition}" style="width: 50%;" 
+                                filterBy="#{enum.displayDefinition}" filterMatchMode="contains">
+                            <h:outputText value="#{enum.displayDefinition}" />
                         </p:column>
                     </p:dataTable>
                 </div>

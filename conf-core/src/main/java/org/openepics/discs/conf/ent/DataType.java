@@ -65,7 +65,7 @@ public class DataType extends ConfigurationEntity implements NamedEntity {
     @Column(name = "definition", columnDefinition="TEXT")
     private String definition;
 
-    protected DataType() {
+    public DataType() {
     }
 
     /**
