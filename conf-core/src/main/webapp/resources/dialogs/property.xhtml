@@ -10,13 +10,13 @@
                 <h:outputText value="#{dialogTitle}" />
             </f:facet>
             <div class="ui-fluid">
-                <p:panelGrid id="grp" styleClass="dialog-grid-panel noBorders">
+                <p:panelGrid id="grp" styleClass="dialog-grid-panel noBorders" rendered="#{not empty propertyManager.dialogProperty}">
                     <p:row>
                         <p:column styleClass="alignRight alignMiddle dialog-labels-width-2">
                             <p:outputLabel for="propertyName" value="Name:" />
                         </p:column>
                         <p:column>
-                            <p:inputText id="propertyName" value="#{propertyManager.name}" required="true" 
+                            <p:inputText id="propertyName" value="#{propertyManager.dialogProperty.name}" required="true" 
                                 validator="#{propertyManager.nameValidator}" requiredMessage="Please enter a name."/>
                             <p:message for="propertyName"/>
                             <p:messages for="propertyNameMsg" id="propertyNameMsg" showDetail="true" autoUpdate="true" />
@@ -29,15 +29,15 @@
                         </p:column>
                         <p:column>
                             <p:inputTextarea id="propertyDesc" rows="5" maxlength="254" required="true" 
-                                requiredMessage="Please enter a description" value="#{propertyManager.description}" />
+                                requiredMessage="Please enter a description" value="#{propertyManager.dialogProperty.description}" />
                             <br/>
                             <p:message for="propertyDesc" />
                         </p:column>
                     </p:row>
     
-                    <p:row rendered="#{not empty propertyManager.propertyUsedBy}">
+                    <p:row rendered="#{not empty propertyManager.dialogProperty.usedBy}">
                         <p:column colspan="2" style="text-align: center; font-weight: bold;">
-                            Property is already in use by: #{propertyManager.propertyUsedBy}.
+                            Property is already in use by: #{propertyManager.dialogProperty.usedBy}.
                         </p:column>
                     </p:row>
     
@@ -46,10 +46,10 @@
                             <p:outputLabel for="propertyDataType" value="Data Type:" />
                         </p:column>
                         <p:column>
-                            <p:selectOneMenu id="propertyDataType" value="#{propertyManager.dataType}" var="dt" 
+                            <p:selectOneMenu id="propertyDataType" value="#{propertyManager.dialogProperty.dataType}" var="dt" 
                                     converter="#{dataTypeConverter}" required="true" requiredMessage="Please select data type" 
-                                    disabled="#{not empty propertyManager.propertyUsedBy}">
-                                <p:ajax update=":#{formId}:propertyUnit" listener="#{propertyManager.setIsUnitComboEnabled}" />
+                                    disabled="#{not empty propertyManager.dialogProperty.usedBy}">
+                                <p:ajax update=":#{formId}:propertyUnit"/>
                                 <f:selectItem itemLabel="Select One" itemValue="" noSelectionOption="true" />
                                 <f:selectItems value="#{dataTypeManager.dataTypes}" var="dataType" 
                                     itemLabel="#{dataType.name}" itemValue="#{dataType}" />
@@ -66,8 +66,8 @@
                             <p:outputLabel for="propertyUnit" value="Unit:" />
                         </p:column>
                         <p:column>
-                            <p:selectOneMenu id="propertyUnit" value="#{propertyManager.unit}" var="u" converter="#{unitConverter}"  
-                                    disabled="#{not propertyManager.unitComboEnabled or not empty propertyManager.propertyUsedBy}">
+                            <p:selectOneMenu id="propertyUnit" value="#{propertyManager.dialogProperty.unit}" var="u" converter="#{unitConverter}"  
+                                    disabled="#{not propertyManager.dialogProperty.unitComboEnabled or not empty propertyManager.dialogProperty.usedBy}">
                                 <f:selectItem itemLabel="Select One" itemValue="" noSelectionOption="true" />
                                 <f:selectItems value="#{unitManager.unitViews}" var="unitView" 
                                     itemLabel="#{unitView.name}" itemValue="#{unitView.unit}" />
@@ -83,9 +83,9 @@
                             <p:outputLabel for="valueUniqueness" value="Uniqueness:" />
                         </p:column>
                         <p:column>
-                            <p:selectOneMenu id="valueUniqueness" value="#{propertyManager.valueUniqueness}" 
+                            <p:selectOneMenu id="valueUniqueness" value="#{propertyManager.dialogProperty.valueUniqueness}" 
                                     required="true" requiredMessage="Please select value uniqueness" 
-                                    disabled="#{not empty propertyManager.propertyUsedBy}">
+                                    disabled="#{not empty propertyManager.dialogProperty.usedBy}">
                                 <f:selectItems value="#{propertyManager.uniqunessValues}" />
                             </p:selectOneMenu>
                             <p:message for="valueUniqueness" />
@@ -97,7 +97,7 @@
                             <h:outputLabel value="Batch:" for="batchCreation" />
                         </p:column>
                         <p:column>
-                            <h:selectBooleanCheckbox id="batchCreation" value="#{propertyManager.batchCreation}" >
+                            <h:selectBooleanCheckbox id="batchCreation" value="#{propertyManager.dialogProperty.batchCreation}" >
                                 <p:ajax update=":#{formId}:startSpinner :#{formId}:endSpinner :#{formId}:zeroesSpinner" />
                             </h:selectBooleanCheckbox>
                         </p:column>
@@ -107,9 +107,9 @@
                             <h:outputLabel value="Start {i}:" for="startSpinner" />
                         </p:column>
                         <p:column>
-                            <p:spinner id="startSpinner" value="#{propertyManager.batchStartIndex}" min="0" 
-                                    disabled="#{!propertyManager.batchCreation}" 
-                                    validator="#{propertyManager.batchStartValidator}">
+                            <p:spinner id="startSpinner" value="#{propertyManager.dialogProperty.batchStartIndex}" min="0" 
+                                    disabled="#{!propertyManager.dialogProperty.batchCreation}" 
+                                    validator="#{propertyManager.dialogProperty.batchStartValidator}">
                                 <p:ajax process="@this"/>
                             </p:spinner>
                             <p:message for="startSpinner" />
@@ -120,9 +120,9 @@
                             <h:outputLabel value="End {i}:" for="endSpinner" />
                         </p:column>
                         <p:column>
-                            <p:spinner id="endSpinner" value="#{propertyManager.batchEndIndex}" min="0" 
-                                    disabled="#{!propertyManager.batchCreation}" 
-                                    validator="#{propertyManager.batchEndValidator}">
+                            <p:spinner id="endSpinner" value="#{propertyManager.dialogProperty.batchEndIndex}" min="0" 
+                                    disabled="#{!propertyManager.dialogProperty.batchCreation}" 
+                                    validator="#{propertyManager.dialogProperty.batchEndValidator}">
                                 <p:ajax process="@this"/>
                             </p:spinner>
                             <p:message for="endSpinner" />
@@ -133,15 +133,15 @@
                             <h:outputLabel value="Leading 0 {i}:" for="zeroesSpinner" />
                         </p:column>
                         <p:column>
-                            <p:spinner id="zeroesSpinner" value="#{propertyManager.batchLeadingZeros}" min="0" max="10" 
-                                disabled="#{!propertyManager.batchCreation}" />
+                            <p:spinner id="zeroesSpinner" value="#{propertyManager.dialogProperty.batchLeadingZeros}" min="0" max="10" 
+                                disabled="#{!propertyManager.dialogProperty.batchCreation}" />
                         </p:column>
                     </p:row>
                 </p:panelGrid>
             </div>
             <p:commandButton value="Cancel" styleClass="dialogButton" onclick="PF('#{widgetName}').hide();#{resetFilter}" 
-                    update="grp" resetValues="true" />
-            <p:commandButton value="Save" styleClass="dialogButton" update="#{updateComponents} grp" 
+                    update="grp" resetValues="true" action="#{propertyManager.resetFields()}"/>
+            <p:commandButton value="Save" styleClass="dialogButton" update="grp #{updateComponents}" 
                     oncomplete="if (args &amp;&amp; !args.validationFailed) {#{saveAction}}" 
                     action="#{propertyManager[submitHandler]}" />
         </p:dialog>

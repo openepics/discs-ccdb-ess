@@ -80,7 +80,7 @@ public class Property extends ConfigurationEntity implements NamedEntity {
     @Enumerated(EnumType.STRING)
     private PropertyValueUniqueness valueUniqueness = PropertyValueUniqueness.NONE;
 
-    protected Property() {
+    public Property() {
     }
 
     /** Constructs a property with a name and description.
@@ -90,6 +90,14 @@ public class Property extends ConfigurationEntity implements NamedEntity {
     public Property(String name, String description) {
         this.name = name;
         this.description = description;
+    }
+
+    public Property(Property prop) {
+        this.name = prop.name;
+        this.description = prop.description;
+        this.dataType = prop.dataType;
+        this.unit = prop.unit;
+        this.valueUniqueness = prop.valueUniqueness;
     }
 
     /**
