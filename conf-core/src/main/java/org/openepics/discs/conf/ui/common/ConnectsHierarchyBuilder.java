@@ -92,6 +92,9 @@ public class ConnectsHierarchyBuilder extends HierarchyBuilder {
                 visibleSubtree = true;
             }
         }
+        if (visibleSubtree) {
+            parentSlotView.setCableNumber(connectsEJB.getCobles(parentSlot, ((SlotView)node.getChildren().get(0).getData()).getSlot()).get(0).getNumber());
+        }
         parentSlotView.setInitialzed(true);
         return visibleSubtree || isSlotAcceptedByFilter(parentSlot);
     }
