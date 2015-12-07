@@ -2339,7 +2339,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         if (restrictToConventionNames && isInstallationSlot) {
             if (!nameList.containsKey(valueStr))
                 throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                        Utility.MESSAGE_SUMMARY_ERROR, "The installation slot name not foud in the naming tool."));
+                        Utility.MESSAGE_SUMMARY_ERROR, "The installation slot name not found in the naming tool."));
         }
         if (isNewInstallationSlot) {
             if (!slotEJB.isInstallationSlotNameUnique(valueStr))
@@ -3297,4 +3297,17 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         return editedRelationshipView;
     }
 
+    /**
+     * @return the namesForAutoComplete
+     */
+    public List<String> getNamesForAutoComplete() {
+        return namesForAutoComplete;
+    }
+
+    /**
+     * @return the restrictToConventionNames
+     */
+    public boolean isRestrictToConventionNames() {
+        return restrictToConventionNames;
+    }
 }

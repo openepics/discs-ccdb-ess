@@ -38,10 +38,13 @@
                         </p:column>
                         <p:column>
                             <h:panelGroup>
-                                <p:autoComplete id="slotName" value="#{hierarchiesController.name}" 
-                                    completeMethod="#{hierarchiesController.nameAutocompleteText}" 
+                                <p:selectOneMenu id="slotName" value="#{hierarchiesController.name}" editable="#{not hierachiesController.restrictToConventionNames or not hierarchiesController.installationSlot}"
+                                    filter="true" filterMatchMode="contains"
                                     validator="#{hierarchiesController.validateInstallationSlot}" 
-                                    required="true" requiredMessage="Please enter an installation slot name" />
+                                    required="true" requiredMessage="Please enter an installation slot name">
+                                    <f:selectItem itemLabel="" itemValue="" />
+                                    <f:selectItems value="#{hierarchiesController.namesForAutoComplete}"/>                                    
+                                </p:selectOneMenu>
                                 <p:message for="slotName" />
                             </h:panelGroup>
                         </p:column>
