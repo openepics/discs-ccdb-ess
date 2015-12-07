@@ -109,9 +109,11 @@ public class SlotRelationshipView {
     }
 
     public void setTargetNode(TreeNode targetNode) {
-        this.targetNode = targetNode;
-        targetSlot = ((SlotView)targetNode.getData()).getSlot();
-        targetSlotName = targetSlot.getName();
+        if (targetNode != null) {
+            this.targetNode = targetNode;
+            targetSlot = ((SlotView)targetNode.getData()).getSlot();
+            targetSlotName = targetSlot.getName();
+        }
     }
 
     public SlotPair getSlotPair() {
