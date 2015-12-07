@@ -66,6 +66,7 @@ public interface AppProperties {
     public static final String BLOB_STORE_PROPERTY_NAME = "BlobStoreRoot";
     public static final String NAMING_APPLICATION_URL = "namingAppURL";
     public static final String NAMING_DETECT_STATUS = "detectNamingStatus";
+    public static final String RESTRICT_TO_CONVENTION_NAMES = "restrictToConventionNames";
     public static final String CABLEDB_STATUS = "cableDBStatus";
     public static final String CABLEDB_APPLICATION_URL = "cableDBAppURL";
 

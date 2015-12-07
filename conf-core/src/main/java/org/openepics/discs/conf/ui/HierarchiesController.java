@@ -227,6 +227,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     private transient List<SlotView> slotsToDelete;
     private transient List<SlotView> filteredSlotsToDelete;
     private boolean detectNamingStatus;
+    private boolean restrictToConventionNames;
 
     // variables from the installation slot / containers editing merger.
     private String name;
@@ -321,6 +322,12 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     private void initNamingInformation() {
         final String namingStatus = properties.getProperty(AppProperties.NAMING_DETECT_STATUS);
         detectNamingStatus = namingStatus == null ? false : "TRUE".equals(namingStatus.toUpperCase());
+
+        final String restrictNames = properties.getProperty(AppProperties.RESTRICT_TO_CONVENTION_NAMES);
+        restrictToConventionNames = restrictNames == null || !detectNamingStatus
+                                            ? false
+                                            : "TRUE".equals(restrictNames.toUpperCase());
+
         nameList = detectNamingStatus ? names.getAllNames() : new HashMap<>();
         namesForAutoComplete = ImmutableList.copyOf(nameList.keySet());
 
@@ -2327,14 +2334,21 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      * @throws ValidatorException validation failed
      */
     public void validateInstallationSlot(FacesContext ctx, UIComponent component, Object value) {
+        final String valueStr = value.toString();
+
+        if (restrictToConventionNames && isInstallationSlot) {
+            if (!nameList.containsKey(valueStr))
+                throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                        Utility.MESSAGE_SUMMARY_ERROR, "The installation slot name not foud in the naming tool."));
+        }
         if (isNewInstallationSlot) {
-            if (!slotEJB.isInstallationSlotNameUnique(value.toString()))
-                throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
-                    "The installation slot name must be unique."));
+            if (!slotEJB.isInstallationSlotNameUnique(valueStr))
+                throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                        Utility.MESSAGE_SUMMARY_ERROR, "The installation slot name must be unique."));
         } else if (isInstallationSlot)
-            if (!name.equals(value.toString()) && !slotEJB.isInstallationSlotNameUnique(value.toString())) {
-                throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
-                    "The installation slot name must be unique."));
+            if (!name.equals(valueStr) && !slotEJB.isInstallationSlotNameUnique(valueStr)) {
+                throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                        Utility.MESSAGE_SUMMARY_ERROR, "The installation slot name must be unique."));
         }
     }
 
