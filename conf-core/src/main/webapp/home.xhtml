@@ -534,7 +534,7 @@
             <ui:param name="resizeContent" value="hierarchiesResizeAll();" />
             <ui:param name="entityType" value="#{hierarchiesController.numberOfSlotsToDelete gt 1
                                                         ? 'the following slots:' : 'selected slot?'}" />
-            <ui:param name="isTableDisplayed" value="#{(hierarchiesController.numberOfSlotsToDelete gt 1)}" />
+            <ui:param name="isTableDisplayed" value="true" />
             <ui:param name="slotsToDelete" value="#{hierarchiesController.slotsToDelete}" />
             <ui:param name="filteredSlotsToDelete" value="#{hierarchiesController.filteredSlotsToDelete}" />
             <ui:param name="resetFilter"
