@@ -109,6 +109,12 @@ public class Device extends ConfigurationEntity
                joinColumns = { @JoinColumn(name = "device_id") }, inverseJoinColumns = { @JoinColumn(name = "tag_id") })
     private Set<Tag> tags = new HashSet<>();
 
+    @ManyToMany(cascade={CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+    @JoinTable(name = "device_authorization",
+                joinColumns = { @JoinColumn(name = "device_id") },
+                inverseJoinColumns = { @JoinColumn(name = "auth_data_id") })
+    private List<Authorization> authorizationData;
+
     protected Device() {
     }
 

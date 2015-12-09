@@ -19,11 +19,16 @@
  */
 package org.openepics.discs.conf.ent;
 
+import java.util.List;
+
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -73,6 +78,12 @@ public class ComptypePropertyValue extends PropertyValue {
     @NotNull
     @Column(name = "is_def_target_device")
     private boolean isDefinitionTargetDevice;
+
+    @ManyToMany(cascade={CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+    @JoinTable(name = "comptypepropval_authorization",
+                joinColumns = { @JoinColumn(name = "propval_id") },
+                inverseJoinColumns = { @JoinColumn(name = "auth_data_id") })
+    private List<Authorization> authorizationData;
 
     public ComptypePropertyValue() { }
 

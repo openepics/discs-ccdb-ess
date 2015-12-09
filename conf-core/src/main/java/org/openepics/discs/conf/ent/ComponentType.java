@@ -96,9 +96,15 @@ public class ComponentType extends ConfigurationEntity
 
     @ManyToMany(cascade={CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     @JoinTable(name = "comptype_tag",
-               joinColumns = { @JoinColumn(name = "comptype_id") },
-               inverseJoinColumns = { @JoinColumn(name = "tag_id") })
+                joinColumns = { @JoinColumn(name = "comptype_id") },
+                inverseJoinColumns = { @JoinColumn(name = "tag_id") })
     private Set<Tag> tags = new HashSet<>();
+
+    @ManyToMany(cascade={CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+    @JoinTable(name = "comptype_authorization",
+                joinColumns = { @JoinColumn(name = "comptype_id") },
+                inverseJoinColumns = { @JoinColumn(name = "auth_data_id") })
+    private List<Authorization> authorizationData;
 
     public ComponentType() {}
 

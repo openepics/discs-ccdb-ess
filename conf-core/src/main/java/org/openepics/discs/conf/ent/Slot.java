@@ -125,6 +125,12 @@ public class Slot extends ConfigurationEntity implements EntityWithProperties, E
                joinColumns = { @JoinColumn(name = "slot_id") }, inverseJoinColumns = { @JoinColumn(name = "tag_id") })
     private Set<Tag> tags = new HashSet<>();
 
+    @ManyToMany(cascade={CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+    @JoinTable(name = "slot_authorization",
+                joinColumns = { @JoinColumn(name = "slot_id") },
+                inverseJoinColumns = { @JoinColumn(name = "auth_data_id") })
+    private List<Authorization> authorizationData;
+
     protected Slot() {
     }
 
