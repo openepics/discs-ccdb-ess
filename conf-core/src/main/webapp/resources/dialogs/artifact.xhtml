@@ -20,7 +20,7 @@
                             </p:column>
                             <p:column>
                                 <h:panelGroup id="artifactNameValue">
-                                    <p:inputText id="artifactName" maxlength="254" required="true" 
+                                    <p:inputText id="artifactName" maxlength="128" required="true" 
                                         requiredMessage="Please enter a description" rendered="#{!controller.artifactInternal}"
                                         value="#{controller.artifactName}"/>
                                     <br />
@@ -34,7 +34,7 @@
                             </p:column>
                             <p:column>
                                 <h:panelGroup>
-                                    <p:inputTextarea id="artifactDesc" rows="5" maxlength="254" 
+                                    <p:inputTextarea id="artifactDesc" rows="5" maxlength="255" 
                                         required="true" requiredMessage="Please enter a description" 
                                         value="#{controller.artifactDescription}" />
                                     <br />

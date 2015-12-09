@@ -39,6 +39,8 @@ import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
 import javax.faces.validator.ValidatorException;
 import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import org.apache.commons.io.FilenameUtils;
 import org.openepics.discs.conf.ejb.DAO;
@@ -669,6 +671,8 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
     }
 
     /** @return The value of the tag */
+    @NotNull
+    @Size(min = 1, max = 255, message = "Tag can have at most 255 characters.")
     public String getTag() {
         return tag;
     }
@@ -685,6 +689,8 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
     }
 
     /** @return The user specified {@link Artifact} name. */
+    @NotNull
+    @Size(min = 1, max = 128, message = "Name can have at most 128 characters.")
     public String getArtifactName() {
         return artifactName;
     }
@@ -696,6 +702,8 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
     }
 
     /** @return The user specified {@link Artifact} description. */
+    @NotNull
+    @Size(min = 1, max = 255, message = "Description can have at most 255 characters.")
     public String getArtifactDescription() {
         return artifactDescription;
     }

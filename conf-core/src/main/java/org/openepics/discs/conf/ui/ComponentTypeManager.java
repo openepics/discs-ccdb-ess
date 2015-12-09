@@ -38,6 +38,8 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import org.apache.commons.io.FilenameUtils;
 import org.openepics.discs.conf.ejb.ComptypeEJB;
@@ -812,6 +814,8 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
     }
 
     /** @return The name of the device type the user is adding or modifying. Used in the UI dialog. */
+    @NotNull
+    @Size(min = 1, max = 32, message = "Name can have at most 32 characters.")
     public String getName() {
         return name;
     }
@@ -821,6 +825,7 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
     }
 
     /** @return The description of the device type the user is adding or modifying. Used in the UI dialog. */
+    @Size(max = 255, message = "Description can have at most 255 characters")
     public String getDescription() {
         return description;
     }

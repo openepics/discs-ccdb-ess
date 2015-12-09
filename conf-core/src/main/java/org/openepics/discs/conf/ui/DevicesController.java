@@ -37,6 +37,8 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import org.apache.commons.io.FilenameUtils;
 import org.openepics.discs.conf.ejb.ComptypeEJB;
@@ -577,6 +579,8 @@ public class DevicesController
     }
 
     /** @return The inventory ID (see {@link Device#getSerialNumber()}) of the {@link Device} */
+    @NotNull
+    @Size(min = 1, max = 64, message="Inventory ID can have at most 64 characters.")
     public String getSerialNumber() {
         return serialNumber;
     }

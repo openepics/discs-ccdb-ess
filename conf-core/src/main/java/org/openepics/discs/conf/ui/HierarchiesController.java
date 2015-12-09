@@ -56,6 +56,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.persistence.PersistenceException;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import joptsimple.internal.Strings;
 
@@ -2998,6 +3000,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     // Slot dialog
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /** @return the name */
+    @NotNull
+    @Size(min = 1, max = 128, message = "Name can have at most 128 characters.")
     public String getName() {
         return name;
     }
@@ -3007,6 +3011,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     }
 
     /** @return the description */
+    @NotNull
+    @Size(min = 1, max = 255, message = "Description can have at most 255 characters.")
     public String getDescription() {
         return description;
     }
@@ -3105,6 +3111,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     }
 
     /** @return the artifactName */
+    @NotNull
+    @Size(min = 1, max = 128, message = "Name can have at most 128 characters.")
     public String getArtifactName() {
         return artifactName;
     }
@@ -3114,6 +3122,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     }
 
     /** @return the artifactDescription */
+    @NotNull
+    @Size(min = 1, max = 255, message = "Description can have at most 255 characters.")
     public String getArtifactDescription() {
         return artifactDescription;
     }
@@ -3135,6 +3145,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     // Tag dialog
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /** @return The value of the tag */
+    @NotNull
+    @Size(min = 1, max = 255, message = "Tag can have at most 255 characters.")
     public String getTag() {
         return tag;
     }

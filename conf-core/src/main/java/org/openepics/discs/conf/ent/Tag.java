@@ -27,6 +27,8 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Version;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
@@ -41,6 +43,8 @@ public class Tag implements Serializable {
     private static final long serialVersionUID = 6824320954767876122L;
 
     @Id
+    @NotNull
+    @Size(min = 1, max = 255)
     private String name;
 
     @Version
