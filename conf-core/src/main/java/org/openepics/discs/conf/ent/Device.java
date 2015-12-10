@@ -64,7 +64,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 })
 
 public class Device extends ConfigurationEntity
-    implements EntityWithProperties, EntityWithArtifacts, NamedEntity {
+    implements EntityWithProperties, EntityWithArtifacts, EntityWithTags, NamedEntity {
 
     private static final long serialVersionUID = 113778637670841841L;
     @Basic(optional = false)
@@ -192,6 +192,7 @@ public class Device extends ConfigurationEntity
         this.asmParent = asmParent;
     }
 
+    @Override
     @XmlTransient
     @JsonIgnore
     public Set<Tag> getTags() {

@@ -20,11 +20,8 @@
 
 package org.openepics.discs.conf.ui;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -41,7 +38,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import org.apache.commons.io.FilenameUtils;
 import org.openepics.discs.conf.ejb.ComptypeEJB;
 import org.openepics.discs.conf.ejb.DAO;
 import org.openepics.discs.conf.ejb.DeviceEJB;
@@ -71,17 +67,18 @@ import org.openepics.discs.conf.util.PropertyValueUIElement;
 import org.openepics.discs.conf.util.UnhandledCaseException;
 import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.views.ComponentTypeView;
+import org.openepics.discs.conf.views.EntityAttrArtifactView;
+import org.openepics.discs.conf.views.EntityAttrPropertyValueView;
+import org.openepics.discs.conf.views.EntityAttrTagView;
 import org.openepics.discs.conf.views.EntityAttributeView;
 import org.openepics.discs.conf.views.EntityAttributeViewKind;
 import org.openepics.discs.conf.views.MultiPropertyValueView;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.CellEditEvent;
-import org.primefaces.event.FileUploadEvent;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.google.common.io.ByteStreams;
 
 /**
  * Controller bean for manipulation of {@link ComponentType} attributes
@@ -103,7 +100,7 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
     @Inject private transient SlotEJB slotEJB;
     @Inject private transient DeviceEJB deviceEJB;
 
-    private ComponentType compType;
+    private ComponentTypeView selectedComponent;
     private transient List<MultiPropertyValueView> filteredPropertyValues;
     private transient List<MultiPropertyValueView> selectedPropertyValues;
     private transient List<MultiPropertyValueView> selectionPropertyValuesFiltered;
@@ -114,8 +111,6 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
     private List<ComponentTypeView> selectedDeviceTypes;
     private List<ComponentTypeView> usedDeviceTypes;
     private List<ComponentTypeView> filteredDialogTypes;
-    private String name;
-    private String description;
 
     private transient ExportSimpleTableDialog simpleTableExporterDialog;
 
@@ -155,8 +150,6 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
             super.init();
             simpleTableExporterDialog = new ExportSimpleDevTypeTableDialog();
             reloadDeviceTypes();
-            setArtifactClass(ComptypeArtifact.class);
-            setPropertyValueClass(ComptypePropertyValue.class);
             setDao(comptypeEJB);
             resetFields();
 
@@ -187,14 +180,14 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
     @Override
     protected void addPropertyValueBasedOnDef(ComptypePropertyValue definition) {
         if (definition.isDefinitionTargetSlot()) {
-            for (final Slot slot : slotEJB.findByComponentType(compType)) {
+            for (final Slot slot : slotEJB.findByComponentType(selectedComponent.getComponentType())) {
                 if (canAddProperty(slot.getSlotPropertyList(), definition.getProperty())) {
                     final SlotPropertyValue newSlotProperty = new SlotPropertyValue();
                     newSlotProperty.setProperty(definition.getProperty());
                     newSlotProperty.setSlot(slot);
                     slotEJB.addChild(newSlotProperty);
                 } else {
-                    LOGGER.log(Level.FINE, "Type: " + compType.getName() + "; Slot: " + slot.getName()
+                    LOGGER.log(Level.FINE, "Type: " + selectedComponent.getName() + "; Slot: " + slot.getName()
                             + ";  Trying to add the same property value again: "
                             + definition.getProperty().getName());
                 }
@@ -202,14 +195,14 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
         }
 
         if (definition.isDefinitionTargetDevice()) {
-            for (final Device device : deviceEJB.findDevicesByComponentType(compType)) {
+            for (final Device device : deviceEJB.findDevicesByComponentType(selectedComponent.getComponentType())) {
                 if (canAddProperty(device.getDevicePropertyList(), definition.getProperty())) {
                     final DevicePropertyValue newDeviceProperty = new DevicePropertyValue();
                     newDeviceProperty.setProperty(definition.getProperty());
                     newDeviceProperty.setDevice(device);
                     deviceEJB.addChild(newDeviceProperty);
                 } else {
-                    LOGGER.log(Level.FINE, "Type: " + compType.getName() + "; Device: " + device.getSerialNumber()
+                    LOGGER.log(Level.FINE, "Type: " + selectedComponent.getName() + "; Device: " + device.getSerialNumber()
                             + ";  Trying to add the same property value again: "
                             + definition.getProperty().getName());
                 }
@@ -236,13 +229,13 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
     protected void deletePropertyValue(final ComptypePropertyValue propValueToDelete) {
         if (propValueToDelete.isPropertyDefinition()) {
             if (propValueToDelete.isDefinitionTargetSlot()) {
-                for (final Slot slot : slotEJB.findByComponentType(compType)) {
+                for (final Slot slot : slotEJB.findByComponentType(selectedComponent.getComponentType())) {
                     removeUndefinedProperty(slot.getSlotPropertyList(), propValueToDelete.getProperty(), slotEJB);
                 }
             }
 
             if (propValueToDelete.isDefinitionTargetDevice()) {
-                for (final Device device : deviceEJB.findDevicesByComponentType(compType)) {
+                for (final Device device : deviceEJB.findDevicesByComponentType(selectedComponent.getComponentType())) {
                     removeUndefinedProperty(device.getDevicePropertyList(), propValueToDelete.getProperty(), deviceEJB);
                 }
             }
@@ -278,18 +271,18 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
             final ComponentType freshComponentType = comptypeEJB.findById(selectedMember.getId());
 
             for (final ComptypePropertyValue prop : freshComponentType.getComptypePropertyList()) {
-                attributes.add(new EntityAttributeView(prop, EntityAttributeViewKind.getPropertyValueKind(prop),
-                                                            freshComponentType, comptypeEJB));
+                attributes.add(new EntityAttrPropertyValueView<ComponentType>(prop, EntityAttributeViewKind.getPropertyValueKind(prop),
+                                                            freshComponentType));
             }
 
             for (final ComptypeArtifact art : freshComponentType.getComptypeArtifactList()) {
-                attributes.add(new EntityAttributeView(art, EntityAttributeViewKind.DEVICE_TYPE_ARTIFACT,
-                                                            freshComponentType, comptypeEJB));
+                attributes.add(new EntityAttrArtifactView<ComponentType>(art, EntityAttributeViewKind.DEVICE_TYPE_ARTIFACT,
+                                                            freshComponentType));
             }
 
             for (final Tag tagAttr : freshComponentType.getTags()) {
-                attributes.add(new EntityAttributeView(tagAttr, EntityAttributeViewKind.DEVICE_TYPE_TAG,
-                                                            freshComponentType, comptypeEJB));
+                attributes.add(new EntityAttrTagView<ComponentType>(tagAttr, EntityAttributeViewKind.DEVICE_TYPE_TAG,
+                                                            freshComponentType));
             }
         }
     }
@@ -302,12 +295,12 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
         }
 
         final List<Property> propertyCandidates = propertyEJB.findAllOrderedByName();
+        final Property dialogProperty = getDialogAttrPropertyValue() != null ? getDialogAttrPropertyValue().getProperty() : null;
 
         for (ComponentTypeView compType : selectedDeviceTypes) {
-            for (final ComptypePropertyValue comptypePropertyValue : compType.findComponentType(comptypeEJB).getComptypePropertyList()) {
+            for (final ComptypePropertyValue comptypePropertyValue : compType.getComponentType().getComptypePropertyList()) {
                 final Property currentProperty = comptypePropertyValue.getProperty();
-                // in modify dialog the 'property' is set to the property of the current value
-                if (!currentProperty.equals(property)) {
+                if (!currentProperty.equals(dialogProperty)) {
                     propertyCandidates.remove(currentProperty);
                 }
             }
@@ -320,9 +313,9 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
         if (selectedDeviceTypes != null && !selectedDeviceTypes.isEmpty()) {
             // selectedDeviceTypes = getFreshTypes(deviceTypes);
             if (selectedDeviceTypes.size() == 1) {
-                compType = comptypeEJB.findById(selectedDeviceTypes.get(0).getId());
+                selectedComponent = selectedDeviceTypes.get(0);
             } else {
-                compType = null;
+                selectedComponent = null;
             }
             selectedAttributes = null;
             filteredAttributes = null;
@@ -332,45 +325,6 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
         }
     }
 
-    @Override
-    protected void setPropertyValueParent(ComptypePropertyValue child) {
-        compType = comptypeEJB.findById(compType.getId());
-        child.setComponentType(compType);
-    }
-
-    @Override
-    protected void setArtifactParent(ComptypeArtifact child) {
-        compType = comptypeEJB.findById(compType.getId());
-        child.setComponentType(compType);
-    }
-
-    @Override
-    protected void setTagParent(Tag tag) {
-        Preconditions.checkNotNull(compType);
-        compType = comptypeEJB.findById(compType.getId());
-        final Set<Tag> existingTags = compType.getTags();
-        if (!existingTags.contains(tag)) {
-            existingTags.add(tag);
-            comptypeEJB.save(compType);
-        }
-    }
-
-    @Override
-    protected void setTagParentForOperations(Long parentId) {
-        Preconditions.checkNotNull(parentId);
-        Preconditions.checkNotNull(compType);
-        compType = comptypeEJB.findById(parentId);
-    }
-
-    @Override
-    protected void deleteTagFromParent(Tag tag) {
-        Preconditions.checkNotNull(compType);
-        compType = comptypeEJB.findById(compType.getId());
-        compType.getTags().remove(tag);
-        comptypeEJB.save(compType);
-    }
-
-    @Override
     public void prepareForPropertyValueAdd() {
         filterProperties();
         filteredPropertyValues = transformIntoViewList(filteredProperties);
@@ -380,25 +334,21 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
     }
 
     private List<MultiPropertyValueView> transformIntoViewList(final List<Property> properties) {
-        final List<MultiPropertyValueView> pvViewList = Lists.newArrayList();
-        for (final Property prop : properties) {
-            pvViewList.add(new MultiPropertyValueView(prop));
-        }
-        return pvViewList;
+        return new ArrayList<>(Lists.transform(properties, MultiPropertyValueView::new));
     }
 
     /** Prepares the data for slot property (definition) creation */
     public void prepareForSlotPropertyAdd() {
         definitionTarget = AbstractAttributesController.DefinitionTarget.SLOT;
         isPropertyDefinition = true;
-        super.prepareForPropertyValueAdd();
+        filterProperties();
     }
 
     /** Prepares the data for device property (definition) creation */
     public void prepareForDevicePropertyAdd() {
         definitionTarget = AbstractAttributesController.DefinitionTarget.DEVICE;
         isPropertyDefinition = true;
-        super.prepareForPropertyValueAdd();
+        filterProperties();
     }
 
     @Override
@@ -492,10 +442,10 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
             try {
                 switch (editedPropVal.getPropertyValueUIElement()) {
                     case INPUT:
-                        validateSingleLine(newValueStr, dataType);
+                        EntityAttrPropertyValueView.validateSingleLine(newValueStr, dataType);
                         break;
                     case TEXT_AREA:
-                        validateMultiLine(newValueStr, dataType);
+                        EntityAttrPropertyValueView.validateMultiLine(newValueStr, dataType);
                         break;
                     case SELECT_ONE_MENU:
                         if (Strings.isNullOrEmpty(newValueStr)) {
@@ -572,7 +522,7 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
         for (final ComponentTypeView selectedDeviceType : selectedDeviceTypes) {
             String newName = Utility.findFreeName(selectedDeviceType.getName(), comptypeEJB);
             ComponentType newDeviceType = new ComponentType(newName);
-            comptypeEJB.duplicate(newDeviceType, selectedDeviceType.findComponentType(comptypeEJB));
+            comptypeEJB.duplicate(newDeviceType, selectedDeviceType.getComponentType());
         }
         reloadDeviceTypes();
     }
@@ -628,7 +578,7 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
 
     private ComptypePropertyValue createPropertyValue(final Property prop, final Value value) {
         final ComptypePropertyValue pv = new ComptypePropertyValue();
-        pv.setComponentType(compType);
+        pv.setComponentType(selectedComponent.getComponentType());
         pv.setProperty(prop);
         pv.setPropValue(value);
         return pv;
@@ -650,7 +600,7 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
         for (final MultiPropertyValueView pv : selectedPropertyValues) {
             ComptypePropertyValue newValue = createPropertyValue(pv.getProperty(), pv.getValue());
             comptypeEJB.addChild(newValue);
-            compType = comptypeEJB.findById(compType.getId());
+            selectedComponent.setComponentType(comptypeEJB.findById(selectedComponent.getComponentType().getId()));
         }
         populateAttributesList();
     }
@@ -658,26 +608,11 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
     private void clearDeviceTypeRelatedInformation() {
         selectedDeviceTypes = null;
         filteredDeviceTypes = null;
-        compType = null;
+        selectedComponent = null;
         attributes = null;
         filteredAttributes = null;
         filteredProperties = null;
         selectedAttributes = null;
-    }
-
-    @Override
-    public void handleImportFileUpload(FileUploadEvent event) {
-        // this handler is shared between AbstractExcelSingleFileImportUI and Artifact loading
-        if ("importCompTypesForm:singleFileDLUploadCtl".equals(event.getComponent().getClientId())) {
-            super.handleImportFileUpload(event);
-        } else {
-            try (InputStream inputStream = event.getFile().getInputstream()) {
-                importData = ByteStreams.toByteArray(inputStream);
-                importFileName = FilenameUtils.getName(event.getFile().getFileName());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
     }
 
     // ---------------------------------------------------------------------------------------------------------
@@ -689,22 +624,24 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
     /** Prepares the UI data for the "Add a new device type" dialog. */
     public void prepareAddPopup() {
         resetFields();
+        selectedComponent = new ComponentTypeView(new ComponentType());
         RequestContext.getCurrentInstance().update("addDeviceTypeForm:addDeviceType");
     }
 
     @Override
     public void resetFields() {
         super.resetFields();
-        name = null;
-        description = null;
+        if (selectedDeviceTypes != null && selectedDeviceTypes.size() == 1) {
+            selectedComponent = selectedDeviceTypes.get(0);
+        } else {
+            selectedComponent = null;
+        }
     }
 
     /** Called when the user presses the "Save" button in the "Add a new device type" dialog. */
     public void onAdd() {
-        final ComponentType componentTypeToAdd = new ComponentType(name);
-        componentTypeToAdd.setDescription(description);
         try {
-            comptypeEJB.add(componentTypeToAdd);
+            comptypeEJB.add(selectedComponent.getComponentType());
             Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
                     "New device type has been created");
         } catch (Exception e) {
@@ -722,17 +659,13 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
     /** Prepares the data for the device type editing dialog fields based on the selected device type. */
     public void prepareEditPopup() {
         Preconditions.checkState(isSingleDeviceTypeSelected());
-        name = compType.getName();
-        description = compType.getDescription();
     }
 
     /** Saves the new device type data (name and/or description) */
     public void onChange() {
-        Preconditions.checkNotNull(compType);
-        compType.setName(name);
-        compType.setDescription(description);
+        Preconditions.checkNotNull(selectedComponent);
         try {
-            comptypeEJB.save(compType);
+            comptypeEJB.save(selectedComponent.getComponentType());
             Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
                     "Device type updated");
         } catch (Exception e) {
@@ -743,7 +676,7 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
                 throw e;
             }
         } finally {
-            compType = comptypeEJB.findById(compType.getId());
+            selectedComponent.setComponentType(comptypeEJB.findById(selectedComponent.getComponentType().getId()));
             reloadDeviceTypes();
         }
     }
@@ -758,7 +691,7 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
 
         usedDeviceTypes = Lists.newArrayList();
         for (final ComponentTypeView deviceTypeToDelete : selectedDeviceTypes) {
-            List<String> usedBy = comptypeEJB.findWhereIsComponentTypeUsed(deviceTypeToDelete.findComponentType(comptypeEJB), 2);
+            List<String> usedBy = comptypeEJB.findWhereIsComponentTypeUsed(deviceTypeToDelete.getComponentType(), 2);
             if (!usedBy.isEmpty()) {
                 deviceTypeToDelete.setUsedBy(usedBy.get(0) + (usedBy.size()>1 ? ", ..." : ""));
                 usedDeviceTypes.add(deviceTypeToDelete);
@@ -813,29 +746,6 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
         return usedDeviceTypes;
     }
 
-    /** @return The name of the device type the user is adding or modifying. Used in the UI dialog. */
-    @NotNull
-    @Size(min = 1, max = 32, message = "Name can have at most 32 characters.")
-    public String getName() {
-        return name;
-    }
-    /** @param name The name of the device type the user is adding or modifying. Used in the UI dialog. */
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    /** @return The description of the device type the user is adding or modifying. Used in the UI dialog. */
-    @Size(max = 255, message = "Description can have at most 255 characters")
-    public String getDescription() {
-        return description;
-    }
-    /**
-     * @param description The description of the device type the user is adding or modifying. Used in the UI dialog.
-     */
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     /** @return The list of filtered device types used by the PrimeFaces filter field. */
     public List<ComponentTypeView> getFilteredDeviceTypes() {
         return filteredDeviceTypes;
@@ -863,5 +773,30 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
     /** @param filteredDialogTypes the filteredDialogTypes to set */
     public void setFilteredDialogTypes(List<ComponentTypeView> filteredDialogTypes) {
         this.filteredDialogTypes = filteredDialogTypes;
+    }
+
+    /** @return the selectedComponent */
+    public ComponentTypeView getSelectedComponent() {
+        return selectedComponent;
+    }
+
+    @Override
+    protected ComponentType getSelectedEntity() {
+        if (selectedComponent != null) {
+            ComponentType componentType = comptypeEJB.findById(selectedComponent.getId());
+            selectedComponent.setComponentType(componentType);
+            return componentType;
+        }
+        throw new IllegalArgumentException("No device type selected");
+    }
+
+    @Override
+    protected ComptypePropertyValue newPropertyValue() {
+        return new ComptypePropertyValue();
+    }
+
+    @Override
+    protected ComptypeArtifact newArtifact() {
+        return new ComptypeArtifact();
     }
 }

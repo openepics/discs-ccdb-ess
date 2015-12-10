@@ -24,25 +24,19 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
-import java.util.regex.Pattern;
+import java.util.Set;
 
 import javax.ejb.EJBException;
 import javax.faces.application.FacesMessage;
-import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
-import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
-import javax.faces.validator.ValidatorException;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import org.apache.commons.io.FilenameUtils;
 import org.openepics.discs.conf.ejb.DAO;
 import org.openepics.discs.conf.ejb.DataTypeEJB;
 import org.openepics.discs.conf.ejb.TagEJB;
@@ -51,36 +45,34 @@ import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypeArtifact;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.ConfigurationEntity;
-import org.openepics.discs.conf.ent.DataType;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
+import org.openepics.discs.conf.ent.EntityWithArtifacts;
 import org.openepics.discs.conf.ent.EntityWithProperties;
+import org.openepics.discs.conf.ent.EntityWithTags;
+import org.openepics.discs.conf.ent.NamedEntity;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyValue;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.ent.Tag;
-import org.openepics.discs.conf.ent.values.Value;
 import org.openepics.discs.conf.util.BlobStore;
-import org.openepics.discs.conf.util.BuiltInDataType;
-import org.openepics.discs.conf.util.Conversion;
 import org.openepics.discs.conf.util.PropertyValueNotUniqueException;
-import org.openepics.discs.conf.util.PropertyValueUIElement;
 import org.openepics.discs.conf.util.UnhandledCaseException;
 import org.openepics.discs.conf.util.Utility;
+import org.openepics.discs.conf.views.EntityAttrArtifactView;
+import org.openepics.discs.conf.views.EntityAttrPropertyValueView;
+import org.openepics.discs.conf.views.EntityAttrTagView;
 import org.openepics.discs.conf.views.EntityAttributeView;
 import org.openepics.discs.conf.views.EntityAttributeViewKind;
 import org.primefaces.component.datatable.DataTable;
 import org.primefaces.context.RequestContext;
-import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 
-import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.google.common.io.ByteStreams;
 
 /**
  * Parent class for all classes that handle entity attributes manipulation
@@ -91,16 +83,9 @@ import com.google.common.io.ByteStreams;
  * @author <a href="mailto:andraz.pozar@cosylab.com">Andraž Požar</a>
  * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  */
-public abstract class AbstractAttributesController<T extends PropertyValue, S extends Artifact> implements Serializable {
+public abstract class AbstractAttributesController
+        <C extends ConfigurationEntity & NamedEntity & EntityWithTags & EntityWithArtifacts,T extends PropertyValue, S extends Artifact> implements Serializable {
     private static final long serialVersionUID = 523935015308933240L;
-
-    private static final String MULTILINE_DELIMITER = "(\\r\\n)|\\r|\\n";
-
-    private static final int MIN_ELEMENT_SIZE = 20;
-    private static final int MAX_ELEMENT_SIZE = 40;
-    private static final int ELEMENT_SIZE_PADDING = 8;
-    private static final int LO_CONTENT_LEN = MIN_ELEMENT_SIZE - ELEMENT_SIZE_PADDING;
-    private static final int HI_CONTENT_LEN = MAX_ELEMENT_SIZE - ELEMENT_SIZE_PADDING;
 
     protected static enum DefinitionTarget { SLOT, DEVICE }
 
@@ -108,86 +93,30 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
     @Inject protected TagEJB tagEJB;
     @Inject protected DataTypeEJB dataTypeEJB;
 
-    protected Property property;
+    // TODO move to ComponentTypeController
     private List<Property> selectedProperties;
     private List<Property> selectionPropertiesFiltered;
-    protected Value propertyValue;
-    protected List<String> enumSelections;
     protected List<Property> filteredProperties;
-    private boolean propertyNameChangeDisabled;
-    protected PropertyValueUIElement propertyValueUIElement;
     protected boolean isPropertyDefinition;
     protected DefinitionTarget definitionTarget;
 
-    private String tag;
     private List<String> tagsForAutocomplete;
 
-    protected String artifactName;
-    protected String artifactDescription;
-    protected boolean isArtifactInternal;
-    protected String artifactURI;
-    protected boolean isArtifactBeingModified;
-
-    protected List<EntityAttributeView> attributes;
-    protected List<EntityAttributeView> filteredAttributes;
+    protected List<EntityAttributeView<C>> attributes;
+    protected List<EntityAttributeView<C>> filteredAttributes;
     private final List<SelectItem> attributeKinds = Utility.buildAttributeKinds();
-    protected List<EntityAttributeView> selectedAttributes;
-    protected List<EntityAttributeView> nonDeletableAttributes;
-    private List<EntityAttributeView> filteredDialogAttributes;
-    protected EntityAttributeView attributeToModify;
-    private EntityAttributeView downloadArtifactView;
+    protected List<EntityAttributeView<C>> selectedAttributes;
+    protected List<EntityAttributeView<C>> nonDeletableAttributes;
+    private List<EntityAttributeView<C>> filteredDialogAttributes;
 
-    protected byte[] importData;
-    protected String importFileName;
+    protected EntityAttributeView<C> dialogAttribute;
 
-    private DAO<? extends ConfigurationEntity> dao;
-    private Class<T> propertyValueClass;
-    private Class<S> artifactClass;
+    protected EntityAttrArtifactView<C> downloadArtifactView;
 
-    protected String entityName;
+    private DAO<C> dao;
 
     protected void resetFields() {
-        property = null;
-        propertyValue = null;
-        tag = null;
-        artifactDescription = null;
-        isArtifactInternal = false;
-        artifactURI = null;
-        importData = null;
-        importFileName = null;
-        enumSelections = null;
-        propertyValueUIElement = PropertyValueUIElement.NONE;
-    }
-
-    /**
-     * Adds new {@link PropertyValue} to parent {@link ConfigurationEntity}
-     * defined in {@link AbstractAttributesController#setPropertyValueParent(PropertyValue)}
-     */
-    public void addNewPropertyValue() {
-        try {
-            final T propertyValueInstance = propertyValueClass.newInstance();
-            propertyValueInstance.setInRepository(false);
-            propertyValueInstance.setProperty(property);
-            propertyValueInstance.setPropValue(propertyValue);
-            setPropertyValueParent(propertyValueInstance);
-
-            dao.addChild(propertyValueInstance);
-            internalPopulateAttributesList();
-
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
-                    "New property has been created");
-        } catch (EJBException e) {
-            if (Utility.causedBySpecifiedExceptionClass(e, PropertyValueNotUniqueException.class)) {
-                FacesContext.getCurrentInstance().addMessage("uniqueMessage",
-                        new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
-                                "Value is not unique."));
-                FacesContext.getCurrentInstance().validationFailed();
-            } else {
-                throw e;
-            }
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
+        dialogAttribute = null;
     }
 
     /**
@@ -195,30 +124,26 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
      * type and property values to already existing installation slots or device instances.
      */
     public void addNewPropertyValueDefs() {
-        try {
-            for (Property selectedProperty : selectedProperties) {
-                final T newPropertyValueInstance = propertyValueClass.newInstance();
-                newPropertyValueInstance.setInRepository(false);
-                newPropertyValueInstance.setProperty(selectedProperty);
-                newPropertyValueInstance.setPropValue(null);
-                setPropertyValueParent(newPropertyValueInstance);
+        for (Property selectedProperty : selectedProperties) {
+            final T newPropertyValueInstance = newPropertyValue();
+            newPropertyValueInstance.setInRepository(false);
+            newPropertyValueInstance.setProperty(selectedProperty);
+            newPropertyValueInstance.setPropValue(null);
+            newPropertyValueInstance.setPropertiesParent((EntityWithProperties)getSelectedEntity());
 
-                if ((newPropertyValueInstance instanceof ComptypePropertyValue) && isPropertyDefinition) {
-                    final ComptypePropertyValue ctPropValueInstance = (ComptypePropertyValue) newPropertyValueInstance;
-                    ctPropValueInstance.setPropertyDefinition(true);
-                    if (definitionTarget == DefinitionTarget.SLOT) {
-                        ctPropValueInstance.setDefinitionTargetSlot(true);
-                    } else {
-                        ctPropValueInstance.setDefinitionTargetDevice(true);
-                    }
+            if ((newPropertyValueInstance instanceof ComptypePropertyValue) && isPropertyDefinition) {
+                final ComptypePropertyValue ctPropValueInstance = (ComptypePropertyValue) newPropertyValueInstance;
+                ctPropValueInstance.setPropertyDefinition(true);
+                if (definitionTarget == DefinitionTarget.SLOT) {
+                    ctPropValueInstance.setDefinitionTargetSlot(true);
+                } else {
+                    ctPropValueInstance.setDefinitionTargetDevice(true);
                 }
-                dao.addChild(newPropertyValueInstance);
-                addPropertyValueBasedOnDef(newPropertyValueInstance);
             }
-            populateAttributesList();
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException(e);
+            dao.addChild(newPropertyValueInstance);
+            addPropertyValueBasedOnDef(newPropertyValueInstance);
         }
+        populateAttributesList();
     }
 
     protected void addPropertyValueBasedOnDef(T definition) {
@@ -226,50 +151,59 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
     }
 
     /**
-     * Adds new {@link PropertyValue} to parent {@link ConfigurationEntity}
-     * defined in {@link AbstractAttributesController#setArtifactParent(Artifact)}
+     * Adds or modifies an artifact
      *
      * @throws IOException thrown if file in the artifact could not be stored on the file system
      */
-    public void addNewArtifact() throws IOException {
-        if (importData != null) {
-            artifactURI = blobStore.storeFile(new ByteArrayInputStream(importData));
-        }
-
-        final S artifactInstance;
+    public void modifyArtifact() throws IOException {
         try {
-            artifactInstance = artifactClass.newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
+            final EntityAttrArtifactView<C> artifactView = getDialogAttrArtifact();
 
-        artifactInstance.setName(importData != null ? importFileName : artifactName);
-        artifactInstance.setInternal(isArtifactInternal);
-        artifactInstance.setDescription(artifactDescription);
-        artifactInstance.setUri(artifactURI);
+            if (artifactView.isArtifactInternal()) {
+                final byte[] importData = artifactView.getImportData();
+                if (importData != null) {
+                    if (artifactView.isArtifactBeingModified()) {
+                        blobStore.deleteFile(artifactView.getArtifactURI());
+                    }
+                    artifactView.setArtifactURI(blobStore.storeFile(new ByteArrayInputStream(importData)));
+                }
+            }
 
-        setArtifactParent(artifactInstance);
+            final Artifact artifactInstance = artifactView.getEntity();
 
-        try {
-            dao.addChild(artifactInstance);
+            if (artifactView.isArtifactBeingModified()) {
+                dao.saveChild(artifactInstance);
+            } else {
+                dao.addChild(artifactInstance);
+            }
             Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
-                                                                        "New artifact has been created");
+                    artifactView.isArtifactBeingModified() ? "Artifact has been modified" : "New artifact has been created");
         } finally {
+            resetFields();
             internalPopulateAttributesList();
         }
     }
 
     /** Adds new {@link Tag} to parent {@link ConfigurationEntity} */
     public void addNewTag() {
-        final String normalizedTag = tag.trim();
-        Tag existingTag = tagEJB.findById(normalizedTag);
-        if (existingTag == null) {
-            existingTag = new Tag(normalizedTag);
-        }
-        setTagParent(existingTag);
-        internalPopulateAttributesList();
+        try {
+            final EntityAttrTagView<C> tagView = getDialogAttrTag();
+            Tag tag = tagEJB.findById(tagView.getTag());
+            if (tag == null) {
+                tag = tagView.getEntity();
+            }
 
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Tag added", tag);
+            C ent = tagView.getParentEntity();
+            final Set<Tag> existingTags = ent.getTags();
+            if (!existingTags.contains(tag)) {
+                existingTags.add(tag);
+                dao.save(ent);
+                Utility.showMessage(FacesMessage.SEVERITY_INFO, "Tag added", tag.getName());
+            }
+        } finally {
+            resetFields();
+            internalPopulateAttributesList();
+        }
     }
 
     /**
@@ -282,7 +216,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
 
         filteredDialogAttributes = Lists.newArrayList();
         nonDeletableAttributes = Lists.newArrayList();
-        for (final EntityAttributeView attrToDelete : selectedAttributes) {
+        for (final EntityAttributeView<C> attrToDelete : selectedAttributes) {
             if (!canDelete(attrToDelete)) {
                 nonDeletableAttributes.add(attrToDelete);
             }
@@ -299,22 +233,19 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
     public void deleteAttributes() throws IOException {
         Preconditions.checkNotNull(selectedAttributes);
         Preconditions.checkState(!selectedAttributes.isEmpty());
-        Preconditions.checkNotNull(propertyValueClass);
-        Preconditions.checkNotNull(artifactClass);
         Preconditions.checkNotNull(dao);
         Preconditions.checkNotNull(nonDeletableAttributes);
         Preconditions.checkState(nonDeletableAttributes.isEmpty());
 
         int deletedAttributes = 0;
-        for (final EntityAttributeView attributeToDelete : selectedAttributes) {
-            if (attributeToDelete.getEntity().getClass().equals(propertyValueClass)) {
+        for (final EntityAttributeView<C> attributeToDelete : selectedAttributes) {
+            if (attributeToDelete instanceof EntityAttrPropertyValueView<?>) {
                 deletePropertyValue((T) attributeToDelete.getEntity());
-            } else if (attributeToDelete.getEntity().getClass().equals(artifactClass)) {
+            } else if (attributeToDelete instanceof EntityAttrArtifactView<?>) {
                 deleteArtifact((S) attributeToDelete.getEntity());
-            } else if (attributeToDelete.getEntity().getClass().equals(Tag.class)) {
+            } else if (attributeToDelete instanceof EntityAttrTagView<?>) {
                 final Tag tagAttr = (Tag) attributeToDelete.getEntity();
-                setTagParentForOperations(attributeToDelete.getParentId());
-                deleteTagFromParent(tagAttr);
+                deleteTagFromParent(attributeToDelete.getParentEntity(), tagAttr);
             } else {
                 throw new UnhandledCaseException();
             }
@@ -355,77 +286,32 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
     public void prepareModifyPropertyPopUp() {
         Preconditions.checkNotNull(selectedAttributes);
         Preconditions.checkState(selectedAttributes.size() == 1);
-        Preconditions.checkNotNull(propertyValueClass);
-        Preconditions.checkNotNull(artifactClass);
+        dialogAttribute = selectedAttributes.get(0);
 
-        attributeToModify = selectedAttributes.get(0);
-        if (attributeToModify.getEntity().getClass().equals(propertyValueClass)) {
-            prepareModifyPropertyValuePopUp();
-        } else if (attributeToModify.getEntity().getClass().equals(artifactClass)) {
-            prepareModifyArtifactPopUp();
-        } else {
-            throw new UnhandledCaseException();
-        }
-    }
+        if (getDialogAttrPropertyValue() != null) {
+            final EntityAttrPropertyValueView<C> propertyValueView = getDialogAttrPropertyValue();
+            PropertyValue propertyValue = propertyValueView.getEntity();
+            propertyValueView.setPropertyNameChangeDisabled(propertyValue instanceof DevicePropertyValue
+                        || propertyValue instanceof SlotPropertyValue
+                        || isPropertyValueInherited(propertyValue));
+            filterProperties();
 
-    @SuppressWarnings("unchecked")
-    private void prepareModifyPropertyValuePopUp() {
-        final T selectedPropertyValue = (T) attributeToModify.getEntity();
-        property = selectedPropertyValue.getProperty();
-        propertyValue = selectedPropertyValue.getPropValue();
-
-        if (attributeToModify.getEntity() instanceof PropertyValue) {
-            propertyNameChangeDisabled = attributeToModify.getEntity() instanceof DevicePropertyValue
-                    || attributeToModify.getEntity() instanceof SlotPropertyValue
-                    || isPropertyValueInherited(selectedPropertyValue);
+            RequestContext.getCurrentInstance().update("modifyPropertyValueForm:modifyPropertyValue");
+            RequestContext.getCurrentInstance().execute("PF('modifyPropertyValue').show();");
         }
 
-        propertyValueUIElement = Conversion.getUIElementFromProperty(property);
-        if (Conversion.getBuiltInDataType(property.getDataType()) == BuiltInDataType.USER_DEFINED_ENUM) {
-            // if it is an enumeration, get the list of its options from the data type definition field
-            enumSelections = Conversion.prepareEnumSelections(property.getDataType());
-        } else {
-            enumSelections = null;
+        if (getDialogAttrArtifact() != null) {
+            RequestContext.getCurrentInstance().update("modifyArtifactForm:modifyArtifact");
+            RequestContext.getCurrentInstance().execute("PF('modifyArtifact').show();");
         }
-
-        // prepare the property selection list
-        filterProperties();
-
-        RequestContext.getCurrentInstance().update("modifyPropertyValueForm:modifyPropertyValue");
-        RequestContext.getCurrentInstance().execute("PF('modifyPropertyValue').show();");
-    }
-
-    @SuppressWarnings("unchecked")
-    private void prepareModifyArtifactPopUp() {
-        final S selectedArtifact = (S) attributeToModify.getEntity();
-        if (selectedArtifact.isInternal()) {
-            importFileName = selectedArtifact.getName();
-            artifactName = null;
-        } else {
-            artifactName = selectedArtifact.getName();
-            importFileName = null;
-        }
-        importData = null;
-        artifactDescription = selectedArtifact.getDescription();
-        isArtifactInternal = selectedArtifact.isInternal();
-        artifactURI = selectedArtifact.getUri();
-        isArtifactBeingModified = true;
-
-        RequestContext.getCurrentInstance().update("modifyArtifactForm:modifyArtifact");
-        RequestContext.getCurrentInstance().execute("PF('modifyArtifact').show();");
     }
 
     /** Modifies {@link PropertyValue} */
-    @SuppressWarnings("unchecked")
     public void modifyPropertyValue() {
-        Preconditions.checkNotNull(attributeToModify);
-
-        final T selectedPropertyValue = (T) attributeToModify.getEntity();
-        selectedPropertyValue.setProperty(property);
-        selectedPropertyValue.setPropValue(propertyValue);
+        Preconditions.checkNotNull(dialogAttribute);
 
         try {
-            dao.saveChild(selectedPropertyValue);
+            dao.saveChild(dialogAttribute.getEntity());
             Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
                                                                         "Property value has been modified");
         } catch (EJBException e) {
@@ -438,36 +324,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
                 throw e;
             }
         } finally {
-            internalPopulateAttributesList();
-        }
-    }
-
-    /** Modifies {@link Artifact}
-     * @throws IOException if attachment file operation has failed. */
-    @SuppressWarnings("unchecked")
-    public void modifyArtifact() throws IOException {
-        Preconditions.checkNotNull(attributeToModify);
-
-        final S selectedArtifact = (S) attributeToModify.getEntity();
-
-        if (importData != null) { // replace the imported data
-            blobStore.deleteFile(selectedArtifact.getUri());
-            artifactURI = blobStore.storeFile(new ByteArrayInputStream(importData));
-            selectedArtifact.setName(importFileName); // only if new file uploaded
-        }
-
-        selectedArtifact.setDescription(artifactDescription);
-        selectedArtifact.setUri(artifactURI);
-        if (!selectedArtifact.isInternal()) {
-            selectedArtifact.setName(artifactName);
-        }
-
-
-        try {
-            dao.saveChild(selectedArtifact);
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
-                                                                        "Artifact has been modified");
-        } finally {
+            resetFields();
             internalPopulateAttributesList();
         }
     }
@@ -489,11 +346,11 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
         return new DefaultStreamedContent(new FileInputStream(filePath), contentType, selectedArtifact.getName());
     }
 
-    public EntityAttributeView getDownloadArtifact() {
+    public EntityAttributeView<C> getDownloadArtifact() {
         return downloadArtifactView;
     }
 
-    public void setDownloadArtifact(EntityAttributeView downloadArtifact) {
+    public void setDownloadArtifact(EntityAttrArtifactView<C> downloadArtifact) {
         this.downloadArtifactView = downloadArtifact;
     }
 
@@ -501,7 +358,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
      * @param attributeView The object containing the UI info for the attribute table row.
      * @return <code>true</code> if the attribute can be edited, <code>false</code> otherwise.
      */
-    public boolean canEdit(EntityAttributeView attributeView) {
+    public boolean canEdit(EntityAttributeView<C> attributeView) {
         final Object attribute = attributeView.getEntity();
         return (attribute instanceof PropertyValue && !(attribute instanceof ComptypePropertyValue) && !(attribute instanceof SlotPropertyValue))
                     || (attribute instanceof Artifact && !(attribute instanceof ComptypeArtifact));
@@ -512,7 +369,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
      * @param attributeView The object containing the UI info for the attribute table row.
      * @return <code>true</code> if the attribute can be deleted, <code>false</code> otherwise.
      */
-    protected boolean canDelete(EntityAttributeView attributeView) {
+    protected boolean canDelete(EntityAttributeView<C> attributeView) {
         final Object attribute = attributeView.getEntity();
         return (attribute instanceof Artifact && !(attribute instanceof ComptypeArtifact))
                 || (attribute instanceof Tag && attributeView.getKind() != EntityAttributeViewKind.DEVICE_TYPE_TAG)
@@ -554,15 +411,17 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
         return false;
     }
 
-    protected abstract void setPropertyValueParent(T child);
+    protected abstract C getSelectedEntity();
 
-    protected abstract void setArtifactParent(S child);
+    protected abstract T newPropertyValue();
 
-    protected abstract void setTagParentForOperations(Long parentId);
+    protected abstract S newArtifact();
 
-    protected abstract void setTagParent(Tag tag);
-
-    protected abstract void deleteTagFromParent(Tag tag);
+    protected void deleteTagFromParent(C parent, Tag tag) {
+        Preconditions.checkNotNull(parent);
+        parent.getTags().remove(tag);
+        dao.save(parent);
+    }
 
     /** Filters a list of possible properties to attach to the entity based on the association type. */
     protected abstract void filterProperties();
@@ -575,112 +434,29 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
     }
 
     private void fillTagsAutocomplete() {
-        tagsForAutocomplete = ImmutableList.copyOf(Lists.transform(tagEJB.findAllSorted(), new Function<Tag, String>() {
-
-            @Override
-            public String apply(Tag input) {
-                return input.getName();
-            }
-        }));
+        tagsForAutocomplete = ImmutableList.copyOf(Lists.transform(tagEJB.findAllSorted(), Tag::getName));
     }
 
     /**
      * Returns list of all attributes for current {@link ConfigurationEntity}
      * @return the list of attributes
      */
-    public List<EntityAttributeView> getAttributes() {
+    public List<EntityAttributeView<C>> getAttributes() {
         return attributes;
-    }
-
-    /** Prepares data for addition of {@link PropertyValue} */
-    public void prepareForPropertyValueAdd() {
-        propertyNameChangeDisabled = false;
-        property = null;
-        propertyValue = null;
-        enumSelections = null;
-        selectedAttributes = null;
-        propertyValueUIElement = PropertyValueUIElement.NONE;
-        selectedProperties = null;
-        selectionPropertiesFiltered = null;
-        filterProperties();
     }
 
     /** Prepares the UI data for addition of {@link Tag} */
     public void prepareForTagAdd() {
         fillTagsAutocomplete();
-        tag = null;
+        dialogAttribute = new EntityAttrTagView<C>(getSelectedEntity());
     }
 
     /** Prepares the UI data for addition of {@link Artifact} */
     public void prepareForArtifactAdd() {
-        artifactName = null;
-        artifactDescription = null;
-        isArtifactInternal = false;
-        artifactURI = null;
-        isArtifactBeingModified = false;
-        importData = null;
-        importFileName = null;
-    }
-
-    /**
-     * Uploads file to be saved in the {@link Artifact}
-     * @param event the {@link FileUploadEvent}
-     */
-    public void handleImportFileUpload(FileUploadEvent event) {
-        try (InputStream inputStream = event.getFile().getInputstream()) {
-            this.importData = ByteStreams.toByteArray(inputStream);
-            this.importFileName = FilenameUtils.getName(event.getFile().getFileName());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /** If user changes the type of the artifact, any previously uploaded file gets deleted */
-    public void artifactTypeChanged() {
-        importData = null;
-        importFileName = null;
-    }
-
-    /** @return The name of the imported file. */
-    public String getImportFileName() {
-        return importFileName;
-    }
-
-    /** Called by the UI input control to set the value.
-     * @param property The property
-     */
-    public void setProperty(Property property) {
-        this.property = property;
-    }
-    /** @return The property associated with the property value */
-    public Property getProperty() {
-        return property;
-    }
-
-    /** The method called to convert user input into {@link Value} when the user presses "Save" button in the dialog.
-     * Called by the UI input control to set the value.
-     * @param propertyValue String representation of the property value.
-     */
-    public void setPropertyValue(String propertyValue) {
-        final DataType dataType = attributeToModify != null ? attributeToModify.getType() : property.getDataType();
-        this.propertyValue = Conversion.stringToValue(propertyValue, dataType);
-    }
-    /** @return String representation of the property value. */
-    public String getPropertyValue() {
-        return Conversion.valueToString(propertyValue);
-    }
-
-    /** @return The value of the tag */
-    @NotNull
-    @Size(min = 1, max = 255, message = "Tag can have at most 255 characters.")
-    public String getTag() {
-        return tag;
-    }
-    /** Called by the UI input control to set the value.
-     * @param tag The value of the tag
-     */
-    public void setTag(String tag) {
-        this.tag = tag;
+        final Artifact artifact = newArtifact();
+        final C selectedEntity = getSelectedEntity();
+        artifact.setArtifactsParent(selectedEntity);
+        dialogAttribute = new EntityAttrArtifactView<C>(artifact, null, selectedEntity, null, false);
     }
 
     /** @return The list of {@link Property} entities the user can select from the drop-down control. */
@@ -688,87 +464,18 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
         return filteredProperties;
     }
 
-    /** @return The user specified {@link Artifact} name. */
-    @NotNull
-    @Size(min = 1, max = 128, message = "Name can have at most 128 characters.")
-    public String getArtifactName() {
-        return artifactName;
-    }
-    /** Called by the UI input control to set the value.
-     * @param artifactName The user specified {@link Artifact} name.
-     */
-    public void setArtifactName(String artifactName) {
-        this.artifactName = artifactName;
-    }
-
-    /** @return The user specified {@link Artifact} description. */
-    @NotNull
-    @Size(min = 1, max = 255, message = "Description can have at most 255 characters.")
-    public String getArtifactDescription() {
-        return artifactDescription;
-    }
-    /** Called by the UI input control to set the value.
-     * @param artifactDescription The user specified {@link Artifact} description.
-     */
-    public void setArtifactDescription(String artifactDescription) {
-        this.artifactDescription = artifactDescription;
-    }
-
-    /** @return <code>true</code> if the {@link Artifact} is a file attachment, <code>false</code> if its an URL. */
-    public boolean isArtifactInternal() {
-        return isArtifactInternal;
-    }
-    /** Called by the UI input control to set the value.
-     * @param isArtifactInternal <code>true</code> if the {@link Artifact} is a file attachment, <code>false</code> if its an URL.
-     */
-    public void setArtifactInternal(boolean isArtifactInternal) {
-        this.isArtifactInternal = isArtifactInternal;
-    }
-
-    /** @return The URL the user stored in the database. */
-    public String getArtifactURI() {
-        return artifactURI;
-    }
-    /** Called by the UI input control to set the value.
-     * @param artifactURI The URL to store into the database.
-     */
-    public void setArtifactURI(String artifactURI) {
-        this.artifactURI = artifactURI.trim();
-    }
-
-    /** @return <code>true</code> if a "Modify artifact" dialog is open, <code>false</code> otherwise. */
-    public boolean isArtifactBeingModified() {
-        return isArtifactBeingModified;
-    }
-
     /** @return the selected table rows (UI view presentation)
      */
-    public List<EntityAttributeView> getSelectedAttributes() {
+    public List<EntityAttributeView<C>> getSelectedAttributes() {
         return selectedAttributes;
     }
     /** @param selectedAttributes a list of  property values, tags and  artifacts */
-    public void setSelectedAttributes(List<EntityAttributeView> selectedAttributes) {
+    public void setSelectedAttributes(List<EntityAttributeView<C>> selectedAttributes) {
         this.selectedAttributes = selectedAttributes;
     }
 
-    protected void setDao(DAO<? extends ConfigurationEntity> dao) {
+    protected void setDao(DAO<C> dao) {
         this.dao = dao;
-    }
-
-    protected void setPropertyValueClass(Class<T> propertyValueClass) {
-        this.propertyValueClass = propertyValueClass;
-    }
-
-    protected void setArtifactClass(Class<S> artifactClass) {
-        this.artifactClass = artifactClass;
-    }
-
-    /**
-     * @return <code>true</code> if the property can also be changed when modifying the property value,
-     * <code>false</code> otherwise.
-     */
-    public boolean isPropertyNameChangeDisabled() {
-        return propertyNameChangeDisabled;
     }
 
     /** Used by the {@link Tag} input value control to display the list of auto-complete suggestions. The list contains
@@ -787,243 +494,13 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
         return resultList;
     }
 
-    /** Called when the user selects a new {@link Property} in the dialog drop-down control.
-     * @param event {@link javax.faces.event.ValueChangeEvent}
-     */
-    public void propertyChangeListener(ValueChangeEvent event) {
-        // get the newly selected property
-        if (event.getNewValue() instanceof Property) {
-            final Property newProperty = (Property) event.getNewValue();
-            propertyValueUIElement = Conversion.getUIElementFromProperty(newProperty);
-            propertyValue = null;
-            if (Conversion.getBuiltInDataType(newProperty.getDataType()) == BuiltInDataType.USER_DEFINED_ENUM) {
-                // if it is an enumeration, get the list of its options from the data type definition field
-                enumSelections = Conversion.prepareEnumSelections(newProperty.getDataType());
-            } else {
-                enumSelections = null;
-            }
-        }
-    }
-
-    /** @return The type of the UI control to use depending on the {@link PropertyValue} {@link DataType} */
-    public PropertyValueUIElement getPropertyValueUIElement() {
-        return propertyValueUIElement;
-    }
-    /**
-     * @param propertyValueUIElement The type of the UI control to use depending on the {@link PropertyValue} {@link DataType}
-     */
-    public void setPropertyValueUIElement(PropertyValueUIElement propertyValueUIElement) {
-        this.propertyValueUIElement = propertyValueUIElement;
-    }
-
-    /** @return The list of values the user can select a value from if the {@link DataType} is an enumeration. */
-    public List<String> getEnumSelections() {
-        return enumSelections;
-    }
-    /**
-     * @param enumSelections The list of values the user can select a value from if the {@link DataType} is an enumeration.
-     */
-    public void setEnumSelections(List<String> enumSelections) {
-        this.enumSelections = enumSelections;
-    }
-
-    /** The validator for the UI input area when the UI control accepts a matrix of double precision numbers or a list
-     * of values for input.
-     * Called when saving {@link PropertyValue}
-     * @param ctx {@link javax.faces.context.FacesContext}
-     * @param component {@link javax.faces.component.UIComponent}
-     * @param value The value
-     * @throws ValidatorException {@link javax.faces.validator.ValidatorException}
-     */
-    public void areaValidator(FacesContext ctx, UIComponent component, Object value) throws ValidatorException {
-        if (value == null) {
-            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                    Utility.MESSAGE_SUMMARY_ERROR, "No value to parse."));
-        }
-        if (property == null) {
-            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                    Utility.MESSAGE_SUMMARY_ERROR, "You must select a property first."));
-        }
-
-        final DataType dataType = property.getDataType();
-        validateMultiLine(value.toString(), dataType);
-    }
-
-    protected void validateMultiLine(final String strValue, final DataType dataType) {
-        switch (Conversion.getBuiltInDataType(dataType)) {
-            case DBL_TABLE:
-                validateTable(strValue);
-                break;
-            case DBL_VECTOR:
-                validateDblVector(strValue);
-                break;
-            case INT_VECTOR:
-                validateIntVector(strValue);
-                break;
-            case STRING_LIST:
-                break;
-            default:
-                throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                        Utility.MESSAGE_SUMMARY_ERROR, "Incorrect property data type."));
-        }
-    }
-
-    private void validateTable(final String value) throws ValidatorException {
-        try (Scanner lineScanner = new Scanner(value)) {
-            lineScanner.useDelimiter(Pattern.compile(MULTILINE_DELIMITER));
-
-            int lineLength = -1;
-            while (lineScanner.hasNext()) {
-                // replace unicode no-break spaces with normal ones
-                final String line = lineScanner.next().replaceAll("\u00A0", " ");
-
-                try (Scanner valueScanner = new Scanner(line)) {
-                    valueScanner.useDelimiter(",\\s*");
-                    int currentLineLength = 0;
-                    while (valueScanner.hasNext()) {
-                        final String dblValue = valueScanner.next().trim();
-                        currentLineLength++;
-                        try {
-                            Double.valueOf(dblValue);
-                        } catch (NumberFormatException e) {
-                            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                                    Utility.MESSAGE_SUMMARY_ERROR, "Incorrect value: " + dblValue));
-                        }
-                    }
-                    if (lineLength < 0) {
-                        lineLength = currentLineLength;
-                    } else if (currentLineLength != lineLength) {
-                        throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                                Utility.MESSAGE_SUMMARY_ERROR, "All rows must contain the same number of elements."));
-                    }
-                }
-            }
-        }
-    }
-
-    private void validateIntVector(final String value) throws ValidatorException {
-        try (Scanner scanner = new Scanner(value)) {
-            scanner.useDelimiter(Pattern.compile(MULTILINE_DELIMITER));
-
-            while (scanner.hasNext()) {
-                String intValue = "<error>";
-                try {
-                    // replace unicode no-break spaces with normal ones
-                    intValue = scanner.next().replaceAll("\\u00A0", " ").trim();
-                    Integer.parseInt(intValue);
-                } catch (NumberFormatException e) {
-                    throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                            Utility.MESSAGE_SUMMARY_ERROR, "Incorrect value: " + intValue));
-                }
-            }
-        }
-    }
-
-    private void validateDblVector(final String value) throws ValidatorException {
-        try (Scanner scanner = new Scanner(value)) {
-            scanner.useDelimiter(Pattern.compile(MULTILINE_DELIMITER));
-
-            while (scanner.hasNext()) {
-                String dblValue = "<error>";
-                try {
-                    // replace unicode no-break spaces with normal ones
-                    dblValue = scanner.next().replaceAll("\\u00A0", " ").trim();
-                    Double.parseDouble(dblValue);
-                } catch (NumberFormatException e) {
-                    throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                            Utility.MESSAGE_SUMMARY_ERROR, "Incorrect value: " + dblValue));
-                }
-            }
-        }
-    }
-
-    /** The validator for the UI input field when UI control accepts a double precision number, and integer number or a
-     * string for input.
-     * Called when saving {@link PropertyValue}
-     * @param ctx {@link javax.faces.context.FacesContext}
-     * @param component {@link javax.faces.component.UIComponent}
-     * @param value The value
-     * @throws ValidatorException {@link javax.faces.validator.ValidatorException}
-     */
-    public void inputValidator(FacesContext ctx, UIComponent component, Object value) throws ValidatorException {
-        if (value == null) {
-            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                    Utility.MESSAGE_SUMMARY_ERROR, "No value to parse."));
-        }
-
-        if (property == null) {
-            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                    Utility.MESSAGE_SUMMARY_ERROR, "You must select a property first."));
-        }
-
-        final DataType dataType = property.getDataType();
-
-        validateSingleLine(value.toString(), dataType);
-    }
-
-    protected void validateSingleLine(final String strValue, final DataType dataType) {
-        switch (Conversion.getBuiltInDataType(dataType)) {
-            case DOUBLE:
-                try {
-                    Double.parseDouble(strValue.trim());
-                } catch (NumberFormatException e) {
-                    throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                            Utility.MESSAGE_SUMMARY_ERROR, "Not a double value."));
-                }
-                break;
-            case INTEGER:
-                try {
-                    Integer.parseInt(strValue.trim());
-                } catch (NumberFormatException e) {
-                    throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                            Utility.MESSAGE_SUMMARY_ERROR, "Not an integer number."));
-                }
-                break;
-            case STRING:
-                break;
-            case TIMESTAMP:
-                try {
-                    Conversion.toTimestamp(strValue);
-                } catch (RuntimeException e) {
-                    throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                            Utility.MESSAGE_SUMMARY_ERROR, e.getMessage()), e);
-                }
-                break;
-            default:
-                throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                        Utility.MESSAGE_SUMMARY_ERROR, "Incorrect property data type."));
-        }
-    }
-
-    /**  @return The name of the entity displayed in the header */
-    public String getEntityName() {
-        return entityName;
-    }
-    /**  @param entityName The name of the entity displayed in the header */
-    public void setEntityName(String entityName) {
-        this.entityName = entityName;
-    }
-
-    /**
-     * @return The width of the UI input control for setting the entity name. The width of the element is calculated
-     * to be 8 characters more than its current value, but not more than 40 characters and not less than 20 characters.
-     */
-    public String getNameElementSize() {
-        if ((entityName == null) || (entityName.length() < LO_CONTENT_LEN)) {
-            return Integer.toString(MIN_ELEMENT_SIZE);
-        }
-        final int size = entityName.length() < HI_CONTENT_LEN ? entityName.length() + ELEMENT_SIZE_PADDING
-                                : MAX_ELEMENT_SIZE;
-        return Integer.toString(size);
-    }
-
     /** @return the filteredAttributes */
-    public List<EntityAttributeView> getFilteredAttributes() {
+    public List<EntityAttributeView<C>> getFilteredAttributes() {
         return filteredAttributes;
     }
 
     /** @param filteredAttributes the filteredAttributes to set */
-    public void setFilteredAttributes(List<EntityAttributeView> filteredAttributes) {
+    public void setFilteredAttributes(List<EntityAttributeView<C>> filteredAttributes) {
         this.filteredAttributes = filteredAttributes;
     }
 
@@ -1073,17 +550,41 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
     }
 
     /** @return the nonDeletableAttributes */
-    public List<EntityAttributeView> getNonDeletableAttributes() {
+    public List<EntityAttributeView<C>> getNonDeletableAttributes() {
         return nonDeletableAttributes;
     }
 
     /** @return the filteredDialogAttributes */
-    public List<EntityAttributeView> getFilteredDialogAttributes() {
+    public List<EntityAttributeView<C>> getFilteredDialogAttributes() {
         return filteredDialogAttributes;
     }
 
     /** @param filteredDialogAttributes the filteredDialogAttributes to set */
-    public void setFilteredDialogAttributes(List<EntityAttributeView> filteredDialogAttributes) {
+    public void setFilteredDialogAttributes(List<EntityAttributeView<C>> filteredDialogAttributes) {
         this.filteredDialogAttributes = filteredDialogAttributes;
+    }
+
+    /** @return the dialogAttribute */
+    public EntityAttrTagView<C> getDialogAttrTag() {
+        if (dialogAttribute instanceof EntityAttrTagView<?>) {
+            return (EntityAttrTagView<C>)dialogAttribute;
+        }
+        return null;
+    }
+
+    /** @return the dialogAttribute */
+    public EntityAttrPropertyValueView<C> getDialogAttrPropertyValue() {
+        if (dialogAttribute instanceof EntityAttrPropertyValueView<?>) {
+            return (EntityAttrPropertyValueView<C>)dialogAttribute;
+        }
+        return null;
+    }
+
+    /** @return the dialogAttribute */
+    public EntityAttrArtifactView<C> getDialogAttrArtifact() {
+        if (dialogAttribute instanceof EntityAttrArtifactView<?>) {
+            return (EntityAttrArtifactView<C>)dialogAttribute;
+        }
+        return null;
     }
 }

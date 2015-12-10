@@ -28,6 +28,7 @@ import javax.inject.Inject;
 import org.openepics.discs.conf.dl.annotations.DevicesLoader;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
+import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.DeviceArtifact;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ui.export.ExportSimpleTableDialog;
@@ -37,7 +38,7 @@ import org.primefaces.event.FileUploadEvent;
  * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  */
 public abstract class AbstractDeviceAttributesController
-        extends AbstractAttributesController<DevicePropertyValue, DeviceArtifact>
+        extends AbstractAttributesController<Device, DevicePropertyValue, DeviceArtifact>
         implements ExcelSingleFileImportUIHandlers {
 
     private static final long serialVersionUID = -1920073445045143338L;
@@ -109,12 +110,8 @@ public abstract class AbstractDeviceAttributesController
 
     /** @see org.openepics.discs.conf.ui.common.AbstractExcelSingleFileImportUI#getImportFileName() */
     @Override
-    public String getImportFileName() {
-        if (isArtifactInternal) {
-            return importFileName;
-        } else {
-            return excelSingleFileImportUI.getImportFileName();
-        }
+    public String getExcelImportFileName() {
+        return excelSingleFileImportUI.getExcelImportFileName();
     }
 
     /** @see org.openepics.discs.conf.ui.common.AbstractExcelSingleFileImportUI#getImportedFileStatistics() */

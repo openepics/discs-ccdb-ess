@@ -1,60 +1,64 @@
 package org.openepics.discs.conf.views;
 
-import org.openepics.discs.conf.ejb.ComptypeEJB;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
 import org.openepics.discs.conf.ent.ComponentType;
 
 public class ComponentTypeView {
-    private final Long id;
-    private final String name;
-    private final String description;
+    private ComponentType componentType;
     private String usedBy;
 
     public ComponentTypeView(ComponentType componentType)
     {
-        id = componentType.getId();
-        name = componentType.getName();
-        description = componentType.getDescription();
+        this.componentType = componentType;
     }
 
-
-    /**
-     * @return the name
-     */
+    /** @return The name of the device type the user is adding or modifying. Used in the UI dialog. */
+    @NotNull
+    @Size(min = 1, max = 32, message = "Name can have at most 32 characters.")
     public String getName() {
-        return name;
+        return componentType.getName();
     }
 
-    /**
-     * @return the description
-     */
+    /** @return The description of the device type the user is adding or modifying. Used in the UI dialog. */
+    @Size(max = 255, message = "Description can have at most 255 characters.")
     public String getDescription() {
-        return description;
+        return componentType.getDescription();
     }
 
-    /**
-     * @return the usedBy
-     */
+    /** @return the usedBy */
     public String getUsedBy() {
         return usedBy;
     }
 
-    /**
-     * @param usedBy the usedBy to set
-     */
+    /** @param usedBy the usedBy to set */
     public void setUsedBy(String usedBy) {
         this.usedBy = usedBy;
     }
 
-
-    /**
-     * @return the id
-     */
+    /** @return the id */
     public Long getId() {
-        return id;
+        return componentType.getId();
     }
 
-    public ComponentType findComponentType(ComptypeEJB ejb)
+    public ComponentType getComponentType()
     {
-        return ejb.findById(id);
+        return componentType;
+    }
+
+    /** @param name The name of the device type the user is adding or modifying. Used in the UI dialog. */
+    public void setName(String name) {
+        componentType.setName(name);
+    }
+
+    /** @param description The description of the device type the user is adding or modifying. Used in the UI dialog. */
+    public void setDescription(String description) {
+        componentType.setDescription(description);
+    }
+
+    public void setComponentType(ComponentType componentType) {
+        this.componentType = componentType;
+
     }
 }

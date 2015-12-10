@@ -10,15 +10,15 @@
                 <h:outputText value="#{dialogTitle}" />
             </f:facet>
             <div class="ui-fluid">
-                <p:panelGrid id="grp" styleClass="dialog-grid-panel noBorders" columns="2"                     
+                <p:panelGrid id="grp" rendered="#{not empty controller.dialogAttrPropertyValue}" styleClass="dialog-grid-panel noBorders" columns="2"                     
                         columnClasses="alignRight alignMiddle dialog-labels-width-2, noPaddingRight">
                 
                     <p:outputLabel for="propertySelect" value="Property:" />
-                    <h:outputText value="#{controller.property.name}" rendered="#{controller.propertyNameChangeDisabled}" />
-                    <h:panelGroup rendered="#{!controller.propertyNameChangeDisabled}">
-                        <p:selectOneMenu id="propertySelect" value="#{controller.property}" var="prop" converter="#{propertyConverter}" 
+                    <h:outputText value="#{controller.dialogAttrPropertyValue.property.name}" rendered="#{controller.dialogAttrPropertyValue.propertyNameChangeDisabled}" />
+                    <h:panelGroup rendered="#{!controller.dialogAttrPropertyValue.propertyNameChangeDisabled}">
+                        <p:selectOneMenu id="propertySelect" value="#{controller.dialogAttrPropertyValue.property}" var="prop" converter="#{propertyConverter}" 
                                 rendered="true" required="true" requiredMessage="Please select a property"
-                                disabled="#{controller.propertyNameChangeDisabled}" valueChangeListener="#{controller.propertyChangeListener}">
+                                disabled="#{controller.dialogAttrPropertyValue.propertyNameChangeDisabled}">
                             <p:ajax update=":#{formId}:propertyUnit :#{formId}:propertyDataType :#{formId}:valueInputGroup"/>
                             <f:selectItem itemLabel="Select One" itemValue="" noSelectionOption="true" />
                             <f:selectItems value="#{controller.filteredProperties}" var="property" itemLabel="#{property.name}" itemValue="#{property}" />
@@ -31,37 +31,37 @@
                     
                     <p:outputLabel value="Value:" />
                     <h:panelGroup id="valueInputGroup">
-                        <h:outputText id="propertyValueNoProp" rendered="#{controller.propertyValueUIElement eq 'NONE'}" value="Select a property first."/>
-                        <p:inputText id="propertyValueSimple" value="#{controller.propertyValue}" required="true"
-                                requiredMessage="Please enter a property value" validator="#{controller.inputValidator}" 
-                                rendered="#{controller.propertyValueUIElement eq 'INPUT'}" />
-                        <p:message for="propertyValueSimple" rendered="#{controller.propertyValueUIElement eq 'INPUT'}"/>
+                        <h:outputText id="propertyValueNoProp" rendered="#{controller.dialogAttrPropertyValue.propertyValueUIElement eq 'NONE'}" value="Select a property first."/>
+                        <p:inputText id="propertyValueSimple" value="#{controller.dialogAttrPropertyValue.propertyValue}" required="true"
+                                requiredMessage="Please enter a property value" validator="#{controller.dialogAttrPropertyValue.inputValidator}" 
+                                rendered="#{controller.dialogAttrPropertyValue.propertyValueUIElement eq 'INPUT'}" />
+                        <p:message for="propertyValueSimple" rendered="#{controller.dialogAttrPropertyValue.propertyValueUIElement eq 'INPUT'}"/>
                         
-                        <p:inputTextarea id="propertyValueArea" value="#{controller.propertyValue}" required="true" 
+                        <p:inputTextarea id="propertyValueArea" value="#{controller.dialogAttrPropertyValue.propertyValue}" required="true" 
                                 rows="7" cols="40" style="white-space: nowrap; resize: none;" autoResize="false" 
-                                requiredMessage="Please enter a property value" validator="#{controller.areaValidator}" 
-                                rendered="#{controller.propertyValueUIElement eq 'TEXT_AREA'}" />
-                        <p:message for="propertyValueArea" rendered="#{controller.propertyValueUIElement eq 'TEXT_AREA'}"/>
+                                requiredMessage="Please enter a property value" validator="#{controller.dialogAttrPropertyValue.areaValidator}" 
+                                rendered="#{controller.dialogAttrPropertyValue.propertyValueUIElement eq 'TEXT_AREA'}" />
+                        <p:message for="propertyValueArea" rendered="#{controller.dialogAttrPropertyValue.propertyValueUIElement eq 'TEXT_AREA'}"/>
                         
-                        <p:selectOneMenu id="propertyValueEnum" value="#{controller.propertyValue}" required="true" 
-                                rendered="#{controller.propertyValueUIElement eq 'SELECT_ONE_MENU'}">
-                            <f:selectItems value="#{controller.enumSelections}" var="enum" itemLabel="#{enum}" itemValue="#{enum}" />        
+                        <p:selectOneMenu id="propertyValueEnum" value="#{controller.dialogAttrPropertyValue.propertyValue}" required="true" 
+                                rendered="#{controller.dialogAttrPropertyValue.propertyValueUIElement eq 'SELECT_ONE_MENU'}">
+                            <f:selectItems value="#{controller.dialogAttrPropertyValue.enumSelections}" var="enum" itemLabel="#{enum}" itemValue="#{enum}" />        
                         </p:selectOneMenu>
-                        <p:message for="propertyValueEnum" rendered="#{controller.propertyValueUIElement eq 'SELECT_ONE_MENU'}"/>
+                        <p:message for="propertyValueEnum" rendered="#{controller.dialogAttrPropertyValue.propertyValueUIElement eq 'SELECT_ONE_MENU'}"/>
                         <p:messages for="uniqueMessage" showDetail="true" autoUpdate="true" />
                     </h:panelGroup>
                     
                     <p:outputLabel value="Data type:" />
-                    <p:inputText disabled="true" id="propertyDataType" value="#{controller.property.dataType.name}"/>
+                    <p:inputText disabled="true" id="propertyDataType" value="#{controller.dialogAttrPropertyValue.property.dataType.name}"/>
                     
                     <p:outputLabel value="Unit:" />
-                    <p:inputText disabled="true" id="propertyUnit" value="#{controller.property.unit.name}"/>
+                    <p:inputText disabled="true" id="propertyUnit" value="#{controller.dialogAttrPropertyValue.property.unit.name}"/>
                    
                 </p:panelGrid>
             </div>
             
             <p:commandButton value="Cancel" styleClass="dialogButton" onclick="PF('#{widgetName}').hide();#{resetFilter}" 
-                    update="grp" resetValues="true" />
+                    update="grp" resetValues="true" action="#{controller.resetFields}"/>
             <p:commandButton value="Save" styleClass="dialogButton" update="#{componentToUpdate} grp" 
                     oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('#{widgetName}').hide(); #{resetFilter}}" 
                     action="#{controller[submitHandler]}" />

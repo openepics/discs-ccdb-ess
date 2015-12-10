@@ -38,5 +38,5 @@ public interface ExcelSingleFileImportUIHandlers extends ExcelImportUIHandlers {
     /**
      * @return The name of the import file. Used in the "Import excel" procedure.
      */
-    public String getImportFileName();
+    public String getExcelImportFileName();
 }

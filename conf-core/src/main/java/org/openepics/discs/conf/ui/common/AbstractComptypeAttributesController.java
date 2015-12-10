@@ -28,6 +28,7 @@ import javax.inject.Inject;
 import org.openepics.discs.conf.dl.annotations.ComponentTypesLoader;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
+import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypeArtifact;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ui.export.ExportSimpleTableDialog;
@@ -37,7 +38,7 @@ import org.primefaces.event.FileUploadEvent;
  * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  */
 public abstract class AbstractComptypeAttributesController
-        extends AbstractAttributesController<ComptypePropertyValue, ComptypeArtifact>
+        extends AbstractAttributesController<ComponentType, ComptypePropertyValue, ComptypeArtifact>
         implements ExcelSingleFileImportUIHandlers {
 
     private static final long serialVersionUID = 5703434699958338017L;
@@ -109,12 +110,8 @@ public abstract class AbstractComptypeAttributesController
 
     /** @see org.openepics.discs.conf.ui.common.AbstractExcelSingleFileImportUI#getImportFileName() */
     @Override
-    public String getImportFileName() {
-        if (isArtifactInternal) {
-            return importFileName;
-        } else {
-            return excelSingleFileImportUI.getImportFileName();
-        }
+    public String getExcelImportFileName() {
+        return excelSingleFileImportUI.getExcelImportFileName();
     }
 
     /** @see org.openepics.discs.conf.ui.common.AbstractExcelSingleFileImportUI#getImportedFileStatistics() */

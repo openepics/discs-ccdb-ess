@@ -37,9 +37,8 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Set;
 import java.util.Map.Entry;
-import java.util.Scanner;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
@@ -48,7 +47,6 @@ import javax.ejb.EJBException;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
-import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
 import javax.faces.validator.ValidatorException;
 import javax.faces.view.ViewScoped;
@@ -61,7 +59,6 @@ import javax.validation.constraints.Size;
 
 import joptsimple.internal.Strings;
 
-import org.apache.commons.io.FilenameUtils;
 import org.openepics.discs.conf.dl.annotations.SignalsLoader;
 import org.openepics.discs.conf.dl.annotations.SlotsLoader;
 import org.openepics.discs.conf.dl.common.DataLoader;
@@ -77,7 +74,6 @@ import org.openepics.discs.conf.ent.Artifact;
 import org.openepics.discs.conf.ent.ComptypeArtifact;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.ConfigurationEntity;
-import org.openepics.discs.conf.ent.DataType;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.DeviceArtifact;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
@@ -92,8 +88,6 @@ import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.ent.SlotRelation;
 import org.openepics.discs.conf.ent.SlotRelationName;
 import org.openepics.discs.conf.ent.Tag;
-import org.openepics.discs.conf.ent.values.Value;
-import org.openepics.discs.conf.ui.common.AbstractAttributesController;
 import org.openepics.discs.conf.ui.common.AbstractExcelSingleFileImportUI;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
 import org.openepics.discs.conf.ui.common.EntityHierarchyBuilder;
@@ -103,13 +97,12 @@ import org.openepics.discs.conf.ui.common.TreeFilterContains;
 import org.openepics.discs.conf.ui.common.UIException;
 import org.openepics.discs.conf.util.AppProperties;
 import org.openepics.discs.conf.util.BlobStore;
-import org.openepics.discs.conf.util.BuiltInDataType;
-import org.openepics.discs.conf.util.Conversion;
 import org.openepics.discs.conf.util.PropertyValueNotUniqueException;
-import org.openepics.discs.conf.util.PropertyValueUIElement;
-import org.openepics.discs.conf.util.UnhandledCaseException;
 import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.util.names.Names;
+import org.openepics.discs.conf.views.EntityAttrArtifactView;
+import org.openepics.discs.conf.views.EntityAttrPropertyValueView;
+import org.openepics.discs.conf.views.EntityAttrTagView;
 import org.openepics.discs.conf.views.EntityAttributeView;
 import org.openepics.discs.conf.views.EntityAttributeViewKind;
 import org.openepics.discs.conf.views.InstallationView;
@@ -117,7 +110,6 @@ import org.openepics.discs.conf.views.SlotRelationshipView;
 import org.openepics.discs.conf.views.SlotView;
 import org.openepics.names.jaxb.DeviceNameElement;
 import org.primefaces.context.RequestContext;
-import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.NodeExpandEvent;
 import org.primefaces.event.NodeSelectEvent;
 import org.primefaces.event.NodeUnselectEvent;
@@ -132,7 +124,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
 import com.google.common.collect.Lists;
-import com.google.common.io.ByteStreams;
 
 /**
  * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
@@ -185,8 +176,9 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         ACTIVE, OBSOLETE, DELETED, MISSING
     }
 
-    private transient List<EntityAttributeView> attributes;
-    private transient List<EntityAttributeView> filteredAttributes;
+    private transient List<EntityAttributeView<Slot>> attributes;
+    private transient List<EntityAttributeView<Slot>> filteredAttributes;
+    private EntityAttributeView<Slot> dialogAttribute;
     private transient List<SelectItem> attributeKinds;
     private transient List<SlotRelationshipView> relationships;
     private transient List<SlotRelationshipView> filteredRelationships;
@@ -244,20 +236,9 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     private transient Map<String, DeviceNameElement> nameList;
 
     // ------ variables for attribute manipulation ------
-    private transient List<EntityAttributeView> selectedAttributes;
-    private transient EntityAttributeView downloadAttribute;
-    private String artifactDescription;
-    private String artifactURI;
-    private String artifactName;
-    private boolean isArtifactInternal;
-    private boolean isArtifactBeingModified;
-    private Property property;
-    private transient Value propertyValue;
-    private transient List<String> enumSelections;
+    private transient List<EntityAttributeView<Slot>> selectedAttributes;
+    private transient EntityAttributeView<Slot> downloadAttribute;
     private transient List<Property> filteredProperties;
-    private PropertyValueUIElement propertyValueUIElement;
-    private boolean propertyNameChangeDisabled;
-    private String tag;
     private transient List<String> tagsForAutocomplete;
 
     private transient List<SlotRelationshipView> selectedRelationships;
@@ -467,19 +448,19 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         // Use iterator. If the property value is found, then update it.
         // If not, add new property value to the already existing ones. Append to the end of the ones for the same slot.
         boolean encounteredParentSiblings = false;
-        ListIterator<EntityAttributeView> attributesIter = attributes.listIterator();
+        ListIterator<EntityAttributeView<Slot>> attributesIter = attributes.listIterator();
         while (attributesIter.hasNext()) {
-            final EntityAttributeView tableAttribute = attributesIter.next();
+            final EntityAttributeView<Slot> tableAttribute = attributesIter.next();
             if (tableAttribute.getParent().equals(slot.getName())) {
                 encounteredParentSiblings = true;
                 // the entity's real sibling
 
                 if (tableAttribute.getEntity().equals(propertyValue)) {
                     // found the existing artifact, update it and exit!
-                    attributesIter.set(new EntityAttributeView(propertyValue, slot.isHostingSlot()
+                    attributesIter.set(new EntityAttrPropertyValueView<Slot>(propertyValue, slot.isHostingSlot()
                             ? EntityAttributeViewKind.INSTALL_SLOT_PROPERTY
                                     : EntityAttributeViewKind.CONTAINER_SLOT_PROPERTY,
-                            slot, slotEJB, slot.getComponentType() != null ? slot.getComponentType().getName() : ""));
+                            slot, slot.getComponentType() != null ? slot.getComponentType().getName() : ""));
                     return;
                 }
 
@@ -500,17 +481,17 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         }
         // the insertion pointer is at the right spot. This is either the last property value for this parent,
         //   the last attribute for this parent (no artifacts and tags), or the very last attribute in the entire table
-        attributesIter.add(new EntityAttributeView(propertyValue, slot.isHostingSlot()
-                ? EntityAttributeViewKind.INSTALL_SLOT_PROPERTY : EntityAttributeViewKind.CONTAINER_SLOT_PROPERTY,
-                slot, slotEJB, slot.getComponentType() != null ? slot.getComponentType().getName() : ""));
+        attributesIter.add(new EntityAttrPropertyValueView<Slot>(propertyValue, slot.isHostingSlot()
+                ? EntityAttributeViewKind.INSTALL_SLOT_PROPERTY : EntityAttributeViewKind.CONTAINER_SLOT_PROPERTY, slot,
+                slot.getComponentType() != null ? slot.getComponentType().getName() : ""));
     }
 
     private void refreshAttributeList(final Slot slot, final Tag tag) {
         // Use iterator. Add new Tag to the already existing ones. Append to the end of the ones for the same slot.
         boolean encounteredParentSiblings = false;
-        ListIterator<EntityAttributeView> attributesIter = attributes.listIterator();
+        ListIterator<EntityAttributeView<Slot>> attributesIter = attributes.listIterator();
         while (attributesIter.hasNext()) {
-            final EntityAttributeView tableAttribute = attributesIter.next();
+            final EntityAttributeView<Slot> tableAttribute = attributesIter.next();
             if (tableAttribute.getParent().equals(slot.getName())) {
                 encounteredParentSiblings = true;
             } else if (encounteredParentSiblings) {
@@ -521,8 +502,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         }
         // the insertion pointer is at the right spot. This is either the last attribute for this parent,
         //     or the very last attribute in the entire table
-        attributesIter.add(new EntityAttributeView(tag,  slot.isHostingSlot()
-            ? EntityAttributeViewKind.INSTALL_SLOT_TAG : EntityAttributeViewKind.CONTAINER_SLOT_TAG, slot, slotEJB,
+        attributesIter.add(new EntityAttrTagView<Slot>(tag,  slot.isHostingSlot()
+            ? EntityAttributeViewKind.INSTALL_SLOT_TAG : EntityAttributeViewKind.CONTAINER_SLOT_TAG, slot,
                     slot.getComponentType() != null ? slot.getComponentType().getName() : ""));
     }
 
@@ -530,18 +511,18 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         // Use iterator. If the artifact is found, then update it.
         // If not, add new artifact to the already existing ones. Append to the end of the ones for the same slot.
         boolean encounteredParentSiblings = false;
-        ListIterator<EntityAttributeView> attributesIter = attributes.listIterator();
+        ListIterator<EntityAttributeView<Slot>> attributesIter = attributes.listIterator();
         while (attributesIter.hasNext()) {
-            final EntityAttributeView tableAttribute = attributesIter.next();
+            final EntityAttributeView<Slot> tableAttribute = attributesIter.next();
             if (tableAttribute.getParent().equals(slot.getName())) {
                 encounteredParentSiblings = true;
                 // the entity's real sibling
 
                 if (tableAttribute.getEntity().equals(artifact)) {
                     // found the existing artifact, update it and exit!
-                    attributesIter.set(new EntityAttributeView(artifact, slot.isHostingSlot()
+                    attributesIter.set(new EntityAttrArtifactView<Slot>(artifact, slot.isHostingSlot()
                             ? EntityAttributeViewKind.INSTALL_SLOT_ARTIFACT
-                                    : EntityAttributeViewKind.CONTAINER_SLOT_ARTIFACT, slot, slotEJB));
+                                    : EntityAttributeViewKind.CONTAINER_SLOT_ARTIFACT, slot));
                     return;
                 }
 
@@ -562,15 +543,15 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         }
         // the insertion pointer is at the right spot. This is either the last artifact for this parent,
         //     the last attribute for this parent (no tags), or the very last attribute in the entire table
-        attributesIter.add(new EntityAttributeView(artifact, slot.isHostingSlot()
+        attributesIter.add(new EntityAttrArtifactView<Slot>(artifact, slot.isHostingSlot()
                 ? EntityAttributeViewKind.INSTALL_SLOT_ARTIFACT : EntityAttributeViewKind.CONTAINER_SLOT_ARTIFACT,
-                slot, slotEJB));
+                slot));
     }
 
     private void removeRelatedAttributes(Slot slot) {
-        final ListIterator<EntityAttributeView> slotAttributes = attributes.listIterator();
+        final ListIterator<EntityAttributeView<Slot>> slotAttributes = attributes.listIterator();
         while (slotAttributes.hasNext()) {
-            final EntityAttributeView attribute = slotAttributes.next();
+            final EntityAttributeView<Slot> attribute = slotAttributes.next();
             if (slot.getName().equals(attribute.getParent())) {
                 slotAttributes.remove();
             }
@@ -583,24 +564,24 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
         for (final ComptypePropertyValue value : slot.getComponentType().getComptypePropertyList()) {
             if (!value.isPropertyDefinition()) {
-                attributes.add(new EntityAttributeView(value, EntityAttributeViewKind.DEVICE_TYPE_PROPERTY,
-                                                            slot, slotEJB, slot.getComponentType().getName()));
+                attributes.add(new EntityAttrPropertyValueView<Slot>(value, EntityAttributeViewKind.DEVICE_TYPE_PROPERTY,
+                                                            slot, slot.getComponentType().getName()));
             }
         }
 
         for (final SlotPropertyValue value : slot.getSlotPropertyList()) {
-            attributes.add(new EntityAttributeView(value, isHostingSlot
+            attributes.add(new EntityAttrPropertyValueView<Slot>(value, isHostingSlot
                                                             ? EntityAttributeViewKind.INSTALL_SLOT_PROPERTY
                                                             : EntityAttributeViewKind.CONTAINER_SLOT_PROPERTY,
-                                                            slot, slotEJB, slot.getComponentType().getName()));
+                                                            slot, slot.getComponentType().getName()));
         }
 
         if (activeInstallationRecord != null) {
             for (final DevicePropertyValue devicePropertyValue : activeInstallationRecord.getDevice().
                                                                                         getDevicePropertyList()) {
-                attributes.add(new EntityAttributeView(devicePropertyValue,
+                attributes.add(new EntityAttrPropertyValueView<Slot>(devicePropertyValue,
                                                             EntityAttributeViewKind.DEVICE_PROPERTY,
-                                                            slot, slotEJB,
+                                                            slot,
                                                             activeInstallationRecord.getDevice().getName()));
             }
         }
@@ -611,21 +592,21 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         final InstallationRecord activeInstallationRecord = installationEJB.getActiveInstallationRecordForSlot(slot);
 
         for (final ComptypeArtifact artifact : slot.getComponentType().getComptypeArtifactList()) {
-            attributes.add(new EntityAttributeView(artifact, EntityAttributeViewKind.DEVICE_TYPE_ARTIFACT,
-                                                            slot, slotEJB, slot.getComponentType().getName()));
+            attributes.add(new EntityAttrArtifactView<Slot>(artifact, EntityAttributeViewKind.DEVICE_TYPE_ARTIFACT,
+                                                            slot, slot.getComponentType().getName()));
         }
 
         for (final SlotArtifact artifact : slot.getSlotArtifactList()) {
-            attributes.add(new EntityAttributeView(artifact, isHostingSlot
+            attributes.add(new EntityAttrArtifactView<Slot>(artifact, isHostingSlot
                                                             ? EntityAttributeViewKind.INSTALL_SLOT_ARTIFACT
                                                             : EntityAttributeViewKind.CONTAINER_SLOT_ARTIFACT,
-                                                            slot, slotEJB));
+                                                            slot));
         }
 
         if (activeInstallationRecord != null) {
             for (final DeviceArtifact deviceArtifact : activeInstallationRecord.getDevice().getDeviceArtifactList()) {
-                attributes.add(new EntityAttributeView(deviceArtifact,
-                                                            EntityAttributeViewKind.DEVICE_ARTIFACT, slot, slotEJB,
+                attributes.add(new EntityAttrArtifactView<Slot>(deviceArtifact,
+                                                            EntityAttributeViewKind.DEVICE_ARTIFACT, slot,
                                                             activeInstallationRecord.getDevice().getName()));
             }
         }
@@ -636,20 +617,20 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         final InstallationRecord activeInstallationRecord = installationEJB.getActiveInstallationRecordForSlot(slot);
 
         for (final Tag tagInstance : slot.getComponentType().getTags()) {
-            attributes.add(new EntityAttributeView(tagInstance, EntityAttributeViewKind.DEVICE_TYPE_TAG,
-                                                            slot, slotEJB, slot.getComponentType().getName()));
+            attributes.add(new EntityAttrTagView<Slot>(tagInstance, EntityAttributeViewKind.DEVICE_TYPE_TAG,
+                                                            slot, slot.getComponentType().getName()));
         }
 
         for (final Tag tagInstance : slot.getTags()) {
-            attributes.add(new EntityAttributeView(tagInstance, isHostingSlot
+            attributes.add(new EntityAttrTagView<Slot>(tagInstance, isHostingSlot
                                                             ? EntityAttributeViewKind.INSTALL_SLOT_TAG
                                                             : EntityAttributeViewKind.CONTAINER_SLOT_TAG,
-                                                            slot, slotEJB));
+                                                            slot));
         }
 
         if (activeInstallationRecord != null) {
             for (final Tag tagInstance : activeInstallationRecord.getDevice().getTags()) {
-                attributes.add(new EntityAttributeView(tagInstance, EntityAttributeViewKind.DEVICE_TAG, slot, slotEJB,
+                attributes.add(new EntityAttrTagView<Slot>(tagInstance, EntityAttributeViewKind.DEVICE_TAG, slot,
                         activeInstallationRecord.getDevice().getName()));
             }
         }
@@ -750,9 +731,9 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
                 removeRelatedInstallationRecord(unselectedSlot);
                 iter.remove();
                 if (selectedAttributes != null) {
-                    Iterator<EntityAttributeView> i = selectedAttributes.iterator();
+                    Iterator<EntityAttributeView<Slot>> i = selectedAttributes.iterator();
                     while (i.hasNext()) {
-                        EntityAttributeView selectedAttribute = i.next();
+                        EntityAttributeView<Slot> selectedAttribute = i.next();
                         if (selectedAttribute.getParent().equals(unselectedSlot.getName())) i.remove();
                     }
                 }
@@ -1992,12 +1973,31 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     /** Prepares the information for the "Edit" attribute dialog. */
     public void prepareModifyAttributePopup() {
         Preconditions.checkNotNull(selectedAttributes);
-        if (selectedAttributes.get(0).getEntity() instanceof SlotPropertyValue) {
-            prepareModifyPropertyValuePopup();
-        } else if (selectedAttributes.get(0).getEntity() instanceof SlotArtifact) {
-            prepareModifyArtifactPopup();
-        } else {
-            throw new UnhandledCaseException();
+        Preconditions.checkState(selectedAttributes.size() == 1);
+
+        final EntityAttributeView<Slot> selectedAttrView = selectedAttributes.get(0);
+
+        if (selectedAttrView instanceof EntityAttrPropertyValueView<?>) {
+            final EntityAttrPropertyValueView<Slot> propertyValueView = new EntityAttrPropertyValueView<Slot>(
+                    slotEJB.refreshPropertyValue((PropertyValue)selectedAttrView.getEntity()), selectedAttrView.getKind(), selectedAttrView.getParentEntity(), selectedAttrView.getUsedBy());
+            final boolean propertyNameChangeDisabled = propertyValueView.getParentEntity().isHostingSlot();
+            propertyValueView.setPropertyNameChangeDisabled(propertyNameChangeDisabled);
+            if (!propertyNameChangeDisabled) {
+                filterProperties();
+            }
+            dialogAttribute = propertyValueView;
+
+            RequestContext.getCurrentInstance().update("modifyPropertyValueForm:modifyPropertyValue");
+            RequestContext.getCurrentInstance().execute("PF('modifyPropertyValue').show();");
+        }
+
+        if (selectedAttrView instanceof EntityAttrArtifactView<?>) {
+            final EntityAttrArtifactView<Slot> view = new EntityAttrArtifactView<Slot>(
+                    slotEJB.refreshArtifact((Artifact)selectedAttrView.getEntity()), selectedAttrView.getKind(), selectedAttrView.getParentEntity(), selectedAttrView.getUsedBy());
+            dialogAttribute = view;
+
+            RequestContext.getCurrentInstance().update("modifyArtifactForm:modifyArtifact");
+            RequestContext.getCurrentInstance().execute("PF('modifyArtifact').show();");
         }
     }
 
@@ -2016,41 +2016,11 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
     /** Prepares data for addition of {@link PropertyValue}. Only valid for containers. */
     public void prepareForPropertyValueAdd() {
-        propertyNameChangeDisabled = false;
-        property = null;
-        propertyValue = null;
-        enumSelections = null;
         selectedAttributes = null;
-        propertyValueUIElement = PropertyValueUIElement.NONE;
+        final SlotPropertyValue slotValueInstance = new SlotPropertyValue(false);
+        slotValueInstance.setPropertiesParent(selectedSlot);
+        dialogAttribute = new EntityAttrPropertyValueView<Slot>(slotValueInstance, null, getSelectedEntity(), null, true);
         filterProperties();
-    }
-
-    /** Adds new {@link PropertyValue} to container {@link Slot} */
-    public void addNewPropertyValue() {
-        try {
-            final SlotPropertyValue slotValueInstance = new SlotPropertyValue(false);
-            selectedAttributes = null;
-            slotValueInstance.setProperty(property);
-            slotValueInstance.setPropValue(propertyValue);
-            slotValueInstance.setPropertiesParent(selectedSlot);
-
-            slotEJB.addChild(slotValueInstance);
-
-            refreshSlot(selectedSlot);
-            refreshAllPropertyValues();
-
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
-                    "New property has been created");
-        } catch (EJBException e) {
-            if (Utility.causedBySpecifiedExceptionClass(e, PropertyValueNotUniqueException.class)) {
-                FacesContext.getCurrentInstance().addMessage("uniqueMessage",
-                        new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
-                                "Value is not unique."));
-                FacesContext.getCurrentInstance().validationFailed();
-            } else {
-                throw e;
-            }
-        }
     }
 
     private void refreshAllPropertyValues() {
@@ -2060,20 +2030,25 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         }
     }
 
-    /** The handler called to save a new value of the {@link SlotPropertyValue} after modification */
+    /** The handler called to save or add a new value of the {@link SlotPropertyValue} after modification */
     public void modifyPropertyValue() {
-        final SlotPropertyValue selectedPropertyValue = (SlotPropertyValue) selectedAttributes.get(0).getEntity();
-        selectedPropertyValue.setProperty(property);
-        selectedPropertyValue.setPropValue(propertyValue);
-
         try {
-            slotEJB.saveChild(selectedPropertyValue);
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
-                                                                        "Property value has been modified");
-            final Slot parentSlot = selectedPropertyValue.getSlot();
-            refreshSlot(parentSlot);
-            final SlotPropertyValue freshPropertyValue = slotEJB.refreshPropertyValue(selectedPropertyValue);
-            refreshAttributeList(parentSlot, freshPropertyValue);
+            final EntityAttrPropertyValueView<Slot> view = getDialogAttrPropertyValue();
+            final PropertyValue slotValueInstance = view.getEntity();
+            if (view.isBeingAdded()) {
+                slotEJB.addChild(slotValueInstance);
+                refreshSlot(view.getParentEntity());
+                refreshAllPropertyValues();
+                Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+                        "New property has been created");
+            } else {
+                slotEJB.saveChild(slotValueInstance);
+                refreshSlot(view.getParentEntity());
+                final SlotPropertyValue freshPropertyValue = slotEJB.refreshPropertyValue((SlotPropertyValue)slotValueInstance);
+                refreshAttributeList(view.getParentEntity(), freshPropertyValue);;
+                Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+                        "Property value has been modified");
+            }
         } catch (EJBException e) {
             if (Utility.causedBySpecifiedExceptionClass(e, PropertyValueNotUniqueException.class)) {
                 FacesContext.getCurrentInstance().addMessage("uniqueMessage",
@@ -2086,34 +2061,15 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         }
     }
 
-    private void prepareModifyPropertyValuePopup() {
-        final SlotPropertyValue selectedPropertyValue = (SlotPropertyValue) selectedAttributes.get(0).getEntity();
-        property = selectedPropertyValue.getProperty();
-        propertyValue = selectedPropertyValue.getPropValue();
-        propertyNameChangeDisabled = selectedPropertyValue.getSlot().isHostingSlot();
-        propertyValueUIElement = Conversion.getUIElementFromProperty(property);
-
-        if (Conversion.getBuiltInDataType(property.getDataType()) == BuiltInDataType.USER_DEFINED_ENUM) {
-            // if it is an enumeration, get the list of its options from the data type definition field
-            enumSelections = Conversion.prepareEnumSelections(property.getDataType());
-        } else {
-            enumSelections = null;
-        }
-
-        if (!propertyNameChangeDisabled) {
-            filterProperties();
-        }
-
-        RequestContext.getCurrentInstance().update("modifyPropertyValueForm:modifyPropertyValue");
-        RequestContext.getCurrentInstance().execute("PF('modifyPropertyValue').show();");
-    }
 
     private void filterProperties() {
         final List<Property> propertyCandidates = propertyEJB.findAllOrderedByName();
 
+        final Property dialogProperty = getDialogAttrPropertyValue() != null ? getDialogAttrPropertyValue().getProperty() : null;
+
         // remove all properties that are already defined.
         for (final SlotPropertyValue slotPropertyValue : selectedSlot.getSlotPropertyList()) {
-            if (!slotPropertyValue.getProperty().equals(property)) {
+            if (!slotPropertyValue.getProperty().equals(dialogProperty)) {
                 propertyCandidates.remove(slotPropertyValue.getProperty());
             }
         }
@@ -2121,23 +2077,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         filteredProperties = propertyCandidates;
     }
 
-    /** Called when the user selects a new {@link Property} in the dialog drop-down control.
-     * @param event {@link javax.faces.event.ValueChangeEvent}
-     */
-    public void propertyChangeListener(ValueChangeEvent event) {
-        // get the newly selected property
-        if (event.getNewValue() instanceof Property) {
-            final Property newProperty = (Property) event.getNewValue();
-            propertyValueUIElement = Conversion.getUIElementFromProperty(newProperty);
-            propertyValue = null;
-            if (Conversion.getBuiltInDataType(newProperty.getDataType()) == BuiltInDataType.USER_DEFINED_ENUM) {
-                // if it is an enumeration, get the list of its options from the data type definition field
-                enumSelections = Conversion.prepareEnumSelections(newProperty.getDataType());
-            } else {
-                enumSelections = null;
-            }
-        }
-    }
+
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      * Above: Methods for adding and modifying container and installation slot property values.
@@ -2147,23 +2087,31 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     /** Prepares the UI data for addition of {@link Tag} */
     public void prepareForTagAdd() {
         fillTagsAutocomplete();
-        tag = null;
+        dialogAttribute = new EntityAttrTagView<Slot>(getSelectedEntity());
     }
 
     /** Adds new {@link Tag} to parent {@link ConfigurationEntity} */
     public void addNewTag() {
-        selectedAttributes = null;
-        final String normalizedTag = tag.trim();
-        Tag existingTag = tagEJB.findById(normalizedTag);
-        if (existingTag == null) {
-            existingTag = new Tag(normalizedTag);
-        }
-        selectedSlot.getTags().add(existingTag);
-        saveSlotAndRefresh(selectedSlot);
-        refreshAttributeList(selectedSlot, existingTag);
-        fillTagsAutocomplete();
+        try {
+            final EntityAttrTagView<Slot> tagView = getDialogAttrTag();
+            Tag tag = tagEJB.findById(tagView.getTag());
+            if (tag == null) {
+                tag = tagView.getEntity();
+            }
 
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Tag added", tag);
+            Slot ent = tagView.getParentEntity();
+            final Set<Tag> existingTags = ent.getTags();
+            if (!existingTags.contains(tag)) {
+                existingTags.add(tag);
+                saveSlotAndRefresh(ent);
+                refreshAttributeList(ent, tag);
+                Utility.showMessage(FacesMessage.SEVERITY_INFO, "Tag added", tag.getName());
+            }
+        } finally {
+            fillTagsAutocomplete();
+            selectedAttributes = null;
+            dialogAttribute = null;
+        }
     }
 
     private void fillTagsAutocomplete() {
@@ -2198,37 +2146,10 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
     /** Prepares the UI data for addition of {@link Artifact} */
     public void prepareForArtifactAdd() {
-        artifactName = null;
-        artifactDescription = null;
-        isArtifactInternal = false;
-        artifactURI = null;
-        isArtifactBeingModified = false;
-        importData = null;
-        importFileName = null;
-    }
-
-    /**
-     * Adds new {@link PropertyValue} to parent {@link ConfigurationEntity}
-     * defined in {@link AbstractAttributesController#setArtifactParent(Artifact)}
-     *
-     * @throws IOException thrown if file in the artifact could not be stored on the file system
-     */
-    public void addNewArtifact() throws IOException {
-        Preconditions.checkNotNull(selectedSlot);
-        selectedAttributes = null;
-        if (importData != null) {
-            artifactURI = blobStore.storeFile(new ByteArrayInputStream(importData));
-        }
-
-        final SlotArtifact slotArtifact = new SlotArtifact(importData != null ? importFileName : artifactName,
-                isArtifactInternal, artifactDescription, artifactURI);
-        slotArtifact.setSlot(selectedSlot);
-
-        slotEJB.addChild(slotArtifact);
-        refreshSlot(selectedSlot);
-        refreshAllArtifacts();
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
-                                                                    "New artifact has been created");
+        final Artifact artifact = new SlotArtifact();
+        final Slot selectedEntity = getSelectedEntity();
+        artifact.setArtifactsParent(selectedEntity);
+        dialogAttribute = new EntityAttrArtifactView<Slot>(artifact, null, selectedEntity, null, false);
     }
 
     private void refreshAllArtifacts() {
@@ -2238,75 +2159,40 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         }
     }
 
-    private void prepareModifyArtifactPopup() {
-        final SlotArtifact selectedArtifact = (SlotArtifact) selectedAttributes.get(0).getEntity();
-        if (selectedArtifact.isInternal()) {
-            importFileName = selectedArtifact.getName();
-            artifactName = null;
-        } else {
-            artifactName = selectedArtifact.getName();
-            importFileName = null;
-        }
-        importData = null;
-        artifactDescription = selectedArtifact.getDescription();
-        isArtifactInternal = selectedArtifact.isInternal();
-        artifactURI = selectedArtifact.getUri();
-        isArtifactBeingModified = true;
-
-        RequestContext.getCurrentInstance().update("modifyArtifactForm:modifyArtifact");
-        RequestContext.getCurrentInstance().execute("PF('modifyArtifact').show();");
-    }
-
     /** Modifies the selected artifact properties
      * @throws IOException if attachment file operation has failed. */
     public void modifyArtifact() throws IOException {
-        final SlotArtifact selectedArtifact = (SlotArtifact) selectedAttributes.get(0).getEntity();
+        try {
+            final EntityAttrArtifactView<Slot> artifactView = getDialogAttrArtifact();
 
-        if (importData != null) { // replace the imported data
-            blobStore.deleteFile(selectedArtifact.getUri());
-            artifactURI = blobStore.storeFile(new ByteArrayInputStream(importData));
-            selectedArtifact.setName(importFileName); // only if new file uploaded
-        }
-
-        selectedArtifact.setDescription(artifactDescription);
-        selectedArtifact.setUri(artifactURI);
-        if (!selectedArtifact.isInternal()) {
-            selectedArtifact.setName(artifactName);
-        }
-
-        slotEJB.saveChild(selectedArtifact);
-        final Slot parentSlot = selectedArtifact.getSlot();
-        refreshSlot(parentSlot);
-        final SlotArtifact freshArtifact = slotEJB.refreshArtifact(selectedArtifact);
-        refreshAttributeList(parentSlot, freshArtifact);
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
-                                                                    "Artifact has been modified");
-    }
-
-    /**
-     * Uploads file to be saved in the {@link Artifact}
-     * @param event the {@link FileUploadEvent}
-     */
-    @Override
-    public void handleImportFileUpload(FileUploadEvent event) {
-        // this handler is shared between AbstractExcelSingleFileImportUI and Artifact loading
-        if ("importSignalsForm:singleFileDLUploadCtl".equals(event.getComponent().getClientId())
-                || "importSlotsForm:singleFileDLUploadCtl".equals(event.getComponent().getClientId())) {
-            super.handleImportFileUpload(event);
-        } else {
-            try (InputStream inputStream = event.getFile().getInputstream()) {
-                importData = ByteStreams.toByteArray(inputStream);
-                importFileName = FilenameUtils.getName(event.getFile().getFileName());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            if (artifactView.isArtifactInternal()) {
+                final byte[] importData = artifactView.getImportData();
+                if (importData != null) {
+                    if (artifactView.isArtifactBeingModified()) {
+                        blobStore.deleteFile(artifactView.getArtifactURI());
+                    }
+                    artifactView.setArtifactURI(blobStore.storeFile(new ByteArrayInputStream(importData)));
+                }
             }
-        }
-    }
 
-    /** If user changes the type of the artifact, any previously uploaded file gets deleted */
-    public void artifactTypeChanged() {
-        importData = null;
-        importFileName = null;
+            final Artifact artifactInstance = artifactView.getEntity();
+            final Slot parentSlot = artifactView.getParentEntity();
+
+            if (artifactView.isArtifactBeingModified()) {
+                slotEJB.saveChild(artifactInstance);
+                final SlotArtifact freshArtifact = slotEJB.refreshArtifact((SlotArtifact)artifactInstance);
+                refreshAttributeList(parentSlot, freshArtifact);
+            } else {
+                slotEJB.addChild(artifactInstance);
+                refreshAllArtifacts();
+            }
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+                    artifactView.isArtifactBeingModified() ? "Artifact has been modified" : "New artifact has been created");
+
+            refreshSlot(parentSlot);
+        } finally {
+            dialogAttribute = null;
+        }
     }
 
     /**
@@ -2354,174 +2240,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         }
     }
 
-    /** The validator for the UI input field when UI control accepts a double precision number, and integer number or a
-     * string for input.
-     * Called when saving {@link PropertyValue}
-     * @param ctx {@link javax.faces.context.FacesContext}
-     * @param component {@link javax.faces.component.UIComponent}
-     * @param value The value
-     * @throws ValidatorException {@link javax.faces.validator.ValidatorException}
-     */
-    public void inputValidator(FacesContext ctx, UIComponent component, Object value) throws ValidatorException {
-        if (value == null) {
-            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                    Utility.MESSAGE_SUMMARY_ERROR, "No value to parse."));
-        }
-
-        if (property == null) {
-            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                    Utility.MESSAGE_SUMMARY_ERROR, "You must select a property first."));
-        }
-
-        final DataType dataType = property.getDataType();
-        validateSingleLine(value.toString(), dataType);
-    }
-
-    private void validateSingleLine(final String strValue, final DataType dataType) {
-        switch (Conversion.getBuiltInDataType(dataType)) {
-            case DOUBLE:
-                try {
-                    Double.parseDouble(strValue.trim());
-                } catch (NumberFormatException e) {
-                    throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                            Utility.MESSAGE_SUMMARY_ERROR, "Not a double value."));
-                }
-                break;
-            case INTEGER:
-                try {
-                    Integer.parseInt(strValue.trim());
-                } catch (NumberFormatException e) {
-                    throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                            Utility.MESSAGE_SUMMARY_ERROR, "Not an integer number."));
-                }
-                break;
-            case STRING:
-                break;
-            case TIMESTAMP:
-                try {
-                    Conversion.toTimestamp(strValue);
-                } catch (RuntimeException e) {
-                    throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                            Utility.MESSAGE_SUMMARY_ERROR, e.getMessage()), e);
-                }
-                break;
-            default:
-                throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                        Utility.MESSAGE_SUMMARY_ERROR, "Incorrect property data type."));
-        }
-    }
-
-    /** The validator for the UI input area when the UI control accepts a matrix of double precision numbers or a list
-     * of values for input.
-     * Called when saving {@link PropertyValue}
-     * @param ctx {@link javax.faces.context.FacesContext}
-     * @param component {@link javax.faces.component.UIComponent}
-     * @param value The value
-     * @throws ValidatorException {@link javax.faces.validator.ValidatorException}
-     */
-    public void areaValidator(FacesContext ctx, UIComponent component, Object value) throws ValidatorException {
-        if (value == null) {
-            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                    Utility.MESSAGE_SUMMARY_ERROR, "No value to parse."));
-        }
-        if (property == null) {
-            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                    Utility.MESSAGE_SUMMARY_ERROR, "You must select a property first."));
-        }
-
-        final DataType dataType = property.getDataType();
-        validateMultiLine(value.toString(), dataType);
-    }
-
-    private void validateMultiLine(final String strValue, final DataType dataType) {
-        switch (Conversion.getBuiltInDataType(dataType)) {
-            case DBL_TABLE:
-                validateTable(strValue);
-                break;
-            case DBL_VECTOR:
-                validateDblVector(strValue);
-                break;
-            case INT_VECTOR:
-                validateIntVector(strValue);
-                break;
-            case STRING_LIST:
-                break;
-            default:
-                throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                        Utility.MESSAGE_SUMMARY_ERROR, "Incorrect property data type."));
-        }
-    }
-
-    private void validateTable(final String value) throws ValidatorException {
-        try (final Scanner lineScanner = new Scanner(value)) {
-            lineScanner.useDelimiter(Pattern.compile(MULTILINE_DELIMITER));
-
-            int lineLength = -1;
-            while (lineScanner.hasNext()) {
-                // replace unicode no-break spaces with normal ones
-                final String line = lineScanner.next().replaceAll("\u00A0", " ");
-
-                try (Scanner valueScanner = new Scanner(line)) {
-                    valueScanner.useDelimiter(",\\s*");
-                    int currentLineLength = 0;
-                    while (valueScanner.hasNext()) {
-                        final String dblValue = valueScanner.next().trim();
-                        currentLineLength++;
-                        try {
-                            Double.valueOf(dblValue);
-                        } catch (NumberFormatException e) {
-                            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                                    Utility.MESSAGE_SUMMARY_ERROR, "Incorrect value: " + dblValue));
-                        }
-                    }
-                    if (lineLength < 0) {
-                        lineLength = currentLineLength;
-                    } else if (currentLineLength != lineLength) {
-                        throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                                Utility.MESSAGE_SUMMARY_ERROR, "All rows must contain the same number of elements."));
-                    }
-                }
-            }
-        }
-    }
-
-    private void validateIntVector(final String value) throws ValidatorException {
-        try (final Scanner scanner = new Scanner(value)) {
-            scanner.useDelimiter(Pattern.compile(MULTILINE_DELIMITER));
-
-            while (scanner.hasNext()) {
-                String intValue = "<error>";
-                try {
-                    // replace unicode no-break spaces with normal ones
-                    intValue = scanner.next().replaceAll("\\u00A0", " ").trim();
-                    Integer.parseInt(intValue);
-                } catch (NumberFormatException e) {
-                    throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                            Utility.MESSAGE_SUMMARY_ERROR, "Incorrect value: " + intValue));
-                }
-            }
-        }
-    }
-
-    private void validateDblVector(final String value) throws ValidatorException {
-        try (final Scanner scanner = new Scanner(value)) {
-            scanner.useDelimiter(Pattern.compile(MULTILINE_DELIMITER));
-
-            while (scanner.hasNext()) {
-                String dblValue = "<error>";
-                try {
-                    // replace unicode no-break spaces with normal ones
-                    dblValue = scanner.next().replaceAll("\\u00A0", " ").trim();
-                    Double.parseDouble(dblValue);
-                } catch (NumberFormatException e) {
-                    throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                            Utility.MESSAGE_SUMMARY_ERROR, "Incorrect value: " + dblValue));
-                }
-            }
-        }
-    }
-
-    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+      /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      * Above: Input field validators regardless of the dialog they are used in.
      *
      * Below: Relationships related methods
@@ -2732,10 +2451,10 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      * <li>container or installation slot properties</li>
      * </ul>
      */
-    public List<EntityAttributeView> getAttributes() {
+    public List<EntityAttributeView<Slot>> getAttributes() {
         return attributes;
     }
-    public void setAttrbutes(List<EntityAttributeView> attributes) {
+    public void setAttrbutes(List<EntityAttributeView<Slot>> attributes) {
         this.attributes = attributes;
     }
 
@@ -2949,11 +2668,11 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     // Attributes table
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /** @return the filteredAttributes */
-    public List<EntityAttributeView> getFilteredAttributes() {
+    public List<EntityAttributeView<Slot>> getFilteredAttributes() {
         return filteredAttributes;
     }
     /** @param filteredAttributes the filteredAttributes to set */
-    public void setFilteredAttributes(List<EntityAttributeView> filteredAttributes) {
+    public void setFilteredAttributes(List<EntityAttributeView<Slot>> filteredAttributes) {
         this.filteredAttributes = filteredAttributes;
     }
 
@@ -2962,20 +2681,20 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     }
 
     /** @return the selectedAttributes */
-    public List<EntityAttributeView> getSelectedAttributes() {
+    public List<EntityAttributeView<Slot>> getSelectedAttributes() {
         return selectedAttributes;
     }
     /** @param selectedAttributes the selectedAttributes to set */
-    public void setSelectedAttributes(List<EntityAttributeView> selectedAttributes) {
+    public void setSelectedAttributes(List<EntityAttributeView<Slot>> selectedAttributes) {
         this.selectedAttributes = selectedAttributes;
     }
 
     /** @return the downloadAttribute */
-    public EntityAttributeView getDownloadAttribute() {
+    public EntityAttributeView<Slot> getDownloadAttribute() {
         return downloadAttribute;
     }
     /** @param downloadAttribute the downloadAttribute to set */
-    public void setDownloadAttribute(EntityAttributeView downloadAttribute) {
+    public void setDownloadAttribute(EntityAttributeView<Slot> downloadAttribute) {
         this.downloadAttribute = downloadAttribute;
     }
 
@@ -3050,111 +2769,9 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         return hasDevice;
     }
 
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Property values
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /** @return the propertyValueUIElement */
-    public PropertyValueUIElement getPropertyValueUIElement() {
-        return propertyValueUIElement;
-    }
-
-    /** @return the propertyValue */
-    public String getPropertyValue() {
-        return Conversion.valueToString(propertyValue);
-    }
-    /** @param propertyValue the propertyValue to set */
-    public void setPropertyValue(String propertyValue) {
-        final DataType dataType = selectedAttributes != null ? selectedAttributes.get(0).getType() : property.getDataType();
-        this.propertyValue = Conversion.stringToValue(propertyValue, dataType);
-    }
-
-    /** @return the enumSelections */
-    public List<String> getEnumSelections() {
-        return enumSelections;
-    }
-
-    public boolean isPropertyNameChangeDisabled() {
-        return propertyNameChangeDisabled;
-    }
-
     /** @return the filteredProperties */
     public List<Property> getFilteredProperties() {
         return filteredProperties;
-    }
-
-    /** Called by the UI input control to set the value.
-     * @param property The property
-     */
-    public void setProperty(Property property) {
-        this.property = property;
-    }
-    /** @return The property associated with the property value */
-    public Property getProperty() {
-        return property;
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Artifact dialog
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /** @return the isArtifactInternal */
-    public boolean isArtifactInternal() {
-        return isArtifactInternal;
-    }
-    /** @param isArtifactInternal the isArtifactInternal to set */
-    public void setArtifactInternal(boolean isArtifactInternal) {
-        this.isArtifactInternal = isArtifactInternal;
-    }
-
-    /** @return the isArtifactBeingModified */
-    public boolean isArtifactBeingModified() {
-        return isArtifactBeingModified;
-    }
-
-    /** @return the artifactName */
-    @NotNull
-    @Size(min = 1, max = 128, message = "Name can have at most 128 characters.")
-    public String getArtifactName() {
-        return artifactName;
-    }
-    /** @param artifactName the artifactName to set */
-    public void setArtifactName(String artifactName) {
-        this.artifactName = artifactName;
-    }
-
-    /** @return the artifactDescription */
-    @NotNull
-    @Size(min = 1, max = 255, message = "Description can have at most 255 characters.")
-    public String getArtifactDescription() {
-        return artifactDescription;
-    }
-    /** @param artifactDescription the artifactDescription to set */
-    public void setArtifactDescription(String artifactDescription) {
-        this.artifactDescription = artifactDescription;
-    }
-
-    /** @return the artifactURI */
-    public String getArtifactURI() {
-        return artifactURI;
-    }
-    /** @param artifactURI the artifactURI to set */
-    public void setArtifactURI(String artifactURI) {
-        this.artifactURI = artifactURI;
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Tag dialog
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /** @return The value of the tag */
-    @NotNull
-    @Size(min = 1, max = 255, message = "Tag can have at most 255 characters.")
-    public String getTag() {
-        return tag;
-    }
-    /** Called by the UI input control to set the value.
-     * @param tag The value of the tag
-     */
-    public void setTag(String tag) {
-        this.tag = tag;
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3321,5 +2938,42 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      */
     public boolean isRestrictToConventionNames() {
         return restrictToConventionNames;
+    }
+
+    /** @return the dialogAttribute */
+    public EntityAttrTagView<Slot> getDialogAttrTag() {
+        if (dialogAttribute instanceof EntityAttrTagView<?>) {
+            return (EntityAttrTagView<Slot>)dialogAttribute;
+        }
+        return null;
+    }
+
+    /** @return the dialogAttribute */
+    public EntityAttrPropertyValueView<Slot> getDialogAttrPropertyValue() {
+        if (dialogAttribute instanceof EntityAttrPropertyValueView<?>) {
+            return (EntityAttrPropertyValueView<Slot>)dialogAttribute;
+        }
+        return null;
+    }
+
+    /** @return the dialogAttribute */
+    public EntityAttrArtifactView<Slot> getDialogAttrArtifact() {
+        if (dialogAttribute instanceof EntityAttrArtifactView<?>) {
+            return (EntityAttrArtifactView<Slot>)dialogAttribute;
+        }
+        return null;
+    }
+
+    protected Slot getSelectedEntity() {
+        if (selectedSlot != null) {
+            Slot slot = slotEJB.findById(selectedSlot.getId());
+            return slot;
+        }
+        throw new IllegalArgumentException("No slot selected");
+    }
+
+    public void resetFields()
+    {
+        dialogAttribute = null;
     }
 }

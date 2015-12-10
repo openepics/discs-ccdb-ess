@@ -62,7 +62,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
             + "WHERE c.modifiedBy = :modifiedBy")
 })
 public class ComponentType extends ConfigurationEntity
-    implements EntityWithProperties, EntityWithArtifacts, NamedEntity {
+    implements EntityWithProperties, EntityWithArtifacts, EntityWithTags, NamedEntity {
 
     private static final long serialVersionUID = 6347994218786782623L;
     @Basic(optional = false)

@@ -21,21 +21,9 @@ package org.openepics.discs.conf.views;
 
 import javax.annotation.Nullable;
 
-import org.openepics.discs.conf.ejb.ReadOnlyDAO;
-import org.openepics.discs.conf.ent.Artifact;
-import org.openepics.discs.conf.ent.ComptypePropertyValue;
-import org.openepics.discs.conf.ent.ConfigurationEntity;
 import org.openepics.discs.conf.ent.DataType;
 import org.openepics.discs.conf.ent.NamedEntity;
-import org.openepics.discs.conf.ent.PropertyValue;
-import org.openepics.discs.conf.ent.Tag;
 import org.openepics.discs.conf.ent.Unit;
-import org.openepics.discs.conf.ent.values.StrValue;
-import org.openepics.discs.conf.ent.values.Value;
-import org.openepics.discs.conf.util.Conversion;
-import org.openepics.discs.conf.util.UnhandledCaseException;
-
-import com.google.common.base.Preconditions;
 
 /**
  * The UI view class. This is a helper class containing all the information that is used in the UI and is displayed
@@ -46,21 +34,15 @@ import com.google.common.base.Preconditions;
  * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  *
  */
-public class EntityAttributeView {
-    private String id;
-    private String parentName;
-    private Long parentId;
-    private String name;
-    @Nullable private DataType type;
-    @Nullable private Unit unit;
-    @Nullable private Value value;
+public abstract class EntityAttributeView<E extends NamedEntity> {
+    private final E parentEntity;
     final private EntityAttributeViewKind kind;
-    private boolean hasFile;
-    private boolean hasURL;
-    private boolean isBuiltIn;
-    private Object entity;
-    final private ReadOnlyDAO<? extends ConfigurationEntity> dao;
-    private final String usedBy;
+    private String usedBy;
+
+//    private boolean isBuiltIn;
+//    private Object entity;
+  //  final private ReadOnlyDAO<? extends ConfigurationEntity> dao;
+  //  private final String usedBy;
 
     /** Construct a new UI view object based on the database entity
      * @param entity the database entity
@@ -68,10 +50,10 @@ public class EntityAttributeView {
      * @param parent the named entity parent for this attribute
      * @param dao the EJB to handle the entities associated with this view object
      */
-    public EntityAttributeView(Object entity, EntityAttributeViewKind kind, @Nullable NamedEntity parent,
+/*    public EntityAttributeView(E entity, EntityAttributeViewKind kind, @Nullable NamedEntity parent,
             ReadOnlyDAO<? extends ConfigurationEntity> dao) {
         this(entity, kind, parent, dao, "");
-    }
+    }*/
 
     /** Construct a new UI view object based on the database entity
      * @param entity the database entity
@@ -80,115 +62,50 @@ public class EntityAttributeView {
      * @param dao the EJB to handle the entities associated with this view object
      * @param usedBy the name of the entity owning this attribute
      */
-    public EntityAttributeView(Object entity, EntityAttributeViewKind kind, @Nullable NamedEntity parent,
-            ReadOnlyDAO<? extends ConfigurationEntity> dao, String usedBy) {
-        Preconditions.checkNotNull(kind);
-        this.entity = entity;
+    protected EntityAttributeView(EntityAttributeViewKind kind, @Nullable E parent, String usedBy) {
+        //Preconditions.checkNotNull(kind);
         this.kind = kind;
-        setParameters();
-        if (parent != null) {
+        this.parentEntity = parent;
+        /*if (parent != null) {
             this.parentName = parent.getName();
             this.parentId = parent.getId();
-        }
-        this.dao = dao;
+        }*/
         this.usedBy = usedBy;
     }
 
-    private void setParameters() {
-        if (entity instanceof ComptypePropertyValue) {
-            setComponentTypeParameters();
-        } else if (entity instanceof PropertyValue) {
-            setPropValueParameters();
-        } else if (entity instanceof Artifact) {
-            setArtifactParameters();
-        } else if (entity instanceof Tag) {
-            setTagParameters();
-        } else {
-            throw new UnhandledCaseException();
-        }
-    }
-
-    private void setComponentTypeParameters() {
-        setPropValueParameters();
-        final ComptypePropertyValue comptypePropertyValue = (ComptypePropertyValue) entity;
-        id = comptypePropertyValue.getId().toString();
-    }
-
-    private void setPropValueParameters() {
-        final PropertyValue propertyValue = (PropertyValue) entity;
-        name = propertyValue.getProperty().getName();
-        type = propertyValue.getProperty().getDataType();
-        unit = propertyValue.getProperty().getUnit();
-        value = propertyValue.getPropValue();
-        id = propertyValue.getId().toString();
-    }
-
-    private void setArtifactParameters() {
-        final Artifact artifact = (Artifact) entity;
-        name = artifact.getName();
-        hasFile = artifact.isInternal();
-        hasURL = !artifact.isInternal();
-        value = hasURL ? new StrValue(artifact.getUri()) : new StrValue("Download attachment");
-        id = artifact.getId().toString();
-    }
-
-    private void setTagParameters() {
-        name = ((Tag) entity).getName();
-        value = null;
-        id = "TAG_" + name;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public DataType getType() {
-        return type;
-    }
-
-    public Unit getUnit() {
-        return unit;
-    }
-
-    /** @return A String representation of the associated entity */
-    public String getValue() {
-        return Conversion.valueToString(value);
+    protected EntityAttributeView(EntityAttributeViewKind kind, @Nullable E parent) {
+        this(kind, parent, null);
     }
 
     public EntityAttributeViewKind getKind() {
         return kind;
     }
 
-    public Object getEntity() {
-        return entity;
-    }
+    public abstract Object getEntity();
 
-    public boolean getHasFile() {
-        return hasFile;
-    }
-
-    public boolean getHasURL() {
-        return hasURL;
-    }
-
-    public boolean isBuiltIn() {
+  /*  public boolean isBuiltIn() {
         return isBuiltIn;
-    }
+    }*/
 
-    public String getId() {
-        return id;
-    }
+    public abstract String getId();
+    public abstract String getName();
+    public abstract String getValue();
 
     public String getParent() {
-        return parentName;
+ //       return parentName;
+        return parentEntity != null ? parentEntity.getName() : null;
     }
 
     public Long getParentId() {
-        return parentId;
+//        return parentId;
+        return parentEntity != null ? parentEntity.getId() : null;
     }
 
-    public ConfigurationEntity getParentEntity() {
-        return (dao != null) && (parentId != null) ? dao.findById(parentId) : null;
+    /**
+     * @return the parentEntity
+     */
+    public E getParentEntity() {
+        return parentEntity;
     }
 
     /**
@@ -196,5 +113,22 @@ public class EntityAttributeView {
      */
     public String getUsedBy() {
         return usedBy;
+    }
+
+    public DataType getType() {
+        return null;
+    }
+
+    public Unit getUnit() {
+        return null;
+    }
+
+    public boolean getHasURL()
+    {
+        return false;
+    }
+
+    public boolean getHasFile() {
+        return false;
     }
 }

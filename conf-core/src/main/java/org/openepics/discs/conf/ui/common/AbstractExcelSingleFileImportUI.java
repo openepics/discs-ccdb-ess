@@ -122,7 +122,7 @@ public abstract class AbstractExcelSingleFileImportUI implements ExcelSingleFile
     }
 
     @Override
-    public String getImportFileName() {
+    public String getExcelImportFileName() {
         return importFileName;
     }
 
