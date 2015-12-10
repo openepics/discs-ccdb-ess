@@ -25,9 +25,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.openepics.discs.conf.ejb.ConnectsEJB;
 import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.Slot;
+import org.openepics.discs.conf.util.ConnectsManager;
 import org.openepics.discs.conf.views.SlotView;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
@@ -40,10 +40,10 @@ import com.google.common.collect.Lists;
  */
 public class ConnectsHierarchyBuilder extends HierarchyBuilder {
     private Set<Long> expandedNodes = Collections.emptySet();
-    private ConnectsEJB connectsEJB;
+    private ConnectsManager connectsEJB;
     private SlotEJB slotEJB;
 
-    public ConnectsHierarchyBuilder(ConnectsEJB connectsEJB, SlotEJB slotEJB) {
+    public ConnectsHierarchyBuilder(ConnectsManager connectsEJB, SlotEJB slotEJB) {
         this.connectsEJB = connectsEJB;
         this.slotEJB = slotEJB;
     }

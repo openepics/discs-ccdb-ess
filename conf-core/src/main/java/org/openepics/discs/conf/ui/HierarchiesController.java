@@ -66,7 +66,6 @@ import org.openepics.discs.conf.dl.annotations.SignalsLoader;
 import org.openepics.discs.conf.dl.annotations.SlotsLoader;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.ejb.ComptypeEJB;
-import org.openepics.discs.conf.ejb.ConnectsEJB;
 import org.openepics.discs.conf.ejb.InstallationEJB;
 import org.openepics.discs.conf.ejb.PropertyEJB;
 import org.openepics.discs.conf.ejb.SlotEJB;
@@ -104,6 +103,7 @@ import org.openepics.discs.conf.ui.common.UIException;
 import org.openepics.discs.conf.util.AppProperties;
 import org.openepics.discs.conf.util.BlobStore;
 import org.openepics.discs.conf.util.BuiltInDataType;
+import org.openepics.discs.conf.util.ConnectsManager;
 import org.openepics.discs.conf.util.Conversion;
 import org.openepics.discs.conf.util.PropertyValueNotUniqueException;
 import org.openepics.discs.conf.util.PropertyValueUIElement;
@@ -154,11 +154,10 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     /** The device page part of the URL containing all the required parameters already. */
     private static final String     NAMING_DEVICE_PAGE = "devices.xhtml?i=2&deviceName=";
 
-    private static final Object CABLEDB_DEVICE_PAGE = "index.xhtml?cableNumber=";
+    private static final String CABLEDB_DEVICE_PAGE = "index.xhtml?cableNumber=";
 
     @Inject private transient SlotEJB slotEJB;
     @Inject private transient SlotPairEJB slotPairEJB;
-    @Inject private transient ConnectsEJB connectsEJB;
     @Inject private transient InstallationEJB installationEJB;
     @Inject private transient SlotRelationEJB slotRelationEJB;
     @Inject private transient ComptypeEJB comptypeEJB;
@@ -166,6 +165,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     @Inject private transient TagEJB tagEJB;
     @Inject private transient BlobStore blobStore;
     @Inject private Names names;
+    @Inject private transient ConnectsManager connectsManager;
 
     @Inject private transient DataLoaderHandler dataLoaderHandler;
     @Inject @SignalsLoader private transient DataLoader signalsDataLoader;
@@ -314,7 +314,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             slotRelationBySlotRelationStringName.put(slotRelation.getIname(), slotRelation);
         }
         if (getCableDBStatus()) {
-            immutableListBuilder.add(new SelectItem(connectsEJB.getRelationshipName(), connectsEJB.getRelationshipName()));
+            immutableListBuilder.add(new SelectItem(connectsManager.getRelationshipName(),
+                    connectsManager.getRelationshipName()));
         }
 
         relationshipTypesForDialog = ImmutableList.copyOf(slotRelationBySlotRelationStringName.keySet().iterator());
@@ -672,9 +673,10 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             }
         }
 
-        final List<Slot> connectedSlots = connectsEJB.getSlotConnects(slot);
+        final List<Slot> connectedSlots = connectsManager.getSlotConnects(slot);
         for (final Slot targetSlot : connectedSlots) {
-            relationships.add(new SlotRelationshipView(slot.getId()+"c"+targetSlot.getId(), slot, targetSlot, connectsEJB.getRelationshipName()));
+            relationships.add(new SlotRelationshipView(slot.getId()+"c"+targetSlot.getId(), slot, targetSlot,
+                    connectsManager.getRelationshipName()));
         }
     }
 
@@ -1364,7 +1366,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         // initializing root node prevents NPE in initial page display
         controlsRootNode = new DefaultTreeNode(new SlotView(slotEJB.getRootNode(), null, 1, slotEJB), null);
 
-        connectsHierarchyBuilder = new ConnectsHierarchyBuilder(connectsEJB, slotEJB);
+        connectsHierarchyBuilder = new ConnectsHierarchyBuilder(connectsManager, slotEJB);
         connectsHierarchyBuilder.setFilterMethod(new TreeFilterContains());
         // initializing root node prevents NPE in initial page display
         connectsRootNode = new DefaultTreeNode(new SlotView(slotEJB.getRootNode(), null, 1, slotEJB), null);
@@ -1375,7 +1377,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      */
     public boolean getCableDBStatus()
     {
-        return connectsEJB.getCableDBStatus();
+        return connectsManager.getCableDBStatus();
     }
 
 

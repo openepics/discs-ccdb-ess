@@ -17,31 +17,33 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.ejb;
+package org.openepics.discs.conf.util;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
-import javax.ejb.Singleton;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 
 import org.openepics.cable.client.CableDBClient;
 import org.openepics.cable.jaxb.CableElement;
 import org.openepics.cable.jaxb.CableResource;
+import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.Slot;
-import org.openepics.discs.conf.util.AppProperties;
 
 /**
  * Service for CableDB
  *
  * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovic</a>
- *
  */
-@Singleton
-public class ConnectsEJB {
+@ViewScoped
+public class ConnectsManager implements Serializable  {
+    private static final long serialVersionUID = 1615712215239730844L;
+
     @Inject private transient SlotEJB slotEJB;
     @Inject private transient AppProperties properties;
 
