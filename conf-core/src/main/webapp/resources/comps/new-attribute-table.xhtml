@@ -15,7 +15,7 @@
     <cc:implementation>
         <p:dataTable id="#{cc.attrs.id}" var="attribute" value="#{cc.attrs.controllerBean.attributes}"
                 selection="#{cc.attrs.controllerBean.selectedAttributes}" selectionMode="multiple"
-                rowKey="#{attribute.id}" style="overflow: hidden" scrollHeight="100%"
+                rowKey="#{attribute.id}" style="overflow: hidden" scrollHeight="100%" emptyMessage="No records found." 
                 scrollable="true" resizableColumns="true" filteredValue="#{cc.attrs.controllerBean.filteredAttributes}"
                 tableStyle="word-wrap: break-word;" widgetVar="attributesDataTable">
             <p:ajax event="filter" ignoreAutoUpdate="true" />

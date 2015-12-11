@@ -33,7 +33,7 @@
                                 selectionMode="single" selection="#{hierarchiesController.deviceToInstall}" 
                                 rowKey="#{device.id}" scrollable="true" scrollHeight="180" 
                                 filteredValue="#{hierarchiesController.filteredUninstalledDevices}" 
-                                emptyMessage="No device available for installation.">
+                                emptyMessage="No records found.">
                             <p:ajax event="rowSelect" update=":#{formId}:installButton" />
                             <p:ajax event="rowUnselect" update=":#{formId}:installButton" />
                             <p:column headerText="Inventory Id" sortBy="#{device.serialNumber}" 

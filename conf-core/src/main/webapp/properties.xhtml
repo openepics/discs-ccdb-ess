@@ -23,7 +23,7 @@
                             selection="#{propertyManager.selectedProperties}" selectionMode="multiple" rowKey="#{property.id}" 
                             value="#{propertyManager.properties}" tableStyle="word-wrap: break-word"
                             resizableColumns="true" scrollable="true" scrollWidth="100%" scrollHeight="100%"
-                            filteredValue="#{propertyManager.filteredProperties}">
+                            filteredValue="#{propertyManager.filteredProperties}" emptyMessage="No records found.">
                         <p:ajax event="filter" update=":propertiesForm:exportButton" />
                         <p:ajax event="rowSelect" update=":propertiesForm:deleteButton :propertiesForm:editButton 
                                 :propertiesForm:duplicateButton" />
