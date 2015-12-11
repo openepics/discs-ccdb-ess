@@ -5,7 +5,7 @@
 
     <groupId>org.openepics.discs</groupId>
     <artifactId>confmgr</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <packaging>war</packaging>
 
     <name>confmgr</name>

@@ -4,11 +4,7 @@
     <alternatives>
         <class>org.openepics.discs.conf.util.AppPropertiesJBoss</class>
         <class>org.openepics.discs.conf.util.names.NamesESS</class>
-        <!--
-         To enable RBAC include this alternative below.
-         <class>org.openepics.discs.conf.security.RBACEntityTypeSecurityPolicy</class>
-         -->
-        
+        <class>org.openepics.discs.conf.security.RBACEntityTypeSecurityPolicy</class>
     </alternatives>
 
     <interceptors>
