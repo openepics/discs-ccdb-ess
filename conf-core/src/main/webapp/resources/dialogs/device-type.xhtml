@@ -31,7 +31,7 @@
             
             <p:commandButton value="Cancel" styleClass="dialogButton" onclick="PF('#{widgetName}').hide();" update="grp" 
                     resetValues="true" />
-            <p:commandButton value="Save" styleClass="dialogButton" update=":deviceTypesForm:exportButton grp" 
+            <p:commandButton value="Save" styleClass="dialogButton" update=":deviceTypesForm:exportButton grp :deviceTypesForm:growl" 
                     oncomplete="if (args &amp;&amp; !args.validationFailed) { PF('#{widgetName}').hide(); PF('deviceTypeTableVar').clearFilters(); }" 
                     action="#{componentTypeManager[submitHandler]}" />
         </p:dialog>

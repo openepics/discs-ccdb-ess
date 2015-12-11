@@ -196,6 +196,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
      */
     public void addNewPropertyValueDefs() {
         try {
+            int props = 0;
             for (Property selectedProperty : selectedProperties) {
                 final T newPropertyValueInstance = propertyValueClass.newInstance();
                 newPropertyValueInstance.setInRepository(false);
@@ -214,7 +215,10 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
                 }
                 dao.addChild(newPropertyValueInstance);
                 addPropertyValueBasedOnDef(newPropertyValueInstance);
+                props++;
             }
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+                    "Created " + props + " new properties.");
             populateAttributesList();
         } catch (InstantiationException | IllegalAccessException e) {
             throw new RuntimeException(e);
@@ -269,7 +273,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
         setTagParent(existingTag);
         internalPopulateAttributesList();
 
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Tag added", tag);
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS, "Tag added");
     }
 
     /**

@@ -28,7 +28,7 @@
                 }
             // ]]>
             </script>
-            <p:growl showDetail="true" globalOnly="true" autoUpdate="true" />
+            <p:growl id="growl" showDetail="true" globalOnly="true"/>
             <p:panelGrid id="hierarchiesContainer" styleClass="noBorders">
                 <p:row>
                     <p:column rowspan="4" id="treeColumn">
@@ -496,7 +496,7 @@
                             </div>
                             <p:commandButton title="Uninstall selected device" label="Uninstall" value="Uninstall"
                                 type="button" onclick="PF('uninstallConfirm').show();" id="uninstallDeviceBtn"
-                                style="margin-top: 1em; float: right;" update=":hierarchies:installationDetails"
+                                style="margin-top: 1em; float: right;" update=":hierarchies:installationDetails :hierarchies:growl"
                                 disabled="#{!hierarchiesController.canUninstall()}" icon="ui-icon-cancel" />
                             <p:commandButton title="Install device to the selected slot" id="installDeviceBtn"
                                     value="Install" ajax="true" icon="ui-icon-check" 
@@ -516,7 +516,7 @@
             <ui:param name="widgetName" value="installDevice" />
             <ui:param name="slot" value="#{hierarchiesController.selectedInstallationViews.get(0).slot}" />
             <ui:param name="componentToUpdate"
-                value=":hierarchies:slotAttributes :hierarchies:relationsTable :hierarchies:installationDetails" />
+                value=":hierarchies:slotAttributes :hierarchies:relationsTable :hierarchies:installationDetails :hierarchies:growl" />
         </ui:include>
 
         <ui:include src="/resources/dialogs/delete-slots-confirmation.xhtml" >
@@ -530,7 +530,7 @@
             <ui:param name="formsToUpdate" value=":hierarchies:hierarchyTabs:tree :hierarchies:deleteButton
                     :hierarchies:slotAttributes :hierarchies:relationsTable :hierarchies:installationDetails
                     :hierarchies:downButton :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton
-                    :hierarchies:clipboardOperations" />
+                    :hierarchies:clipboardOperations :hierarchies:growl" />
             <ui:param name="resizeContent" value="hierarchiesResizeAll();" />
             <ui:param name="entityType" value="#{hierarchiesController.numberOfSlotsToDelete gt 1
                                                         ? 'the following slots:' : 'selected slot?'}" />
@@ -545,7 +545,7 @@
             <ui:param name="formId" value="pasteSlotsForm" />
             <ui:param name="widgetName" value="pasteSlots" />
             <ui:param name="formsToUpdate" value=":hierarchies:cutButton :hierarchies:pasteButton
-                    :hierarchies:hierarchyTabs:tree" />
+                    :hierarchies:hierarchyTabs:tree :hierarchies:growl" />
             <ui:param name="closeDialogActions" value="hierarchiesResizeAll();" />
         </ui:include>
 
@@ -571,7 +571,7 @@
             <ui:param name="widgetName" value="deleteAttribute" />
             <ui:param name="controller" value="#{hierarchiesController}" />
             <ui:param name="submitHandler" value="deleteAttributes" />
-            <ui:param name="formToUpdate" value=":hierarchies:slotAttributes" />
+            <ui:param name="formsToUpdate" value=":hierarchies:slotAttributes :hierarchies:growl" />
             <ui:param name="entityType" value="selected attribute" />
             <ui:param name="closeDialogActions" value="PF('attributesWidget').clearFilters();" />
             <ui:param name="entityType" value="properties" />
@@ -585,7 +585,7 @@
             <ui:param name="widgetName" value="modifyPropertyValue" />
             <ui:param name="controller" value="#{hierarchiesController}" />
             <ui:param name="submitHandler" value="modifyPropertyValue" />
-            <ui:param name="componentToUpdate" value=":hierarchies:slotAttributes" />
+            <ui:param name="componentToUpdate" value=":hierarchies:slotAttributes :hierarchies:growl" />
             <ui:param name="resetFilter" value="PF('attributesWidget').clearFilters();" />
         </ui:include>
 
@@ -595,7 +595,7 @@
             <ui:param name="widgetName" value="addPropertyValue" />
             <ui:param name="controller" value="#{hierarchiesController}" />
             <ui:param name="submitHandler" value="addNewPropertyValue" />
-            <ui:param name="componentToUpdate" value=":hierarchies:slotAttributes" />
+            <ui:param name="componentToUpdate" value=":hierarchies:slotAttributes :hierarchies:growl" />
             <ui:param name="resetFilter" value="PF('attributesWidget').clearFilters();" />
         </ui:include>
 
@@ -605,7 +605,7 @@
             <ui:param name="widgetName" value="containerTag" />
             <ui:param name="controller" value="#{hierarchiesController}" />
             <ui:param name="submitHandler" value="addNewTag" />
-            <ui:param name="componentToUpdate" value=":hierarchies:slotAttributes" />
+            <ui:param name="componentToUpdate" value=":hierarchies:slotAttributes :hierarchies:growl" />
             <ui:param name="resetFilter" value="PF('attributesWidget').clearFilters();" />
         </ui:include>
 
@@ -615,7 +615,7 @@
             <ui:param name="widgetName" value="addArtifact" />
             <ui:param name="controller" value="#{hierarchiesController}" />
             <ui:param name="submitHandler" value="addNewArtifact" />
-            <ui:param name="componentToUpdate" value=":hierarchies:slotAttributes" />
+            <ui:param name="componentToUpdate" value=":hierarchies:slotAttributes :hierarchies:growl" />
             <ui:param name="resetFilter" value="PF('attributesWidget').clearFilters();" />
         </ui:include>
 
@@ -625,7 +625,7 @@
             <ui:param name="widgetName" value="modifyArtifact" />
             <ui:param name="controller" value="#{hierarchiesController}" />
             <ui:param name="submitHandler" value="modifyArtifact" />
-            <ui:param name="componentToUpdate" value=":hierarchies:slotAttributes" />
+            <ui:param name="componentToUpdate" value=":hierarchies:slotAttributes :hierarchies:growl" />
             <ui:param name="resetFilter" value="PF('attributesWidget').clearFilters();" />
         </ui:include>
 
@@ -635,8 +635,8 @@
             <ui:param name="widgetName" value="deleteRelationship" />
             <ui:param name="controller" value="#{hierarchiesController}" />
             <ui:param name="submitHandler" value="onRelationshipDelete" />
-            <ui:param name="formToUpdate" value=":hierarchies:relationshipTable :hierarchies:deleteRelationship
-                    :hierarchies:hierarchyTabs:tree" />
+            <ui:param name="formsToUpdate" value=":hierarchies:relationshipTable :hierarchies:deleteRelationship
+                    :hierarchies:hierarchyTabs:tree :hierarchies:growl" />
             <ui:param name="entityType" value="selected relationships" />
             <ui:param name="entityName" value="Relationship" />
             <ui:param name="entityProperty" value="targetSlotName" />
@@ -650,7 +650,7 @@
             <ui:param name="controller" value="#{hierarchiesController}" />
             <ui:param name="message" value="Are you sure you want to uninstall selected devices?"/>
             <ui:param name="submitHandler" value="uninstallDevice" />
-            <ui:param name="formToUpdate" value="hierarchies:installationDetails" />            
+            <ui:param name="formsToUpdate" value="hierarchies:installationDetails :hierarchies:growl" />            
             <ui:param name="entityName" value="Device" />
             <ui:param name="entityProperty" value="deviceInventoryId" />
             <ui:param name="closeDialogActions" value="hierarchiesResizeAll();" />

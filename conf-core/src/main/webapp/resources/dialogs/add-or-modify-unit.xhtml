@@ -60,7 +60,7 @@
             <p:commandButton value="Save" styleClass="dialogButton" action="#{unitManager[submitHandler]}" 
                     oncomplete="if (args &amp;&amp; !args.validationFailed) { closeDialogActions('#{widgetName}');}" 
                     update=":unitsForm:unitsTable :unitsForm:deleteButton :unitsForm:editButton :unitsForm:exportButton
-                            :unitsForm:duplicateButton grp" />
+                            :unitsForm:duplicateButton grp :unitsForm:growl" />
         </p:dialog>
         
     </h:form>

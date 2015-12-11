@@ -63,7 +63,7 @@
                     disabled="#{empty hierarchiesController.editedRelationshipView.targetNode}" 
                     action="#{hierarchiesController.onRelationshipAdd}" 
                     oncomplete="PF('addSlotRelationship').hide(); hierarchiesResizeAll();" 
-                    update=":addSlotRelationshipForm :hierarchies:relationshipTable :hierarchies:editRelationship :hierarchies:hierarchyTabs:tree" />
+                    update=":addSlotRelationshipForm :hierarchies:relationshipTable :hierarchies:editRelationship :hierarchies:hierarchyTabs:tree :hierarchies:growl" />
         </p:dialog>
     </h:form>
 </ui:composition>

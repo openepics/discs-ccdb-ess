@@ -15,6 +15,7 @@
                 }
                 // ]]>
             </script>
+            <p:growl id="growl" showDetail="true" globalOnly="true"/>
             <p:fieldset id="enumsFieldset" legend="Enumerations" style="box-sizing: border-box; height: calc(100vh - 7em);">
                 <div style="height: calc(100% - 3em)">
                     <p:dataTable widgetVar="enumsTableVar" var="enum" id="enumsTable" value="#{dataTypeManager.dataTypeViews}" 
@@ -77,7 +78,7 @@
             <ui:param name="submitHandler" value="onDelete" />
             <ui:param name="formsToUpdate" value=":enumsForm:enumsTable :enumsForm:deleteButton 
                                                 :enumsForm:editButton :enumsForm:exportButton 
-                                                :enumsForm:duplicateButton" />
+                                                :enumsForm:duplicateButton :enumsForm:growl" />
             <ui:param name="closeDialogActions" value="closeDialogActions(null);" />
             <ui:param name="entityType" value="enumerations" />
             <ui:param name="entityName" value="Enumeration" />
@@ -88,7 +89,7 @@
             <ui:param name="controller" value="#{dataTypeManager}" />
             <ui:param name="duplicateList" value="#{dataTypeManager.selectedEnums}" />
             <ui:param name="filteredDuplicateList" value="#{dataTypeManager.filteredDataTypeViews}" />
-            <ui:param name="formsToUpdate" value=":enumsForm:enumsTable :enumsForm:deleteButton :enumsForm:editButton :enumsForm:duplicateButton" />
+            <ui:param name="formsToUpdate" value=":enumsForm:enumsTable :enumsForm:deleteButton :enumsForm:editButton :enumsForm:duplicateButton :enumsForm:growl" />
             <ui:param name="closeDialogActions" value="closeDialogActions(null);" />
             <ui:param name="entityType" value="enumerations" />
             <ui:param name="entityName" value="Enumeration" />
@@ -99,7 +100,7 @@
             <ui:param name="dialogTitle" value="Edit Enumeration" />
             <ui:param name="widgetName" value="modifyEnum" />
             <ui:param name="submitHandler" value="onModify" />
-            <ui:param name="componentToUpdate" value=":enumsForm:enumsTable :enumsForm:deleteButton :enumsForm:editButton" />
+            <ui:param name="componentToUpdate" value=":enumsForm:enumsTable :enumsForm:deleteButton :enumsForm:editButton :enumsForm:growl" />
             <ui:param name="closeDialogActions" value="closeDialogActions('modifyEnum');" />
         </ui:include>
 
@@ -110,7 +111,7 @@
             <ui:param name="submitHandler" value="onAdd" />
             <ui:param name="componentToUpdate" value=":enumsForm:enumsTable :enumsForm:deleteButton 
                                                 :enumsForm:editButton :enumsForm:exportButton 
-                                                :enumsForm:duplicateButton" />
+                                                :enumsForm:duplicateButton :enumsForm:growl" />
             <ui:param name="closeDialogActions" value="closeDialogActions('addEnum');" />
         </ui:include>
 

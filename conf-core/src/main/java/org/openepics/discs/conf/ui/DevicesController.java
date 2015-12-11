@@ -407,7 +407,7 @@ public class DevicesController
         deviceEJB.save(device);
 
         selectedDevices.get(0).refreshDevice(deviceEJB.findById(device.getId()));
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Device updated.", null);
+        Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS, "Device updated.");
     }
 
     /**
@@ -532,13 +532,17 @@ public class DevicesController
     public void duplicate() {
         Preconditions.checkState(!Utility.isNullOrEmpty(selectedDevices));
         try {
+            int duplicated = 0;
             for (final DeviceView deviceView : selectedDevices) {
                 final Device deviceToCopy =  deviceView.getDevice();
                 final String newDeviceSerial = Utility.findFreeName(deviceToCopy.getSerialNumber(), deviceEJB);
                 final Device newCopy = createNewDevice(newDeviceSerial, deviceToCopy.getComponentType());
 
                 deviceEJB.duplicate(newCopy, deviceToCopy);
+                duplicated++;
             }
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS, "Duplicated " + duplicated
+                    + " devices.");
         } finally {
             prepareDevicesForDisplay(null);
             attributes = null;

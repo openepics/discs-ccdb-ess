@@ -215,11 +215,16 @@ public class DataTypeManager extends AbstractExcelSingleFileImportUI implements 
 
     /** Method that saves a new enumeration definition, when user presses the "Save" button in the "Add new" dialog */
     public void onAdd() {
-        final DataType newEnum = dialogEnum.getEnumeration();
-        newEnum.setDefinition(jsonDefinitionFromList(dialogEnum.getDefinitionList()));
-        dataTypeEJB.add(newEnum);
-        dialogEnum = null;
-        refreshUserDataTypes();
+        try {
+            final DataType newEnum = dialogEnum.getEnumeration();
+            newEnum.setDefinition(jsonDefinitionFromList(dialogEnum.getDefinitionList()));
+            dataTypeEJB.add(newEnum);
+            Utility.showMessage(FacesMessage.SEVERITY_INFO,  Utility.MESSAGE_SUMMARY_SUCCESS, "Enumeration has been successfully created.");
+        } finally {
+            dialogEnum = null;
+            refreshUserDataTypes();
+
+        }
     }
 
     /**
@@ -227,12 +232,16 @@ public class DataTypeManager extends AbstractExcelSingleFileImportUI implements 
      * "Modify enumeration" dialog.
      */
     public void onModify() {
-        Preconditions.checkNotNull(dialogEnum);
-        final DataType modifiedEnum = dialogEnum.getEnumeration();
-        modifiedEnum.setDefinition(jsonDefinitionFromList(dialogEnum.getDefinitionList()));
-        dataTypeEJB.save(modifiedEnum);
-        dialogEnum = null;
-        refreshUserDataTypes();
+        try {
+            Preconditions.checkNotNull(dialogEnum);
+            final DataType modifiedEnum = dialogEnum.getEnumeration();
+            modifiedEnum.setDefinition(jsonDefinitionFromList(dialogEnum.getDefinitionList()));
+            dataTypeEJB.save(modifiedEnum);
+            Utility.showMessage(FacesMessage.SEVERITY_INFO,  Utility.MESSAGE_SUMMARY_SUCCESS, "Enumeration has been successfully modified.");
+        } finally {
+            dialogEnum = null;
+            refreshUserDataTypes();
+        }
     }
 
     /**
@@ -258,21 +267,25 @@ public class DataTypeManager extends AbstractExcelSingleFileImportUI implements 
      * is used in some property value.
      */
     public void onDelete() {
-        Preconditions.checkNotNull(selectedEnums);
-        Preconditions.checkState(!selectedEnums.isEmpty());
-        Preconditions.checkNotNull(usedEnums);
-        Preconditions.checkState(usedEnums.isEmpty());
+        try {
+            Preconditions.checkNotNull(selectedEnums);
+            Preconditions.checkState(!selectedEnums.isEmpty());
+            Preconditions.checkNotNull(usedEnums);
+            Preconditions.checkState(usedEnums.isEmpty());
 
-        int deletedEnums = 0;
-        for (final UserEnumerationView enumToDelete : selectedEnums) {
-            dataTypeEJB.delete(enumToDelete.getEnumeration());
-            ++deletedEnums;
+            int deletedEnums = 0;
+            for (final UserEnumerationView enumToDelete : selectedEnums) {
+                dataTypeEJB.delete(enumToDelete.getEnumeration());
+                ++deletedEnums;
+            }
+
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+                    "Deleted " + deletedEnums + " enumerations.");
+        } finally {
+            selectedEnums = null;
+            usedEnums = null;
+            refreshUserDataTypes();
         }
-        selectedEnums = null;
-        usedEnums = null;
-        refreshUserDataTypes();
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
-                "Deleted " + deletedEnums + " enumerations.");
     }
 
     private String jsonDefinitionFromList(List<String> definitionValues) {
@@ -291,16 +304,22 @@ public class DataTypeManager extends AbstractExcelSingleFileImportUI implements 
      * The method creates a new copy of the currently selected user enumeration(s)
      */
     public void duplicate() {
-        Preconditions.checkState(!Utility.isNullOrEmpty(selectedEnums));
-
-        for (final UserEnumerationView userEnumerationView : selectedEnums) {
-            final DataType enumToCopy = userEnumerationView.getEnumeration();
-            final String newEnumName = Utility.findFreeName(enumToCopy.getName(), dataTypeEJB);
-            final DataType newEnum = new DataType(newEnumName, enumToCopy.getDescription(), enumToCopy.isScalar(),
-                    enumToCopy.getDefinition());
-            dataTypeEJB.add(newEnum);
+        try {
+            Preconditions.checkState(!Utility.isNullOrEmpty(selectedEnums));
+            int duplicated = 0;
+            for (final UserEnumerationView userEnumerationView : selectedEnums) {
+                final DataType enumToCopy = userEnumerationView.getEnumeration();
+                final String newEnumName = Utility.findFreeName(enumToCopy.getName(), dataTypeEJB);
+                final DataType newEnum = new DataType(newEnumName, enumToCopy.getDescription(), enumToCopy.isScalar(),
+                        enumToCopy.getDefinition());
+                dataTypeEJB.add(newEnum);
+                duplicated++;
+            }
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+                    "Duplicated " + duplicated + " enumerations.");
+        } finally {
+            refreshUserDataTypes();
         }
-        refreshUserDataTypes();
     }
 
     /* * * * * * * * * * * * * * * * * getters and setters * * * * * * * * * * * * * * * * */

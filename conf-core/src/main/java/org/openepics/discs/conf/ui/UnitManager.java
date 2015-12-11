@@ -177,12 +177,16 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
 
     /** Method creates a new unit definition when user presses the "Save" button in the "Add new" dialog  */
     public void onAdd() {
-        Preconditions.checkNotNull(dialogUnit);
-        selectedUnits = null;
-        final Unit unitToAdd = dialogUnit.getUnit();
-        unitEJB.add(unitToAdd);
-        refreshUnits();
-        dialogUnit = null;
+        try {
+            Preconditions.checkNotNull(dialogUnit);
+            final Unit unitToAdd = dialogUnit.getUnit();
+            unitEJB.add(unitToAdd);
+            Utility.showMessage(FacesMessage.SEVERITY_INFO,  Utility.MESSAGE_SUMMARY_SUCCESS, "Unit has been successfully created.");
+        } finally {
+            selectedUnits = null;
+            dialogUnit = null;
+            refreshUnits();
+        }
     }
 
     /**
@@ -190,13 +194,15 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
      * "Modify unit" dialog.
      */
     public void onModify() {
-        Preconditions.checkNotNull(dialogUnit);
-        final Unit unitToSave = dialogUnit.getUnit();
-        unitEJB.save(unitToSave);
-
-        refreshUnits();
-        // reset the input fields
-        dialogUnit = null;
+        try {
+            Preconditions.checkNotNull(dialogUnit);
+            final Unit unitToSave = dialogUnit.getUnit();
+            unitEJB.save(unitToSave);
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS, "Unit has been successfully modified.");
+        } finally {
+            dialogUnit = null;
+            refreshUnits();
+        }
     }
 
     /** @return <code>true</code> if a single {@link Unit} is selected, <code>false</code> otherwise */
@@ -227,22 +233,24 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
      * some {@link Property} definition.
      */
     public void onDelete() {
-        Preconditions.checkNotNull(selectedUnits);
-        Preconditions.checkState(!selectedUnits.isEmpty());
-        Preconditions.checkNotNull(usedUnits);
-        Preconditions.checkState(usedUnits.isEmpty());
+        try {
+            Preconditions.checkNotNull(selectedUnits);
+            Preconditions.checkState(!selectedUnits.isEmpty());
+            Preconditions.checkNotNull(usedUnits);
+            Preconditions.checkState(usedUnits.isEmpty());
 
-        int deletedUnits = 0;
-        for (UnitView unitToDelete : selectedUnits) {
-            unitEJB.delete(unitToDelete.getUnit());
-            ++deletedUnits;
+            int deletedUnits = 0;
+            for (UnitView unitToDelete : selectedUnits) {
+                unitEJB.delete(unitToDelete.getUnit());
+                ++deletedUnits;
+            }
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+                    "Deleted " + deletedUnits + " units.");
+        } finally {
+            selectedUnits = null;
+            usedUnits = null;
+            refreshUnits();
         }
-
-        selectedUnits = null;
-        usedUnits = null;
-        refreshUnits();
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
-                "Deleted " + deletedUnits + " units.");
     }
 
     /**
@@ -273,15 +281,22 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
      * The method creates a new copy of the currently selected {@link Unit}(s)
      */
     public void duplicate() {
-        Preconditions.checkState(!Utility.isNullOrEmpty(selectedUnits));
+        try {
+            Preconditions.checkState(!Utility.isNullOrEmpty(selectedUnits));
 
-        for (final UnitView unitView : selectedUnits) {
-            final Unit unitToCopy = unitView.getUnit();
-            final String newUnitName = Utility.findFreeName(unitToCopy.getName(), unitEJB);
-            final Unit newUnit = new Unit(newUnitName, unitToCopy.getSymbol(), unitToCopy.getDescription());
-            unitEJB.add(newUnit);
+            int duplicated = 0;
+            for (final UnitView unitView : selectedUnits) {
+                final Unit unitToCopy = unitView.getUnit();
+                final String newUnitName = Utility.findFreeName(unitToCopy.getName(), unitEJB);
+                final Unit newUnit = new Unit(newUnitName, unitToCopy.getSymbol(), unitToCopy.getDescription());
+                unitEJB.add(newUnit);
+                duplicated++;
+            }
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+                    "Duplicated " + duplicated + " units.");
+        } finally {
+            refreshUnits();
         }
-        refreshUnits();
     }
 
     //-------------------------------------------------------------------------------------------

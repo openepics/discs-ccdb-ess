@@ -6,8 +6,8 @@
     xmlns:h="http://java.sun.com/jsf/html">
 
     <ui:define name="content">
-        <p:growl showDetail="true" globalOnly="true" autoUpdate="true" />
         <h:form id="devicesForm">
+            <p:growl id="growl" showDetail="true" globalOnly="true"/>
             <p:panelGrid styleClass="noBorders noPaddingLeft">
                 <p:row>
                     <p:column style="width: 50vw; vertical-align: top;">
@@ -124,7 +124,7 @@
             <ui:param name="dialogTitle" value="Add Device" />
             <ui:param name="updateComponents" value=":devicesForm:devicesTable :devicesForm:deleteButton 
                                                     :devicesForm:editButton :devicesForm:exportButton
-                                                    :devicesForm:duplicateButton" />
+                                                    :devicesForm:duplicateButton :devicesForm:growl" />
             <ui:param name="submitHandler" value="onDeviceAdd" />
             <ui:param name="batchCreation" value="true" />
             <ui:param name="saveAction" value="PF('devicesTableVar').clearFilters();" />
@@ -137,7 +137,7 @@
             <ui:param name="saveAction" value="PF('devicesTableVar').clearFilters();" />
             <ui:param name="updateComponents" value=":devicesForm:devicesTable :devicesForm:deleteButton 
                                                     :devicesForm:editButton :devicesForm:exportButton
-                                                    :devicesForm:duplicateButton" />
+                                                    :devicesForm:duplicateButton :devicesForm:growl" />
             <ui:param name="submitHandler" value="onDeviceEdit" />
         </ui:include>
 
@@ -148,7 +148,7 @@
             <ui:param name="resetFilter" value="PF('attributesDataTable').clearFilters();" />
             <ui:param name="controller" value="#{devicesController}" />
             <ui:param name="submitHandler" value="modifyPropertyValue" />
-            <ui:param name="componentToUpdate" value=":devicesForm:attributesDataTable:attributesDataTable" />
+            <ui:param name="componentToUpdate" value=":devicesForm:attributesDataTable:attributesDataTable :devicesForm:growl" />
         </ui:include>
 
         <ui:include src="/resources/dialogs/tag.xhtml">
@@ -158,7 +158,7 @@
             <ui:param name="resetFilter" value="PF('attributesDataTable').clearFilters();" />
             <ui:param name="controller" value="#{devicesController}" />
             <ui:param name="submitHandler" value="addNewTag" />
-            <ui:param name="componentToUpdate" value=":devicesForm:attributesDataTable:attributesDataTable" />
+            <ui:param name="componentToUpdate" value=":devicesForm:attributesDataTable:attributesDataTable :devicesForm:growl" />
         </ui:include>
 
         <ui:include src="/resources/dialogs/artifact.xhtml">
@@ -168,7 +168,7 @@
             <ui:param name="resetFilter" value="PF('attributesDataTable').clearFilters();" />
             <ui:param name="controller" value="#{devicesController}" />
             <ui:param name="submitHandler" value="addNewArtifact" />
-            <ui:param name="componentToUpdate" value=":devicesForm:attributesDataTable:attributesDataTable" />
+            <ui:param name="componentToUpdate" value=":devicesForm:attributesDataTable:attributesDataTable :devicesForm:growl" />
         </ui:include>
 
         <ui:include src="/resources/dialogs/artifact.xhtml">
@@ -178,7 +178,7 @@
             <ui:param name="resetFilter" value="PF('attributesDataTable').clearFilters();" />
             <ui:param name="controller" value="#{devicesController}" />
             <ui:param name="submitHandler" value="modifyArtifact" />
-            <ui:param name="componentToUpdate" value=":devicesForm:attributesDataTable:attributesDataTable" />
+            <ui:param name="componentToUpdate" value=":devicesForm:attributesDataTable:attributesDataTable :devicesForm:growl" />
         </ui:include>
 
         <ui:include src="/resources/dialogs/delete-multi-confirmation.xhtml" >
@@ -193,7 +193,7 @@
             <ui:param name="formsToUpdate" value=":devicesForm:attributesDataTable:attributesDataTable 
                                                     :devicesForm:editAttrButton :devicesForm:deleteAttrButton
                                                     :devicesForm:duplicateButton :devicesForm:deleteButton
-                                                    :devicesForm:exportButton" />
+                                                    :devicesForm:exportButton :devicesForm:growl" />
             <ui:param name="closeDialogActions" value="PF('devicesTableVar').clearFilters();" />
             <ui:param name="entityType" value="devices" />
             <ui:param name="entityName" value="Device" />
@@ -205,7 +205,7 @@
             <ui:param name="duplicateList" value="#{devicesController.selectedDevices}" />
             <ui:param name="filteredDuplicateList" value="#{devicesController.filteredDevices}" />
             <ui:param name="formsToUpdate" value=":devicesForm:devicesTable :devicesForm:duplicateButton :devicesForm:editButton 
-                                  :devicesForm:deleteButton :devicesForm:attributesDataTable:attributesDataTable" />
+                                  :devicesForm:deleteButton :devicesForm:attributesDataTable:attributesDataTable :devicesForm:growl" />
             <ui:param name="closeDialogActions" 
                         value="PF('devicesTableVar').clearFilters(); PF('attributesDataTable').clearFilters();" />
             <ui:param name="entityType" value="devices" />
@@ -224,7 +224,7 @@
             <ui:param name="formsToUpdate" value=":devicesForm:attributesDataTable:attributesDataTable 
                                                     :devicesForm:editAttrButton :devicesForm:deleteAttrButton
                                                     :devicesForm:duplicateButton :devicesForm:exportButton
-                                                    :devicesForm:deleteButton" />
+                                                    :devicesForm:deleteButton :devicesForm:growl" />
             <ui:param name="closeDialogActions" value="PF('attributesDataTable').clearFilters();" />
             <ui:param name="entityType" value="properties" />
             <ui:param name="entityName" value="Property" />
@@ -240,7 +240,7 @@
             <ui:param name="controller" value="#{devicesController}" />
             <ui:param name="submitHandler" value="creationProceed" />
             <ui:param name="formToUpdate" value=":devicesForm:devicesTable :devicesForm:deleteButton 
-                                                :devicesForm:editButton :devicesForm:duplicateButton" />
+                                                :devicesForm:editButton :devicesForm:duplicateButton :devicesForm:growl" />
             <ui:param name="saveActions" value="" />
         </ui:include>
 

@@ -7,6 +7,7 @@
 
     <ui:define name="content">
         <h:form id="logsForm">
+            <p:growl id="growl" showDetail="true" globalOnly="true"/>
             <p:fieldset legend="Log" id="logFieldset" style="box-sizing: border-box; height: calc(100vh - 7em);">
                 <div style="height: calc(100% - 3em)">
                     <p:dataTable widgetVar="logTableVar" var="auditRecord" id="logTable" value="#{auditManager.auditRecords}" 

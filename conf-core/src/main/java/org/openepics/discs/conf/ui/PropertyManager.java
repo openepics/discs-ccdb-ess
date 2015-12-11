@@ -205,17 +205,23 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
 
     /** Called when the user confirms the batch property creation if there were some conflicts */
     public void creationProceed() {
-        ((NewPropertyView)dialogProperty).setBatchSaveStage(BatchSaveStage.CREATION);
-        multiPropertyAdd();
-        init();
+        try {
+            ((NewPropertyView)dialogProperty).setBatchSaveStage(BatchSaveStage.CREATION);
+            multiPropertyAdd();
+        } finally {
+            init();
+        }
     }
 
     /** Called when the user presses the "Save" button in the "Modify a property" dialog */
     public void onModify() {
-        Preconditions.checkNotNull(dialogProperty);
-        propertyEJB.save(dialogProperty.getProperty());
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS, "Property was modified");
-        init();
+        try {
+            Preconditions.checkNotNull(dialogProperty);
+            propertyEJB.save(dialogProperty.getProperty());
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS, "Property was modified");
+        } finally {
+            init();
+        }
     }
 
     /** Prepares the data to be used in the "Add new property" dialog */
@@ -267,22 +273,26 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
 
     /** Called when the user clicks the "trash can" icon in the UI */
     public void onDelete() {
-        Preconditions.checkNotNull(selectedProperties);
-        Preconditions.checkState(!selectedProperties.isEmpty());
-        Preconditions.checkNotNull(usedProperties);
-        Preconditions.checkState(usedProperties.isEmpty());
+        try {
+            Preconditions.checkNotNull(selectedProperties);
+            Preconditions.checkState(!selectedProperties.isEmpty());
+            Preconditions.checkNotNull(usedProperties);
+            Preconditions.checkState(usedProperties.isEmpty());
 
-        int deletedProperties = 0;
-        for (PropertyView propertyToDelete : selectedProperties) {
-            propertyEJB.delete(propertyToDelete.getProperty());
-            ++deletedProperties;
+            int deletedProperties = 0;
+            for (PropertyView propertyToDelete : selectedProperties) {
+                propertyEJB.delete(propertyToDelete.getProperty());
+                ++deletedProperties;
+            }
+
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+                    "Deleted " + deletedProperties + " properties.");
+        } finally {
+            selectedProperties = null;
+            usedProperties = null;
+
+            init();
         }
-
-        selectedProperties = null;
-        usedProperties = null;
-        init();
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
-                "Deleted " + deletedProperties + " properties.");
     }
 
     /** @return The list of filtered properties used by the PrimeFaces filter field */
@@ -314,17 +324,24 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
      * The method creates a new copy of the currently selected {@link Property}(ies)
      */
     public void duplicate() {
-        Preconditions.checkState(!Utility.isNullOrEmpty(selectedProperties));
+        try {
+            Preconditions.checkState(!Utility.isNullOrEmpty(selectedProperties));
 
-        for (final PropertyView propToCopy : selectedProperties) {
-            final String newPropName = Utility.findFreeName(propToCopy.getName(), propertyEJB);
-            final Property newProp = new Property(newPropName, propToCopy.getDescription());
-            newProp.setDataType(propToCopy.getDataType());
-            newProp.setUnit(propToCopy.getUnit());
-            newProp.setValueUniqueness(propToCopy.getValueUniqueness());
-            propertyEJB.add(newProp);
+            int duplicated = 0;
+            for (final PropertyView propToCopy : selectedProperties) {
+                final String newPropName = Utility.findFreeName(propToCopy.getName(), propertyEJB);
+                final Property newProp = new Property(newPropName, propToCopy.getDescription());
+                newProp.setDataType(propToCopy.getDataType());
+                newProp.setUnit(propToCopy.getUnit());
+                newProp.setValueUniqueness(propToCopy.getValueUniqueness());
+                propertyEJB.add(newProp);
+                duplicated++;
+            }
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+                    "Duplicated " + duplicated + " properties.");
+        } finally {
+            init();
         }
-        properties = propertyEJB.findAllOrderedByName().stream().map(PropertyView::new).collect(Collectors.toList());
     }
 
 

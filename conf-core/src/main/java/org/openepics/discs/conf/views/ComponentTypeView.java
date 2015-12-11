@@ -9,6 +9,13 @@ public class ComponentTypeView {
     private final String description;
     private String usedBy;
 
+    public ComponentTypeView()
+    {
+        id = null;
+        name = null;
+        description = null;
+    }
+
     public ComponentTypeView(ComponentType componentType)
     {
         id = componentType.getId();

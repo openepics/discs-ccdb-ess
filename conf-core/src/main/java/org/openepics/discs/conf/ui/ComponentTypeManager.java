@@ -567,14 +567,21 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
      * copied property value is set to null.
      */
     public void duplicate() {
-        Preconditions.checkState(!Utility.isNullOrEmpty(selectedDeviceTypes));
+        try {
+            Preconditions.checkState(!Utility.isNullOrEmpty(selectedDeviceTypes));
 
-        for (final ComponentTypeView selectedDeviceType : selectedDeviceTypes) {
-            String newName = Utility.findFreeName(selectedDeviceType.getName(), comptypeEJB);
-            ComponentType newDeviceType = new ComponentType(newName);
-            comptypeEJB.duplicate(newDeviceType, selectedDeviceType.findComponentType(comptypeEJB));
+            int duplicated = 0;
+            for (final ComponentTypeView selectedDeviceType : selectedDeviceTypes) {
+                String newName = Utility.findFreeName(selectedDeviceType.getName(), comptypeEJB);
+                ComponentType newDeviceType = new ComponentType(newName);
+                comptypeEJB.duplicate(newDeviceType, selectedDeviceType.findComponentType(comptypeEJB));
+                duplicated++;
+            }
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+                    "Duplicated " + duplicated + " device types.");
+        } finally {
+            reloadDeviceTypes();
         }
-        reloadDeviceTypes();
     }
 
     /** This method returns a String representation of the property value.
@@ -646,13 +653,19 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
                 return;
             }
         }
-
-        for (final MultiPropertyValueView pv : selectedPropertyValues) {
-            ComptypePropertyValue newValue = createPropertyValue(pv.getProperty(), pv.getValue());
-            comptypeEJB.addChild(newValue);
-            compType = comptypeEJB.findById(compType.getId());
+        try {
+            int created = 0;
+            for (final MultiPropertyValueView pv : selectedPropertyValues) {
+                ComptypePropertyValue newValue = createPropertyValue(pv.getProperty(), pv.getValue());
+                comptypeEJB.addChild(newValue);
+                compType = comptypeEJB.findById(compType.getId());
+                created++;
+            }
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+                    "Created " + created + " device type properties.");
+        } finally {
+            populateAttributesList();
         }
-        populateAttributesList();
     }
 
     private void clearDeviceTypeRelatedInformation() {
@@ -768,22 +781,25 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
 
     /** Called when the user presses the "Delete" button under table listing the devices types. */
     public void onDelete() {
-        Preconditions.checkNotNull(selectedDeviceTypes);
-        Preconditions.checkState(!selectedDeviceTypes.isEmpty());
-        Preconditions.checkNotNull(usedDeviceTypes);
-        Preconditions.checkState(usedDeviceTypes.isEmpty());
+        try {
+            Preconditions.checkNotNull(selectedDeviceTypes);
+            Preconditions.checkState(!selectedDeviceTypes.isEmpty());
+            Preconditions.checkNotNull(usedDeviceTypes);
+            Preconditions.checkState(usedDeviceTypes.isEmpty());
 
-        int deletedDeviceTypes = 0;
-        for (final ComponentTypeView deviceTypeToDelete : selectedDeviceTypes) {
-            final ComponentType freshEntity = comptypeEJB.findById(deviceTypeToDelete.getId());
-            freshEntity.getTags().clear();
-            comptypeEJB.delete(freshEntity);
-            ++deletedDeviceTypes;
+            int deletedDeviceTypes = 0;
+            for (final ComponentTypeView deviceTypeToDelete : selectedDeviceTypes) {
+                final ComponentType freshEntity = comptypeEJB.findById(deviceTypeToDelete.getId());
+                freshEntity.getTags().clear();
+                comptypeEJB.delete(freshEntity);
+                ++deletedDeviceTypes;
+            }
+            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+                    "Deleted " + deletedDeviceTypes + " device types.");
+        } finally {
+            clearDeviceTypeRelatedInformation();
+            reloadDeviceTypes();
         }
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
-                "Deleted " + deletedDeviceTypes + " device types.");
-        clearDeviceTypeRelatedInformation();
-        reloadDeviceTypes();
     }
 
     /** @return <code>true</code> if a single device type is selected , <code>false</code> otherwise */
