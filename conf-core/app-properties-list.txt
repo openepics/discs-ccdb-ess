@@ -1,0 +1,16 @@
+#
+# These are the CCDB properties that must be configured in production 
+# with their proper values
+#
+org.openepics.discs.conf.props.BlobStoreRoot=/usr/share/ccdb-storage
+org.openepics.discs.conf.props.namingAppURL=https://naming.esss.lu.se
+org.openepics.discs.conf.props.detectNamingStatus=TRUE
+org.openepics.discs.conf.props.restrictToConventionNames=TRUE
+org.openepics.discs.conf.props.cableDBStatus=TRUE
+org.openepics.discs.conf.props.cableDBAppURL=https://cable.esss.lu.se
+#
+# This properties are not directly related to CCDB, but they need to be set for 
+# the naming and cable client to work correctly 
+#
+names.servicesBaseURL=https://naming.esss.lu.se/rest
+cable.serviceBaseURL=https://cable.esss.lu.se/rest
