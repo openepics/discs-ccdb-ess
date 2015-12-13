@@ -51,8 +51,7 @@ public class ConnectsManager implements Serializable  {
     private boolean cableDBStatus = false;
 
     @PostConstruct
-    public void init()
-    {
+    public void init() {
         final String cableDBStatusStr = properties.getProperty(AppProperties.CABLEDB_STATUS);
         cableDBStatus = cableDBStatusStr == null ? false : "TRUE".equals(cableDBStatusStr.toUpperCase());
 
