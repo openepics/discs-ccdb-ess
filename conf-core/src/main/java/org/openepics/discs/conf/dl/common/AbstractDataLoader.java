@@ -44,7 +44,7 @@ import com.google.common.base.Preconditions;
  */
 public abstract class AbstractDataLoader implements DataLoader {
 
-    protected static final String HDR_OPERATION = "OPERATION";
+    public static final String HDR_OPERATION = "OPERATION";
     /** Constant representing the index of the command (Operation) in the data row */
     protected static final int COL_INDEX_OPERATION = 0;
 

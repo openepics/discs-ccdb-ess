@@ -59,11 +59,11 @@ public class ComponentTypesDataLoader extends AbstractEntityWithPropertiesDataLo
     private static final Logger LOGGER = Logger.getLogger(ComponentTypesDataLoader.class.getCanonicalName());
 
     // Header column name constants
-    private static final String HDR_NAME = "NAME";
-    private static final String HDR_DESC = "DESCRIPTION";
-    private static final String HDR_PROP_TYPE = "PROPERTY TYPE";
-    private static final String HDR_PROP_NAME = "PROPERTY NAME";
-    private static final String HDR_PROP_VALUE = "PROPERTY VALUE";
+    protected static final String HDR_NAME = "NAME";
+    protected static final String HDR_DESC = "DESCRIPTION";
+    protected static final String HDR_PROP_TYPE = "PROPERTY TYPE";
+    protected static final String HDR_PROP_NAME = "PROPERTY NAME";
+    protected static final String HDR_PROP_VALUE = "PROPERTY VALUE";
 
     private static final int COL_INDEX_NAME = 1;
     private static final int COL_INDEX_DESC = 2;
@@ -115,13 +115,19 @@ public class ComponentTypesDataLoader extends AbstractEntityWithPropertiesDataLo
                 if (DataLoader.CMD_UPDATE_DEVICE_TYPE.equals(actualCommand)) {
                     componentTypeToUpdate.setDescription(descriptionFld);
                 } else {
-                    final ComptypePropertyValue comptypePropertyValue =
-                            (ComptypePropertyValue) getPropertyValue(componentTypeToUpdate, propNameFld,
-                                                                        HDR_PROP_NAME);
-                    if (!comptypePropertyValue.isPropertyDefinition()) {
-                        addOrUpdateProperty(componentTypeToUpdate, propNameFld, propValueFld, HDR_PROP_NAME);
+                    if (propNameFld != null) {
+                        final ComptypePropertyValue comptypePropertyValue =
+                                (ComptypePropertyValue) getPropertyValue(componentTypeToUpdate, propNameFld,
+                                                                            HDR_PROP_NAME);
+                        if (comptypePropertyValue != null) {
+                            if (!comptypePropertyValue.isPropertyDefinition()) {
+                                addOrUpdateProperty(componentTypeToUpdate, propNameFld, propValueFld, HDR_PROP_NAME);
+                            } else {
+                                result.addRowMessage(ErrorMessage.PROPERTY_TYPE_INCORRECT, HDR_PROP_TYPE);
+                            }
+                        }
                     } else {
-                        result.addRowMessage(ErrorMessage.PROPERTY_TYPE_INCORRECT, HDR_PROP_TYPE);
+                        result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, HDR_PROP_NAME);
                     }
                 }
             } catch (EJBTransactionRolledbackException e) {
@@ -171,14 +177,20 @@ public class ComponentTypesDataLoader extends AbstractEntityWithPropertiesDataLo
                 if (DataLoader.CMD_DELETE_DEVICE_TYPE.equals(actualCommand)) {
                     comptypeEJB.delete(componentTypeToDelete);
                 } else {
-                    final ComptypePropertyValue comptypePropertyValue =
-                            (ComptypePropertyValue) getPropertyValue(componentTypeToDelete, propNameFld,
-                                                                        HDR_PROP_NAME);
-                    // Property defs can only be deleted through UI to properly handle already assigned prop values
-                    if (!comptypePropertyValue.isPropertyDefinition()) {
-                        comptypeEJB.deleteChild(comptypePropertyValue);
+                    if (propNameFld != null) {
+                        final ComptypePropertyValue comptypePropertyValue =
+                                (ComptypePropertyValue) getPropertyValue(componentTypeToDelete, propNameFld,
+                                                                            HDR_PROP_NAME);
+                        // Property defs can only be deleted through UI to properly handle already assigned prop values
+                        if (comptypePropertyValue != null) {
+                            if (!comptypePropertyValue.isPropertyDefinition()) {
+                                comptypeEJB.deleteChild(comptypePropertyValue);
+                            } else {
+                                result.addRowMessage(ErrorMessage.PROPERTY_TYPE_INCORRECT, HDR_PROP_TYPE);
+                            }
+                        }
                     } else {
-                        result.addRowMessage(ErrorMessage.PROPERTY_TYPE_INCORRECT, HDR_PROP_TYPE);
+                        result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, HDR_PROP_NAME);
                     }
                 }
             }

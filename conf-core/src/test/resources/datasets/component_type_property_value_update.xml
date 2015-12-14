@@ -1,0 +1,5 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+  <comptype_property_value id="209" modified_at="2014-11-14 10:21:41.345" modified_by="admin" version="0" in_repository="false" property="199" is_property_definition="true" is_def_target_device="false" is_def_target_slot="true" component_type="0" />
+  <comptype_property_value id="213" modified_at="2014-11-14 10:21:41.789" modified_by="admin" version="0" in_repository="false" property="177" is_property_definition="true" is_def_target_device="false" is_def_target_slot="true" component_type="0" />
+</dataset>

@@ -3,16 +3,13 @@
   <component_type id="287" modified_at="2014-11-14 10:21:41.142" modified_by="admin" version="3" description="Dipole corrector, X/Y, type 2" name="DCM2"/>
   <component_type id="295" modified_at="2014-11-14 10:21:41.173" modified_by="admin" version="3" description="Dipole corrector, X/Y, type 3" name="DCM3"/>
   <component_type id="303" modified_at="2014-11-14 10:21:41.22" modified_by="admin" version="3" description="Dipole Horizontal, type 1" name="DH1"/>
-  <component_type id="389" modified_at="2014-11-14 10:20:01.203" modified_by="admin" version="5" name="BPM1"/>
   <component_type id="207" modified_at="2014-11-14 10:21:40.798" modified_by="admin" version="3" description="quadrupole and sextupole combined function magnet type 1" name="QSM1"/>
   <component_type id="221" modified_at="2014-11-14 10:21:40.86" modified_by="admin" version="3" description="quadrupole and sextupole combined function magnet type 1" name="QSM2"/>
   <component_type id="235" modified_at="2014-11-14 10:21:40.923" modified_by="admin" version="3" description="quadrupole and sextupole combined function magnet type 1" name="QSM3"/>
-  <component_type id="391" modified_at="2014-11-14 10:20:01.234" modified_by="admin" version="5" name="BPM2"/>
   <component_type id="249" modified_at="2014-11-14 10:21:40.985" modified_by="admin" version="3" description="quadrupole magnet type 1" name="QM1"/>
   <component_type id="259" modified_at="2014-11-14 10:21:41.032" modified_by="admin" version="3" description="quadrupole magnet type 2" name="QM2"/>
   <component_type id="343" modified_at="2014-11-14 10:20:00.875" modified_by="admin" version="0" description="System" name="SYS"/>
   <component_type id="345" modified_at="2014-11-14 10:20:00.875" modified_by="admin" version="0" description="Subsystem" name="SUBS"/>
-  <component_type id="46" modified_at="2014-11-14 10:06:44.797" modified_by="system" version="1" description="Component Group" name="_GRP"/>
   <component_type id="347" modified_at="2014-11-14 10:20:00.906" modified_by="admin" version="0" description="Aperture" name="AP"/>
   <component_type id="349" modified_at="2014-11-14 10:20:00.922" modified_by="admin" version="0" description="Air Separator" name="AS"/>
   <component_type id="351" modified_at="2014-11-14 10:20:00.937" modified_by="admin" version="0" description="Attenuation Plate (sieve to reduce beam intensity)" name="ATP"/>

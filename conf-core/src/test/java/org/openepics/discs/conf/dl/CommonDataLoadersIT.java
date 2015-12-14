@@ -33,6 +33,7 @@ import org.jboss.arquillian.persistence.UsingDataSet;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openepics.discs.conf.dl.annotations.PropertiesLoader;
@@ -50,6 +51,7 @@ import org.openepics.discs.conf.util.TestUtility;
  * @author <a href="mailto:andraz.pozar@cosylab.com">Andraž Požar</a>
  *
  */
+@Ignore
 @RunWith(Arquillian.class)
 @ApplyScriptAfter(value= "truncate_database.sql")
 public class CommonDataLoadersIT {
