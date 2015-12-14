@@ -76,42 +76,42 @@ public class ComptypeEJBIT {
     }
 
     @Test
-    @UsingDataSet(value= {"component_type.xml", "slot.xml"})
+    @UsingDataSet(value= {"basic_component_types.xml", "component_type.xml", "slot.xml"})
     public void testFindComponentType() {
         final List<ComponentType> compTypes = compTypesService.findAll();
         assertNotEquals(compTypes.size(), 0);
     }
 
     @Test
-    @UsingDataSet(value= {"component_type.xml", "slot.xml"})
+    @UsingDataSet(value= {"basic_component_types.xml", "component_type.xml", "slot.xml"})
     public void testFindComponentTypeLong() {
         final ComponentType compType = compTypesService.findById( compTypesService.findByName(SEARCH_COMP_TYPE_NAME).getId() );
         assertNotNull(compType);
     }
 
     @Test
-    @UsingDataSet(value= {"component_type.xml", "slot.xml"})
+    @UsingDataSet(value= {"basic_component_types.xml", "component_type.xml", "slot.xml"})
     public void testFindComponentTypeLongInvalid() {
         final ComponentType compType = compTypesService.findById(SEARCH_COMP_TYPE_ID_INVALID);
         assertNull(compType);
     }
 
     @Test
-    @UsingDataSet(value= {"component_type.xml", "slot.xml"})
+    @UsingDataSet(value= {"basic_component_types.xml", "component_type.xml", "slot.xml"})
     public void testFindComponentTypeByName() {
         final ComponentType compType = compTypesService.findByName(SEARCH_COMP_TYPE_NAME);
         assertNotNull(compType);
     }
 
     @Test
-    @UsingDataSet(value= {"component_type.xml", "slot.xml"})
+    @UsingDataSet(value= {"basic_component_types.xml", "component_type.xml", "slot.xml"})
     public void testFindComponentTypeByNameInvalid() {
         final ComponentType compType = compTypesService.findByName(SEARCH_COMP_TYPE_NAME_INVALID);
         assertEquals(compType, null);
     }
 
     @Test
-    @UsingDataSet(value= {"component_type.xml", "slot.xml"})
+    @UsingDataSet(value= {"basic_component_types.xml", "component_type.xml", "slot.xml"})
     @ApplyScriptBefore(value= {"update_sequences.sql"})
     @ApplyScriptAfter(value= {"delete_tags.sql"})
     public void testAddComponentType() {
@@ -134,7 +134,7 @@ public class ComptypeEJBIT {
     }
 
     @Test
-    @UsingDataSet(value= {"component_type.xml", "slot.xml"})
+    @UsingDataSet(value= {"basic_component_types.xml", "component_type.xml", "slot.xml"})
     @ApplyScriptBefore(value= {"update_sequences.sql"})
     @ApplyScriptAfter(value= {"delete_tags.sql"})
     public void testSaveComponentType() {
@@ -168,7 +168,7 @@ public class ComptypeEJBIT {
     }
 
     @Test
-    @UsingDataSet(value= {"component_type.xml", "slot.xml"})
+    @UsingDataSet(value= {"basic_component_types.xml", "component_type.xml", "slot.xml"})
     public void testDeleteComponentType() {
         final ComponentType compType = compTypesService.findByName(SEARCH_COMP_TYPE_NAME);
         compTypesService.delete(compType);
@@ -178,7 +178,8 @@ public class ComptypeEJBIT {
 
 
     @Test
-    @UsingDataSet(value= {"component_type.xml", "unit.xml", "property.xml", "comptype_property_value.xml", "slot.xml"})
+    @UsingDataSet(value= {"basic_component_types.xml", "component_type.xml", "unit.xml", "property.xml",
+            "comptype_property_value.xml", "slot.xml"})
     @ApplyScriptBefore(value= {"update_sequences.sql"})
     public void testAddCompTypeProp() {
         final ComponentType compType = compTypesService.findByName(SEARCH_COMP_TYPE_NAME);
@@ -200,7 +201,8 @@ public class ComptypeEJBIT {
     }
 
     @Test
-    @UsingDataSet(value= {"component_type.xml", "unit.xml", "property.xml", "comptype_property_value.xml", "slot.xml"})
+    @UsingDataSet(value= {"basic_component_types.xml", "component_type.xml", "unit.xml", "property.xml",
+            "comptype_property_value.xml", "slot.xml"})
     @ApplyScriptBefore(value= {"update_sequences.sql"})
     public void testSaveCompTypeProp() {
         final ComponentType compType = compTypesService.findByName(SEARCH_COMP_TYPE_NAME);
@@ -215,7 +217,8 @@ public class ComptypeEJBIT {
     }
 
     @Test
-    @UsingDataSet(value= {"component_type.xml", "unit.xml", "property.xml", "comptype_property_value.xml", "slot.xml"})
+    @UsingDataSet(value= {"basic_component_types.xml", "component_type.xml", "unit.xml", "property.xml",
+            "comptype_property_value.xml", "slot.xml"})
     @ApplyScriptBefore(value= {"update_sequences.sql"})
     public void testDeleteCompTypeProp() {
         final ComponentType compType = compTypesService.findByName(SEARCH_COMP_TYPE_NAME);
@@ -227,7 +230,7 @@ public class ComptypeEJBIT {
         assertFalse(newCompType.getComptypePropertyList().contains(compValue));
     }
 
-    /**
+    /* * * * * * * *
     @Test
     public void testAddCompTypeArtifact() {
         fail("Not yet implemented");

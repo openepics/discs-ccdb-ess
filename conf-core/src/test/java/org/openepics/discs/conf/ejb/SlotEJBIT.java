@@ -67,7 +67,8 @@ public class SlotEJBIT {
     }
 
     @Test
-    @UsingDataSet(value= {"component_type.xml", "unit.xml", "property.xml", "comptype_property_value.xml", "slot.xml"})
+    @UsingDataSet(value= {"basic_component_types.xml", "component_type.xml", "unit.xml", "property.xml",
+            "comptype_property_value.xml", "slot.xml"})
     @ApplyScriptBefore(value= {"update_sequences.sql"})
     public void testFindAll() {
         final List<Slot> slots = slotService.findAll();
@@ -75,7 +76,8 @@ public class SlotEJBIT {
     }
 
     @Test
-    @UsingDataSet(value= {"component_type.xml", "unit.xml", "property.xml", "comptype_property_value.xml", "slot.xml"})
+    @UsingDataSet(value= {"basic_component_types.xml", "component_type.xml", "unit.xml", "property.xml",
+            "comptype_property_value.xml", "slot.xml"})
     @ApplyScriptBefore(value= {"update_sequences.sql"})
     public void testFindById() {
         final Slot slot = slotService.findById( slotService.findByName("FE").getId() );
@@ -84,7 +86,8 @@ public class SlotEJBIT {
     }
 
     @Test
-    @UsingDataSet(value= {"component_type.xml", "unit.xml", "property.xml", "comptype_property_value.xml", "slot.xml"})
+    @UsingDataSet(value= {"basic_component_types.xml", "component_type.xml", "unit.xml", "property.xml",
+            "comptype_property_value.xml", "slot.xml"})
     @ApplyScriptBefore(value= {"update_sequences.sql"})
     public void testByIdInvalid() {
         final Slot slot = slotService.findById(12321321321L);
@@ -92,7 +95,8 @@ public class SlotEJBIT {
     }
 
     @Test
-    @UsingDataSet(value= {"component_type.xml", "unit.xml", "property.xml", "comptype_property_value.xml", "slot.xml"})
+    @UsingDataSet(value= {"basic_component_types.xml", "component_type.xml", "unit.xml", "property.xml",
+            "comptype_property_value.xml", "slot.xml"})
     @ApplyScriptBefore(value= {"update_sequences.sql"})
     public void testFindByName() {
         final Slot slot = slotService.findByName("FE");
@@ -101,7 +105,8 @@ public class SlotEJBIT {
     }
 
     @Test
-    @UsingDataSet(value= {"component_type.xml", "unit.xml", "property.xml", "comptype_property_value.xml", "slot.xml"})
+    @UsingDataSet(value= {"basic_component_types.xml", "component_type.xml", "unit.xml", "property.xml",
+            "comptype_property_value.xml", "slot.xml"})
     @ApplyScriptBefore(value= {"update_sequences.sql"})
     public void testFindByNameInvalid() {
         final Slot slot = slotService.findByName("R4nd0m_Stuff");
@@ -109,7 +114,8 @@ public class SlotEJBIT {
     }
 
     @Test
-    @UsingDataSet(value= {"component_type.xml", "unit.xml", "property.xml", "comptype_property_value.xml", "slot.xml"})
+    @UsingDataSet(value= {"basic_component_types.xml", "component_type.xml", "unit.xml", "property.xml",
+            "comptype_property_value.xml", "slot.xml"})
     @ApplyScriptBefore(value= {"update_sequences.sql"})
     @ApplyScriptAfter(value= {"delete_tags.sql"})
     public void testAdd() {
@@ -134,7 +140,8 @@ public class SlotEJBIT {
     }
 
     @Test
-    @UsingDataSet(value= {"component_type.xml", "unit.xml", "property.xml", "comptype_property_value.xml", "slot.xml"})
+    @UsingDataSet(value= {"basic_component_types.xml", "component_type.xml", "unit.xml", "property.xml",
+            "comptype_property_value.xml", "slot.xml"})
     @ApplyScriptBefore(value= {"update_sequences.sql"})
     @ApplyScriptAfter(value= {"delete_tags.sql"})
     public void testSave() {
@@ -158,7 +165,8 @@ public class SlotEJBIT {
     }
 
     @Test
-    @UsingDataSet(value= {"component_type.xml", "unit.xml", "property.xml", "comptype_property_value.xml", "slot.xml"})
+    @UsingDataSet(value= {"basic_component_types.xml", "component_type.xml", "unit.xml", "property.xml",
+            "comptype_property_value.xml", "slot.xml"})
     @ApplyScriptBefore(value= {"update_sequences.sql"})
     @ApplyScriptAfter(value= {"delete_tags.sql"})
     public void testDelete() {
@@ -169,7 +177,7 @@ public class SlotEJBIT {
         assertNull( slotService.findByName("FS1_CSS") );
     }
 
-    /*
+    /* TODO add later
     @Test
     @UsingDataSet(value={"component_type.xml", "unit.xml", "property.xml", "comptype_property_value.xml", "slot.xml"})
     @ApplyScriptBefore(value={"update_sequences.sql"})
