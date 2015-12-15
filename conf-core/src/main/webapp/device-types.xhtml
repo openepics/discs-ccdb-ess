@@ -44,8 +44,9 @@
                                 </p:dataTable>
                             </div>
 
-                            <p:commandButton id="duplicateButton" icon="ui-icon-copy" value="Duplicate" title="Duplicate selected"
-                                style="float: right; margin-top: 1em;" disabled="#{empty componentTypeManager.selectedDeviceTypes}"
+                            <p:commandButton id="duplicateButton" icon="ui-icon-copy" value="Duplicate" title="Duplicate Selected"
+                                style="float: right; margin-top: 1em;" 
+                                disabled="#{empty componentTypeManager.selectedDeviceTypes or not securityPolicy.getUIHint('DEVTYPE_CREATE')}"
                                 oncomplete="PF('duplicateDialog').show();" update=":duplicateForm:duplicateDialog" />                           
                             <p:commandButton id="exportButton" icon="ui-icon-disk" value="Export" title="Export"
                                 style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('exportDevTypes').show();"
@@ -53,14 +54,16 @@
                                 actionListener="#{componentTypeManager.simpleTableDialog.prepareTableExportPopup}" />
                             <p:commandButton id="deleteButton" icon="ui-icon-trash" value="Delete" title="Delete"
                                 style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('deleteDeviceTypes').show();"
-                                disabled="#{empty componentTypeManager.selectedDeviceTypes}" update=":deleteDeviceTypesForm:deleteDeviceTypes"
+                                disabled="#{empty componentTypeManager.selectedDeviceTypes or not securityPolicy.getUIHint('DEVTYPE_DELETE')}" 
+                                update=":deleteDeviceTypesForm:deleteDeviceTypes"
                                 actionListener="#{componentTypeManager.checkDeviceTypesForDeletion()}" />
-                            <p:commandButton id="editButton" ajax="true" style="float: right; margin: 1em 1ex 0 0;"
+                            <p:commandButton id="editButton" style="float: right; margin: 1em 1ex 0 0;"
                                 value="Edit" action="#{componentTypeManager.prepareEditPopup()}"
                                 update=":editDeviceTypeForm" icon="ui-icon-pencil" oncomplete="PF('editDeviceType').show();"
-                                disabled="#{not componentTypeManager.singleDeviceTypeSelected}" />
-                            <p:commandButton ajax="true" style="float: right; margin: 1em 1ex 0 0;" icon="ui-icon-plus"
-                                actionListener="#{componentTypeManager.prepareAddPopup()}" value="Add"
+                                disabled="#{not componentTypeManager.singleDeviceTypeSelected or not securityPolicy.getUIHint('DEVTYPE_MODIFY')}" />
+                            <p:commandButton style="float: right; margin: 1em 1ex 0 0;" icon="ui-icon-plus"
+                                disabled="#{not securityPolicy.getUIHint('DEVTYPE_CREATE')}"
+                                actionListener="#{componentTypeManager.prepareAddPopup()}" value="Add New Device Type"
                                 oncomplete="PF('addDeviceType').show();" />
                         </p:fieldset>
                     </p:column>
@@ -77,16 +80,18 @@
                                 style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('deleteAttributes').show()"
                                 update=":deleteAttributesForm:deleteAttributes"
                                 actionListener="#{componentTypeManager.checkAttributesForDeletion()}"
-                                disabled="#{empty componentTypeManager.selectedAttributes}" />
+                                disabled="#{empty componentTypeManager.selectedAttributes or not securityPolicy.getUIHint('DEVTYPE_DELETE')}" />
 
                             <p:commandButton id="editAttrButton" value="Edit" icon="ui-icon-pencil"
                                 action="#{componentTypeManager.prepareModifyPropertyPopUp()}"
                                 style="float: right; margin: 1em 1ex 0 0;" update=":modifyPropertyValueForm :modifyArtifactForm"
                                 disabled="#{not componentTypeManager.singleAttributeSelected or
-                                    not componentTypeManager.canEdit(componentTypeManager.selectedAttributes.get(0))}" />
+                                    not componentTypeManager.canEdit(componentTypeManager.selectedAttributes.get(0))
+                                    or not securityPolicy.getUIHint('DEVTYPE_MODIFY')}" />
 
                             <p:menuButton id="addButton" value="Add" style="float: right; margin: 1em 1ex 0 0;"
-                                disabled="#{not componentTypeManager.singleDeviceTypeSelected}">
+                                disabled="#{not componentTypeManager.singleDeviceTypeSelected 
+                                            or not securityPolicy.getUIHint('DEVTYPE_CREATE')}">
                                 <p:menuitem value="Device Type Property" oncomplete="PF('addPropertyValue').show();"
                                     actionListener="#{componentTypeManager.prepareForPropertyValueAdd}"
                                     update=":addPropertyValueForm:addPropertyValue" />

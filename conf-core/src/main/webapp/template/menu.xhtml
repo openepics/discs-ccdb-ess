@@ -30,11 +30,11 @@
 
                 <p:menuitem value="Import" update=":importSlotsForm" oncomplete="PF('importSlots').show();"
                             title="Import slots" actionListener="#{hierarchiesController.prepareImportSlotPopup()}"
-                    disabled="#{!securityPolicy.getUIHint('SLOT')}" />
+                    disabled="#{not securityPolicy.getUIHint('HIERARCHY_ALL')}" />
 
                 <p:menuitem value="Import signals" update=":importSignalsForm" title="Import signals"
                     oncomplete="PF('importSignals').show();" actionListener="#{hierarchiesController.prepareImportSignalPopup()}"
-                    disabled="#{!securityPolicy.getUIHint('SIGNALS')}" />
+                    disabled="#{not securityPolicy.getUIHint('IMPORT_SIGNALS')}" />
             </p:submenu>
 
             <p:menuitem value="Devices" title="View devices" url="/devices.xhtml"
@@ -45,7 +45,7 @@
 
                 <p:menuitem value="Import" update=":importDevicesForm" oncomplete="PF('importDevices').show();"
                     title="Import Devices" actionListener="#{devicesController.prepareImportPopup()}"
-                    disabled="#{!securityPolicy.getUIHint('DEVICE')}" />
+                    disabled="#{not securityPolicy.getUIHint('DEVICES_ALL')}" />
             </p:submenu>
 
             <p:menuitem value="Device types" title="View device types" url="/device-types.xhtml"
@@ -56,7 +56,7 @@
 
                 <p:menuitem value="Import" update=":importCompTypesForm" oncomplete="PF('importCompTypes').show();"
                     title="Import Device Types" actionListener="#{componentTypeManager.prepareImportPopup()}"
-                    disabled="#{!securityPolicy.getUIHint('COMPONENT_TYPE')}" />
+                    disabled="#{not securityPolicy.getUIHint('DEVTYPE_CREATE')}" />
             </p:submenu>
 
             <p:menuitem value="Properties" title="View property definitions" url="/properties.xhtml"
@@ -67,7 +67,7 @@
 
                 <p:menuitem value="Import" update=":importPropertiesForm" oncomplete="PF('importProperties').show();"
                     title="Import Properties" actionListener="#{propertyManager.prepareImportPopup()}"
-                    disabled="#{!securityPolicy.getUIHint('PROPERTY')}" />
+                    disabled="#{not securityPolicy.getUIHint('PROP_ALL')}" />
             </p:submenu>
 
             <p:menuitem value="Enumerations" title="View user defined enumerations" url="/enums.xhtml"
@@ -78,7 +78,7 @@
 
                 <p:menuitem value="Import" update=":importEnumsForm" oncomplete="PF('importEnums').show();"
                     title="Import Enumerations" actionListener="#{dataTypeManager.prepareImportPopup()}"
-                    disabled="#{!securityPolicy.getUIHint('DATA_TYPE')}" />
+                    disabled="#{not securityPolicy.getUIHint('ENUM_ALL')}" />
             </p:submenu>
 
             <p:menuitem value="Units" title="View units" url="units.xhtml"
@@ -89,7 +89,7 @@
 
                 <p:menuitem value="Import" update=":importUnitsForm" oncomplete="PF('importUnits').show();"
                     title="Import Units" actionListener="#{unitManager.prepareImportPopup()}"
-                    disabled="#{!securityPolicy.getUIHint('UNIT')}" />
+                    disabled="#{not securityPolicy.getUIHint('UNIT_ALL')}" />
             </p:submenu>
 
             <p:menuitem value="Log" icon="ui-icon-script" title="View Audit Log" url="/log.xhtml"

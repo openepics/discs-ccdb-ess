@@ -46,8 +46,9 @@
                     </p:dataTable>
                 </div>
 
-                <p:commandButton id="duplicateButton" icon="ui-icon-copy" value="Duplicate" title="Duplicate selected" 
-                    style="float: right; margin-top: 1em;" disabled="#{empty unitManager.selectedUnits}"
+                <p:commandButton id="duplicateButton" icon="ui-icon-copy" value="Duplicate" title="Duplicate Selected" 
+                    style="float: right; margin-top: 1em;" 
+                    disabled="#{empty unitManager.selectedUnits or not securityPolicy.getUIHint('UNIT_CREATE')}"
                     oncomplete="PF('duplicateDialog').show();" update=":duplicateForm:duplicateDialog" />                    
                 <p:commandButton id="exportButton" icon="ui-icon-disk" value="Export" title="Export" 
                     style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('exportUnits').show();" 
@@ -55,14 +56,15 @@
                     actionListener="#{unitManager.simpleTableDialog.prepareTableExportPopup}" />
                 <p:commandButton id="deleteButton" icon="ui-icon-trash" value="Delete" title="Delete" 
                     style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('deleteUnits').show();" 
-                    disabled="#{empty unitManager.selectedUnits}" update=":deleteUnitsForm:deleteUnits" 
-                    actionListener="#{unitManager.checkUnitsForDeletion()}" />
+                    disabled="#{empty unitManager.selectedUnits or not securityPolicy.getUIHint('UNIT_DELETE')}" 
+                    update=":deleteUnitsForm:deleteUnits" actionListener="#{unitManager.checkUnitsForDeletion()}" />
                 <p:commandButton id="editButton" icon="ui-icon-pencil" value="Edit" title="Edit" 
                     style="float: right; margin: 1em 1ex 0 0;" update=":modifyUnitForm:modifyUnit" 
-                    disabled="#{not unitManager.singleUnitSelected}" oncomplete="PF('modifyUnit').show();" 
-                    actionListener="#{unitManager.prepareModifyPopup}" />
+                    disabled="#{not unitManager.singleUnitSelected or not securityPolicy.getUIHint('UNIT_MODIFY')}" 
+                    oncomplete="PF('modifyUnit').show();" actionListener="#{unitManager.prepareModifyPopup}" />
                 <p:commandButton ajax="true" actionListener="#{unitManager.prepareAddPopup}" value="Add" 
-                    update=":addUnitForm" title="Add unit" icon="ui-icon-plus"
+                    update=":addUnitForm" title="Add New Unit" icon="ui-icon-plus" 
+                    disabled="#{not securityPolicy.getUIHint('UNIT_CREATE')}" 
                     oncomplete="PF('addUnit').show()" style="float: right; margin: 1em 1ex 0 0;" />
              </p:fieldset>
         </h:form>

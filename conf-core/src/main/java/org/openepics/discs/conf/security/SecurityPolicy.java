@@ -26,9 +26,44 @@ import org.openepics.discs.conf.ent.EntityTypeOperation;
  * Abstract SecurityPolicy interface. Implementations should contain all needed A&amp;A functionality.
  *
  * @author <a href="mailto:miroslav.pavleski@cosylab.com">Miroslav Pavleski</a>
- *
+ * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  */
 public interface SecurityPolicy {
+    public static final String UI_HINT_HIERARCHY_CREATE = "HIERARCHY_CREATE";
+    public static final String UI_HINT_HIERARCHY_DELETE = "HIERARCHY_DELETE";
+    public static final String UI_HINT_HIERARCHY_MODIFY = "HIERARCHY_MODIFY";
+    public static final String UI_HINT_HIERARCHY_ALL = "HIERARCHY_ALL";
+
+    public static final String UI_HINT_DEVICES_CREATE = "DEVICES_CREATE";
+    public static final String UI_HINT_DEVICES_DELETE = "DEVICES_DELETE";
+    public static final String UI_HINT_DEVICES_MODIFY = "DEVICES_MODIFY";
+    public static final String UI_HINT_DEVICES_ALL = "DEVICES_ALL";
+
+    public static final String UI_HINT_DEVTYPE_CREATE = "DEVTYPE_CREATE";
+    public static final String UI_HINT_DEVTYPE_DELETE = "DEVTYPE_DELETE";
+    public static final String UI_HINT_DEVTYPE_MODIFY = "DEVTYPE_MODIFY";
+    public static final String UI_HINT_DEVTYPE_ALL = "DEVTYPE_ALL";
+
+    public static final String UI_HINT_PROP_CREATE = "PROP_CREATE";
+    public static final String UI_HINT_PROP_DELETE = "PROP_DELETE";
+    public static final String UI_HINT_PROP_MODIFY = "PROP_MODIFY";
+    public static final String UI_HINT_PROP_ALL = "PROP_ALL";
+
+    public static final String UI_HINT_ENUM_CREATE = "ENUM_CREATE";
+    public static final String UI_HINT_ENUM_DELETE = "ENUM_DELETE";
+    public static final String UI_HINT_ENUM_MODIFY = "ENUM_MODIFY";
+    public static final String UI_HINT_ENUM_ALL = "ENUM_ALL";
+
+    public static final String UI_HINT_UNIT_CREATE = "UNIT_CREATE";
+    public static final String UI_HINT_UNIT_DELETE = "UNIT_DELETE";
+    public static final String UI_HINT_UNIT_MODIFY = "UNIT_MODIFY";
+    public static final String UI_HINT_UNIT_ALL = "UNIT_ALL";
+
+    public static final String UI_HINT_MOVE_SLOT = "MOVE_SLOT";
+    public static final String UI_HINT_IMPORT_SIGNALS = "IMPORT_SIGNALS";
+    public static final String UI_HINT_INSTALLATION = "INSTALLATION";
+    public static final String UI_HINT_RELATIONSHIP = "RELATIONSHIP";
+
     /**
      * Returns the user id (user-name) for the current user
      *
@@ -64,7 +99,8 @@ public interface SecurityPolicy {
      * Returns UI hints for the JSF/ManagedBeans layer
      *
      * @param param the parameter
-     * @return a {@link Boolean} value for the hint
+     * @return a {@link Boolean} value for the hint. <code>true</code> means that action is allowed,
+     * <code>false</code> not allowed.
      */
     public boolean getUIHint(String param);
 

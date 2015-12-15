@@ -46,8 +46,9 @@
                     </p:dataTable>
                 </div>
 
-                <p:commandButton id="duplicateButton" icon="ui-icon-copy" value="Duplicate" title="Duplicate selected" 
-                    style="float: right; margin-top: 1em;" disabled="#{empty dataTypeManager.selectedEnums}" 
+                <p:commandButton id="duplicateButton" icon="ui-icon-copy" value="Duplicate" title="Duplicate Selected" 
+                    style="float: right; margin-top: 1em;" 
+                    disabled="#{empty dataTypeManager.selectedEnums or not securityPolicy.getUIHint('ENUM_CREATE')}" 
                     oncomplete="PF('duplicateDialog').show();" update=":duplicateForm:duplicateDialog" />                       
                 <p:commandButton id="exportButton" icon="ui-icon-disk" value="Export" title="Export" 
                     style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('exportEnums').show();" 
@@ -55,14 +56,15 @@
                     actionListener="#{dataTypeManager.simpleTableDialog.prepareTableExportPopup}" />
                 <p:commandButton id="deleteButton" icon="ui-icon-trash" value="Delete" title="Delete" 
                     style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('deleteEnums').show();" 
-                    disabled="#{empty dataTypeManager.selectedEnums}" update=":deleteEnumsForm:deleteEnums" 
-                    actionListener="#{dataTypeManager.checkEnumsForDeletion()}" />
+                    disabled="#{empty dataTypeManager.selectedEnums or not securityPolicy.getUIHint('ENUM_DELETE')}" 
+                    update=":deleteEnumsForm:deleteEnums" actionListener="#{dataTypeManager.checkEnumsForDeletion()}" />
                 <p:commandButton id="editButton" icon="ui-icon-pencil" value="Edit" title="Edit" 
                     style="float: right; margin: 1em 1ex 0 0;" update=":modifyEnumForm:modifyEnum" 
-                    disabled="#{not dataTypeManager.singleEnumSelected}" oncomplete="PF('modifyEnum').show();" 
-                    actionListener="#{dataTypeManager.prepareModifyPopup}" />
-                <p:commandButton ajax="true" actionListener="#{dataTypeManager.prepareAddPopup}" value="Add"
-                        title="Add new enumeration" icon="ui-icon-plus" style="float: right; margin: 1em 1ex 0 0;" 
+                    disabled="#{not dataTypeManager.singleEnumSelected or not securityPolicy.getUIHint('ENUM_MODIFY')}" 
+                    oncomplete="PF('modifyEnum').show();" actionListener="#{dataTypeManager.prepareModifyPopup}" />
+                <p:commandButton actionListener="#{dataTypeManager.prepareAddPopup}" value="Add"
+                        title="Add New Enumeration" icon="ui-icon-plus" style="float: right; margin: 1em 1ex 0 0;" 
+                        disabled="#{not securityPolicy.getUIHint('ENUM_CREATE')}"
                         oncomplete="PF('addEnum').show();" update=":addEnumForm:addEnum" />
             </p:fieldset>
         </h:form>

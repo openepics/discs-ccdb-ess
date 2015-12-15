@@ -57,8 +57,9 @@
                     </p:dataTable>
                 </div>
     
-                <p:commandButton id="duplicateButton" icon="ui-icon-copy" value="Duplicate" title="Duplicate selected" 
-                    style="float: right; margin-top: 1em;" disabled="#{empty propertyManager.selectedProperties}" 
+                <p:commandButton id="duplicateButton" icon="ui-icon-copy" value="Duplicate" title="Duplicate Selected" 
+                    style="float: right; margin-top: 1em;" 
+                    disabled="#{empty propertyManager.selectedProperties or not securityPolicy.getUIHint('PROP_CREATE')}" 
                     oncomplete="PF('duplicateDialog').show();" update=":duplicateForm:duplicateDialog" />                    
                 <p:commandButton id="exportButton" icon="ui-icon-disk" value="Export" title="Export" 
                     style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('exportProperties').show();" 
@@ -66,15 +67,17 @@
                     actionListener="#{propertyManager.simpleTableDialog.prepareTableExportPopup}" />
                 <p:commandButton id="deleteButton" icon="ui-icon-trash" value="Delete" title="Delete" 
                     style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('deleteProperties').show();" 
-                    disabled="#{empty propertyManager.selectedProperties}" update=":deletePropertiesForm:deleteProperties"
+                    disabled="#{empty propertyManager.selectedProperties or not securityPolicy.getUIHint('PROP_DELETE')}" 
+                    update=":deletePropertiesForm:deleteProperties" 
                     actionListener="#{propertyManager.checkPropertiesForDeletion()}" />
                 <p:commandButton id="editButton" icon="ui-icon-pencil" value="Edit" title="Edit" 
                     style="float: right; margin: 1em 1ex 0 0;" update=":modifyPropertyForm:modifyProperty" 
-                    disabled="#{not propertyManager.singlePropertySelected}" oncomplete="PF('modifyProperty').show();" 
-                    actionListener="#{propertyManager.prepareModifyPopup}" />
-                <p:commandButton id="addButton" ajax="true" actionListener="#{propertyManager.prepareAddPopup}" value="Add" 
+                    disabled="#{not propertyManager.singlePropertySelected or not securityPolicy.getUIHint('PROP_MODIFY')}" 
+                    oncomplete="PF('modifyProperty').show();" actionListener="#{propertyManager.prepareModifyPopup}" />
+                <p:commandButton id="addButton" actionListener="#{propertyManager.prepareAddPopup}" value="Add" 
+                    disabled="#{not securityPolicy.getUIHint('PROP_CREATE')}"
                     style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('addProperty').show()" 
-                    update=":addPropertyForm:addProperty" title="Add new properties" icon="ui-icon-plus" />
+                    update=":addPropertyForm:addProperty" title="Add New Properties" icon="ui-icon-plus" />
             </p:fieldset>
         </h:form>
 

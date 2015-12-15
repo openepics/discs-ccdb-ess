@@ -54,19 +54,28 @@ public class RBACEntityTypeSecurityPolicy extends AbstractEnityTypeSecurityPolic
 
     private static final Logger LOGGER = Logger.getLogger(RBACEntityTypeSecurityPolicy.class.getCanonicalName());
 
+    private static final String PERM_ALIGN_WRITE = "WriteAlignmentRecords";
+    private static final String PERM_COMPTYPE_WRITE = "WriteComponentTypes";
+    private static final String PERM_DATATYPE_WRITE = "WriteDataTypes";
+    private static final String PERM_DEVICE_WRITE = "WriteDevices";
+    private static final String PERM_INSTREC_WRITE = "WriteInstallationRecords";
+    private static final String PERM_PROP_WRITE = "WriteProperties";
+    private static final String PERM_SLOT_WRITE = "WriteSlots";
+    private static final String PERM_UNIT_WRITE = "WriteUnits";
+
     private static final Map<EntityType, String> PERMISSION_MAPPING;
 
     static {
         final Builder<EntityType, String> permissionMappingBuilder = ImmutableMap.builder();
 
-        permissionMappingBuilder.put(EntityType.ALIGNMENT_RECORD, "WriteAlignmentRecords");
-        permissionMappingBuilder.put(EntityType.COMPONENT_TYPE, "WriteComponentTypes");
-        permissionMappingBuilder.put(EntityType.DATA_TYPE, "WriteDataTypes");
-        permissionMappingBuilder.put(EntityType.DEVICE, "WriteDevices");
-        permissionMappingBuilder.put(EntityType.INSTALLATION_RECORD, "WriteInstallationRecords");
-        permissionMappingBuilder.put(EntityType.PROPERTY, "WriteProperties");
-        permissionMappingBuilder.put(EntityType.SLOT, "WriteSlots");
-        permissionMappingBuilder.put(EntityType.UNIT, "WriteUnits");
+        permissionMappingBuilder.put(EntityType.ALIGNMENT_RECORD, PERM_ALIGN_WRITE);
+        permissionMappingBuilder.put(EntityType.COMPONENT_TYPE, PERM_COMPTYPE_WRITE);
+        permissionMappingBuilder.put(EntityType.DATA_TYPE, PERM_DATATYPE_WRITE);
+        permissionMappingBuilder.put(EntityType.DEVICE, PERM_DEVICE_WRITE);
+        permissionMappingBuilder.put(EntityType.INSTALLATION_RECORD, PERM_INSTREC_WRITE);
+        permissionMappingBuilder.put(EntityType.PROPERTY, PERM_PROP_WRITE);
+        permissionMappingBuilder.put(EntityType.SLOT, PERM_SLOT_WRITE);
+        permissionMappingBuilder.put(EntityType.UNIT, PERM_UNIT_WRITE);
 
         PERMISSION_MAPPING = permissionMappingBuilder.build();
     }
@@ -108,5 +117,51 @@ public class RBACEntityTypeSecurityPolicy extends AbstractEnityTypeSecurityPolic
     @Override
     public boolean isLoggedIn() {
         return sessionService.isLoggedIn();
+    }
+
+    @Override
+    public boolean getUIHint(String param) {
+        if (!isLoggedIn()) return false;
+
+        switch (param) {
+            case SecurityPolicy.UI_HINT_HIERARCHY_CREATE:
+            case SecurityPolicy.UI_HINT_HIERARCHY_DELETE:
+            case SecurityPolicy.UI_HINT_HIERARCHY_MODIFY:
+            case SecurityPolicy.UI_HINT_HIERARCHY_ALL:
+            case SecurityPolicy.UI_HINT_INSTALLATION:
+            case SecurityPolicy.UI_HINT_RELATIONSHIP:
+            case SecurityPolicy.UI_HINT_MOVE_SLOT:
+            case SecurityPolicy.UI_HINT_IMPORT_SIGNALS:
+                return sessionService.hasPermission(PERM_SLOT_WRITE);
+            case SecurityPolicy.UI_HINT_DEVICES_CREATE:
+            case SecurityPolicy.UI_HINT_DEVICES_DELETE:
+            case SecurityPolicy.UI_HINT_DEVICES_MODIFY:
+            case SecurityPolicy.UI_HINT_DEVICES_ALL:
+                return sessionService.hasPermission(PERM_DEVICE_WRITE);
+            case SecurityPolicy.UI_HINT_DEVTYPE_CREATE:
+            case SecurityPolicy.UI_HINT_DEVTYPE_DELETE:
+            case SecurityPolicy.UI_HINT_DEVTYPE_MODIFY:
+            case SecurityPolicy.UI_HINT_DEVTYPE_ALL:
+                return sessionService.hasPermission(PERM_COMPTYPE_WRITE);
+            case SecurityPolicy.UI_HINT_PROP_CREATE:
+            case SecurityPolicy.UI_HINT_PROP_DELETE:
+            case SecurityPolicy.UI_HINT_PROP_MODIFY:
+            case SecurityPolicy.UI_HINT_PROP_ALL:
+                return sessionService.hasPermission(PERM_PROP_WRITE);
+            case SecurityPolicy.UI_HINT_ENUM_CREATE:
+            case SecurityPolicy.UI_HINT_ENUM_DELETE:
+            case SecurityPolicy.UI_HINT_ENUM_MODIFY:
+            case SecurityPolicy.UI_HINT_ENUM_ALL:
+                return sessionService.hasPermission(PERM_DATATYPE_WRITE);
+            case SecurityPolicy.UI_HINT_UNIT_CREATE:
+            case SecurityPolicy.UI_HINT_UNIT_DELETE:
+            case SecurityPolicy.UI_HINT_UNIT_MODIFY:
+            case SecurityPolicy.UI_HINT_UNIT_ALL:
+                return sessionService.hasPermission(PERM_UNIT_WRITE);
+            default:
+                return super.getUIHint(param);
+        }
+
+
     }
 }
