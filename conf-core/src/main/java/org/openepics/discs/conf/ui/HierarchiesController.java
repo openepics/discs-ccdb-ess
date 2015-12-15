@@ -1896,6 +1896,11 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
         installationView.setSlot(slotEJB.findById(installationView.getSlot().getId()));
         installationView.setInstallationRecord(newRecord);
+
+        final Slot installationSlot = installationView.getSlot();
+        removeRelatedAttributes(installationSlot);
+        initAttributeList(installationSlot, false);
+
         deviceToInstall = null;
     }
 
@@ -1910,6 +1915,10 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
                     "Device uninstalled.");
             // signal that nothing is installed
             selectedInstallationView.setInstallationRecord(null);
+
+            final Slot installationSlot = selectedInstallationView.getSlot();
+            removeRelatedAttributes(installationSlot);
+            initAttributeList(installationSlot, false);
         }
     }
 

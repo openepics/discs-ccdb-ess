@@ -660,8 +660,8 @@
             <ui:param name="entityName" value="Relationship" />
             <ui:param name="entityProperty" value="targetSlotName" />
             <ui:param name="closeDialogActions" value="PF('relationshipsWidget').clearFilters();" />
-            <ui:param name="deleteList" value="#{hierarchiesController.selectedRelationships}" />                      
-        </ui:include>        
+            <ui:param name="deleteList" value="#{hierarchiesController.selectedRelationships}" />
+        </ui:include>
         <ui:include src="/resources/dialogs/delete-multi-confirmation.xhtml">
             <ui:param name="formId" value="uninstallationForm" />
             <ui:param name="dialogTitle" value="Uninstall devices" />
@@ -669,12 +669,12 @@
             <ui:param name="controller" value="#{hierarchiesController}" />
             <ui:param name="message" value="Are you sure you want to uninstall selected devices?"/>
             <ui:param name="submitHandler" value="uninstallDevice" />
-            <ui:param name="formsToUpdate" value="hierarchies:installationDetails :hierarchies:growl" />            
+            <ui:param name="formsToUpdate" value=":hierarchies:installationDetails :hierarchies:slotAttributes :hierarchies:growl" />
             <ui:param name="entityName" value="Device" />
             <ui:param name="entityProperty" value="deviceInventoryId" />
             <ui:param name="closeDialogActions" value="hierarchiesResizeAll();" />
-            <ui:param name="deleteList" value="#{hierarchiesController.selectedInstallationViews}" />                      
-        </ui:include>    
+            <ui:param name="deleteList" value="#{hierarchiesController.selectedInstallationViews}" />
+        </ui:include>
         <ui:include src="/resources/dialogs/cannot-delete-relationship.xhtml" />
         <ui:include src="/resources/dialogs/slot-pair-loop-notification.xhtml" />
         <ui:include src="/resources/dialogs/add-relationship.xhtml" />        
