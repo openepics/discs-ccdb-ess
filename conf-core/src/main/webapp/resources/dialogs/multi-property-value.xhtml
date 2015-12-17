@@ -7,9 +7,7 @@
         <p:remoteCommand name="updateToggle" actionListener="#{componentTypeManager.updateToggle()}" 
             update=":#{formId}:propertySelect:toggleAll" />
         <p:dialog widgetVar="#{widgetName}" id="#{widgetName}" modal="true" resizable="false" closable="false" 
-                dynamic="true" styleClass="property-selection" closeOnEscape="true">
-            <p:ajax event="close" resetValues="true" update="propertySelect" 
-                listener="#{componentTypeManager.resetPropertySelection(formId)}" oncomplete="#{resetFilter}" />
+                dynamic="true" styleClass="property-selection">
 
             <f:facet name="header">
                 <h:outputText value="#{dialogTitle}" />
@@ -78,15 +76,13 @@
             </p:panel>
 
             <p:panel style="text-align: right; padding: 0 1.5em 0 0; border: 0;" styleClass="dialogButtonPanel">
-                <p:commandButton value="Save" id="save" styleClass="dialogButton defaultCommand"  
+                <p:commandButton value="Save" id="save" styleClass="dialogButton" 
                         oncomplete="if (args &amp;&amp; !args.validationFailed) { PF('#{widgetName}').hide(); #{resetFilter} }" 
                         action="#{componentTypeManager[submitHandler]}" update="#{componentToUpdate} propertySelect" />
                 <p:commandButton value="Cancel" styleClass="dialogButton" update="propertySelect" resetValues="true"
                         oncomplete="PF('#{widgetName}').hide();#{resetFilter}" 
                         action="#{componentTypeManager.resetPropertySelection(formId)}" />
             </p:panel>
-
-            <p:defaultCommand target="save" />
         </p:dialog>
     </h:form>
 </ui:composition>
