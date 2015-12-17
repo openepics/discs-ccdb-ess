@@ -474,7 +474,8 @@
                 </p:row>
                 <p:row>
                     <p:column id="installationColumn" styleClass="alignTop">
-                        <p:fieldset id="installationDetails" legend="Installation"  style="box-sizing: border-box; height: calc(33.33vh - 4em)">
+                        <p:fieldset id="installationDetails" legend="Installation" 
+                                style="box-sizing: border-box; height: calc(33.33vh - 4em)">
                             <div style="height: calc(100% - 3em)">
                                 <p:dataTable id="installationTable" value="#{hierarchiesController.installationRecords}"
                                         var="installationRecord" widgetVar="installationWidget"
@@ -662,6 +663,7 @@
             <ui:param name="closeDialogActions" value="PF('relationshipsWidget').clearFilters();" />
             <ui:param name="deleteList" value="#{hierarchiesController.selectedRelationships}" />
         </ui:include>
+
         <ui:include src="/resources/dialogs/delete-multi-confirmation.xhtml">
             <ui:param name="formId" value="uninstallationForm" />
             <ui:param name="dialogTitle" value="Uninstall devices" />
@@ -675,10 +677,29 @@
             <ui:param name="closeDialogActions" value="hierarchiesResizeAll();" />
             <ui:param name="deleteList" value="#{hierarchiesController.selectedInstallationViews}" />
         </ui:include>
-        <ui:include src="/resources/dialogs/cannot-delete-relationship.xhtml" />
-        <ui:include src="/resources/dialogs/slot-pair-loop-notification.xhtml" />
-        <ui:include src="/resources/dialogs/add-relationship.xhtml" />        
-        <ui:include src="/resources/dialogs/cannot-find-slot.xhtml" />
+
+        <ui:include src="/resources/dialogs/confirm-dialog.xhtml">
+            <ui:param name="formId" value="slotPairLoopNotificationForm" />
+            <ui:param name="widgetName" value="slotPairLoopNotification" />
+            <ui:param name="dialogTitle" value="Slot Pair Loop" />
+            <ui:param name="message" value="Relationship 'contains' between these two slots cannot be created because this would result in loop." />
+        </ui:include>
+
+        <ui:include src="/resources/dialogs/confirm-dialog.xhtml">
+            <ui:param name="formId" value="cantDeleteRelationForm" />
+            <ui:param name="widgetName" value="cantDeleteRelation" />
+            <ui:param name="dialogTitle" value="Cannot Delete Slot Relationship" />
+            <ui:param name="message" value="This relationship cannot be deleted, because every slot must have at least one 'contained in' relationship." />
+        </ui:include>
+
+        <ui:include src="/resources/dialogs/confirm-dialog.xhtml">
+            <ui:param name="formId" value="cannotFindSlotForm" />
+            <ui:param name="widgetName" value="cannotFindSlot" />
+            <ui:param name="dialogTitle" value="Cannot Find the Requested Installation Slot" />
+            <ui:param name="message" value="The requested installation slot '#{hierarchiesController.requestedSlot}' could not be located in the database." />
+        </ui:include>
+
+        <ui:include src="/resources/dialogs/add-relationship.xhtml" />
         <ui:include src="/resources/dialogs/linkdialog.xhtml" />
         <script type="text/javascript">
             //<![CDATA[

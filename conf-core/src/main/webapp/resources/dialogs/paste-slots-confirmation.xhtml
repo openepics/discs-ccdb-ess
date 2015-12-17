@@ -5,10 +5,13 @@
 
     <h:form id="#{formId}">
         <p:dialog widgetVar="#{widgetName}" id="#{widgetName}" modal="true" resizable="false" dynamic="true"
-                closable="false" class="dialogWithList">
+                closable="false" class="dialogWithList" closeOnEscape="true" onShow="$('#${formId} .defaultCommand').focus()">
+            <p:ajax event="close" oncomplete="#{closeDialogActions}" />
+
             <f:facet name="header">
-                <h:outputText value="Paste installation slots and containers" />
+                <h:outputText value="Paste Installation Slots and Containers" />
             </f:facet>
+
             <p:outputPanel style="display: block; width: 30em; margin-bottom: 1.2em;">
                 <h:outputText value="Are you sure you want paste the listed slots to the selected target?" 
                     rendered="#{empty hierarchiesController.pasteErrors and hierarchiesController.cliboardOperation == 'CUT'}" />
@@ -27,12 +30,18 @@
                 </p:column>
             </p:dataTable>
 
-            <p:commandButton value="#{empty hierarchiesController.pasteErrors ? 'No' : 'Close'}" styleClass="dialogButton" 
-                onclick="PF('#{widgetName}').hide(); #{closeDialogActions}" />
-            <p:commandButton value="Yes" styleClass="dialogButton" update="#{formsToUpdate}" 
-                rendered="#{empty hierarchiesController.pasteErrors}" 
-                oncomplete="PF('#{widgetName}').hide(); #{closeDialogActions}" 
-                action="#{hierarchiesController.pasteTreeNodes}" />
+            <p:panel style="text-align: right; padding: 0; border: 0;" styleClass="dialogButtonPanel">
+                <p:commandButton value="Yes" id="confirm" styleClass="dialogButton defaultCommand" 
+                    update="#{formsToUpdate}" rendered="#{empty hierarchiesController.pasteErrors}" 
+                    oncomplete="PF('#{widgetName}').hide(); #{closeDialogActions}" 
+                    action="#{hierarchiesController.pasteTreeNodes}" />
+                <p:commandButton value="#{empty hierarchiesController.pasteErrors ? 'No' : 'Close'}" id="cancel" 
+                    styleClass="dialogButton #{not empty hierarchiesController.pasteErrors ? 'defaultCommand' : ''}" 
+                    onclick="PF('#{widgetName}').hide(); #{closeDialogActions}" />
+            </p:panel>
+
+            <p:defaultCommand target="cancel" rendered="#{not empty hierarchiesController.pasteErrors}" />
+            <p:defaultCommand target="confirm" rendered="#{empty hierarchiesController.pasteErrors}" />
         </p:dialog>
     </h:form>
 </ui:composition>

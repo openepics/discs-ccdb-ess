@@ -5,10 +5,14 @@
 
     <h:form id="addSlotRelationshipForm" rendered="#{not empty empty hierarchiesController.editedRelationshipView}">
         <p:dialog widgetVar="addSlotRelationship" id="addSlotRelationship" modal="true" width="45em" resizable="false" 
-                closable="false" dynamic="true">
+                closable="false" dynamic="true" closeOnEscape="true">
+            <p:ajax event="close" resetValues="true" update=":hierarchies:hierarchyTabs:tree" 
+                listener="#{hierarchiesController.onRelationshipPopupClose}" oncomplete="hierarchiesResizeAll();" />
+
             <f:facet name="header">
                 <h:outputText value="#{empty hierarchiesController.editedRelationshipView.id ? 'Add' : 'Edit'} relationship to #{hierarchiesController.editedRelationshipView.sourceSlotName}" />
             </f:facet>
+
             <p:panelGrid id="grid" style="text-align: left" styleClass="dialog-grid-panel noBorders">
                 <p:row>
                     <p:column>
@@ -55,15 +59,20 @@
                 </p:row>
             </p:panelGrid>
 
-            <p:commandButton value="Cancel" styleClass="dialogButton" 
-                    onclick="PF('addSlotRelationship').hide();" oncomplete="hierarchiesResizeAll();"
-                    actionListener="#{hierarchiesController.onRelationshipPopupClose}" 
-                    resetValues="true" style="margin-top: 1em;" update=":hierarchies:hierarchyTabs:tree" />
-            <p:commandButton value="#{empty hierarchiesController.editedRelationshipView.id ? 'Add' : 'Save'}" styleClass="dialogButton" id="addButton" style="margin-top: 1em;" 
-                    disabled="#{empty hierarchiesController.editedRelationshipView.targetNode}" 
-                    action="#{hierarchiesController.onRelationshipAdd}" 
-                    oncomplete="PF('addSlotRelationship').hide(); hierarchiesResizeAll();" 
-                    update=":addSlotRelationshipForm :hierarchies:relationshipTable :hierarchies:editRelationship :hierarchies:hierarchyTabs:tree :hierarchies:growl" />
+            <p:panel style="text-align: right; padding: 0; border: 0;" styleClass="dialogButtonPanel">
+                <p:commandButton value="#{empty hierarchiesController.editedRelationshipView.id ? 'Add' : 'Save'}" 
+                        styleClass="dialogButton defaultCommand" id="addButton"  
+                        disabled="#{empty hierarchiesController.editedRelationshipView.targetNode}" 
+                        action="#{hierarchiesController.onRelationshipAdd}" 
+                        oncomplete="PF('addSlotRelationship').hide(); hierarchiesResizeAll();" 
+                        update=":addSlotRelationshipForm :hierarchies:relationshipTable :hierarchies:editRelationship :hierarchies:hierarchyTabs:tree :hierarchies:growl" />
+                <p:commandButton value="Cancel" styleClass="dialogButton" 
+                        onclick="PF('addSlotRelationship').hide();" oncomplete="hierarchiesResizeAll();"
+                        actionListener="#{hierarchiesController.onRelationshipPopupClose}" 
+                        resetValues="true" update=":hierarchies:hierarchyTabs:tree" />
+            </p:panel>
+
+            <p:defaultCommand target="addButton" />
         </p:dialog>
     </h:form>
 </ui:composition>

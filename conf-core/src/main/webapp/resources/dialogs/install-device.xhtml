@@ -4,7 +4,10 @@
     xmlns:h="http://java.sun.com/jsf/html">
 
     <h:form id="#{formId}">
-        <p:dialog widgetVar="#{widgetName}" id="#{widgetName}" modal="true" resizable="false" dynamic="true" width="55em">
+        <p:dialog widgetVar="#{widgetName}" id="#{widgetName}" modal="true" resizable="false" dynamic="true" 
+                width="55em" closeOnEscape="true" closable="false">
+            <p:ajax event="close" resetValues="true" update=":#{formId}" 
+                listener="#{hierarchiesController.setDeviceToInstall(null)}" />
 
             <f:facet name="header">
                 <h:outputText value="#{dialogTitle}" />
@@ -45,13 +48,17 @@
                 </p:row>
                 <p:row>
                     <p:column colspan="2">
-                        <p:commandButton title="Cancel" styleClass="dialogButton" label="Cancel" value="Cancel" 
-                            onclick="PF('#{widgetName}').hide();" resetValues="true" update=":#{formId}" ajax="true" 
-                            action="#{hierarchiesController.setDeviceToInstall(null)}" />
-                        <p:commandButton id="installButton" styleClass="dialogButton" title="Install" label="Install" 
-                            disabled="#{empty hierarchiesController.deviceToInstall}" value="Install" 
-                            action="#{hierarchiesController.installDevice()}" update="#{componentToUpdate} :#{formId}" 
-                            oncomplete="PF('#{widgetName}').hide();hierarchiesResizeAll();" />
+                        <p:panel style="text-align: right; padding: 0; border: 0;" styleClass="dialogButtonPanel">
+                            <p:commandButton id="installButton" styleClass="dialogButton defaultCommand" title="Install" 
+                                label="Install" disabled="#{empty hierarchiesController.deviceToInstall}" value="Install" 
+                                action="#{hierarchiesController.installDevice()}" update="#{componentToUpdate} :#{formId}" 
+                                oncomplete="PF('#{widgetName}').hide();hierarchiesResizeAll();" />
+                            <p:commandButton title="Cancel" styleClass="dialogButton" label="Cancel" value="Cancel" 
+                                onclick="PF('#{widgetName}').hide();" resetValues="true" update=":#{formId}" 
+                                action="#{hierarchiesController.setDeviceToInstall(null)}" />
+                        </p:panel>
+
+                        <p:defaultCommand target="installButton" />
                     </p:column>
                 </p:row>
             </p:panelGrid>

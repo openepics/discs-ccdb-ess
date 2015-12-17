@@ -5,7 +5,9 @@
 
     <h:form id="#{formId}">
         <p:dialog widgetVar="#{widgetName}" id="#{widgetName}" modal="true" resizable="false" closable="false" 
-                dynamic="true">
+                dynamic="true" closeOnEscape="true">
+            <p:ajax event="close" resetValues="true" update="grp" oncomplete="#{resetFilter}" />
+
             <f:facet name="header">
                 <h:outputText value="#{dialogTitle}" />
             </f:facet>
@@ -15,9 +17,9 @@
                 
                     <p:outputLabel for="propertySelect" value="Property:" />
                     <h:outputText value="#{controller.property.name}" rendered="#{controller.propertyNameChangeDisabled}" />
-                    <h:panelGroup rendered="#{!controller.propertyNameChangeDisabled}">
+                    <h:panelGroup rendered="#{not controller.propertyNameChangeDisabled}">
                         <p:selectOneMenu id="propertySelect" value="#{controller.property}" var="prop" converter="#{propertyConverter}" 
-                                rendered="true" required="true" requiredMessage="Please select a property"
+                                rendered="true" required="true" requiredMessage="Please select a property" tabindex="1" 
                                 disabled="#{controller.propertyNameChangeDisabled}" valueChangeListener="#{controller.propertyChangeListener}">
                             <p:ajax update=":#{formId}:propertyUnit :#{formId}:propertyDataType :#{formId}:valueInputGroup"/>
                             <f:selectItem itemLabel="Select One" itemValue="" noSelectionOption="true" />
@@ -34,17 +36,17 @@
                         <h:outputText id="propertyValueNoProp" rendered="#{controller.propertyValueUIElement eq 'NONE'}" value="Select a property first."/>
                         <p:inputText id="propertyValueSimple" value="#{controller.propertyValue}" required="true"
                                 requiredMessage="Please enter a property value" validator="#{controller.inputValidator}" 
-                                rendered="#{controller.propertyValueUIElement eq 'INPUT'}" />
+                                rendered="#{controller.propertyValueUIElement eq 'INPUT'}" tabindex="2" />
                         <p:message for="propertyValueSimple" rendered="#{controller.propertyValueUIElement eq 'INPUT'}"/>
                         
                         <p:inputTextarea id="propertyValueArea" value="#{controller.propertyValue}" required="true" 
                                 rows="7" cols="40" style="white-space: nowrap; resize: none;" autoResize="false" 
                                 requiredMessage="Please enter a property value" validator="#{controller.areaValidator}" 
-                                rendered="#{controller.propertyValueUIElement eq 'TEXT_AREA'}" />
+                                rendered="#{controller.propertyValueUIElement eq 'TEXT_AREA'}" tabindex="2" />
                         <p:message for="propertyValueArea" rendered="#{controller.propertyValueUIElement eq 'TEXT_AREA'}"/>
                         
                         <p:selectOneMenu id="propertyValueEnum" value="#{controller.propertyValue}" required="true" 
-                                rendered="#{controller.propertyValueUIElement eq 'SELECT_ONE_MENU'}">
+                                rendered="#{controller.propertyValueUIElement eq 'SELECT_ONE_MENU'}" tabindex="2">
                             <f:selectItems value="#{controller.enumSelections}" var="enum" itemLabel="#{enum}" itemValue="#{enum}" />        
                         </p:selectOneMenu>
                         <p:message for="propertyValueEnum" rendered="#{controller.propertyValueUIElement eq 'SELECT_ONE_MENU'}"/>
@@ -52,20 +54,23 @@
                     </h:panelGroup>
                     
                     <p:outputLabel value="Data type:" />
-                    <p:inputText disabled="true" id="propertyDataType" value="#{controller.property.dataType.name}"/>
+                    <p:inputText disabled="true" id="propertyDataType" value="#{controller.property.dataType.name}" tabindex="3" />
                     
                     <p:outputLabel value="Unit:" />
-                    <p:inputText disabled="true" id="propertyUnit" value="#{controller.property.unit.name}"/>
+                    <p:inputText disabled="true" id="propertyUnit" value="#{controller.property.unit.name}" tabindex="4" />
                    
                 </p:panelGrid>
             </div>
             
-            <p:commandButton value="Cancel" styleClass="dialogButton" onclick="PF('#{widgetName}').hide();#{resetFilter}" 
-                    update="grp" resetValues="true" />
-            <p:commandButton value="Save" styleClass="dialogButton" update="#{componentToUpdate} grp" 
-                    oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('#{widgetName}').hide(); #{resetFilter}}" 
-                    action="#{controller[submitHandler]}" />
-        </p:dialog>
+            <p:panel style="text-align: right; padding: 0; border: 0;" styleClass="dialogButtonPanel">
+                <p:commandButton value="Save" id="save" styleClass="dialogButton defaultCommand"  
+                        oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('#{widgetName}').hide(); #{resetFilter}}" 
+                        action="#{controller[submitHandler]}" tabindex="5" update="#{componentToUpdate} grp" />
+                <p:commandButton value="Cancel" styleClass="dialogButton" onclick="PF('#{widgetName}').hide();#{resetFilter}" 
+                        update="grp" resetValues="true" tabindex="6" />
+            </p:panel>
 
+            <p:defaultCommand target="save" />
+        </p:dialog>
     </h:form>
 </ui:composition>

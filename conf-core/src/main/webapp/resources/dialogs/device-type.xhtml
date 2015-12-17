@@ -4,10 +4,14 @@
     xmlns:h="http://java.sun.com/jsf/html">
 
     <h:form id="#{formId}">
-        <p:dialog widgetVar="#{widgetName}" id="#{widgetName}" modal="true" resizable="false" closable="false">
+        <p:dialog widgetVar="#{widgetName}" id="#{widgetName}" modal="true" resizable="false" closable="false"
+                closeOnEscape="true">
+            <p:ajax event="close" resetValues="true" update="grp" />
+
             <f:facet name="header">
                 <h:outputText value="#{dialogTitle}" />
             </f:facet>
+
             <div class="ui-fluid">
                 <p:panelGrid id="grp" styleClass="dialog-grid-panel noBorders" columns="2" 
                         columnClasses="alignRight dialog-labels-width-1">
@@ -15,13 +19,13 @@
                     <p:outputLabel for="deviceTypeName" value="Name:" />
                     <h:panelGroup>
                         <p:inputText id="deviceTypeName" value="#{componentTypeManager.name}" required="true" 
-                                requiredMessage="Please enter a name"/>
+                                requiredMessage="Please enter a name" tabindex="1"/>
                         <p:message for="deviceTypeName" />
                     </h:panelGroup>
     
                     <p:outputLabel for="deviceTypeDesc" value="Description:" />
                     <h:panelGroup>
-                        <p:inputTextarea id="deviceTypeDesc" rows="5" cols="60" maxlength="255" required="true" 
+                        <p:inputTextarea id="deviceTypeDesc" rows="5" cols="60" maxlength="255" required="true" tabindex="2"
                             requiredMessage="Please enter a description" value="#{componentTypeManager.description}" />
                         <br/>
                         <p:message for="deviceTypeDesc" />
@@ -29,11 +33,16 @@
                 </p:panelGrid>
             </div>
             
-            <p:commandButton value="Cancel" styleClass="dialogButton" onclick="PF('#{widgetName}').hide();" update="grp" 
-                    resetValues="true" />
-            <p:commandButton value="Save" styleClass="dialogButton" update=":deviceTypesForm:exportButton grp :deviceTypesForm:growl" 
-                    oncomplete="if (args &amp;&amp; !args.validationFailed) { PF('#{widgetName}').hide(); PF('deviceTypeTableVar').clearFilters(); }" 
-                    action="#{componentTypeManager[submitHandler]}" />
+            <p:panel style="text-align: right; padding: 0; border: 0;" styleClass="dialogButtonPanel">
+                <p:commandButton value="Save" id="save" styleClass="dialogButton defaultCommand" tabindex="3" 
+                        update=":deviceTypesForm:exportButton grp :deviceTypesForm:growl" 
+                        oncomplete="if (args &amp;&amp; !args.validationFailed) { PF('#{widgetName}').hide(); PF('deviceTypeTableVar').clearFilters(); }" 
+                        action="#{componentTypeManager[submitHandler]}" />
+                <p:commandButton value="Cancel" styleClass="dialogButton" onclick="PF('#{widgetName}').hide();" 
+                        update="grp" resetValues="true" tabindex="4" />
+            </p:panel>
+
+            <p:defaultCommand target="save" />
         </p:dialog>
 
     </h:form>

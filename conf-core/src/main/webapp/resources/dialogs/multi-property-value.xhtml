@@ -7,12 +7,16 @@
         <p:remoteCommand name="updateToggle" actionListener="#{componentTypeManager.updateToggle()}" 
             update=":#{formId}:propertySelect:toggleAll" />
         <p:dialog widgetVar="#{widgetName}" id="#{widgetName}" modal="true" resizable="false" closable="false" 
-                dynamic="true" styleClass="property-selection">
+                dynamic="true" styleClass="property-selection" closeOnEscape="true">
+            <p:ajax event="close" resetValues="true" update="propertySelect" 
+                listener="#{componentTypeManager.resetPropertySelection(formId)}" oncomplete="#{resetFilter}" />
+
             <f:facet name="header">
                 <h:outputText value="#{dialogTitle}" />
             </f:facet>
+
             <p:messages id="inputValidationFail" showDetail="true" autoUpdate="true" />
-            <p:panel style="margin-bottom: 2ex; border: 0;">
+            <p:panel style="border: 0;">
                 <p:dataTable id="propertySelect" value="#{componentTypeManager.filteredPropertyValues}" var="prop" 
                         editable="true" editMode="cell" scrollable="true" 
                         scrollHeight="350" tableStyle="width: 80em; table-layout: auto;" widgetVar="propSelectTable" 
@@ -73,11 +77,16 @@
                 </p:dataTable>
             </p:panel>
 
-            <p:commandButton value="Cancel" styleClass="dialogButton" oncomplete="PF('#{widgetName}').hide();#{resetFilter}" 
-                    update="propertySelect" resetValues="true" action="#{componentTypeManager.resetPropertySelection(formId)}" />
-            <p:commandButton value="Save" styleClass="dialogButton" update="#{componentToUpdate} propertySelect" 
-                    oncomplete="if (args &amp;&amp; !args.validationFailed) { PF('#{widgetName}').hide(); #{resetFilter} }" 
-                    action="#{componentTypeManager[submitHandler]}"/>
+            <p:panel style="text-align: right; padding: 0 1.5em 0 0; border: 0;" styleClass="dialogButtonPanel">
+                <p:commandButton value="Save" id="save" styleClass="dialogButton defaultCommand"  
+                        oncomplete="if (args &amp;&amp; !args.validationFailed) { PF('#{widgetName}').hide(); #{resetFilter} }" 
+                        action="#{componentTypeManager[submitHandler]}" update="#{componentToUpdate} propertySelect" />
+                <p:commandButton value="Cancel" styleClass="dialogButton" update="propertySelect" resetValues="true"
+                        oncomplete="PF('#{widgetName}').hide();#{resetFilter}" 
+                        action="#{componentTypeManager.resetPropertySelection(formId)}" />
+            </p:panel>
+
+            <p:defaultCommand target="save" />
         </p:dialog>
     </h:form>
 </ui:composition>

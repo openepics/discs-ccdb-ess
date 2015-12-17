@@ -14,30 +14,38 @@
             //]]>
         </script>
         <p:dialog widgetVar="#{widgetName}" id="#{widgetName}" modal="true" resizable="false" closable="false" 
-                width="35em">
+                width="35em" closeOnEscape="true">
+            <p:ajax event="close" resetValues="true" update="grp" />
+
+            <p:focus context="grp" />
+
             <f:facet name="header">
                 <h:outputText value="#{dialogTitle}" />
             </f:facet>
+
             <p:panelGrid id="grp" styleClass="dialog-grid-panel noBorders" columns="2" style="margin-bottom: 1ex;" 
                     columnClasses="alignRight dialog-labels-width-1">
 
                 <p:outputLabel for="fileFormat" value="File format:" />
-                <p:selectOneRadio id="fileFormat" value="#{fileFormatSelection}">
+                <p:selectOneRadio id="fileFormat" value="#{fileFormatSelection}" tabindex="1">
                     <f:selectItem itemLabel="CSV File" itemValue="CSV" />
                     <f:selectItem itemLabel="Excel File" itemValue="XLSX" />
                 </p:selectOneRadio>
 
                 <p:outputLabel for="includeHeader" value="Include header row:" />
-                <p:selectBooleanCheckbox id="includeHeader" value="#{includeHeader}" />
+                <p:selectBooleanCheckbox id="includeHeader" value="#{includeHeader}" tabindex="2" />
             </p:panelGrid>
 
-            <p:commandButton value="Close" styleClass="dialogButton" onclick="PF('#{widgetName}').hide();" update="grp" 
-                    resetValues="true" />
-            <p:commandButton value="Export" styleClass="dialogButton" update="grp" ajax="false" 
-                        onclick="PrimeFaces.monitorDownload(startDownload, #{widgetName}_stopDownload);">
-                <p:fileDownload value="#{tableFile}" />
-            </p:commandButton>
+            <p:panel style="text-align: right; padding: 0; border: 0;" styleClass="dialogButtonPanel">
+                <p:commandButton value="Export" id="export" styleClass="dialogButton defaultCommand" update="grp" ajax="false" 
+                        tabindex="3" onclick="PrimeFaces.monitorDownload(startDownload, #{widgetName}_stopDownload);">
+                    <p:fileDownload value="#{tableFile}" />
+                </p:commandButton>
+                <p:commandButton value="Close" styleClass="dialogButton" onclick="PF('#{widgetName}').hide();" 
+                        update="grp" resetValues="true" tabindex="4" />
+            </p:panel>
 
+            <p:defaultCommand target="export" />
         </p:dialog>    
     </h:form>
 </ui:composition>

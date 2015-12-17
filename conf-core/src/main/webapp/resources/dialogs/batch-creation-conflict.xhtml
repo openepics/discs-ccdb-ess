@@ -4,19 +4,27 @@
     xmlns:h="http://java.sun.com/jsf/html">
 
     <h:form id="#{formId}">
-        <p:dialog widgetVar="#{widgetName}" id="#{widgetName}" modal="true" resizable="false" dynamic="true" closable="false">
+        <p:dialog widgetVar="#{widgetName}" id="#{widgetName}" modal="true" resizable="false" dynamic="true" 
+                closable="false" closeOnEscape="true" onShow="$('#${formId} .defaultCommand').focus()">
+
             <f:facet name="header">
                 <h:outputText value="#{dialogTitle}" />
             </f:facet>
+
             <h:outputText value="There are conflicts with existing #{entity}:" />
             <p:scrollPanel mode="native" style="width: 100%; height: 6em; font-family: monospace; white-space: pre; margin-bottom: 1.2em;">
                 <h:outputText value="#{entityListing}" />
             </p:scrollPanel>
 
-            <p:commandButton value="Abort" styleClass="dialogButton" onclick="PF('#{widgetName}').hide();PF('#{relatedDialog}').show();" />
-            <p:commandButton value="Proceed" styleClass="dialogButton" ajax="true" update="#{formToUpdate}"
-                    oncomplete="PF('#{widgetName}').hide();PF('#{relatedDialog}').hide();#{saveActions}"
-                    action="#{controller[submitHandler]}" />
+            <p:panel style="text-align: right; padding: 0; border: 0;" styleClass="dialogButtonPanel">
+                <p:commandButton value="Proceed" id="confirm" styleClass="dialogButton defaultCommand" 
+                        oncomplete="PF('#{widgetName}').hide();PF('#{relatedDialog}').hide();#{saveActions}"
+                        action="#{controller[submitHandler]}" update="#{formToUpdate}" />
+                <p:commandButton value="Abort" styleClass="dialogButton" 
+                    onclick="PF('#{widgetName}').hide();PF('#{relatedDialog}').show();" />
+            </p:panel>
+
+            <p:defaultCommand target="confirm" />
         </p:dialog>
     </h:form>
 </ui:composition>

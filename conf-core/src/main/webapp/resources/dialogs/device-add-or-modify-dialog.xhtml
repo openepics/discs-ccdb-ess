@@ -5,7 +5,9 @@
 
     <h:form id="#{formId}">
         <p:dialog id="#{widgetName}" widgetVar="#{widgetName}" modal="true" resizable="false" closable="false"
-            width="35em" dynamic="true">
+                width="35em" dynamic="true" closeOnEscape="true">
+            <p:ajax event="close" resetValues="true" update="grp" oncomplete="#{saveAction}" />
+
             <f:facet name="header">
                 <h:outputText value="#{dialogTitle}" />
             </f:facet>
@@ -15,7 +17,7 @@
                         columnClasses="alignRight dialog-labels-width-1">
                     <h:outputLabel value="Device type:" for="deviceTypeSelection" />
                     <h:panelGroup>
-                        <p:selectOneMenu id="deviceTypeSelection" required="true" 
+                        <p:selectOneMenu id="deviceTypeSelection" required="true" tabindex="1" 
                                 value="#{devicesController.deviceTypeSelection}" 
                                 requiredMessage="Please select a device type." 
                                 disabled="#{not batchCreation and 
@@ -29,20 +31,21 @@
     
                     <p:outputLabel for="devInventoryId" value="Inventory ID:" />
                     <h:panelGroup>
-                        <p:inputText id="devInventoryId" value="#{devicesController.serialNumber}" 
+                        <p:inputText id="devInventoryId" value="#{devicesController.serialNumber}" tabindex="2"
                             required="true" requiredMessage="Please enter an inventory ID" 
                             validator="#{devicesController.newDeviceSerialNoValidator}"/>
                         <p:message for="devInventoryId" />
                     </h:panelGroup>
                     
                     <h:outputLabel value="Batch:" for="batchCreation" rendered="#{batchCreation}" />
-                    <h:selectBooleanCheckbox id="batchCreation" value="#{devicesController.batchCreation}" rendered="#{batchCreation}" >
+                    <h:selectBooleanCheckbox id="batchCreation" value="#{devicesController.batchCreation}" 
+                            rendered="#{batchCreation}" tabindex="3">
                         <p:ajax update=":#{formId}:startSpinner :#{formId}:endSpinner :#{formId}:zeroesSpinner" />
                     </h:selectBooleanCheckbox>
     
                     <h:outputLabel value="Start {i}:" for="startSpinner" rendered="#{batchCreation}" />
                     <h:panelGroup rendered="#{batchCreation}">
-                        <p:spinner id="startSpinner" value="#{devicesController.batchStartIndex}" min="0" 
+                        <p:spinner id="startSpinner" value="#{devicesController.batchStartIndex}" min="0" tabindex="4" 
                                 disabled="#{!devicesController.batchCreation}" 
                                 validator="#{devicesController.batchStartValidator}">
                             <p:ajax process="@this"/>
@@ -52,7 +55,7 @@
     
                     <h:outputLabel value="End {i}:" for="endSpinner" rendered="#{batchCreation}" />
                     <h:panelGroup rendered="#{batchCreation}">
-                        <p:spinner id="endSpinner" value="#{devicesController.batchEndIndex}" min="0" 
+                        <p:spinner id="endSpinner" value="#{devicesController.batchEndIndex}" min="0" tabindex="5"
                                 disabled="#{!devicesController.batchCreation}" 
                                 validator="#{devicesController.batchEndValidator}">
                             <p:ajax process="@this"/>
@@ -62,17 +65,20 @@
     
                     <h:outputLabel value="Leading 0 {i}:" for="zeroesSpinner" rendered="#{batchCreation}" />
                     <p:spinner id="zeroesSpinner" value="#{devicesController.batchLeadingZeros}" min="0" max="10" 
-                        disabled="#{!devicesController.batchCreation}" rendered="#{batchCreation}" />
+                        disabled="#{!devicesController.batchCreation}" rendered="#{batchCreation}" tabindex="6" />
     
                 </p:panelGrid>
             </div>
             
-            <p:commandButton value="Cancel" styleClass="dialogButton" update="grp" resetValues="true" 
-                onclick="PF('#{widgetName}').hide(); #{saveAction}" />
-            <p:commandButton value="Save" styleClass="dialogButton" update="#{updateComponents} grp" 
-                oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('#{widgetName}').hide(); #{saveAction}}"
-                action="#{devicesController[submitHandler]}" />
+            <p:panel style="text-align: right; padding: 0; border: 0;" styleClass="dialogButtonPanel">
+                <p:commandButton value="Save" id="save" styleClass="dialogButton defaultCommand" tabindex="7"
+                    oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('#{widgetName}').hide(); #{saveAction}}"
+                    action="#{devicesController[submitHandler]}" update="#{updateComponents} grp" />
+                <p:commandButton value="Cancel" styleClass="dialogButton" update="grp" resetValues="true" 
+                    onclick="PF('#{widgetName}').hide(); #{saveAction}" tabindex="8"/>
+            </p:panel>
             
+            <p:defaultCommand target="save" />
         </p:dialog>
     </h:form>
 

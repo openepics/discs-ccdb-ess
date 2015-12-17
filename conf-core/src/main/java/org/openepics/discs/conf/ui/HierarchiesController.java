@@ -290,7 +290,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             attributeKinds = Utility.buildAttributeKinds();
             relationshipTypes = buildRelationshipTypeList();
 
-            navigateToUrlSelctedSlot();
+            navigateToUrlSelectedSlot();
         } catch (Exception e) {
             throw new UIException("Hierarchies display initialization fialed: " + e.getMessage(), e);
         }
@@ -389,7 +389,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         }
     }
 
-    private void navigateToUrlSelctedSlot() {
+    private void navigateToUrlSelectedSlot() {
         // navigate to slot based on ID or name
         final String slotIdStr = ((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().
                 getRequest()).getParameter("id");

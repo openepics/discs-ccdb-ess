@@ -5,7 +5,9 @@
 
     <h:form id="#{formId}">
         <p:dialog id="#{widgetName}" widgetVar="#{widgetName}" modal="true" resizable="false" closable="false" 
-                dynamic="true">
+                dynamic="true" closeOnEscape="true">
+            <p:ajax event="close" resetValues="true" update="grp" />
+
             <f:facet name="header">
                 <h:outputText value="#{dialogTitle}" />
             </f:facet>
@@ -19,7 +21,7 @@
                         <p:column>
                             <h:panelGroup>
                                 <p:selectOneMenu id="compTypeSelect" value="#{hierarchiesController.deviceType}" 
-                                        rendered="true" required="true" 
+                                        rendered="true" required="true" tabindex="1" 
                                         requiredMessage="Please select a device type" 
                                         disabled="#{not hierarchiesController.newInstallationSlot 
                                                 and hierarchiesController.hasDevice}">
@@ -38,8 +40,9 @@
                         </p:column>
                         <p:column>
                             <h:panelGroup>
-                                <p:selectOneMenu id="slotName" value="#{hierarchiesController.name}" editable="#{not hierachiesController.restrictToConventionNames or not hierarchiesController.installationSlot}"
-                                    filter="true" filterMatchMode="contains"
+                                <p:selectOneMenu id="slotName" value="#{hierarchiesController.name}" 
+                                    editable="#{not hierachiesController.restrictToConventionNames or not hierarchiesController.installationSlot}"
+                                    filter="true" filterMatchMode="contains" tabindex="2" 
                                     validator="#{hierarchiesController.validateInstallationSlot}" 
                                     required="true" requiredMessage="Please enter an installation slot name">
                                     <f:selectItem itemLabel="" itemValue="" />
@@ -56,8 +59,9 @@
                         </p:column>
                         <p:column>
                             <h:panelGroup>
-                                <p:inputTextarea id="slotDesc" rows="5" style="width: 20em;" maxlength="255" required="true" 
-                                    requiredMessage="Please enter a description" value="#{hierarchiesController.description}" />
+                                <p:inputTextarea id="slotDesc" rows="5" style="width: 20em;" maxlength="255" 
+                                    required="true" tabindex="3" requiredMessage="Please enter a description" 
+                                    value="#{hierarchiesController.description}" />
                                 <br />
                                 <p:message for="slotDesc" />
                             </h:panelGroup>
@@ -74,13 +78,17 @@
                     </p:row>
                 </p:panelGrid>
             </div>
-            <p:commandButton value="Cancel" styleClass="dialogButton" onclick="PF('#{widgetName}').hide();" update="grp" 
-                    resetValues="true" />
-            <p:commandButton value="Save" styleClass="dialogButton" 
-                    oncomplete="if (args &amp;&amp; !args.validationFailed) { PF('#{widgetName}').hide();hierarchiesResizeAll();}" 
-                    action="#{hierarchiesController[submitHandler]}" 
-                    update=":hierarchies:hierarchyTabs:tree :hierarchies:slotAttributes grp :hierarchies:deleteButton :hierarchies:installationDetails :hierarchies:growl" />
-                    <!-- TODO: update the add button after this -->
+            <p:panel style="text-align: right; padding: 0; border: 0;" styleClass="dialogButtonPanel">
+                <p:commandButton value="Save" styleClass="dialogButton defaultCommand" id="save" tabindex="4" 
+                        oncomplete="if (args &amp;&amp; !args.validationFailed) { PF('#{widgetName}').hide();hierarchiesResizeAll();}" 
+                        action="#{hierarchiesController[submitHandler]}" 
+                        update=":hierarchies:hierarchyTabs:tree :hierarchies:slotAttributes grp 
+                                :hierarchies:deleteButton :hierarchies:installationDetails :hierarchies:growl" />
+                <p:commandButton value="Cancel" styleClass="dialogButton" onclick="PF('#{widgetName}').hide();" update="grp" 
+                        resetValues="true" tabindex="5" />
+            </p:panel>
+
+            <p:defaultCommand target="save" />
         </p:dialog>
     </h:form>
 

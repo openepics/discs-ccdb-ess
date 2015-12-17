@@ -5,11 +5,14 @@
             
     <h:form id="#{formId}">
         <p:dialog widgetVar="duplicateDialog" id="duplicateDialog" modal="true" resizable="false" dynamic="true"
-                closable="false" class="dialogWithList" 
+                closable="false" class="dialogWithList" closeOnEscape="true" 
                 onShow="resizeDeleteList('#{formId}');PF('duplicateDialog:table').clearFilters();">
+            <p:ajax event="close" oncomplete="#{closeDialogActions}" />
+
             <f:facet name="header">
                 <h:outputText value="Duplicate" />
             </f:facet>
+
             <p:outputPanel style="display: block; width: 30em; margin-bottom: 1.2em;">
                 <h:outputText value="Are you sure you want to duplicate selected #{entityType}?" />                
             </p:outputPanel>
@@ -23,12 +26,15 @@
                 </p:column>
             </p:dataTable>
 
-            <p:commandButton value="No" styleClass="dialogButton" 
-                onclick="PF('duplicateDialog').hide(); #{closeDialogActions}" />
-            <p:commandButton value="Yes" styleClass="dialogButton" ajax="true" update="#{formsToUpdate}"
-                onstart=" PF('duplicateDialog').hide(); PF('statusDialog').show();" 
-                oncomplete="PF('statusDialog').hide(); #{closeDialogActions}" 
-                action="#{controller.duplicate}" />
+            <p:panel style="text-align: right; padding: 0; border: 0;" styleClass="dialogButtonPanel">
+                <p:commandButton value="Yes" id="confirm" styleClass="dialogButton defaultCommand" 
+                    update="#{formsToUpdate}" onstart=" PF('duplicateDialog').hide(); PF('statusDialog').show();" 
+                    oncomplete="PF('statusDialog').hide(); #{closeDialogActions}" action="#{controller.duplicate}" />
+                <p:commandButton value="No" styleClass="dialogButton" 
+                    onclick="PF('duplicateDialog').hide(); #{closeDialogActions}" />
+            </p:panel>
+
+            <p:defaultCommand target="confirm" />
         </p:dialog>
     </h:form>
 </ui:composition>

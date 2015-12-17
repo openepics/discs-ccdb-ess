@@ -72,9 +72,8 @@ body {
 }
 
 .dialogButton {
-    float: right;
     margin-top: 1ex;
-    margin-right: 1ex !important;
+    margin-left: 1ex !important;
     margin-bottom: 1ex !important;
 }
 
@@ -355,4 +354,14 @@ a {
 
 legend {
 	position: relative;
+}
+
+.dialogButtonPanel .ui-panel-content {
+	padding: 0 !important;
+}
+
+.defaultCommand .ui-button-text {
+	border-color: rgba(0, 0, 0, 0.4);
+	border-style: dotted;
+	border-width: thin;
 }

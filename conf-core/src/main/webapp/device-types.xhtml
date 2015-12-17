@@ -62,8 +62,8 @@
                                 update=":editDeviceTypeForm" icon="ui-icon-pencil" oncomplete="PF('editDeviceType').show();"
                                 disabled="#{not componentTypeManager.singleDeviceTypeSelected or not securityPolicy.getUIHint('DEVTYPE_MODIFY')}" />
                             <p:commandButton style="float: right; margin: 1em 1ex 0 0;" icon="ui-icon-plus"
-                                disabled="#{not securityPolicy.getUIHint('DEVTYPE_CREATE')}"
-                                actionListener="#{componentTypeManager.prepareAddPopup()}" value="Add New Device Type"
+                                disabled="#{not securityPolicy.getUIHint('DEVTYPE_CREATE')}" title="Add New Device Type"
+                                actionListener="#{componentTypeManager.prepareAddPopup()}" value="Add"
                                 oncomplete="PF('addDeviceType').show();" />
                         </p:fieldset>
                     </p:column>
@@ -112,22 +112,6 @@
                 </p:row>
             </p:panelGrid>
         </h:form>
-
-        <script type="text/javascript">
-            // <![CDATA[      
-            // prevent focus of the first element, select the first button (Cancel) instead
-            // http://forum.primefaces.org/viewtopic.php?f=3&t=29050
-            PrimeFaces.widget.Dialog.prototype.applyFocus = function() {
-                if (this.id == "addPropertyValueForm:addPropertyValue"
-                        || this.id == "installationSlotPropertyForm:installationSlotProperty"
-                        || this.id == "deviceInstancePropertyForm:deviceInstanceProperty") {
-                    this.jq.find(':button:input:visible:enabled:first').focus();
-                } else {
-                    this.jq.find(':not(:submit):not(:button):input:visible:enabled:first').focus();
-                }
-            }
-            // ]]>
-        </script>
 
         <ui:include src="/resources/dialogs/delete-multi-confirmation.xhtml" >
             <ui:param name="formId" value="deleteDeviceTypesForm" />

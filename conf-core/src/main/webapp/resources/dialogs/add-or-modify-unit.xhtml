@@ -5,10 +5,13 @@
 
     <h:form id="#{formId}">
         <p:dialog widgetVar="#{widgetName}" id="#{widgetName}" modal="true" resizable="false" closable="false" 
-            dynamic="true" width="45em">
+            dynamic="true" width="45em" closeOnEscape="true">
+            <p:ajax event="close" resetValues="true" update="grp" />
+
             <f:facet name="header">
                 <h:outputText value="#{dialogTitle}" />
             </f:facet>
+
             <div class="ui-fluid">
                 <p:panelGrid id="grp" styleClass="dialog-grid-panel noBorders">
                     <p:row rendered="#{not empty unitManager.dialogUnit.usedBy}">
@@ -21,7 +24,7 @@
                             <p:outputLabel for="unitName" value="Name:" />
                         </p:column>
                         <p:column>
-                            <p:inputText id="unitName" value="#{unitManager.dialogUnit.name}" required="true" 
+                            <p:inputText id="unitName" value="#{unitManager.dialogUnit.name}" required="true" tabindex="1" 
                                 requiredMessage="Please enter a name" validator="#{unitManager.nameValidator}"
                                 disabled="#{not empty unitManager.dialogUnit.usedBy and not unitManager.dialogUnit.unitAdd}"/>
                             <p:message for="unitName" />
@@ -35,7 +38,7 @@
                         <p:column>
                             <p:inputTextarea id="unitDesc" rows="5" style="height: 7em; overflow-y: scroll;" 
                                 maxlength="255" required="true" requiredMessage="Please enter a description" 
-                                value="#{unitManager.dialogUnit.description}" />
+                                value="#{unitManager.dialogUnit.description}" tabindex="2" />
                             <br/>
                             <p:message for="unitDesc" />
                         </p:column>
@@ -47,7 +50,7 @@
                         </p:column>
                         <p:column>
                             <p:inputText id="unitSymbol" value="#{unitManager.dialogUnit.symbol}" required="true" 
-                                requiredMessage="Please enter a symbol" 
+                                requiredMessage="Please enter a symbol" tabindex="3" 
                                 disabled="#{not empty unitManager.dialogUnit.usedBy and not unitManager.dialogUnit.unitAdd}"/>
                             <p:message for="unitSymbol" />
                         </p:column>
@@ -55,13 +58,17 @@
                 </p:panelGrid>
             </div>
             
-            <p:commandButton value="Cancel" styleClass="dialogButton" onclick="PF('#{widgetName}').hide();" 
-                    update="grp" resetValues="true" />
-            <p:commandButton value="Save" styleClass="dialogButton" action="#{unitManager[submitHandler]}" 
-                    oncomplete="if (args &amp;&amp; !args.validationFailed) { closeDialogActions('#{widgetName}');}" 
-                    update=":unitsForm:unitsTable :unitsForm:deleteButton :unitsForm:editButton :unitsForm:exportButton
-                            :unitsForm:duplicateButton grp :unitsForm:growl" />
+            <p:panel style="text-align: right; padding: 0; border: 0;" styleClass="dialogButtonPanel">
+                <p:commandButton value="Save" id="save" styleClass="dialogButton defaultCommand" tabindex="4" 
+                        action="#{unitManager[submitHandler]}" 
+                        oncomplete="if (args &amp;&amp; !args.validationFailed) { closeDialogActions('#{widgetName}');}" 
+                        update=":unitsForm:unitsTable :unitsForm:deleteButton :unitsForm:editButton :unitsForm:exportButton
+                                :unitsForm:duplicateButton grp :unitsForm:growl" />
+                <p:commandButton value="Cancel" styleClass="dialogButton" onclick="PF('#{widgetName}').hide();" 
+                        update="grp" resetValues="true" tabindex="5" />
+            </p:panel>
+
+            <p:defaultCommand target="save" />
         </p:dialog>
-        
     </h:form>
 </ui:composition>

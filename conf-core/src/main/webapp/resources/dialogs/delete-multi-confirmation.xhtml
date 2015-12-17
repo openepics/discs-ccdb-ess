@@ -5,11 +5,14 @@
 
     <h:form id="#{formId}">
         <p:dialog widgetVar="#{widgetName}" id="#{widgetName}" modal="true" resizable="false" dynamic="true"
-                closable="false" class="dialogWithList" 
+                closable="false" class="dialogWithList" closeOnEscape="true" 
                 onShow="resizeDeleteList('#{formId}');PF('#{widgetName}:table').clearFilters();">
+            <p:ajax event="close" oncomplete="#{closeDialogActions}" />
+
             <f:facet name="header">
                 <h:outputText value="#{dialogTitle}" />
             </f:facet>
+
             <p:outputPanel style="display: block; width: 30em; margin-bottom: 1.2em;">
                 <h:outputText value="#{empty message?'Are you sure you want to delete selected ' += entityType += '?':message}" 
                     rendered="#{empty deletePreventionList}" />
@@ -21,7 +24,7 @@
                     class="dialogListTable" filteredValue="#{filteredDialogList}" var="entity" 
                     scrollable="true" style="width: 30em; margin-bottom: 1em;">
                 <p:column headerText="#{entityName}" sortBy="#{entity[empty entityProperty ? 'name' : entityProperty]}" 
-                            filterBy="#{entity[empty entityProperty ? 'name' : entityProperty]}" 
+                        filterBy="#{entity[empty entityProperty ? 'name' : entityProperty]}" 
                         filterMatchMode="contains">
                     <h:outputText value="#{entity[empty entityProperty ? 'name' : entityProperty]}" />
                 </p:column>
@@ -31,11 +34,17 @@
                 </p:column>
             </p:dataTable>
 
-            <p:commandButton value="#{empty deletePreventionList ? 'No' : 'Close'}" styleClass="dialogButton" 
-                onclick="PF('#{widgetName}').hide(); #{closeDialogActions}" />
-            <p:commandButton value="Yes" styleClass="dialogButton" ajax="true" update="#{formsToUpdate}" 
-                rendered="#{empty deletePreventionList}" oncomplete="PF('#{widgetName}').hide(); #{closeDialogActions}" 
-                action="#{controller[submitHandler]}" />
+            <p:panel style="text-align: right; padding: 0; border: 0;" styleClass="dialogButtonPanel">
+                <p:commandButton value="Yes" id="deleteAttr" styleClass="dialogButton defaultCommand" update="#{formsToUpdate}" 
+                    rendered="#{empty deletePreventionList}" oncomplete="PF('#{widgetName}').hide(); #{closeDialogActions}" 
+                    action="#{controller[submitHandler]}" />
+                <p:commandButton value="#{empty deletePreventionList ? 'No' : 'Close'}" id="cancel"
+                    styleClass="dialogButton #{not empty deletePreventionList ? 'defaultCommand' : ''}" 
+                    onclick="PF('#{widgetName}').hide(); #{closeDialogActions}" />
+            </p:panel>
+
+            <p:defaultCommand rendered="#{empty deletePreventionList}" target="deleteAttr" />
+            <p:defaultCommand rendered="#{not empty deletePreventionList}" target="cancel" />
         </p:dialog>
     </h:form>
 </ui:composition>

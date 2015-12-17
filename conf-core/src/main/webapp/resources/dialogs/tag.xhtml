@@ -5,7 +5,8 @@
 
     <h:form id="#{formId}">
         <p:dialog widgetVar="#{widgetName}" id="#{widgetName}" modal="true" resizable="false" closable="false" 
-            dynamic="true">
+            dynamic="true" closeOnEscape="true">
+            <p:ajax event="close" resetValues="true" update="grp" oncomplete="#{resetFilter}" />
             <f:facet name="header">
                 <h:outputText value="#{dialogTitle}" />
             </f:facet>
@@ -15,18 +16,21 @@
                     <p:outputLabel for="tag" value="Tag:" />
                     <h:panelGroup>
                         <p:autoComplete id="tag" value="#{controller.tag}" completeMethod="#{controller.tagAutocompleteText}" 
-                                required="true" requiredMessage="Please enter tag"/>
+                                required="true" requiredMessage="Please enter tag" tabindex="1" />
                         <p:message for="tag" />
                     </h:panelGroup>               
                 </p:panelGrid>
             </div>
 
-            <p:commandButton value="Cancel" styleClass="dialogButton" onclick="PF('#{widgetName}').hide();#{resetFilter}" 
-                    update="grp" resetValues="true" />
-            <p:commandButton value="Save" styleClass="dialogButton" update="#{componentToUpdate} grp" 
-                    oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('#{widgetName}').hide(); #{resetFilter}}" 
-                    action="#{controller[submitHandler]}" />
-        </p:dialog>
+            <p:panel style="text-align: right; padding: 0; border: 0;" styleClass="dialogButtonPanel">
+                <p:commandButton value="Save" id="save" styleClass="dialogButton defaultCommand" 
+                        oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('#{widgetName}').hide(); #{resetFilter}}" 
+                        action="#{controller[submitHandler]}" tabindex="2" update="#{componentToUpdate} grp" />
+                <p:commandButton value="Cancel" styleClass="dialogButton" onclick="PF('#{widgetName}').hide();#{resetFilter}" 
+                        update="grp" resetValues="true" tabindex="3" />
+            </p:panel>
 
+            <p:defaultCommand target="save" />
+        </p:dialog>
     </h:form>
 </ui:composition>

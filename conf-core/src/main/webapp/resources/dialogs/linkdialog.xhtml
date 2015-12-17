@@ -23,10 +23,13 @@
                 xmlns:h="http://java.sun.com/jsf/html">
     <h:form id="linksForm">
         <p:dialog id="linksDlg" widgetVar="linksDlg"  modal="true" resizable="false" closable="false"
-                width="400">
+                width="400" closeOnEscape="true">
+            <p:ajax event="close" update="grp" />
+
             <f:facet name="header">
                 <h:outputText value="Show #{hierarchiesController.linkSlot.name} in..." />
             </f:facet>
+
             <p:panelGrid id="grp" styleClass="noBorders" columns="1" style="margin-bottom: 1ex;">
                 <h:outputLink rendered="#{hierarchiesController.linkToNaming(hierarchiesController.linkSlot)}" target="_blank" 
                         value="#{hierarchiesController.namingRedirectionUrl}#{hierarchiesController.linkSlot.name}">
@@ -37,8 +40,12 @@
                     <h:outputText value="Cable DB" style="color: blue; text-decoration: underline;" />
                 </h:outputLink>
             </p:panelGrid>
-            <p:commandButton ajax="true" value="Close" styleClass="dialogButton" onclick="PF('linksDlg').hide();"
-                             update="grp"  />
+            <p:panel style="text-align: right; padding: 0; border: 0;" styleClass="dialogButtonPanel">
+                <p:commandButton value="Close" id="confirm" styleClass="dialogButton" onclick="PF('linksDlg').hide();"
+                        update="grp" />
+            </p:panel>
+
+            <p:defaultCommand target="confirm" />
         </p:dialog>
     </h:form>
 </ui:composition>
