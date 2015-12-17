@@ -76,7 +76,12 @@ public class ConnectsHierarchyBuilder extends HierarchyBuilder {
         List<Slot> slots = connectsEJB.getSlotConnects(parentSlot);
         int order = 1;
         for (Slot child : slots) {
-            if (parentIds.contains(child.getId())) continue;
+            if (parentIds.contains(child.getId())) {
+                // This sets the default for parent if the only connection from the slot is to itself.
+                // If there are any other connections, this will get set to correct value after the loop.
+                parentSlotView.setCableNumber(connectsEJB.getCobles(parentSlot, child).get(0).getNumber());
+                continue;
+            }
 
             final SlotView childSlotView = new SlotView(child, parentSlotView, order++, slotEJB);
             childSlotView.setLevel(parentSlotView.getLevel() + 1);
@@ -93,7 +98,8 @@ public class ConnectsHierarchyBuilder extends HierarchyBuilder {
             }
         }
         if (visibleSubtree) {
-            parentSlotView.setCableNumber(connectsEJB.getCobles(parentSlot, ((SlotView)node.getChildren().get(0).getData()).getSlot()).get(0).getNumber());
+            parentSlotView.setCableNumber(connectsEJB.getCobles(parentSlot,
+                                        ((SlotView)node.getChildren().get(0).getData()).getSlot()).get(0).getNumber());
         }
         parentSlotView.setInitialzed(true);
         return visibleSubtree || isSlotAcceptedByFilter(parentSlot);
