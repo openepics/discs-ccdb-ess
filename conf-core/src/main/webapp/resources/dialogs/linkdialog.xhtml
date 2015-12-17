@@ -23,7 +23,7 @@
                 xmlns:h="http://java.sun.com/jsf/html">
     <h:form id="linksForm">
         <p:dialog id="linksDlg" widgetVar="linksDlg"  modal="true" resizable="false" closable="false"
-                width="400" closeOnEscape="true">
+                width="400" closeOnEscape="true" onShow="$('#linksForm .defaultCommand').focus()">
             <p:ajax event="close" update="grp" />
 
             <f:facet name="header">
@@ -41,8 +41,8 @@
                 </h:outputLink>
             </p:panelGrid>
             <p:panel style="text-align: right; padding: 0; border: 0;" styleClass="dialogButtonPanel">
-                <p:commandButton value="Close" id="confirm" styleClass="dialogButton" onclick="PF('linksDlg').hide();"
-                        update="grp" />
+                <p:commandButton value="Close" id="confirm" styleClass="dialogButton defaultCommand" 
+                        onclick="PF('linksDlg').hide();" update="grp" />
             </p:panel>
 
             <p:defaultCommand target="confirm" />
