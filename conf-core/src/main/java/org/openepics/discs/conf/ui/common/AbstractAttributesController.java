@@ -520,7 +520,10 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
         final Object attribute = attributeView.getEntity();
         return (attribute instanceof Artifact && !(attribute instanceof ComptypeArtifact))
                 || (attribute instanceof Tag && attributeView.getKind() != EntityAttributeViewKind.DEVICE_TYPE_TAG)
-                || (attribute instanceof PropertyValue &&  ( ((PropertyValue)attribute).getPropValue() != null || !isPropertyValueInherited((PropertyValue)attribute) )  );
+                || (attribute instanceof PropertyValue
+                        && ((((PropertyValue)attribute).getPropValue() != null)
+                                || !isPropertyValueInherited((PropertyValue)attribute))
+                    );
     }
 
     private boolean isPropertyValueInherited(PropertyValue propValue) {

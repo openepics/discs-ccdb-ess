@@ -30,13 +30,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Scanner;
 import java.util.regex.Pattern;
@@ -94,9 +94,9 @@ import org.openepics.discs.conf.ent.Tag;
 import org.openepics.discs.conf.ent.values.Value;
 import org.openepics.discs.conf.ui.common.AbstractAttributesController;
 import org.openepics.discs.conf.ui.common.AbstractExcelSingleFileImportUI;
+import org.openepics.discs.conf.ui.common.ConnectsHierarchyBuilder;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
 import org.openepics.discs.conf.ui.common.EntityHierarchyBuilder;
-import org.openepics.discs.conf.ui.common.ConnectsHierarchyBuilder;
 import org.openepics.discs.conf.ui.common.HierarchyBuilder;
 import org.openepics.discs.conf.ui.common.TreeFilterContains;
 import org.openepics.discs.conf.ui.common.UIException;
@@ -3073,7 +3073,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         return isNewInstallationSlot;
     }
 
-    /** @return the parentSlotSlot */
+    /** @return the parent slot name */
     public String getParentName() {
         return parentName;
     }
