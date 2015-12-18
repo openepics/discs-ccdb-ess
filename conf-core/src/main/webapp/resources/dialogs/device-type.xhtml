@@ -18,15 +18,15 @@
     
                     <p:outputLabel for="deviceTypeName" value="Name:" />
                     <h:panelGroup>
-                        <p:inputText id="deviceTypeName" value="#{componentTypeManager.name}" required="true" 
-                                requiredMessage="Please enter a name" tabindex="1"/>
+                        <p:inputText id="deviceTypeName" value="#{componentTypeManager.selectedComponent.name}" required="true" 
+                                requiredMessage="Please enter a name" tabindex="1" />
                         <p:message for="deviceTypeName" />
                     </h:panelGroup>
     
                     <p:outputLabel for="deviceTypeDesc" value="Description:" />
                     <h:panelGroup>
-                        <p:inputTextarea id="deviceTypeDesc" rows="5" cols="60" maxlength="255" required="true" tabindex="2"
-                            requiredMessage="Please enter a description" value="#{componentTypeManager.description}" />
+                        <p:inputTextarea id="deviceTypeDesc" rows="5" cols="60" maxlength="255" required="true" tabindex="2" 
+                            requiredMessage="Please enter a description" value="#{componentTypeManager.selectedComponent.description}" />
                         <br/>
                         <p:message for="deviceTypeDesc" />
                     </h:panelGroup>

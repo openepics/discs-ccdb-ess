@@ -17,26 +17,16 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.ui.common;
+package org.openepics.discs.conf.ent;
 
-import org.primefaces.event.FileUploadEvent;
+import java.util.Set;
 
 /**
- * The interface contains all the methods that the UI control handling the import of a single Excel file must implement.
+ * An interface for accessing a list of tags associated with a given entity.
  *
  * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
- *
  */
-public interface ExcelSingleFileImportUIHandlers extends ExcelImportUIHandlers {
-
-    /** This method is called when user clicks the "Upload" button in the "excel import" UI. The data is stored on the
-     * server to be parsed if the user actually decides to process the import data (he can still cancel the action instead).
-     * @param event The PrimeFaces upload event.
-     */
-    public void handleImportFileUpload(FileUploadEvent event);
-
-    /**
-     * @return The name of the import file. Used in the "Import excel" procedure.
-     */
-    public String getExcelImportFileName();
+public interface EntityWithTags {
+    /** @return a list of tags associated with a given entity */
+    public Set<Tag> getTags();
 }

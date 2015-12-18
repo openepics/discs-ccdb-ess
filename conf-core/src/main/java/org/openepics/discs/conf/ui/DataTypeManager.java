@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 European Spallation Source
+pre * Copyright (c) 2014 European Spallation Source
  * Copyright (c) 2014 Cosylab d.d.
  *
  * This file is part of Controls Configuration Database.
@@ -209,7 +209,7 @@ public class DataTypeManager extends AbstractExcelSingleFileImportUI implements 
     /** This method prepares the input fields used in the "Edit enumeration" dialog. */
     public void prepareModifyPopup() {
         Preconditions.checkState(isSingleEnumSelected());
-        dialogEnum = selectedEnums.get(0);
+        dialogEnum = new UserEnumerationView(dataTypeEJB.findById(selectedEnums.get(0).getEnumeration().getId()));
         dialogEnum.setUsed(dataTypeEJB.isDataTypeUsed(dialogEnum.getEnumeration()));
     }
 

@@ -50,7 +50,7 @@ public class Tag implements Serializable {
     @Version
     protected Long version;
 
-    protected Tag() {}
+    public Tag() {}
 
     /** Constructs a new tag
      * @param name the string to be used for tag

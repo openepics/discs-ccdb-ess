@@ -12,18 +12,19 @@
             </f:facet>            
             <h:panelGroup id="group" style="display: block">
                 <div class="ui-fluid">
-                    <p:panelGrid id="grp" styleClass="dialog-grid-panel noBorders">
+                    <p:panelGrid id="grp" styleClass="dialog-grid-panel noBorders" rendered="#{not empty controller.dialogAttrArtifact}">
                         <p:row>
                             <p:column class="alignRight dialog-labels-width-2" style="padding-top: 0.5em;">
                                 <h:panelGroup id="artifactNameLabel">
-                                    <p:outputLabel for="artifactName" value="Name" rendered="#{!controller.artifactInternal}"/>
+                                    <p:outputLabel for="artifactName" value="Name" rendered="#{!controller.dialogAttrArtifact.artifactInternal}"/>
                                 </h:panelGroup>
                             </p:column>
                             <p:column>
                                 <h:panelGroup id="artifactNameValue">
                                     <p:inputText id="artifactName" maxlength="128" required="true" tabindex="1" 
-                                        requiredMessage="Please enter a description" rendered="#{not controller.artifactInternal}"
-                                        value="#{controller.artifactName}"/>
+                                        requiredMessage="Please enter a description" 
+                                        rendered="#{!controller.dialogAttrArtifact.artifactInternal}"
+                                        value="#{controller.dialogAttrArtifact.artifactName}"/>
                                     <br />
                                     <p:message for="artifactName" />
                                 </h:panelGroup>
@@ -37,7 +38,7 @@
                                 <h:panelGroup>
                                     <p:inputTextarea id="artifactDesc" rows="5" maxlength="255" tabindex="2" 
                                         required="true" requiredMessage="Please enter a description" 
-                                        value="#{controller.artifactDescription}" />
+                                        value="#{controller.dialogAttrArtifact.artifactDescription}" />
                                     <br />
                                     <p:message for="artifactDesc" />
                                 </h:panelGroup>
@@ -49,10 +50,10 @@
                                 <p:outputLabel value="File :" />
                             </p:column>
                             <p:column>
-                                <p:selectBooleanCheckbox id="options" value="#{controller.artifactInternal}" 
-                                        disabled="#{controller.artifactBeingModified}" tabindex="3">
-                                    <p:ajax process="@this" listener="#{controller.artifactTypeChanged}" 
-                                        update="artifactNameLabel artifactNameValue urlLabel urlValue uploader uploadFile" />
+                                <p:selectBooleanCheckbox id="options" value="#{controller.dialogAttrArtifact.artifactInternal}" 
+                                        disabled="#{controller.dialogAttrArtifact.artifactBeingModified}" tabindex="3">
+                                    <p:ajax process="@this" update="artifactNameLabel artifactNameValue urlLabel urlValue 
+                                                                    uploader uploadFile saveButton" />
                                 </p:selectBooleanCheckbox>
                             </p:column>
                         </p:row>
@@ -60,14 +61,14 @@
                         <p:row>
                             <p:column class="alignRight dialog-labels-width-2" style="padding-top: 0.5em;">
                                 <h:panelGroup id="urlLabel">
-                                    <p:outputLabel value="URL :" rendered="#{!controller.artifactInternal}"/>
+                                    <p:outputLabel value="URL :" rendered="#{!controller.dialogAttrArtifact.artifactInternal}"/>
                                 </h:panelGroup>
                             </p:column>
                             <p:column>
                                 <h:panelGroup id="urlValue" >
                                     <p:inputTextarea id="artifactURI" rows="5" required="true" tabindex="4" 
-                                        value="#{controller.artifactURI}" requiredMessage="Please enter an URL" 
-                                        rendered="#{!controller.artifactInternal}" validatorMessage="Invalid URL">
+                                        value="#{controller.dialogAttrArtifact.artifactURI}" requiredMessage="Please enter an URL" 
+                                        rendered="#{!controller.dialogAttrArtifact.artifactInternal}" validatorMessage="Invalid URL">
                                         <f:validator validatorId="custom.urlValidator" />
                                     </p:inputTextarea>
                                     <p:message for="artifactURI" />
@@ -78,17 +79,17 @@
                         <p:row>
                             <p:column colspan="2">
                                 <h:panelGroup id="uploader">
-                                    <p:fileUpload fileUploadListener="#{controller.handleImportFileUpload}" 
+                                    <p:fileUpload fileUploadListener="#{controller.dialogAttrArtifact.handleImportFileUpload}" 
                                         update="uploader uploadFile saveButton" 
                                         mode="advanced" auto="false" fileLimit="1" dragDropSupport="true"
-                                        rendered="#{controller.artifactInternal}" />
+                                        rendered="#{controller.dialogAttrArtifact.artifactInternal}" />
                                 </h:panelGroup>
                                 <h:panelGroup id="uploadFile">
-                                    <h:panelGroup rendered="#{not empty controller.importFileName}">
+                                    <h:panelGroup rendered="#{controller.dialogAttrArtifact.artifactInternal and not empty controller.dialogAttrArtifact.name}">
                                         <div class="ui-message ui-message-warn ui-widget ui-corner-all">
                                             <span class="ui-message-info-icon"></span>
                                             <span class="ui-message-info-detail">
-                                                <p:outputLabel value="#{controller.importFileName} uploaded" />
+                                                <p:outputLabel value="#{controller.dialogAttrArtifact.name} uploaded" />
                                             </span>
                                         </div>
                                     </h:panelGroup>
@@ -102,10 +103,11 @@
                     <p:commandButton value="Save" styleClass="dialogButton defaultCommand" id="saveButton" 
                             oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('#{widgetName}').hide(); #{resetFilter}}" 
                             action="#{controller[submitHandler]}" tabindex="5" update="#{componentToUpdate} grp" 
-                            disabled="#{not controller.artifactBeingModified and controller.artifactInternal 
-                                        and empty controller.importFileName}"/>
+                            disabled="#{not controller.dialogAttrArtifact.artifactBeingModified 
+                                        and controller.dialogAttrArtifact.artifactInternal 
+                                        and empty controller.dialogAttrArtifact.name}" />
                     <p:commandButton value="Cancel" styleClass="dialogButton" onclick="PF('#{widgetName}').hide(); #{resetFilter}" 
-                            update="grp" resetValues="true" tabindex="6" />
+                            update="grp" resetValues="true" tabindex="6" action="#{controller.resetFields}" />
                 </p:panel>
 
                 <p:defaultCommand target="saveButton" />

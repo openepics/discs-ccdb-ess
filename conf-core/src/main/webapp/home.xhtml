@@ -614,7 +614,7 @@
             <ui:param name="dialogTitle" value="Add Property" />
             <ui:param name="widgetName" value="addPropertyValue" />
             <ui:param name="controller" value="#{hierarchiesController}" />
-            <ui:param name="submitHandler" value="addNewPropertyValue" />
+            <ui:param name="submitHandler" value="modifyPropertyValue" />
             <ui:param name="componentToUpdate" value=":hierarchies:slotAttributes :hierarchies:growl" />
             <ui:param name="resetFilter" value="PF('attributesWidget').clearFilters();" />
         </ui:include>
@@ -634,7 +634,7 @@
             <ui:param name="dialogTitle" value="Add Artifact" />
             <ui:param name="widgetName" value="addArtifact" />
             <ui:param name="controller" value="#{hierarchiesController}" />
-            <ui:param name="submitHandler" value="addNewArtifact" />
+            <ui:param name="submitHandler" value="modifyArtifact" />
             <ui:param name="componentToUpdate" value=":hierarchies:slotAttributes :hierarchies:growl" />
             <ui:param name="resetFilter" value="PF('attributesWidget').clearFilters();" />
         </ui:include>

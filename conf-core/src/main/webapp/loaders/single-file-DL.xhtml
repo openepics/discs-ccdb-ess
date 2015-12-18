@@ -9,18 +9,18 @@
                 <h:outputText value="#{dialogTitle}" />
             </f:facet>
             <h:panelGroup id="grp" layout="block">
-                <h:panelGroup rendered="#{controller.importFileName == null}" layout="block" 
+                <h:panelGroup rendered="#{controller.excelImportFileName == null}" layout="block" 
                     style="padding: 0 0 7px 0">Please choose an Excel file (*.xlsx) to import data from.</h:panelGroup>
                 <p:fileUpload id="singleFileDLUploadCtl" fileUploadListener="#{controller.handleImportFileUpload}" 
                     update="grp importStatsDialog" mode="advanced" auto="true" fileLimit="1" 
                     dragDropSupport="true" allowTypes="/(\.|\/)(xlsx)$/" oncomplete="PF('importStatsDialog').show();"
-                    rendered="#{controller.importFileName == null}" />
-                <h:outputText value="#{controller.importFileName}" />
+                    rendered="#{controller.excelImportFileName == null}" />
+                <h:outputText value="#{controller.excelImportFileName}" />
                 <p:separator />
                 <p:commandButton value="Cancel" styleClass="dialogButton" onclick="PF('#{widgetName}').hide();" />
                 <p:commandButton value="Import" styleClass="dialogButton" onclick="PF('statusDialog').show()" 
                     update=":menuform :#{formId}" oncomplete="PF('#{widgetName}').hide();PF('statusDialog').hide();" 
-                    action="#{controller.doImport()}" disabled="#{controller.importFileName == null}" />
+                    action="#{controller.doImport()}" disabled="#{controller.excelImportFileName == null}" />
             </h:panelGroup>
         </p:dialog>
 
@@ -80,7 +80,7 @@
         </p:dialog>
 
         <p:dialog id="resultDialog" widgetVar="resultDialog" modal="true" style="max-width: 90%; max-height: 600px;" 
-                visible="#{controller.importFileName != null and controller.loaderResult != null}" resizable="false" 
+                visible="#{controller.excelImportFileName != null and controller.loaderResult != null}" resizable="false" 
                 closable="false">  
             <f:facet name="header">
                 <h:outputText style="#{controller.loaderResult.error ? 'color: red !important;' : ''}" 

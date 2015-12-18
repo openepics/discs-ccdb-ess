@@ -19,12 +19,9 @@
  */
 package org.openepics.discs.conf.ui;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -40,7 +37,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import org.apache.commons.io.FilenameUtils;
 import org.openepics.discs.conf.ejb.ComptypeEJB;
 import org.openepics.discs.conf.ejb.DeviceEJB;
 import org.openepics.discs.conf.ejb.InstallationEJB;
@@ -52,6 +48,7 @@ import org.openepics.discs.conf.ent.DeviceArtifact;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ent.InstallationRecord;
 import org.openepics.discs.conf.ent.Slot;
+import org.openepics.discs.conf.ent.SlotArtifact;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.ent.Tag;
 import org.openepics.discs.conf.export.ExportTable;
@@ -63,15 +60,16 @@ import org.openepics.discs.conf.util.BatchIterator;
 import org.openepics.discs.conf.util.BatchSaveStage;
 import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.views.DeviceView;
+import org.openepics.discs.conf.views.EntityAttrArtifactView;
+import org.openepics.discs.conf.views.EntityAttrPropertyValueView;
+import org.openepics.discs.conf.views.EntityAttrTagView;
 import org.openepics.discs.conf.views.EntityAttributeView;
 import org.openepics.discs.conf.views.EntityAttributeViewKind;
 import org.primefaces.context.RequestContext;
-import org.primefaces.event.FileUploadEvent;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.google.common.io.ByteStreams;
 
 /**
  * Controller bean for manipulation of {@link Device} attributes
@@ -158,8 +156,6 @@ public class DevicesController
             final String deviceId = ((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().
                     getRequest()).getParameter("id");
             super.init();
-            setArtifactClass(DeviceArtifact.class);
-            setPropertyValueClass(DevicePropertyValue.class);
             setDao(deviceEJB);
             simpleTableExporterDialog = new ExportSimpleDeviceTableDialog();
             availableDeviceTypes = componentTypesEJB.findAll();
@@ -186,49 +182,13 @@ public class DevicesController
     }
 
     @Override
-    protected void setPropertyValueParent(DevicePropertyValue child) {
-        child.setDevice(device);
-    }
-
-    @Override
-    protected void setArtifactParent(DeviceArtifact child) {
-        device = deviceEJB.findById(device.getId());
-        child.setDevice(device);
-    }
-
-    @Override
-    protected void setTagParent(Tag tag) {
-        Preconditions.checkNotNull(device);
-        device = deviceEJB.findById(device.getId());
-        final Set<Tag> existingTags = device.getTags();
-        if (!existingTags.contains(tag)) {
-            existingTags.add(tag);
-            deviceEJB.save(device);
-        }
-    }
-
-    @Override
-    protected void setTagParentForOperations(Long parentId) {
-        Preconditions.checkNotNull(parentId);
-        device = deviceEJB.findById(parentId);
-    }
-
-    @Override
-    protected void deleteTagFromParent(Tag tag) {
-        Preconditions.checkNotNull(device);
-        device = deviceEJB.findById(device.getId());
-        device.getTags().remove(tag);
-        deviceEJB.save(device);
-    }
-
-    @Override
     protected void filterProperties() {
         // nothing to do
     }
 
     @Override
     protected void populateAttributesList() {
-        attributes = new ArrayList<EntityAttributeView>();
+        attributes = new ArrayList<>();
 
         for (final DeviceView deviceView : selectedDevices) {
             final Device attrDevice = deviceEJB.findById(deviceView.getDevice().getId());
@@ -236,34 +196,28 @@ public class DevicesController
 
             for (final ComptypePropertyValue parentProp : parent.getComptypePropertyList()) {
                 if (parentProp.getPropValue() != null) {
-                    attributes.add(new EntityAttributeView(parentProp, EntityAttributeViewKind.DEVICE_TYPE_PROPERTY,
-                                                                attrDevice, deviceEJB, parent.getName()));
+                    attributes.add(new EntityAttrPropertyValueView<Device>(parentProp, attrDevice, parent));
                 }
             }
 
             for (final ComptypeArtifact parentArtifact : parent.getComptypeArtifactList()) {
-                attributes.add(new EntityAttributeView(parentArtifact, EntityAttributeViewKind.DEVICE_TYPE_ARTIFACT,
-                                                                attrDevice, deviceEJB, parent.getName()));
+                attributes.add(new EntityAttrArtifactView<Device>(parentArtifact, attrDevice, parent));
             }
 
             for (final Tag parentTag : parent.getTags()) {
-                attributes.add(new EntityAttributeView(parentTag, EntityAttributeViewKind.DEVICE_TYPE_TAG,
-                                                                attrDevice, deviceEJB, parent.getName()));
+                attributes.add(new EntityAttrTagView<Device>(parentTag, attrDevice, parent));
             }
 
             for (final DevicePropertyValue propVal : attrDevice.getDevicePropertyList()) {
-                attributes.add(new EntityAttributeView(propVal, EntityAttributeViewKind.DEVICE_PROPERTY,
-                                                                attrDevice, deviceEJB, parent.getName()));
+                attributes.add(new EntityAttrPropertyValueView<Device>(propVal, attrDevice));
             }
 
             for (final DeviceArtifact artf : attrDevice.getDeviceArtifactList()) {
-                attributes.add(new EntityAttributeView(artf, EntityAttributeViewKind.DEVICE_ARTIFACT,
-                                                                attrDevice, deviceEJB));
+                attributes.add(new EntityAttrArtifactView<Device>(artf, attrDevice));
             }
 
             for (final Tag tagAttr : attrDevice.getTags()) {
-                attributes.add(new EntityAttributeView(tagAttr, EntityAttributeViewKind.DEVICE_TAG,
-                                                                attrDevice, deviceEJB));
+                attributes.add(new EntityAttrTagView<Device>(tagAttr, attrDevice));
             }
 
             final InstallationRecord installationRecord = installationEJB.getActiveInstallationRecordForDevice(attrDevice);
@@ -271,15 +225,20 @@ public class DevicesController
 
             if (slot != null) {
                 for (final SlotPropertyValue value : slot.getSlotPropertyList()) {
-                    attributes.add(new EntityAttributeView(value, EntityAttributeViewKind.INSTALL_SLOT_PROPERTY,
-                                                                    attrDevice, deviceEJB,
-                                                                    slot.getName() + ", " + parent.getName()));
+                    attributes.add(new EntityAttrPropertyValueView<Device>(value, attrDevice, slot));
+                }
+                for (final SlotArtifact value : slot.getSlotArtifactList()) {
+                    attributes.add(new EntityAttrArtifactView<Device>(value, attrDevice, slot));
+                }
+                for (final Tag tag : slot.getTags()) {
+                    attributes.add(new EntityAttrTagView<Device>(tag, attrDevice, slot));
                 }
             } else {
                 for (final ComptypePropertyValue parentProp : parent.getComptypePropertyList()) {
                     if (parentProp.isDefinitionTargetSlot())
-                        attributes.add(new EntityAttributeView(parentProp, EntityAttributeViewKind.INSTALL_SLOT_PROPERTY,
-                                                                    attrDevice, deviceEJB, parent.getName()));
+                        attributes.add(new EntityAttrPropertyValueView<Device>(parentProp,
+                                                                    EntityAttributeViewKind.INSTALL_SLOT_PROPERTY,
+                                                                    attrDevice, parent));
                 }
             }
         }
@@ -551,21 +510,6 @@ public class DevicesController
         }
     }
 
-    @Override
-    public void handleImportFileUpload(FileUploadEvent event) {
-        // this handler is shared between AbstractExcelSingleFileImportUI and Artifact loading
-        if ("importDevicesForm:singleFileDLUploadCtl".equals(event.getComponent().getClientId())) {
-            super.handleImportFileUpload(event);
-        } else {
-            try (InputStream inputStream = event.getFile().getInputstream()) {
-                importData = ByteStreams.toByteArray(inputStream);
-                importFileName = FilenameUtils.getName(event.getFile().getFileName());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
     /** @return The list of all {@link Device} instances to display to the the user */
     public List<DeviceView> getDevices() {
         return devices;
@@ -740,10 +684,29 @@ public class DevicesController
      *  Prevents deletion of installation slot properties in this view only.     *
      */
     @Override
-    protected boolean canDelete(EntityAttributeView attributeView) {
+    protected boolean canDelete(EntityAttributeView<Device> attributeView) {
         if (EntityAttributeViewKind.CONTAINER_SLOT_PROPERTY.equals(attributeView.getKind())) return false;
         if (EntityAttributeViewKind.INSTALL_SLOT_PROPERTY.equals(attributeView.getKind())) return false;
         if (EntityAttributeViewKind.DEVICE_TYPE_PROPERTY.equals(attributeView.getKind())) return false;
         return super.canDelete(attributeView);
+    }
+
+    @Override
+    protected Device getSelectedEntity() {
+        if (selectedDevices != null && selectedDevices.size() == 1) {
+            Device device = deviceEJB.findById(selectedDevices.get(0).getDevice().getId());
+            return device;
+        }
+        throw new IllegalArgumentException("No device selected");
+    }
+
+    @Override
+    protected DevicePropertyValue newPropertyValue() {
+        return new DevicePropertyValue();
+    }
+
+    @Override
+    protected DeviceArtifact newArtifact() {
+        return new DeviceArtifact();
     }
 }

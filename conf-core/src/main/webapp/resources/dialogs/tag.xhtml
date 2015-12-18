@@ -15,7 +15,7 @@
                         columnClasses="alignMiddle alignRight dialog-labels-width-2">
                     <p:outputLabel for="tag" value="Tag:" />
                     <h:panelGroup>
-                        <p:autoComplete id="tag" value="#{controller.tag}" completeMethod="#{controller.tagAutocompleteText}" 
+                        <p:autoComplete id="tag" value="#{controller.dialogAttrTag.tag}" completeMethod="#{controller.tagAutocompleteText}" 
                                 required="true" requiredMessage="Please enter tag" tabindex="1" />
                         <p:message for="tag" />
                     </h:panelGroup>               
@@ -27,7 +27,7 @@
                         oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('#{widgetName}').hide(); #{resetFilter}}" 
                         action="#{controller[submitHandler]}" tabindex="2" update="#{componentToUpdate} grp" />
                 <p:commandButton value="Cancel" styleClass="dialogButton" onclick="PF('#{widgetName}').hide();#{resetFilter}" 
-                        update="grp" resetValues="true" tabindex="3" />
+                        update="grp" resetValues="true" action="#{controller.resetFields}" tabindex="3" />
             </p:panel>
 
             <p:defaultCommand target="save" />

@@ -185,7 +185,6 @@ public class EntityHierarchyBuilder extends HierarchyBuilder {
 
     private boolean handleNodeSubtree(TreeNode node) {
         final SlotView slotView = (SlotView) node.getData();
-        final boolean isSlotContainer = !slotView.isHostingSlot();
 
         if (expandedNodes.contains(slotView.getId())) node.setExpanded(true);
 
