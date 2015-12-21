@@ -326,17 +326,8 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
     public void duplicate() {
         try {
             Preconditions.checkState(!Utility.isNullOrEmpty(selectedProperties));
-
-            int duplicated = 0;
-            for (final PropertyView propToCopy : selectedProperties) {
-                final String newPropName = Utility.findFreeName(propToCopy.getName(), propertyEJB);
-                final Property newProp = new Property(newPropName, propToCopy.getDescription());
-                newProp.setDataType(propToCopy.getDataType());
-                newProp.setUnit(propToCopy.getUnit());
-                newProp.setValueUniqueness(propToCopy.getValueUniqueness());
-                propertyEJB.add(newProp);
-                duplicated++;
-            }
+            final int duplicated = propertyEJB.duplicate(selectedProperties.stream().map(PropertyView::getProperty).
+                                            collect(Collectors.toList()));
             Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
                     "Duplicated " + duplicated + " properties.");
         } finally {

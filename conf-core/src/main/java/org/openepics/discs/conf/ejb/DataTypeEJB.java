@@ -27,9 +27,13 @@ import org.openepics.discs.conf.ent.AlignmentPropertyValue;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.DataType;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
+import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyValue;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
+import org.openepics.discs.conf.security.Authorized;
+import org.openepics.discs.conf.util.CRUDOperation;
+import org.openepics.discs.conf.util.Utility;
 
 import com.google.common.base.Preconditions;
 
@@ -114,4 +118,25 @@ public class DataTypeEJB extends DAO<DataType> {
                     .setParameter("dataType", dataType).setMaxResults(maxResults).getResultList();
     }
 
+    /**
+     * The method creates a new copy of the selected {@link DataType}s
+     * @param enumsToDuplicate a {@link List} of {@link DataType}s to create a copy of
+     * @return the number of copies created
+     */
+    @CRUDOperation(operation=EntityTypeOperation.CREATE)
+    @Authorized
+    public int duplicate(final List<DataType> enumsToDuplicate) {
+        int duplicated = 0;
+        if (Utility.isNullOrEmpty(enumsToDuplicate)) return 0;
+
+        for (final DataType enumToCopy : enumsToDuplicate) {
+            final String newEnumName = Utility.findFreeName(enumToCopy.getName(), this);
+            final DataType newEnum = new DataType(newEnumName, enumToCopy.getDescription(), enumToCopy.isScalar(),
+                    enumToCopy.getDefinition());
+            add(newEnum);
+            explicitAuditLog(newEnum, EntityTypeOperation.CREATE);
+            ++duplicated;
+        }
+        return duplicated;
+    }
 }

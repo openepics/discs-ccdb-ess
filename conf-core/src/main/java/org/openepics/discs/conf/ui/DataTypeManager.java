@@ -306,15 +306,8 @@ public class DataTypeManager extends AbstractExcelSingleFileImportUI implements 
     public void duplicate() {
         try {
             Preconditions.checkState(!Utility.isNullOrEmpty(selectedEnums));
-            int duplicated = 0;
-            for (final UserEnumerationView userEnumerationView : selectedEnums) {
-                final DataType enumToCopy = userEnumerationView.getEnumeration();
-                final String newEnumName = Utility.findFreeName(enumToCopy.getName(), dataTypeEJB);
-                final DataType newEnum = new DataType(newEnumName, enumToCopy.getDescription(), enumToCopy.isScalar(),
-                        enumToCopy.getDefinition());
-                dataTypeEJB.add(newEnum);
-                duplicated++;
-            }
+            final int duplicated =  dataTypeEJB.duplicate(selectedEnums.stream().
+                                            map(UserEnumerationView::getEnumeration).collect(Collectors.toList()));
             Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
                     "Duplicated " + duplicated + " enumerations.");
         } finally {

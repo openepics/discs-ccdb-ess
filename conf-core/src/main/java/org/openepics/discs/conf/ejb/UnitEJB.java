@@ -23,8 +23,12 @@ import java.util.List;
 
 import javax.ejb.Stateless;
 
+import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.Unit;
+import org.openepics.discs.conf.security.Authorized;
+import org.openepics.discs.conf.util.CRUDOperation;
+import org.openepics.discs.conf.util.Utility;
 
 /**
  *
@@ -62,5 +66,26 @@ public class UnitEJB extends DAO<Unit> {
      */
     public List<Property> findProperties(Unit unit, int maxResults) {
         return em.createNamedQuery("Property.findByUnit", Property.class).setParameter("unit", unit).setMaxResults(maxResults).getResultList();
+    }
+
+    /**
+     * The method creates a new copy of the selected {@link Unit}s
+     * @param unitsToDuplicate a {@link List} of {@link Unit}s to create a copy of
+     * @return the number of copies created
+     */
+    @CRUDOperation(operation=EntityTypeOperation.CREATE)
+    @Authorized
+    public int duplicate(final List<Unit> unitsToDuplicate) {
+        int duplicated = 0;
+        if (Utility.isNullOrEmpty(unitsToDuplicate)) return 0;
+
+        for (final Unit unitToCopy : unitsToDuplicate) {
+            final String newUnitName = Utility.findFreeName(unitToCopy.getName(), this);
+            final Unit newUnit = new Unit(newUnitName, unitToCopy.getSymbol(), unitToCopy.getDescription());
+            add(newUnit);
+            explicitAuditLog(newUnit, EntityTypeOperation.CREATE);
+            ++duplicated;
+        }
+        return duplicated;
     }
 }

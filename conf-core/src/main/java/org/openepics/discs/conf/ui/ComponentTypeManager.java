@@ -514,13 +514,8 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
         try {
             Preconditions.checkState(!Utility.isNullOrEmpty(selectedDeviceTypes));
 
-            int duplicated = 0;
-            for (final ComponentTypeView selectedDeviceType : selectedDeviceTypes) {
-                String newName = Utility.findFreeName(selectedDeviceType.getName(), comptypeEJB);
-                ComponentType newDeviceType = new ComponentType(newName);
-                comptypeEJB.duplicate(newDeviceType, selectedDeviceType.getComponentType());
-                ++duplicated;
-            }
+            final int duplicated = comptypeEJB.duplicate(selectedDeviceTypes.stream().
+                                    map(ComponentTypeView::getComponentType).collect(Collectors.toList()));
             Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
                     "Duplicated " + duplicated + " device types.");
         } finally {

@@ -20,6 +20,7 @@
 package org.openepics.discs.conf.security;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.security.auth.spi.LoginModule;
 import javax.servlet.http.HttpServletRequest;
@@ -71,10 +72,21 @@ public abstract class AbstractEnityTypeSecurityPolicy implements SecurityPolicy,
 
     @Override
     public void checkAuth(Object entity, EntityTypeOperation operationType) {
-        final EntityType entityType = EntityTypeResolver.resolveEntityType(entity);
+        if (entity instanceof List<?>) {
+            final List<?> entityList = (List<?>) entity;
+            for (Object element : entityList) {
+                final EntityType entityType = EntityTypeResolver.resolveEntityType(element);
 
-        if (!hasPermission(entityType , operationType)) {
-            throw SecurityException.generateExceptionMessage(entity, entityType, operationType);
+                if (!hasPermission(entityType, operationType)) {
+                    throw SecurityException.generateExceptionMessage(entity, entityType, operationType);
+                }
+            }
+        } else {
+            final EntityType entityType = EntityTypeResolver.resolveEntityType(entity);
+
+            if (!hasPermission(entityType, operationType)) {
+                throw SecurityException.generateExceptionMessage(entity, entityType, operationType);
+            }
         }
     }
 

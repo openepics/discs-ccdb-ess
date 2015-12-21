@@ -27,7 +27,6 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.PersistenceException;
 
-import org.openepics.discs.conf.auditlog.Audit;
 import org.openepics.discs.conf.ent.ComponentType;
 import org.openepics.discs.conf.ent.ComptypeArtifact;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
@@ -41,6 +40,7 @@ import org.openepics.discs.conf.security.Authorized;
 import org.openepics.discs.conf.util.BlobStore;
 import org.openepics.discs.conf.util.CRUDOperation;
 import org.openepics.discs.conf.util.PropertyValueNotUniqueException;
+import org.openepics.discs.conf.util.Utility;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -133,6 +133,28 @@ public class ComptypeEJB extends DAO<ComponentType> {
         return usedBy;
     }
 
+
+    /**
+     * The method creates a new copy of the selected {@link ComponentType}s
+     * @param deviceTypesToDuplicate a {@link List} of {@link ComponentType}s to create a copy of
+     * @return the number of copies created
+     */
+    @CRUDOperation(operation=EntityTypeOperation.CREATE)
+    @Authorized
+    public int duplicate(List<ComponentType> deviceTypesToDuplicate) {
+        if (Utility.isNullOrEmpty(deviceTypesToDuplicate)) return 0;
+
+        int duplicated = 0;
+        for (final ComponentType deviceType : deviceTypesToDuplicate) {
+            String newName = Utility.findFreeName(deviceType.getName(), this);
+            ComponentType newDeviceType = new ComponentType(newName);
+            duplicate(newDeviceType, deviceType);
+            explicitAuditLog(newDeviceType, EntityTypeOperation.CREATE);
+            ++duplicated;
+        }
+        return duplicated;
+    }
+
     /**
      * This method duplicates selected device types. This method actually copies
      * selected device type description, tags, artifacts and properties
@@ -142,10 +164,7 @@ public class ComptypeEJB extends DAO<ComponentType> {
      * @param newDeviceType the newly created device type
      * @param originalDeviceType the device type to copy the attributes from
      */
-    @CRUDOperation(operation=EntityTypeOperation.CREATE)
-    @Audit
-    @Authorized
-    public void duplicate(final ComponentType newDeviceType, final ComponentType originalDeviceType) {
+    private void duplicate(final ComponentType newDeviceType, final ComponentType originalDeviceType) {
         newDeviceType.setDescription(originalDeviceType.getDescription());
         add(newDeviceType);
 

@@ -284,14 +284,8 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
         try {
             Preconditions.checkState(!Utility.isNullOrEmpty(selectedUnits));
 
-            int duplicated = 0;
-            for (final UnitView unitView : selectedUnits) {
-                final Unit unitToCopy = unitView.getUnit();
-                final String newUnitName = Utility.findFreeName(unitToCopy.getName(), unitEJB);
-                final Unit newUnit = new Unit(newUnitName, unitToCopy.getSymbol(), unitToCopy.getDescription());
-                unitEJB.add(newUnit);
-                duplicated++;
-            }
+            final int duplicated = unitEJB.duplicate(selectedUnits.stream().map(UnitView::getUnit).
+                                        collect(Collectors.toList()));
             Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
                     "Duplicated " + duplicated + " units.");
         } finally {

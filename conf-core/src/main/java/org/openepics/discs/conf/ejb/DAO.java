@@ -19,10 +19,15 @@
  */
 package org.openepics.discs.conf.ejb;
 
+import java.util.Date;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.openepics.discs.conf.auditlog.Audit;
+import org.openepics.discs.conf.auditlog.AuditLogEntryCreator;
 import org.openepics.discs.conf.ent.Artifact;
+import org.openepics.discs.conf.ent.AuditRecord;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.EntityWithArtifacts;
 import org.openepics.discs.conf.ent.EntityWithProperties;
@@ -31,6 +36,7 @@ import org.openepics.discs.conf.ent.PropertyValue;
 import org.openepics.discs.conf.ent.values.Value;
 import org.openepics.discs.conf.security.Authorized;
 import org.openepics.discs.conf.util.CRUDOperation;
+import org.openepics.discs.conf.util.ParentEntityResolver;
 import org.openepics.discs.conf.util.PropertyValueNotUniqueException;
 import org.openepics.discs.conf.util.UnhandledCaseException;
 
@@ -49,6 +55,8 @@ import com.google.common.base.Preconditions;
 public abstract class DAO<T> extends ReadOnlyDAO<T> {
     private static final String PROPERTY_PARAM = "property";
     private static final String PROPERTY_VALUE_PARAM = "propValue";
+
+    @Inject private AuditLogEntryCreator auditLogEntryCreator;
 
     /**
      * Adds a new entity to the database
@@ -241,5 +249,21 @@ public abstract class DAO<T> extends ReadOnlyDAO<T> {
             valueUnique = (results.size() < 2) && (results.isEmpty() || results.get(0).equals(child));
         }
         return valueUnique;
+    }
+
+    /** Create an explicit audit log entry for the database entity.
+     * @param entity the entity to create the audit log for
+     * @param operation the type of database operation
+     */
+    protected void explicitAuditLog(final T entity, final EntityTypeOperation operation) {
+        final List<AuditRecord> auditRecords = auditLogEntryCreator.auditRecords(
+                ParentEntityResolver.resolveParentEntity(entity), operation);
+
+        for (AuditRecord auditRecord : auditRecords) {
+            auditRecord.setUser(entityUtility.getUserId());
+            auditRecord.setLogTime(new Date());
+
+            em.persist(auditRecord);
+        }
     }
 }

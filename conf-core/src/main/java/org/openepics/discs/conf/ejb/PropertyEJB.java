@@ -25,9 +25,13 @@ import javax.ejb.Stateless;
 
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
+import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyValue;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
+import org.openepics.discs.conf.security.Authorized;
+import org.openepics.discs.conf.util.CRUDOperation;
+import org.openepics.discs.conf.util.Utility;
 
 import com.google.common.collect.Lists;
 
@@ -35,6 +39,7 @@ import com.google.common.collect.Lists;
  * DAO Service for accesing {@link Property} entities
  *
  * @author vuppala
+ * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  * @author <a href="mailto:miroslav.pavleski@cosylab.com">Miroslav Pavleski</a>
  *
  */
@@ -92,5 +97,29 @@ public class PropertyEJB extends DAO<Property> {
     @Override
     protected Class<Property> getEntityClass() {
         return Property.class;
+    }
+
+    /**
+     * The method creates a new copy of the selected {@link Property}s
+     * @param propertiesToCopy a {@link List} of {@link Property}s to create a copy of
+     * @return the number of copies created
+     */
+    @CRUDOperation(operation=EntityTypeOperation.CREATE)
+    @Authorized
+    public int duplicate(final List<Property> propertiesToCopy) {
+        if (Utility.isNullOrEmpty(propertiesToCopy)) return 0;
+
+        int duplicated = 0;
+        for (final Property propToCopy : propertiesToCopy) {
+            final String newPropName = Utility.findFreeName(propToCopy.getName(), this);
+            final Property newProp = new Property(newPropName, propToCopy.getDescription());
+            newProp.setDataType(propToCopy.getDataType());
+            newProp.setUnit(propToCopy.getUnit());
+            newProp.setValueUniqueness(propToCopy.getValueUniqueness());
+            add(newProp);
+            explicitAuditLog(newProp, EntityTypeOperation.CREATE);
+            ++duplicated;
+        }
+        return duplicated;
     }
 }

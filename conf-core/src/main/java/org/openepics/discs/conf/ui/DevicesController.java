@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
@@ -348,12 +349,8 @@ public class DevicesController
     }
 
     private Device createNewDevice(String deviceSerailNo) {
-        return createNewDevice(deviceSerailNo, selectedComponentType);
-    }
-
-    private Device createNewDevice(String deviceSerailNo, final ComponentType componentType) {
         final Device newDevice = new Device(deviceSerailNo);
-        newDevice.setComponentType(componentType);
+        newDevice.setComponentType(selectedComponentType);
         return newDevice;
     }
 
@@ -491,15 +488,8 @@ public class DevicesController
     public void duplicate() {
         Preconditions.checkState(!Utility.isNullOrEmpty(selectedDevices));
         try {
-            int duplicated = 0;
-            for (final DeviceView deviceView : selectedDevices) {
-                final Device deviceToCopy =  deviceView.getDevice();
-                final String newDeviceSerial = Utility.findFreeName(deviceToCopy.getSerialNumber(), deviceEJB);
-                final Device newCopy = createNewDevice(newDeviceSerial, deviceToCopy.getComponentType());
-
-                deviceEJB.duplicate(newCopy, deviceToCopy);
-                duplicated++;
-            }
+            final int duplicated = deviceEJB.duplicate(selectedDevices.stream().map(DeviceView::getDevice).
+                                                        collect(Collectors.toList()));
             Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS, "Duplicated " + duplicated
                     + " devices.");
         } finally {

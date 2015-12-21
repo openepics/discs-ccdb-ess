@@ -83,7 +83,7 @@ public class ConfigurationEntityUtility {
      *
      * @return resolved user name from the {@link SecurityPolicy} implementation or "system" if none found
      */
-    private String getUserId() {
+    protected String getUserId() {
         final String username = securityPolicy.getUserId();
 
         return username != null ? username : "system";

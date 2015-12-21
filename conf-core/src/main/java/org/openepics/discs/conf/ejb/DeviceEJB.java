@@ -40,6 +40,7 @@ import org.openepics.discs.conf.ent.values.Value;
 import org.openepics.discs.conf.security.Authorized;
 import org.openepics.discs.conf.util.BlobStore;
 import org.openepics.discs.conf.util.CRUDOperation;
+import org.openepics.discs.conf.util.Utility;
 
 import com.google.common.base.Preconditions;
 
@@ -98,7 +99,37 @@ public class DeviceEJB extends DAO<Device> {
         }
     }
 
-    public void duplicate(Device newCopy, Device deviceToCopy) {
+    /**
+     * This method duplicates selected devices. This method actually copies
+     * selected devices serial number, tags, artifacts and properties
+     * into the new device type. If property value has uniqueness setting of any type,
+     * copied property value is set to <code>null</code>.
+     *
+     * @param devicesToCopy a {@link List} of {@link Device}s to create a copy of
+     * @return the number of copies created
+     */
+    @CRUDOperation(operation=EntityTypeOperation.CREATE)
+    @Authorized
+    public int duplicate(List<Device> devicesToCopy) {
+        if (Utility.isNullOrEmpty(devicesToCopy)) return 0;
+
+        int duplicated = 0;
+        for (final Device deviceToCopy : devicesToCopy) {
+            final String newDeviceSerial = Utility.findFreeName(deviceToCopy.getSerialNumber(), this);
+            final Device newDevice = new Device(newDeviceSerial);
+            newDevice.setComponentType(deviceToCopy.getComponentType());
+            duplicate(newDevice, deviceToCopy);
+            explicitAuditLog(newDevice, EntityTypeOperation.CREATE);
+            ++duplicated;
+        }
+        return duplicated;
+    }
+
+    /** Creates a duplicate device, copying all the properties. For the {@link Device} property values
+     * @param newCopy a new device that has not been persisted yet
+     * @param deviceToCopy the device to copy the properties from
+     */
+    private void duplicate(Device newCopy, Device deviceToCopy) {
         addDeviceAndPropertyDefs(newCopy);
         transferValuesFromSource(newCopy, deviceToCopy);
         copyArtifactsFromSource(newCopy, deviceToCopy);
