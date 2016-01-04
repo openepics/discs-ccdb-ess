@@ -37,8 +37,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
@@ -1544,6 +1544,16 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         }
     }
 
+    /**
+     * @param possibleAscendant
+     * @param candidate
+     * @return <code>true</code> if the <code>candidate</code> is a descendant of <code>possibleAscendant</code>,
+     * <code>false</code> otherwise
+     */
+    private boolean isNodeDescendant(final SlotView possibleAscendant, final SlotView candidate) {
+        return isAncestorNodeInList(Arrays.asList(possibleAscendant), candidate);
+    }
+
     private boolean isAncestorNodeInList(final List<SlotView> candidates, final SlotView node) {
         SlotView parentNode = node.getParentNode();
         while (parentNode != null) {
@@ -1624,41 +1634,20 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
     private void moveSlotsToNewParent() {
         final TreeNode newParent = Utility.isNullOrEmpty(selectedNodes) ? rootNode : selectedNodes.get(0);
-        SlotView parentSlotView = (SlotView) newParent.getData();
-        for (final SlotView childSlotView : clipboardSlots) {
-            if (childSlotView.getParentNode().equals(parentSlotView) || isAncestorNodeInList(Lists.newArrayList(childSlotView), parentSlotView)) {
-                // The node is pasted to its own parent or the target is the nodes own descendant
-                continue;
-            }
-            // move the node to target
-            // create new relation first
-            slotPairEJB.add(new SlotPair(childSlotView.getSlot(), parentSlotView.getSlot(),
-                                    slotRelationEJB.findBySlotRelationName(SlotRelationName.CONTAINS)));
+        final SlotView parentSlotView = (SlotView) newParent.getData();
 
-            // remove the old relationship
-            final Slot oldParentSlot = childSlotView.getParentNode().getSlot();
-            //updateTreeWithFreshSlot(oldParent, oldParentSlot, false);
-            final SlotPair relationToRemove = findExistingPair(oldParentSlot, childSlotView.getSlot());
-            if (relationToRemove != null) {
-                slotPairEJB.delete(relationToRemove);
-            }
-        }
+        // remove the nodes that do not get moved or are moved to their own descendant
+        final List<SlotPair> moveCandidatesByRelationship = clipboardSlots.stream().
+                                        filter(e -> !(e.getParentNode().equals(parentSlotView)
+                                                || isNodeDescendant(e, parentSlotView))).
+                                        map(SlotView::getParentRelationship).collect(Collectors.toList());
+        slotPairEJB.moveSlotsToNewParent(moveCandidatesByRelationship, parentSlotView.getSlot());
+
         clipboardSlots = null;
         // Refresh the information about the affected slots in all the hierarchy trees
         if (!newParent.equals(rootNode)) {
             newParent.setExpanded(true);
         }
-    }
-
-    private SlotPair findExistingPair(final Slot parent, final Slot child) {
-        final SlotRelation containsRelation = slotRelationEJB.findBySlotRelationName(SlotRelationName.CONTAINS);
-        for (final SlotPair pair : parent.getPairsInWhichThisSlotIsAParentList()) {
-            if (pair.getChildSlot().equals(child) && pair.getParentSlot().equals(parent)
-                    && pair.getSlotRelation().equals(containsRelation)) {
-                return pair;
-            }
-        }
-        return null;
     }
 
     private void copySlotsToParent(final List<Slot> sourceSlots, final TreeNode parentNode) {

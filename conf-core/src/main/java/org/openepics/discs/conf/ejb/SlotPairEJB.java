@@ -228,4 +228,20 @@ public class SlotPairEJB extends DAO<SlotPair> {
         em.flush();
         mySlotPair.setSlotOrder(swapPairOrder);
     }
+
+    /** Changes the parent in all relationship to point to the new parent in a single transaction.
+     * @param relationships the {@link List} of relationships to change the parent for
+     * @param parent the new parent slot
+     */
+    public void moveSlotsToNewParent(final List<SlotPair> relationships, final Slot parent) {
+        for (SlotPair relationship : relationships) {
+            final SlotPair newRelationship = new SlotPair(relationship.getChildSlot(), parent, relationship.getSlotRelation());
+            add(newRelationship);
+            explicitAuditLog(newRelationship, EntityTypeOperation.UPDATE);
+            // pull in the new parent slot info
+            final SlotPair freshPair = findById(relationship.getId());
+            delete(freshPair);
+            explicitAuditLog(freshPair, EntityTypeOperation.UPDATE);
+        }
+    }
 }

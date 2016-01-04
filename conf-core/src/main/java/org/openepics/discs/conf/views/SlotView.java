@@ -22,6 +22,9 @@ package org.openepics.discs.conf.views;
 import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.Slot;
+import org.openepics.discs.conf.ent.SlotPair;
+import org.openepics.discs.conf.ent.SlotRelationName;
+import org.openepics.discs.conf.util.CCDBRuntimeException;
 
 /**
  * View of container used to compose and manipulate with container presentation in tree view
@@ -162,6 +165,19 @@ public class SlotView {
      */
     public void setCableNumber(String cableNumber) {
         this.cableNumber = cableNumber;
+    }
+
+    /** @return a {@link SlotPair} of the {@link SlotRelationName#CONTAINS} type to the parent node */
+    public SlotPair getParentRelationship() {
+        final Slot parentSlot = parentNode.getSlot();
+        for (SlotPair relationship : getSlot().getPairsInWhichThisSlotIsAChildList()) {
+            if ((relationship.getSlotRelation().getName() == SlotRelationName.CONTAINS)
+                    && relationship.getParentSlot().equals(parentSlot)) {
+                return relationship;
+            }
+        }
+        throw new CCDBRuntimeException("CONTAINS relationship with parent Slot not found (C, P): (" + name +", " +
+                                        parentSlot.getName() + ")");
     }
 
     /**
