@@ -51,7 +51,7 @@ public class EntityAttrTagView<E extends ConfigurationEntity & NamedEntity> exte
     public EntityAttrTagView(E parent) {
         super(parent);
         entity = new Tag();
-        setKind(EntityAttributeViewKind.TAG);
+        setKind(getEntityKind(parent));
     }
 
     /** @return The value of the tag */

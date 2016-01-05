@@ -670,15 +670,19 @@ public class DevicesController
         this.filteredDialogDevices = filteredDialogDevices;
     }
 
-    /**
-     *  Prevents deletion of installation slot properties in this view only.     *
-     */
+    @Override
+    public boolean canEdit(EntityAttributeView<Device> attributeView) {
+        final EntityAttributeViewKind attributeKind = attributeView.getKind();
+        return EntityAttributeViewKind.DEVICE_PROPERTY.equals(attributeKind)
+                || EntityAttributeViewKind.DEVICE_ARTIFACT.equals(attributeKind);
+    }
+
     @Override
     protected boolean canDelete(EntityAttributeView<Device> attributeView) {
-        if (EntityAttributeViewKind.CONTAINER_SLOT_PROPERTY.equals(attributeView.getKind())) return false;
-        if (EntityAttributeViewKind.INSTALL_SLOT_PROPERTY.equals(attributeView.getKind())) return false;
-        if (EntityAttributeViewKind.DEVICE_TYPE_PROPERTY.equals(attributeView.getKind())) return false;
-        return super.canDelete(attributeView);
+        final EntityAttributeViewKind attributeKind = attributeView.getKind();
+        return EntityAttributeViewKind.DEVICE_PROPERTY.equals(attributeKind)
+                || EntityAttributeViewKind.DEVICE_ARTIFACT.equals(attributeKind)
+                || EntityAttributeViewKind.DEVICE_TAG.equals(attributeKind);
     }
 
     @Override

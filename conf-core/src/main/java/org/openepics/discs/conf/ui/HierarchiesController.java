@@ -461,8 +461,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
                 if (tableAttribute.getKind() == EntityAttributeViewKind.DEVICE_TYPE_ARTIFACT
                         || tableAttribute.getKind() == EntityAttributeViewKind.INSTALL_SLOT_ARTIFACT
                         || tableAttribute.getKind() == EntityAttributeViewKind.DEVICE_ARTIFACT
-                        || tableAttribute.getKind() == EntityAttributeViewKind.CONTAINER_SLOT_ARTIFACT
-                        || tableAttribute.getKind() == EntityAttributeViewKind.ARTIFACT) {
+                        || tableAttribute.getKind() == EntityAttributeViewKind.CONTAINER_SLOT_ARTIFACT) {
                     // we just encountered our sibling ARTIFACT. Insert before that.
                     attributesIter.previous();
                     break;
@@ -517,8 +516,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
                 if (tableAttribute.getKind() == EntityAttributeViewKind.DEVICE_TYPE_TAG
                         || tableAttribute.getKind() == EntityAttributeViewKind.INSTALL_SLOT_TAG
                         || tableAttribute.getKind() == EntityAttributeViewKind.DEVICE_TAG
-                        || tableAttribute.getKind() == EntityAttributeViewKind.CONTAINER_SLOT_TAG
-                        || tableAttribute.getKind() == EntityAttributeViewKind.TAG) {
+                        || tableAttribute.getKind() == EntityAttributeViewKind.CONTAINER_SLOT_TAG) {
                     // we just encountered our sibling TAG. Insert before that.
                     attributesIter.previous();
                     break;
@@ -1750,7 +1748,6 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         }
         for (EntityAttributeView<Slot> selectedAttribute : selectedAttributes)
             switch (selectedAttribute.getKind()) {
-                case ARTIFACT:
                 case CONTAINER_SLOT_ARTIFACT:
                 case CONTAINER_SLOT_TAG:
                 case CONTAINER_SLOT_PROPERTY:

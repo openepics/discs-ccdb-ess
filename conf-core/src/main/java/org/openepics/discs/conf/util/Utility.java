@@ -34,7 +34,6 @@
  */
 package org.openepics.discs.conf.util;
 
-import com.google.common.base.Preconditions;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -55,6 +54,7 @@ import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotRelationName;
 import org.openepics.discs.conf.views.EntityAttributeViewKind;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 /**
  *
@@ -157,10 +157,7 @@ public class Utility {
                 EntityAttributeViewKind.INSTALL_SLOT_TAG,
                 EntityAttributeViewKind.DEVICE_PROPERTY,
                 EntityAttributeViewKind.DEVICE_ARTIFACT,
-                EntityAttributeViewKind.DEVICE_TAG,
-                EntityAttributeViewKind.ARTIFACT,
-                EntityAttributeViewKind.PROPERTY,
-                EntityAttributeViewKind.TAG,
+                EntityAttributeViewKind.DEVICE_TAG
         };
         for (EntityAttributeViewKind kind : displayedKinds) attributeKinds.add(new SelectItem(kind, kind.toString()));
         return attributeKinds;

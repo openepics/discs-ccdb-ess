@@ -34,12 +34,12 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.inject.Inject;
+
 import org.openepics.discs.conf.ejb.DAO;
 import org.openepics.discs.conf.ejb.DataTypeEJB;
 import org.openepics.discs.conf.ejb.TagEJB;
 import org.openepics.discs.conf.ent.Artifact;
 import org.openepics.discs.conf.ent.ComponentType;
-import org.openepics.discs.conf.ent.ComptypeArtifact;
 import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.ConfigurationEntity;
 import org.openepics.discs.conf.ent.Device;
@@ -48,7 +48,6 @@ import org.openepics.discs.conf.ent.EntityWithArtifacts;
 import org.openepics.discs.conf.ent.EntityWithProperties;
 import org.openepics.discs.conf.ent.EntityWithTags;
 import org.openepics.discs.conf.ent.NamedEntity;
-import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyValue;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
@@ -61,7 +60,6 @@ import org.openepics.discs.conf.views.EntityAttrArtifactView;
 import org.openepics.discs.conf.views.EntityAttrPropertyValueView;
 import org.openepics.discs.conf.views.EntityAttrTagView;
 import org.openepics.discs.conf.views.EntityAttributeView;
-import org.openepics.discs.conf.views.EntityAttributeViewKind;
 import org.primefaces.component.datatable.DataTable;
 import org.primefaces.context.RequestContext;
 import org.primefaces.model.DefaultStreamedContent;
@@ -92,13 +90,6 @@ public abstract class AbstractAttributesController
     @Inject protected TagEJB tagEJB;
     @Inject protected DataTypeEJB dataTypeEJB;
 
-    // TODO move to ComponentTypeController
-    private List<Property> selectedProperties;
-    private List<Property> selectionPropertiesFiltered;
-    protected List<Property> filteredProperties;
-    protected boolean isPropertyDefinition;
-    protected DefinitionTarget definitionTarget;
-
     private List<String> tagsForAutocomplete;
 
     protected List<EntityAttributeView<C>> attributes;
@@ -116,37 +107,6 @@ public abstract class AbstractAttributesController
 
     protected void resetFields() {
         dialogAttribute = null;
-    }
-
-    /**
-     * A method that adds either installation slot or device instance properties. It adds the definition to the device
-     * type and property values to already existing installation slots or device instances.
-     */
-    public void addNewPropertyValueDefs() {
-        for (Property selectedProperty : selectedProperties) {
-            final T newPropertyValueInstance = newPropertyValue();
-            newPropertyValueInstance.setInRepository(false);
-            newPropertyValueInstance.setProperty(selectedProperty);
-            newPropertyValueInstance.setPropValue(null);
-            newPropertyValueInstance.setPropertiesParent((EntityWithProperties)getSelectedEntity());
-
-            if ((newPropertyValueInstance instanceof ComptypePropertyValue) && isPropertyDefinition) {
-                final ComptypePropertyValue ctPropValueInstance = (ComptypePropertyValue) newPropertyValueInstance;
-                ctPropValueInstance.setPropertyDefinition(true);
-                if (definitionTarget == DefinitionTarget.SLOT) {
-                    ctPropValueInstance.setDefinitionTargetSlot(true);
-                } else {
-                    ctPropValueInstance.setDefinitionTargetDevice(true);
-                }
-            }
-            dao.addChild(newPropertyValueInstance);
-            addPropertyValueBasedOnDef(newPropertyValueInstance);
-        }
-        populateAttributesList();
-    }
-
-    protected void addPropertyValueBasedOnDef(T definition) {
-        // redefined in descendant
     }
 
     /**
@@ -357,26 +317,14 @@ public abstract class AbstractAttributesController
      * @param attributeView The object containing the UI info for the attribute table row.
      * @return <code>true</code> if the attribute can be edited, <code>false</code> otherwise.
      */
-    public boolean canEdit(EntityAttributeView<C> attributeView) {
-        final Object attribute = attributeView.getEntity();
-        return (attribute instanceof PropertyValue && !(attribute instanceof ComptypePropertyValue) && !(attribute instanceof SlotPropertyValue))
-                    || (attribute instanceof Artifact && !(attribute instanceof ComptypeArtifact));
-    }
+    public abstract boolean canEdit(EntityAttributeView<C> attributeView);
 
     /** This method determines whether the entity attribute can be deleted - is not used anywhere.
      *
      * @param attributeView The object containing the UI info for the attribute table row.
      * @return <code>true</code> if the attribute can be deleted, <code>false</code> otherwise.
      */
-    protected boolean canDelete(EntityAttributeView<C> attributeView) {
-        final Object attribute = attributeView.getEntity();
-        return (attribute instanceof Artifact && !(attribute instanceof ComptypeArtifact))
-                || (attribute instanceof Tag && attributeView.getKind() != EntityAttributeViewKind.DEVICE_TYPE_TAG)
-                || (attribute instanceof PropertyValue
-                        && ((((PropertyValue)attribute).getPropValue() != null)
-                                || !isPropertyValueInherited((PropertyValue)attribute))
-                    );
-    }
+    protected abstract boolean canDelete(EntityAttributeView<C> attributeView);
 
     private boolean isPropertyValueInherited(PropertyValue propValue) {
         List<ComptypePropertyValue> parentProperties = null;
@@ -461,11 +409,6 @@ public abstract class AbstractAttributesController
         dialogAttribute = new EntityAttrArtifactView<C>(artifact, selectedEntity);
     }
 
-    /** @return The list of {@link Property} entities the user can select from the drop-down control. */
-    public List<Property> getFilteredProperties() {
-        return filteredProperties;
-    }
-
     /** @return the selected table rows (UI view presentation)
      */
     public List<EntityAttributeView<C>> getSelectedAttributes() {
@@ -509,26 +452,6 @@ public abstract class AbstractAttributesController
     /** @return the attributeKinds */
     public List<SelectItem> getAttributeKinds() {
         return attributeKinds;
-    }
-
-    /** @return the selectedProperties */
-    public List<Property> getSelectedProperties() {
-        return selectedProperties;
-    }
-
-    /** @param selectedProperties the selectedProperties to set */
-    public void setSelectedProperties(List<Property> selectedProperties) {
-        this.selectedProperties = selectedProperties;
-    }
-
-    /** @return the selectionPropertiesFiltered */
-    public List<Property> getSelectionPropertiesFiltered() {
-        return selectionPropertiesFiltered;
-    }
-
-    /** @param selectionPropertiesFiltered the selectionPropertiesFiltered to set */
-    public void setSelectionPropertiesFiltered(List<Property> selectionPropertiesFiltered) {
-        this.selectionPropertiesFiltered = selectionPropertiesFiltered;
     }
 
     /**

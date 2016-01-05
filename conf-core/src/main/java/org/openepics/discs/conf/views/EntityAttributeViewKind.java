@@ -39,9 +39,6 @@ public enum EntityAttributeViewKind {
     DEVICE_PROPERTY("Device property"),
     DEVICE_ARTIFACT("Device artifact"),
     DEVICE_TAG("Device tag"),
-    ARTIFACT("Artifact"),
-    PROPERTY("Property"),
-    TAG("Tag"),
     UNKNOWN_PROPERTY("Unknown type property");
 
     private final String text;
