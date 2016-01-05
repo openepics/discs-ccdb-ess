@@ -241,14 +241,14 @@
                         <configuration>
                             <webResources>
                                 <resource>
-                                    <directory>/AS-specific-resources/glassfish</directory>
+                                    <directory>AS-specific-resources/glassfish</directory>
                                     <targetPath>WEB-INF/classes/META-INF</targetPath>
                                     <includes>
                                         <include>persistence.xml</include>
                                     </includes>                                    
                                 </resource>
                                 <resource>
-                                    <directory>/AS-specific-resources/glassfish</directory>
+                                    <directory>AS-specific-resources/glassfish</directory>
                                     <targetPath>WEB-INF</targetPath>
                                     <includes>
                                         <include>beans.xml</include>
@@ -475,14 +475,14 @@
                         <configuration>
                             <webResources>
                                 <resource>
-                                    <directory>/AS-specific-resources/jboss</directory>
+                                    <directory>AS-specific-resources/jboss</directory>
                                     <targetPath>WEB-INF/classes/META-INF</targetPath>
                                     <includes>
                                         <include>persistence.xml</include>
                                     </includes>                                    
                                 </resource>
                                 <resource>
-                                    <directory>/AS-specific-resources/jboss</directory>
+                                    <directory>AS-specific-resources/jboss</directory>
                                     <targetPath>WEB-INF</targetPath>
                                     <includes>
                                         <include>beans.xml</include>
