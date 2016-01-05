@@ -52,7 +52,6 @@ import javax.faces.validator.ValidatorException;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.persistence.PersistenceException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -79,7 +78,6 @@ import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ent.InstallationRecord;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyValue;
-import org.openepics.discs.conf.ent.PropertyValueUniqueness;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotArtifact;
 import org.openepics.discs.conf.ent.SlotPair;
@@ -1651,18 +1649,13 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     }
 
     private void copySlotsToParent(final List<Slot> sourceSlots, final TreeNode parentNode) {
-        for (final Slot sourceSlot : sourceSlots) {
-            // initialize subtree if required
+        final SlotView newParentSlotView = (SlotView) parentNode.getData();
+        final Slot newParentSlot = newParentSlotView.getSlot();
+        slotEJB.copySlotsToParent(sourceSlots, newParentSlot);
 
-            final Slot newCopy = createSlotCopy(sourceSlot, parentNode);
-
-            addAttributesToNewCopy(slotEJB.findById(newCopy.getId()), sourceSlot);
-
-            List<Slot> children = sourceSlot.getPairsInWhichThisSlotIsAParentList().stream()
-                .filter(sp -> sp.getSlotRelation().getName().equals(SlotRelationName.CONTAINS))
-                .map(SlotPair::getChildSlot).collect(Collectors.toList());
-            copySlotsToParent(children, findNodeForSlot(slotEJB.findById(newCopy.getId()), parentNode));
-        }
+        newParentSlotView.setDeletable(false);
+        hierarchyBuilder.rebuildSubTree(parentNode);
+        parentNode.setExpanded(true);
     }
 
     /*
@@ -1677,130 +1670,6 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         }
         return null;
     }
-
-    /**
-     * This method transfers from the copy source all the attributes that can be copied:
-     * <ul>
-     * <li>non-unique <b>DEFINED</b> property values</li>
-     * <li>tags</li>
-     * <li>URL artifacts</li>
-     * </ul>
-     * It does not copy the attachments, since this may be too heavy.
-     *
-     * @param newCopy the slot that was just created
-     * @param copySource the slot that is the source of the data
-     */
-    private void addAttributesToNewCopy(final Slot newCopy, final Slot copySource) {
-        if (newCopy.isHostingSlot()) {
-            // installation slots already have the property value instances, we just need to copy the actual values
-            transferValuesFromSource(newCopy, copySource);
-        } else {
-            // containers can have "free floating" property values. We need to copy them to the newly created containers
-            copyValuesFromSource(newCopy, copySource);
-        }
-
-        copyArtifactsFromSource(slotEJB.findById(newCopy.getId()), copySource);
-
-        final Slot tagCopy = slotEJB.findById(newCopy.getId());
-        tagCopy.getTags().addAll(copySource.getTags());
-
-        slotEJB.save(tagCopy);
-    }
-
-    private void transferValuesFromSource(final Slot newCopy, final Slot copySource) {
-        for (final SlotPropertyValue pv : newCopy.getSlotPropertyList()) {
-            if (pv.getProperty().getValueUniqueness() == PropertyValueUniqueness.NONE) {
-                final SlotPropertyValue parentPv = getPropertyValue(copySource, pv.getProperty().getName());
-                if (parentPv != null) {
-                    pv.setPropValue(parentPv.getPropValue());
-                }
-            }
-        }
-    }
-
-    private SlotPropertyValue getPropertyValue(final Slot slot, final String pvName) {
-        for (final SlotPropertyValue pv : slot.getSlotPropertyList()) {
-            if (pv.getProperty().getName().equals(pvName)) {
-                return pv;
-            }
-        }
-        return null;
-    }
-
-    private void copyValuesFromSource(final Slot newCopy, final Slot copySource) {
-        for (final SlotPropertyValue pv : copySource.getSlotPropertyList()) {
-            final SlotPropertyValue targetPv = new SlotPropertyValue(false);
-            targetPv.setProperty(pv.getProperty());
-            targetPv.setUnit(pv.getUnit());
-            if (pv.getProperty().getValueUniqueness() == PropertyValueUniqueness.NONE) {
-                targetPv.setPropValue(pv.getPropValue());
-            }
-            targetPv.setSlot(newCopy);
-            slotEJB.addChild(targetPv);
-            newCopy.getSlotPropertyList().add(targetPv);
-        }
-    }
-
-    private void copyArtifactsFromSource(final Slot newCopy, final Slot copySource) {
-        for (final SlotArtifact artifact : copySource.getSlotArtifactList()) {
-            String uri = artifact.getUri();
-            if (artifact.isInternal()) {
-                try {
-                    uri = blobStore.storeFile(blobStore.retreiveFile(uri));
-                } catch (IOException e) {
-                    throw new PersistenceException(e);
-                }
-            }
-
-            final SlotArtifact newArtifact = new SlotArtifact(artifact.getName(), artifact.isInternal(), artifact.getDescription(),
-                                                                    artifact.getUri());
-            newArtifact.setSlot(newCopy);
-            slotEJB.addChild(newArtifact);
-        }
-    }
-
-    private Slot createSlotCopy(final Slot source, final TreeNode parentNode) {
-        final String newName = findNewSlotCopyName(source.getName());
-        final Slot newSlot = new Slot(newName, source.isHostingSlot());
-        newSlot.setDescription(source.getDescription());
-        newSlot.setComponentType(source.getComponentType());
-        final Slot parentSlot = ((SlotView) parentNode.getData()).getSlot();
-        slotEJB.addSlotToParentWithPropertyDefs(newSlot, parentSlot, false);
-
-        // first update the back-end data
-        final SlotView slotViewToUpdate = (SlotView) parentNode.getData();
-        if (selectedSlotView != null) {
-            selectedSlotView = slotViewToUpdate;
-        }
-
-        // now update the front-end data as well.
-        if (slotViewToUpdate.isInitialzed()) {
-            final List<SlotPair> containsRelation = slotPairEJB.findSlotPairsByParentChildRelation(newSlot.getName(),
-                    slotViewToUpdate.getName(), SlotRelationName.CONTAINS);
-            final SlotPair newRelation = containsRelation.get(0);
-            final SlotView slotViewToAdd = new SlotView(newSlot, slotViewToUpdate, newRelation.getSlotOrder(), slotEJB);
-            hierarchyBuilder.addChildToParent(parentNode, slotViewToAdd);
-        } else {
-            hierarchyBuilder.rebuildSubTree(parentNode);
-        }
-        slotViewToUpdate.setDeletable(false);
-        parentNode.setExpanded(true);
-        return newSlot;
-    }
-
-    private String findNewSlotCopyName(String name) {
-        int slotIndex = 1;
-        String returnName = "";
-        while (returnName.isEmpty()) {
-            String candidateName = name + "_" + slotIndex;
-            if (slotEJB.findByName(candidateName) == null) {
-                return candidateName;
-            }
-            ++slotIndex;
-        }
-        return returnName;
-    }
-
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      * Above: Methods for manipulation, populating and editing the hierarchy tree of slots and containers.

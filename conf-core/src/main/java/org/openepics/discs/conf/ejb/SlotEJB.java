@@ -19,11 +19,17 @@
  */
 package org.openepics.discs.conf.ejb;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.persistence.PersistenceException;
 
 import org.openepics.discs.conf.auditlog.Audit;
 import org.openepics.discs.conf.dl.SlotsDataLoader;
@@ -38,6 +44,7 @@ import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyValue;
+import org.openepics.discs.conf.ent.PropertyValueUniqueness;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotArtifact;
 import org.openepics.discs.conf.ent.SlotPair;
@@ -46,6 +53,7 @@ import org.openepics.discs.conf.ent.SlotRelation;
 import org.openepics.discs.conf.ent.SlotRelationName;
 import org.openepics.discs.conf.ent.values.Value;
 import org.openepics.discs.conf.security.Authorized;
+import org.openepics.discs.conf.util.BlobStore;
 import org.openepics.discs.conf.util.CRUDOperation;
 import org.openepics.discs.conf.util.UnhandledCaseException;
 
@@ -60,19 +68,16 @@ import com.google.common.base.Preconditions;
  */
 @Stateless
 public class SlotEJB extends DAO<Slot> {
-    /**
-     * Special {@link ComponentType} name for root components
-     */
+    /** Special {@link ComponentType} name for root components */
     public static final String ROOT_COMPONENT_TYPE = "_ROOT";
 
-    /**
-     * Special {@link ComponentType} name for group components
-     */
+    /** Special {@link ComponentType} name for group components */
     public static final String GRP_COMPONENT_TYPE = "_GRP";
 
     @Inject private SlotPairEJB slotPairEJB;
     @Inject private SlotRelationEJB slotRelationEJB;
     @Inject private ComptypeEJB comptypeEJB;
+    @Inject private transient BlobStore blobStore;
 
     /**
      * Queries database for slots by partial name
@@ -112,6 +117,7 @@ public class SlotEJB extends DAO<Slot> {
 
     /**
      * All {@link Slot}s for given {@link ComponentType}
+     *
      * @param componentType the {@link ComponentType}
      * @return list of slots with specific {@link ComponentType}
      */
@@ -167,8 +173,9 @@ public class SlotEJB extends DAO<Slot> {
         }
     }
 
-    /** This method removed all needless property values in a single transaction.
-     * Also, all the removals are only logged once.
+    /**
+     * This method removed all needless property values in a single transaction. All the removals are only logged once.
+     *
      * @param slot the {@link Slot} to work on
      * @param deleteList property values to delete
      */
@@ -183,7 +190,9 @@ public class SlotEJB extends DAO<Slot> {
     }
 
 
-    /** This adds all the new properties in a single transaction.
+    /**
+     * This adds all the new properties in a single transaction.
+     *
      * @param slot the {@link Slot} to work on
      * @param newComponentType the new {@link ComponentType} to add the properties on
      */
@@ -249,9 +258,11 @@ public class SlotEJB extends DAO<Slot> {
         return (results.size() < 2) && (results.isEmpty() || results.get(0).equals(child));
     }
 
-    /** The method takes an instance of the property value ({@link SlotPropertyValue}, {@link ComptypePropertyValue},
+    /**
+     * The method takes an instance of the property value ({@link SlotPropertyValue}, {@link ComptypePropertyValue},
      * {@link DevicePropertyValue}, {@link AlignmentPropertyValue}) that has already been persisted (it has a valid ID),
      * and returns a fresh instance of the entity from the database.
+     *
      * @param propertyValue the {@link PropertyValue} to refresh. Must be already persisted.
      * @param <T> the actual instance type of the {@link PropertyValue}
      * @return a fresh instance of the property value from the database
@@ -275,9 +286,11 @@ public class SlotEJB extends DAO<Slot> {
         return returnPropertyValue;
     }
 
-    /** The method takes an instance of the artifact ({@link SlotArtifact}, {@link ComptypeArtifact},
+    /**
+     * The method takes an instance of the artifact ({@link SlotArtifact}, {@link ComptypeArtifact},
      * {@link DeviceArtifact}, {@link AlignmentArtifact}) that has already been persisted (it has a valid ID),
      * and returns a fresh instance of the entity from the database.
+     *
      * @param artifact the {@link Artifact} to refresh. Must be already persisted.
      * @param <T> the actual instance type of the {@link Artifact}
      * @return a fresh instance of the artifact from the database
@@ -301,7 +314,9 @@ public class SlotEJB extends DAO<Slot> {
         return returnPropertyValue;
     }
 
-    /** This method returns all {@link Slot}s, that are the root of some relationship (do not have any parents).
+    /**
+     * This method returns all {@link Slot}s, that are the root of some relationship (do not have any parents).
+     *
      * @param relation the relationship to test for
      * @return a {@link List} of {@link Slot}s that are roots of a certain relationship type.
      */
@@ -312,5 +327,183 @@ public class SlotEJB extends DAO<Slot> {
 
     public List<Slot> findAllByName(final String name) {
         return em.createNamedQuery("Slot.findByName", Slot.class).setParameter("name", name).getResultList();
+    }
+
+    /**
+     * Creates a copy of the slots in the <code>sourceSlots</code> under a new <code>parentSlot</code>.
+     *
+     * @param sourceSlots a {@link List} of {@link Slot}s to copy
+     * @param parentSlot a parent to contain the copies
+     */
+    public void copySlotsToParent(final List<Slot> sourceSlots, final Slot parentSlot) {
+        // originalToCopy is a mapping between original slots and their copies.
+        // It is used for creating relationship copies.
+        final Map<Slot, Slot> originalToCopy = new HashMap<>();
+        copySlotsToParent(sourceSlots, parentSlot, originalToCopy);
+        createRelationshipCopies(originalToCopy);
+    }
+
+    private void copySlotsToParent(final List<Slot> sourceSlots, final Slot parentSlot,
+                                                                            final Map<Slot, Slot> originalToCopy) {
+        // creates copies recursively
+        for (final Slot sourceSlot : sourceSlots) {
+            // a slot of the same type but of different name
+            final Slot newCopy = createSlotCopy(sourceSlot, parentSlot);
+            originalToCopy.put(sourceSlot, newCopy);
+
+            addAttributesToNewCopy(findById(newCopy.getId()), sourceSlot);
+
+            List<Slot> children = sourceSlot.getPairsInWhichThisSlotIsAParentList().stream()
+                .filter(sp -> sp.getSlotRelation().getName().equals(SlotRelationName.CONTAINS))
+                .map(SlotPair::getChildSlot).collect(Collectors.toList());
+            final Slot freshNewCopy = em.merge(newCopy);
+            explicitAuditLog(freshNewCopy, EntityTypeOperation.CREATE);
+            copySlotsToParent(children, freshNewCopy, originalToCopy);
+        }
+    }
+
+    /**
+     * Creates the relationships between all copies that exist between the original slots. This method only creates
+     * relationships where both sides of the relationship are in the copy set.
+     *
+     * @param originalToCopy a mapping between original slots and their copies.
+     */
+    private void createRelationshipCopies(final Map<Slot, Slot> originalToCopy) {
+        for (final Slot source : originalToCopy.keySet()) {
+            // Since both slots need to be in the copy set, it is enough to only search the children list
+            // and make sure the parent is in the copy set as well
+            final List<SlotPair> relationshipCandidates = source.getPairsInWhichThisSlotIsAChildList().stream().
+                                                        filter(e -> originalToCopy.containsKey(e.getParentSlot())).
+                                                        collect(Collectors.toList());
+
+            // go through all the candidates, remember the ones for which there is no copied relationship yet
+            final List<SlotPair> relationshipsToCopy = new ArrayList<>();
+            final Slot relChildCopySlot = findById(originalToCopy.get(source).getId());
+            for (final SlotPair relationship : relationshipCandidates) {
+                final Slot relParentCopySlot = originalToCopy.get(relationship.getParentSlot());
+                final SlotRelationName relName = relationship.getSlotRelation().getName();
+                if (!relationshipExists(relChildCopySlot, relParentCopySlot, relName)) {
+                    relationshipsToCopy.add(relationship);
+                }
+            }
+
+            // create copies of the remaining list
+            for (final SlotPair relationshipToCopy : relationshipsToCopy) {
+                final Slot newRelParent = findById(originalToCopy.get(relationshipToCopy.getParentSlot()).getId());
+                slotPairEJB.add(new SlotPair(relChildCopySlot, newRelParent, relationshipToCopy.getSlotRelation()));
+            }
+        }
+    }
+
+    private boolean relationshipExists(final Slot child, final Slot parent, SlotRelationName name) {
+        for (SlotPair pair : child.getPairsInWhichThisSlotIsAChildList()) {
+            if (pair.getParentSlot().equals(parent) && pair.getSlotRelation().getName() == name) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private Slot createSlotCopy(final Slot source, final Slot parentSlot) {
+        final String newName = findNewSlotCopyName(source.getName());
+        final Slot newSlot = new Slot(newName, source.isHostingSlot());
+        newSlot.setDescription(source.getDescription());
+        newSlot.setComponentType(source.getComponentType());
+        addSlotToParentWithPropertyDefs(newSlot, parentSlot, false);
+        return newSlot;
+    }
+
+    private String findNewSlotCopyName(String name) {
+        int slotIndex = 1;
+        String returnName = "";
+        while (returnName.isEmpty()) {
+            String candidateName = name + "_" + slotIndex;
+            if (findByName(candidateName) == null) {
+                return candidateName;
+            }
+            ++slotIndex;
+        }
+        return returnName;
+    }
+
+    /**
+     * This method transfers from the copy source all the attributes that can be copied:
+     * <ul>
+     * <li>non-unique <b>DEFINED</b> property values</li>
+     * <li>tags</li>
+     * <li>URL artifacts</li>
+     * </ul>
+     * It does not copy the attachments, since this may be too heavy.
+     *
+     * @param newCopy the slot that was just created
+     * @param copySource the slot that is the source of the data
+     */
+    private void addAttributesToNewCopy(final Slot newCopy, final Slot copySource) {
+        if (newCopy.isHostingSlot()) {
+            // installation slots already have the property value instances, we just need to copy the actual values
+            transferValuesFromSource(newCopy, copySource);
+        } else {
+            // containers can have "free floating" property values. We need to copy them to the newly created containers
+            copyValuesFromSource(newCopy, copySource);
+        }
+
+        copyArtifactsFromSource(findById(newCopy.getId()), copySource);
+
+        final Slot tagCopy = findById(newCopy.getId());
+        tagCopy.getTags().addAll(copySource.getTags());
+
+        save(tagCopy);
+    }
+
+    private void transferValuesFromSource(final Slot newCopy, final Slot copySource) {
+        for (final SlotPropertyValue pv : newCopy.getSlotPropertyList()) {
+            if (pv.getProperty().getValueUniqueness() == PropertyValueUniqueness.NONE) {
+                final SlotPropertyValue parentPv = getPropertyValue(copySource, pv.getProperty().getName());
+                if (parentPv != null) {
+                    pv.setPropValue(parentPv.getPropValue());
+                }
+            }
+        }
+    }
+
+    private SlotPropertyValue getPropertyValue(final Slot slot, final String pvName) {
+        for (final SlotPropertyValue pv : slot.getSlotPropertyList()) {
+            if (pv.getProperty().getName().equals(pvName)) {
+                return pv;
+            }
+        }
+        return null;
+    }
+
+    private void copyValuesFromSource(final Slot newCopy, final Slot copySource) {
+        for (final SlotPropertyValue pv : copySource.getSlotPropertyList()) {
+            final SlotPropertyValue targetPv = new SlotPropertyValue(false);
+            targetPv.setProperty(pv.getProperty());
+            targetPv.setUnit(pv.getUnit());
+            if (pv.getProperty().getValueUniqueness() == PropertyValueUniqueness.NONE) {
+                targetPv.setPropValue(pv.getPropValue());
+            }
+            targetPv.setSlot(newCopy);
+            addChild(targetPv);
+            newCopy.getSlotPropertyList().add(targetPv);
+        }
+    }
+
+    private void copyArtifactsFromSource(final Slot newCopy, final Slot copySource) {
+        for (final SlotArtifact artifact : copySource.getSlotArtifactList()) {
+            String uri = artifact.getUri();
+            if (artifact.isInternal()) {
+                try {
+                    uri = blobStore.storeFile(blobStore.retreiveFile(uri));
+                } catch (IOException e) {
+                    throw new PersistenceException(e);
+                }
+            }
+
+            final SlotArtifact newArtifact = new SlotArtifact(artifact.getName(), artifact.isInternal(),
+                                                                artifact.getDescription(), artifact.getUri());
+            newArtifact.setSlot(newCopy);
+            addChild(newArtifact);
+        }
     }
 }
