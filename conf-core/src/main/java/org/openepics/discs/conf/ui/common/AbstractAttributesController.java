@@ -157,6 +157,11 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
         importFileName = null;
         enumSelections = null;
         propertyValueUIElement = PropertyValueUIElement.NONE;
+
+        filteredProperties = null;
+        selectedProperties = null;
+        selectionPropertiesFiltered = null;
+
     }
 
     /**
@@ -219,6 +224,7 @@ public abstract class AbstractAttributesController<T extends PropertyValue, S ex
             }
             Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
                     "Created " + props + " new properties.");
+            resetFields();
             populateAttributesList();
         } catch (InstantiationException | IllegalAccessException e) {
             throw new RuntimeException(e);

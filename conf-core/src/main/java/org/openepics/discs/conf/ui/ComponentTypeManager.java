@@ -215,6 +215,7 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
                 }
             }
         }
+        compType = comptypeEJB.findById(compType.getId());
     }
 
     /** Checks whether it is safe to add a new property (definition) to the entity.
@@ -296,7 +297,7 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
 
     @Override
     protected void filterProperties() {
-        if (selectedDeviceTypes == null || selectedDeviceTypes.isEmpty()) {
+        if (selectedDeviceTypes == null || (selectedDeviceTypes.size() != 1)) {
             filteredProperties = null;
             return;
         }
@@ -664,6 +665,7 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
             Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
                     "Created " + created + " device type properties.");
         } finally {
+            resetFields();
             populateAttributesList();
         }
     }
@@ -676,6 +678,7 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
         filteredAttributes = null;
         filteredProperties = null;
         selectedAttributes = null;
+        resetFields();
     }
 
     @Override
