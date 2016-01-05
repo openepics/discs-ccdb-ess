@@ -104,9 +104,9 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
     private transient List<MultiPropertyValueView> selectionPropertyValuesFiltered;
     private boolean selectAllRows;
 
+    private List<Property> filteredProperties;
     private List<Property> selectedProperties;
     private List<Property> selectionPropertiesFiltered;
-    private List<Property> filteredProperties;
     private boolean isPropertyDefinition;
     private DefinitionTarget definitionTarget;
 
@@ -289,7 +289,7 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
 
     @Override
     protected void filterProperties() {
-        if (selectedDeviceTypes == null || selectedDeviceTypes.isEmpty()) {
+        if (selectedDeviceTypes == null || (selectedDeviceTypes.size() != 1)) {
             filteredProperties = null;
             return;
         }
@@ -361,10 +361,7 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
 
     @Override
     protected boolean canDelete(EntityAttributeView<ComponentType> attribute) {
-        final EntityAttributeViewKind attributeKind = attribute.getKind();
-        return attributeKind == EntityAttributeViewKind.DEVICE_TYPE_PROPERTY
-                || attributeKind == EntityAttributeViewKind.DEVICE_TYPE_ARTIFACT
-                || attributeKind == EntityAttributeViewKind.DEVICE_TYPE_TAG;
+        return true;
     }
 
     /** The event handler for when user clicks on the check-box in the "Add property values" dialog.
@@ -609,6 +606,7 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
             Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
                     "Created " + created + " device type properties.");
         } finally {
+            resetFields();
             populateAttributesList();
         }
     }
@@ -621,6 +619,7 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
         filteredAttributes = null;
         filteredProperties = null;
         selectedAttributes = null;
+        resetFields();
     }
 
     // ---------------------------------------------------------------------------------------------------------
@@ -644,6 +643,9 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
         } else {
             selectedComponent = null;
         }
+        filteredProperties = null;
+        selectedProperties = null;
+        selectionPropertiesFiltered = null;
     }
 
     /** Called when the user presses the "Save" button in the "Add a new device type" dialog. */
@@ -741,6 +743,35 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
         reloadDeviceTypes();
     }
 
+    /**
+     * A method that adds either installation slot or device instance properties. It adds the definition to the device
+     * type and property values to already existing installation slots or device instances.
+     */
+    public void addNewPropertyValueDefs() {
+        for (Property selectedProperty : selectedProperties) {
+            final ComptypePropertyValue newPropertyValueInstance = newPropertyValue();
+            newPropertyValueInstance.setInRepository(false);
+            newPropertyValueInstance.setProperty(selectedProperty);
+            newPropertyValueInstance.setPropValue(null);
+            newPropertyValueInstance.setPropertiesParent(getSelectedEntity());
+
+            if ((newPropertyValueInstance instanceof ComptypePropertyValue) && isPropertyDefinition) {
+                final ComptypePropertyValue ctPropValueInstance = newPropertyValueInstance;
+                ctPropValueInstance.setPropertyDefinition(true);
+                if (definitionTarget == DefinitionTarget.SLOT) {
+                    ctPropValueInstance.setDefinitionTargetSlot(true);
+                } else {
+                    ctPropValueInstance.setDefinitionTargetDevice(true);
+                }
+            }
+            comptypeEJB.addChild(newPropertyValueInstance);
+            selectedComponent.setComponentType(comptypeEJB.findById(selectedComponent.getComponentType().getId()));
+            addPropertyValueBasedOnDef(newPropertyValueInstance);
+        }
+        resetFields();
+        populateAttributesList();
+    }
+
     // -------------------- Getters and Setters ---------------------------------------
 
     /** @return the selectedDeviceTypes */
@@ -811,34 +842,7 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
         return new ComptypeArtifact();
     }
 
-    /**
-     * A method that adds either installation slot or device instance properties. It adds the definition to the device
-     * type and property values to already existing installation slots or device instances.
-     */
-    public void addNewPropertyValueDefs() {
-        for (Property selectedProperty : selectedProperties) {
-            final ComptypePropertyValue newPropertyValueInstance = newPropertyValue();
-            newPropertyValueInstance.setInRepository(false);
-            newPropertyValueInstance.setProperty(selectedProperty);
-            newPropertyValueInstance.setPropValue(null);
-            newPropertyValueInstance.setPropertiesParent(getSelectedEntity());
-
-            if ((newPropertyValueInstance instanceof ComptypePropertyValue) && isPropertyDefinition) {
-                final ComptypePropertyValue ctPropValueInstance = newPropertyValueInstance;
-                ctPropValueInstance.setPropertyDefinition(true);
-                if (definitionTarget == DefinitionTarget.SLOT) {
-                    ctPropValueInstance.setDefinitionTargetSlot(true);
-                } else {
-                    ctPropValueInstance.setDefinitionTargetDevice(true);
-                }
-            }
-            comptypeEJB.addChild(newPropertyValueInstance);
-            addPropertyValueBasedOnDef(newPropertyValueInstance);
-        }
-        populateAttributesList();
-    }
-
-    /** @return The list of {@link Property} entities the user can select from the drop-down control. */
+    /** @return The list of {@link Property} entities the user can select in the property table. */
     public List<Property> getFilteredProperties() {
         return filteredProperties;
     }
