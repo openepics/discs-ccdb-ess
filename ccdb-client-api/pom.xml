@@ -3,38 +3,24 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.openepics.discs</groupId>
     <artifactId>ccdb-client-api</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
-
     <name>CCDB REST Service Client</name>
+
     <description>Client Access Java API is a convenient implementation of the client side of the CCDB, which can be used by client applications to use the CCDB facilities.</description>    
 
-    <distributionManagement>
-        <repository>
-            <id>artifactory01.esss.lu.se</id>
-            <name>artifactory01.esss.lu.se-releases</name>
-            <url>https://artifactory01.esss.lu.se/artifactory/libs-release-local</url>
-        </repository>
-        <snapshotRepository>
-            <id>artifactory01.esss.lu.se</id>
-            <name>artifactory01.esss.lu.se-snapshots</name>
-            <url>https://artifactory01.esss.lu.se/artifactory/libs-snapshot-local</url>
-        </snapshotRepository>
-    </distributionManagement>
-
     <parent>
-        <groupId>se.esss.ics</groupId>
-        <artifactId>ess-java-config</artifactId>
-        <version>2.1.1</version>
+        <groupId>org.openepics.discs</groupId>
+        <artifactId>ccdb</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+        <relativePath>..</relativePath>
     </parent>
 
     <dependencies>
         <dependency>
             <groupId>org.openepics.discs</groupId>
             <artifactId>ccdb-jaxb</artifactId>
-            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>javax.ws.rs</groupId>
@@ -44,7 +30,6 @@
         <dependency>
             <groupId>com.google.code.findbugs</groupId>
             <artifactId>jsr305</artifactId>
-            <version>2.0.2</version>
         </dependency>
     </dependencies>
 </project>

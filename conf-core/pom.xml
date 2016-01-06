@@ -3,17 +3,16 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.openepics.discs</groupId>
     <artifactId>confmgr</artifactId>
     <version>1.0.2-SNAPSHOT</version>
     <packaging>war</packaging>
-
     <name>confmgr</name>
 
     <parent>
-        <groupId>se.esss.ics</groupId>
-        <artifactId>ess-java-config</artifactId>
-        <version>2.1.1</version>
+        <groupId>org.openepics.discs</groupId>
+        <artifactId>ccdb</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+        <relativePath>..</relativePath>
     </parent>
 
     <properties>
@@ -48,7 +47,6 @@
         <dependency>
             <groupId>org.openepics.discs</groupId>
             <artifactId>ccdb-jaxb</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.primefaces</groupId>
@@ -78,7 +76,6 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>17.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.poi</groupId>
@@ -93,13 +90,11 @@
         <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-web-api</artifactId>
-            <version>7.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.google.code.findbugs</groupId>
             <artifactId>jsr305</artifactId>
-            <version>2.0.2</version>
         </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>
@@ -109,7 +104,6 @@
         <dependency>
             <groupId>org.openepics</groupId>
             <artifactId>seds-japi</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -126,19 +120,27 @@
             <artifactId>epics-util</artifactId>
             <version>0.3.2</version>
         </dependency>
-
-        <!-- TESTING -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.11</version>
-            <scope>test</scope>
-        </dependency>
-
         <dependency>
             <groupId>org.openepics</groupId>
             <artifactId>CableDB-client-api</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>se.esss.ics.rbac</groupId>
+            <artifactId>loginmodules</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.openepics</groupId>
+            <artifactId>names-client</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>asm</groupId>
+                    <artifactId>asm</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.openepics</groupId>
+            <artifactId>names-jaxb</artifactId>
         </dependency>
     </dependencies>
 
@@ -157,6 +159,7 @@
                     <exclude>beans.xml</exclude>
                     <exclude>jboss-web.xml</exclude>
                     <exclude>jboss-all.xml</exclude>
+                    <exclude>glassfish-web.xml</exclude>
                 </excludes>
                 <filtering>false</filtering>
             </resource>
@@ -375,29 +378,7 @@
                     </dependency>
                 </dependencies>
             </dependencyManagement>
-
             <dependencies>
-                <dependency>
-                    <groupId>se.esss.ics.rbac</groupId>
-                    <artifactId>loginmodules</artifactId>
-                    <version>2.0.4</version>
-                </dependency>
-                <dependency>
-                    <groupId>org.openepics</groupId>
-                    <artifactId>names-client</artifactId>
-                    <version>[3.0.1,)</version>
-                    <exclusions>
-                        <exclusion>
-                            <groupId>asm</groupId>
-                            <artifactId>asm</artifactId>
-                        </exclusion>
-                    </exclusions>
-                </dependency>
-                <dependency>
-                    <groupId>org.openepics</groupId>
-                    <artifactId>names-jaxb</artifactId>
-                    <version>[3.0.2,)</version>
-                </dependency>
                 <dependency>
                     <groupId>org.postgresql</groupId>
                     <artifactId>postgresql</artifactId>

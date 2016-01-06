@@ -166,6 +166,7 @@ pip-log.txt
 
 # Java
 */target/*
+target
 
 # For DISCS Collaboration:  VV
 *.ldb  
