@@ -52,7 +52,11 @@
             <groupId>org.openepics.discs</groupId>
             <artifactId>ccdb-model</artifactId>
         </dependency>
-        
+        <dependency>
+            <groupId>org.openepics.discs</groupId>
+            <artifactId>ccdb-business</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.primefaces</groupId>
             <artifactId>primefaces</artifactId>
@@ -187,6 +191,14 @@
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>2.8.2</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>            
         </plugins>
         <pluginManagement>
             <plugins>

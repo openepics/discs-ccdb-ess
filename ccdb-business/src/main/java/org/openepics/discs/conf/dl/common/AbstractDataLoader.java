@@ -31,7 +31,7 @@ import javax.annotation.Nullable;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.openepics.discs.conf.ui.common.ExcelImportUIHandlers.ImportFileStatistics;
+import org.openepics.discs.conf.util.ImportFileStatistics;
 
 import com.google.common.base.Preconditions;
 

@@ -32,6 +32,7 @@ import org.openepics.discs.conf.dl.common.ExcelImportFileReader;
 import org.openepics.discs.conf.dl.common.ValidationMessage;
 import org.openepics.discs.conf.export.ExportTable;
 import org.openepics.discs.conf.ui.export.ExportSimpleTableDialog;
+import org.openepics.discs.conf.util.ImportFileStatistics;
 import org.openepics.discs.conf.util.Utility;
 import org.primefaces.event.FileUploadEvent;
 

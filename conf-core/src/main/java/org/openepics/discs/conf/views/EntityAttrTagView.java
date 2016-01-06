@@ -28,6 +28,7 @@ import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.NamedEntity;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.Tag;
+import org.openepics.discs.conf.util.EntityAttributeViewKind;
 import org.openepics.discs.conf.util.UnhandledCaseException;
 
 /**

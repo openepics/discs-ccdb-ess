@@ -52,7 +52,6 @@ import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotRelationName;
-import org.openepics.discs.conf.views.EntityAttributeViewKind;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;

@@ -20,6 +20,7 @@
 package org.openepics.discs.conf.ui.common;
 
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
+import org.openepics.discs.conf.util.ImportFileStatistics;
 
 /**
  * The interface contains all the methods that the UI control handling the import of any number of excel files must implement.
@@ -28,69 +29,6 @@ import org.openepics.discs.conf.dl.common.DataLoaderResult;
  *
  */
 public interface ExcelImportUIHandlers {
-
-    /**
-     * A class returning basic statistics for the imported excel file, i.e. the number of lines in the Excel file
-     * containing:
-     * <ul>
-     * <li>any data</li>
-     * <li>entity to be created</li>
-     * <li>entity to be updated</li>
-     * <li>entity to be deleted</li>
-     * </ul>
-     *
-     * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
-     */
-    public static class ImportFileStatistics {
-        private final int dataRows;
-        private final int createRows;
-        private final int updateRows;
-        private final int deleteRows;
-
-        /** Default constructor with <code>0</code> statistics */
-        public ImportFileStatistics() {
-            dataRows = createRows = updateRows = deleteRows = 0;
-        }
-
-        /**
-         * Creates a new statistics object with the following parameters.
-         * @param dataRows the number of rows processed
-         * @param createRows the number of rows with the CREATE command
-         * @param updateRows the number of rows with the UPDATE command
-         * @param deleteRows the number of rows with the DELETE command
-         */
-        public ImportFileStatistics(int dataRows, int createRows, int updateRows, int deleteRows) {
-            this.dataRows = dataRows;
-            this.createRows = createRows;
-            this.updateRows = updateRows;
-            this.deleteRows = deleteRows;
-        }
-
-        /** @return the dataRows */
-        public int getDataRows() {
-            return dataRows;
-        }
-
-        /** @return the createRows */
-        public int getCreateRows() {
-            return createRows;
-        }
-
-        /** @return the updateRows */
-        public int getUpdateRows() {
-            return updateRows;
-        }
-
-        /** @return the deleteRows */
-        public int getDeleteRows() {
-            return deleteRows;
-        }
-
-        /** @return the number of lines actually containing any of the 3 commands */
-        public int getImportRows() {
-            return createRows + updateRows + deleteRows;
-        }
-    }
 
     /** The action called to actually import excel file containing properties. */
     public void doImport();

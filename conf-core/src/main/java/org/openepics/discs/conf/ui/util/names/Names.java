@@ -17,33 +17,27 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
+package org.openepics.discs.conf.ui.util.names;
 
-package org.openepics.discs.conf.ent.values;
+import java.io.Serializable;
+import java.util.Map;
+import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-
-import org.junit.Test;
+import org.openepics.discs.conf.ent.Slot;
+import org.openepics.names.jaxb.DeviceNameElement;
 
 /**
- * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
+ * Interface for providing custom implementation to get names used
+ * for auto complete when creating new installation {@link Slot}
  *
+ * @author <a href="mailto:andraz.pozar@cosylab.com">Andraž Požar</a>
  */
-public class EnumValueTest {
+public interface Names extends Serializable {
 
-    @Test(expected = NullPointerException.class)
-    public void enumValue() {
-        EnumValue enumValue = new EnumValue(null);
-    }
-
-    @Test
-    public void displayToString() {
-        EnumValue enumValue = new EnumValue("Test");
-        assertEquals("Test", enumValue.toString());
-    }
-
-    @Test
-    public void displayAuditLog() {
-        EnumValue enumValue = new EnumValue("Test");
-        assertEquals("Test", enumValue.auditLogString());
-    }
+    /**
+     * Returns a set of all names that can be used for installation {@link Slot} name
+     *
+     * @return {@link Set}&lt;{@link String}&gt; of names that can be used for installation {@link Slot} name
+     */
+    public Map<String, DeviceNameElement> getAllNames();
 }

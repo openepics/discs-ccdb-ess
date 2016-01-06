@@ -48,21 +48,6 @@ import javax.annotation.Resource;
  *
  */
 public interface AppProperties {
-    // Entity types for Audit records, authorization, etc
-    public static final String EN_DEVICE = "device";
-    public static final String EN_SLOT = "slot";
-    public static final String EN_COMPTYPE = "comptype";
-    public static final String EN_USER = "user";
-    public static final String EN_INSTALLREC = "installrec";
-    public static final String EN_ALIGNREC = "alignrec";
-
-    // operations for authorization
-    public static final char OPER_UPDATE = 'u';
-    public static final char OPER_CREATE = 'c';
-    public static final char OPER_DELETE = 'd';
-    public static final char OPER_LOGIN = 'l';
-    public static final char OPER_LOGOUT = 'o';
-
     public static final String BLOB_STORE_PROPERTY_NAME = "BlobStoreRoot";
     public static final String NAMING_APPLICATION_URL = "namingAppURL";
     public static final String NAMING_DETECT_STATUS = "detectNamingStatus";

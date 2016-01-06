@@ -41,6 +41,7 @@ import org.openepics.discs.conf.ent.Unit;
 import org.openepics.discs.conf.ent.values.Value;
 import org.openepics.discs.conf.util.BuiltInDataType;
 import org.openepics.discs.conf.util.Conversion;
+import org.openepics.discs.conf.util.EntityAttributeViewKind;
 import org.openepics.discs.conf.util.PropertyValueUIElement;
 import org.openepics.discs.conf.util.UnhandledCaseException;
 import org.openepics.discs.conf.util.Utility;

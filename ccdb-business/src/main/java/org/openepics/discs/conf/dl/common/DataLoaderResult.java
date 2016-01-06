@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.openepics.discs.conf.ent.Slot;
-import org.openepics.discs.conf.ui.common.ExcelImportUIHandlers.ImportFileStatistics;
+import org.openepics.discs.conf.util.ImportFileStatistics;
 
 import com.google.common.base.Preconditions;
 

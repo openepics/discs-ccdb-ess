@@ -25,6 +25,7 @@ import org.openepics.discs.conf.ent.ConfigurationEntity;
 import org.openepics.discs.conf.ent.DataType;
 import org.openepics.discs.conf.ent.NamedEntity;
 import org.openepics.discs.conf.ent.Unit;
+import org.openepics.discs.conf.util.EntityAttributeViewKind;
 
 /**
  * The UI view class. This is a helper class containing all the information that is used in the UI and is displayed
