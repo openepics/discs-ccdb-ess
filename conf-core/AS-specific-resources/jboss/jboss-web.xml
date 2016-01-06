@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<jboss-web>
-    <!-- For production the context root is only "/" -->
-    <!-- For ics-services the context root is /ccdb-test "/" -->
-    <context-root>/ccdb-test</context-root>
-    <security-domain>ccdb.security-domain</security-domain>
-    <!-- <server-instance>default-server_external</server-instance> -->
-    <!-- <virtual-host>ccdb</virtual-host> -->
-</jboss-web>

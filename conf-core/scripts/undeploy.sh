@@ -1,2 +1,2 @@
 #!/bin/sh
-mvn wildfly:undeploy -P jboss
+mvn wildfly:undeploy
