@@ -17,7 +17,8 @@ import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 
 import org.epics.util.time.Timestamp;
-import org.openepics.discs.conf.util.Conversion;
+// TODO check
+// import org.openepics.discs.conf.util.Conversion;
 
 import com.google.common.base.Preconditions;
 
@@ -46,7 +47,8 @@ public class TimestampValue implements Value {
 
     @Override
     public String toString() {
-        final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(Conversion.DATE_TIME_FORMAT);
+        // TODO check
+        final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         final StringBuilder returnString = new StringBuilder(simpleDateFormat.format(timestampValue.toDate()));
         if (timestampValue.getNanoSec() > 0) {

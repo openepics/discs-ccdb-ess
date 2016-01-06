@@ -42,7 +42,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.openepics.discs.conf.util.Conversion;
+// TODO check
+// import org.openepics.discs.conf.util.Conversion;
 
 /**
  * {@link AuditRecord} entity stores audit logs for changes on entity types
@@ -132,7 +133,8 @@ public class AuditRecord implements Serializable {
 
     /** @return a string representation of the audit log entry timestamp */
     public String getLogTimeFormatted() {
-        final SimpleDateFormat timestampFormatter = new SimpleDateFormat(Conversion.TIMESTAMP_FORMAT);
+        // TODO check
+        final SimpleDateFormat timestampFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         return timestampFormatter.format(logTime);
     }
 

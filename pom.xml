@@ -51,6 +51,11 @@
                 <artifactId>ccdb-client-api</artifactId>
                 <version>1.0.0</version>
             </dependency>
+            <dependency>
+                <groupId>org.openepics.discs</groupId>
+                <artifactId>ccdb-model</artifactId>
+                <version>1.0.0-SNAPSHOT</version>
+            </dependency>
 
             <dependency>
                 <groupId>org.openepics</groupId>
@@ -101,6 +106,7 @@
     <modules>
         <module>conf-JAXB</module>
         <module>ccdb-client-api</module>
+        <module>ccdb-model</module>
         <module>conf-core</module>
     </modules>
 </project>
