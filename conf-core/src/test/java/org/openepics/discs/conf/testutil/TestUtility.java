@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.util;
+package org.openepics.discs.conf.testutil;
 
 import java.io.File;
 
@@ -46,26 +46,21 @@ public class TestUtility {
         final File[] libraries = Maven.resolver().loadPomFromFile("pom.xml", "jboss").importRuntimeDependencies()
                                                     .resolve().withTransitivity().asFile();
         final WebArchive war = ShrinkWrap.create(WebArchive.class, "confmgr_test.war")
-                               .addAsLibraries(libraries)
-                               .addPackages(true,
-                                            "org.openepics.discs.conf.auditlog",
-                                            "org.openepics.discs.conf.dl",
-                                            "org.openepics.discs.conf.dl.common",
-                                            "org.openepics.discs.conf.ejb",
-                                            "org.openepics.discs.conf.ent",
-                                            "org.openepics.discs.conf.ent.values",
-                                            "org.openepics.discs.conf.security",
-                                            "org.openepics.discs.conf.ui",
-                                            "org.openepics.discs.conf.ui.common",
-                                            "org.openepics.discs.conf.util",
-                                            "org.openepics.discs.conf.util.names",
-                                            "org.openepics.discs.conf.valueconverters",
-                                            "org.openepics.discs.conf.views")
-                               .addAsResource("test-persistence.xml", "META-INF/persistence.xml")
-                               .addAsResource("messages.properties", "/messages.properties")
-                               .addAsWebInfResource("beans.xml")
-                               .addAsWebInfResource("jboss-web.xml")
-                               .addAsWebInfResource("web.xml");
+                                .addAsLibraries(libraries)
+                                .addPackages(true,
+                                        "org.openepics.discs.conf.export",
+                                        "org.openepics.discs.conf.testutil",
+                                        "org.openepics.discs.conf.ui",
+                                        "org.openepics.discs.conf.ui.common",
+                                        "org.openepics.discs.conf.ui.export",
+                                        "org.openepics.discs.conf.ui.util.names",
+                                        "org.openepics.discs.conf.valueconverters",
+                                        "org.openepics.discs.conf.views")
+                                .addAsResource("test-persistence.xml", "META-INF/persistence.xml")
+                                .addAsResource("messages.properties", "/messages.properties")
+                                .addAsWebInfResource("beans.xml")
+                                .addAsWebInfResource("jboss-web.xml")
+                                .addAsWebInfResource("web.xml");
 
         // Add all files in dataloader
         final File datasetsDir = new File("src/test/resources/dataloader");

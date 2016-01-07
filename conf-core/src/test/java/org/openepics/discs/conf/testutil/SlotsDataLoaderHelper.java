@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.dl;
+package org.openepics.discs.conf.testutil;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,12 +26,12 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.openepics.discs.conf.dl.SlotsDataLoaderIT;
 import org.openepics.discs.conf.dl.annotations.SlotsLoader;
 import org.openepics.discs.conf.dl.common.AbstractDataLoader;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.dl.common.ExcelImportFileReader;
-import org.openepics.discs.conf.util.TestUtility;
 
 /**
  * Helper class for {@link SlotsDataLoaderIT} and {@link SlotsAndSlotPairsDataLoaderIT}
@@ -42,11 +42,6 @@ import org.openepics.discs.conf.util.TestUtility;
 public class SlotsDataLoaderHelper {
 
     @Inject @SlotsLoader private DataLoader slotsDataLoader;
-
-    final static int NUM_OF_SLOTS_IF_FAILURE = 1;
-    final static int NUM_OF_SLOTS_IF_SUCCESS = 156;
-    final static int NUM_OF_SLOT_PAIRS_IF_FAILURE = 0;
-    final static int NUM_OF_SLOT_PAIRS_IF_SUCCESS = 155;
 
     public DataLoaderResult importSlots(final String slotsImportFileName) throws IOException {
         List<Pair<Integer, List<String>>> slotsFileInputRows = null;

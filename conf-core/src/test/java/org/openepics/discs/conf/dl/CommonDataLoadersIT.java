@@ -42,8 +42,9 @@ import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.dl.common.ErrorMessage;
 import org.openepics.discs.conf.dl.common.ValidationMessage;
+import org.openepics.discs.conf.testutil.SlotsDataLoaderHelper;
+import org.openepics.discs.conf.testutil.TestUtility;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
-import org.openepics.discs.conf.util.TestUtility;
 
 /**
  * Integration tests for failures common to all data loaders

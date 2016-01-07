@@ -46,7 +46,8 @@ import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.ent.SlotRelationName;
-import org.openepics.discs.conf.util.TestUtility;
+import org.openepics.discs.conf.testutil.SlotsDataLoaderHelper;
+import org.openepics.discs.conf.testutil.TestUtility;
 
 /**
  * Integration tests for {@link SlotsDataLoader}

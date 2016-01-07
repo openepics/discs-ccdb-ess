@@ -44,8 +44,8 @@ import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.dl.common.ErrorMessage;
 import org.openepics.discs.conf.dl.common.ValidationMessage;
 import org.openepics.discs.conf.ejb.DeviceEJB;
+import org.openepics.discs.conf.testutil.TestUtility;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
-import org.openepics.discs.conf.util.TestUtility;
 
 /**
  * Integration tests for {@link DevicesDataLoader}

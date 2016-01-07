@@ -39,7 +39,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.openepics.discs.conf.ent.Unit;
-import org.openepics.discs.conf.util.TestUtility;
+import org.openepics.discs.conf.testutil.TestUtility;
 
 @RunWith(Arquillian.class)
 public class UnitEJBIT {

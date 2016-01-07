@@ -46,7 +46,7 @@ import org.openepics.discs.conf.ent.Tag;
 import org.openepics.discs.conf.ent.values.DblValue;
 import org.openepics.discs.conf.ent.values.IntValue;
 import org.openepics.discs.conf.ent.values.Value;
-import org.openepics.discs.conf.util.TestUtility;
+import org.openepics.discs.conf.testutil.TestUtility;
 
 /**
  *

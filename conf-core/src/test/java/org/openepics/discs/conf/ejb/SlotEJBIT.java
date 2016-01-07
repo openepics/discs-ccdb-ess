@@ -41,7 +41,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.Tag;
-import org.openepics.discs.conf.util.TestUtility;
+import org.openepics.discs.conf.testutil.TestUtility;
 
 /**
  *

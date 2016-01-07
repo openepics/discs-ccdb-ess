@@ -46,8 +46,8 @@ import org.openepics.discs.conf.dl.common.ValidationMessage;
 import org.openepics.discs.conf.ejb.PropertyEJB;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyValueUniqueness;
+import org.openepics.discs.conf.testutil.TestUtility;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
-import org.openepics.discs.conf.util.TestUtility;
 
 /**
  * Integration tests for {@link PropertiesDataLoader}

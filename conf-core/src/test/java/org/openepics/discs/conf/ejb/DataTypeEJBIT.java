@@ -33,7 +33,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openepics.discs.conf.ent.DataType;
-import org.openepics.discs.conf.util.TestUtility;
+import org.openepics.discs.conf.testutil.TestUtility;
 
 @RunWith(Arquillian.class)
 public class DataTypeEJBIT {
