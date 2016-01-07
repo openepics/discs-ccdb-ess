@@ -57,15 +57,16 @@ import org.openepics.discs.conf.ui.common.AbstractDeviceAttributesController;
 import org.openepics.discs.conf.ui.common.UIException;
 import org.openepics.discs.conf.ui.export.ExportSimpleTableDialog;
 import org.openepics.discs.conf.ui.export.SimpleTableExporter;
+import org.openepics.discs.conf.ui.util.UiUtility;
 import org.openepics.discs.conf.util.BatchIterator;
 import org.openepics.discs.conf.util.BatchSaveStage;
-import org.openepics.discs.conf.util.EntityAttributeViewKind;
 import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.views.DeviceView;
 import org.openepics.discs.conf.views.EntityAttrArtifactView;
 import org.openepics.discs.conf.views.EntityAttrPropertyValueView;
 import org.openepics.discs.conf.views.EntityAttrTagView;
 import org.openepics.discs.conf.views.EntityAttributeView;
+import org.openepics.discs.conf.views.EntityAttributeViewKind;
 import org.primefaces.context.RequestContext;
 
 import com.google.common.base.Preconditions;
@@ -291,7 +292,7 @@ public class DevicesController
     private void singleDeviceAdd() {
         deviceEJB.addDeviceAndPropertyDefs(createNewDevice(serialNumber));
         RequestContext.getCurrentInstance().execute("PF('addDeviceDialog').hide();");
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Device saved.", null);
+        UiUtility.showMessage(FacesMessage.SEVERITY_INFO, "Device saved.", null);
     }
 
     /** @return <code>true</code> creation successful, <code>false</code> means error */
@@ -333,8 +334,8 @@ public class DevicesController
                 }
             }
             RequestContext.getCurrentInstance().execute("PF('devicesTableVar').filter();");
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
-                    "Created " + devicesCreated + " new devices.");
+            UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
+                                                                "Created " + devicesCreated + " new devices.");
         }
         return true;
     }
@@ -363,7 +364,7 @@ public class DevicesController
         deviceEJB.save(device);
 
         selectedDevices.get(0).refreshDevice(deviceEJB.findById(device.getId()));
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS, "Device updated.");
+        UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS, "Device updated.");
     }
 
     /**
@@ -404,8 +405,8 @@ public class DevicesController
         attributes = null;
         selectedAttributes = null;
         filteredAttributes = null;
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS, "Deleted " + deletedDevices
-                + " devices.");
+        UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
+                                                            "Deleted " + deletedDevices + " devices.");
     }
 
     /** Clears the data displayed in the "Add device instance" dialog */
@@ -490,8 +491,8 @@ public class DevicesController
         try {
             final int duplicated = deviceEJB.duplicate(selectedDevices.stream().map(DeviceView::getDevice).
                                                         collect(Collectors.toList()));
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS, "Duplicated " + duplicated
-                    + " devices.");
+            UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
+                                                                "Duplicated " + duplicated + " devices.");
         } finally {
             prepareDevicesForDisplay(null);
             attributes = null;
@@ -536,17 +537,17 @@ public class DevicesController
     public void newDeviceSerialNoValidator(FacesContext ctx, UIComponent component, Object value)
             throws ValidatorException {
         if (value == null) {
-            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
+            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, UiUtility.MESSAGE_SUMMARY_ERROR,
                                                                     "No value to parse."));
         }
         final String newDeviceSerial = value.toString();
 
         if (isBatchCreation && !newDeviceSerial.contains("{i}")) {
-            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
+            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, UiUtility.MESSAGE_SUMMARY_ERROR,
                     "Batch creation selected, but index position \"{i}\" not set"));
         }
         if (!isBatchCreation && newDeviceSerial.contains("{i}")) {
-            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
+            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, UiUtility.MESSAGE_SUMMARY_ERROR,
                     "Error in name: \"{i}\""));
         }
 
@@ -557,7 +558,7 @@ public class DevicesController
                                                     ? null : selectedDevices.get(0).getDevice();
             if (existingDevice != null && !existingDevice.equals(editedDevice)) {
                 throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                            Utility.MESSAGE_SUMMARY_ERROR, "Device with this inventory ID already exists."));
+                        UiUtility.MESSAGE_SUMMARY_ERROR, "Device with this inventory ID already exists."));
             }
         }
     }
@@ -626,7 +627,7 @@ public class DevicesController
      */
     public void batchEndValidator(FacesContext ctx, UIComponent component, Object value) throws ValidatorException {
         if (batchStartIndex >= (Integer)value) {
-            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
+            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, UiUtility.MESSAGE_SUMMARY_ERROR,
                     "End index must be greater than start index."));
         }
     }
@@ -639,7 +640,7 @@ public class DevicesController
      */
     public void batchStartValidator(FacesContext ctx, UIComponent component, Object value) throws ValidatorException {
         if ((Integer)value >= batchEndIndex) {
-            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
+            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, UiUtility.MESSAGE_SUMMARY_ERROR,
                     "Start index must be less than end index."));
         }
     }

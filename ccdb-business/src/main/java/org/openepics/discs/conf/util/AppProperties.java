@@ -35,25 +35,24 @@
 
 package org.openepics.discs.conf.util;
 
-import javax.annotation.Resource;
+import javax.enterprise.context.ApplicationScoped;
 
 
 /**
  * Interface used to represent generic application properties facility.
- * Has at least two implementations, one for JBoss that uses System properties and one for Glassfish that uses a
- * Properties {@link Resource}
  *
  * @author vuppala
  * @author <a href="mailto:miroslav.pavleski@cosylab.com">Miroslav Pavleski</a>
  *
  */
-public interface AppProperties {
-    public static final String BLOB_STORE_PROPERTY_NAME = "BlobStoreRoot";
-    public static final String NAMING_APPLICATION_URL = "namingAppURL";
-    public static final String NAMING_DETECT_STATUS = "detectNamingStatus";
-    public static final String RESTRICT_TO_CONVENTION_NAMES = "restrictToConventionNames";
-    public static final String CABLEDB_STATUS = "cableDBStatus";
-    public static final String CABLEDB_APPLICATION_URL = "cableDBAppURL";
+@ApplicationScoped
+public class AppProperties {
+    public static final String BLOB_STORE_PROPERTY_NAME = "org.openepics.discs.conf.props.BlobStoreRoot";
+    public static final String NAMING_APPLICATION_URL = "org.openepics.discs.conf.props.namingAppURL";
+    public static final String NAMING_DETECT_STATUS = "org.openepics.discs.conf.props.detectNamingStatus";
+    public static final String RESTRICT_TO_CONVENTION_NAMES = "org.openepics.discs.conf.props.restrictToConventionNames";
+    public static final String CABLEDB_STATUS = "org.openepics.discs.conf.props.cableDBStatus";
+    public static final String CABLEDB_APPLICATION_URL = "org.openepics.discs.conf.props.cableDBAppURL";
 
     /**
      * Retrieves the string property with the given key-name
@@ -61,5 +60,11 @@ public interface AppProperties {
      * @param name a {@link String} key for the property
      * @return the property value, or <code>null</code> if it does not exist
      */
-    String getProperty(String name);
+    public String getProperty(String name) {
+        if (name == null || name.isEmpty()) {
+            return null;
+        }
+
+        return System.getProperty(name);
+    }
 }

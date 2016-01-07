@@ -25,11 +25,12 @@ package org.openepics.discs.conf.util;
  * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  *
  */
-public class ConversionException extends RuntimeException {
+public class ConversionException extends CCDBRuntimeException {
     private static final long serialVersionUID = 9060559072643456765L;
 
     /**
      * A new conversion exception with no message and no reference
+     * @see RuntimeException#RuntimeException(String)
      */
     public ConversionException() {
         super();
@@ -37,6 +38,7 @@ public class ConversionException extends RuntimeException {
 
     /** A new conversion exception with no reference
      * @param msg The text message
+     * @see RuntimeException#RuntimeException(String)
      */
     public ConversionException(String msg) {
         super(msg);
@@ -45,6 +47,7 @@ public class ConversionException extends RuntimeException {
     /** A new conversion exception
      * @param msg The text message
      * @param cause The original cause of the exception
+     * @see RuntimeException#RuntimeException(String)
      */
     public ConversionException(String msg, Throwable cause) {
         super(msg, cause);
@@ -52,6 +55,7 @@ public class ConversionException extends RuntimeException {
 
     /** A new conversion exception with no message
      * @param cause The original cause of the exception
+     * @see RuntimeException#RuntimeException(String)
      */
     public ConversionException(Throwable cause) {
         super(cause);

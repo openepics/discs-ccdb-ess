@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
  */
-package org.openepics.discs.conf.util;
+package org.openepics.discs.conf.ui.util;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -34,6 +34,7 @@ import org.openepics.cable.jaxb.CableElement;
 import org.openepics.cable.jaxb.CableResource;
 import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.Slot;
+import org.openepics.discs.conf.util.AppProperties;
 
 /**
  * Service for CableDB

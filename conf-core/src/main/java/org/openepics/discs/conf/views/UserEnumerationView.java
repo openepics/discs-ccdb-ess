@@ -31,8 +31,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.openepics.discs.conf.ent.DataType;
+import org.openepics.discs.conf.ui.util.UiUtility;
 import org.openepics.discs.conf.util.Conversion;
-import org.openepics.discs.conf.util.Utility;
 
 import com.google.common.base.Preconditions;
 
@@ -136,7 +136,7 @@ public class UserEnumerationView {
                 if (!enumVal.isEmpty()) {
                     if (!enumVal.matches("^[\\w\\-_]*$")) {
                         throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                                Utility.MESSAGE_SUMMARY_ERROR,
+                                UiUtility.MESSAGE_SUMMARY_ERROR,
                                 "Enumeration value can only contain alphanumerical characters, hyphens and "
                                         + "underscores: " + enumVal));
                     }
@@ -149,7 +149,7 @@ public class UserEnumerationView {
             }
             if (lines < 2) {
                 throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                        Utility.MESSAGE_SUMMARY_ERROR, "Enumeration definition must contain at least 2 values."));
+                        UiUtility.MESSAGE_SUMMARY_ERROR, "Enumeration definition must contain at least 2 values."));
             }
         }
         return definitions;
@@ -176,7 +176,7 @@ public class UserEnumerationView {
      */
     public void enumValidator(FacesContext ctx, UIComponent component, Object value) throws ValidatorException {
         if (value == null) {
-            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
+            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, UiUtility.MESSAGE_SUMMARY_ERROR,
                                                         "No value to parse."));
         }
 
@@ -184,7 +184,8 @@ public class UserEnumerationView {
         // check whether redefinition is possible and correct
         if (!enumerationBeingAdded && used) {
             if (!isEnumModificationSafe(enumDefs)) {
-                throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
+                throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                                        UiUtility.MESSAGE_SUMMARY_ERROR,
                                                         "Enumeration already in use. Values can only be added."));
             }
         }

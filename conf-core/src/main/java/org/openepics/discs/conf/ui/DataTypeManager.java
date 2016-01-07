@@ -47,6 +47,7 @@ import org.openepics.discs.conf.ui.common.DataLoaderHandler;
 import org.openepics.discs.conf.ui.common.UIException;
 import org.openepics.discs.conf.ui.export.ExportSimpleTableDialog;
 import org.openepics.discs.conf.ui.export.SimpleTableExporter;
+import org.openepics.discs.conf.ui.util.UiUtility;
 import org.openepics.discs.conf.util.BuiltInDataType;
 import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.views.UserEnumerationView;
@@ -177,7 +178,7 @@ public class DataTypeManager extends AbstractExcelSingleFileImportUI implements 
      */
     public void nameValidator(FacesContext ctx, UIComponent component, Object value) {
         if (value == null) {
-            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
+            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, UiUtility.MESSAGE_SUMMARY_ERROR,
                                                                     "Enumeration name required."));
         }
 
@@ -186,7 +187,8 @@ public class DataTypeManager extends AbstractExcelSingleFileImportUI implements 
         if (dialogEnum.isEnumerationBeingAdded() || !dialogEnum.getName().equals(enumName)) {
             final DataType existingDataType = dataTypeEJB.findByName(enumName);
             if (existingDataType != null) {
-                throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
+                throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                                                    UiUtility.MESSAGE_SUMMARY_ERROR,
                                                                     "Enumeration with the same name already exists."));
             }
         }
@@ -219,7 +221,8 @@ public class DataTypeManager extends AbstractExcelSingleFileImportUI implements 
             final DataType newEnum = dialogEnum.getEnumeration();
             newEnum.setDefinition(jsonDefinitionFromList(dialogEnum.getDefinitionList()));
             dataTypeEJB.add(newEnum);
-            Utility.showMessage(FacesMessage.SEVERITY_INFO,  Utility.MESSAGE_SUMMARY_SUCCESS, "Enumeration has been successfully created.");
+            UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
+                                                                "Enumeration has been successfully created.");
         } finally {
             dialogEnum = null;
             refreshUserDataTypes();
@@ -237,7 +240,8 @@ public class DataTypeManager extends AbstractExcelSingleFileImportUI implements 
             final DataType modifiedEnum = dialogEnum.getEnumeration();
             modifiedEnum.setDefinition(jsonDefinitionFromList(dialogEnum.getDefinitionList()));
             dataTypeEJB.save(modifiedEnum);
-            Utility.showMessage(FacesMessage.SEVERITY_INFO,  Utility.MESSAGE_SUMMARY_SUCCESS, "Enumeration has been successfully modified.");
+            UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
+                                                                "Enumeration has been successfully modified.");
         } finally {
             dialogEnum = null;
             refreshUserDataTypes();
@@ -279,8 +283,8 @@ public class DataTypeManager extends AbstractExcelSingleFileImportUI implements 
                 ++deletedEnums;
             }
 
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
-                    "Deleted " + deletedEnums + " enumerations.");
+            UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
+                                                                "Deleted " + deletedEnums + " enumerations.");
         } finally {
             selectedEnums = null;
             usedEnums = null;
@@ -308,8 +312,8 @@ public class DataTypeManager extends AbstractExcelSingleFileImportUI implements 
             Preconditions.checkState(!Utility.isNullOrEmpty(selectedEnums));
             final int duplicated =  dataTypeEJB.duplicate(selectedEnums.stream().
                                             map(UserEnumerationView::getEnumeration).collect(Collectors.toList()));
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
-                    "Duplicated " + duplicated + " enumerations.");
+            UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
+                                                                "Duplicated " + duplicated + " enumerations.");
         } finally {
             refreshUserDataTypes();
         }

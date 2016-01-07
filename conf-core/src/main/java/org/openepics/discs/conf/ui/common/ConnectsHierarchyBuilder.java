@@ -27,7 +27,7 @@ import java.util.Set;
 
 import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.Slot;
-import org.openepics.discs.conf.util.ConnectsManager;
+import org.openepics.discs.conf.ui.util.ConnectsManager;
 import org.openepics.discs.conf.views.SlotView;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;

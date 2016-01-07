@@ -59,8 +59,8 @@ import org.openepics.discs.conf.ui.common.AbstractComptypeAttributesController;
 import org.openepics.discs.conf.ui.common.UIException;
 import org.openepics.discs.conf.ui.export.ExportSimpleTableDialog;
 import org.openepics.discs.conf.ui.export.SimpleTableExporter;
+import org.openepics.discs.conf.ui.util.UiUtility;
 import org.openepics.discs.conf.util.Conversion;
-import org.openepics.discs.conf.util.EntityAttributeViewKind;
 import org.openepics.discs.conf.util.PropertyValueNotUniqueException;
 import org.openepics.discs.conf.util.PropertyValueUIElement;
 import org.openepics.discs.conf.util.UnhandledCaseException;
@@ -70,6 +70,7 @@ import org.openepics.discs.conf.views.EntityAttrArtifactView;
 import org.openepics.discs.conf.views.EntityAttrPropertyValueView;
 import org.openepics.discs.conf.views.EntityAttrTagView;
 import org.openepics.discs.conf.views.EntityAttributeView;
+import org.openepics.discs.conf.views.EntityAttributeViewKind;
 import org.openepics.discs.conf.views.MultiPropertyValueView;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.CellEditEvent;
@@ -447,7 +448,7 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
                     case SELECT_ONE_MENU:
                         if (Strings.isNullOrEmpty(newValueStr)) {
                             throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                                    Utility.MESSAGE_SUMMARY_ERROR, "A value must be selected."));
+                                    UiUtility.MESSAGE_SUMMARY_ERROR, "A value must be selected."));
                         }
                         break;
                     case NONE:
@@ -462,9 +463,9 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
                 FacesContext.getCurrentInstance().addMessage("inputValidationFail", e.getFacesMessage());
                 FacesContext.getCurrentInstance().validationFailed();
             } catch (EJBException e) {
-                if (Utility.causedBySpecifiedExceptionClass(e, PropertyValueNotUniqueException.class)) {
+                if (UiUtility.causedBySpecifiedExceptionClass(e, PropertyValueNotUniqueException.class)) {
                     FacesContext.getCurrentInstance().addMessage("inputValidationFail",
-                            new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
+                            new FacesMessage(FacesMessage.SEVERITY_ERROR, UiUtility.MESSAGE_SUMMARY_ERROR,
                                     "Value is not unique."));
                     FacesContext.getCurrentInstance().validationFailed();
                 } else {
@@ -519,7 +520,7 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
 
             final int duplicated = comptypeEJB.duplicate(selectedDeviceTypes.stream().
                                     map(ComponentTypeView::getComponentType).collect(Collectors.toList()));
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+            UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
                     "Duplicated " + duplicated + " device types.");
         } finally {
             reloadDeviceTypes();
@@ -589,7 +590,7 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
         for (final MultiPropertyValueView pv : selectedPropertyValues) {
             if (pv.getValue() == null) {
                 FacesContext.getCurrentInstance().addMessage("inputValidationFail",
-                        new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, UiUtility.MESSAGE_SUMMARY_ERROR,
                                 pv.getName() + ": value not set."));
                 FacesContext.getCurrentInstance().validationFailed();
                 return;
@@ -603,7 +604,7 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
                 selectedComponent.setComponentType(comptypeEJB.findById(selectedComponent.getComponentType().getId()));
                 ++created;
             }
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+            UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
                     "Created " + created + " device type properties.");
         } finally {
             resetFields();
@@ -652,11 +653,11 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
     public void onAdd() {
         try {
             comptypeEJB.add(selectedComponent.getComponentType());
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+            UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
                     "New device type has been created");
         } catch (Exception e) {
-            if (Utility.causedByPersistenceException(e)) {
-                Utility.showMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
+            if (UiUtility.causedByPersistenceException(e)) {
+                UiUtility.showMessage(FacesMessage.SEVERITY_ERROR, UiUtility.MESSAGE_SUMMARY_ERROR,
                         "Device type could not be added because a device type instance with same name already exists.");
             } else {
                 throw e;
@@ -676,11 +677,11 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
         Preconditions.checkNotNull(selectedComponent);
         try {
             comptypeEJB.save(selectedComponent.getComponentType());
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+            UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
                     "Device type updated");
         } catch (Exception e) {
-            if (Utility.causedByPersistenceException(e)) {
-                Utility.showMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
+            if (UiUtility.causedByPersistenceException(e)) {
+                UiUtility.showMessage(FacesMessage.SEVERITY_ERROR, UiUtility.MESSAGE_SUMMARY_ERROR,
                         "Device type could not be modified because a device type instance with same name already exists.");
             } else {
                 throw e;
@@ -724,7 +725,7 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
                 comptypeEJB.delete(freshEntity);
                 ++deletedDeviceTypes;
             }
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+            UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
                     "Deleted " + deletedDeviceTypes + " device types.");
         } finally {
             clearDeviceTypeRelatedInformation();

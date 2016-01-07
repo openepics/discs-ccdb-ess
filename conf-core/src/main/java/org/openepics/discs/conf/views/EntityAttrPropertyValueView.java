@@ -39,12 +39,11 @@ import org.openepics.discs.conf.ent.PropertyValue;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.Unit;
 import org.openepics.discs.conf.ent.values.Value;
+import org.openepics.discs.conf.ui.util.UiUtility;
 import org.openepics.discs.conf.util.BuiltInDataType;
 import org.openepics.discs.conf.util.Conversion;
-import org.openepics.discs.conf.util.EntityAttributeViewKind;
 import org.openepics.discs.conf.util.PropertyValueUIElement;
 import org.openepics.discs.conf.util.UnhandledCaseException;
-import org.openepics.discs.conf.util.Utility;
 
 import com.google.common.base.Preconditions;
 
@@ -161,12 +160,12 @@ public class EntityAttrPropertyValueView<E extends ConfigurationEntity & NamedEn
     public void inputValidator(FacesContext ctx, UIComponent component, Object value) throws ValidatorException {
         if (value == null) {
             throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                    Utility.MESSAGE_SUMMARY_ERROR, "No value to parse."));
+                    UiUtility.MESSAGE_SUMMARY_ERROR, "No value to parse."));
         }
 
         if (propertyValue.getProperty() == null) {
             throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                    Utility.MESSAGE_SUMMARY_ERROR, "You must select a property first."));
+                    UiUtility.MESSAGE_SUMMARY_ERROR, "You must select a property first."));
         }
 
         final DataType dataType = propertyValue.getProperty().getDataType();
@@ -180,7 +179,7 @@ public class EntityAttrPropertyValueView<E extends ConfigurationEntity & NamedEn
                     Double.parseDouble(strValue.trim());
                 } catch (NumberFormatException e) {
                     throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                            Utility.MESSAGE_SUMMARY_ERROR, "Not a double value."));
+                            UiUtility.MESSAGE_SUMMARY_ERROR, "Not a double value."));
                 }
                 break;
             case INTEGER:
@@ -188,7 +187,7 @@ public class EntityAttrPropertyValueView<E extends ConfigurationEntity & NamedEn
                     Integer.parseInt(strValue.trim());
                 } catch (NumberFormatException e) {
                     throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                            Utility.MESSAGE_SUMMARY_ERROR, "Not an integer number."));
+                            UiUtility.MESSAGE_SUMMARY_ERROR, "Not an integer number."));
                 }
                 break;
             case STRING:
@@ -198,12 +197,12 @@ public class EntityAttrPropertyValueView<E extends ConfigurationEntity & NamedEn
                     Conversion.toTimestamp(strValue);
                 } catch (RuntimeException e) {
                     throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                            Utility.MESSAGE_SUMMARY_ERROR, e.getMessage()), e);
+                            UiUtility.MESSAGE_SUMMARY_ERROR, e.getMessage()), e);
                 }
                 break;
             default:
                 throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                        Utility.MESSAGE_SUMMARY_ERROR, "Incorrect property data type."));
+                        UiUtility.MESSAGE_SUMMARY_ERROR, "Incorrect property data type."));
         }
     }
 
@@ -218,11 +217,11 @@ public class EntityAttrPropertyValueView<E extends ConfigurationEntity & NamedEn
     public void areaValidator(FacesContext ctx, UIComponent component, Object value) throws ValidatorException {
         if (value == null) {
             throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                    Utility.MESSAGE_SUMMARY_ERROR, "No value to parse."));
+                    UiUtility.MESSAGE_SUMMARY_ERROR, "No value to parse."));
         }
         if (propertyValue.getProperty() == null) {
             throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                    Utility.MESSAGE_SUMMARY_ERROR, "You must select a property first."));
+                    UiUtility.MESSAGE_SUMMARY_ERROR, "You must select a property first."));
         }
 
         final DataType dataType = propertyValue.getProperty().getDataType();
@@ -244,7 +243,7 @@ public class EntityAttrPropertyValueView<E extends ConfigurationEntity & NamedEn
                 break;
             default:
                 throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                        Utility.MESSAGE_SUMMARY_ERROR, "Incorrect property data type."));
+                        UiUtility.MESSAGE_SUMMARY_ERROR, "Incorrect property data type."));
         }
     }
 
@@ -267,14 +266,14 @@ public class EntityAttrPropertyValueView<E extends ConfigurationEntity & NamedEn
                             Double.valueOf(dblValue);
                         } catch (NumberFormatException e) {
                             throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                                    Utility.MESSAGE_SUMMARY_ERROR, "Incorrect value: " + dblValue));
+                                    UiUtility.MESSAGE_SUMMARY_ERROR, "Incorrect value: " + dblValue));
                         }
                     }
                     if (lineLength < 0) {
                         lineLength = currentLineLength;
                     } else if (currentLineLength != lineLength) {
                         throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                                Utility.MESSAGE_SUMMARY_ERROR, "All rows must contain the same number of elements."));
+                                UiUtility.MESSAGE_SUMMARY_ERROR, "All rows must contain the same number of elements."));
                     }
                 }
             }
@@ -293,7 +292,7 @@ public class EntityAttrPropertyValueView<E extends ConfigurationEntity & NamedEn
                     Integer.parseInt(intValue);
                 } catch (NumberFormatException e) {
                     throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                            Utility.MESSAGE_SUMMARY_ERROR, "Incorrect value: " + intValue));
+                            UiUtility.MESSAGE_SUMMARY_ERROR, "Incorrect value: " + intValue));
                 }
             }
         }
@@ -311,7 +310,7 @@ public class EntityAttrPropertyValueView<E extends ConfigurationEntity & NamedEn
                     Double.parseDouble(dblValue);
                 } catch (NumberFormatException e) {
                     throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                            Utility.MESSAGE_SUMMARY_ERROR, "Incorrect value: " + dblValue));
+                            UiUtility.MESSAGE_SUMMARY_ERROR, "Incorrect value: " + dblValue));
                 }
             }
         }

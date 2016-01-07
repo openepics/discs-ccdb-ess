@@ -49,6 +49,7 @@ import org.openepics.discs.conf.ui.common.DataLoaderHandler;
 import org.openepics.discs.conf.ui.common.UIException;
 import org.openepics.discs.conf.ui.export.ExportSimpleTableDialog;
 import org.openepics.discs.conf.ui.export.SimpleTableExporter;
+import org.openepics.discs.conf.ui.util.UiUtility;
 import org.openepics.discs.conf.util.BatchSaveStage;
 import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.views.NewPropertyView;
@@ -157,7 +158,7 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
     private void singlePropertyAdd() {
         propertyEJB.add(dialogProperty.getProperty());
         RequestContext.getCurrentInstance().execute("PF('addProperty').hide();");
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+        UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
                                                                 "New property has been created");
     }
 
@@ -197,7 +198,7 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
                     propertiesCreated++;
                 }
             }
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+            UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
                     "Created " + propertiesCreated + " new properties.");
         }
         return true;
@@ -218,7 +219,8 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
         try {
             Preconditions.checkNotNull(dialogProperty);
             propertyEJB.save(dialogProperty.getProperty());
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS, "Property was modified");
+            UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
+                                                                "Property was modified");
         } finally {
             init();
         }
@@ -285,8 +287,8 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
                 ++deletedProperties;
             }
 
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
-                    "Deleted " + deletedProperties + " properties.");
+            UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
+                                                                "Deleted " + deletedProperties + " properties.");
         } finally {
             selectedProperties = null;
             usedProperties = null;
@@ -328,8 +330,8 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
             Preconditions.checkState(!Utility.isNullOrEmpty(selectedProperties));
             final int duplicated = propertyEJB.duplicate(selectedProperties.stream().map(PropertyView::getProperty).
                                             collect(Collectors.toList()));
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
-                    "Duplicated " + duplicated + " properties.");
+            UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
+                                                                "Duplicated " + duplicated + " properties.");
         } finally {
             init();
         }
@@ -369,7 +371,7 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
      */
     public void nameValidator(FacesContext ctx, UIComponent component, Object value) throws ValidatorException {
         if (value == null) {
-            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
+            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, UiUtility.MESSAGE_SUMMARY_ERROR,
                                                                     "Please enter a name"));
         }
 
@@ -379,7 +381,8 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
 
         if (dialogProperty.isBeingAdded() || !dialogProperty.getName().equals(propertyName)) {
             if (propertyEJB.findByName(propertyName) != null) {
-                throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
+                throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                                                    UiUtility.MESSAGE_SUMMARY_ERROR,
                                                                     "The property with this name already exists."));
             }
         }

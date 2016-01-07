@@ -24,11 +24,8 @@ package org.openepics.discs.conf.util;
  *
  * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  */
-public class PropertyValueUnassignedException extends RuntimeException {
-    /**
-     *
-     */
-    private static final long serialVersionUID = 6810749085522329211L;
+public class PropertyValueUnassignedException extends CCDBRuntimeException {
+    private static final long serialVersionUID = -2720300106220614057L;
 
     /**
      * @see RuntimeException#RuntimeException()

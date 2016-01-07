@@ -33,7 +33,6 @@ import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.NamedEntity;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.util.UnhandledCaseException;
-import org.openepics.discs.conf.util.EntityAttributeViewKind;
 import org.primefaces.event.FileUploadEvent;
 
 import com.google.common.io.ByteStreams;

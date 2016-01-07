@@ -52,6 +52,7 @@ import org.openepics.discs.conf.ent.PropertyValue;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.ent.Tag;
+import org.openepics.discs.conf.ui.util.UiUtility;
 import org.openepics.discs.conf.util.BlobStore;
 import org.openepics.discs.conf.util.PropertyValueNotUniqueException;
 import org.openepics.discs.conf.util.UnhandledCaseException;
@@ -94,7 +95,7 @@ public abstract class AbstractAttributesController
 
     protected List<EntityAttributeView<C>> attributes;
     protected List<EntityAttributeView<C>> filteredAttributes;
-    private final List<SelectItem> attributeKinds = Utility.buildAttributeKinds();
+    private final List<SelectItem> attributeKinds = UiUtility.buildAttributeKinds();
     protected List<EntityAttributeView<C>> selectedAttributes;
     protected List<EntityAttributeView<C>> nonDeletableAttributes;
     private List<EntityAttributeView<C>> filteredDialogAttributes;
@@ -135,7 +136,7 @@ public abstract class AbstractAttributesController
             } else {
                 dao.addChild(artifactInstance);
             }
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+            UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
                     artifactView.isArtifactBeingModified() ? "Artifact has been modified" : "New artifact has been created");
         } finally {
             resetFields();
@@ -157,7 +158,7 @@ public abstract class AbstractAttributesController
             if (!existingTags.contains(tag)) {
                 existingTags.add(tag);
                 dao.save(ent);
-                Utility.showMessage(FacesMessage.SEVERITY_INFO, "Tag added", tag.getName());
+                UiUtility.showMessage(FacesMessage.SEVERITY_INFO, "Tag added", tag.getName());
             }
         } finally {
             resetFields();
@@ -215,8 +216,8 @@ public abstract class AbstractAttributesController
         selectedAttributes = null;
         nonDeletableAttributes = null;
         internalPopulateAttributesList();
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
-                "Deleted " + deletedAttributes + " attributes.");
+        UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
+                                                            "Deleted " + deletedAttributes + " attributes.");
     }
 
     protected void deletePropertyValue(final T propValueToDelete) {
@@ -271,13 +272,13 @@ public abstract class AbstractAttributesController
 
         try {
             dao.saveChild(dialogAttribute.getEntity());
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+            UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
                                                                         "Property value has been modified");
         } catch (EJBException e) {
-            if (Utility.causedBySpecifiedExceptionClass(e, PropertyValueNotUniqueException.class)) {
+            if (UiUtility.causedBySpecifiedExceptionClass(e, PropertyValueNotUniqueException.class)) {
                 FacesContext.getCurrentInstance().addMessage("uniqueMessage",
-                        new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
-                                "Value is not unique."));
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, UiUtility.MESSAGE_SUMMARY_ERROR,
+                                                                        "Value is not unique."));
                 FacesContext.getCurrentInstance().validationFailed();
             } else {
                 throw e;

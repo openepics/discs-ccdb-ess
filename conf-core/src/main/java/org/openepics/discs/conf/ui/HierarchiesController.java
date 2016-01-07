@@ -92,17 +92,18 @@ import org.openepics.discs.conf.ui.common.EntityHierarchyBuilder;
 import org.openepics.discs.conf.ui.common.HierarchyBuilder;
 import org.openepics.discs.conf.ui.common.TreeFilterContains;
 import org.openepics.discs.conf.ui.common.UIException;
+import org.openepics.discs.conf.ui.util.ConnectsManager;
+import org.openepics.discs.conf.ui.util.UiUtility;
 import org.openepics.discs.conf.ui.util.names.Names;
 import org.openepics.discs.conf.util.AppProperties;
 import org.openepics.discs.conf.util.BlobStore;
-import org.openepics.discs.conf.util.ConnectsManager;
-import org.openepics.discs.conf.util.EntityAttributeViewKind;
 import org.openepics.discs.conf.util.PropertyValueNotUniqueException;
 import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.views.EntityAttrArtifactView;
 import org.openepics.discs.conf.views.EntityAttrPropertyValueView;
 import org.openepics.discs.conf.views.EntityAttrTagView;
 import org.openepics.discs.conf.views.EntityAttributeView;
+import org.openepics.discs.conf.views.EntityAttributeViewKind;
 import org.openepics.discs.conf.views.InstallationView;
 import org.openepics.discs.conf.views.SlotRelationshipView;
 import org.openepics.discs.conf.views.SlotView;
@@ -264,7 +265,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
             initHierarchies();
             initNamingInformation();
-            attributeKinds = Utility.buildAttributeKinds();
+            attributeKinds = UiUtility.buildAttributeKinds();
             relationshipTypes = buildRelationshipTypeList();
 
             navigateToUrlSelectedSlot();
@@ -1236,7 +1237,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         for (final TreeNode refreshNode : parentRefreshList) {
             updateTreesWithFreshSlot(((SlotView) refreshNode.getData()).getSlot(), true);
         }
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, "Slots deleted", Integer.toString(numSlotsToDelete)
+        UiUtility.showMessage(FacesMessage.SEVERITY_INFO, "Slots deleted", Integer.toString(numSlotsToDelete)
                                             + " slots have been successfully deleted");
         selectedNodes = null;
         nodesToDelete = null;
@@ -1424,7 +1425,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         }
         slotEJB.save(modifiedSlot);
         selectedSlotView.setSlot(modifiedSlot);
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS, "Slot has been modified.");
+        UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS, "Slot has been modified.");
         clearRelatedInformation();
         updateDisplayedSlotInformation();
     }
@@ -1461,7 +1462,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         }
         slotViewToUpdate.setDeletable(false);
         parentNode.setExpanded(true);
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS, "Slot has been successfully created");
+        UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS, "Slot has been successfully created");
     }
 
     /**
@@ -1615,14 +1616,14 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
         if (clipboardOperation == ClipboardOperations.CUT) {
             moveSlotsToNewParent();
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+            UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
                     "Slots were moved.");
         } else {
             final TreeNode parentNode = (selectedNodes != null) && (!selectedNodes.isEmpty())
                                             ? selectedNodes.get(0)
                                             : rootNode;
             copySlotsToParent(clipboardSlots.stream().map(SlotView::getSlot).collect(Collectors.toList()), parentNode);
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+            UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
                     "Slots were copied.");
         }
         filterContainsTree();
@@ -1697,7 +1698,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         newRecord.setSlot(installationView.getSlot());
         installationEJB.add(newRecord);
 
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+        UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
                 "Device installed.");
 
         installationView.setSlot(slotEJB.findById(installationView.getSlot().getId()));
@@ -1717,7 +1718,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             Preconditions.checkNotNull(selectedInstallationRecord);
             selectedInstallationRecord.setUninstallDate(new Date());
             installationEJB.save(selectedInstallationRecord);
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+            UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
                     "Device uninstalled.");
             // signal that nothing is installed
             selectedInstallationView.setInstallationRecord(null);
@@ -1800,7 +1801,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             }
             attributes.remove(selectedAttribute);
         }
-        Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+        UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
                 "Deleted " + props + " properties.");
         selectedAttributes = null;
     }
@@ -1890,20 +1891,20 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
                 slotEJB.addChild(slotValueInstance);
                 refreshSlot(view.getParentEntity());
                 refreshAllPropertyValues();
-                Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+                UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
                         "New property has been created");
             } else {
                 slotEJB.saveChild(slotValueInstance);
                 refreshSlot(view.getParentEntity());
                 final SlotPropertyValue freshPropertyValue = slotEJB.refreshPropertyValue((SlotPropertyValue)slotValueInstance);
                 refreshAttributeList(view.getParentEntity(), freshPropertyValue);;
-                Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+                UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
                         "Property value has been modified");
             }
         } catch (EJBException e) {
-            if (Utility.causedBySpecifiedExceptionClass(e, PropertyValueNotUniqueException.class)) {
+            if (UiUtility.causedBySpecifiedExceptionClass(e, PropertyValueNotUniqueException.class)) {
                 FacesContext.getCurrentInstance().addMessage("uniqueMessage",
-                        new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, UiUtility.MESSAGE_SUMMARY_ERROR,
                                 "Value is not unique."));
                 FacesContext.getCurrentInstance().validationFailed();
             } else {
@@ -1953,7 +1954,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
                 existingTags.add(tag);
                 saveSlotAndRefresh(ent);
                 refreshAttributeList(ent, tag);
-                Utility.showMessage(FacesMessage.SEVERITY_INFO, "Tag added", tag.getName());
+                UiUtility.showMessage(FacesMessage.SEVERITY_INFO, "Tag added", tag.getName());
             }
         } finally {
             fillTagsAutocomplete();
@@ -2028,7 +2029,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
                 slotEJB.addChild(artifactInstance);
                 refreshAllArtifacts();
             }
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+            UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
                     artifactView.isArtifactBeingModified() ? "Artifact has been modified" : "New artifact has been created");
 
             refreshSlot(parentSlot);
@@ -2069,16 +2070,16 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         if (restrictToConventionNames && isInstallationSlot) {
             if (!nameList.containsKey(valueStr))
                 throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                        Utility.MESSAGE_SUMMARY_ERROR, "The installation slot name not found in the naming tool."));
+                        UiUtility.MESSAGE_SUMMARY_ERROR, "The installation slot name not found in the naming tool."));
         }
         if (isNewInstallationSlot) {
             if (!slotEJB.isInstallationSlotNameUnique(valueStr))
                 throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                        Utility.MESSAGE_SUMMARY_ERROR, "The installation slot name must be unique."));
+                        UiUtility.MESSAGE_SUMMARY_ERROR, "The installation slot name must be unique."));
         } else if (isInstallationSlot)
             if (!name.equals(valueStr) && !slotEJB.isInstallationSlotNameUnique(valueStr)) {
                 throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                        Utility.MESSAGE_SUMMARY_ERROR, "The installation slot name must be unique."));
+                        UiUtility.MESSAGE_SUMMARY_ERROR, "The installation slot name must be unique."));
         }
     }
 
@@ -2124,7 +2125,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
                 final Long childSlotId = slotPairToBeRemoved.getChildSlot().getId();
                 relationships.remove(selectedRelationship);
                 slotPairEJB.delete(slotPairToBeRemoved);
-                Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+                UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
                         "Relationship deleted.");
                 selectedRelationship = null;
                 updateTreesWithFreshSlot(slotEJB.findById(childSlotId), isContainsRemoved);
@@ -2219,7 +2220,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             }
 
             if (childSlot.equals(parentSlot)) {
-                Utility.showMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
+                UiUtility.showMessage(FacesMessage.SEVERITY_ERROR, UiUtility.MESSAGE_SUMMARY_ERROR,
                         "The installation slot cannot be in relationship with itself.");
                 return;
             }
@@ -2240,7 +2241,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
             if (!slotPairEJB.findSlotPairsByParentChildRelation(childSlot.getName(), parentSlot.getName(),
                     slotRelation.getName()).isEmpty()) {
-                Utility.showMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
+                UiUtility.showMessage(FacesMessage.SEVERITY_ERROR, UiUtility.MESSAGE_SUMMARY_ERROR,
                         "This relationship already exists.");  // TODO why is this message not show?!
                 return;
             }
@@ -2257,13 +2258,13 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             if (editedRelationshipView.getSlotPair() == null) {
                 slotPairEJB.add(newSlotPair);
                 relationships.add(new SlotRelationshipView(slotPairEJB.findById(newSlotPair.getId()), selectedSlot));
-                Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+                UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
                         "Relationship added.");
             } else {
                 slotPairEJB.save(newSlotPair);
                 relationships.remove(selectedRelationships.get(0));
                 relationships.add(new SlotRelationshipView(slotPairEJB.findById(newSlotPair.getId()), selectedRelationships.get(0).getSourceSlot()));
-                Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+                UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
                         "Relationship modified.");
                 selectedRelationships = null;
             }
@@ -2506,7 +2507,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      * "Install device" dialog.
      */
     public String getInstallationSlotPath() {
-        final String slotPath = Utility.buildSlotPath(selectedInstallationViews.get(0).getSlot()).toString();
+        final String slotPath = UiUtility.buildSlotPath(selectedInstallationViews.get(0).getSlot()).toString();
         return slotPath.substring(1, slotPath.length() - 1);
     }
 

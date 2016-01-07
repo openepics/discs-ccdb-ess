@@ -7,9 +7,9 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.validator.ValidatorException;
 
+import org.openepics.discs.conf.ui.util.UiUtility;
 import org.openepics.discs.conf.util.BatchIterator;
 import org.openepics.discs.conf.util.BatchSaveStage;
-import org.openepics.discs.conf.util.Utility;
 
 public class NewPropertyView extends PropertyView implements Iterable<String> {
     // ---- batch property creation
@@ -70,7 +70,7 @@ public class NewPropertyView extends PropertyView implements Iterable<String> {
      */
     public void batchEndValidator(FacesContext ctx, UIComponent component, Object value) throws ValidatorException {
         if (batchStartIndex >= (Integer)value) {
-            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
+            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, UiUtility.MESSAGE_SUMMARY_ERROR,
                     "End index must be greater than start index."));
         }
     }
@@ -83,7 +83,7 @@ public class NewPropertyView extends PropertyView implements Iterable<String> {
      */
     public void batchStartValidator(FacesContext ctx, UIComponent component, Object value) throws ValidatorException {
         if ((Integer)value >= batchEndIndex) {
-            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
+            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, UiUtility.MESSAGE_SUMMARY_ERROR,
                     "Start index must be less than end index."));
         }
     }
@@ -117,7 +117,8 @@ public class NewPropertyView extends PropertyView implements Iterable<String> {
     public void nameValidator(String propertyName) {
         if (isBatchCreation) {
             if (!propertyName.contains("{i}")) {
-                throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
+                throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                        UiUtility.MESSAGE_SUMMARY_ERROR,
                         "Batch creation selected, but index position \"{i}\" not set"));
             }
         } else {

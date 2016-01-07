@@ -25,6 +25,38 @@ package org.openepics.discs.conf.util;
  *
  * @author <a href="mailto:marko.kolar@cosylab.com">Marko Kolar</a>
  */
-public class UnhandledCaseException extends RuntimeException {
-    private static final long serialVersionUID = -5102250300643496913L;
+public class UnhandledCaseException extends CCDBRuntimeException {
+    private static final long serialVersionUID = 7073944478368214363L;
+
+    /**
+     * @param message the message
+     * @param cause the cause
+     * @see RuntimeException#RuntimeException(String, Throwable)
+     */
+    public UnhandledCaseException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    /**
+     * @param message the message
+     * @see RuntimeException#RuntimeException(String)
+     */
+    public UnhandledCaseException(String message) {
+        super(message);
+    }
+
+    /**
+     * @param cause the cause
+     * @see RuntimeException#RuntimeException(Throwable)
+     */
+    public UnhandledCaseException(Throwable cause) {
+        super(cause);
+    }
+
+    /**
+     * @see RuntimeException#RuntimeException(Throwable)
+     */
+    public UnhandledCaseException() {
+        super();
+    }
 }

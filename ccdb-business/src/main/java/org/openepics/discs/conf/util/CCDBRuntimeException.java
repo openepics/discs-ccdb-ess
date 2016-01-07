@@ -51,4 +51,11 @@ public class CCDBRuntimeException extends RuntimeException {
     public CCDBRuntimeException(Throwable cause) {
         super(cause);
     }
+
+    /**
+     * @see RuntimeException#RuntimeException(Throwable)
+     */
+    public CCDBRuntimeException() {
+        super();
+    }
 }

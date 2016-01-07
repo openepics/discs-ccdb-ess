@@ -23,7 +23,38 @@ package org.openepics.discs.conf.util;
  * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  *
  */
-public class PropertyValueNotUniqueException extends RuntimeException {
+public class PropertyValueNotUniqueException extends CCDBRuntimeException {
     private static final long serialVersionUID = 1516835043698546908L;
 
+    /**
+     * @param message the message
+     * @param cause the cause
+     * @see RuntimeException#RuntimeException(String, Throwable)
+     */
+    public PropertyValueNotUniqueException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    /**
+     * @param message the message
+     * @see RuntimeException#RuntimeException(String)
+     */
+    public PropertyValueNotUniqueException(String message) {
+        super(message);
+    }
+
+    /**
+     * @param cause the cause
+     * @see RuntimeException#RuntimeException(Throwable)
+     */
+    public PropertyValueNotUniqueException(Throwable cause) {
+        super(cause);
+    }
+
+    /**
+     * @see RuntimeException#RuntimeException(Throwable)
+     */
+    public PropertyValueNotUniqueException() {
+        super();
+    }
 }

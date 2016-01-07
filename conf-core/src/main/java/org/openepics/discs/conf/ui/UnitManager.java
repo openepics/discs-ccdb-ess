@@ -49,6 +49,7 @@ import org.openepics.discs.conf.ui.common.DataLoaderHandler;
 import org.openepics.discs.conf.ui.common.UIException;
 import org.openepics.discs.conf.ui.export.ExportSimpleTableDialog;
 import org.openepics.discs.conf.ui.export.SimpleTableExporter;
+import org.openepics.discs.conf.ui.util.UiUtility;
 import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.views.UnitView;
 import org.primefaces.context.RequestContext;
@@ -181,7 +182,8 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
             Preconditions.checkNotNull(dialogUnit);
             final Unit unitToAdd = dialogUnit.getUnit();
             unitEJB.add(unitToAdd);
-            Utility.showMessage(FacesMessage.SEVERITY_INFO,  Utility.MESSAGE_SUMMARY_SUCCESS, "Unit has been successfully created.");
+            UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
+                                                                "Unit has been successfully created.");
         } finally {
             selectedUnits = null;
             dialogUnit = null;
@@ -198,7 +200,8 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
             Preconditions.checkNotNull(dialogUnit);
             final Unit unitToSave = dialogUnit.getUnit();
             unitEJB.save(unitToSave);
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS, "Unit has been successfully modified.");
+            UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
+                                                                "Unit has been successfully modified.");
         } finally {
             dialogUnit = null;
             refreshUnits();
@@ -244,8 +247,8 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
                 unitEJB.delete(unitToDelete.getUnit());
                 ++deletedUnits;
             }
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
-                    "Deleted " + deletedUnits + " units.");
+            UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
+                                                                "Deleted " + deletedUnits + " units.");
         } finally {
             selectedUnits = null;
             usedUnits = null;
@@ -262,7 +265,7 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
      */
     public void nameValidator(FacesContext ctx, UIComponent component, Object value) throws ValidatorException {
         if (value == null) {
-            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
+            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, UiUtility.MESSAGE_SUMMARY_ERROR,
                                                                     "Please enter a name"));
         }
 
@@ -271,7 +274,8 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
         if (dialogUnit.isUnitAdd() || !unitName.equals(dialogUnit.getName())) {
             final Unit existingUnit = unitEJB.findByName(unitName);
             if (existingUnit != null) {
-                throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
+                throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                                                    UiUtility.MESSAGE_SUMMARY_ERROR,
                                                                     "The unit with this name already exists."));
             }
         }
@@ -286,7 +290,7 @@ public class UnitManager extends AbstractExcelSingleFileImportUI implements Seri
 
             final int duplicated = unitEJB.duplicate(selectedUnits.stream().map(UnitView::getUnit).
                                         collect(Collectors.toList()));
-            Utility.showMessage(FacesMessage.SEVERITY_INFO, Utility.MESSAGE_SUMMARY_SUCCESS,
+            UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
                     "Duplicated " + duplicated + " units.");
         } finally {
             refreshUnits();

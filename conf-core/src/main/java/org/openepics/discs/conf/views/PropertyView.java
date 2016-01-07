@@ -12,8 +12,8 @@ import org.openepics.discs.conf.ent.DataType;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyValueUniqueness;
 import org.openepics.discs.conf.ent.Unit;
+import org.openepics.discs.conf.ui.util.UiUtility;
 import org.openepics.discs.conf.util.BuiltInDataType;
-import org.openepics.discs.conf.util.Utility;
 
 public class PropertyView {
     private final Property prop;
@@ -141,7 +141,7 @@ public class PropertyView {
 
     public void nameValidator(String propertyName) {
         if (propertyName.contains("{i}")) {
-            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, Utility.MESSAGE_SUMMARY_ERROR,
+            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, UiUtility.MESSAGE_SUMMARY_ERROR,
                     "Error in name: \"{i}\""));
         }
     }
