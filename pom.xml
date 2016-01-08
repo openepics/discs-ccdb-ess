@@ -59,7 +59,7 @@
             <dependency>
                 <groupId>org.openepics.discs</groupId>
                 <artifactId>ccdb-business</artifactId>
-                <version>1.1.1</version>
+                <version>1.2.0</version>
             </dependency>
 
             <dependency>
@@ -114,5 +114,6 @@
         <module>ccdb-model</module>
         <module>ccdb-business</module>
         <module>conf-core</module>
+        <module>ccdb-ws</module>
     </modules>
 </project>

@@ -28,7 +28,6 @@ import org.openepics.discs.conf.ent.values.Value;
  * A JPA converter to convert between the Value object and the data serialized in the database.
  *
  * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
- *
  */
 @Converter(autoApply=true)
 public class SedsConverter implements AttributeConverter<Value, String> {

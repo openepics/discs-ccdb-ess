@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+
+<entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm orm_2_0.xsd"
+                 version="2.0" >
+    <entity-mappings>
+        <persistence-unit-metadata>       
+            <persistence-unit-defaults>
+                <entity-listeners>
+                    <entity-listener class="org.openepics.discs.ent.AuditListener">
+                        <post-persist method-name="entityCreated" />
+                        <post-update method-name="entityCreated" />
+                        
+                    </entity-listener>
+                </entity-listeners>
+            </persistence-unit-defaults>
+        </persistence-unit-metadata>
+    </entity-mappings>
+</entity-mappings>

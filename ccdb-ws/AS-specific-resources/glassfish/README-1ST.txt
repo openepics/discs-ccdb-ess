@@ -1,0 +1,1 @@
+The Glassfish AS distribution is totally unmaintaned, and I'm not sure it would even build now. Inspect the provided files carefully and make changes before you do anything you'll be sorry about later.

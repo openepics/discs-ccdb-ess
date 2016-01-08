@@ -40,7 +40,7 @@ public class DeviceTypeResourceImpl implements DeviceTypeResource {
     public List<DeviceType> getAllDeviceTypes() {
         return comptypeEJB.findAll().stream().
                 map(compType -> getDeviceType(compType)).
-                collect(Collectors.toList());        
+                collect(Collectors.toList());
     }
 
     @Override
@@ -53,12 +53,12 @@ public class DeviceTypeResourceImpl implements DeviceTypeResource {
      * @return REST DTO object
      */
     protected static DeviceType getDeviceType(ComponentType componentType) {
-        if (componentType==null) {
+        if (componentType == null) {
             return null;
         } else {
             final DeviceType deviceType = new DeviceType();
             deviceType.setName(componentType.getName());
-            deviceType.setDescription(componentType.getDescription());           
+            deviceType.setDescription(componentType.getDescription());
             return deviceType;
         }
     }

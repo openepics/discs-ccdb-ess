@@ -28,7 +28,7 @@ import javax.ws.rs.core.Application;
  *
  * @author <a href="mailto:sunil.sah@cosylab.com">Sunil Sah</a>
  */
-@ApplicationPath("/rest")
+@ApplicationPath("/")
 public class CcdbRestService extends Application {
     @Override
     public Set<Class<?>> getClasses() { // NOSONAR generic wildcard types part of the framework
