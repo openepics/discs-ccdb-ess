@@ -55,7 +55,7 @@ public class BatchIterator implements Iterator<String> {
         if (leadingZeroes == 0) {
             indexLen = 0;
         } else {
-            indexLen = (prefix + leadingZeroes).length();
+            indexLen = (prefix + startIndex).length();
         }
     }
 

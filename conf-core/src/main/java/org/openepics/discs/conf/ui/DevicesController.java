@@ -367,8 +367,7 @@ public class DevicesController
                     bi.hasNext();) {
                 final String deviceSerialNo = serialNumber.replace("{i}", bi.next());
                 if (deviceEJB.findByName(deviceSerialNo) == null) {
-                    final Device deviceToAdd = createNewDevice(deviceSerialNo);
-                    deviceEJB.add(deviceToAdd);
+                    deviceEJB.addDeviceAndPropertyDefs(createNewDevice(deviceSerialNo));
                     devicesCreated++;
                 }
             }
