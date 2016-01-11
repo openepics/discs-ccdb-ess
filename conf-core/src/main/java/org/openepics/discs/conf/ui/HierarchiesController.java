@@ -104,7 +104,6 @@ import org.openepics.discs.conf.views.EntityAttrPropertyValueView;
 import org.openepics.discs.conf.views.EntityAttrTagView;
 import org.openepics.discs.conf.views.EntityAttributeView;
 import org.openepics.discs.conf.views.EntityAttributeViewKind;
-import org.openepics.discs.conf.views.InstallationView;
 import org.openepics.discs.conf.views.SlotRelationshipView;
 import org.openepics.discs.conf.views.SlotView;
 import org.openepics.names.jaxb.DeviceNameElement;
@@ -154,6 +153,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     @Inject private transient BlobStore blobStore;
     @Inject private Names names;
     @Inject private transient ConnectsManager connectsManager;
+    @Inject private transient InstallationController installationController;
 
     @Inject private transient DataLoaderHandler dataLoaderHandler;
     @Inject @SignalsLoader private transient DataLoader signalsDataLoader;
@@ -182,12 +182,6 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     private transient List<SelectItem> relationshipTypes;
     private transient HashSet<Long> selectedNodeIds;
     private transient HashSet<Long> displayedAttributeNodeIds;
-    private transient List<Device> uninstalledDevices;
-    private transient List<Device> filteredUninstalledDevices;
-    private transient List<InstallationView> installationRecords;
-    private transient List<InstallationView> filteredInstallationRecords;
-    private transient List<InstallationView> selectedInstallationViews;
-    private Device deviceToInstall;
     private String requestedSlot;
 
     // ---- variables for hierarchies and tabs --------
@@ -262,6 +256,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         try {
             super.init();
             activeTab = ActiveTab.INCLUDES;
+
+            installationController.setUIParent(this);
 
             initHierarchies();
             initNamingInformation();
@@ -433,7 +429,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      *
      * Below: Screen population methods. These methods prepare the data to be displayed on the main UI screen.
      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-    private void initAttributeList(final Slot slot, final boolean forceInit) {
+    protected void initAttributeList(final Slot slot, final boolean forceInit) {
         if (forceInit || attributes == null) {
             attributes = Lists.newArrayList();
         }
@@ -533,7 +529,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         attributesIter.add(new EntityAttrArtifactView<Slot>(artifact, slot));
     }
 
-    private void removeRelatedAttributes(Slot slot) {
+    protected void removeRelatedAttributes(Slot slot) {
         final ListIterator<EntityAttributeView<Slot>> slotAttributes = attributes.listIterator();
         while (slotAttributes.hasNext()) {
             final EntityAttributeView<Slot> attribute = slotAttributes.next();
@@ -637,31 +633,6 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         }
     }
 
-    private void initInstallationRecordList(final Slot slot, final boolean forceInit) {
-        if (forceInit || installationRecords == null) {
-            installationRecords = Lists.newArrayList();
-        }
-        addToInstallationRecordList(slot);
-    }
-
-    private void addToInstallationRecordList(final Slot slot) {
-        if (slot.isHostingSlot()) {
-            final InstallationRecord record = installationEJB.getActiveInstallationRecordForSlot(slot);
-            installationRecords.add(new InstallationView(slot, record));
-        }
-    }
-
-    private void removeRelatedInstallationRecord(final Slot slot) {
-        final ListIterator<InstallationView> recordsIterator = installationRecords.listIterator();
-        while (recordsIterator.hasNext()) {
-            final InstallationView record = recordsIterator.next();
-            if (slot.equals(record.getSlot())) {
-                recordsIterator.remove();
-                break;
-            }
-        }
-    }
-
     private void updateDisplayedSlotInformation() {
         selectedSlotView = null;
         selectedSlot = null;
@@ -696,7 +667,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
                 final Slot unselectedSlot = slotEJB.findById(id);
                 removeRelatedAttributes(unselectedSlot);
                 removeRelatedRelationships(unselectedSlot);
-                removeRelatedInstallationRecord(unselectedSlot);
+                installationController.removeRelatedInstallationRecord(unselectedSlot);
                 iter.remove();
                 if (selectedAttributes != null) {
                     Iterator<EntityAttributeView<Slot>> i = selectedAttributes.iterator();
@@ -712,13 +683,6 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
                         if (selectedRelationship.getSourceSlotName().equals(unselectedSlot.getName())) i.remove();
                     }
                 }
-                if (selectedInstallationViews!= null) {
-                    Iterator<InstallationView> i = selectedInstallationViews.iterator();
-                    while (i.hasNext()) {
-                        InstallationView selectedInstallationView = i.next();
-                        if (selectedInstallationView.getSlot().getId().equals(id)) i.remove();
-                    }
-                }
             }
         }
     }
@@ -731,7 +695,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
                 final Slot slotToAdd = slotEJB.findById(selectedId);
                 initAttributeList(slotToAdd, false);
                 initRelationshipList(slotToAdd, false);
-                initInstallationRecordList(slotToAdd, false);
+                installationController.initInstallationRecordList(slotToAdd, false);
                 displayedAttributeNodeIds.add(selectedId);
             }
         }
@@ -756,14 +720,13 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         filteredAttributes = null;
         relationships = null;
         filteredRelationships = null;
-        installationRecords = null;
         selectedSlotView = null;
         selectedSlot = null;
         selectedAttributes = null;
         selectedRelationships = null;
-        selectedInstallationViews = null;
         selectedNodeIds = null;
         displayedAttributeNodeIds = null;
+        installationController.clearInstallationInformation();
     }
 
     private void selectSingleNode(final TreeNode selectedNode) {
@@ -816,7 +779,6 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             }
         }
         return node;
-
     }
 
     private void fakeUISelection(final TreeNode node) {
@@ -1675,72 +1637,6 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      *
      * Below: Methods for device instance and attribute table manipulation.
      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-    /**
-     * This method creates a new installation record for the device selected in the installation dialog. Before that
-     * it checks whether a device slot and device are both selected, and that both are also uninstalled at the moment.
-     * The checks are performed in the EJB.
-     * This method creates a new installation record containing:
-     * <ul>
-     * <li>record number</li>
-     * <li>install date</li>
-     * <li>device</li>
-     * <li>installation slot</li>
-     * </ul>
-     * The uninstall date is left empty (NULL).
-     */
-    public void installDevice() {
-        Preconditions.checkNotNull(selectedInstallationViews);
-        final Date today = new Date();
-        final InstallationRecord newRecord = new InstallationRecord(Long.toString(today.getTime()), today);
-        final InstallationView installationView = selectedInstallationViews.get(0);
-
-        newRecord.setDevice(deviceToInstall);
-        newRecord.setSlot(installationView.getSlot());
-        installationEJB.add(newRecord);
-
-        UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
-                "Device installed.");
-
-        installationView.setSlot(slotEJB.findById(installationView.getSlot().getId()));
-        installationView.setInstallationRecord(newRecord);
-
-        final Slot installationSlot = installationView.getSlot();
-        removeRelatedAttributes(installationSlot);
-        initAttributeList(installationSlot, false);
-
-        deviceToInstall = null;
-    }
-
-    /** This method is called when a user presses the "Uninstall" button in the hierarchies view. */
-    public void uninstallDevice() {
-        for (InstallationView selectedInstallationView : selectedInstallationViews) {
-            final InstallationRecord selectedInstallationRecord = selectedInstallationView.getInstallationRecord();
-            Preconditions.checkNotNull(selectedInstallationRecord);
-            selectedInstallationRecord.setUninstallDate(new Date());
-            installationEJB.save(selectedInstallationRecord);
-            UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
-                    "Device uninstalled.");
-            // signal that nothing is installed
-            selectedInstallationView.setInstallationRecord(null);
-
-            final Slot installationSlot = selectedInstallationView.getSlot();
-            removeRelatedAttributes(installationSlot);
-            initAttributeList(installationSlot, false);
-        }
-    }
-
-    public boolean canInstall()
-    {
-        return selectedInstallationViews != null && selectedInstallationViews.size() == 1 && selectedInstallationViews.get(0).getInstallationRecord() == null;
-    }
-
-    public boolean canUninstall()
-    {
-        if (selectedInstallationViews == null || selectedInstallationViews.size() == 0) return false;
-        for (InstallationView selectedInstallationView : selectedInstallationViews)
-            if (selectedInstallationView.getInstallationRecord() == null) return false;
-        return true;
-    }
 
     /** @return <code>true</code> if the attribute "Delete" button can be enabled, <code>false</code> otherwise */
     public boolean canDeleteAttributes() {
@@ -1851,14 +1747,6 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             RequestContext.getCurrentInstance().update("modifyArtifactForm:modifyArtifact");
             RequestContext.getCurrentInstance().execute("PF('modifyArtifact').show();");
         }
-    }
-
-    /** Prepares a list of a devices that can still be installed into the selected installation slot */
-    public void prepareUninstalledDevices() {
-        final Slot slotToFill = selectedInstallationViews.get(0).getSlot();
-        uninstalledDevices = (slotToFill == null) || !slotToFill.isHostingSlot() ? null
-                : installationEJB.getUninstalledDevices(slotToFill.getComponentType());
-        filteredUninstalledDevices = null;
     }
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -2440,75 +2328,6 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
     public String getRequestedSlot() {
         return requestedSlot;
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Device instance installation
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /**
-     * @return The latest installation records associated with the selected installation slots, <code>null</code> if no
-     * slots are selected.
-     */
-    public List<InstallationView> getInstallationRecords() {
-        return installationRecords;
-    }
-
-    /** @return the selectedInstallationView */
-    public List<InstallationView> getSelectedInstallationViews() {
-        return selectedInstallationViews;
-    }
-
-    /** @param selectedInstallationViews the selectedInstallationViews to set */
-    public void setSelectedInstallationViews(List<InstallationView> selectedInstallationViews) {
-        this.selectedInstallationViews = selectedInstallationViews;
-    }
-
-    /**
-     * @return Based on the device type of the currently selected slot, this returns a list of all appropriate device
-     * instances that are not installed.
-     */
-    public List<Device> getUninstalledDevices() {
-        return uninstalledDevices;
-    }
-    public void setUninstalledDevices(List<Device> uninstalledDevices) {
-        this.uninstalledDevices = uninstalledDevices;
-    }
-
-    /** @return the filteredUninstalledDevices */
-    public List<Device> getFilteredUninstalledDevices() {
-        return filteredUninstalledDevices;
-    }
-
-    /** @param filteredUninstalledDevices the filteredUninstalledDevices to set */
-    public void setFilteredUninstalledDevices(List<Device> filteredUninstalledDevices) {
-        this.filteredUninstalledDevices = filteredUninstalledDevices;
-    }
-
-    /** @return the deviceToInstall */
-    public Device getDeviceToInstall() {
-        return deviceToInstall;
-    }
-    /** @param deviceToInstall the deviceToInstall to set */
-    public void setDeviceToInstall(Device deviceToInstall) {
-        this.deviceToInstall = deviceToInstall;
-    }
-
-    /** @return installation records for filtering */
-    public List<InstallationView> getFilteredInstallationRecords() {
-        return filteredInstallationRecords;
-    }
-    /** @param filteredInstallationRecords installation records for filtering */
-    public void setFilteredInstallationRecords(List<InstallationView> filteredInstallationRecords) {
-        this.filteredInstallationRecords = filteredInstallationRecords;
-    }
-
-    /**
-     * @return The path to the installation slot the user is currently installing a device into. Used in the
-     * "Install device" dialog.
-     */
-    public String getInstallationSlotPath() {
-        final String slotPath = UiUtility.buildSlotPath(selectedInstallationViews.get(0).getSlot()).toString();
-        return slotPath.substring(1, slotPath.length() - 1);
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////

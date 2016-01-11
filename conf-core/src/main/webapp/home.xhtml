@@ -477,11 +477,11 @@
                         <p:fieldset id="installationDetails" legend="Installation" 
                                 style="box-sizing: border-box; height: calc(33.33vh - 4em)">
                             <div style="height: calc(100% - 3em)">
-                                <p:dataTable id="installationTable" value="#{hierarchiesController.installationRecords}"
+                                <p:dataTable id="installationTable" value="#{installationController.installationRecords}"
                                         var="installationRecord" widgetVar="installationWidget"
-                                        selectionMode="multiple" selection="#{hierarchiesController.selectedInstallationViews}"
+                                        selectionMode="multiple" selection="#{installationController.selectedInstallationViews}"
                                         emptyMessage="No records found." rowKey="#{installationRecord.slotName}"
-                                        filteredValue="#{hierarchiesController.filteredInstallationRecords}"
+                                        filteredValue="#{installationController.filteredInstallationRecords}"
                                         scrollable="true" scrollWidth="100%" scrollHeight="100%" class="hierarchies-attributes-cell">
     
                                     <p:ajax event="rowSelect" update=":hierarchies:installDeviceBtn :hierarchies:uninstallDeviceBtn" />
@@ -514,15 +514,15 @@
                             <p:commandButton title="Uninstall Selected Device" label="Uninstall" value="Uninstall" 
                                 type="button" onclick="PF('uninstallConfirm').show();" id="uninstallDeviceBtn" 
                                 style="margin-top: 1em; float: right;" icon="ui-icon-cancel" 
-                                disabled="#{not hierarchiesController.canUninstall() 
+                                disabled="#{not installationController.canUninstall() 
                                             or not securityPolicy.getUIHint('INSTALLATION')}" 
                                 update=":hierarchies:installationDetails :hierarchies:growl" />
                             <p:commandButton title="Install Device to the Selected Slot" id="installDeviceBtn"
                                     value="Install" ajax="true" icon="ui-icon-check" 
-                                    actionListener="#{hierarchiesController.prepareUninstalledDevices}"
+                                    actionListener="#{installationController.prepareUninstalledDevices}"
                                     style="margin: 1em 1ex 0 0; float: right;" oncomplete="PF('installDevice').show();" 
                                     update=":hierarchies:installationDetails :installDeviceForm :installDeviceForm:installDevice"
-                                    disabled="#{not hierarchiesController.canInstall() 
+                                    disabled="#{not installationController.canInstall() 
                                                 or not securityPolicy.getUIHint('INSTALLATION')}" />
                         </p:fieldset>
                     </p:column>
@@ -534,7 +534,7 @@
             <ui:param name="formId" value="installDeviceForm" />
             <ui:param name="dialogTitle" value="Select Device" />
             <ui:param name="widgetName" value="installDevice" />
-            <ui:param name="slot" value="#{hierarchiesController.selectedInstallationViews.get(0).slot}" />
+            <ui:param name="slot" value="#{installationController.selectedInstallationViews.get(0).slot}" />
             <ui:param name="componentToUpdate"
                 value=":hierarchies:slotAttributes :hierarchies:relationsTable :hierarchies:installationDetails :hierarchies:growl" />
         </ui:include>
@@ -668,14 +668,14 @@
             <ui:param name="formId" value="uninstallationForm" />
             <ui:param name="dialogTitle" value="Uninstall devices" />
             <ui:param name="widgetName" value="uninstallConfirm" />
-            <ui:param name="controller" value="#{hierarchiesController}" />
+            <ui:param name="controller" value="#{installationController}" />
             <ui:param name="message" value="Are you sure you want to uninstall selected devices?"/>
             <ui:param name="submitHandler" value="uninstallDevice" />
             <ui:param name="formsToUpdate" value=":hierarchies:installationDetails :hierarchies:slotAttributes :hierarchies:growl" />
             <ui:param name="entityName" value="Device" />
             <ui:param name="entityProperty" value="deviceInventoryId" />
             <ui:param name="closeDialogActions" value="hierarchiesResizeAll();" />
-            <ui:param name="deleteList" value="#{hierarchiesController.selectedInstallationViews}" />
+            <ui:param name="deleteList" value="#{installationController.selectedInstallationViews}" />
         </ui:include>
 
         <ui:include src="/resources/dialogs/confirm-dialog.xhtml">
