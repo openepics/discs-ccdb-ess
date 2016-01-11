@@ -31,6 +31,7 @@
         <dependency>
             <groupId>org.openepics.discs</groupId>
             <artifactId>ccdb-business</artifactId>
+            <version>1.3.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -72,7 +73,6 @@
             <resource>
                 <directory>src/main/webapp/WEB-INF</directory>
                 <excludes>
-                    <exclude>beans.xml</exclude>
                     <exclude>jboss-web.xml</exclude>
                     <exclude>jboss-all.xml</exclude>
                     <exclude>glassfish-web.xml</exclude>
@@ -149,6 +149,32 @@
             <properties>
                 <as.specific.source>development</as.specific.source>
             </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.google.code.maven-replacer-plugin</groupId>
+                        <artifactId>replacer</artifactId>
+                        <version>1.5.3</version>
+                        <executions>
+                            <execution>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>replace</goal>
+                                </goals>                   
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <file>src/main/java/org/openepics/discs/conf/security/RBACEntityTypeSecurityPolicy.java</file>
+                                <replacements>
+                                    <replacement>
+                                        <token>@Priority(Interceptor.Priority.APPLICATION+20)</token>
+                                        <value>@Priority(Interceptor.Priority.APPLICATION+5)</value>
+                                    </replacement>         
+                                </replacements>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
 
         <profile>
@@ -159,6 +185,32 @@
             <properties>
                 <as.specific.source>stage</as.specific.source>
             </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.google.code.maven-replacer-plugin</groupId>
+                        <artifactId>replacer</artifactId>
+                        <version>1.5.3</version>
+                        <executions>
+                            <execution>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>replace</goal>
+                                </goals>                   
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <file>src/main/java/org/openepics/discs/conf/security/RBACEntityTypeSecurityPolicy.java</file>
+                                <replacements>
+                                    <replacement>
+                                        <token>@Priority(Interceptor.Priority.APPLICATION+5)</token>
+                                        <value>@Priority(Interceptor.Priority.APPLICATION+20)</value>
+                                    </replacement>         
+                                </replacements>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
 
         <profile>
@@ -169,6 +221,32 @@
             <properties>
                 <as.specific.source>production</as.specific.source>
             </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.google.code.maven-replacer-plugin</groupId>
+                        <artifactId>replacer</artifactId>
+                        <version>1.5.3</version>
+                        <executions>
+                            <execution>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>replace</goal>
+                                </goals>                   
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <file>src/main/java/org/openepics/discs/conf/security/RBACEntityTypeSecurityPolicy.java</file>
+                                <replacements>
+                                    <replacement>
+                                        <token>@Priority(Interceptor.Priority.APPLICATION+5)</token>
+                                        <value>@Priority(Interceptor.Priority.APPLICATION+20)</value>
+                                    </replacement>         
+                                </replacements>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
     
         <profile>
