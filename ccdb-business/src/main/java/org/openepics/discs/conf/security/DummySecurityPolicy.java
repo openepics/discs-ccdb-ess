@@ -23,9 +23,11 @@ import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.annotation.Priority;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Alternative;
 import javax.inject.Named;
+import javax.interceptor.Interceptor;
 
 import org.openepics.discs.conf.ent.EntityTypeOperation;
 
@@ -40,6 +42,7 @@ import org.openepics.discs.conf.ent.EntityTypeOperation;
 @RequestScoped
 @Named("securityPolicy")
 @Alternative
+@Priority(Interceptor.Priority.APPLICATION)
 public class DummySecurityPolicy implements SecurityPolicy, Serializable {
     private static final long serialVersionUID = 4280076418469633096L;
 

@@ -24,9 +24,12 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.annotation.Priority;
 import javax.enterprise.context.RequestScoped;
+import javax.enterprise.inject.Alternative;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.interceptor.Interceptor;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.servlet.http.HttpServletRequest;
@@ -44,6 +47,8 @@ import org.openepics.discs.conf.ent.Privilege;
  */
 @RequestScoped
 @Named("securityPolicy")
+@Alternative
+@Priority(Interceptor.Priority.APPLICATION+10)
 public class DBTableEntityTypeSecurityPolicy extends AbstractEnityTypeSecurityPolicy
                 implements SecurityPolicy, Serializable {
     private static final long serialVersionUID = 108664734022549860L;
