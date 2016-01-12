@@ -51,7 +51,7 @@ import com.google.common.collect.ImmutableMap.Builder;
 @RequestScoped
 @Named("securityPolicy")
 @Alternative
-@Priority(Interceptor.Priority.APPLICATION+20)       // If you want to force the maven to use RBACeven in dev, set to 15
+@Priority(Interceptor.Priority.APPLICATION+20)
 public class RBACEntityTypeSecurityPolicy extends AbstractEnityTypeSecurityPolicy
         implements SecurityPolicy, Serializable {
     private static final long serialVersionUID = 7573725310824284483L;
