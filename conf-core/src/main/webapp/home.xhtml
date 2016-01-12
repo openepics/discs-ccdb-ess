@@ -411,13 +411,13 @@
                     <p:column id="relationsColumn" styleClass="alignTop">
                         <p:fieldset id="relationsTable" legend="Relationships" style="box-sizing: border-box; height: calc(33.33vh - 4em)">
                             <div style="height: calc(100% - 3em)">
-                                <p:dataTable value="#{hierarchiesController.relationships}" id="relationshipTable"
+                                <p:dataTable value="#{relationshipController.relationships}" id="relationshipTable"
                                         var="relationship" emptyMessage="No records found."
                                         scrollable="true" scrollWidth="100%" scrollHeight="100%" 
                                         class="hierarchies-attributes-cell"
-                                        filteredValue="#{hierarchiesController.filteredRelationships}"
+                                        filteredValue="#{relationshipController.filteredRelationships}"
                                         selectionMode="multiple" rowKey="#{relationship.id}"
-                                        selection="#{hierarchiesController.selectedRelationships}"
+                                        selection="#{relationshipController.selectedRelationships}"
                                         widgetVar="relationshipsWidget">
                                     <p:ajax event="rowSelect" update=":hierarchies:editRelationship :hierarchies:deleteRelationship" />
                                     <p:ajax event="rowUnselect" update=":hierarchies:editRelationship :hierarchies:deleteRelationship" />                                
@@ -428,7 +428,7 @@
                                     </p:column>
     
                                     <p:column headerText="Relationship" sortBy="#{relationship.relationshipName}"
-                                            filterOptions="#{hierarchiesController.relationshipTypes}"
+                                            filterOptions="#{relationshipController.relationshipTypes}"
                                             filterBy="#{relationship.relationshipName}" filterMatchMode="exact">
                                         <h:outputText value="#{relationship.relationshipName}" />
                                     </p:column>
@@ -454,20 +454,20 @@
 
                             <p:commandButton id="deleteRelationship" value="Delete" icon="ui-icon-trash"
                                 style="margin-top: 1em; float: right;" oncomplete="PF('deleteRelationship').show();" 
-                                disabled="#{empty hierarchiesController.selectedRelationships 
+                                disabled="#{empty relationshipController.selectedRelationships 
                                             or not securityPolicy.getUIHint('RELATIONSHIP')}" />
                             <p:commandButton value="Edit" id="editRelationship" icon="ui-icon-pencil" 
                                 oncomplete="PF('addSlotRelationship').show()" style="margin: 1em 1ex 0 0; float: right;" 
-                                disabled="#{not hierarchiesController.canRelationshipBeEdited() 
+                                disabled="#{not relationshipController.canRelationshipBeEdited() 
                                             or not securityPolicy.getUIHint('RELATIONSHIP')}"
                                 update=":addSlotRelationshipForm:addSlotRelationship"
-                                actionListener="#{hierarchiesController.prepareEditRelationshipPopup}" />                                
+                                actionListener="#{relationshipController.prepareEditRelationshipPopup}" />                                
                             <p:commandButton value="Add" id="addRelationship" icon="ui-icon-plus" 
                                 oncomplete="PF('addSlotRelationship').show()" style="margin: 1em 1ex 0 0; float: right;" 
                                 disabled="#{not hierarchiesController.singleNodeSelected 
                                             or not securityPolicy.getUIHint('RELATIONSHIP')}"
                                 update=":addSlotRelationshipForm:addSlotRelationship"
-                                actionListener="#{hierarchiesController.prepareAddRelationshipPopup}" />
+                                actionListener="#{relationshipController.prepareAddRelationshipPopup}" />
                         </p:fieldset>
                         <p:spacer height="20" />
                     </p:column>
@@ -653,7 +653,7 @@
             <ui:param name="formId" value="deleteRelationshipForm" />
             <ui:param name="dialogTitle" value="Delete Relationships" />
             <ui:param name="widgetName" value="deleteRelationship" />
-            <ui:param name="controller" value="#{hierarchiesController}" />
+            <ui:param name="controller" value="#{relationshipController}" />
             <ui:param name="submitHandler" value="onRelationshipDelete" />
             <ui:param name="formsToUpdate" value=":hierarchies:relationshipTable :hierarchies:deleteRelationship
                     :hierarchies:hierarchyTabs:tree :hierarchies:growl" />
@@ -661,7 +661,7 @@
             <ui:param name="entityName" value="Relationship" />
             <ui:param name="entityProperty" value="targetSlotName" />
             <ui:param name="closeDialogActions" value="PF('relationshipsWidget').clearFilters();" />
-            <ui:param name="deleteList" value="#{hierarchiesController.selectedRelationships}" />
+            <ui:param name="deleteList" value="#{relationshipController.selectedRelationships}" />
         </ui:include>
 
         <ui:include src="/resources/dialogs/delete-multi-confirmation.xhtml">

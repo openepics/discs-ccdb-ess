@@ -28,16 +28,13 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -66,7 +63,6 @@ import org.openepics.discs.conf.ejb.InstallationEJB;
 import org.openepics.discs.conf.ejb.PropertyEJB;
 import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ejb.SlotPairEJB;
-import org.openepics.discs.conf.ejb.SlotRelationEJB;
 import org.openepics.discs.conf.ejb.TagEJB;
 import org.openepics.discs.conf.ent.Artifact;
 import org.openepics.discs.conf.ent.ComptypeArtifact;
@@ -82,7 +78,6 @@ import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotArtifact;
 import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotPropertyValue;
-import org.openepics.discs.conf.ent.SlotRelation;
 import org.openepics.discs.conf.ent.SlotRelationName;
 import org.openepics.discs.conf.ent.Tag;
 import org.openepics.discs.conf.ui.common.AbstractExcelSingleFileImportUI;
@@ -104,7 +99,6 @@ import org.openepics.discs.conf.views.EntityAttrPropertyValueView;
 import org.openepics.discs.conf.views.EntityAttrTagView;
 import org.openepics.discs.conf.views.EntityAttributeView;
 import org.openepics.discs.conf.views.EntityAttributeViewKind;
-import org.openepics.discs.conf.views.SlotRelationshipView;
 import org.openepics.discs.conf.views.SlotView;
 import org.openepics.names.jaxb.DeviceNameElement;
 import org.primefaces.context.RequestContext;
@@ -119,7 +113,6 @@ import org.primefaces.model.TreeNode;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableList.Builder;
 import com.google.common.collect.Lists;
 
 /**
@@ -146,7 +139,6 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     @Inject private transient SlotEJB slotEJB;
     @Inject private transient SlotPairEJB slotPairEJB;
     @Inject private transient InstallationEJB installationEJB;
-    @Inject private transient SlotRelationEJB slotRelationEJB;
     @Inject private transient ComptypeEJB comptypeEJB;
     @Inject private transient PropertyEJB propertyEJB;
     @Inject private transient TagEJB tagEJB;
@@ -154,6 +146,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     @Inject private Names names;
     @Inject private transient ConnectsManager connectsManager;
     @Inject private transient InstallationController installationController;
+    @Inject private transient RelationshipController relationshipController;
 
     @Inject private transient DataLoaderHandler dataLoaderHandler;
     @Inject @SignalsLoader private transient DataLoader signalsDataLoader;
@@ -177,9 +170,6 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     private transient List<EntityAttributeView<Slot>> filteredAttributes;
     private EntityAttributeView<Slot> dialogAttribute;
     private transient List<SelectItem> attributeKinds;
-    private transient List<SlotRelationshipView> relationships;
-    private transient List<SlotRelationshipView> filteredRelationships;
-    private transient List<SelectItem> relationshipTypes;
     private transient HashSet<Long> selectedNodeIds;
     private transient HashSet<Long> displayedAttributeNodeIds;
     private String requestedSlot;
@@ -232,13 +222,6 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     private transient List<Property> filteredProperties;
     private transient List<String> tagsForAutocomplete;
 
-    private transient List<SlotRelationshipView> selectedRelationships;
-
-    private SlotRelationshipView editedRelationshipView;
-    private List<String> relationshipTypesForDialog;
-    private Map<String, SlotRelation> slotRelationBySlotRelationStringName;
-
-
     private String filterContainsTree;
     private String filterControlsTree;
     private String filterPowersTree;
@@ -258,42 +241,16 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             activeTab = ActiveTab.INCLUDES;
 
             installationController.setUIParent(this);
+            relationshipController.setUIParent(this);
 
             initHierarchies();
             initNamingInformation();
             attributeKinds = UiUtility.buildAttributeKinds();
-            relationshipTypes = buildRelationshipTypeList();
 
             navigateToUrlSelectedSlot();
         } catch (Exception e) {
             throw new UIException("Hierarchies display initialization fialed: " + e.getMessage(), e);
         }
-    }
-
-    private List<SelectItem> buildRelationshipTypeList() {
-        Builder<SelectItem> immutableListBuilder = ImmutableList.builder();
-        immutableListBuilder.add(new SelectItem("", "Select one"));
-
-        final List<SlotRelation> slotRelations = slotRelationEJB.findAll();
-        slotRelations.sort(new Comparator<SlotRelation>() {
-            @Override
-            public int compare(SlotRelation o1, SlotRelation o2) {
-                return o1.getNameAsString().compareTo(o2.getNameAsString());
-            }});
-        slotRelationBySlotRelationStringName = new LinkedHashMap<>();
-        for (final SlotRelation slotRelation : slotRelations) {
-            immutableListBuilder.add(new SelectItem(slotRelation.getNameAsString(), slotRelation.getNameAsString()));
-            immutableListBuilder.add(new SelectItem(slotRelation.getIname(), slotRelation.getIname()));
-            slotRelationBySlotRelationStringName.put(slotRelation.getNameAsString(), slotRelation);
-            slotRelationBySlotRelationStringName.put(slotRelation.getIname(), slotRelation);
-        }
-        if (getCableDBStatus()) {
-            immutableListBuilder.add(new SelectItem(connectsManager.getRelationshipName(),
-                    connectsManager.getRelationshipName()));
-        }
-
-        relationshipTypesForDialog = ImmutableList.copyOf(slotRelationBySlotRelationStringName.keySet().iterator());
-        return immutableListBuilder.build();
     }
 
     private void initNamingInformation() {
@@ -335,7 +292,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         }
     }
 
-    private void updateTreesWithFreshSlot(final Slot freshSlot, boolean rebuildAffectedSlots) {
+    protected void updateTreesWithFreshSlot(final Slot freshSlot, boolean rebuildAffectedSlots) {
         updateTreeWithFreshSlot(rootNode, freshSlot, rebuildAffectedSlots);
         updateTreeWithFreshSlot(controlsRootNode, freshSlot, rebuildAffectedSlots);
         updateTreeWithFreshSlot(powersRootNode, freshSlot, rebuildAffectedSlots);
@@ -599,39 +556,6 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         }
     }
 
-    private void initRelationshipList(final Slot slot, final boolean forceInit) {
-        if (forceInit || relationships == null) {
-            relationships = Lists.newArrayList();
-        }
-        addToRelationshipList(slot);
-    }
-
-    private void addToRelationshipList(final Slot slot) {
-        final Slot rootSlot = slotEJB.getRootNode();
-        final List<SlotPair> slotPairs = slotPairEJB.getSlotRelations(slot);
-
-        for (final SlotPair slotPair : slotPairs) {
-            if (!slotPair.getParentSlot().equals(rootSlot)) {
-                relationships.add(new SlotRelationshipView(slotPair, slot));
-            }
-        }
-
-        final List<Slot> connectedSlots = connectsManager.getSlotConnects(slot);
-        for (final Slot targetSlot : connectedSlots) {
-            relationships.add(new SlotRelationshipView(slot.getId()+"c"+targetSlot.getId(), slot, targetSlot,
-                    connectsManager.getRelationshipName()));
-        }
-    }
-
-    private void removeRelatedRelationships(final Slot slot) {
-        final ListIterator<SlotRelationshipView> relationsList = relationships.listIterator();
-        while (relationsList.hasNext()) {
-            final SlotRelationshipView relationshipView = relationsList.next();
-            if (slot.getName().equals(relationshipView.getSourceSlotName())) {
-                relationsList.remove();
-            }
-        }
-    }
 
     private void updateDisplayedSlotInformation() {
         selectedSlotView = null;
@@ -666,7 +590,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             if (!selectedNodeIds.contains(id)) {
                 final Slot unselectedSlot = slotEJB.findById(id);
                 removeRelatedAttributes(unselectedSlot);
-                removeRelatedRelationships(unselectedSlot);
+                relationshipController.removeRelatedRelationships(unselectedSlot);
                 installationController.removeRelatedInstallationRecord(unselectedSlot);
                 iter.remove();
                 if (selectedAttributes != null) {
@@ -674,13 +598,6 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
                     while (i.hasNext()) {
                         EntityAttributeView<Slot> selectedAttribute = i.next();
                         if (selectedAttribute.getParent().equals(unselectedSlot.getName())) i.remove();
-                    }
-                }
-                if (selectedRelationships!= null) {
-                    Iterator<SlotRelationshipView> i = selectedRelationships.iterator();
-                    while (i.hasNext()) {
-                        SlotRelationshipView selectedRelationship = i.next();
-                        if (selectedRelationship.getSourceSlotName().equals(unselectedSlot.getName())) i.remove();
                     }
                 }
             }
@@ -694,7 +611,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
                 // this slot doesn't have information in the related tables yet
                 final Slot slotToAdd = slotEJB.findById(selectedId);
                 initAttributeList(slotToAdd, false);
-                initRelationshipList(slotToAdd, false);
+                relationshipController.initRelationshipList(slotToAdd, false);
                 installationController.initInstallationRecordList(slotToAdd, false);
                 displayedAttributeNodeIds.add(selectedId);
             }
@@ -718,15 +635,13 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     private void clearRelatedInformation() {
         attributes = null;
         filteredAttributes = null;
-        relationships = null;
-        filteredRelationships = null;
         selectedSlotView = null;
         selectedSlot = null;
         selectedAttributes = null;
-        selectedRelationships = null;
         selectedNodeIds = null;
         displayedAttributeNodeIds = null;
         installationController.clearInstallationInformation();
+        relationshipController.clearRelationshipInformation();
     }
 
     private void selectSingleNode(final TreeNode selectedNode) {
@@ -1284,8 +1199,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     /**
      * @return cableDBStatus
      */
-    public boolean getCableDBStatus()
-    {
+    public boolean getCableDBStatus() {
         return connectsManager.getCableDBStatus();
     }
 
@@ -1373,7 +1287,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         name = null;
         description = null;
         deviceType = null;
-        parentName = getSelectedNodeSlot() == null ? "" : getSelectedNodeSlot().getName();
+        parentName = (selectedSlot == null) ? "" : selectedSlot.getName();
         hasDevice = false;
     }
 
@@ -1971,79 +1885,13 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         }
     }
 
-      /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      * Above: Input field validators regardless of the dialog they are used in.
      *
      * Below: Relationships related methods
      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-    /**
-     * This method gets called when the relationship processing is complete or dialog is simply closed. It properly
-     * refreshes the selected node state so that the hierarchy behaves consistently.
-     * The currently selected slot is also refreshed, so that new realtionship data is displayed.
-     */
-    public void onRelationshipPopupClose() {
-        // clear the previous dialog selection for the next use
-        if (editedRelationshipView != null) {
-            if (editedRelationshipView.getTargetNode() != null) {
-                editedRelationshipView.getTargetNode().setSelected(false);
-            }
 
-            editedRelationshipView = null;
-        }
-
-     // restore the current main selection. The relationship manipulation is done.
-        hierarchyBuilder.setFilterValue(filterContainsTree);
-        hierarchyBuilder.applyFilter(rootNode, new ArrayList<>(rootNode.getChildren()));
-        List<TreeNode> selected = selectedNodes;
-        selectedNodes = new ArrayList<TreeNode>();
-        reselectNodes(rootNode, selected);
-
-
-        refreshSlot(selectedSlot);
-    }
-
-    /** Called when button to delete relationship is clicked */
-    public void onRelationshipDelete() {
-        if (canRelationshipBeDeleted()) {
-            for (SlotRelationshipView selectedRelationship : selectedRelationships) {
-                final SlotPair slotPairToBeRemoved = selectedRelationship.getSlotPair();
-                final boolean isContainsRemoved =
-                        (slotPairToBeRemoved.getSlotRelation().getName() == SlotRelationName.CONTAINS);
-                final Long parentSlotId = slotPairToBeRemoved.getParentSlot().getId();
-                final Long childSlotId = slotPairToBeRemoved.getChildSlot().getId();
-                relationships.remove(selectedRelationship);
-                slotPairEJB.delete(slotPairToBeRemoved);
-                UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
-                        "Relationship deleted.");
-                selectedRelationship = null;
-                updateTreesWithFreshSlot(slotEJB.findById(childSlotId), isContainsRemoved);
-                updateTreesWithFreshSlot(slotEJB.findById(parentSlotId), isContainsRemoved);
-            }
-        } else {
-            RequestContext.getCurrentInstance().execute("PF('cantDeleteRelation').show();");
-        }
-    }
-
-    public boolean canRelationshipBeEdited() {
-        if (selectedRelationships == null || selectedRelationships.size() != 1) return false;
-        if (selectedRelationships.get(0).getSlotPair() == null) return false;
-        if (selectedRelationships.get(0).getSlotPair().getSlotRelation().getName().equals(SlotRelationName.CONTAINS)) {
-            return false;
-        }
-        return true;
-    }
-
-    private boolean canRelationshipBeDeleted() {
-        if (selectedRelationships == null || selectedRelationships.size() == 0) return false;
-        for (SlotRelationshipView selectedRelationship : selectedRelationships) {
-            if (selectedRelationship.getSlotPair() == null) return false;
-            if (selectedRelationship.getSlotPair().getSlotRelation().getName().equals(SlotRelationName.CONTAINS)
-                && !slotPairEJB.slotHasMoreThanOneContainsRelation(selectedRelationship.getSlotPair().getChildSlot())) return false;
-        }
-        return true;
-    }
-
-    private void prepareTreeForRelationshipsPopup() {
+    protected void prepareTreeForRelationshipsPopup() {
         // hide the current main selection, since the same data can be used to add new relationships.
         // Will be restored when the user finishes relationship manipulation.
         for (TreeNode node : selectedNodes) node.setSelected(false);
@@ -2051,122 +1899,15 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         hierarchyBuilder.applyFilter(rootNode, new ArrayList<>(rootNode.getChildren()));
     }
 
-    /** Prepares data for editing new relationship */
-    public void prepareEditRelationshipPopup() {
-        Preconditions.checkState((selectedRelationships != null) && (selectedRelationships.size() == 1));
-        prepareTreeForRelationshipsPopup();
+    protected void restoreTreeAfterRelationshipPopup() {
+        // restore the current main selection. The relationship manipulation is done.
+        hierarchyBuilder.setFilterValue(filterContainsTree);
+        hierarchyBuilder.applyFilter(rootNode, new ArrayList<>(rootNode.getChildren()));
+        List<TreeNode> selected = selectedNodes;
+        selectedNodes = new ArrayList<TreeNode>();
+        reselectNodes(rootNode, selected);
 
-        // setups the dialog
-        SlotRelationshipView v = selectedRelationships.get(0);
-        editedRelationshipView = new SlotRelationshipView(v.getSlotPair(), v.getSourceSlot());
-
-        TreeNode node = findNode(editedRelationshipView.getTargetSlot());
-        node.setSelected(true);
-        editedRelationshipView.setTargetNode(node);
-
-        // modify relationship types drop down menu
-        relationshipTypesForDialog = slotRelationBySlotRelationStringName.entrySet().stream()
-                .filter(e -> !e.getValue().getName().equals(SlotRelationName.CONTAINS)).map(Entry::getKey).collect(Collectors.toList());
-    }
-
-    /** Prepares data for adding new relationship */
-    public void prepareAddRelationshipPopup() {
-        Preconditions.checkNotNull(selectedSlot);
-        Preconditions.checkState((selectedNodes != null) && (selectedNodes.size() == 1));
-
-        prepareTreeForRelationshipsPopup();
-
-        // clear the previous dialog selection in case the dialog was already used before
-        editedRelationshipView = new SlotRelationshipView(null, selectedSlot);
-        editedRelationshipView.setRelationshipName(SlotRelationName.CONTAINS.toString());
-
-        // modify relationship types drop down menu
-        if (selectedSlot.isHostingSlot()) {
-            relationshipTypesForDialog = ImmutableList.copyOf(slotRelationBySlotRelationStringName.keySet().iterator());
-
-        } else {
-            relationshipTypesForDialog = ImmutableList.of(SlotRelationName.CONTAINS.toString(),
-                    SlotRelationName.CONTAINS.inverseName());
-        }
-    }
-
-    /**
-     * Called when user clicks add button to add new relationship. Relationship is added if this does not
-     * cause a loop on CONTAINS relationships
-     */
-    public void onRelationshipAdd() {
-        try {
-            final SlotRelation slotRelation = slotRelationBySlotRelationStringName.get(editedRelationshipView.getRelationshipName());
-            final Slot parentSlot;
-            final Slot childSlot;
-            if (slotRelation.getNameAsString().equals(editedRelationshipView.getRelationshipName())) {
-                childSlot = ((SlotView) editedRelationshipView.getTargetNode().getData()).getSlot();
-                parentSlot = editedRelationshipView.getSourceSlot();
-            } else {
-                childSlot = editedRelationshipView.getSourceSlot();
-                parentSlot = ((SlotView) editedRelationshipView.getTargetNode().getData()).getSlot();
-            }
-
-            if (childSlot.equals(parentSlot)) {
-                UiUtility.showMessage(FacesMessage.SEVERITY_ERROR, UiUtility.MESSAGE_SUMMARY_ERROR,
-                        "The installation slot cannot be in relationship with itself.");
-                return;
-            }
-
-            final SlotPair newSlotPair;
-            final boolean isContainsRemoved = editedRelationshipView.getSlotPair() != null && editedRelationshipView.getSlotPair().getSlotRelation().equals(SlotRelationName.CONTAINS);
-            if (editedRelationshipView.getSlotPair() != null) {
-                newSlotPair = editedRelationshipView.getSlotPair();
-                if (newSlotPair.getChildSlot().equals(childSlot) &&
-                        newSlotPair.getParentSlot().equals(parentSlot) &&
-                        newSlotPair.getSlotRelation().equals(slotRelation)) {
-                    // nothing to do, relationship not modified
-                    return;
-                }
-            } else {
-                newSlotPair = new SlotPair();
-            }
-
-            if (!slotPairEJB.findSlotPairsByParentChildRelation(childSlot.getName(), parentSlot.getName(),
-                    slotRelation.getName()).isEmpty()) {
-                UiUtility.showMessage(FacesMessage.SEVERITY_ERROR, UiUtility.MESSAGE_SUMMARY_ERROR,
-                        "This relationship already exists.");  // TODO why is this message not show?!
-                return;
-            }
-
-            newSlotPair.setChildSlot(childSlot);
-            newSlotPair.setParentSlot(parentSlot);
-            newSlotPair.setSlotRelation(slotRelation);
-
-            if (slotPairEJB.slotPairCreatesLoop(newSlotPair, childSlot)) {
-                RequestContext.getCurrentInstance().execute("PF('slotPairLoopNotification').show();");
-                return;
-            }
-
-            if (editedRelationshipView.getSlotPair() == null) {
-                slotPairEJB.add(newSlotPair);
-                relationships.add(new SlotRelationshipView(slotPairEJB.findById(newSlotPair.getId()), selectedSlot));
-                UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
-                        "Relationship added.");
-            } else {
-                slotPairEJB.save(newSlotPair);
-                relationships.remove(selectedRelationships.get(0));
-                relationships.add(new SlotRelationshipView(slotPairEJB.findById(newSlotPair.getId()), selectedRelationships.get(0).getSourceSlot()));
-                UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
-                        "Relationship modified.");
-                selectedRelationships = null;
-            }
-
-            final boolean isContainsAdded = (slotRelation.getName() == SlotRelationName.CONTAINS);
-            updateTreesWithFreshSlot(slotEJB.findById(childSlot.getId()), isContainsAdded || isContainsRemoved);
-            updateTreesWithFreshSlot(slotEJB.findById(parentSlot.getId()), isContainsAdded || isContainsRemoved);
-
-            if (isContainsAdded && parentSlot == selectedSlot) {
-                selectedNodes.get(0).setExpanded(true);
-            }
-        } finally {
-            onRelationshipPopupClose();
-        }
+        refreshSlot(selectedSlot);
     }
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -2205,14 +1946,6 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         return selectedSlotView;
     }
 
-    /** @return The list of relationships for the currently selected slot. */
-    public List<SlotRelationshipView> getRelationships() {
-        return relationships;
-    }
-    public void setRelationships(List<SlotRelationshipView> relationships) {
-        this.relationships = relationships;
-    }
-
     /** @return The root node of the <code>CONTAINS</code> hierarchy tree. */
     public TreeNode getRootNode() {
         return rootNode;
@@ -2233,6 +1966,9 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         return connectsRootNode;
     }
 
+    protected void expandFirstSelectedNode() {
+        selectedNodes.get(0).setExpanded(true);
+    }
 
     public void setSelectedIncludesNodes(TreeNode[] nodes) {
         if (activeTab == ActiveTab.INCLUDES) {
@@ -2365,23 +2101,6 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Relationships table
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /** @return the {@link List} of relationship types to display in the filter drop down selection. */
-    public List<SelectItem> getRelationshipTypes() {
-        return relationshipTypes;
-    }
-
-    /** @return the filteredRelationships */
-    public List<SlotRelationshipView> getFilteredRelationships() {
-        return filteredRelationships;
-    }
-    /** @param filteredRelationships the filteredRelationships to set */
-    public void setFilteredRelationships(List<SlotRelationshipView> filteredRelationships) {
-        this.filteredRelationships = filteredRelationships;
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Slot dialog
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /** @return the name */
@@ -2440,86 +2159,47 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         return filteredProperties;
     }
 
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Relationship manipulation
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /** @return the selectedRelationships */
-    public List<SlotRelationshipView> getSelectedRelationships() {
-        return selectedRelationships;
-    }
-    /** @param selectedRelationships the selectedRelationships to set */
-    public void setSelectedRelationships(List<SlotRelationshipView> selectedRelationships) {
-        this.selectedRelationships = selectedRelationships;
-    }
-
-    /** @return the relationshipTypesForDialog */
-    public List<String> getRelationshipTypesForDialog() {
-        return relationshipTypesForDialog;
-    }
-    /** @param relationshipTypesForDialog the relationshipTypesForDialog to set */
-    public void setRelationshipTypesForDialog(List<String> relationshipTypesForDialog) {
-        this.relationshipTypesForDialog = relationshipTypesForDialog;
-    }
-
-    /**
-     * @return the filterContainsTree
-     */
+    /** @return the filterContainsTree */
     public String getFilterContainsTree() {
         return filterContainsTree;
     }
 
-    /**
-     * @param filterContainsTree the filterContainsTree to set
-     */
+    /** @param filterContainsTree the filterContainsTree to set */
     public void setFilterContainsTree(String filterContainsTree) {
         this.filterContainsTree = filterContainsTree;
     }
 
-    /**
-     * @return the namingRedirectionUrl
-     */
+    /** @return the namingRedirectionUrl */
     public String getNamingRedirectionUrl() {
         return namingRedirectionUrl;
     }
 
-    /**
-     * @return the filterControlsTree
-     */
+    /** @return the filterControlsTree */
     public String getFilterControlsTree() {
         return filterControlsTree;
     }
 
-    /**
-     * @param filterControlsTree the filterControlsTree to set
-     */
+    /** @param filterControlsTree the filterControlsTree to set */
     public void setFilterControlsTree(String filterControlsTree) {
         this.filterControlsTree = filterControlsTree;
     }
 
-    /**
-     * @return the filterPowersTree
-     */
+    /** @return the filterPowersTree */
     public String getFilterPowersTree() {
         return filterPowersTree;
     }
 
-    /**
-     * @param filterPowersTree the filterPowersTree to set
-     */
+    /** @param filterPowersTree the filterPowersTree to set */
     public void setFilterPowersTree(String filterPowersTree) {
         this.filterPowersTree = filterPowersTree;
     }
 
-    /**
-     * @return the filterConnectsTree
-     */
+    /** @return the filterConnectsTree */
     public String getFilterConnectsTree() {
         return filterConnectsTree;
     }
 
-    /**
-     * @param filterConnectsTree the filterConnectsTree to set
-     */
+    /** @param filterConnectsTree the filterConnectsTree to set */
     public void setFilterConnectsTree(String filterConnectsTree) {
         this.filterConnectsTree = filterConnectsTree;
     }
@@ -2552,23 +2232,17 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         selectedNodes = null;
     }
 
-    /**
-     * @return the linkSlot
-     */
+    /** @return the linkSlot */
     public SlotView getLinkSlot() {
         return linkSlot;
     }
 
-    /**
-     * @param linkSlot the linkSlot to set
-     */
+    /** @param linkSlot the linkSlot to set */
     public void setLinkSlot(SlotView linkSlot) {
         this.linkSlot = linkSlot;
     }
 
-    /**
-     * @return the cableRedirectionUrl
-     */
+    /** @return the cableRedirectionUrl */
     public String getCableRedirectionUrl() {
         if (cableRedirectionUrl == null) {
             final String cableRedirectionUrl = properties.getProperty(AppProperties.CABLEDB_APPLICATION_URL);
@@ -2585,23 +2259,12 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         return cableRedirectionUrl;
     }
 
-    /**
-     * @return the editedRelationshipView
-     */
-    public SlotRelationshipView getEditedRelationshipView() {
-        return editedRelationshipView;
-    }
-
-    /**
-     * @return the namesForAutoComplete
-     */
+    /** @return the namesForAutoComplete */
     public List<String> getNamesForAutoComplete() {
         return namesForAutoComplete;
     }
 
-    /**
-     * @return the restrictToConventionNames
-     */
+    /** @return the restrictToConventionNames */
     public boolean isRestrictToConventionNames() {
         return restrictToConventionNames;
     }
