@@ -20,9 +20,6 @@
 package org.openepics.discs.conf.ui;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -35,16 +32,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
-import javax.ejb.EJBException;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
-import javax.faces.model.SelectItem;
 import javax.faces.validator.ValidatorException;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -60,26 +54,13 @@ import org.openepics.discs.conf.dl.annotations.SlotsLoader;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.ejb.ComptypeEJB;
 import org.openepics.discs.conf.ejb.InstallationEJB;
-import org.openepics.discs.conf.ejb.PropertyEJB;
 import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ejb.SlotPairEJB;
-import org.openepics.discs.conf.ejb.TagEJB;
-import org.openepics.discs.conf.ent.Artifact;
-import org.openepics.discs.conf.ent.ComptypeArtifact;
-import org.openepics.discs.conf.ent.ComptypePropertyValue;
-import org.openepics.discs.conf.ent.ConfigurationEntity;
 import org.openepics.discs.conf.ent.Device;
-import org.openepics.discs.conf.ent.DeviceArtifact;
-import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ent.InstallationRecord;
-import org.openepics.discs.conf.ent.Property;
-import org.openepics.discs.conf.ent.PropertyValue;
 import org.openepics.discs.conf.ent.Slot;
-import org.openepics.discs.conf.ent.SlotArtifact;
 import org.openepics.discs.conf.ent.SlotPair;
-import org.openepics.discs.conf.ent.SlotPropertyValue;
 import org.openepics.discs.conf.ent.SlotRelationName;
-import org.openepics.discs.conf.ent.Tag;
 import org.openepics.discs.conf.ui.common.AbstractExcelSingleFileImportUI;
 import org.openepics.discs.conf.ui.common.ConnectsHierarchyBuilder;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
@@ -91,14 +72,7 @@ import org.openepics.discs.conf.ui.util.ConnectsManager;
 import org.openepics.discs.conf.ui.util.UiUtility;
 import org.openepics.discs.conf.ui.util.names.Names;
 import org.openepics.discs.conf.util.AppProperties;
-import org.openepics.discs.conf.util.BlobStore;
-import org.openepics.discs.conf.util.PropertyValueNotUniqueException;
 import org.openepics.discs.conf.util.Utility;
-import org.openepics.discs.conf.views.EntityAttrArtifactView;
-import org.openepics.discs.conf.views.EntityAttrPropertyValueView;
-import org.openepics.discs.conf.views.EntityAttrTagView;
-import org.openepics.discs.conf.views.EntityAttributeView;
-import org.openepics.discs.conf.views.EntityAttributeViewKind;
 import org.openepics.discs.conf.views.SlotView;
 import org.openepics.names.jaxb.DeviceNameElement;
 import org.primefaces.context.RequestContext;
@@ -106,9 +80,7 @@ import org.primefaces.event.NodeExpandEvent;
 import org.primefaces.event.NodeSelectEvent;
 import org.primefaces.event.NodeUnselectEvent;
 import org.primefaces.event.TabChangeEvent;
-import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.DefaultTreeNode;
-import org.primefaces.model.StreamedContent;
 import org.primefaces.model.TreeNode;
 
 import com.google.common.base.Preconditions;
@@ -140,13 +112,11 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     @Inject private transient SlotPairEJB slotPairEJB;
     @Inject private transient InstallationEJB installationEJB;
     @Inject private transient ComptypeEJB comptypeEJB;
-    @Inject private transient PropertyEJB propertyEJB;
-    @Inject private transient TagEJB tagEJB;
-    @Inject private transient BlobStore blobStore;
     @Inject private Names names;
     @Inject private transient ConnectsManager connectsManager;
     @Inject private transient InstallationController installationController;
     @Inject private transient RelationshipController relationshipController;
+    @Inject private transient SlotAttributeController slotAttributeController;
 
     @Inject private transient DataLoaderHandler dataLoaderHandler;
     @Inject @SignalsLoader private transient DataLoader signalsDataLoader;
@@ -166,10 +136,6 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         ACTIVE, OBSOLETE, DELETED, MISSING
     }
 
-    private transient List<EntityAttributeView<Slot>> attributes;
-    private transient List<EntityAttributeView<Slot>> filteredAttributes;
-    private EntityAttributeView<Slot> dialogAttribute;
-    private transient List<SelectItem> attributeKinds;
     private transient HashSet<Long> selectedNodeIds;
     private transient HashSet<Long> displayedAttributeNodeIds;
     private String requestedSlot;
@@ -216,12 +182,6 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     private boolean isNewInstallationSlot;
     private transient Map<String, DeviceNameElement> nameList;
 
-    // ------ variables for attribute manipulation ------
-    private transient List<EntityAttributeView<Slot>> selectedAttributes;
-    private transient EntityAttributeView<Slot> downloadAttribute;
-    private transient List<Property> filteredProperties;
-    private transient List<String> tagsForAutocomplete;
-
     private String filterContainsTree;
     private String filterControlsTree;
     private String filterPowersTree;
@@ -240,12 +200,11 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             super.init();
             activeTab = ActiveTab.INCLUDES;
 
-            installationController.setUIParent(this);
             relationshipController.setUIParent(this);
+            slotAttributeController.setUIParent(this);
 
             initHierarchies();
             initNamingInformation();
-            attributeKinds = UiUtility.buildAttributeKinds();
 
             navigateToUrlSelectedSlot();
         } catch (Exception e) {
@@ -280,12 +239,12 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         }
     }
 
-    private void saveSlotAndRefresh(final Slot slot) {
+    protected void saveSlotAndRefresh(final Slot slot) {
         slotEJB.save(slot);
         refreshSlot(slot);
     }
 
-    private void refreshSlot(final Slot slot) {
+    protected void refreshSlot(final Slot slot) {
         final Slot freshSlot = slotEJB.findById(slot.getId());
         if (selectedSlot != null) {
             selectedSlot = freshSlot;
@@ -386,176 +345,6 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      *
      * Below: Screen population methods. These methods prepare the data to be displayed on the main UI screen.
      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-    protected void initAttributeList(final Slot slot, final boolean forceInit) {
-        if (forceInit || attributes == null) {
-            attributes = Lists.newArrayList();
-        }
-        addPropertyValues(slot);
-        addArtifacts(slot);
-        addTags(slot);
-    }
-
-    private void refreshAttributeList(final Slot slot, final SlotPropertyValue propertyValue) {
-        // Use iterator. If the property value is found, then update it.
-        // If not, add new property value to the already existing ones. Append to the end of the ones for the same slot.
-        boolean encounteredParentSiblings = false;
-        ListIterator<EntityAttributeView<Slot>> attributesIter = attributes.listIterator();
-        while (attributesIter.hasNext()) {
-            final EntityAttributeView<Slot> tableAttribute = attributesIter.next();
-            if (tableAttribute.getParent().equals(slot.getName())) {
-                encounteredParentSiblings = true;
-                // the entity's real sibling
-
-                if (tableAttribute.getEntity().equals(propertyValue)) {
-                    // found the existing artifact, update it and exit!
-                    attributesIter.set(new EntityAttrPropertyValueView<Slot>(propertyValue, slot));
-                    return;
-                }
-
-                if (tableAttribute.getKind() == EntityAttributeViewKind.DEVICE_TYPE_ARTIFACT
-                        || tableAttribute.getKind() == EntityAttributeViewKind.INSTALL_SLOT_ARTIFACT
-                        || tableAttribute.getKind() == EntityAttributeViewKind.DEVICE_ARTIFACT
-                        || tableAttribute.getKind() == EntityAttributeViewKind.CONTAINER_SLOT_ARTIFACT) {
-                    // we just encountered our sibling ARTIFACT. Insert before that.
-                    attributesIter.previous();
-                    break;
-                }
-            } else if (encounteredParentSiblings) {
-                // we just moved past all our siblings. Move one back and break;
-                attributesIter.previous();
-                break;
-            }
-        }
-        // the insertion pointer is at the right spot. This is either the last property value for this parent,
-        //   the last attribute for this parent (no artifacts and tags), or the very last attribute in the entire table
-        attributesIter.add(new EntityAttrPropertyValueView<Slot>(propertyValue, slot));
-    }
-
-    private void refreshAttributeList(final Slot slot, final Tag tag) {
-        // Use iterator. Add new Tag to the already existing ones. Append to the end of the ones for the same slot.
-        boolean encounteredParentSiblings = false;
-        ListIterator<EntityAttributeView<Slot>> attributesIter = attributes.listIterator();
-        while (attributesIter.hasNext()) {
-            final EntityAttributeView<Slot> tableAttribute = attributesIter.next();
-            if (tableAttribute.getParent().equals(slot.getName())) {
-                encounteredParentSiblings = true;
-            } else if (encounteredParentSiblings) {
-                // we just moved past all our siblings. Move one back and break.
-                attributesIter.previous();
-                break;
-            }
-        }
-        // the insertion pointer is at the right spot. This is either the last attribute for this parent,
-        //     or the very last attribute in the entire table
-        attributesIter.add(new EntityAttrTagView<Slot>(tag, slot));
-    }
-
-    private void refreshAttributeList(final Slot slot, final SlotArtifact artifact) {
-        // Use iterator. If the artifact is found, then update it.
-        // If not, add new artifact to the already existing ones. Append to the end of the ones for the same slot.
-        boolean encounteredParentSiblings = false;
-        ListIterator<EntityAttributeView<Slot>> attributesIter = attributes.listIterator();
-        while (attributesIter.hasNext()) {
-            final EntityAttributeView<Slot> tableAttribute = attributesIter.next();
-            if (tableAttribute.getParent().equals(slot.getName())) {
-                encounteredParentSiblings = true;
-                // the entity's real sibling
-
-                if (tableAttribute.getEntity().equals(artifact)) {
-                    // found the existing artifact, update it and exit!
-                    attributesIter.set(new EntityAttrArtifactView<Slot>(artifact, slot));
-                    return;
-                }
-
-                if (tableAttribute.getKind() == EntityAttributeViewKind.DEVICE_TYPE_TAG
-                        || tableAttribute.getKind() == EntityAttributeViewKind.INSTALL_SLOT_TAG
-                        || tableAttribute.getKind() == EntityAttributeViewKind.DEVICE_TAG
-                        || tableAttribute.getKind() == EntityAttributeViewKind.CONTAINER_SLOT_TAG) {
-                    // we just encountered our sibling TAG. Insert before that.
-                    attributesIter.previous();
-                    break;
-                }
-            } else if (encounteredParentSiblings) {
-                // we just moved past all our siblings. Move one back and break;
-                attributesIter.previous();
-                break;
-            }
-        }
-        // the insertion pointer is at the right spot. This is either the last artifact for this parent,
-        //     the last attribute for this parent (no tags), or the very last attribute in the entire table
-        attributesIter.add(new EntityAttrArtifactView<Slot>(artifact, slot));
-    }
-
-    protected void removeRelatedAttributes(Slot slot) {
-        final ListIterator<EntityAttributeView<Slot>> slotAttributes = attributes.listIterator();
-        while (slotAttributes.hasNext()) {
-            final EntityAttributeView<Slot> attribute = slotAttributes.next();
-            if (slot.getName().equals(attribute.getParent())) {
-                slotAttributes.remove();
-            }
-        }
-    }
-
-    private void addPropertyValues(final Slot slot) {
-        final InstallationRecord activeInstallationRecord = installationEJB.getActiveInstallationRecordForSlot(slot);
-
-        for (final ComptypePropertyValue value : slot.getComponentType().getComptypePropertyList()) {
-            if (!value.isPropertyDefinition()) {
-                attributes.add(new EntityAttrPropertyValueView<Slot>(value, slot, slot.getComponentType()));
-            }
-        }
-
-        for (final SlotPropertyValue value : slot.getSlotPropertyList()) {
-            attributes.add(new EntityAttrPropertyValueView<Slot>(value, slot));
-        }
-
-        if (activeInstallationRecord != null) {
-            for (final DevicePropertyValue devicePropertyValue : activeInstallationRecord.getDevice().
-                                                                                        getDevicePropertyList()) {
-                attributes.add(new EntityAttrPropertyValueView<Slot>(devicePropertyValue,
-                                                            EntityAttributeViewKind.DEVICE_PROPERTY,
-                                                            slot,
-                                                            activeInstallationRecord.getDevice()));
-            }
-        }
-    }
-
-    private void addArtifacts(final Slot slot) {
-        final InstallationRecord activeInstallationRecord = installationEJB.getActiveInstallationRecordForSlot(slot);
-
-        for (final ComptypeArtifact artifact : slot.getComponentType().getComptypeArtifactList()) {
-            attributes.add(new EntityAttrArtifactView<Slot>(artifact, slot, slot.getComponentType()));
-        }
-
-        for (final SlotArtifact artifact : slot.getSlotArtifactList()) {
-            attributes.add(new EntityAttrArtifactView<Slot>(artifact, slot));
-        }
-
-        if (activeInstallationRecord != null) {
-            for (final DeviceArtifact deviceArtifact : activeInstallationRecord.getDevice().getDeviceArtifactList()) {
-                attributes.add(new EntityAttrArtifactView<Slot>(deviceArtifact, slot, activeInstallationRecord.getDevice()));
-            }
-        }
-    }
-
-    private void addTags(final Slot slot) {
-        final InstallationRecord activeInstallationRecord = installationEJB.getActiveInstallationRecordForSlot(slot);
-
-        for (final Tag tagInstance : slot.getComponentType().getTags()) {
-            attributes.add(new EntityAttrTagView<Slot>(tagInstance, slot, slot.getComponentType()));
-        }
-
-        for (final Tag tagInstance : slot.getTags()) {
-            attributes.add(new EntityAttrTagView<Slot>(tagInstance, slot));
-        }
-
-        if (activeInstallationRecord != null) {
-            for (final Tag tagInstance : activeInstallationRecord.getDevice().getTags()) {
-                attributes.add(new EntityAttrTagView<Slot>(tagInstance, slot, activeInstallationRecord.getDevice()));
-            }
-        }
-    }
-
 
     private void updateDisplayedSlotInformation() {
         selectedSlotView = null;
@@ -589,17 +378,10 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             final Long id = iter.next();
             if (!selectedNodeIds.contains(id)) {
                 final Slot unselectedSlot = slotEJB.findById(id);
-                removeRelatedAttributes(unselectedSlot);
+                slotAttributeController.removeRelatedAttributes(unselectedSlot);
                 relationshipController.removeRelatedRelationships(unselectedSlot);
                 installationController.removeRelatedInstallationRecord(unselectedSlot);
                 iter.remove();
-                if (selectedAttributes != null) {
-                    Iterator<EntityAttributeView<Slot>> i = selectedAttributes.iterator();
-                    while (i.hasNext()) {
-                        EntityAttributeView<Slot> selectedAttribute = i.next();
-                        if (selectedAttribute.getParent().equals(unselectedSlot.getName())) i.remove();
-                    }
-                }
             }
         }
     }
@@ -610,7 +392,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             if (!displayedAttributeNodeIds.contains(selectedId)) {
                 // this slot doesn't have information in the related tables yet
                 final Slot slotToAdd = slotEJB.findById(selectedId);
-                initAttributeList(slotToAdd, false);
+                slotAttributeController.initAttributeList(slotToAdd, false);
                 relationshipController.initRelationshipList(slotToAdd, false);
                 installationController.initInstallationRecordList(slotToAdd, false);
                 displayedAttributeNodeIds.add(selectedId);
@@ -633,13 +415,11 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
     /** Clears all slot related information when user deselects the slots in the hierarchy. */
     private void clearRelatedInformation() {
-        attributes = null;
-        filteredAttributes = null;
         selectedSlotView = null;
         selectedSlot = null;
-        selectedAttributes = null;
         selectedNodeIds = null;
         displayedAttributeNodeIds = null;
+        slotAttributeController.clearAttributeInformation();
         installationController.clearInstallationInformation();
         relationshipController.clearRelationshipInformation();
     }
@@ -655,12 +435,10 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     public void selectNode(final Slot slot) {
         TreeNode node = findNode(slot);
 
-
-     // the final slot found
+        // the final slot found
         unselectAllTreeNodes();
         clearRelatedInformation();
         fakeUISelection(node);
-
     }
 
     public TreeNode findNode(final Slot slot) {
@@ -1549,314 +1327,6 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      * Above: Methods for manipulation, populating and editing the hierarchy tree of slots and containers.
      *
-     * Below: Methods for device instance and attribute table manipulation.
-     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-    /** @return <code>true</code> if the attribute "Delete" button can be enabled, <code>false</code> otherwise */
-    public boolean canDeleteAttributes() {
-        if (selectedAttributes == null || selectedAttributes.size() == 0) {
-            return false;
-        }
-        for (EntityAttributeView<Slot> selectedAttribute : selectedAttributes)
-            switch (selectedAttribute.getKind()) {
-                case CONTAINER_SLOT_ARTIFACT:
-                case CONTAINER_SLOT_TAG:
-                case CONTAINER_SLOT_PROPERTY:
-                case INSTALL_SLOT_ARTIFACT:
-                case INSTALL_SLOT_TAG:
-                    continue;
-                case INSTALL_SLOT_PROPERTY:
-                    if (selectedAttribute.getValue() != null) {
-                        continue;
-                    } else {
-                        return false;
-                    }
-                default:
-                    return false;
-            }
-        return true;
-    }
-
-    /** The handler called from the "Delete confirmation" dialog. This actually deletes an attribute */
-    public void deleteAttributes() {
-        Preconditions.checkNotNull(selectedAttributes);
-        int props = 0;
-        for (EntityAttributeView<Slot> selectedAttribute : selectedAttributes) {
-            final Slot slot = slotEJB.findByName(selectedAttribute.getParent());
-            switch (selectedAttribute.getKind()) {
-                case INSTALL_SLOT_ARTIFACT:
-                case CONTAINER_SLOT_ARTIFACT:
-                case CONTAINER_SLOT_PROPERTY:
-                    slotEJB.deleteChild(selectedAttribute.getEntity());
-                    refreshSlot(slot);
-                    props++;
-                    break;
-                case INSTALL_SLOT_TAG:
-                case CONTAINER_SLOT_TAG:
-                    slot.getTags().remove(selectedAttribute.getEntity());
-                    saveSlotAndRefresh(slot);
-                    props++;
-                    break;
-                case INSTALL_SLOT_PROPERTY:
-                    SlotPropertyValue prop = ((SlotPropertyValue)selectedAttribute.getEntity());
-                    prop.setPropValue(null);
-                    slotEJB.saveChild(prop);
-                    refreshSlot(slot);
-                    props++;
-                    final SlotPropertyValue freshPropertyValue = slotEJB.refreshPropertyValue(prop);
-                    refreshAttributeList(slot, freshPropertyValue);
-                    break;
-                default:
-                    throw new RuntimeException("Trying to delete an attribute that cannot be removed on home screen.");
-            }
-            attributes.remove(selectedAttribute);
-        }
-        UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
-                "Deleted " + props + " properties.");
-        selectedAttributes = null;
-    }
-
-    /** @return <code>true</code> if the attribute "Edit" button can be enables, <code>false</code> otherwise */
-    public boolean canEditAttribute() {
-        if (selectedAttributes == null || selectedAttributes.size() != 1) {
-            return false;
-        }
-        switch (selectedAttributes.get(0).getKind()) {
-            case CONTAINER_SLOT_ARTIFACT:
-            case CONTAINER_SLOT_PROPERTY:
-            case INSTALL_SLOT_ARTIFACT:
-            case INSTALL_SLOT_PROPERTY:
-                return true;
-            default:
-                return false;
-        }
-    }
-
-    /** Prepares the information for the "Edit" attribute dialog. */
-    public void prepareModifyAttributePopup() {
-        Preconditions.checkNotNull(selectedAttributes);
-        Preconditions.checkState(selectedAttributes.size() == 1);
-
-        final EntityAttributeView<Slot> selectedAttrView = selectedAttributes.get(0);
-
-        if (selectedAttrView instanceof EntityAttrPropertyValueView<?>) {
-            final EntityAttrPropertyValueView<Slot> propertyValueView = new EntityAttrPropertyValueView<Slot>(
-                    slotEJB.refreshPropertyValue((PropertyValue)selectedAttrView.getEntity()), selectedAttrView.getParentEntity());
-            final boolean propertyNameChangeDisabled = propertyValueView.getParentEntity().isHostingSlot();
-            propertyValueView.setPropertyNameChangeDisabled(propertyNameChangeDisabled);
-            if (!propertyNameChangeDisabled) {
-                filterProperties();
-            }
-            dialogAttribute = propertyValueView;
-
-            RequestContext.getCurrentInstance().update("modifyPropertyValueForm:modifyPropertyValue");
-            RequestContext.getCurrentInstance().execute("PF('modifyPropertyValue').show();");
-        }
-
-        if (selectedAttrView instanceof EntityAttrArtifactView<?>) {
-            final EntityAttrArtifactView<Slot> view = new EntityAttrArtifactView<Slot>(
-                    slotEJB.refreshArtifact((Artifact)selectedAttrView.getEntity()), selectedAttrView.getParentEntity());
-            dialogAttribute = view;
-
-            RequestContext.getCurrentInstance().update("modifyArtifactForm:modifyArtifact");
-            RequestContext.getCurrentInstance().execute("PF('modifyArtifact').show();");
-        }
-    }
-
-    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     * Above: Methods for device instance and attribute table manipulation.
-     *
-     * Below: Methods for adding and modifying container and installation slot property values.
-     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-    /** Prepares data for addition of {@link PropertyValue}. Only valid for containers. */
-    public void prepareForPropertyValueAdd() {
-        selectedAttributes = null;
-        final SlotPropertyValue slotValueInstance = new SlotPropertyValue(false);
-        slotValueInstance.setPropertiesParent(selectedSlot);
-        dialogAttribute = new EntityAttrPropertyValueView<Slot>(slotValueInstance, getSelectedEntity());
-        filterProperties();
-    }
-
-    private void refreshAllPropertyValues() {
-        final List<SlotPropertyValue> propertyValues = selectedSlot.getSlotPropertyList();
-        for (final SlotPropertyValue propValue : propertyValues) {
-            refreshAttributeList(selectedSlot, propValue);
-        }
-    }
-
-    /** The handler called to save or add a new value of the {@link SlotPropertyValue} after modification */
-    public void modifyPropertyValue() {
-        try {
-            final EntityAttrPropertyValueView<Slot> view = getDialogAttrPropertyValue();
-            final PropertyValue slotValueInstance = view.getEntity();
-            if (view.isBeingAdded()) {
-                slotEJB.addChild(slotValueInstance);
-                refreshSlot(view.getParentEntity());
-                refreshAllPropertyValues();
-                UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
-                        "New property has been created");
-            } else {
-                slotEJB.saveChild(slotValueInstance);
-                refreshSlot(view.getParentEntity());
-                final SlotPropertyValue freshPropertyValue = slotEJB.refreshPropertyValue((SlotPropertyValue)slotValueInstance);
-                refreshAttributeList(view.getParentEntity(), freshPropertyValue);;
-                UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
-                        "Property value has been modified");
-            }
-        } catch (EJBException e) {
-            if (UiUtility.causedBySpecifiedExceptionClass(e, PropertyValueNotUniqueException.class)) {
-                FacesContext.getCurrentInstance().addMessage("uniqueMessage",
-                        new FacesMessage(FacesMessage.SEVERITY_ERROR, UiUtility.MESSAGE_SUMMARY_ERROR,
-                                "Value is not unique."));
-                FacesContext.getCurrentInstance().validationFailed();
-            } else {
-                throw e;
-            }
-        }
-    }
-
-    private void filterProperties() {
-        final List<Property> propertyCandidates = propertyEJB.findAllOrderedByName();
-
-        final Property dialogProperty = getDialogAttrPropertyValue() != null ? getDialogAttrPropertyValue().getProperty() : null;
-
-        // remove all properties that are already defined.
-        for (final SlotPropertyValue slotPropertyValue : selectedSlot.getSlotPropertyList()) {
-            if (!slotPropertyValue.getProperty().equals(dialogProperty)) {
-                propertyCandidates.remove(slotPropertyValue.getProperty());
-            }
-        }
-
-        filteredProperties = propertyCandidates;
-    }
-
-    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     * Above: Methods for adding and modifying container and installation slot property values.
-     *
-     * Below: Methods for adding and deleting tags.
-     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-    /** Prepares the UI data for addition of {@link Tag} */
-    public void prepareForTagAdd() {
-        fillTagsAutocomplete();
-        dialogAttribute = new EntityAttrTagView<Slot>(getSelectedEntity());
-    }
-
-    /** Adds new {@link Tag} to parent {@link ConfigurationEntity} */
-    public void addNewTag() {
-        try {
-            final EntityAttrTagView<Slot> tagView = getDialogAttrTag();
-            Tag tag = tagEJB.findById(tagView.getTag());
-            if (tag == null) {
-                tag = tagView.getEntity();
-            }
-
-            Slot ent = tagView.getParentEntity();
-            final Set<Tag> existingTags = ent.getTags();
-            if (!existingTags.contains(tag)) {
-                existingTags.add(tag);
-                saveSlotAndRefresh(ent);
-                refreshAttributeList(ent, tag);
-                UiUtility.showMessage(FacesMessage.SEVERITY_INFO, "Tag added", tag.getName());
-            }
-        } finally {
-            fillTagsAutocomplete();
-            selectedAttributes = null;
-            dialogAttribute = null;
-        }
-    }
-
-    private void fillTagsAutocomplete() {
-        tagsForAutocomplete = ImmutableList.copyOf(Lists.transform(tagEJB.findAllSorted(), Tag::getName));
-    }
-
-    /** Used by the {@link Tag} input value control to display the list of auto-complete suggestions. The list contains
-     * the tags already stored in the database.
-     * @param query The text the user typed so far.
-     * @return The list of auto-complete suggestions.
-     */
-    public List<String> tagAutocompleteText(String query) {
-        final List<String> resultList = new ArrayList<String>();
-        final String queryUpperCase = query.toUpperCase();
-        for (final String element : tagsForAutocomplete) {
-            if (element.toUpperCase().startsWith(queryUpperCase))
-                resultList.add(element);
-        }
-        return resultList;
-    }
-
-    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     * Above: Methods for adding and deleting tags.
-     *
-     * Below: Methods for adding, deleting and modifying artifacts.
-     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-    /** Prepares the UI data for addition of {@link Artifact} */
-    public void prepareForArtifactAdd() {
-        final Artifact artifact = new SlotArtifact();
-        final Slot selectedEntity = getSelectedEntity();
-        artifact.setArtifactsParent(selectedEntity);
-        dialogAttribute = new EntityAttrArtifactView<Slot>(artifact, selectedEntity);
-    }
-
-    private void refreshAllArtifacts() {
-        final List<SlotArtifact> slotArtifacts = selectedSlot.getSlotArtifactList();
-        for (final SlotArtifact artifact : slotArtifacts) {
-            refreshAttributeList(selectedSlot, artifact);
-        }
-    }
-
-    /** Modifies the selected artifact properties
-     * @throws IOException if attachment file operation has failed. */
-    public void modifyArtifact() throws IOException {
-        try {
-            final EntityAttrArtifactView<Slot> artifactView = getDialogAttrArtifact();
-
-            if (artifactView.isArtifactInternal()) {
-                final byte[] importData = artifactView.getImportData();
-                if (importData != null) {
-                    if (artifactView.isArtifactBeingModified()) {
-                        blobStore.deleteFile(artifactView.getArtifactURI());
-                    }
-                    artifactView.setArtifactURI(blobStore.storeFile(new ByteArrayInputStream(importData)));
-                }
-            }
-
-            final Artifact artifactInstance = artifactView.getEntity();
-            final Slot parentSlot = artifactView.getParentEntity();
-
-            if (artifactView.isArtifactBeingModified()) {
-                slotEJB.saveChild(artifactInstance);
-                final SlotArtifact freshArtifact = slotEJB.refreshArtifact((SlotArtifact)artifactInstance);
-                refreshAttributeList(parentSlot, freshArtifact);
-            } else {
-                slotEJB.addChild(artifactInstance);
-                refreshAllArtifacts();
-            }
-            UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
-                    artifactView.isArtifactBeingModified() ? "Artifact has been modified" : "New artifact has been created");
-
-            refreshSlot(parentSlot);
-        } finally {
-            dialogAttribute = null;
-        }
-    }
-
-    /**
-     * Finds artifact file that was uploaded on the file system and returns it to be downloaded
-     *
-     * @return Artifact file to be downloaded
-     * @throws FileNotFoundException Thrown if file was not found on file system
-     */
-    public StreamedContent getDownloadFile() throws FileNotFoundException {
-        final Artifact downloadArtifact = (Artifact) downloadAttribute.getEntity();
-        final String filePath = blobStore.getBlobStoreRoot() + File.separator + downloadArtifact.getUri();
-        final String contentType = FacesContext.getCurrentInstance().getExternalContext().getMimeType(filePath);
-
-        return new DefaultStreamedContent(new FileInputStream(filePath), contentType, downloadArtifact.getName());
-    }
-
-    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     * Above: Methods for adding, deleting and modifying artifacts.
-     *
      * Below: Input field validators regardless of the dialog they are used in.
      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
     /**
@@ -1920,19 +1390,6 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Main screen
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /**
-     * @return The list of attributes (property values, artifacts and tags) for at all levels:
-     * <ul>
-     * <li>device type properties</li>
-     * <li>container or installation slot properties</li>
-     * </ul>
-     */
-    public List<EntityAttributeView<Slot>> getAttributes() {
-        return attributes;
-    }
-    public void setAttrbutes(List<EntityAttributeView<Slot>> attributes) {
-        this.attributes = attributes;
-    }
 
     /** @return The slot (container or installation slot) that is currently selected in the tree. */
     public Slot getSelectedNodeSlot() {
@@ -2067,40 +1524,6 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Attributes table
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /** @return the filteredAttributes */
-    public List<EntityAttributeView<Slot>> getFilteredAttributes() {
-        return filteredAttributes;
-    }
-    /** @param filteredAttributes the filteredAttributes to set */
-    public void setFilteredAttributes(List<EntityAttributeView<Slot>> filteredAttributes) {
-        this.filteredAttributes = filteredAttributes;
-    }
-
-    public List<SelectItem> getAttributeKinds() {
-        return attributeKinds;
-    }
-
-    /** @return the selectedAttributes */
-    public List<EntityAttributeView<Slot>> getSelectedAttributes() {
-        return selectedAttributes;
-    }
-    /** @param selectedAttributes the selectedAttributes to set */
-    public void setSelectedAttributes(List<EntityAttributeView<Slot>> selectedAttributes) {
-        this.selectedAttributes = selectedAttributes;
-    }
-
-    /** @return the downloadAttribute */
-    public EntityAttributeView<Slot> getDownloadAttribute() {
-        return downloadAttribute;
-    }
-    /** @param downloadAttribute the downloadAttribute to set */
-    public void setDownloadAttribute(EntityAttributeView<Slot> downloadAttribute) {
-        this.downloadAttribute = downloadAttribute;
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Slot dialog
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /** @return the name */
@@ -2152,11 +1575,6 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     /** @return hasDevice */
     public boolean getHasDevice() {
         return hasDevice;
-    }
-
-    /** @return the filteredProperties */
-    public List<Property> getFilteredProperties() {
-        return filteredProperties;
     }
 
     /** @return the filterContainsTree */
@@ -2269,39 +1687,11 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         return restrictToConventionNames;
     }
 
-    /** @return the dialogAttribute */
-    public EntityAttrTagView<Slot> getDialogAttrTag() {
-        if (dialogAttribute instanceof EntityAttrTagView<?>) {
-            return (EntityAttrTagView<Slot>)dialogAttribute;
-        }
-        return null;
-    }
-
-    /** @return the dialogAttribute */
-    public EntityAttrPropertyValueView<Slot> getDialogAttrPropertyValue() {
-        if (dialogAttribute instanceof EntityAttrPropertyValueView<?>) {
-            return (EntityAttrPropertyValueView<Slot>)dialogAttribute;
-        }
-        return null;
-    }
-
-    /** @return the dialogAttribute */
-    public EntityAttrArtifactView<Slot> getDialogAttrArtifact() {
-        if (dialogAttribute instanceof EntityAttrArtifactView<?>) {
-            return (EntityAttrArtifactView<Slot>)dialogAttribute;
-        }
-        return null;
-    }
-
     protected Slot getSelectedEntity() {
         if (selectedSlot != null) {
             Slot slot = slotEJB.findById(selectedSlot.getId());
             return slot;
         }
         throw new IllegalArgumentException("No slot selected");
-    }
-
-    public void resetFields() {
-        dialogAttribute = null;
     }
 }

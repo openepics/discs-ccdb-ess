@@ -48,7 +48,7 @@ public class InstallationController implements Serializable {
 
     @Inject private transient InstallationEJB installationEJB;
     @Inject private transient SlotEJB slotEJB;
-    private transient HierarchiesController hierarchiesController;
+    @Inject private transient SlotAttributeController slotAttributeController;
 
     private transient List<InstallationView> selectedInstallationViews;
     private transient List<InstallationView> installationRecords;
@@ -58,22 +58,12 @@ public class InstallationController implements Serializable {
     private transient List<Device> filteredUninstalledDevices;
     private Device deviceToInstall;
 
-    protected void setUIParent(HierarchiesController hierarchiesController) {
-        this.hierarchiesController = hierarchiesController;
-    }
-
-    public boolean canInstall() {
-        return (selectedInstallationViews != null) && (selectedInstallationViews.size() == 1)
-                && (selectedInstallationViews.get(0).getInstallationRecord() == null);
-    }
-
-    public boolean canUninstall() {
-        if (selectedInstallationViews == null || selectedInstallationViews.size() == 0) return false;
-        for (InstallationView selectedInstallationView : selectedInstallationViews)
-            if (selectedInstallationView.getInstallationRecord() == null) return false;
-        return true;
-    }
-
+    /** Adds the installation information connected to one {@link Slot} to the installation list.
+     * @param slot the {@link Slot} to add the information for
+     * @param forceInit if <code>true</code> recreate the installation list even if it already contains some information
+     * and add just the one {@link Slot} info to the new list. If <code>false</code> adds the installation information
+     * to the already existing list.
+     */
     protected void initInstallationRecordList(final Slot slot, final boolean forceInit) {
         if (forceInit || installationRecords == null) {
             installationRecords = Lists.newArrayList();
@@ -88,6 +78,10 @@ public class InstallationController implements Serializable {
         }
     }
 
+    /** Remove the installation information connected to one {@link Slot} from the installation list and the
+     * list of selected installation records if necessary.
+     * @param slot the {@link Slot} to remove the information for
+     */
     protected void removeRelatedInstallationRecord(final Slot slot) {
         final ListIterator<InstallationView> recordsIterator = installationRecords.listIterator();
         while (recordsIterator.hasNext()) {
@@ -107,9 +101,29 @@ public class InstallationController implements Serializable {
         }
     }
 
+    /** Called from {@link HierarchiesController} when the user deselects everything. */
     protected void clearInstallationInformation() {
         installationRecords = null;
         selectedInstallationViews = null;
+    }
+
+
+    /** Tells the UI whether the "Install" button can be enabled.
+     * @return <code>true</code> if the {@link Slot} is free for installation, <code>false</code> otherwise.
+     */
+    public boolean canInstall() {
+        return (selectedInstallationViews != null) && (selectedInstallationViews.size() == 1)
+                && (selectedInstallationViews.get(0).getInstallationRecord() == null);
+    }
+
+    /** Tells the UI whether the "Uninstall" button can be enabled.
+     * @return <code>true</code> if the {@link Slot} has device installed, <code>false</code> otherwise.
+     */
+    public boolean canUninstall() {
+        if (selectedInstallationViews == null || selectedInstallationViews.size() == 0) return false;
+        for (InstallationView selectedInstallationView : selectedInstallationViews)
+            if (selectedInstallationView.getInstallationRecord() == null) return false;
+        return true;
     }
 
     /**
@@ -142,8 +156,8 @@ public class InstallationController implements Serializable {
         installationView.setInstallationRecord(newRecord);
 
         final Slot installationSlot = installationView.getSlot();
-        hierarchiesController.removeRelatedAttributes(installationSlot);
-        hierarchiesController.initAttributeList(installationSlot, false);
+        slotAttributeController.removeRelatedAttributes(installationSlot);
+        slotAttributeController.initAttributeList(installationSlot, false);
 
         deviceToInstall = null;
     }
@@ -161,8 +175,8 @@ public class InstallationController implements Serializable {
             selectedInstallationView.setInstallationRecord(null);
 
             final Slot installationSlot = selectedInstallationView.getSlot();
-            hierarchiesController.removeRelatedAttributes(installationSlot);
-            hierarchiesController.initAttributeList(installationSlot, false);
+            slotAttributeController.removeRelatedAttributes(installationSlot);
+            slotAttributeController.initAttributeList(installationSlot, false);
         }
     }
 
@@ -239,5 +253,4 @@ public class InstallationController implements Serializable {
     public void setDeviceToInstall(Device deviceToInstall) {
         this.deviceToInstall = deviceToInstall;
     }
-
 }

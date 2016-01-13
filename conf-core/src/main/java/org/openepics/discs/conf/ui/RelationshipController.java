@@ -87,6 +87,9 @@ public class RelationshipController implements Serializable {
         relationshipTypes = buildRelationshipTypeList();
     }
 
+    /** Tell this bean which {@link HierarchiesController} is its "master"
+     * @param hierarchiesController the {@link HierarchiesController} master bean
+     */
     protected void setUIParent(HierarchiesController hierarchiesController) {
         this.hierarchiesController = hierarchiesController;
     }
@@ -117,6 +120,12 @@ public class RelationshipController implements Serializable {
         return immutableListBuilder.build();
     }
 
+    /** Add the relationship information connected to one {@link Slot} to the relationship list.
+     * @param slot the {@link Slot} to add the information for
+     * @param forceInit if <code>true</code> recreate the relationship list even if it already contains some information
+     * and add just the one {@link Slot} info to the new list. If <code>false</code> add the relationship information to
+     * the already existing list.
+     */
     protected void initRelationshipList(final Slot slot, final boolean forceInit) {
         if (forceInit || relationships == null) {
             relationships = Lists.newArrayList();
@@ -141,6 +150,10 @@ public class RelationshipController implements Serializable {
         }
     }
 
+    /** Remove the relationships connected to one {@link Slot} from the relationship list and the
+     * list of selected relationships if necessary.
+     * @param slot the {@link Slot} to remove the information for
+     */
     protected void removeRelatedRelationships(final Slot slot) {
         final ListIterator<SlotRelationshipView> relationsList = relationships.listIterator();
         while (relationsList.hasNext()) {
@@ -158,7 +171,8 @@ public class RelationshipController implements Serializable {
         }
     }
 
-    public void clearRelationshipInformation() {
+    /** Called from {@link HierarchiesController} when the user deselects everything. */
+    protected void clearRelationshipInformation() {
         relationships = null;
         filteredRelationships = null;
         selectedRelationships = null;
@@ -198,15 +212,20 @@ public class RelationshipController implements Serializable {
                 hierarchiesController.updateTreesWithFreshSlot(slotEJB.findById(childSlotId), isContainsRemoved);
                 hierarchiesController.updateTreesWithFreshSlot(slotEJB.findById(parentSlotId), isContainsRemoved);
             }
+            selectedRelationships = null;
         } else {
             RequestContext.getCurrentInstance().execute("PF('cantDeleteRelation').show();");
         }
     }
 
+    /** Tells the UI whether the relationship "Edit" button can be enabled.
+     * @return <code>true</code> if only one relationship is selected and is of correct type,
+     * <code>false</code> otherwise.
+     */
     public boolean canRelationshipBeEdited() {
         if (selectedRelationships == null || selectedRelationships.size() != 1) return false;
         if (selectedRelationships.get(0).getSlotPair() == null) return false;
-        if (selectedRelationships.get(0).getSlotPair().getSlotRelation().getName().equals(SlotRelationName.CONTAINS)) {
+        if (selectedRelationships.get(0).getSlotPair().getSlotRelation().getName() == SlotRelationName.CONTAINS) {
             return false;
         }
         return true;
@@ -325,7 +344,8 @@ public class RelationshipController implements Serializable {
             } else {
                 slotPairEJB.save(newSlotPair);
                 relationships.remove(selectedRelationships.get(0));
-                relationships.add(new SlotRelationshipView(slotPairEJB.findById(newSlotPair.getId()), selectedRelationships.get(0).getSourceSlot()));
+                relationships.add(new SlotRelationshipView(slotPairEJB.findById(newSlotPair.getId()),
+                                                                selectedRelationships.get(0).getSourceSlot()));
                 UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
                         "Relationship modified.");
                 selectedRelationships = null;
