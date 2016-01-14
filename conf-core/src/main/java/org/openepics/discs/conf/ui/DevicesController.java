@@ -19,7 +19,10 @@
  */
 package org.openepics.discs.conf.ui;
 
-import java.util.ArrayList;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
@@ -38,36 +41,30 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.openepics.discs.conf.dl.annotations.DevicesLoader;
+import org.openepics.discs.conf.dl.common.DataLoader;
+import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.ejb.ComptypeEJB;
 import org.openepics.discs.conf.ejb.DeviceEJB;
 import org.openepics.discs.conf.ejb.InstallationEJB;
 import org.openepics.discs.conf.ent.ComponentType;
-import org.openepics.discs.conf.ent.ComptypeArtifact;
-import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.Device;
-import org.openepics.discs.conf.ent.DeviceArtifact;
-import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ent.InstallationRecord;
-import org.openepics.discs.conf.ent.Slot;
-import org.openepics.discs.conf.ent.SlotArtifact;
-import org.openepics.discs.conf.ent.SlotPropertyValue;
-import org.openepics.discs.conf.ent.Tag;
 import org.openepics.discs.conf.export.ExportTable;
-import org.openepics.discs.conf.ui.common.AbstractDeviceAttributesController;
+import org.openepics.discs.conf.ui.common.AbstractExcelSingleFileImportUI;
+import org.openepics.discs.conf.ui.common.DataLoaderHandler;
+import org.openepics.discs.conf.ui.common.ExcelSingleFileImportUIHandlers;
 import org.openepics.discs.conf.ui.common.UIException;
 import org.openepics.discs.conf.ui.export.ExportSimpleTableDialog;
 import org.openepics.discs.conf.ui.export.SimpleTableExporter;
 import org.openepics.discs.conf.ui.util.UiUtility;
 import org.openepics.discs.conf.util.BatchIterator;
 import org.openepics.discs.conf.util.BatchSaveStage;
+import org.openepics.discs.conf.util.ImportFileStatistics;
 import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.views.DeviceView;
-import org.openepics.discs.conf.views.EntityAttrArtifactView;
-import org.openepics.discs.conf.views.EntityAttrPropertyValueView;
-import org.openepics.discs.conf.views.EntityAttrTagView;
-import org.openepics.discs.conf.views.EntityAttributeView;
-import org.openepics.discs.conf.views.EntityAttributeViewKind;
 import org.primefaces.context.RequestContext;
+import org.primefaces.event.FileUploadEvent;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
@@ -81,22 +78,20 @@ import com.google.common.collect.Lists;
  */
 @Named
 @ViewScoped
-public class DevicesController
-                    extends AbstractDeviceAttributesController
-                    implements SimpleTableExporter{
+public class DevicesController implements SimpleTableExporter, ExcelSingleFileImportUIHandlers, Serializable {
     private static final long serialVersionUID = -2881746639197321061L;
 
     private static final Logger LOGGER = Logger.getLogger(DevicesController.class.getCanonicalName());
     private static final String CRLF = "\r\n";
 
+    @Inject private transient DataLoaderHandler dataLoaderHandler;
+    @Inject @DevicesLoader private transient DataLoader devicesDataLoader;
     @Inject private transient ComptypeEJB componentTypesEJB;
     @Inject private transient InstallationEJB installationEJB;
     @Inject private transient DeviceEJB deviceEJB;
+    @Inject private transient DeviceAttributesController deviceAttributesController;
 
     private Device device;
-
-    private ComponentType selectedComponentType;
-    private List<ComponentType> availableDeviceTypes;
 
     private transient List<DeviceView> devices;
     private transient List<DeviceView> filteredDevices;
@@ -104,6 +99,9 @@ public class DevicesController
     private transient List<DeviceView> usedDevices;
     private transient List<DeviceView> filteredDialogDevices;
 
+    // Add/Edit device dialog
+    private ComponentType selectedComponentType;
+    private List<ComponentType> availableDeviceTypes;
     private String serialNumber;
     private boolean isDeviceBeingEdited;
 
@@ -118,6 +116,29 @@ public class DevicesController
     private int selectedIndex = -1;
 
     private transient ExportSimpleTableDialog simpleTableExporterDialog;
+
+    private ExcelSingleFileImportUI excelSingleFileImportUI;
+
+    private class ExcelSingleFileImportUI extends AbstractExcelSingleFileImportUI {
+        /** Construct the file import UI for the device data loader. */
+        public ExcelSingleFileImportUI() {
+            super.init();
+        }
+
+        @Override
+        public void setDataLoader() {
+            dataLoader = devicesDataLoader;
+        }
+
+        @Override
+        public void doImport() {
+            try (InputStream inputStream = new ByteArrayInputStream(importData)) {
+                setLoaderResult(dataLoaderHandler.loadData(inputStream, devicesDataLoader));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
 
     private class ExportSimpleDeviceTableDialog extends ExportSimpleTableDialog {
         @Override
@@ -148,19 +169,18 @@ public class DevicesController
         }
     }
 
-    public DevicesController() {
-    }
+    public DevicesController() {}
 
-    @Override
     @PostConstruct
     public void init() {
         try {
             final String deviceId = ((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().
                     getRequest()).getParameter("id");
-            super.init();
-            setDao(deviceEJB);
+            excelSingleFileImportUI = new ExcelSingleFileImportUI();
             simpleTableExporterDialog = new ExportSimpleDeviceTableDialog();
             availableDeviceTypes = componentTypesEJB.findAll();
+
+            deviceAttributesController.setUIParent(this);
 
             Long selectedDeviceId = null;
             if (!Strings.isNullOrEmpty(deviceId)) {
@@ -183,67 +203,63 @@ public class DevicesController
         }
     }
 
+    /** @see org.openepics.discs.conf.ui.common.ExcelImportUIHandlers#doImport() */
     @Override
-    protected void filterProperties() {
-        // nothing to do
+    public void doImport() {
+        excelSingleFileImportUI.doImport();
+        prepareDevicesForDisplay(null);
     }
 
+    /** @see org.openepics.discs.conf.ui.common.ExcelImportUIHandlers#prepareImportPopup() */
     @Override
-    protected void populateAttributesList() {
-        attributes = new ArrayList<>();
+    public void prepareImportPopup() {
+        excelSingleFileImportUI.prepareImportPopup();
+    }
 
-        for (final DeviceView deviceView : selectedDevices) {
-            final Device attrDevice = deviceEJB.findById(deviceView.getDevice().getId());
-            final ComponentType parent = attrDevice.getComponentType();
+    /** @see org.openepics.discs.conf.ui.common.ExcelImportUIHandlers#setDataLoader() */
+    @Override
+    public void setDataLoader() {
+        excelSingleFileImportUI.setDataLoader();
+    }
 
-            for (final ComptypePropertyValue parentProp : parent.getComptypePropertyList()) {
-                if (parentProp.getPropValue() != null) {
-                    attributes.add(new EntityAttrPropertyValueView<Device>(parentProp, attrDevice, parent));
-                }
-            }
+    /** @see org.openepics.discs.conf.ui.common.ExcelImportUIHandlers#getLoaderResult() */
+    @Override
+    public DataLoaderResult getLoaderResult() {
+        return excelSingleFileImportUI.getLoaderResult();
+    }
 
-            for (final ComptypeArtifact parentArtifact : parent.getComptypeArtifactList()) {
-                attributes.add(new EntityAttrArtifactView<Device>(parentArtifact, attrDevice, parent));
-            }
+    /**
+     * @see org.openepics.discs.conf.ui.common.ExcelSingleFileImportUIHandlers#handleImportFileUpload(FileUploadEvent)
+     */
+    @Override
+    public void handleImportFileUpload(FileUploadEvent event) {
+        excelSingleFileImportUI.handleImportFileUpload(event);
+    }
 
-            for (final Tag parentTag : parent.getTags()) {
-                attributes.add(new EntityAttrTagView<Device>(parentTag, attrDevice, parent));
-            }
+    /** @see org.openepics.discs.conf.ui.common.ExcelSingleFileImportUIHandlers#getExcelImportFileName() */
+    @Override
+    public String getExcelImportFileName() {
+        return excelSingleFileImportUI.getExcelImportFileName();
+    }
 
-            for (final DevicePropertyValue propVal : attrDevice.getDevicePropertyList()) {
-                attributes.add(new EntityAttrPropertyValueView<Device>(propVal, attrDevice));
-            }
+    /** @see org.openepics.discs.conf.ui.common.ExcelImportUIHandlers#getImportedFileStatistics() */
+    @Override
+    public ImportFileStatistics getImportedFileStatistics() {
+        return excelSingleFileImportUI.getImportedFileStatistics();
+    }
 
-            for (final DeviceArtifact artf : attrDevice.getDeviceArtifactList()) {
-                attributes.add(new EntityAttrArtifactView<Device>(artf, attrDevice));
-            }
+    /**
+     * @return the import statistics for the imported file
+     * @see org.openepics.discs.conf.ui.common.AbstractExcelSingleFileImportUI#getImportFileStatistics() */
+    public ImportFileStatistics getImportFileStatistics() {
+        return excelSingleFileImportUI.getImportFileStatistics();
+    }
 
-            for (final Tag tagAttr : attrDevice.getTags()) {
-                attributes.add(new EntityAttrTagView<Device>(tagAttr, attrDevice));
-            }
-
-            final InstallationRecord installationRecord = installationEJB.getActiveInstallationRecordForDevice(attrDevice);
-            final Slot slot = installationRecord != null ? installationRecord.getSlot() : null;
-
-            if (slot != null) {
-                for (final SlotPropertyValue value : slot.getSlotPropertyList()) {
-                    attributes.add(new EntityAttrPropertyValueView<Device>(value, attrDevice, slot));
-                }
-                for (final SlotArtifact value : slot.getSlotArtifactList()) {
-                    attributes.add(new EntityAttrArtifactView<Device>(value, attrDevice, slot));
-                }
-                for (final Tag tag : slot.getTags()) {
-                    attributes.add(new EntityAttrTagView<Device>(tag, attrDevice, slot));
-                }
-            } else {
-                for (final ComptypePropertyValue parentProp : parent.getComptypePropertyList()) {
-                    if (parentProp.isDefinitionTargetSlot())
-                        attributes.add(new EntityAttrPropertyValueView<Device>(parentProp,
-                                                                    EntityAttributeViewKind.INSTALL_SLOT_PROPERTY,
-                                                                    attrDevice, parent));
-                }
-            }
-        }
+    /**
+     * @return the dialog containing a simple error message
+     * @see org.openepics.discs.conf.ui.common.AbstractExcelSingleFileImportUI#getSimpleErrorTableExportDialog() */
+    public ExportSimpleTableDialog getSimpleErrorTableExportDialog() {
+        return excelSingleFileImportUI.getSimpleErrorTableExportDialog();
     }
 
     // --------------------------------------------------------------------------------------------------
@@ -261,17 +277,14 @@ public class DevicesController
             } else {
                 device = null;
             }
-            selectedAttributes = null;
-            filteredAttributes = null;
-            populateAttributesList();
+            deviceAttributesController.clearRelatedAttributeInformation();
+            deviceAttributesController.populateAttributesList();
         } else {
             clearDeviceDialogFields();
             device = null;
             selectedComponentType = null;
             availableDeviceTypes = null;
-            attributes = null;
-            selectedAttributes = null;
-            filteredAttributes = null;
+            deviceAttributesController.clearRelatedAttributeInformation();
         }
      }
 
@@ -287,6 +300,7 @@ public class DevicesController
 
         clearDeviceDialogFields();
         prepareDevicesForDisplay(null);
+        deviceAttributesController.clearRelatedAttributeInformation();
     }
 
     private void singleDeviceAdd() {
@@ -392,7 +406,6 @@ public class DevicesController
         int deletedDevices = 0;
         for (final DeviceView deviceToDelete : selectedDevices) {
             final Device deleteDevice = deviceEJB.findById(deviceToDelete.getDevice().getId());
-            deleteDevice.getTags().clear();
             deviceEJB.delete(deleteDevice);
             ++deletedDevices;
         }
@@ -401,9 +414,7 @@ public class DevicesController
         filteredDevices = null;
         selectedDevices = null;
         usedDevices = null;
-        attributes = null;
-        selectedAttributes = null;
-        filteredAttributes = null;
+        deviceAttributesController.clearRelatedAttributeInformation();
         UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
                                                             "Deleted " + deletedDevices + " devices.");
     }
@@ -494,9 +505,7 @@ public class DevicesController
                                                                 "Duplicated " + duplicated + " devices.");
         } finally {
             prepareDevicesForDisplay(null);
-            attributes = null;
-            selectedAttributes = null;
-            filteredAttributes = null;
+            deviceAttributesController.clearRelatedAttributeInformation();
         }
     }
 
@@ -654,12 +663,6 @@ public class DevicesController
         return simpleTableExporterDialog;
     }
 
-    @Override
-    public void doImport() {
-        super.doImport();
-        prepareDevicesForDisplay(null);
-    }
-
     /** @return the filteredDialogDevices */
     public List<DeviceView> getFilteredDialogDevices() {
         return filteredDialogDevices;
@@ -668,39 +671,5 @@ public class DevicesController
     /** @param filteredDialogDevices the filteredDialogDevices to set */
     public void setFilteredDialogDevices(List<DeviceView> filteredDialogDevices) {
         this.filteredDialogDevices = filteredDialogDevices;
-    }
-
-    @Override
-    public boolean canEdit(EntityAttributeView<Device> attributeView) {
-        final EntityAttributeViewKind attributeKind = attributeView.getKind();
-        return EntityAttributeViewKind.DEVICE_PROPERTY.equals(attributeKind)
-                || EntityAttributeViewKind.DEVICE_ARTIFACT.equals(attributeKind);
-    }
-
-    @Override
-    protected boolean canDelete(EntityAttributeView<Device> attributeView) {
-        final EntityAttributeViewKind attributeKind = attributeView.getKind();
-        return EntityAttributeViewKind.DEVICE_PROPERTY.equals(attributeKind)
-                || EntityAttributeViewKind.DEVICE_ARTIFACT.equals(attributeKind)
-                || EntityAttributeViewKind.DEVICE_TAG.equals(attributeKind);
-    }
-
-    @Override
-    protected Device getSelectedEntity() {
-        if (selectedDevices != null && selectedDevices.size() == 1) {
-            Device device = deviceEJB.findById(selectedDevices.get(0).getDevice().getId());
-            return device;
-        }
-        throw new IllegalArgumentException("No device selected");
-    }
-
-    @Override
-    protected DevicePropertyValue newPropertyValue() {
-        return new DevicePropertyValue();
-    }
-
-    @Override
-    protected DeviceArtifact newArtifact() {
-        return new DeviceArtifact();
     }
 }

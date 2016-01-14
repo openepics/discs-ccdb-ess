@@ -64,13 +64,14 @@
                             <p:commandButton style="float: right; margin: 1em 1ex 0 0;" icon="ui-icon-plus"
                                 disabled="#{not securityPolicy.getUIHint('DEVTYPE_CREATE')}" title="Add New Device Type"
                                 actionListener="#{componentTypeManager.prepareAddPopup()}" value="Add"
+                                update=":addDeviceTypeForm:addDeviceType"
                                 oncomplete="PF('addDeviceType').show();" />
                         </p:fieldset>
                     </p:column>
                     <p:column style="width: 65vw; min-width: 30em;">
                         <p:fieldset legend="Properties" id="propFieldset" style="box-sizing: border-box; height: calc(100vh - 7em)">
                             <div style="height: calc(100% - 3em)">
-                                <rc:new-attribute-table id="attributesDataTable" controllerBean="#{componentTypeManager}"
+                                <rc:new-attribute-table id="attributesDataTable" controllerBean="#{comptypeAttributesController}"
                                     updateTargets=":modifyPropertyValueForm :modifyArtifactForm"
                                     updateButtons=":deviceTypesForm:editAttrButton :deviceTypesForm:deleteAttrButton"
                                     parentName="Device Type" />
@@ -79,32 +80,33 @@
                             <p:commandButton id="deleteAttrButton" value="Delete" icon="ui-icon-trash"
                                 style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('deleteAttributes').show()"
                                 update=":deleteAttributesForm:deleteAttributes"
-                                actionListener="#{componentTypeManager.checkAttributesForDeletion()}"
-                                disabled="#{empty componentTypeManager.selectedAttributes or not securityPolicy.getUIHint('DEVTYPE_DELETE')}" />
+                                actionListener="#{comptypeAttributesController.checkAttributesForDeletion()}"
+                                disabled="#{empty comptypeAttributesController.selectedAttributes 
+                                                or not securityPolicy.getUIHint('DEVTYPE_DELETE')}" />
 
                             <p:commandButton id="editAttrButton" value="Edit" icon="ui-icon-pencil"
-                                action="#{componentTypeManager.prepareModifyPropertyPopUp()}"
+                                action="#{comptypeAttributesController.prepareModifyPropertyPopUp()}"
                                 style="float: right; margin: 1em 1ex 0 0;" update=":modifyPropertyValueForm :modifyArtifactForm"
-                                disabled="#{not componentTypeManager.singleAttributeSelected or
-                                    not componentTypeManager.canEdit(componentTypeManager.selectedAttributes.get(0))
+                                disabled="#{not comptypeAttributesController.singleAttributeSelected or
+                                    not comptypeAttributesController.canEdit(comptypeAttributesController.selectedAttributes.get(0))
                                     or not securityPolicy.getUIHint('DEVTYPE_MODIFY')}" />
 
                             <p:menuButton id="addButton" value="Add" style="float: right; margin: 1em 1ex 0 0;"
                                 disabled="#{not componentTypeManager.singleDeviceTypeSelected 
                                             or not securityPolicy.getUIHint('DEVTYPE_CREATE')}">
                                 <p:menuitem value="Device Type Property" oncomplete="PF('addPropertyValue').show();"
-                                    actionListener="#{componentTypeManager.prepareForPropertyValueAdd}"
+                                    actionListener="#{comptypeAttributesController.prepareForPropertyValueAdd}"
                                     update=":addPropertyValueForm:addPropertyValue" />
                                 <p:menuitem value="Installation Slot Property" oncomplete="PF('installationSlotProperty').show();"
-                                    actionListener="#{componentTypeManager.prepareForSlotPropertyAdd()}"
+                                    actionListener="#{comptypeAttributesController.prepareForSlotPropertyAdd()}"
                                     update=":installationSlotPropertyForm:installationSlotProperty" />
                                 <p:menuitem value="Device Property" oncomplete="PF('deviceInstanceProperty').show();"
-                                    actionListener="#{componentTypeManager.prepareForDevicePropertyAdd()}"
+                                    actionListener="#{comptypeAttributesController.prepareForDevicePropertyAdd()}"
                                     update=":deviceInstancePropertyForm:deviceInstanceProperty" />
                                 <p:menuitem value="Tag" oncomplete="PF('deviceTypeTag').show();" update=":deviceTypeTagForm"
-                                    actionListener="#{componentTypeManager.prepareForTagAdd}" />
+                                    actionListener="#{comptypeAttributesController.prepareForTagAdd}" />
                                 <p:menuitem value="Artifact" oncomplete="PF('addArtifact').show();"
-                                    actionListener="#{componentTypeManager.prepareForArtifactAdd}"
+                                    actionListener="#{comptypeAttributesController.prepareForArtifactAdd}"
                                     update=":addArtifactForm:addArtifact" />
                             </p:menuButton>
                         </p:fieldset>
@@ -126,7 +128,8 @@
                                                 :deviceTypesForm:editButton :deviceTypesForm:exportButton
                                                 :deviceTypesForm:attributesDataTable:attributesDataTable
                                                 :deviceTypesForm:editAttrButton :deviceTypesForm:deleteAttrButton
-                                                :deviceTypesForm:duplicateButton :deviceTypesForm:growl" />
+                                                :deviceTypesForm:duplicateButton :deviceTypesForm:growl
+                                                :deviceTypesForm:addButton" />
             <ui:param name="closeDialogActions"
                 value="PF('deviceTypeTableVar').clearFilters(); PF('attributesDataTable').clearFilters();" />
             <ui:param name="entityType" value="device types" />
@@ -138,7 +141,9 @@
             <ui:param name="controller" value="#{componentTypeManager}" />
             <ui:param name="duplicateList" value="#{componentTypeManager.selectedDeviceTypes}" />
             <ui:param name="filteredDuplicateList" value="#{componentTypeManager.filteredDeviceTypes}" />
-            <ui:param name="formsToUpdate" value=":deviceTypesForm:deviceTypeTable :deviceTypesForm:growl" />
+            <ui:param name="formsToUpdate" value=":deviceTypesForm:deviceTypeTable :deviceTypesForm:growl 
+                                                :deviceTypesForm:attributesDataTable:attributesDataTable
+                                                :deviceTypesForm:addButton" />
             <ui:param name="closeDialogActions" value="PF('deviceTypeTableVar').clearFilters(); PF('attributesDataTable').clearFilters();" />
             <ui:param name="entityType" value="device types" />
             <ui:param name="entityName" value="Device Type" />
@@ -162,7 +167,7 @@
             <ui:param name="formId" value="modifyPropertyValueForm" />
             <ui:param name="dialogTitle" value="Edit Property" />
             <ui:param name="widgetName" value="modifyPropertyValue" />
-            <ui:param name="controller" value="#{componentTypeManager}" />
+            <ui:param name="controller" value="#{comptypeAttributesController}" />
             <ui:param name="resetFilter" value="PF('attributesDataTable').clearFilters();" />
             <ui:param name="submitHandler" value="modifyPropertyValue" />
             <ui:param name="componentToUpdate" value=":deviceTypesForm:attributesDataTable:attributesDataTable :deviceTypesForm:growl" />
@@ -172,7 +177,7 @@
             <ui:param name="formId" value="modifyArtifactForm" />
             <ui:param name="dialogTitle" value="Edit Artifact" />
             <ui:param name="widgetName" value="modifyArtifact" />
-            <ui:param name="controller" value="#{componentTypeManager}" />
+            <ui:param name="controller" value="#{comptypeAttributesController}" />
             <ui:param name="resetFilter" value="PF('attributesDataTable').clearFilters();" />
             <ui:param name="submitHandler" value="modifyArtifact" />
             <ui:param name="componentToUpdate" value=":deviceTypesForm:attributesDataTable:attributesDataTable :deviceTypesForm:growl" />
@@ -182,7 +187,7 @@
             <ui:param name="formId" value="addPropertyValueForm" />
             <ui:param name="dialogTitle" value="Add Properties" />
             <ui:param name="widgetName" value="addPropertyValue" />
-            <ui:param name="controller" value="#{componentTypeManager}" />
+            <ui:param name="controller" value="#{comptypeAttributesController}" />
             <ui:param name="resetFilter" value="PF('attributesDataTable').clearFilters();" />
             <ui:param name="submitHandler" value="saveMultiplePropertyValues" />
             <ui:param name="componentToUpdate" value=":deviceTypesForm:attributesDataTable:attributesDataTable :deviceTypesForm:growl" />
@@ -192,7 +197,7 @@
             <ui:param name="formId" value="installationSlotPropertyForm" />
             <ui:param name="dialogTitle" value="Add Properties" />
             <ui:param name="widgetName" value="installationSlotProperty" />
-            <ui:param name="controller" value="#{componentTypeManager}" />
+            <ui:param name="controller" value="#{comptypeAttributesController}" />
             <ui:param name="resetFilter" value="PF('attributesDataTable').clearFilters();" />
             <ui:param name="submitHandler" value="addNewPropertyValueDefs" />
             <ui:param name="componentToUpdate" value=":deviceTypesForm:attributesDataTable:attributesDataTable :deviceTypesForm:growl" />
@@ -202,7 +207,7 @@
             <ui:param name="formId" value="deviceInstancePropertyForm" />
             <ui:param name="dialogTitle" value="Add Properties" />
             <ui:param name="widgetName" value="deviceInstanceProperty" />
-            <ui:param name="controller" value="#{componentTypeManager}" />
+            <ui:param name="controller" value="#{comptypeAttributesController}" />
             <ui:param name="resetFilter" value="PF('attributesDataTable').clearFilters();" />
             <ui:param name="submitHandler" value="addNewPropertyValueDefs" />
             <ui:param name="componentToUpdate" value=":deviceTypesForm:attributesDataTable:attributesDataTable :deviceTypesForm:growl" />
@@ -212,7 +217,7 @@
             <ui:param name="formId" value="deviceTypeTagForm" />
             <ui:param name="dialogTitle" value="Add Tag" />
             <ui:param name="widgetName" value="deviceTypeTag" />
-            <ui:param name="controller" value="#{componentTypeManager}" />
+            <ui:param name="controller" value="#{comptypeAttributesController}" />
             <ui:param name="resetFilter" value="PF('attributesDataTable').clearFilters();" />
             <ui:param name="submitHandler" value="addNewTag" />
             <ui:param name="componentToUpdate" value=":deviceTypesForm:deviceTypeTable :deviceTypesForm:attributesDataTable:attributesDataTable :deviceTypesForm:growl" />
@@ -222,7 +227,7 @@
             <ui:param name="formId" value="addArtifactForm" />
             <ui:param name="dialogTitle" value="Add Artifact" />
             <ui:param name="widgetName" value="addArtifact" />
-            <ui:param name="controller" value="#{componentTypeManager}" />
+            <ui:param name="controller" value="#{comptypeAttributesController}" />
             <ui:param name="resetFilter" value="PF('attributesDataTable').clearFilters();" />
             <ui:param name="submitHandler" value="modifyArtifact" />
             <ui:param name="componentToUpdate" value=":deviceTypesForm:attributesDataTable:attributesDataTable :deviceTypesForm:growl" />
@@ -232,10 +237,10 @@
             <ui:param name="formId" value="deleteAttributesForm" />
             <ui:param name="dialogTitle" value="Delete Properties" />
             <ui:param name="widgetName" value="deleteAttributes" />
-            <ui:param name="controller" value="#{componentTypeManager}" />
-            <ui:param name="deletePreventionList" value="#{componentTypeManager.nonDeletableAttributes}" />
-            <ui:param name="deleteList" value="#{componentTypeManager.selectedAttributes}" />
-            <ui:param name="filteredDialogList" value="#{componentTypeManager.filteredDialogAttributes}" />
+            <ui:param name="controller" value="#{comptypeAttributesController}" />
+            <ui:param name="deletePreventionList" value="#{comptypeAttributesController.nonDeletableAttributes}" />
+            <ui:param name="deleteList" value="#{comptypeAttributesController.selectedAttributes}" />
+            <ui:param name="filteredDialogList" value="#{comptypeAttributesController.filteredDialogAttributes}" />
             <ui:param name="submitHandler" value="deleteAttributes" />
             <ui:param name="formsToUpdate" value=":deviceTypesForm:attributesDataTable:attributesDataTable
                                                 :deviceTypesForm:editAttrButton :deviceTypesForm:deleteAttrButton :deviceTypesForm:growl" />

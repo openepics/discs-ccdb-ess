@@ -20,60 +20,41 @@
 
 package org.openepics.discs.conf.ui;
 
-import java.util.ArrayList;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Serializable;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
-import javax.ejb.EJBException;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
-import javax.faces.validator.ValidatorException;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
+import org.openepics.discs.conf.dl.annotations.ComponentTypesLoader;
+import org.openepics.discs.conf.dl.common.DataLoader;
+import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.ejb.ComptypeEJB;
-import org.openepics.discs.conf.ejb.DAO;
-import org.openepics.discs.conf.ejb.DeviceEJB;
-import org.openepics.discs.conf.ejb.PropertyEJB;
-import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.ComponentType;
-import org.openepics.discs.conf.ent.ComptypeArtifact;
-import org.openepics.discs.conf.ent.ComptypePropertyValue;
-import org.openepics.discs.conf.ent.DataType;
-import org.openepics.discs.conf.ent.Device;
-import org.openepics.discs.conf.ent.DevicePropertyValue;
-import org.openepics.discs.conf.ent.Property;
-import org.openepics.discs.conf.ent.PropertyValue;
-import org.openepics.discs.conf.ent.Slot;
-import org.openepics.discs.conf.ent.SlotPropertyValue;
-import org.openepics.discs.conf.ent.Tag;
-import org.openepics.discs.conf.ent.values.Value;
 import org.openepics.discs.conf.export.ExportTable;
-import org.openepics.discs.conf.ui.common.AbstractAttributesController;
-import org.openepics.discs.conf.ui.common.AbstractComptypeAttributesController;
+import org.openepics.discs.conf.ui.common.AbstractExcelSingleFileImportUI;
+import org.openepics.discs.conf.ui.common.DataLoaderHandler;
+import org.openepics.discs.conf.ui.common.ExcelSingleFileImportUIHandlers;
 import org.openepics.discs.conf.ui.common.UIException;
 import org.openepics.discs.conf.ui.export.ExportSimpleTableDialog;
 import org.openepics.discs.conf.ui.export.SimpleTableExporter;
 import org.openepics.discs.conf.ui.util.UiUtility;
-import org.openepics.discs.conf.util.Conversion;
-import org.openepics.discs.conf.util.PropertyValueNotUniqueException;
-import org.openepics.discs.conf.util.PropertyValueUIElement;
-import org.openepics.discs.conf.util.UnhandledCaseException;
+import org.openepics.discs.conf.util.ImportFileStatistics;
 import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.views.ComponentTypeView;
-import org.openepics.discs.conf.views.EntityAttrArtifactView;
-import org.openepics.discs.conf.views.EntityAttrPropertyValueView;
-import org.openepics.discs.conf.views.EntityAttrTagView;
-import org.openepics.discs.conf.views.EntityAttributeView;
-import org.openepics.discs.conf.views.EntityAttributeViewKind;
-import org.openepics.discs.conf.views.MultiPropertyValueView;
 import org.primefaces.context.RequestContext;
-import org.primefaces.event.CellEditEvent;
+import org.primefaces.event.FileUploadEvent;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
@@ -89,27 +70,19 @@ import com.google.common.collect.Lists;
  */
 @Named
 @ViewScoped
-public class ComponentTypeManager extends AbstractComptypeAttributesController implements SimpleTableExporter {
+public class ComponentTypeManager implements SimpleTableExporter, ExcelSingleFileImportUIHandlers, Serializable {
     private static final long serialVersionUID = 1156974438243970794L;
 
     private static final Logger LOGGER = Logger.getLogger(ComponentTypeManager.class.getCanonicalName());
 
     @Inject private transient ComptypeEJB comptypeEJB;
-    @Inject private transient PropertyEJB propertyEJB;
-    @Inject private transient SlotEJB slotEJB;
-    @Inject private transient DeviceEJB deviceEJB;
+    @Inject private transient ComptypeAttributesController comptypeAttributesController;
+    @Inject private transient DataLoaderHandler dataLoaderHandler;
+    @Inject @ComponentTypesLoader private transient DataLoader compTypesDataLoader;
+
+    private ExcelSingleFileImportUI excelSingleFileImportUI;
 
     private ComponentTypeView selectedComponent;
-    private transient List<MultiPropertyValueView> filteredPropertyValues;
-    private transient List<MultiPropertyValueView> selectedPropertyValues;
-    private transient List<MultiPropertyValueView> selectionPropertyValuesFiltered;
-    private boolean selectAllRows;
-
-    private List<Property> filteredProperties;
-    private List<Property> selectedProperties;
-    private List<Property> selectionPropertiesFiltered;
-    private boolean isPropertyDefinition;
-    private DefinitionTarget definitionTarget;
 
     private List<ComponentTypeView> deviceTypes;
     private List<ComponentTypeView> filteredDeviceTypes;
@@ -118,6 +91,27 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
     private List<ComponentTypeView> filteredDialogTypes;
 
     private transient ExportSimpleTableDialog simpleTableExporterDialog;
+
+    private class ExcelSingleFileImportUI extends AbstractExcelSingleFileImportUI {
+        /** Construct the file import UI for the device type data loader. */
+        public ExcelSingleFileImportUI() {
+            super.init();
+        }
+
+        @Override
+        public void setDataLoader() {
+            dataLoader = compTypesDataLoader;
+        }
+
+        @Override
+        public void doImport() {
+            try (InputStream inputStream = new ByteArrayInputStream(importData)) {
+                setLoaderResult(dataLoaderHandler.loadData(inputStream, compTypesDataLoader));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
 
     private class ExportSimpleDevTypeTableDialog extends ExportSimpleTableDialog {
         @Override
@@ -146,16 +140,15 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
         }
     }
 
-    @Override
     @PostConstruct
     public void init() {
         final String deviceTypeIdStr = ((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().
                 getRequest()).getParameter("id");
         try {
-            super.init();
+            excelSingleFileImportUI = new ExcelSingleFileImportUI();
             simpleTableExporterDialog = new ExportSimpleDevTypeTableDialog();
+            comptypeAttributesController.setUIParent(this);
             reloadDeviceTypes();
-            setDao(comptypeEJB);
             resetFields();
 
             if (!Strings.isNullOrEmpty(deviceTypeIdStr)) {
@@ -178,135 +171,67 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
         }
     }
 
+    /** @see org.openepics.discs.conf.ui.common.ExcelImportUIHandlers#doImport() */
+    @Override
+    public void doImport() {
+        excelSingleFileImportUI.doImport();
+        reloadDeviceTypes();
+    }
+
+    /** @see org.openepics.discs.conf.ui.common.ExcelImportUIHandlers#prepareImportPopup() */
+    @Override
+    public void prepareImportPopup() {
+        excelSingleFileImportUI.prepareImportPopup();
+    }
+
+    /** @see org.openepics.discs.conf.ui.common.ExcelImportUIHandlers#setDataLoader() */
+    @Override
+    public void setDataLoader() {
+        excelSingleFileImportUI.setDataLoader();
+    }
+
+    /** org.openepics.discs.conf.ui.common.ExcelImportUIHandlers#getLoaderResult() */
+    @Override
+    public DataLoaderResult getLoaderResult() {
+        return excelSingleFileImportUI.getLoaderResult();
+    }
+
+    /**
+     * @see org.openepics.discs.conf.ui.common.ExcelSingleFileImportUIHandlers#handleImportFileUpload(FileUploadEvent)
+     */
+    @Override
+    public void handleImportFileUpload(FileUploadEvent event) {
+        excelSingleFileImportUI.handleImportFileUpload(event);
+    }
+
+    /** @see org.openepics.discs.conf.ui.common.ExcelSingleFileImportUIHandlers#getExcelImportFileName() */
+    @Override
+    public String getExcelImportFileName() {
+        return excelSingleFileImportUI.getExcelImportFileName();
+    }
+
+    /** @see org.openepics.discs.conf.ui.common.ExcelImportUIHandlers#getImportedFileStatistics() */
+    @Override
+    public ImportFileStatistics getImportedFileStatistics() {
+        return excelSingleFileImportUI.getImportedFileStatistics();
+    }
+
+    /**
+     * @return the import statistics for the imported file
+     * @see org.openepics.discs.conf.ui.common.AbstractExcelSingleFileImportUI#getImportFileStatistics() */
+    public ImportFileStatistics getImportFileStatistics() {
+        return excelSingleFileImportUI.getImportFileStatistics();
+    }
+
+    /**
+     * @return the dialog containing a simple error message
+     * @see org.openepics.discs.conf.ui.common.AbstractExcelSingleFileImportUI#getSimpleErrorTableExportDialog() */
+    public ExportSimpleTableDialog getSimpleErrorTableExportDialog() {
+        return excelSingleFileImportUI.getSimpleErrorTableExportDialog();
+    }
+
     private void reloadDeviceTypes() {
         deviceTypes = comptypeEJB.findAll().stream().map(ComponentTypeView::new).collect(Collectors.toList());
-    }
-
-    private void addPropertyValueBasedOnDef(ComptypePropertyValue definition) {
-        if (definition.isDefinitionTargetSlot()) {
-            for (final Slot slot : slotEJB.findByComponentType(selectedComponent.getComponentType())) {
-                if (canAddProperty(slot.getSlotPropertyList(), definition.getProperty())) {
-                    final SlotPropertyValue newSlotProperty = new SlotPropertyValue();
-                    newSlotProperty.setProperty(definition.getProperty());
-                    newSlotProperty.setSlot(slot);
-                    slotEJB.addChild(newSlotProperty);
-                } else {
-                    LOGGER.log(Level.FINE, "Type: " + selectedComponent.getName() + "; Slot: " + slot.getName()
-                            + ";  Trying to add the same property value again: "
-                            + definition.getProperty().getName());
-                }
-            }
-        }
-
-        if (definition.isDefinitionTargetDevice()) {
-            for (final Device device : deviceEJB.findDevicesByComponentType(selectedComponent.getComponentType())) {
-                if (canAddProperty(device.getDevicePropertyList(), definition.getProperty())) {
-                    final DevicePropertyValue newDeviceProperty = new DevicePropertyValue();
-                    newDeviceProperty.setProperty(definition.getProperty());
-                    newDeviceProperty.setDevice(device);
-                    deviceEJB.addChild(newDeviceProperty);
-                } else {
-                    LOGGER.log(Level.FINE, "Type: " + selectedComponent.getName() + "; Device: " + device.getSerialNumber()
-                            + ";  Trying to add the same property value again: "
-                            + definition.getProperty().getName());
-                }
-            }
-        }
-    }
-
-    /** Checks whether it is safe to add a new property (definition) to the entity.
-     * @param entityProperties the list of properties the entity already has
-     * @param propertyToAdd the property we want to add
-     * @return <code>true</code> if the property is safe to add, <code>false</code> otherwise (it already exists).
-     */
-    private <T extends PropertyValue> boolean canAddProperty(final List<T> entityProperties,
-                                                                        final Property propertyToAdd) {
-        for (final T entityProperty : entityProperties) {
-            if (entityProperty.getProperty().equals(propertyToAdd)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    @Override
-    protected void deletePropertyValue(final ComptypePropertyValue propValueToDelete) {
-        if (propValueToDelete.isPropertyDefinition()) {
-            if (propValueToDelete.isDefinitionTargetSlot()) {
-                for (final Slot slot : slotEJB.findByComponentType(selectedComponent.getComponentType())) {
-                    removeUndefinedProperty(slot.getSlotPropertyList(), propValueToDelete.getProperty(), slotEJB);
-                }
-            }
-
-            if (propValueToDelete.isDefinitionTargetDevice()) {
-                for (final Device device : deviceEJB.findDevicesByComponentType(selectedComponent.getComponentType())) {
-                    removeUndefinedProperty(device.getDevicePropertyList(), propValueToDelete.getProperty(), deviceEJB);
-                }
-            }
-        }
-        super.deletePropertyValue(propValueToDelete);
-    }
-
-    private <T extends PropertyValue> void removeUndefinedProperty(final List<T> entityProperties,
-                                                final Property propertyToDelete, final DAO<?> daoEJB) {
-        T propValueToDelete = null;
-        for (final T entityPropValue : entityProperties) {
-            if (entityPropValue.getProperty().equals(propertyToDelete)) {
-                if (entityPropValue.getPropValue() == null) {
-                    // value not defined, safe to delete
-                    propValueToDelete = entityPropValue;
-                }
-                // attribute found
-                break;
-            }
-        }
-        if (propValueToDelete != null) {
-            daoEJB.deleteChild(propValueToDelete);
-        }
-    }
-
-    @Override
-    protected void populateAttributesList() {
-        Preconditions.checkNotNull(selectedDeviceTypes);
-        attributes = new ArrayList<>();
-
-        for (final ComponentTypeView selectedMember : selectedDeviceTypes) {
-            // refresh the component type from database. This refreshes all related collections as well.
-            final ComponentType freshComponentType = comptypeEJB.findById(selectedMember.getId());
-
-            for (final ComptypePropertyValue prop : freshComponentType.getComptypePropertyList()) {
-                attributes.add(new EntityAttrPropertyValueView<ComponentType>(prop, freshComponentType));
-            }
-
-            for (final ComptypeArtifact art : freshComponentType.getComptypeArtifactList()) {
-                attributes.add(new EntityAttrArtifactView<ComponentType>(art, freshComponentType));
-            }
-
-            for (final Tag tagAttr : freshComponentType.getTags()) {
-                attributes.add(new EntityAttrTagView<ComponentType>(tagAttr, freshComponentType));
-            }
-        }
-    }
-
-    @Override
-    protected void filterProperties() {
-        if (selectedDeviceTypes == null || (selectedDeviceTypes.size() != 1)) {
-            filteredProperties = null;
-            return;
-        }
-
-        final List<Property> propertyCandidates = propertyEJB.findAllOrderedByName();
-        final Property dialogProperty = getDialogAttrPropertyValue() != null ? getDialogAttrPropertyValue().getProperty() : null;
-
-        for (ComponentTypeView compType : selectedDeviceTypes) {
-            for (final ComptypePropertyValue comptypePropertyValue : compType.getComponentType().getComptypePropertyList()) {
-                final Property currentProperty = comptypePropertyValue.getProperty();
-                if (!currentProperty.equals(dialogProperty)) {
-                    propertyCandidates.remove(currentProperty);
-                }
-            }
-        }
-        filteredProperties = propertyCandidates;
     }
 
     /** Called when user selects a row */
@@ -318,194 +243,11 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
             } else {
                 selectedComponent = null;
             }
-            selectedAttributes = null;
-            filteredAttributes = null;
-            populateAttributesList();
+            comptypeAttributesController.clearRelatedAttributeInformation();
+            comptypeAttributesController.populateAttributesList();
         } else {
             clearDeviceTypeRelatedInformation();
         }
-    }
-
-    public void prepareForPropertyValueAdd() {
-        filterProperties();
-        filteredPropertyValues = transformIntoViewList(filteredProperties);
-        selectedPropertyValues = Lists.newArrayList();
-        selectionPropertyValuesFiltered = null;
-        selectAllRows = false;
-    }
-
-    private List<MultiPropertyValueView> transformIntoViewList(final List<Property> properties) {
-        return properties.stream().map(MultiPropertyValueView::new).collect(Collectors.toList());
-    }
-
-    /** Prepares the data for slot property (definition) creation */
-    public void prepareForSlotPropertyAdd() {
-        definitionTarget = AbstractAttributesController.DefinitionTarget.SLOT;
-        isPropertyDefinition = true;
-        filterProperties();
-    }
-
-    /** Prepares the data for device property (definition) creation */
-    public void prepareForDevicePropertyAdd() {
-        definitionTarget = AbstractAttributesController.DefinitionTarget.DEVICE;
-        isPropertyDefinition = true;
-        filterProperties();
-    }
-
-    @Override
-    public boolean canEdit(EntityAttributeView<ComponentType> attribute) {
-        final EntityAttributeViewKind attributeKind = attribute.getKind();
-        return attributeKind != EntityAttributeViewKind.INSTALL_SLOT_PROPERTY
-                && attributeKind != EntityAttributeViewKind.DEVICE_PROPERTY
-                && attributeKind != EntityAttributeViewKind.DEVICE_TYPE_TAG;
-    }
-
-    @Override
-    protected boolean canDelete(EntityAttributeView<ComponentType> attribute) {
-        return true;
-    }
-
-    /** The event handler for when user clicks on the check-box in the "Add property values" dialog.
-     * @param prop the property value to handle the event for
-     */
-    public void rowSelectListener(final MultiPropertyValueView prop) {
-        if (prop.isSelected()) {
-            selectedPropertyValues.add(prop);
-        } else {
-            selectedPropertyValues.remove(prop);
-        }
-    }
-
-    /** The function to handle the state of the "Select all" checkbox after the filter change */
-    public void updateToggle() {
-        final List<MultiPropertyValueView> pvList = selectionPropertyValuesFiltered == null
-                                                        ? filteredPropertyValues : selectionPropertyValuesFiltered;
-        if (pvList.isEmpty()) {
-            selectAllRows = false;
-            return;
-        }
-        for (final MultiPropertyValueView pv : pvList) {
-            if (!pv.isSelected()) {
-                selectAllRows = false;
-                return;
-            }
-        }
-        selectAllRows = true;
-    }
-
-    /** The event handler for toggling selection of all property values */
-    public void handleToggleAll() {
-        final List<MultiPropertyValueView> pvList = selectionPropertyValuesFiltered == null
-                ? filteredPropertyValues : selectionPropertyValuesFiltered;
-        if (pvList.isEmpty()) return;
-        if (selectAllRows) {
-            selectAllFiltered(pvList);
-        } else {
-            unselectAllFiltered(pvList);
-        }
-    }
-
-    private void selectAllFiltered(final List<MultiPropertyValueView> pvList) {
-        for (final MultiPropertyValueView pv : pvList) {
-            if (!pv.isSelected()) {
-                pv.setSelected(true);
-                selectedPropertyValues.add(pv);
-            }
-        }
-    }
-
-    private void unselectAllFiltered(final List<MultiPropertyValueView> pvList) {
-        for (final MultiPropertyValueView pv : pvList) {
-            if (pv.isSelected()) {
-                pv.setSelected(false);
-                selectedPropertyValues.remove(pv);
-            }
-        }
-    }
-
-    /** This method handled the value once the users is done putting it in. This method actually performs the
-     * input validation.
-     * @param event the event
-     */
-    public void onEditCell(CellEditEvent event) {
-        final Object newValue = event.getNewValue();
-        final Object oldValue = event.getOldValue();
-
-        if (newValue != null && !newValue.equals(oldValue)) {
-            final MultiPropertyValueView editedPropVal = selectionPropertyValuesFiltered == null
-                                                            ? filteredPropertyValues.get(event.getRowIndex())
-                                                            : selectionPropertyValuesFiltered.get(event.getRowIndex());
-            final DataType dataType = editedPropVal.getDataType();
-            final String newValueStr = getEditEventValue(newValue, editedPropVal.getPropertyValueUIElement());
-            try {
-                switch (editedPropVal.getPropertyValueUIElement()) {
-                    case INPUT:
-                        EntityAttrPropertyValueView.validateSingleLine(newValueStr, dataType);
-                        break;
-                    case TEXT_AREA:
-                        EntityAttrPropertyValueView.validateMultiLine(newValueStr, dataType);
-                        break;
-                    case SELECT_ONE_MENU:
-                        if (Strings.isNullOrEmpty(newValueStr)) {
-                            throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                                    UiUtility.MESSAGE_SUMMARY_ERROR, "A value must be selected."));
-                        }
-                        break;
-                    case NONE:
-                    default:
-                        throw new UnhandledCaseException();
-                }
-                final Value val = Conversion.stringToValue(newValueStr, dataType);
-                comptypeEJB.checkPropertyValueUnique(createPropertyValue(editedPropVal.getProperty(), val));
-                editedPropVal.setValue(val);
-            } catch (ValidatorException e) {
-                editedPropVal.setUiValue(oldValue == null ? null : getEditEventValue(oldValue, null));
-                FacesContext.getCurrentInstance().addMessage("inputValidationFail", e.getFacesMessage());
-                FacesContext.getCurrentInstance().validationFailed();
-            } catch (EJBException e) {
-                if (UiUtility.causedBySpecifiedExceptionClass(e, PropertyValueNotUniqueException.class)) {
-                    FacesContext.getCurrentInstance().addMessage("inputValidationFail",
-                            new FacesMessage(FacesMessage.SEVERITY_ERROR, UiUtility.MESSAGE_SUMMARY_ERROR,
-                                    "Value is not unique."));
-                    FacesContext.getCurrentInstance().validationFailed();
-                } else {
-                    throw e;
-                }
-            }
-        }
-    }
-
-    private String getEditEventValue(final Object val, final PropertyValueUIElement propValueUIElement) {
-        if (val == null) {
-            return null;
-        }
-        if (val instanceof String) {
-            return val.toString();
-        }
-        if (val instanceof List<?>) {
-            final List<?> valList = (List<?>)val;
-            if (propValueUIElement == null) {
-                for (final Object v : valList) {
-                    if (v != null) {
-                        return v.toString();
-                    }
-                }
-                return null;
-            } else {
-                switch (propValueUIElement) {
-                    case INPUT:
-                        return valList.get(0).toString();
-                    case TEXT_AREA:
-                        return valList.get(1).toString();
-                    case SELECT_ONE_MENU:
-                        return valList.get(2).toString();
-                    case NONE:
-                    default:
-                        throw new UnhandledCaseException();
-                }
-            }
-        }
-        throw new RuntimeException("MultiPropertyValue: UI string value cannot be extracted.");
     }
 
     /**
@@ -523,92 +265,8 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
             UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
                     "Duplicated " + duplicated + " device types.");
         } finally {
+            clearDeviceTypeRelatedInformation();
             reloadDeviceTypes();
-        }
-    }
-
-    /** This method returns a String representation of the property value.
-     * @param prop the value of the property to show value for
-     * @return the string representation
-     */
-    public String displayPropertyValue(MultiPropertyValueView prop) {
-        final Value val = prop.getValue();
-        return val == null ? "<Please define>" : Conversion.valueToString(val);
-    }
-
-    /** @return the filteredPropertyValues */
-    public List<MultiPropertyValueView> getFilteredPropertyValues() {
-        return filteredPropertyValues;
-    }
-
-    /** @param filteredPropertyValues the filteredPropertyValues to set */
-    public void setFilteredPropertyValues(List<MultiPropertyValueView> filteredPropertyValues) {
-        this.filteredPropertyValues = filteredPropertyValues;
-    }
-
-    /** @return the selectedPropertyValues */
-    public List<MultiPropertyValueView> getSelectedPropertyValues() {
-        return selectedPropertyValues;
-    }
-
-    /** @param selectedPropertyValues the selectedPropertyValues to set */
-    public void setSelectedPropertyValues(List<MultiPropertyValueView> selectedPropertyValues) {
-        this.selectedPropertyValues = selectedPropertyValues;
-    }
-
-    /** @return the selectionPropertyValuesFiltered */
-    public List<MultiPropertyValueView> getSelectionPropertyValuesFiltered() {
-        return selectionPropertyValuesFiltered;
-    }
-
-    /** @param selectionPropertyValuesFiltered the selectionPropertyValuesFiltered to set */
-    public void setSelectionPropertyValuesFiltered(List<MultiPropertyValueView> selectionPropertyValuesFiltered) {
-        this.selectionPropertyValuesFiltered = selectionPropertyValuesFiltered;
-    }
-
-    /** @return the selectAllRows */
-    public boolean isSelectAllRows() {
-        return selectAllRows;
-    }
-
-    /** @param selectAllRows the selectAllRows to set */
-    public void setSelectAllRows(boolean selectAllRows) {
-        this.selectAllRows = selectAllRows;
-    }
-
-    private ComptypePropertyValue createPropertyValue(final Property prop, final Value value) {
-        final ComptypePropertyValue pv = new ComptypePropertyValue();
-        pv.setComponentType(selectedComponent.getComponentType());
-        pv.setProperty(prop);
-        pv.setPropValue(value);
-        return pv;
-    }
-
-    /** The save action for adding multiple property values to a device type. */
-    public void saveMultiplePropertyValues() {
-        // check if all values are set, because we want to save all in one batch
-        for (final MultiPropertyValueView pv : selectedPropertyValues) {
-            if (pv.getValue() == null) {
-                FacesContext.getCurrentInstance().addMessage("inputValidationFail",
-                        new FacesMessage(FacesMessage.SEVERITY_ERROR, UiUtility.MESSAGE_SUMMARY_ERROR,
-                                pv.getName() + ": value not set."));
-                FacesContext.getCurrentInstance().validationFailed();
-                return;
-            }
-        }
-        try {
-            int created = 0;
-            for (final MultiPropertyValueView pv : selectedPropertyValues) {
-                ComptypePropertyValue newValue = createPropertyValue(pv.getProperty(), pv.getValue());
-                comptypeEJB.addChild(newValue);
-                selectedComponent.setComponentType(comptypeEJB.findById(selectedComponent.getComponentType().getId()));
-                ++created;
-            }
-            UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
-                    "Created " + created + " device type properties.");
-        } finally {
-            resetFields();
-            populateAttributesList();
         }
     }
 
@@ -616,37 +274,24 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
         selectedDeviceTypes = null;
         filteredDeviceTypes = null;
         selectedComponent = null;
-        attributes = null;
-        filteredAttributes = null;
-        filteredProperties = null;
-        selectedAttributes = null;
+        comptypeAttributesController.clearRelatedAttributeInformation();
         resetFields();
     }
-
-    // ---------------------------------------------------------------------------------------------------------
-    //
-    //      Old ComponentTypeManager methods
-    //
-    // ---------------------------------------------------------------------------------------------------------
 
     /** Prepares the UI data for the "Add a new device type" dialog. */
     public void prepareAddPopup() {
-        resetFields();
-        selectedComponent = new ComponentTypeView(new ComponentType());
+        comptypeAttributesController.resetFields();
+        selectedComponent = new ComponentTypeView();
         RequestContext.getCurrentInstance().update("addDeviceTypeForm:addDeviceType");
     }
 
-    @Override
     public void resetFields() {
-        super.resetFields();
         if (selectedDeviceTypes != null && selectedDeviceTypes.size() == 1) {
             selectedComponent = selectedDeviceTypes.get(0);
         } else {
             selectedComponent = null;
         }
-        filteredProperties = null;
-        selectedProperties = null;
-        selectionPropertiesFiltered = null;
+        comptypeAttributesController.resetFields();
     }
 
     /** Called when the user presses the "Save" button in the "Add a new device type" dialog. */
@@ -663,6 +308,7 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
                 throw e;
             }
         } finally {
+            clearDeviceTypeRelatedInformation();
             reloadDeviceTypes();
         }
     }
@@ -687,7 +333,7 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
                 throw e;
             }
         } finally {
-            selectedComponent.setComponentType(comptypeEJB.findById(selectedComponent.getComponentType().getId()));
+            refreshSelectedComponent();
             reloadDeviceTypes();
         }
     }
@@ -738,39 +384,9 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
         return (selectedDeviceTypes != null) && (selectedDeviceTypes.size() == 1);
     }
 
-    @Override
-    public void doImport() {
-        super.doImport();
-        reloadDeviceTypes();
-    }
-
-    /**
-     * A method that adds either installation slot or device instance properties. It adds the definition to the device
-     * type and property values to already existing installation slots or device instances.
-     */
-    public void addNewPropertyValueDefs() {
-        for (Property selectedProperty : selectedProperties) {
-            final ComptypePropertyValue newPropertyValueInstance = newPropertyValue();
-            newPropertyValueInstance.setInRepository(false);
-            newPropertyValueInstance.setProperty(selectedProperty);
-            newPropertyValueInstance.setPropValue(null);
-            newPropertyValueInstance.setPropertiesParent(getSelectedEntity());
-
-            if ((newPropertyValueInstance instanceof ComptypePropertyValue) && isPropertyDefinition) {
-                final ComptypePropertyValue ctPropValueInstance = newPropertyValueInstance;
-                ctPropValueInstance.setPropertyDefinition(true);
-                if (definitionTarget == DefinitionTarget.SLOT) {
-                    ctPropValueInstance.setDefinitionTargetSlot(true);
-                } else {
-                    ctPropValueInstance.setDefinitionTargetDevice(true);
-                }
-            }
-            comptypeEJB.addChild(newPropertyValueInstance);
-            selectedComponent.setComponentType(comptypeEJB.findById(selectedComponent.getComponentType().getId()));
-            addPropertyValueBasedOnDef(newPropertyValueInstance);
-        }
-        resetFields();
-        populateAttributesList();
+    /** Pulls a fresh ComponentType entity from the database for the <code>selectedComponent</code>. */
+    protected void refreshSelectedComponent() {
+        selectedComponent.setComponentType(comptypeEJB.findById(selectedComponent.getComponentType().getId()));
     }
 
     // -------------------- Getters and Setters ---------------------------------------
@@ -821,50 +437,5 @@ public class ComponentTypeManager extends AbstractComptypeAttributesController i
     /** @return the selectedComponent */
     public ComponentTypeView getSelectedComponent() {
         return selectedComponent;
-    }
-
-    @Override
-    protected ComponentType getSelectedEntity() {
-        if (selectedComponent != null) {
-            ComponentType componentType = comptypeEJB.findById(selectedComponent.getId());
-            selectedComponent.setComponentType(componentType);
-            return componentType;
-        }
-        throw new IllegalArgumentException("No device type selected");
-    }
-
-    @Override
-    protected ComptypePropertyValue newPropertyValue() {
-        return new ComptypePropertyValue();
-    }
-
-    @Override
-    protected ComptypeArtifact newArtifact() {
-        return new ComptypeArtifact();
-    }
-
-    /** @return The list of {@link Property} entities the user can select in the property table. */
-    public List<Property> getFilteredProperties() {
-        return filteredProperties;
-    }
-
-    /** @return the selectedProperties */
-    public List<Property> getSelectedProperties() {
-        return selectedProperties;
-    }
-
-    /** @param selectedProperties the selectedProperties to set */
-    public void setSelectedProperties(List<Property> selectedProperties) {
-        this.selectedProperties = selectedProperties;
-    }
-
-    /** @return the selectionPropertiesFiltered */
-    public List<Property> getSelectionPropertiesFiltered() {
-        return selectionPropertiesFiltered;
-    }
-
-    /** @param selectionPropertiesFiltered the selectionPropertiesFiltered to set */
-    public void setSelectionPropertiesFiltered(List<Property> selectionPropertiesFiltered) {
-        this.selectionPropertiesFiltered = selectionPropertiesFiltered;
     }
 }

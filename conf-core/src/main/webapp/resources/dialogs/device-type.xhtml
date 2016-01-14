@@ -35,8 +35,11 @@
             
             <p:panel style="text-align: right; padding: 0; border: 0;" styleClass="dialogButtonPanel">
                 <p:commandButton value="Save" id="save" styleClass="dialogButton defaultCommand" tabindex="3" 
-                        update=":deviceTypesForm:exportButton grp :deviceTypesForm:growl" 
-                        oncomplete="if (args &amp;&amp; !args.validationFailed) { PF('#{widgetName}').hide(); PF('deviceTypeTableVar').clearFilters(); }" 
+                        update=":deviceTypesForm:exportButton grp :deviceTypesForm:growl 
+                                :deviceTypesForm:attributesDataTable:attributesDataTable
+                                :deviceTypesForm:addButton :deviceTypesForm:editAttrButton 
+                                :deviceTypesForm:deleteAttrButton" 
+                        oncomplete="if (args &amp;&amp; !args.validationFailed) { PF('#{widgetName}').hide(); PF('deviceTypeTableVar').clearFilters(); PF('attributesDataTable').clearFilters(); }" 
                         action="#{componentTypeManager[submitHandler]}" />
                 <p:commandButton value="Cancel" styleClass="dialogButton" onclick="PF('#{widgetName}').hide();" 
                         update="grp" resetValues="true" tabindex="4" />

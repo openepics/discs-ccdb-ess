@@ -24,10 +24,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.ejb.EJBException;
 import javax.faces.application.FacesMessage;
@@ -67,7 +66,6 @@ import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
 /**
@@ -82,10 +80,7 @@ import com.google.common.collect.Lists;
 public abstract class AbstractAttributesController
         <C extends ConfigurationEntity & NamedEntity & EntityWithTags & EntityWithArtifacts,
         T extends PropertyValue,
-        S extends Artifact> implements Serializable {
-    private static final long serialVersionUID = 523935015308933240L;
-
-    protected static enum DefinitionTarget { SLOT, DEVICE }
+        S extends Artifact> {
 
     @Inject protected BlobStore blobStore;
     @Inject protected TagEJB tagEJB;
@@ -95,10 +90,10 @@ public abstract class AbstractAttributesController
 
     protected List<EntityAttributeView<C>> attributes;
     protected List<EntityAttributeView<C>> filteredAttributes;
-    private final List<SelectItem> attributeKinds = UiUtility.buildAttributeKinds();
     protected List<EntityAttributeView<C>> selectedAttributes;
     protected List<EntityAttributeView<C>> nonDeletableAttributes;
     private List<EntityAttributeView<C>> filteredDialogAttributes;
+    private final List<SelectItem> attributeKinds = UiUtility.buildAttributeKinds();
 
     protected EntityAttributeView<C> dialogAttribute;
 
@@ -362,6 +357,12 @@ public abstract class AbstractAttributesController
         return false;
     }
 
+    public void clearRelatedAttributeInformation() {
+        attributes = null;
+        filteredAttributes = null;
+        selectedAttributes = null;
+    }
+
     protected abstract C getSelectedEntity();
 
     protected abstract T newPropertyValue();
@@ -385,7 +386,7 @@ public abstract class AbstractAttributesController
     }
 
     private void fillTagsAutocomplete() {
-        tagsForAutocomplete = ImmutableList.copyOf(Lists.transform(tagEJB.findAllSorted(), Tag::getName));
+        tagsForAutocomplete = tagEJB.findAllSorted().stream().map(Tag::getName).collect(Collectors.toList());
     }
 
     /**
@@ -430,14 +431,9 @@ public abstract class AbstractAttributesController
      * @return The list of auto-complete suggestions.
      */
     public List<String> tagAutocompleteText(String query) {
-        final List<String> resultList = new ArrayList<String>();
         final String queryUpperCase = query.toUpperCase();
-        for (final String element : tagsForAutocomplete) {
-            if (element.toUpperCase().startsWith(queryUpperCase))
-                resultList.add(element);
-        }
-
-        return resultList;
+        return tagsForAutocomplete.stream().filter(e -> e.toUpperCase().startsWith(queryUpperCase)).
+                    collect(Collectors.toList());
     }
 
     /** @return the filteredAttributes */

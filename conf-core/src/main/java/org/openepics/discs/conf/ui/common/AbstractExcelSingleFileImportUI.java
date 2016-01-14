@@ -83,7 +83,9 @@ public abstract class AbstractExcelSingleFileImportUI implements ExcelSingleFile
         }
     }
 
-    /** Initializes the object with the actual data loader. */
+    /**
+     * Initializes the object with the actual data loader. <code>init</code> has to be used instead of ctor so that
+     * this class can be used as a base for managed beans. */
     public void init() {
         setDataLoader();
     }

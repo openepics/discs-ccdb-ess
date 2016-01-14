@@ -32,6 +32,19 @@ public class ComponentTypeView {
     private ComponentType componentType;
     private String usedBy;
 
+    /**
+     * <p>
+     * If this constructor is missing, the JSF framework produces the <code>java.lang.InstantiationException</code>.
+     * </p><p>
+     * If this constructor is made private, it reveals this problem:
+     * <tt>java.lang.IllegalAccessException: Class javax.faces.component.StateHolderSaver can not access a member of
+     * class org.openepics.discs.conf.views.ComponentTypeView with modifiers "private"</tt>
+     * </p>
+     */
+    public ComponentTypeView() {
+        componentType = new ComponentType();
+    }
+
     public ComponentTypeView(ComponentType componentType) {
         this.componentType = componentType;
     }
