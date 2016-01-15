@@ -65,7 +65,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
     @NamedQuery(name = "Slot.findByComponentType", query = "SELECT s FROM Slot s "
             + "WHERE s.componentType = :componentType")
 })
-public class Slot extends ConfigurationEntity implements EntityWithProperties, EntityWithArtifacts, NamedEntity {
+public class Slot extends ConfigurationEntity implements EntityWithProperties, EntityWithArtifacts, NamedEntity,
+                                                            EntityWithTags {
     private static final long serialVersionUID = -1267956206090538337L;
     @Basic(optional = false)
     @NotNull
@@ -239,6 +240,7 @@ public class Slot extends ConfigurationEntity implements EntityWithProperties, E
 
     @XmlTransient
     @JsonIgnore
+    @Override
     public Set<Tag> getTags() {
         return tags;
     }
