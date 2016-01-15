@@ -1,10 +1,5 @@
+The Controls Configuration Database (CCDB) enables the collection, storage, and distribution of (static) controls configuration data needed to install, commission and operate the European Spallation Source (ESS) control system.
 
-Artifacts for Configuration Module
+More specifically, the CCDB manages the information of thousands of (physical and logical) devices such as cameras, PLCs, IOCs, racks, crates, etc…, that will be in operation at ESS by defining their properties and relationships between these from the control system perspective.
 
-It contains the following directories
-
-1. conf-core :    Proteus web-based GUI and RESTful Service. Can be built 
-                 with Netbeans or Maven.
-2. conf-docs:    Documentation
-3. conf-dl:      Data loader
-4.design:       Design documentation
+This information is then consumed both by end-users and other ICS applications (e.g. Cable Database, IOC Factory, Csentry) to enable these to successfully perform their domain specific businesses.
