@@ -2,6 +2,7 @@
     xmlns:p="http://primefaces.org/ui"
     template="/template/template.xhtml"
     xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:rc="http://java.sun.com/jsf/composite/comps"
     xmlns:h="http://java.sun.com/jsf/html">
 
     <ui:define name="content">
@@ -22,7 +23,7 @@
                     return visibleTreeTable;
                 }
                 function clearRelatedFilters() {
-                    PF('attributesWidget').clearFilters();
+                    PF('attributesDataTable').clearFilters();
                     PF('relationshipsWidget').clearFilters();
                     PF('installationWidget').clearFilters();                    
                 }
@@ -328,67 +329,19 @@
                     <p:column id="attributesColumn" styleClass="alignTop" >
                         <p:fieldset id="slotAttributes" legend="Properties" style="box-sizing: border-box; height: calc(33.33vh - 4em)">
                             <div style="height: calc(100% - 3em)">
-                                <p:dataTable id="attributesTable" class="hierarchies-attributes-cell" var="attribute" 
-                                        emptyMessage="No records found." value="#{slotAttributeController.attributes}" 
-                                        scrollable="true" scrollWidth="100%" scrollHeight="100%"
-                                        selection="#{slotAttributeController.selectedAttributes}" selectionMode="multiple"
-                                        filteredValue="#{slotAttributeController.filteredAttributes}" rowKey="#{attribute.id}"
-                                        widgetVar="attributesWidget">
-                                    <p:ajax event="rowSelect" update=":hierarchies:deleteAttrButton :hierarchies:editAttrButton" />
-                                    <p:ajax event="rowUnselect" update=":hierarchies:deleteAttrButton :hierarchies:editAttrButton" />                                
-                    
-                                    <p:column headerText="Container/Slot" sortBy="#{attribute.parent}" filterBy="#{attribute.parent}"
-                                            filterMatchMode="contains" >
-                                        <h:outputText value="#{attribute.parent}" />
-                                    </p:column>
-    
-                                    <p:column headerText="Name" sortBy="#{attribute.name}" filterBy="#{attribute.name}"
-                                            filterMatchMode="contains">
-                                        <h:outputText value="#{attribute.name}" />
-                                    </p:column>
-    
-                                    <p:column headerText="Value" sortBy="#{attribute.value}"
-                                            filterBy="#{attribute.value}" filterMatchMode="contains">
-                                        <h:outputLink rendered="#{attribute.hasURL}" target="_blank" value="#{attribute.value}" title="Go to URL">
-                                            <h:outputText value="#{attribute.value}" style="text-decoration: underline;" />
-                                        </h:outputLink>
-                                        <h:outputText value="#{!empty attribute.value ? attribute.value : '-'}" rendered="#{not attribute.hasURL}" />
-                                        <p:commandLink ajax="false" title="Download" rendered="#{attribute.hasFile}" style="margin-left: 1ex;">
-                                            <h:outputText styleClass="ui-icon ui-icon-arrowthick-1-s" style="display: inline-block !important; margin-right: 6px;" />
-                                            <f:setPropertyActionListener value="#{attribute}" target="#{slotAttributeController.downloadAttribute}" />
-                                            <p:fileDownload value="#{slotAttributeController.downloadFile}" />
-                                        </p:commandLink>
-                                    </p:column>
-    
-                                    <p:column headerText="Unit" sortBy="#{attribute.unit.name}" filterBy="#{attribute.unit.name}"
-                                            filterMatchMode="contains">
-                                        <h:outputLink rendered="#{!empty attribute.unit}"
-                                                value="#{request.contextPath}/units.xhtml?id=#{attribute.unit.id}">
-                                            <h:outputText value="#{attribute.unit.name}" style="text-decoration: underline;" />
-                                        </h:outputLink>
-                                        <h:outputText value="-" rendered="#{empty attribute.unit}" />
-                                    </p:column>
-    
-                                    <p:column headerText="Kind" sortBy="#{attribute.kind.toString()}"
-                                            filterBy="#{attribute.kind}" filterMatchMode="exact"
-                                            filterOptions="#{slotAttributeController.attributeKinds}">
-                                        <h:outputText value="#{attribute.kind.toString()}" />
-                                    </p:column>
-    
-                                    <p:column headerText="Data type" sortBy="#{attribute.type.name}"
-                                            filterBy="#{attribute.type.name}" filterMatchMode="contains">
-                                        <h:outputText value="#{attribute.type.name}" />
-                                    </p:column>
-                                </p:dataTable>
+                                <rc:new-attribute-table id="attributesDataTable" controllerBean="#{slotAttributeController}"
+                                    updateButtons=":hierarchies:deleteAttrButton :hierarchies:editAttrButton"
+                                    parentName="Container/Slot" />
                             </div>
                             <p:commandButton id="deleteAttrButton" value="Delete" icon="ui-icon-trash"
                                 style="float: right; margin-top: 1em;" oncomplete="PF('deleteAttribute').show();"
                                 disabled="#{not slotAttributeController.canDeleteAttributes() 
                                             or not securityPolicy.getUIHint('HIERARCHY_DELETE')}" />
                             <p:commandButton id="editAttrButton" value="Edit" icon="ui-icon-pencil"
-                                action="#{slotAttributeController.prepareModifyAttributePopup}"
-                                style="float: right; margin: 1em 1ex 0 0;" update=":modifyPropertyValueForm :modifyArtifactForm"
-                                disabled="#{not slotAttributeController.canEditAttribute()
+                                action="#{slotAttributeController.prepareModifyPropertyPopUp}" 
+                                style="float: right; margin: 1em 1ex 0 0;" 
+                                disabled="#{not slotAttributeController.singleAttributeSelected or
+                                            not slotAttributeController.canEdit(slotAttributeController.selectedAttributes.get(0))
                                             or not securityPolicy.getUIHint('HIERARCHY_MODIFY')}" />
                             <p:menuButton id="addAttrButton" value="Add" style="margin: 1em 1ex 0 0; float: right;"
                                     disabled="#{not hierarchiesController.singleNodeSelected
@@ -442,7 +395,7 @@
                                                     :hierarchies:installationDetails :hierarchies:slotAttributes
                                                     :hierarchies:addRelationship :hierarchies:editRelationship :hierarchies:hierarchyTabs:tree"
                                                 oncomplete="hierarchiesResizeAll();scrollSelectedIntoView(getVisibleTree());
-                                                PF('relationshipsWidget').clearFilters();PF('attributesWidget').clearFilters();">
+                                                PF('relationshipsWidget').clearFilters();PF('attributesDataTable').clearFilters();">
                                             <h:outputText value="#{relationship.targetSlotName}"
                                                 style="text-decoration: underline;" />
                                         </p:commandLink>
@@ -558,7 +511,7 @@
             <ui:param name="slotsToDelete" value="#{hierarchiesController.slotsToDelete}" />
             <ui:param name="filteredSlotsToDelete" value="#{hierarchiesController.filteredSlotsToDelete}" />
             <ui:param name="resetFilter"
-                value="PF('attributesWidget').clearFilters(); PF('relationshipsWidget').clearFilters(); PF('installationWidget').clearFilters();" />
+                value="PF('attributesDataTable').clearFilters(); PF('relationshipsWidget').clearFilters(); PF('installationWidget').clearFilters();" />
         </ui:include>
 
         <ui:include src="/resources/dialogs/paste-slots-confirmation.xhtml" >
@@ -593,7 +546,7 @@
             <ui:param name="submitHandler" value="deleteAttributes" />
             <ui:param name="formsToUpdate" value=":hierarchies:slotAttributes :hierarchies:growl" />
             <ui:param name="entityType" value="selected attribute" />
-            <ui:param name="closeDialogActions" value="PF('attributesWidget').clearFilters();" />
+            <ui:param name="closeDialogActions" value="PF('attributesDataTable').clearFilters();" />
             <ui:param name="entityType" value="properties" />
             <ui:param name="entityName" value="Property" />            
             <ui:param name="deleteList" value="#{slotAttributeController.selectedAttributes}" />          
@@ -606,7 +559,7 @@
             <ui:param name="controller" value="#{slotAttributeController}" />
             <ui:param name="submitHandler" value="modifyPropertyValue" />
             <ui:param name="componentToUpdate" value=":hierarchies:slotAttributes :hierarchies:growl" />
-            <ui:param name="resetFilter" value="PF('attributesWidget').clearFilters();" />
+            <ui:param name="resetFilter" value="PF('attributesDataTable').clearFilters();" />
         </ui:include>
 
         <ui:include src="/resources/dialogs/property-value.xhtml">
@@ -614,9 +567,9 @@
             <ui:param name="dialogTitle" value="Add Property" />
             <ui:param name="widgetName" value="addPropertyValue" />
             <ui:param name="controller" value="#{slotAttributeController}" />
-            <ui:param name="submitHandler" value="modifyPropertyValue" />
+            <ui:param name="submitHandler" value="addPropertyValue" />
             <ui:param name="componentToUpdate" value=":hierarchies:slotAttributes :hierarchies:growl" />
-            <ui:param name="resetFilter" value="PF('attributesWidget').clearFilters();" />
+            <ui:param name="resetFilter" value="PF('attributesDataTable').clearFilters();" />
         </ui:include>
 
         <ui:include src="/resources/dialogs/tag.xhtml" >
@@ -626,7 +579,7 @@
             <ui:param name="controller" value="#{slotAttributeController}" />
             <ui:param name="submitHandler" value="addNewTag" />
             <ui:param name="componentToUpdate" value=":hierarchies:slotAttributes :hierarchies:growl" />
-            <ui:param name="resetFilter" value="PF('attributesWidget').clearFilters();" />
+            <ui:param name="resetFilter" value="PF('attributesDataTable').clearFilters();" />
         </ui:include>
 
         <ui:include src="/resources/dialogs/artifact.xhtml" >
@@ -636,7 +589,7 @@
             <ui:param name="controller" value="#{slotAttributeController}" />
             <ui:param name="submitHandler" value="modifyArtifact" />
             <ui:param name="componentToUpdate" value=":hierarchies:slotAttributes :hierarchies:growl" />
-            <ui:param name="resetFilter" value="PF('attributesWidget').clearFilters();" />
+            <ui:param name="resetFilter" value="PF('attributesDataTable').clearFilters();" />
         </ui:include>
 
         <ui:include src="/resources/dialogs/artifact.xhtml">
@@ -646,7 +599,7 @@
             <ui:param name="controller" value="#{slotAttributeController}" />
             <ui:param name="submitHandler" value="modifyArtifact" />
             <ui:param name="componentToUpdate" value=":hierarchies:slotAttributes :hierarchies:growl" />
-            <ui:param name="resetFilter" value="PF('attributesWidget').clearFilters();" />
+            <ui:param name="resetFilter" value="PF('attributesDataTable').clearFilters();" />
         </ui:include>
 
         <ui:include src="/resources/dialogs/delete-multi-confirmation.xhtml">

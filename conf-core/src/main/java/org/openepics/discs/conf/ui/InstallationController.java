@@ -155,9 +155,7 @@ public class InstallationController implements Serializable {
         installationView.setSlot(slotEJB.findById(installationView.getSlot().getId()));
         installationView.setInstallationRecord(newRecord);
 
-        final Slot installationSlot = installationView.getSlot();
-        slotAttributeController.removeRelatedAttributes(installationSlot);
-        slotAttributeController.initAttributeList(installationSlot, false);
+        slotAttributeController.populateAttributesList();
 
         deviceToInstall = null;
     }
@@ -174,9 +172,7 @@ public class InstallationController implements Serializable {
             // signal that nothing is installed
             selectedInstallationView.setInstallationRecord(null);
 
-            final Slot installationSlot = selectedInstallationView.getSlot();
-            slotAttributeController.removeRelatedAttributes(installationSlot);
-            slotAttributeController.initAttributeList(installationSlot, false);
+            slotAttributeController.populateAttributesList();
         }
     }
 

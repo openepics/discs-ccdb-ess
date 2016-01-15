@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -378,7 +379,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             final Long id = iter.next();
             if (!selectedNodeIds.contains(id)) {
                 final Slot unselectedSlot = slotEJB.findById(id);
-                slotAttributeController.removeRelatedAttributes(unselectedSlot);
+                slotAttributeController.clearRelatedAttributeInformation();
+                slotAttributeController.populateAttributesList();
                 relationshipController.removeRelatedRelationships(unselectedSlot);
                 installationController.removeRelatedInstallationRecord(unselectedSlot);
                 iter.remove();
@@ -392,7 +394,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             if (!displayedAttributeNodeIds.contains(selectedId)) {
                 // this slot doesn't have information in the related tables yet
                 final Slot slotToAdd = slotEJB.findById(selectedId);
-                slotAttributeController.initAttributeList(slotToAdd, false);
+                slotAttributeController.clearRelatedAttributeInformation();
+                slotAttributeController.populateAttributesList();
                 relationshipController.initRelationshipList(slotToAdd, false);
                 installationController.initInstallationRecordList(slotToAdd, false);
                 displayedAttributeNodeIds.add(selectedId);
@@ -419,7 +422,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         selectedSlot = null;
         selectedNodeIds = null;
         displayedAttributeNodeIds = null;
-        slotAttributeController.clearAttributeInformation();
+        slotAttributeController.clearRelatedAttributeInformation();
         installationController.clearInstallationInformation();
         relationshipController.clearRelationshipInformation();
     }
@@ -1693,5 +1696,12 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             return slot;
         }
         throw new IllegalArgumentException("No slot selected");
+    }
+
+    protected List<Slot> getSelectedSlots() {
+        if (selectedNodes == null || selectedNodes.isEmpty())
+            return Collections.emptyList();
+        else
+            return selectedNodes.stream().map(e -> ((SlotView)e.getData()).getSlot()).collect(Collectors.toList());
     }
 }

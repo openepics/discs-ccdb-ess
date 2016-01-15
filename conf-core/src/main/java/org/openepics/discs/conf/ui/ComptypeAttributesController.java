@@ -20,7 +20,6 @@
 package org.openepics.discs.conf.ui;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -159,7 +158,7 @@ public class ComptypeAttributesController
     @Override
     protected void populateAttributesList() {
         Preconditions.checkNotNull(componentTypeManager.getSelectedDeviceTypes());
-        attributes = new ArrayList<>();
+        attributes = Lists.newArrayList();
 
         for (final ComponentTypeView selectedMember : componentTypeManager.getSelectedDeviceTypes()) {
             // refresh the component type from database. This refreshes all related collections as well.

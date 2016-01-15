@@ -6,7 +6,8 @@
     <h:form id="#{formId}">
         <p:dialog widgetVar="#{widgetName}" id="#{widgetName}" modal="true" resizable="false" closable="false" 
                 dynamic="true" closeOnEscape="true">
-            <p:ajax event="close" resetValues="true" update="grp" oncomplete="#{resetFilter}" />
+            <p:ajax event="close" resetValues="true" update="grp" oncomplete="#{resetFilter}" 
+                listener="#{controller.resetFields()}" />
 
             <f:facet name="header">
                 <h:outputText value="#{dialogTitle}" />
@@ -75,8 +76,8 @@
                 <p:commandButton value="Save" id="save" styleClass="dialogButton defaultCommand"  
                         oncomplete="if (args &amp;&amp; !args.validationFailed) {PF('#{widgetName}').hide(); #{resetFilter}}" 
                         action="#{controller[submitHandler]}" tabindex="5" update="#{componentToUpdate} grp" />
-                <p:commandButton value="Cancel" styleClass="dialogButton" onclick="PF('#{widgetName}').hide();#{resetFilter}" 
-                        update="grp" resetValues="true" tabindex="6" action="#{controller.resetFields}" />
+                <p:commandButton value="Cancel" styleClass="dialogButton" onclick="PF('#{widgetName}').hide();" 
+                        tabindex="6" />
             </p:panel>
 
             <p:defaultCommand target="save" />

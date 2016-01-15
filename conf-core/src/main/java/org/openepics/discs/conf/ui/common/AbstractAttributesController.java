@@ -101,7 +101,10 @@ public abstract class AbstractAttributesController
 
     private DAO<C> dao;
 
-    protected void resetFields() {
+    /**
+     * This method resets the fields related to the dialog that was just shown to the user.
+     */
+    public void resetFields() {
         dialogAttribute = null;
     }
 
@@ -134,8 +137,10 @@ public abstract class AbstractAttributesController
             UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
                     artifactView.isArtifactBeingModified() ? "Artifact has been modified" : "New artifact has been created");
         } finally {
+            refreshParentEntity(dialogAttribute);
             resetFields();
-            internalPopulateAttributesList();
+            clearRelatedAttributeInformation();
+            populateAttributesList();
         }
     }
 
@@ -156,8 +161,10 @@ public abstract class AbstractAttributesController
                 UiUtility.showMessage(FacesMessage.SEVERITY_INFO, "Tag added", tag.getName());
             }
         } finally {
+            refreshParentEntity(dialogAttribute);
             resetFields();
-            internalPopulateAttributesList();
+            clearRelatedAttributeInformation();
+            populateAttributesList();
         }
     }
 
@@ -208,11 +215,21 @@ public abstract class AbstractAttributesController
             ++deletedAttributes;
         }
 
-        selectedAttributes = null;
         nonDeletableAttributes = null;
-        internalPopulateAttributesList();
+        refreshParentEntity(dialogAttribute);
+        clearRelatedAttributeInformation();
+        populateAttributesList();
         UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
                                                             "Deleted " + deletedAttributes + " attributes.");
+    }
+
+    /**
+     * A callback that gives the descendants opportunity to refresh the entity that is related to the attribute that
+     * was just processed.
+     * @param attributeView the attributeView
+     */
+    protected void refreshParentEntity(final EntityAttributeView<C> attributeView) {
+        // no refresh by default
     }
 
     protected void deletePropertyValue(final T propValueToDelete) {
@@ -249,6 +266,7 @@ public abstract class AbstractAttributesController
             propertyValueView.setPropertyNameChangeDisabled(propertyValue instanceof DevicePropertyValue
                         || propertyValue instanceof SlotPropertyValue
                         || isPropertyValueInherited(propertyValue));
+            propertyNameChangeOverride(propertyValueView);
             filterProperties();
 
             RequestContext.getCurrentInstance().update("modifyPropertyValueForm:modifyPropertyValue");
@@ -261,9 +279,18 @@ public abstract class AbstractAttributesController
         }
     }
 
+    /**
+     * This method is called after the {@link #prepareModifyPropertyPopUp()} calculates the
+     * <code>isPropertyNameChangeDisabled</code> value and can be used to override it from the descendant classes.
+     */
+    protected void propertyNameChangeOverride(final EntityAttrPropertyValueView<C> propertyValueView) {
+        // no override by default
+    }
+
     /** Modifies {@link PropertyValue} */
     public void modifyPropertyValue() {
         Preconditions.checkNotNull(dialogAttribute);
+        Preconditions.checkState(isSingleAttributeSelected());
 
         try {
             dao.saveChild(dialogAttribute.getEntity());
@@ -279,8 +306,10 @@ public abstract class AbstractAttributesController
                 throw e;
             }
         } finally {
+            refreshParentEntity(dialogAttribute);
             resetFields();
-            internalPopulateAttributesList();
+            clearRelatedAttributeInformation();
+            populateAttributesList();
         }
     }
 
@@ -379,11 +408,6 @@ public abstract class AbstractAttributesController
     protected abstract void filterProperties();
 
     protected abstract void populateAttributesList();
-
-    private void internalPopulateAttributesList() {
-        fillTagsAutocomplete();
-        populateAttributesList();
-    }
 
     private void fillTagsAutocomplete() {
         tagsForAutocomplete = tagEJB.findAllSorted().stream().map(Tag::getName).collect(Collectors.toList());
