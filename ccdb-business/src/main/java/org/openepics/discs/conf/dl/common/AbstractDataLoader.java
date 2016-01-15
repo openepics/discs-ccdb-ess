@@ -48,7 +48,8 @@ public abstract class AbstractDataLoader implements DataLoader {
     /** Constant representing the index of the command (Operation) in the data row */
     protected static final int COL_INDEX_OPERATION = 0;
 
-    public static final int DEFAULT_EXCEL_TAMPLATE_DATA_START_ROW = 8;
+    /** The devices template starts with data in row 10 (0 based == 9) */
+    public static final int DEFAULT_EXCEL_TAMPLATE_DATA_START_ROW = 9;
 
     /** The {@link DataLoaderResult} contains error information and state for the error loading process */
     protected DataLoaderResult result = new DataLoaderResult();

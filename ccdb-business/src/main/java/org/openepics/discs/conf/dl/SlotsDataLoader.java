@@ -764,8 +764,8 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
 
     @Override
     public int getImportDataStartIndex() {
-        // index of the first import data Excel row is 10 (0 based 9)
-        return 9;
+        // index of the first import data Excel row is 11 (0 based 10)
+        return 10;
     }
 
     private boolean isHostingSlot() {

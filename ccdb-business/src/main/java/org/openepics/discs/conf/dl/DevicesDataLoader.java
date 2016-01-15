@@ -185,7 +185,7 @@ public class DevicesDataLoader extends AbstractEntityWithPropertiesDataLoader<De
 
     @Override
     public int getImportDataStartIndex() {
-        // the devices template starts with data in row 10 (0 based == 9)
-        return 9;
+        // the devices template starts with data in row 11 (0 based == 10)
+        return 10;
     }
 }

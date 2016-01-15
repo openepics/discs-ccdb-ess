@@ -219,8 +219,8 @@ public class ComponentTypesDataLoader extends AbstractEntityWithPropertiesDataLo
 
     @Override
     public int getImportDataStartIndex() {
-        // the new template starts with data in row 10 (0 based == 9)
-        return 9;
+        // the new template starts with data in row 11 (0 based == 10)
+        return 10;
     }
 
     private void addPropertyValue(ComponentType comptypeToUpdate) {
