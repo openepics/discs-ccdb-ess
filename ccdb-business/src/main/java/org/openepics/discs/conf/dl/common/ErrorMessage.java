@@ -27,7 +27,6 @@ package org.openepics.discs.conf.dl.common;
 public enum ErrorMessage {
     NAME_ALREADY_EXISTS("Entity with this name already exists"),
     NOT_AUTHORIZED("You are not authorized to perform this action"),
-    COMMAND_IS_MISSING("Command is missing"),
     COMMAND_NOT_VALID("Command is not valid"),
     RENAME_MISFORMAT("Rename syntax is not correct"),
     ENTITY_NOT_FOUND("Entity to be affected was not found"),

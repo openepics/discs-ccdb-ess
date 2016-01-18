@@ -29,20 +29,18 @@ import javax.inject.Inject;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.persistence.ApplyScriptAfter;
-import org.jboss.arquillian.persistence.UsingDataSet;
+import org.jboss.arquillian.persistence.ApplyScriptBefore;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.openepics.discs.conf.dl.annotations.PropertiesLoader;
-import org.openepics.discs.conf.dl.annotations.UnitsLoader;
+import org.openepics.discs.conf.dl.annotations.DevicesLoader;
+import org.openepics.discs.conf.dl.common.AbstractDataLoader;
 import org.openepics.discs.conf.dl.common.DataLoader;
 import org.openepics.discs.conf.dl.common.DataLoaderResult;
 import org.openepics.discs.conf.dl.common.ErrorMessage;
 import org.openepics.discs.conf.dl.common.ValidationMessage;
-import org.openepics.discs.conf.testutil.SlotsDataLoaderHelper;
 import org.openepics.discs.conf.testutil.TestUtility;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
 
@@ -50,25 +48,16 @@ import org.openepics.discs.conf.ui.common.DataLoaderHandler;
  * Integration tests for failures common to all data loaders
  *
  * @author <a href="mailto:andraz.pozar@cosylab.com">Andraž Požar</a>
- *
+ * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  */
-@Ignore
 @RunWith(Arquillian.class)
-@ApplyScriptAfter(value= "truncate_database.sql")
+@ApplyScriptBefore(value = "update_sequences.sql")
+@ApplyScriptAfter(value = "truncate_database.sql")
 public class CommonDataLoadersIT {
 
-    @Inject @UnitsLoader private DataLoader unitsDataLoader;
-    @Inject @PropertiesLoader private DataLoader propertiesDataLoader;
-    @Inject private SlotsDataLoaderHelper dataLoaderHelper;
+    @Inject @DevicesLoader private DataLoader devicesDataLoader;
     @Inject private DataLoaderHandler dataLoaderHandler;
     @Inject private TestUtility testUtility;
-
-    final static private String HDR_NAME = "NAME";
-    final static private String HDR_QUANTITY = "QUANTITY";
-    final static private String HDR = "HEADER";
-    final static private String HDR_ACENPOS = "ACENPOS";
-    final static private String HDR_IS_HOSTING_SLOT = "IS-HOSTING-SLOT";
-    final static private String HDR_BLP = "BLP";
 
     @Deployment
     public static WebArchive createDeployment() {
@@ -80,79 +69,28 @@ public class CommonDataLoadersIT {
         testUtility.loginForTests();
     }
 
+    /**
+     * Tests if filtering lines without commands works and if inputing unknown commands fails.
+     *
+     * @throws IOException
+     *             if there was an error with data
+     */
     @Test
-    @UsingDataSet(value= {"unit.xml", "property.xml"})
-    public void commandRelatedFailureTest() throws IOException {
+    public void commandWrongAndMissingFailTest() throws IOException {
         final List<ValidationMessage> expectedValidationMessages = new ArrayList<>();
-        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.RENAME_MISFORMAT, 2, HDR_NAME));
-        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.NAME_ALREADY_EXISTS, 3, HDR_NAME));
-        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, 4, HDR_NAME));
-        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.COMMAND_NOT_VALID, 5, HDR));
 
-        final InputStream testDataStream = this.getClass().getResourceAsStream(TestUtility.DATALOADERS_PATH
-                                                    + "commands-failure-test.xlsx");
-        final DataLoaderResult loaderResult = dataLoaderHandler.loadData(testDataStream, propertiesDataLoader);
+        expectedValidationMessages.
+                add(new ValidationMessage(ErrorMessage.COMMAND_NOT_VALID, 13, AbstractDataLoader.HDR_OPERATION));
+        expectedValidationMessages.
+                add(new ValidationMessage(ErrorMessage.COMMAND_NOT_VALID, 14, AbstractDataLoader.HDR_OPERATION));
+        expectedValidationMessages.
+                add(new ValidationMessage(ErrorMessage.COMMAND_NOT_VALID, 15, AbstractDataLoader.HDR_OPERATION));
+        final InputStream testDataStream = this.getClass().
+                getResourceAsStream(TestUtility.DATALOADERS_PATH + "common-fail-commands.test.xlsx");
+        final DataLoaderResult loaderResult = dataLoaderHandler.loadData(testDataStream, devicesDataLoader);
         testDataStream.close();
 
-        Assert.assertEquals(expectedValidationMessages, loaderResult.getMessages());
-    }
-
-    @Test
-    @UsingDataSet(value= {"unit.xml", "property.xml"})
-    public void duplicateFieldDefinitionFailureTest() throws IOException {
-        final List<ValidationMessage> expectedValidationMessages = new ArrayList<>();
-        // TODO check and fix / delete
-        //expectedValidationMessages.add(new ValidationMessage(ErrorMessage.DUPLICATES_IN_HEADER, 1, HDR_NAME));
-
-        final InputStream testDataStream = this.getClass().getResourceAsStream(TestUtility.DATALOADERS_PATH + "duplicate-field-failure-test.xlsx");
-        final DataLoaderResult loaderResult = dataLoaderHandler.loadData(testDataStream, propertiesDataLoader);
-        testDataStream.close();
-
-        Assert.assertEquals(expectedValidationMessages, loaderResult.getMessages());
-    }
-
-    @Test
-    @UsingDataSet(value= {"unit.xml", "property.xml", "basic_component_types.xml", "component_type.xml",
-            "basic_slot.xml", "slot.xml", "slot_property_value.xml"})
-    public void duplicatePropertyDefinitionFailureTest() throws IOException {
-        final String slotsImportFileName = "duplicate-property-failure-test.xlsx";
-        final List<ValidationMessage> expectedValidationMessages = new ArrayList<>();
-        expectedValidationMessages.add(new ValidationMessage(slotsImportFileName));
-        // TODO check and fix / delete
-        // expectedValidationMessages.add(new ValidationMessage(ErrorMessage.DUPLICATES_IN_HEADER, 1, HDR_ACENPOS));
-
-        final DataLoaderResult loaderResult = dataLoaderHelper.importSlots(slotsImportFileName);
-
-        Assert.assertEquals(expectedValidationMessages, loaderResult.getMessages());
-    }
-
-    @Test
-    public void requiredHeaderFieldsFailure() throws IOException {
-        final List<ValidationMessage> expectedValidationMessages = new ArrayList<>();
-        // TODO check and fix / remove
-        //expectedValidationMessages.add(new ValidationMessage(ErrorMessage.HEADER_FIELD_MISSING, 1, HDR_NAME));
-        //expectedValidationMessages.add(new ValidationMessage(ErrorMessage.HEADER_FIELD_MISSING, 1, HDR_QUANTITY));
-
-        final InputStream testDataStream = this.getClass().getResourceAsStream(TestUtility.DATALOADERS_PATH
-                        + "required-header-fields-failure-test.xlsx");
-        final DataLoaderResult loaderResult = dataLoaderHandler.loadData(testDataStream, unitsDataLoader);
-        testDataStream.close();
-
-        Assert.assertEquals(expectedValidationMessages, loaderResult.getMessages());
-    }
-
-    @Test
-    @UsingDataSet(value= {"unit.xml", "property.xml", "basic_component_types.xml", "component_type.xml",
-            "basic_slot.xml", "slot.xml", "slot_property_value.xml"})
-    public void dataTypeFormatFailureTest() throws IOException {
-        final String slotsImportFileName = "data-type-format-failure-test.xlsx";
-        final List<ValidationMessage> expectedValidationMessages = new ArrayList<>();
-        expectedValidationMessages.add(new ValidationMessage(slotsImportFileName));
-        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.SHOULD_BE_BOOLEAN_VALUE, 8, HDR_IS_HOSTING_SLOT));
-        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.SHOULD_BE_NUMERIC_VALUE, 9, HDR_BLP));
-
-        final DataLoaderResult loaderResult = dataLoaderHelper.importSlots(slotsImportFileName);
-
-        Assert.assertEquals(expectedValidationMessages, loaderResult.getMessages());
+        Assert.assertEquals("Error:\n" + loaderResult.toString(), expectedValidationMessages,
+                                                                            loaderResult.getMessages());
     }
 }

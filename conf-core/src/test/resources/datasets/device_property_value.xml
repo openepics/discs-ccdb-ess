@@ -1,4 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
-  <device_property_value/>
+  <device_property_value id="5343" modified_at="2015-11-14 10:21:41.345" version="0" modified_by="admin" in_repository="false" property="145" prop_value="{&quot;meta&quot;:{&quot;type&quot;:&quot;SedsScalar_Number&quot;,&quot;protocol&quot;:&quot;SEDSv1&quot;,&quot;version&quot;:&quot;1.0.0&quot;},&quot;data&quot;:{&quot;value&quot;:0.035}}" unit="49" device="31338"/>
+  <device_property_value id="5344" modified_at="2015-11-14 10:21:41.346" version="0" modified_by="admin" in_repository="false" property="145" prop_value="{&quot;meta&quot;:{&quot;type&quot;:&quot;SedsScalar_Number&quot;,&quot;protocol&quot;:&quot;SEDSv1&quot;,&quot;version&quot;:&quot;1.0.0&quot;},&quot;data&quot;:{&quot;value&quot;:0.035}}" unit="49" device="31340"/>
+  <device_property_value id="5345" modified_at="2015-11-14 10:21:41.347" version="0" modified_by="admin" in_repository="false" property="145" prop_value="{&quot;meta&quot;:{&quot;type&quot;:&quot;SedsScalar_Number&quot;,&quot;protocol&quot;:&quot;SEDSv1&quot;,&quot;version&quot;:&quot;1.0.0&quot;},&quot;data&quot;:{&quot;value&quot;:0.035}}" unit="49" device="31342"/>
+  <device_property_value id="5346" modified_at="2015-11-14 10:21:41.348" version="0" modified_by="admin" in_repository="false" property="145" prop_value="{&quot;meta&quot;:{&quot;type&quot;:&quot;SedsScalar_Number&quot;,&quot;protocol&quot;:&quot;SEDSv1&quot;,&quot;version&quot;:&quot;1.0.0&quot;},&quot;data&quot;:{&quot;value&quot;:0.035}}" unit="49" device="31344"/>
+  <device_property_value id="5347" modified_at="2015-11-14 10:21:41.348" version="0" modified_by="admin" in_repository="false" property="179" prop_value="{&quot;meta&quot;:{&quot;type&quot;:&quot;SedsScalar_Number&quot;,&quot;protocol&quot;:&quot;SEDSv1&quot;,&quot;version&quot;:&quot;1.0.0&quot;},&quot;data&quot;:{&quot;value&quot;:0.7}}" unit="49" device="31344"/>
 </dataset>

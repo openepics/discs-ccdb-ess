@@ -58,10 +58,10 @@ public class DevicesDataLoader extends AbstractEntityWithPropertiesDataLoader<De
     private static final Logger LOGGER = Logger.getLogger(DevicesDataLoader.class.getCanonicalName());
 
     // Header column name constants
-    private static final String HDR_SERIAL = "INVENTORY ID";
-    private static final String HDR_CTYPE = "TYPE";
-    private static final String HDR_PROP_NAME = "PROPERTY NAME";
-    private static final String HDR_PROP_VALUE = "PROPERTY VALUE";
+    protected static final String HDR_SERIAL = "INVENTORY ID";
+    protected static final String HDR_CTYPE = "TYPE";
+    protected static final String HDR_PROP_NAME = "PROPERTY NAME";
+    protected static final String HDR_PROP_VALUE = "PROPERTY VALUE";
 
     private static final int COL_INDEX_CTYPE = 1;
     private static final int COL_INDEX_SERIAL = 2;
@@ -106,7 +106,11 @@ public class DevicesDataLoader extends AbstractEntityWithPropertiesDataLoader<De
                     if (DataLoader.CMD_UPDATE_DEVICE.equals(actualCommand)) {
                         addOrUpdateDevice(deviceToUpdate, compType);
                     } else {
-                        addOrUpdateProperty(deviceToUpdate, propNameFld, propValueFld, HDR_PROP_NAME);
+                        if (propNameFld != null) {
+                            addOrUpdateProperty(deviceToUpdate, propNameFld, propValueFld, HDR_PROP_NAME);
+                        } else {
+                            result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, HDR_PROP_NAME);
+                        }
                     }
                 } catch (EJBTransactionRolledbackException e) {
                     handleLoadingError(LOGGER, e);
@@ -148,7 +152,11 @@ public class DevicesDataLoader extends AbstractEntityWithPropertiesDataLoader<De
                 if (DataLoader.CMD_DELETE_DEVICE.equals(actualCommand)) {
                     deviceEJB.delete(deviceToDelete);
                 } else {
-                    addOrUpdateProperty(deviceToDelete, propNameFld, null, HDR_PROP_NAME);
+                    if (propNameFld != null) {
+                        addOrUpdateProperty(deviceToDelete, propNameFld, null, HDR_PROP_NAME);
+                    } else {
+                        result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, HDR_PROP_NAME);
+                    }
                 }
             } catch (EJBTransactionRolledbackException e) {
                 handleLoadingError(LOGGER, e);

@@ -3,4 +3,9 @@
   <device id="31338" modified_at="2014-11-14 10:21:41.345" modified_by="admin" version="0" serial_number="BPM1-01" component_type="389" />
   <device id="31339" modified_at="2014-11-14 10:21:41.456" modified_by="admin" version="0" serial_number="BPM1-02" component_type="389" />
   <device id="31340" modified_at="2014-11-14 10:21:41.567" modified_by="admin" version="0" serial_number="BPM2-01" component_type="391" />
+  <device id="31341" modified_at="2014-11-14 10:21:41.657" modified_by="admin" version="0" serial_number="BPM2-02" component_type="391" />
+  <device id="31342" modified_at="2014-11-14 10:21:41.754" modified_by="admin" version="0" serial_number="TOOR-01" component_type="12045" />
+  <device id="31343" modified_at="2014-11-14 10:21:41.853" modified_by="admin" version="0" serial_number="TOOR-02" component_type="12045" />
+  <device id="31344" modified_at="2014-11-14 10:21:41.954" modified_by="admin" version="0" serial_number="PRG-01" component_type="12046" />
+  <device id="31345" modified_at="2014-11-14 10:21:42.064" modified_by="admin" version="0" serial_number="PRG-02" component_type="12046" />
 </dataset>

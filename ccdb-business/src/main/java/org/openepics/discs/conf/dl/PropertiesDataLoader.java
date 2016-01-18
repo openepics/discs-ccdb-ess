@@ -60,11 +60,11 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
     private static final Logger LOGGER = Logger.getLogger(PropertiesDataLoader.class.getCanonicalName());
 
     // Header column name constants
-    private static final String HDR_NAME = "NAME";
-    private static final String HDR_UNIT = "UNIT";
-    private static final String HDR_DATATYPE = "DATA-TYPE";
-    private static final String HDR_DESC = "DESCRIPTION";
-    private static final String HDR_UNIQUE = "UNIQUE";
+    protected static final String HDR_NAME = "NAME";
+    protected static final String HDR_UNIT = "UNIT";
+    protected static final String HDR_DATATYPE = "DATA-TYPE";
+    protected static final String HDR_DESC = "DESCRIPTION";
+    protected static final String HDR_UNIQUE = "UNIQUE";
 
     private static final int COL_INDEX_NAME = 1;
     private static final int COL_INDEX_DESC = 2;
@@ -149,7 +149,6 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
                 setPropertyUnit(propertyToAdd, unitFld, false);
                 setPropertyDataType(propertyToAdd, dataTypeFld, false);
                 setPropertyUniqueness(propertyToAdd, uniqueFld, false);
-                propertyToAdd.setValueUniqueness(uniqueFld);
                 if (!result.isRowError()) {
                     propertyEJB.add(propertyToAdd);
                     propertyByName.put(propertyToAdd.getName(), propertyToAdd);

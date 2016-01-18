@@ -29,7 +29,6 @@ import java.util.logging.Logger;
 
 import javax.annotation.Nullable;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.openepics.discs.conf.util.ImportFileStatistics;
 
@@ -259,10 +258,6 @@ public abstract class AbstractDataLoader implements DataLoader {
         Preconditions.checkNotNull(indicies);
 
         final String command = currentRowData.get(COL_INDEX_OPERATION);
-        if (StringUtils.isEmpty(command)) {
-            result.addRowMessage(ErrorMessage.COMMAND_IS_MISSING, HDR_OPERATION);
-            return null;
-        }
 
         final @Nullable Integer uniqueIndex = getUniqueColumnIndex();
         final Set<String> requiredColumns = getRequiredColumnNames();

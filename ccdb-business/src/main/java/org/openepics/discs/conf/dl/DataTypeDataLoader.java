@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.json.JsonObject;
@@ -136,7 +137,7 @@ public class DataTypeDataLoader extends AbstractDataLoader implements DataLoader
         }
         final List<String> newDefs = parseEnumDefinitions();
         if (newDefs.size() < 2) {
-            result.addRowMessage(ErrorMessage.ENUM_NOT_ENOUGH_ELEMENTS, HDR_NAME);
+            result.addRowMessage(ErrorMessage.ENUM_NOT_ENOUGH_ELEMENTS, HDR_DEFINITION);
         }
 
         if (!result.isRowError()) {

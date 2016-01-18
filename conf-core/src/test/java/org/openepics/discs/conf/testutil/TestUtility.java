@@ -20,13 +20,17 @@
 package org.openepics.discs.conf.testutil;
 
 import java.io.File;
+import java.util.List;
 
 import javax.inject.Inject;
 
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
+import org.openepics.discs.conf.ent.PropertyValue;
 import org.openepics.discs.conf.security.SecurityPolicy;
+
+import com.google.common.base.Preconditions;
 
 /**
  * A collection of helper methods for running integration tests.
@@ -73,5 +77,21 @@ public class TestUtility {
 
     public void loginForTests() {
         securityPoloicy.login("admin", "admin");
+    }
+
+    /**
+     * Helper method for retrieving a PropertyValue  from a list of propertyValues.
+     * @param list list to search for the property
+     * @param name name of the PropertyValue we are looking for
+     * @return PropertyValue or null if not found.
+     */
+    public static PropertyValue getProperty(List<? extends PropertyValue> list, String name) {
+        Preconditions.checkNotNull(name);
+        for (PropertyValue property : list) {
+            if (name.equals(property.getProperty().getName())) {
+                return property;
+            }
+        }
+        return null;
     }
 }
