@@ -188,4 +188,8 @@ public class SlotView {
         if (obj instanceof SlotView) return id.equals((((SlotView)obj).id));
         return false;
     }
+    
+    public String toString() {
+    	return getName()+"[id="+getId()+"]";
+    }
 }
