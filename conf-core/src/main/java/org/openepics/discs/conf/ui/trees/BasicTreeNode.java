@@ -1,5 +1,7 @@
 package org.openepics.discs.conf.ui.trees;
 
+import java.util.List;
+
 import org.primefaces.model.TreeNode;
 
 public abstract class BasicTreeNode<D> implements TreeNode {
@@ -18,6 +20,8 @@ public abstract class BasicTreeNode<D> implements TreeNode {
         this.data = data;        
         this.parent = parent;
     }
+	
+	public abstract List<? extends BasicTreeNode<D>> getAllChildren();
 		
 	@Override
 	public String getType() {
@@ -36,7 +40,6 @@ public abstract class BasicTreeNode<D> implements TreeNode {
 	
 	@Override
 	public BasicTreeNode<D> getParent() {
-		//System.out.println(data.toString() + " getParent " + parent);
 		return parent;
 	}
 	
@@ -93,6 +96,11 @@ public abstract class BasicTreeNode<D> implements TreeNode {
 
 	@Override
     public String getRowKey() {
+		if (rowKey == null) {
+			if (parent == null) rowKey = "root";
+			else if (parent.parent == null) rowKey = String.valueOf(parent.getAllChildren().indexOf(this));
+			else rowKey = parent.getRowKey() + "_" + String.valueOf(parent.getAllChildren().indexOf(this));			
+		}
         return rowKey;
     }
 

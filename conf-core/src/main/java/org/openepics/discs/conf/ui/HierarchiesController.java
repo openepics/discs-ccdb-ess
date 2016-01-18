@@ -69,7 +69,9 @@ import org.openepics.discs.conf.ui.common.EntityHierarchyBuilder;
 import org.openepics.discs.conf.ui.common.HierarchyBuilder;
 import org.openepics.discs.conf.ui.common.TreeFilterContains;
 import org.openepics.discs.conf.ui.common.UIException;
+import org.openepics.discs.conf.ui.trees.BasicTreeNode;
 import org.openepics.discs.conf.ui.trees.SlotRelationshipTree;
+import org.openepics.discs.conf.ui.trees.SlotRelationshipTreeWithChildren;
 import org.openepics.discs.conf.ui.util.ConnectsManager;
 import org.openepics.discs.conf.ui.util.UiUtility;
 import org.openepics.discs.conf.ui.util.names.Names;
@@ -149,6 +151,9 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     private transient ConnectsHierarchyBuilder connectsHierarchyBuilder;
     
     private SlotRelationshipTree containsTree;
+    private SlotRelationshipTreeWithChildren powersTree;
+    private SlotRelationshipTreeWithChildren controlsTree;
+    
     /*TREE private TreeNode powersRootNode;
     private TreeNode controlsRootNode;
     private TreeNode connectsRootNode;
@@ -549,10 +554,10 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      * @param event Event triggered on node expand action
      */
     public void onContainsExpand(NodeExpandEvent event) {
-        final TreeNode expandedNode = event.getTreeNode();
+        /*TREE final TreeNode expandedNode = event.getTreeNode();
         if (expandedNode != null) {
             hierarchyBuilder.expandNode(expandedNode);
-        }
+        }*/
     }
 
     /**
@@ -561,10 +566,10 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      * @param event Event triggered on node expand action
      */
     public void onPowersExpand(NodeExpandEvent event) {
-        final TreeNode expandedNode = event.getTreeNode();
+    	/*TREE final TreeNode expandedNode = event.getTreeNode();
         if (expandedNode != null) {
             powersHierarchyBuilder.expandNode(expandedNode);
-        }
+        }*/
     }
 
     /**
@@ -573,10 +578,10 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      * @param event Event triggered on node expand action
      */
     public void onControlsExpand(NodeExpandEvent event) {
-        final TreeNode expandedNode = event.getTreeNode();
+    	/*TREE final TreeNode expandedNode = event.getTreeNode();
         if (expandedNode != null) {
             controlsHierarchyBuilder.expandNode(expandedNode);
-        }
+        }*/
     }
 
     /**
@@ -585,10 +590,10 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      * @param event Event triggered on node expand action
      */
     public void onConnectsExpand(NodeExpandEvent event) {
-        final TreeNode expandedNode = event.getTreeNode();
+    	/*TREE final TreeNode expandedNode = event.getTreeNode();
         if (expandedNode != null) {
             connectsHierarchyBuilder.expandNode(expandedNode);
-        }
+        }*/
     }
 
     /**
@@ -596,6 +601,20 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      * @param event the event
      */
     public void onTabChange(TabChangeEvent event) {
+    	final List<BasicTreeNode<SlotView>> masterNodes = selectedNodes != null && selectedNodes.size() > 0
+                ? (List<BasicTreeNode<SlotView>>)(Object)selectedNodes : Arrays.asList(containsTree.getRootNode());
+    	
+    	ActiveTab newActiveTab = ActiveTab.valueOf(event.getTab().getId());
+    	
+    	switch (newActiveTab) {     
+    	case POWERS:
+    		powersTree.initHierarchy(masterNodes);            
+        break;
+        case CONTROLS:
+        	controlsTree.initHierarchy(masterNodes);            
+        case CONNECTS:        	            
+        default:break;
+    }
     /*TREE    ActiveTab newActiveTab = ActiveTab.valueOf(event.getTab().getId());
 
 
@@ -957,25 +976,9 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
     private void initHierarchies() {
     	containsTree = new SlotRelationshipTree(new SlotView(slotEJB.getRootNode(), null, 1, slotEJB), SlotRelationName.CONTAINS, slotEJB);
-        /*TREE hierarchyBuilder = new EntityHierarchyBuilder(PRELOAD_LIMIT, installationEJB, slotEJB);
-        hierarchyBuilder.setFilterMethod(new TreeFilterContains());
-        rootNode = new DefaultTreeNode(new SlotView(slotEJB.getRootNode(), null, 1, slotEJB), null);
-        hierarchyBuilder.rebuildSubTree(rootNode);
-
-        // for POWERS and CONTROLS hierarchies, the trees will be rebuild dynamically based on user selection
-        powersHierarchyBuilder = new EntityHierarchyBuilder(PRELOAD_LIMIT, installationEJB, slotEJB);
-        powersHierarchyBuilder.setRelationship(SlotRelationName.POWERS);
-        powersHierarchyBuilder.setFilterMethod(new TreeFilterContains());
-        // initializing root node prevents NPE in initial page display
-        powersRootNode = new DefaultTreeNode(new SlotView(slotEJB.getRootNode(), null, 1, slotEJB), null);
-
-        controlsHierarchyBuilder = new EntityHierarchyBuilder(PRELOAD_LIMIT, installationEJB, slotEJB);
-        controlsHierarchyBuilder.setRelationship(SlotRelationName.CONTROLS);
-        controlsHierarchyBuilder.setFilterMethod(new TreeFilterContains());
-        // initializing root node prevents NPE in initial page display
-        controlsRootNode = new DefaultTreeNode(new SlotView(slotEJB.getRootNode(), null, 1, slotEJB), null);
-
-        connectsHierarchyBuilder = new ConnectsHierarchyBuilder(connectsManager, slotEJB);
+    	controlsTree = new SlotRelationshipTreeWithChildren(new SlotView(slotEJB.getRootNode(), null, 1, slotEJB), SlotRelationName.CONTROLS, slotEJB);
+    	powersTree = new SlotRelationshipTreeWithChildren(new SlotView(slotEJB.getRootNode(), null, 1, slotEJB), SlotRelationName.POWERS, slotEJB);
+        /*TREE connectsHierarchyBuilder = new ConnectsHierarchyBuilder(connectsManager, slotEJB);
         connectsHierarchyBuilder.setFilterMethod(new TreeFilterContains());
         // initializing root node prevents NPE in initial page display
         connectsRootNode = new DefaultTreeNode(new SlotView(slotEJB.getRootNode(), null, 1, slotEJB), null);*/
@@ -1418,12 +1421,12 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
     /** @return The root node of the <code>POWERS</code> hierarchy tree. */
     public TreeNode getPowersRoot() {
-        return new DefaultTreeNode(); //TREE powersRootNode;
+        return powersTree.getRootNode();
     }
 
     /** @return The root node of the <code>CONTROLS</code> hierarchy tree. */
     public TreeNode getControlsRoot() {
-        return new DefaultTreeNode(); //TREE controlsRootNode;
+        return controlsTree.getRootNode();
     }
 
     /** @return The root node of the <code>CONNECTS</code> hierarchy tree. */

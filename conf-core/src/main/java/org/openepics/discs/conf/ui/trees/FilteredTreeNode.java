@@ -15,8 +15,11 @@ public class FilteredTreeNode<D> extends TreeNodeWithTree<D> {
 	@Override
 	public List<TreeNode> getChildren() {
 		if (bufferedChildren == null)
-			bufferedChildren = (List<TreeNode>)getAllChildren(); 
+			bufferedChildren = (List<TreeNode>)(Object)getAllChildren(); 
 		return bufferedChildren;
 	}
 
+	public void cleanCache() {
+		bufferedChildren = null;
+	}
 }

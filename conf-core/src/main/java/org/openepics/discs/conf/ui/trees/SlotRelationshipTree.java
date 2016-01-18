@@ -10,8 +10,8 @@ import org.openepics.discs.conf.ent.SlotRelationName;
 import org.openepics.discs.conf.views.SlotView;
 
 public class SlotRelationshipTree extends Tree<SlotView> {
-	private SlotRelationName relationship;
-	final private SlotEJB slotEJB;
+	protected SlotRelationName relationship;
+	final protected SlotEJB slotEJB;
 	final FilteredTreeNode<SlotView> rootNode;
 	 
 	public SlotRelationshipTree(SlotView data, SlotRelationName relationship, SlotEJB slotEJB) {
@@ -31,6 +31,7 @@ public class SlotRelationshipTree extends Tree<SlotView> {
 	    	if (pair.getSlotRelation().getName().equals(relationship)) {
 	    		final Slot childSlot = pair.getChildSlot();
 	            final SlotView childSlotView = new SlotView(childSlot, slotView, pair.getSlotOrder(), slotEJB);
+	            childSlotView.setLevel(slotView.getLevel()+1);
 	            allChildren.add(new FilteredTreeNode<SlotView>(childSlotView, parent, this));
 	    	}
 	    }
@@ -38,7 +39,7 @@ public class SlotRelationshipTree extends Tree<SlotView> {
 	}
 
 	@Override
-	public BasicTreeNode<SlotView> getRootNode() {
+	public FilteredTreeNode<SlotView> getRootNode() {
 		return rootNode;
 	}
 

@@ -2,8 +2,6 @@ package org.openepics.discs.conf.ui.trees;
 
 import java.util.List;
 
-import org.primefaces.model.TreeNode;
-
 public abstract class TreeNodeWithTree<D> extends BasicTreeNode<D> {
 	private Tree<D> tree;
 	
@@ -12,7 +10,7 @@ public abstract class TreeNodeWithTree<D> extends BasicTreeNode<D> {
 		this.tree = tree;
 	}
 	
-	public List<? extends TreeNode> getAllChildren() {
+	public List<? extends BasicTreeNode<D>> getAllChildren() {
 		return tree.getAllChildren(this);
 	}
 	
