@@ -56,8 +56,8 @@
                                                         :hierarchies:clipboardOperations"/>                                                 
                                     </p:inputText>
                                     <div style="height: calc(100% - 2em)">
-                                        <p:treeTable id="tree" value="#{hierarchiesController.rootNode}" var="installationSlot"
-                                                 selectionMode="multiple" selection="#{hierarchiesController.selectedIncludesNodes}"
+                                        <p:treeTable id="tree" value="#{hierarchiesController.containsTree.rootNode}" var="installationSlot"
+                                                 selectionMode="multiple" selection="#{hierarchiesController.containsTree.selectedNodesArray}"
                                                  scrollable="true" scrollWidth="100%" scrollHeight="100%" rowStyleClass="treeRows"
                                                  widgetVar="hierarchyWidget" nodeVar="slotNode">
                                             <p:ajax event="select" listener="#{hierarchiesController.onNodeSelect}"
@@ -114,8 +114,8 @@
                                                         :hierarchies:clipboardOperations"/>                                                 
                                     </p:inputText>
                                     <div style="height: calc(100% - 2em)">
-                                        <p:treeTable id="controlsTree" value="#{hierarchiesController.controlsRoot}" var="ctrlSlot"
-                                                 selectionMode="multiple" selection="#{hierarchiesController.selectedControlsNodes}"
+                                        <p:treeTable id="controlsTree" value="#{hierarchiesController.controlsTree.rootNode}" var="ctrlSlot"
+                                                 selectionMode="multiple" selection="#{hierarchiesController.controlsTree.selectedNodesArray}"
                                                  scrollable="true" scrollWidth="100%" scrollHeight="100%" rowStyleClass="treeRows"
                                                  widgetVar="ctrlWidget">
                                                  
@@ -160,8 +160,8 @@
                                     </p:inputText>
                                 
                                     <div style="height: calc(100% - 2em)">
-                                        <p:treeTable id="powersTree" value="#{hierarchiesController.powersRoot}" var="powerSlot"
-                                                 selectionMode="multiple" selection="#{hierarchiesController.selectedPowersNodes}"
+                                        <p:treeTable id="powersTree" value="#{hierarchiesController.powersTree.rootNode}" var="powerSlot"
+                                                 selectionMode="multiple" selection="#{hierarchiesController.powersTree.selectedNodesArray}"
                                                  scrollable="true" scrollWidth="100%" scrollHeight="100%" rowStyleClass="treeRows"
                                                  widgetVar="powersWidget">
                                             <p:ajax event="select" listener="#{hierarchiesController.onNodeSelect}"
@@ -204,8 +204,8 @@
                                                         :hierarchies:clipboardOperations"/>                                                 
                                     </p:inputText>                                
                                     <div style="height: calc(100% - 2em)">
-                                        <p:treeTable id="connectsTree" value="#{hierarchiesController.connectsRoot}" var="connectsSlot"
-                                                 selectionMode="multiple" selection="#{hierarchiesController.selectedConnectsNodes}"
+                                        <p:treeTable id="connectsTree" value="#{hierarchiesController.connectsTree.rootNode}" var="connectsSlot"
+                                                 selectionMode="multiple" selection="#{hierarchiesController.connectsTree.selectedNodesArray}"
                                                  scrollable="true" scrollWidth="100%" scrollHeight="100%" rowStyleClass="treeRows"
                                                  widgetVar="connectsWidget">
                                             <p:ajax event="select" listener="#{hierarchiesController.onNodeSelect}"
@@ -261,13 +261,13 @@
                                     title="Put Selected Items to Clipboard for Copying"
                                     action="#{hierarchiesController.copyTreeNodes}" oncomplete="hierarchiesResizeAll();"
                                     disabled="#{not hierarchiesController.includesActive or
-                                                    empty hierarchiesController.selectedIncludesNodes}"
+                                                    empty hierarchiesController.containsTree.selectedNodes}"
                                     update=":hierarchies:hierarchyTabs:tree :hierarchies:clipboardOperations" />
                                 <p:menuitem value="Cut" id="cutButton" icon="ui-icon-scissors"
                                     title="Put Selected Items to Clipboard for Moving"
                                     action="#{hierarchiesController.cutTreeNodes}" oncomplete="hierarchiesResizeAll();"
                                     disabled="#{not hierarchiesController.includesActive or
-                                                    empty hierarchiesController.selectedIncludesNodes}"
+                                                    empty hierarchiesController.containsTree.selectedNodes}"
                                     update=":hierarchies:hierarchyTabs:tree :hierarchies:clipboardOperations" />
                                 <p:menuitem value="Paste" id="pasteButton" icon="ui-icon-clipboard"
                                     title="Paste Into the Selected Parent" oncomplete="PF('pasteSlots').show();"
@@ -280,7 +280,7 @@
                             <p:commandButton id="deleteButton" icon="ui-icon-trash" value="Delete" title="Delete"
                                 style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('deleteSlots').show();"
                                 disabled="#{not hierarchiesController.includesActive
-                                                or empty hierarchiesController.selectedIncludesNodes
+                                                or empty hierarchiesController.containsTree.selectedNodes
                                                 or not securityPolicy.getUIHint('HIERARCHY_DELETE')}"
                                 update=":deleteSlotsForm" actionListener="#{hierarchiesController.prepareDeletePopup()}" />
                             <p:commandButton id="downButton" icon="ui-icon-arrowthick-1-s" value="Down" title="Move Down"
