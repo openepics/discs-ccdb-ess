@@ -55,6 +55,7 @@ import org.openepics.discs.conf.ent.values.Value;
 import org.openepics.discs.conf.security.Authorized;
 import org.openepics.discs.conf.util.BlobStore;
 import org.openepics.discs.conf.util.CRUDOperation;
+import org.openepics.discs.conf.util.DuplicateNameException;
 import org.openepics.discs.conf.util.UnhandledCaseException;
 
 import com.google.common.base.Preconditions;
@@ -139,7 +140,7 @@ public class SlotEJB extends DAO<Slot> {
 
     /**
      * The method takes care of adding a new Slot and all its dependencies in one transaction. Called from Container
-     * and iInstallation slot managed beans.
+     * and Installation slot managed beans.
      *
      * @param newSlot the Container or Installation slot to be added
      * @param parentSlot its parent. <code>null</code> if the container is a new root.
@@ -150,15 +151,17 @@ public class SlotEJB extends DAO<Slot> {
     @Audit
     @Authorized
     public void addSlotToParentWithPropertyDefs(Slot newSlot, @Nullable Slot parentSlot, boolean fromDataLoader) {
+        final Slot actualParentSlot = (parentSlot != null) ? parentSlot : getRootNode();
+        if (!isNewSlotNameAllowed(newSlot, actualParentSlot)) {
+            final String entity = newSlot.isHostingSlot() ? "Installation slot" : "Container";
+            throw new DuplicateNameException(entity + " cannot be created, because equally named "
+                                                + entity.toLowerCase() + " already exists.");
+        }
+
         super.add(newSlot);
         if (!fromDataLoader) {
-            if (parentSlot != null) {
-                slotPairEJB.addWithoutInterceptors(new SlotPair(newSlot, parentSlot,
-                            slotRelationEJB.findBySlotRelationName(SlotRelationName.CONTAINS)));
-            } else {
-                slotPairEJB.addWithoutInterceptors(new SlotPair(newSlot, getRootNode(),
-                            slotRelationEJB.findBySlotRelationName(SlotRelationName.CONTAINS)));
-            }
+            slotPairEJB.addWithoutInterceptors(new SlotPair(newSlot, actualParentSlot,
+                        slotRelationEJB.findBySlotRelationName(SlotRelationName.CONTAINS)));
         }
 
         final List<ComptypePropertyValue> propertyDefinitions =
@@ -170,6 +173,14 @@ public class SlotEJB extends DAO<Slot> {
                 slotPropertyValue.setSlot(newSlot);
                 addChild(slotPropertyValue);
             }
+        }
+    }
+
+    private boolean isNewSlotNameAllowed(final Slot newSlot, final Slot parentSlot) {
+        if (newSlot.isHostingSlot()) {
+            return isInstallationSlotNameUnique(newSlot.getName());
+        } else {
+            return isContainerNameUnique(newSlot.getName(), parentSlot);
         }
     }
 
@@ -234,6 +245,24 @@ public class SlotEJB extends DAO<Slot> {
     public boolean isInstallationSlotNameUnique(String newSlotName) {
         return em.createNamedQuery("Slot.findByNameAndHosting", Slot.class).setParameter("name", newSlotName).
                 setParameter("isHostingSlot", true).getResultList().isEmpty();
+    }
+
+    /**
+     * Checks whether a new container can have the requested name.
+     *
+     * @param newContainerName the name of the container we're about to add to the parent
+     * @param parentSlot the parent for the new container
+     * @return <code>true</code> if the container's parent does not contain a equally named child,
+     * <code>false</code> otherwise.
+     */
+    public boolean isContainerNameUnique(final String newContainerName, final @Nullable Slot parentSlot) {
+        Preconditions.checkNotNull(newContainerName);
+        final Slot actualParentSlot = (parentSlot != null) ? parentSlot : getRootNode();
+        final String candidateName = newContainerName.toLowerCase();
+        final long equalyNamedSiblings = actualParentSlot.getPairsInWhichThisSlotIsAParentList().stream().
+                                            filter(e -> e.getChildSlot().getName().toLowerCase().equals(candidateName)).
+                                            count();
+        return equalyNamedSiblings == 0;
     }
 
     @Override

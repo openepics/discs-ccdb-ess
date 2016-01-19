@@ -180,7 +180,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     private Long deviceType;
     private String parentName;
     private transient List<String> namesForAutoComplete;
-    private boolean isNewInstallationSlot;
+    private boolean isNewSlot;
     private transient Map<String, DeviceNameElement> nameList;
 
     private String filterContainsTree;
@@ -1042,7 +1042,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     /** Prepares fields that are used in pop up for editing an existing container */
     public void prepareEditPopup() {
         Preconditions.checkState(isSingleNodeSelected());
-        isNewInstallationSlot = false;
+        isNewSlot = false;
         isInstallationSlot = selectedSlotView.isHostingSlot();
         name = selectedSlotView.getName();
         description = selectedSlotView.getDescription();
@@ -1053,6 +1053,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
     /** Prepares fields that are used in pop up for adding a new container */
     public void prepareContainerAddPopup() {
+        isNewSlot = true;
         isInstallationSlot = false;
         initAddInputFields();
     }
@@ -1060,7 +1061,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     /** Prepares fields that are used in pop up for adding a new installation slot */
     public void prepareInstallationSlotPopup() {
         isInstallationSlot = true;
-        isNewInstallationSlot = true;
+        isNewSlot = true;
         initAddInputFields();
     }
 
@@ -1347,14 +1348,33 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
                 throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
                         UiUtility.MESSAGE_SUMMARY_ERROR, "The installation slot name not found in the naming tool."));
         }
-        if (isNewInstallationSlot) {
-            if (!slotEJB.isInstallationSlotNameUnique(valueStr))
-                throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                        UiUtility.MESSAGE_SUMMARY_ERROR, "The installation slot name must be unique."));
-        } else if (isInstallationSlot)
-            if (!name.equals(valueStr) && !slotEJB.isInstallationSlotNameUnique(valueStr)) {
-                throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                        UiUtility.MESSAGE_SUMMARY_ERROR, "The installation slot name must be unique."));
+        if (isNewSlot) {
+            // add dialog
+            if (isInstallationSlot) {
+                // check uniqueness across whole database
+                if (!slotEJB.isInstallationSlotNameUnique(valueStr))
+                    throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                            UiUtility.MESSAGE_SUMMARY_ERROR, "The installation slot name must be unique."));
+            } else {
+                // check uniqueness only for the parent
+                if (!slotEJB.isContainerNameUnique(valueStr, selectedSlotView.getSlot()))
+                        throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                UiUtility.MESSAGE_SUMMARY_ERROR, "Parent alread contains equally named child."));
+            }
+        } else {
+            // edit dialog
+            if (isInstallationSlot) {
+                // check uniqueness across whole database
+                if (!name.equals(valueStr) && !slotEJB.isInstallationSlotNameUnique(valueStr))
+                    throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                            UiUtility.MESSAGE_SUMMARY_ERROR, "The installation slot name must be unique."));
+            } else {
+                // check uniqueness only for the parent
+                if (!name.equals(valueStr)
+                        && !slotEJB.isContainerNameUnique(valueStr, selectedSlotView.getParentNode().getSlot()))
+                    throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                            UiUtility.MESSAGE_SUMMARY_ERROR, "Parent alread contains equally named child."));
+            }
         }
     }
 
@@ -1565,9 +1585,9 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         this.deviceType = deviceType;
     }
 
-    /** @return the isNewInstallationSlot */
-    public boolean isNewInstallationSlot() {
-        return isNewInstallationSlot;
+    /** @return the isNewSlot */
+    public boolean isNewSlot() {
+        return isNewSlot;
     }
 
     /** @return the parent slot name */
