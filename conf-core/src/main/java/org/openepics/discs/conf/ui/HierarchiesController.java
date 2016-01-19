@@ -48,8 +48,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import joptsimple.internal.Strings;
-
 import org.openepics.discs.conf.dl.annotations.SignalsLoader;
 import org.openepics.discs.conf.dl.annotations.SlotsLoader;
 import org.openepics.discs.conf.dl.common.DataLoader;
@@ -63,11 +61,8 @@ import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotRelationName;
 import org.openepics.discs.conf.ui.common.AbstractExcelSingleFileImportUI;
-import org.openepics.discs.conf.ui.common.ConnectsHierarchyBuilder;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
-import org.openepics.discs.conf.ui.common.EntityHierarchyBuilder;
 import org.openepics.discs.conf.ui.common.HierarchyBuilder;
-import org.openepics.discs.conf.ui.common.TreeFilterContains;
 import org.openepics.discs.conf.ui.common.UIException;
 import org.openepics.discs.conf.ui.trees.BasicTreeNode;
 import org.openepics.discs.conf.ui.trees.SlotRelationshipTree;
@@ -90,6 +85,8 @@ import org.primefaces.model.TreeNode;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+
+import joptsimple.internal.Strings;
 
 /**
  * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
@@ -145,10 +142,10 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     private String requestedSlot;
 
     // ---- variables for hierarchies and tabs --------
-    private transient EntityHierarchyBuilder hierarchyBuilder;
+    /*TREE private transient EntityHierarchyBuilder hierarchyBuilder;
     private transient EntityHierarchyBuilder powersHierarchyBuilder;
     private transient EntityHierarchyBuilder controlsHierarchyBuilder;
-    private transient ConnectsHierarchyBuilder connectsHierarchyBuilder;
+    private transient ConnectsHierarchyBuilder connectsHierarchyBuilder;*/
     
     private SlotRelationshipTree containsTree;
     private SlotRelationshipTreeWithChildren powersTree;
@@ -161,6 +158,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     private List<TreeNode> controlsChildren;
     private List<TreeNode> connectsChildren;*/
 
+    //TREE 
     private transient List<TreeNode> selectedNodes;
     //TREE private transient List<TreeNode> savedIncludesSelectedNodes;
     /** <code>selectedSlot</code> is only initialized when there is only one node in the tree selected */
@@ -266,7 +264,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     }
 
     private void updateTreeWithFreshSlot(final TreeNode node, final Slot freshSlot, boolean rebuildAffectedSlots) {
-        final SlotView nodeSlotView = (SlotView) node.getData();
+        /* TREE final SlotView nodeSlotView = (SlotView) node.getData();
         if (freshSlot.getId().equals(nodeSlotView.getId())) {
             nodeSlotView.setSlot(freshSlot);
             if (rebuildAffectedSlots) {
@@ -276,15 +274,15 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             for (final TreeNode nodeChild : node.getChildren()) {
                 updateTreeWithFreshSlot(nodeChild, freshSlot, rebuildAffectedSlots);
             }
-        }
+        }*/
     }
 
     private void unselectAllTreeNodes() {
-        if (selectedNodes != null) {
+        /* TREE if (selectedNodes != null) {
             for (final TreeNode node : selectedNodes) {
                 node.setSelected(false);
             }
-        }
+        } */
     }
 
     private void navigateToUrlSelectedSlot() {
@@ -891,7 +889,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     }
 
     private void addSlotToDeleteWithChildren(final TreeNode nodeToDelete) {
-        if (!nodesToDelete.contains(nodeToDelete)) {
+        /* TREE if (!nodesToDelete.contains(nodeToDelete)) {
             nodesToDelete.add(nodeToDelete);
         }
         // make sure that the tree children are properly initialized.
@@ -900,7 +898,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         }
         for (final TreeNode child : nodeToDelete.getChildren()) {
             addSlotToDeleteWithChildren(child);
-        }
+        }*/
     }
 
     /** Deletes selected container */
@@ -1313,13 +1311,13 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     }
 
     private void copySlotsToParent(final List<Slot> sourceSlots, final TreeNode parentNode) {
-        final SlotView newParentSlotView = (SlotView) parentNode.getData();
+        /*TREE final SlotView newParentSlotView = (SlotView) parentNode.getData();
         final Slot newParentSlot = newParentSlotView.getSlot();
         slotEJB.copySlotsToParent(sourceSlots, newParentSlot);
 
         newParentSlotView.setDeletable(false);
         hierarchyBuilder.rebuildSubTree(parentNode);
-        parentNode.setExpanded(true);
+        parentNode.setExpanded(true); */
     }
 
     /*
