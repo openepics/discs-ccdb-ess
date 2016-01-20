@@ -69,6 +69,10 @@
                                 style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('exportDevices').show();" 
                                 disabled="#{empty devicesController.devices}" update=":exportDevForm:exportDevices" 
                                 actionListener="#{devicesController.simpleTableDialog.prepareTableExportPopup}" />
+                            <p:commandButton id="importButton" icon="ui-icon-arrowthickstop-1-n" value="Import" title="Import Devices" 
+                                style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('importDevices').show();" 
+                                disabled="#{not securityPolicy.getUIHint('DEVICES_ALL')}" update=":importDevicesForm" 
+                                actionListener="#{devicesController.prepareImportPopup()}" />
                             <p:commandButton id="deleteButton" style="float: right; margin: 1em 1ex 0 0;" 
                                 value="Delete" icon="ui-icon-trash" title="Delete Selected Devices" 
                                 actionListener="#{devicesController.checkDevicesForDeletion()}"

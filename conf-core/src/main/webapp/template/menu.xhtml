@@ -22,75 +22,23 @@
 
         <p:menubar id="mainMenu" styleClass="menubar">
 
-            <p:menuitem value="Home" title="The main application view" url="/"
-                rendered="#{not request.requestURI.endsWith('home.xhtml')}" icon="ui-icon-home" />
-            <p:submenu label="Home" icon="ui-icon-home" rendered="#{request.requestURI.endsWith('home.xhtml')}"
-                    styleClass="menu-selected">
-                <p:menuitem value="View" title="View Home Screen" url="/" />
+            <p:menuitem value="Home" title="The main application view" url="/" icon="ui-icon-home" 
+                styleClass="#{request.requestURI.endsWith('home.xhtml') ? 'menu-selected' : ''}"  />
 
-                <p:menuitem value="Import" update=":importSlotsForm" oncomplete="PF('importSlots').show();"
-                            title="Import slots" actionListener="#{hierarchiesController.prepareImportSlotPopup()}"
-                    disabled="#{not securityPolicy.getUIHint('HIERARCHY_ALL')}" />
+            <p:menuitem value="Devices" title="View devices" url="/devices.xhtml" icon="ui-icon-gear" 
+                styleClass="#{request.requestURI.endsWith('devices.xhtml') ? 'menu-selected' : ''}" />
 
-                <p:menuitem value="Import signals" update=":importSignalsForm" title="Import signals"
-                    oncomplete="PF('importSignals').show();" actionListener="#{hierarchiesController.prepareImportSignalPopup()}"
-                    disabled="#{not securityPolicy.getUIHint('IMPORT_SIGNALS')}" />
-            </p:submenu>
-
-            <p:menuitem value="Devices" title="View devices" url="/devices.xhtml"
-                rendered="#{not request.requestURI.endsWith('devices.xhtml')}" icon="ui-icon-gear" />
-            <p:submenu label="Devices" icon="ui-icon-gear"  rendered="#{request.requestURI.endsWith('devices.xhtml')}"
-                    styleClass="menu-selected">
-                <p:menuitem value="View" title="View Devices" url="/devices.xhtml" />
-
-                <p:menuitem value="Import" update=":importDevicesForm" oncomplete="PF('importDevices').show();"
-                    title="Import Devices" actionListener="#{devicesController.prepareImportPopup()}"
-                    disabled="#{not securityPolicy.getUIHint('DEVICES_ALL')}" />
-            </p:submenu>
-
-            <p:menuitem value="Device types" title="View device types" url="/device-types.xhtml"
-                rendered="#{not request.requestURI.endsWith('device-types.xhtml')}" icon="ui-icon-wrench" />
-            <p:submenu label="Device types" icon="ui-icon-wrench" rendered="#{request.requestURI.endsWith('device-types.xhtml')}"
-                    styleClass="menu-selected">
-                <p:menuitem value="View" title="View Device Types" url="/device-types.xhtml" />
-
-                <p:menuitem value="Import" update=":importCompTypesForm" oncomplete="PF('importCompTypes').show();"
-                    title="Import Device Types" actionListener="#{componentTypeManager.prepareImportPopup()}"
-                    disabled="#{not securityPolicy.getUIHint('DEVTYPE_CREATE')}" />
-            </p:submenu>
+            <p:menuitem value="Device types" title="View device types" url="/device-types.xhtml" icon="ui-icon-wrench" 
+                styleClass="#{request.requestURI.endsWith('device-types.xhtml') ? 'menu-selected' : ''}" />
 
             <p:menuitem value="Properties" title="View property definitions" url="/properties.xhtml"
-                rendered="#{not request.requestURI.endsWith('properties.xhtml')}" icon="ui-icon-contact" />
-            <p:submenu label="Properties" icon="ui-icon-contact" rendered="#{request.requestURI.endsWith('properties.xhtml')}"
-                    styleClass="menu-selected">
-                <p:menuitem value="View" title="View Properties" url="/properties.xhtml" />
-
-                <p:menuitem value="Import" update=":importPropertiesForm" oncomplete="PF('importProperties').show();"
-                    title="Import Properties" actionListener="#{propertyManager.prepareImportPopup()}"
-                    disabled="#{not securityPolicy.getUIHint('PROP_ALL')}" />
-            </p:submenu>
+                styleClass="#{request.requestURI.endsWith('properties.xhtml') ? 'menu-selected' : ''}" icon="ui-icon-contact" />
 
             <p:menuitem value="Enumerations" title="View user defined enumerations" url="/enums.xhtml"
-                rendered="#{not request.requestURI.endsWith('enums.xhtml')}" icon="ui-icon-radio-off" />
-            <p:submenu label="Enumerations" icon="ui-icon-radio-off" rendered="#{request.requestURI.endsWith('enums.xhtml')}"
-                    styleClass="menu-selected">
-                <p:menuitem value="View" title="View User Defined Enumerations" url="/enums.xhtml" />
+                styleClass="#{request.requestURI.endsWith('enums.xhtml') ? 'menu-selected' : ''}" icon="ui-icon-radio-off" />
 
-                <p:menuitem value="Import" update=":importEnumsForm" oncomplete="PF('importEnums').show();"
-                    title="Import Enumerations" actionListener="#{dataTypeManager.prepareImportPopup()}"
-                    disabled="#{not securityPolicy.getUIHint('ENUM_ALL')}" />
-            </p:submenu>
-
-            <p:menuitem value="Units" title="View units" url="units.xhtml"
-                rendered="#{not request.requestURI.endsWith('units.xhtml')}" icon="ui-icon-folder-open" />
-            <p:submenu label="Units" icon="ui-icon-folder-open" rendered="#{request.requestURI.endsWith('units.xhtml')}"
-                    styleClass="menu-selected">
-                <p:menuitem value="View" title="View Units" url="/units.xhtml" />
-
-                <p:menuitem value="Import" update=":importUnitsForm" oncomplete="PF('importUnits').show();"
-                    title="Import Units" actionListener="#{unitManager.prepareImportPopup()}"
-                    disabled="#{not securityPolicy.getUIHint('UNIT_ALL')}" />
-            </p:submenu>
+            <p:menuitem value="Units" title="View units" url="/units.xhtml" icon="ui-icon-folder-open" 
+                styleClass="#{request.requestURI.endsWith('units.xhtml') ? 'menu-selected' : ''}" />
 
             <p:menuitem value="Log" icon="ui-icon-script" title="View Audit Log" url="/log.xhtml"
                 styleClass="#{request.requestURI.endsWith('log.xhtml') ? 'menu-selected' : ''}" />

@@ -10,7 +10,7 @@
         <p:growl id="growl" showDetail="true" globalOnly="true"/>
             <p:panelGrid styleClass="noBorders">
                 <p:row>
-                    <p:column style="width: 35vw; min-width: 20em;">
+                    <p:column style="width: 35vw; min-width: 44em;">
                         <p:fieldset legend="Device Type" id="devTypeFieldset" style="box-sizing: border-box; height: calc(100vh - 7em)">
                             <div style="height: calc(100% - 3em)">
                                 <p:dataTable id="deviceTypeTable" widgetVar="deviceTypeTableVar" var="deviceType"
@@ -52,6 +52,10 @@
                                 style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('exportDevTypes').show();"
                                 disabled="#{empty componentTypeManager.deviceTypes}" update=":exportDevTypesForm:exportDevTypes"
                                 actionListener="#{componentTypeManager.simpleTableDialog.prepareTableExportPopup}" />
+                            <p:commandButton id="importButton" icon="ui-icon-arrowthickstop-1-n" value="Import" title="Import Device Types" 
+                                style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('importCompTypes').show();" 
+                                disabled="#{not securityPolicy.getUIHint('DEVTYPE_CREATE')}" update=":importCompTypesForm" 
+                                actionListener="#{componentTypeManager.prepareImportPopup()}" />
                             <p:commandButton id="deleteButton" icon="ui-icon-trash" value="Delete" title="Delete"
                                 style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('deleteDeviceTypes').show();"
                                 disabled="#{empty componentTypeManager.selectedDeviceTypes or not securityPolicy.getUIHint('DEVTYPE_DELETE')}" 

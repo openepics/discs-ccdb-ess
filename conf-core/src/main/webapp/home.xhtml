@@ -35,7 +35,7 @@
                     <p:column rowspan="4" id="treeColumn">
                         <p:fieldset id="treeFieldSet" legend="Slots" style="box-sizing: border-box; height: calc(100vh - 7em)">
                         <div style="height: calc(100% - 3em)">
-                            <p:tabView id="hierarchyTabs" style="width: 40em; height: 100%">
+                            <p:tabView id="hierarchyTabs" style="width: 48em; height: 100%">
                                 <p:ajax event="tabChange" listener="#{hierarchiesController.onTabChange}"
                                     update=":hierarchies:relationsTable :hierarchies:deleteButton :hierarchies:downButton
                                         :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton
@@ -276,6 +276,22 @@
                                                     or hierarchiesController.clipboardEmpty}"
                                     action="#{hierarchiesController.checkPasteAction}"
                                     update=":pasteSlotsForm:pasteSlots" />
+                            </p:menuButton>
+                            <p:menuButton value="Import" id="import" style="float: right; margin: 1em 1ex 0 0;"
+                                    disabled="#{not hierarchiesController.includesActive}"
+                                    title="Import Slots and Signals">
+                                <p:menuitem value="Slots" id="importSlots" icon="ui-icon-arrowthickstop-1-n"
+                                    title="Import Slots" oncomplete="PF('importSlots').show();"
+                                    action="#{hierarchiesController.prepareImportSlotPopup()}" 
+                                    disabled="#{not hierarchiesController.includesActive and 
+                                                not securityPolicy.getUIHint('HIERARCHY_ALL')}"
+                                    update=":importSlotsForm" />
+                                <p:menuitem value="Signals" id="importSignals" icon="ui-icon-signal"
+                                    title="Import signals" oncomplete="PF('importSignals').show();"
+                                    action="#{hierarchiesController.prepareImportSignalPopup()}" 
+                                    disabled="#{not hierarchiesController.includesActive and 
+                                                not securityPolicy.getUIHint('IMPORT_SIGNALS')}"
+                                    update=":importSignalsForm" />
                             </p:menuButton>
                             <p:commandButton id="deleteButton" icon="ui-icon-trash" value="Delete" title="Delete"
                                 style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('deleteSlots').show();"

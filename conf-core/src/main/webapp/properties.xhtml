@@ -65,6 +65,10 @@
                     style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('exportProperties').show();" 
                     disabled="#{empty propertyManager.filteredProperties}" update=":exportPropForm:exportProperties" 
                     actionListener="#{propertyManager.simpleTableDialog.prepareTableExportPopup}" />
+                <p:commandButton id="importButton" icon="ui-icon-arrowthickstop-1-n" value="Import" title="Import Properties" 
+                    style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('importProperties').show();" 
+                    disabled="#{not securityPolicy.getUIHint('PROP_ALL')}" update=":importPropertiesForm" 
+                    actionListener="#{propertyManager.prepareImportPopup()}" />
                 <p:commandButton id="deleteButton" icon="ui-icon-trash" value="Delete" title="Delete" 
                     style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('deleteProperties').show();" 
                     disabled="#{empty propertyManager.selectedProperties or not securityPolicy.getUIHint('PROP_DELETE')}" 

@@ -54,6 +54,10 @@
                     style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('exportEnums').show();" 
                     disabled="#{empty dataTypeManager.filteredDataTypeViews}" update=":exportEnumsForm:exportEnums" 
                     actionListener="#{dataTypeManager.simpleTableDialog.prepareTableExportPopup}" />
+                <p:commandButton id="importButton" icon="ui-icon-arrowthickstop-1-n" value="Import" title="Import Enumerations" 
+                    style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('importEnums').show();" 
+                    disabled="#{not securityPolicy.getUIHint('ENUM_ALL')}" update=":importEnumsForm" 
+                    actionListener="#{dataTypeManager.prepareImportPopup()}" />
                 <p:commandButton id="deleteButton" icon="ui-icon-trash" value="Delete" title="Delete" 
                     style="float: right; margin: 1em 1ex 0 0;" oncomplete="PF('deleteEnums').show();" 
                     disabled="#{empty dataTypeManager.selectedEnums or not securityPolicy.getUIHint('ENUM_DELETE')}" 
