@@ -16,8 +16,9 @@
             <p:messages id="inputValidationFail" showDetail="true" autoUpdate="true" />
             <p:panel style="border: 0; width: 80em;">
                 <p:dataTable id="propertySelect" value="#{comptypeAttributesController.filteredPropertyValues}" 
-                        var="prop" editable="true" editMode="cell" scrollable="true" scrollWidth="100%" 
-                        scrollHeight="350" tableStyle="table-layout: auto;" widgetVar="propSelectTable" 
+                        var="prop" editable="true" editMode="cell" scrollable="true" 
+                        tableStyle="word-wrap: break-word;" 
+                        widgetVar="propSelectTable" scrollHeight="350" scrollWidth="100%" 
                         filteredValue="#{comptypeAttributesController.selectionPropertyValuesFiltered}">                        
                     <p:ajax event="cellEdit" listener="#{comptypeAttributesController.onEditCell}" 
                         update=":#{formId}:propertySelect" />
@@ -37,22 +38,22 @@
                         </p:selectBooleanCheckbox>
                     </p:column>
                     <p:column id="propNameCol" headerText="Property" width="20%" sortBy="#{prop.name}" 
-                            style="word-wrap: break-word;" filterBy="#{prop.name}" filterMatchMode="contains">
+                            filterBy="#{prop.name}" filterMatchMode="contains">
                         <h:outputText value="#{prop.name}"/>
                     </p:column>
                     <p:column headerText="Description" width="38%" sortBy="#{prop.description}" 
-                            style="word-wrap: break-word;" filterBy="#{prop.description}" filterMatchMode="contains">
+                            filterBy="#{prop.description}" filterMatchMode="contains">
                         <h:outputText value="#{prop.description}" />
                     </p:column>
                     <p:column headerText="Data type" width="10%" sortBy="#{prop.dataType.name}" 
-                            style="word-wrap: break-word;" filterBy="#{prop.dataType.name}" filterMatchMode="contains">
+                            filterBy="#{prop.dataType.name}" filterMatchMode="contains">
                         <h:outputText value="#{prop.dataType.name}" />
                     </p:column>
                     <p:column headerText="Unit" width="8%" sortBy="#{prop.unit.name}" 
                             filterBy="#{prop.unit.name}" filterMatchMode="contains">
                         <h:outputText value="#{not empty prop.unit ? prop.unit.name : '-'}" />
                     </p:column>
-                    <p:column headerText="Value" width="20%" style="word-wrap: break-word;">
+                    <p:column headerText="Value" width="20%">
                         <p:cellEditor rendered="#{prop.selected}">
                             <f:facet name="output">
                                 <h:outputText value="#{comptypeAttributesController.displayPropertyValue(prop)}" />

@@ -13,24 +13,24 @@
                 <h:outputText value="#{dialogTitle}" />
             </f:facet>
 
-            <p:panel style="border: 0;">
+            <p:panel style="border: 0; width: 66em;">
                 <p:dataTable id="propertySelect" value="#{controller.filteredProperties}" var="prop" 
                         selection="#{controller.selectedProperties}" rowKey="#{prop.id}" scrollable="true" 
-                        scrollHeight="350" tableStyle="width: 66em; table-layout: auto;" widgetVar="propSelectTable" 
-                        filteredValue="#{controller.selectionPropertiesFiltered}">
-                    <p:column selectionMode="multiple" style="width: 2em;" />
-                    <p:column headerText="Property" style="width: 20em;" sortBy="#{prop.name}" filterBy="#{prop.name}">
+                        scrollHeight="350" scrollWidth="100%" tableStyle="word-wrap: break-word;" 
+                        widgetVar="propSelectTable" filteredValue="#{controller.selectionPropertiesFiltered}">
+                    <p:column selectionMode="multiple" width="5%" />
+                    <p:column headerText="Property" width="26%" sortBy="#{prop.name}" filterBy="#{prop.name}">
                         <h:outputText value="#{prop.name}" />
                     </p:column>
-                    <p:column headerText="Description" style="width: 30em;" sortBy="#{prop.description}" 
+                    <p:column headerText="Description" width="45%" sortBy="#{prop.description}" 
                             filterBy="#{prop.description}" filterMatchMode="contains">
                         <h:outputText value="#{prop.description}" />
                     </p:column>
-                    <p:column headerText="Data type" style="width: 8em;" sortBy="#{prop.dataType.name}" 
+                    <p:column headerText="Data type" width="12%" sortBy="#{prop.dataType.name}" 
                             filterBy="#{prop.dataType.name}" filterMatchMode="contains">
                         <h:outputText value="#{prop.dataType.name}" />
                     </p:column>
-                    <p:column headerText="Unit" style="width: 6em;" sortBy="#{prop.unit.name}" 
+                    <p:column headerText="Unit" width="12%" sortBy="#{prop.unit.name}" 
                             filterBy="#{prop.unit.name}" filterMatchMode="contains">
                         <h:outputText value="#{not empty prop.unit ? prop.unit.name : '-'}" />
                     </p:column>

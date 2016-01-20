@@ -53,7 +53,7 @@ import org.openepics.discs.conf.ui.common.DataLoaderHandler;
 @RunWith(Arquillian.class)
 @ApplyScriptBefore(value = "update_sequences.sql")
 @ApplyScriptAfter(value = "truncate_database.sql")
-public class CommonDataLoadersIT {
+public class CommonDataLoaderIT {
 
     @Inject @DevicesLoader private DataLoader devicesDataLoader;
     @Inject private DataLoaderHandler dataLoaderHandler;
