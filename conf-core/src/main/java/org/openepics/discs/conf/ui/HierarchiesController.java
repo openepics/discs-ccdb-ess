@@ -1075,11 +1075,12 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
     /** Called to save modified installation slot / container information */
     public void onSlotModify() {
-        final Slot modifiedSlot = selectedSlotView.getSlot();
+        Slot modifiedSlot = selectedSlotView.getSlot();
         modifiedSlot.setName(name);
         modifiedSlot.setDescription(description);
         if (modifiedSlot.isHostingSlot() && installationEJB.getActiveInstallationRecordForSlot(modifiedSlot) == null) {
-            modifiedSlot.setComponentType(comptypeEJB.findById(deviceType));
+            // changeSlotType only saves if the actual device type changes, otherwise it returns the slot unmodified
+            modifiedSlot = slotEJB.changeSlotType(modifiedSlot, comptypeEJB.findById(deviceType));
         }
         slotEJB.save(modifiedSlot);
         selectedSlotView.setSlot(modifiedSlot);

@@ -282,6 +282,8 @@ public abstract class AbstractAttributesController
     /**
      * This method is called after the {@link #prepareModifyPropertyPopUp()} calculates the
      * <code>isPropertyNameChangeDisabled</code> value and can be used to override it from the descendant classes.
+     *
+     * @param propertyValueView the attribute (property value) for which this callback is called
      */
     protected void propertyNameChangeOverride(final EntityAttrPropertyValueView<C> propertyValueView) {
         // no override by default
