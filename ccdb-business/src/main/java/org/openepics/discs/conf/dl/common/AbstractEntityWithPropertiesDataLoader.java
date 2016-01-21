@@ -86,7 +86,7 @@ public abstract class AbstractEntityWithPropertiesDataLoader<S extends PropertyV
 
         final @Nullable Property property = propertyEJB.findByName(propertyName);
         if (property == null) {
-            result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, propNameHeader);
+            result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, propNameHeader, propertyName);
             return null;
         }
 
@@ -97,7 +97,7 @@ public abstract class AbstractEntityWithPropertiesDataLoader<S extends PropertyV
         }
 
         // property value was not found
-        result.addRowMessage(ErrorMessage.PROPERTY_NOT_FOUND, propNameHeader);
+        result.addRowMessage(ErrorMessage.PROPERTY_NOT_FOUND, propNameHeader, propertyName);
         return null;
     }
 

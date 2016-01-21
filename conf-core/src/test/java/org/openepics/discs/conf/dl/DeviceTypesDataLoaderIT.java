@@ -217,34 +217,34 @@ public class DeviceTypesDataLoaderIT {
         // List of expected errors
         final List<ValidationMessage> expectedValidationMessages = new ArrayList<>();
         // error due to: adding device type which already exists
-        expectedValidationMessages
-                .add(new ValidationMessage(ErrorMessage.NAME_ALREADY_EXISTS, 11, ComponentTypesDataLoader.HDR_NAME));
-        expectedValidationMessages
-                .add(new ValidationMessage(ErrorMessage.NAME_ALREADY_EXISTS, 12, ComponentTypesDataLoader.HDR_NAME));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.NAME_ALREADY_EXISTS, 11,
+                                                        ComponentTypesDataLoader.HDR_NAME, "TOOR"));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.NAME_ALREADY_EXISTS, 12,
+                                                        ComponentTypesDataLoader.HDR_NAME, "BPM1"));
         // error due to: trying to add property to device type which doesn't exist
-        expectedValidationMessages
-                .add(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, 13, ComponentTypesDataLoader.HDR_NAME));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, 13,
+                                                        ComponentTypesDataLoader.HDR_NAME, "BPM3"));
         // error due to: trying to add a property which does not exists
-        expectedValidationMessages
-                .add(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, 14, ComponentTypesDataLoader.HDR_PROP_NAME));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, 14,
+                                                        ComponentTypesDataLoader.HDR_PROP_NAME, "BLOP"));
         // error due to: trying to add a property which is already added
-        expectedValidationMessages.add(
-                new ValidationMessage(ErrorMessage.NAME_ALREADY_EXISTS, 15, ComponentTypesDataLoader.HDR_PROP_NAME));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.NAME_ALREADY_EXISTS, 15,
+                                                        ComponentTypesDataLoader.HDR_PROP_NAME, "ALIAS"));
         // error due to: trying to add a property with invalid type
-        expectedValidationMessages
-                .add(new ValidationMessage(ErrorMessage.COMMAND_NOT_VALID, 16, ComponentTypesDataLoader.HDR_PROP_TYPE));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.COMMAND_NOT_VALID, 16,
+                                                        ComponentTypesDataLoader.HDR_PROP_TYPE, "ELECTRIC INSTRUMENT"));
         // error due to: trying to add a property without name specified
-        expectedValidationMessages.add(
-                new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 17, ComponentTypesDataLoader.HDR_PROP_NAME));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 17,
+                                                        ComponentTypesDataLoader.HDR_PROP_NAME, null));
         // error due to: trying to add a property without type specified
-        expectedValidationMessages.add(
-                new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 18, ComponentTypesDataLoader.HDR_PROP_TYPE));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 18,
+                                                        ComponentTypesDataLoader.HDR_PROP_TYPE, null));
         // error due to: trying to add a device type property without value specified
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 19,
-                ComponentTypesDataLoader.HDR_PROP_VALUE));
+                                                        ComponentTypesDataLoader.HDR_PROP_VALUE, null));
         // error due to: trying to add a device type without name specified
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 20,
-                ComponentTypesDataLoader.HDR_NAME));
+                                                        ComponentTypesDataLoader.HDR_NAME, null));
 
         // Trying to load data
         final InputStream testDataStream = this.getClass()
@@ -269,30 +269,30 @@ public class DeviceTypesDataLoaderIT {
         // List of expected errors
         final List<ValidationMessage> expectedValidationMessages = new ArrayList<>();
         // error due to: deleting device type which doesen't exists
-        expectedValidationMessages
-                .add(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, 11, ComponentTypesDataLoader.HDR_NAME));
-        expectedValidationMessages
-                .add(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, 12, ComponentTypesDataLoader.HDR_NAME));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, 11,
+                                                        ComponentTypesDataLoader.HDR_NAME, "BPM3"));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, 12,
+                                                        ComponentTypesDataLoader.HDR_NAME, "GRP"));
         // error due to: trying to delete _ROOT
-        expectedValidationMessages
-                .add(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, 13, AbstractDataLoader.HDR_OPERATION));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, 13,
+                                                        AbstractDataLoader.HDR_OPERATION, "DELETE DEVICE TYPE"));
         // error due to: trying to delete property which isn't assigned to device type
-        expectedValidationMessages.add(
-                new ValidationMessage(ErrorMessage.PROPERTY_NOT_FOUND, 14, ComponentTypesDataLoader.HDR_PROP_NAME));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.PROPERTY_NOT_FOUND, 14,
+                                                        ComponentTypesDataLoader.HDR_PROP_NAME, "CURRENT"));
         // error due to: trying to delete property which doesn't exist
-        expectedValidationMessages
-                .add(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, 15, ComponentTypesDataLoader.HDR_PROP_NAME));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, 15,
+                                                        ComponentTypesDataLoader.HDR_PROP_NAME, "ACCEPT"));
         // error due to: trying to delete device instance or slot property
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.PROPERTY_TYPE_INCORRECT, 16,
-                ComponentTypesDataLoader.HDR_PROP_TYPE));
+                                                        ComponentTypesDataLoader.HDR_PROP_TYPE, null));
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.PROPERTY_TYPE_INCORRECT, 17,
-                ComponentTypesDataLoader.HDR_PROP_TYPE));
+                                                        ComponentTypesDataLoader.HDR_PROP_TYPE, null));
         // error due to: trying to delete a device type without name specified
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 18,
-                ComponentTypesDataLoader.HDR_NAME));
+                                                        ComponentTypesDataLoader.HDR_NAME, null));
         // error due to: trying to delete a device type property without name specified
-        expectedValidationMessages.add(
-                new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 19, ComponentTypesDataLoader.HDR_PROP_NAME));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 19,
+                                                        ComponentTypesDataLoader.HDR_PROP_NAME, null));
 
         // Trying to load
         final InputStream testDataStream = this.getClass()
@@ -317,30 +317,30 @@ public class DeviceTypesDataLoaderIT {
         // List of expected errors
         final List<ValidationMessage> expectedValidationMessages = new ArrayList<>();
         // error due to: trying to update _ROOT
-        expectedValidationMessages
-                .add(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, 11, AbstractDataLoader.HDR_OPERATION));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.NOT_AUTHORIZED, 11,
+                                                            AbstractDataLoader.HDR_OPERATION, "UPDATE DEVICE TYPE"));
         // error due to: update device type which doesen't exists
-        expectedValidationMessages
-                .add(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, 12, ComponentTypesDataLoader.HDR_NAME));
-        expectedValidationMessages
-                .add(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, 13, ComponentTypesDataLoader.HDR_NAME));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, 12,
+                                                            ComponentTypesDataLoader.HDR_NAME, "GRP"));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, 13,
+                                                            ComponentTypesDataLoader.HDR_NAME, "BPM3"));
         // error due to: trying to update property to device type property which isn't assigned to device type
-        expectedValidationMessages.add(
-                new ValidationMessage(ErrorMessage.PROPERTY_NOT_FOUND, 14, ComponentTypesDataLoader.HDR_PROP_NAME));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.PROPERTY_NOT_FOUND, 14,
+                                                            ComponentTypesDataLoader.HDR_PROP_NAME, "CURRENT"));
         // error due to: trying to update property to device type property which doesn't exist.
-        expectedValidationMessages
-                .add(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, 15, ComponentTypesDataLoader.HDR_PROP_NAME));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, 15,
+                                                            ComponentTypesDataLoader.HDR_PROP_NAME, "ACCEPT"));
         // error due to: trying to update device instance or slot property
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.PROPERTY_TYPE_INCORRECT, 16,
-                ComponentTypesDataLoader.HDR_PROP_TYPE));
+                                                            ComponentTypesDataLoader.HDR_PROP_TYPE, null));
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.PROPERTY_TYPE_INCORRECT, 17,
-                ComponentTypesDataLoader.HDR_PROP_TYPE));
+                                                            ComponentTypesDataLoader.HDR_PROP_TYPE, null));
         // error due to: trying to delete a device type without name specified
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 18,
-                ComponentTypesDataLoader.HDR_NAME));
+                                                            ComponentTypesDataLoader.HDR_NAME, null));
         // error due to: trying to delete a device type property without name specified
-        expectedValidationMessages.add(
-                new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 19, ComponentTypesDataLoader.HDR_PROP_NAME));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 19,
+                                                            ComponentTypesDataLoader.HDR_PROP_NAME, null));
 
         // Trying to load
         final InputStream testDataStream = this.getClass()

@@ -100,7 +100,7 @@ public class DevicesDataLoader extends AbstractEntityWithPropertiesDataLoader<De
         if (deviceToUpdate != null) {
             final @Nullable ComponentType compType = comptypeEJB.findByName(componentTypeFld);
             if (compType == null) {
-                result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_CTYPE);
+                result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_CTYPE, componentTypeFld);
             } else {
                 try {
                     if (DataLoader.CMD_UPDATE_DEVICE.equals(actualCommand)) {
@@ -117,7 +117,7 @@ public class DevicesDataLoader extends AbstractEntityWithPropertiesDataLoader<De
                 }
             }
         } else {
-            result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_SERIAL);
+            result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_SERIAL, serialFld);
         }
     }
 
@@ -127,7 +127,7 @@ public class DevicesDataLoader extends AbstractEntityWithPropertiesDataLoader<De
         if (deviceToUpdate == null) {
             final @Nullable ComponentType compType = comptypeEJB.findByName(componentTypeFld);
             if (compType == null) {
-                result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_CTYPE);
+                result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_CTYPE, componentTypeFld);
             } else {
                 try {
                     final Device newDevice = new Device(serialFld);
@@ -138,7 +138,7 @@ public class DevicesDataLoader extends AbstractEntityWithPropertiesDataLoader<De
                 }
             }
         } else {
-            result.addRowMessage(ErrorMessage.NAME_ALREADY_EXISTS, HDR_SERIAL);
+            result.addRowMessage(ErrorMessage.NAME_ALREADY_EXISTS, HDR_SERIAL, serialFld);
         }
     }
 
@@ -146,7 +146,7 @@ public class DevicesDataLoader extends AbstractEntityWithPropertiesDataLoader<De
     protected void handleDelete(String actualCommand) {
         final @Nullable Device deviceToDelete = deviceEJB.findDeviceBySerialNumber(serialFld);
         if (deviceToDelete == null) {
-            result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_SERIAL);
+            result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_SERIAL, serialFld);
         } else {
             try {
                 if (DataLoader.CMD_DELETE_DEVICE.equals(actualCommand)) {

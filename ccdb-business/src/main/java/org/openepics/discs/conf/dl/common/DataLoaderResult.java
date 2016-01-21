@@ -104,9 +104,9 @@ public class DataLoaderResult {
      * @param operation the operation
      * @param entity the entity
      */
-    private void addMessageInternal(ErrorMessage message, Integer row, String column) {
+    private void addMessageInternal(ErrorMessage message, Integer row, String column, String value) {
         error = true;
-        messages.add(new ValidationMessage(message, row, column));
+        messages.add(new ValidationMessage(message, row, column, value));
     }
 
     /**
@@ -115,7 +115,7 @@ public class DataLoaderResult {
      * @param message the error message
      */
     public void addGlobalMessage(ErrorMessage message) {
-        addMessageInternal(message, currentRowNumber, null);
+        addMessageInternal(message, null, null, null);
     }
 
     /**
@@ -125,7 +125,7 @@ public class DataLoaderResult {
      * @param column the column containing the error
      */
     public void addGlobalMessage(ErrorMessage message, String column) {
-        addMessageInternal(message, currentRowNumber, column);
+        addMessageInternal(message, null, column, null);
     }
 
     /**
@@ -136,8 +136,21 @@ public class DataLoaderResult {
      */
     public void addRowMessage(ErrorMessage message, String column) {
         rowError = true;
-        addMessageInternal(message, currentRowNumber, column);
+        addMessageInternal(message, currentRowNumber, column, null);
     }
+
+    /**
+     * Adds an error message to the message list that is related to the current Excel spreadsheet row.
+     *
+     * @param message the error message
+     * @param column the column containing the error
+     * @param value the string representation of value causing the error
+     */
+    public void addRowMessage(ErrorMessage message, String column, String value) {
+        rowError = true;
+        addMessageInternal(message, currentRowNumber, column, value);
+    }
+
 
     /**
      * Adds an error message to the message list that is related to the current Excel spreadsheet row.
@@ -146,7 +159,7 @@ public class DataLoaderResult {
      */
     public void addRowMessage(ErrorMessage message) {
         rowError = true;
-        addMessageInternal(message, currentRowNumber, null);
+        addMessageInternal(message, currentRowNumber, null, null);
     }
 
     /**
@@ -155,7 +168,7 @@ public class DataLoaderResult {
      * @param slotName the name of the slot
      */
     public void addOrphanSlotMessage(final String slotName) {
-        final ValidationMessage orphanSlotMessage = new ValidationMessage(ErrorMessage.ORPHAN_SLOT, null, null);
+        final ValidationMessage orphanSlotMessage = new ValidationMessage(ErrorMessage.ORPHAN_SLOT, null, null, null);
         orphanSlotMessage.setOrphanSlotName(slotName);
         messages.add(orphanSlotMessage);
         error = true;
@@ -214,7 +227,6 @@ public class DataLoaderResult {
             return new ImportFileStatistics();
         }
         return importFileStatistics;
-
     }
 
     /** @return the filteredMessages */

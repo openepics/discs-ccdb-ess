@@ -79,9 +79,9 @@ public class UnitsDataLoaderIT {
     @Transactional(TransactionMode.DISABLED)
     public void unitsImportRequiredFieldsFailure() throws IOException {
         final List<ValidationMessage> expectedValidationMessages = new ArrayList<>();
-        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 11, HDR_NAME));
-        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 13, HDR_SYMBOL));
-        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 14, HDR_DESC));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 11, HDR_NAME, null));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 13, HDR_SYMBOL, null));
+        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 14, HDR_DESC, null));
 
         final InputStream testDataStream = this.getClass().getResourceAsStream(TestUtility.DATALOADERS_PATH
                                                                         + "units-required-fields-failure-test.xlsx");

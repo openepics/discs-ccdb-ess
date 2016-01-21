@@ -137,7 +137,7 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
                 handleLoadingError(LOGGER, e);
             }
         } else {
-            result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_NAME);
+            result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_NAME, nameFld);
         }
     }
 
@@ -157,7 +157,7 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
                 handleLoadingError(LOGGER, e);
             }
         } else {
-            result.addRowMessage(ErrorMessage.NAME_ALREADY_EXISTS, HDR_NAME);
+            result.addRowMessage(ErrorMessage.NAME_ALREADY_EXISTS, HDR_NAME, nameFld);
         }
     }
 
@@ -167,7 +167,7 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
         try {
             final Property propertyToDelete = propertyByName.get(nameFld);
             if (propertyToDelete == null) {
-                result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_NAME);
+                result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_NAME, nameFld);
             } else {
                 propertyEJB.delete(propertyToDelete);
                 propertyByName.remove(propertyToDelete.getName());
@@ -183,12 +183,12 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
             if (newUnit != null) {
                 // is modification allowed
                 if (inUse && !newUnit.equals(property.getUnit())) {
-                    result.addRowMessage(ErrorMessage.MODIFY_IN_USE, HDR_UNIT);
+                    result.addRowMessage(ErrorMessage.MODIFY_IN_USE, HDR_UNIT, unit);
                 } else {
                     property.setUnit(newUnit);
                 }
             } else {
-                result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_UNIT);
+                result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_UNIT, unit);
             }
         } else {
             if (inUse && (property.getUnit() != null)) {
@@ -203,18 +203,18 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
         final DataType newDataType = dataTypeEJB.findByName(dataType);
         if (newDataType != null) {
             if (inUse && !newDataType.equals(property.getDataType())) {
-                result.addRowMessage(ErrorMessage.MODIFY_IN_USE, HDR_DATATYPE);
+                result.addRowMessage(ErrorMessage.MODIFY_IN_USE, HDR_DATATYPE, dataType);
             } else {
                 property.setDataType(newDataType);
             }
         } else {
-            result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_DATATYPE);
+            result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_DATATYPE, dataType);
         }
     }
 
     private void setPropertyUniqueness(Property property, PropertyValueUniqueness unique, final boolean inUse) {
         if (inUse && property.getValueUniqueness() != unique) {
-            result.addRowMessage(ErrorMessage.MODIFY_IN_USE, HDR_UNIQUE);
+            result.addRowMessage(ErrorMessage.MODIFY_IN_USE, HDR_UNIQUE, unique.toString());
         } else {
             property.setValueUniqueness(unique);
         }
@@ -227,7 +227,7 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
                 uniquenessValue = PropertyValueUniqueness.valueOf(uniqueness.trim().toUpperCase());
             } catch (IllegalArgumentException e) {
                 LOGGER.log(Level.FINE, "Incorrect value for property uniqueness.", e);
-                result.addRowMessage(ErrorMessage.UNIQUE_INCORRECT, HDR_UNIQUE);
+                result.addRowMessage(ErrorMessage.UNIQUE_INCORRECT, HDR_UNIQUE, uniqueness);
             }
         }
         return uniquenessValue;

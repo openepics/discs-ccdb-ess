@@ -196,16 +196,16 @@ public class PropertiesDataLoaderIT {
         final List<ValidationMessage> expectedValidationMessages = new ArrayList<>();
         // Error due to trying to use a datatype that does not exist
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, 10,
-                                                                                PropertiesDataLoader.HDR_DATATYPE));
+                                                                    PropertiesDataLoader.HDR_DATATYPE, "Diagram"));
         // Error due to trying to use an unit that does not exist
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, 11,
-                                                                                PropertiesDataLoader.HDR_UNIT));
+                                                                    PropertiesDataLoader.HDR_UNIT, "kilometer"));
         // Error due to trying to add property with a name that does already exist
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.NAME_ALREADY_EXISTS, 12,
-                                                                                PropertiesDataLoader.HDR_NAME));
+                                                                    PropertiesDataLoader.HDR_NAME, "ALIAS"));
         // Error due to trying to
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.UNIQUE_INCORRECT, 13,
-                                                                                PropertiesDataLoader.HDR_UNIQUE));
+                                                                    PropertiesDataLoader.HDR_UNIQUE, "YES"));
 
         final InputStream testDataStream = this.getClass().
                         getResourceAsStream(TestUtility.DATALOADERS_PATH + "properties-fail-create.test.xlsx");
@@ -223,10 +223,10 @@ public class PropertiesDataLoaderIT {
         final List<ValidationMessage> expectedValidationMessages = new ArrayList<>();
         // Error due to trying to delete a property that does not exist
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, 10,
-                                                                                    PropertiesDataLoader.HDR_NAME));
+                                                                        PropertiesDataLoader.HDR_NAME, "FD"));
         // Error due to trying to use an unit that does not exist
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, 11,
-                                                                                    PropertiesDataLoader.HDR_NAME));
+                                                                        PropertiesDataLoader.HDR_NAME, "ER"));
 
         final InputStream testDataStream = this.getClass().
                             getResourceAsStream(TestUtility.DATALOADERS_PATH + "properties-fail-delete.test.xlsx");
@@ -245,20 +245,20 @@ public class PropertiesDataLoaderIT {
         final List<ValidationMessage> expectedValidationMessages = new ArrayList<>();
         // Error due to trying to delete a property that does not exist
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, 10,
-                                                                                    PropertiesDataLoader.HDR_NAME));
+                                                                        PropertiesDataLoader.HDR_NAME, "FD"));
         // Error due to trying to use an unit that does not exist
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, 11,
-                                                                                    PropertiesDataLoader.HDR_NAME));
+                                                                        PropertiesDataLoader.HDR_NAME, "ER"));
 
         // Error due to trying to update data type on property that is being used
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.MODIFY_IN_USE, 12,
-                                                                                    PropertiesDataLoader.HDR_DATATYPE));
+                                                                        PropertiesDataLoader.HDR_DATATYPE, "String"));
         // Error due to trying to update uniqueness on property that is being used
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.MODIFY_IN_USE, 13,
-                                                                                    PropertiesDataLoader.HDR_UNIQUE));
+                                                                        PropertiesDataLoader.HDR_UNIQUE, "TYPE"));
         // Error due to trying to update unit on property that is being used
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.MODIFY_IN_USE, 14,
-                                                                                    PropertiesDataLoader.HDR_UNIT));
+                                                                        PropertiesDataLoader.HDR_UNIT, "meter"));
 
         final InputStream testDataStream = this.getClass().
                             getResourceAsStream(TestUtility.DATALOADERS_PATH + "properties-fail-update.test.xlsx");
@@ -275,13 +275,13 @@ public class PropertiesDataLoaderIT {
     public void propertiesImportRequiredFieldsFailureTest() throws IOException {
         final List<ValidationMessage> expectedValidationMessages = new ArrayList<>();
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 10,
-                                                                                    PropertiesDataLoader.HDR_NAME));
+                                                                            PropertiesDataLoader.HDR_NAME, null));
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 11,
-                                                                                    PropertiesDataLoader.HDR_DESC));
+                                                                            PropertiesDataLoader.HDR_DESC, null));
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 13,
-                                                                                    PropertiesDataLoader.HDR_UNIQUE));
+                                                                            PropertiesDataLoader.HDR_UNIQUE, null));
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 14,
-                                                                                    PropertiesDataLoader.HDR_DATATYPE));
+                                                                            PropertiesDataLoader.HDR_DATATYPE, null));
 
         final InputStream testDataStream = this.getClass().
                     getResourceAsStream(TestUtility.DATALOADERS_PATH + "properties-fail-required-fields.test.xlsx");

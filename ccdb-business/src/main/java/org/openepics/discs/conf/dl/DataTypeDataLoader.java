@@ -120,10 +120,10 @@ public class DataTypeDataLoader extends AbstractDataLoader implements DataLoader
     protected void handleDelete(String actualCommand) {
         final DataType enumToDelete = dataTypeEJB.findByName(nameFld);
         if (enumToDelete == null) {
-            result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_NAME);
+            result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_NAME, nameFld);
         } else {
             if (dataTypeEJB.isDataTypeUsed(enumToDelete, true)) {
-                result.addRowMessage(ErrorMessage.DELETE_IN_USE, HDR_NAME);
+                result.addRowMessage(ErrorMessage.DELETE_IN_USE, HDR_NAME, nameFld);
             } else {
                 dataTypeEJB.delete(enumToDelete);
             }
@@ -133,11 +133,11 @@ public class DataTypeDataLoader extends AbstractDataLoader implements DataLoader
     @Override
     protected void handleCreate(String actualCommand) {
         if (dataTypeEJB.findByName(nameFld) != null) {
-            result.addRowMessage(ErrorMessage.NAME_ALREADY_EXISTS, HDR_NAME);
+            result.addRowMessage(ErrorMessage.NAME_ALREADY_EXISTS, HDR_NAME, nameFld);
         }
         final List<String> newDefs = parseEnumDefinitions();
         if (newDefs.size() < 2) {
-            result.addRowMessage(ErrorMessage.ENUM_NOT_ENOUGH_ELEMENTS, HDR_DEFINITION);
+            result.addRowMessage(ErrorMessage.ENUM_NOT_ENOUGH_ELEMENTS, HDR_DEFINITION, definitionFld);
         }
 
         if (!result.isRowError()) {
@@ -165,8 +165,8 @@ public class DataTypeDataLoader extends AbstractDataLoader implements DataLoader
     }
 
     private boolean isValidDef(String def) {
-        if (!def.matches("^\\w*$")) {
-            result.addRowMessage(ErrorMessage.ENUM_INVALID_CHARACTERS, HDR_DEFINITION);
+        if (!def.matches(DataType.ALLOWED_ENUM_CHARS_REGEX)) {
+            result.addRowMessage(ErrorMessage.ENUM_INVALID_CHARACTERS, HDR_DEFINITION, definitionFld);
             return false;
         }
         return true;
@@ -205,7 +205,7 @@ public class DataTypeDataLoader extends AbstractDataLoader implements DataLoader
         for (String enumValue : Conversion.prepareEnumSelections(oldDefinition)) {
             // check if it exists in the new definition
             if (!newDefinition.contains(enumValue)) {
-                result.addRowMessage(ErrorMessage.MODIFY_IN_USE, HDR_NAME);
+                result.addRowMessage(ErrorMessage.MODIFY_IN_USE, HDR_NAME, nameFld);
                 return false;
             }
         }

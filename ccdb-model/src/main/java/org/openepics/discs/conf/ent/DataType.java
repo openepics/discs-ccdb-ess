@@ -46,6 +46,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class DataType extends ConfigurationEntity implements NamedEntity {
     private static final long serialVersionUID = 8190792924852505638L;
 
+    public static final String ALLOWED_ENUM_CHARS_REGEX = "^[\\w\\-_]*$";
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)

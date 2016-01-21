@@ -108,7 +108,7 @@ public class ComponentTypesDataLoader extends AbstractEntityWithPropertiesDataLo
         final ComponentType componentTypeToUpdate = comptypeEJB.findByName(nameFld);
         if (componentTypeToUpdate != null) {
             if (componentTypeToUpdate.getName().equals(SlotEJB.ROOT_COMPONENT_TYPE)) {
-                result.addRowMessage(ErrorMessage.NOT_AUTHORIZED, AbstractDataLoader.HDR_OPERATION);
+                result.addRowMessage(ErrorMessage.NOT_AUTHORIZED, AbstractDataLoader.HDR_OPERATION, actualCommand);
                 return;
             }
             try {
@@ -123,7 +123,7 @@ public class ComponentTypesDataLoader extends AbstractEntityWithPropertiesDataLo
                             if (!comptypePropertyValue.isPropertyDefinition()) {
                                 addOrUpdateProperty(componentTypeToUpdate, propNameFld, propValueFld, HDR_PROP_NAME);
                             } else {
-                                result.addRowMessage(ErrorMessage.PROPERTY_TYPE_INCORRECT, HDR_PROP_TYPE);
+                                result.addRowMessage(ErrorMessage.PROPERTY_TYPE_INCORRECT, HDR_PROP_TYPE, propTypeFld);
                             }
                         }
                     } else {
@@ -134,7 +134,7 @@ public class ComponentTypesDataLoader extends AbstractEntityWithPropertiesDataLo
                 handleLoadingError(LOGGER, e);
             }
         } else {
-            result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_NAME);
+            result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_NAME, nameFld);
         }
     }
 
@@ -151,13 +151,13 @@ public class ComponentTypesDataLoader extends AbstractEntityWithPropertiesDataLo
                     handleLoadingError(LOGGER, e);
                 }
             } else {
-                result.addRowMessage(ErrorMessage.NAME_ALREADY_EXISTS, HDR_NAME);
+                result.addRowMessage(ErrorMessage.NAME_ALREADY_EXISTS, HDR_NAME, nameFld);
             }
         } else {
             if (componentTypeToUpdate != null) {
                 addPropertyValue(componentTypeToUpdate);
             } else {
-                result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_NAME);
+                result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_NAME, nameFld);
             }
         }
     }
@@ -167,10 +167,10 @@ public class ComponentTypesDataLoader extends AbstractEntityWithPropertiesDataLo
         final ComponentType componentTypeToDelete = comptypeEJB.findByName(nameFld);
         try {
             if (componentTypeToDelete == null) {
-                result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_NAME);
+                result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_NAME, nameFld);
             } else {
                 if (SlotEJB.ROOT_COMPONENT_TYPE.equals(componentTypeToDelete.getName())) {
-                    result.addRowMessage(ErrorMessage.NOT_AUTHORIZED, AbstractDataLoader.HDR_OPERATION);
+                    result.addRowMessage(ErrorMessage.NOT_AUTHORIZED, AbstractDataLoader.HDR_OPERATION, actualCommand);
                     return;
                 }
 
@@ -186,7 +186,7 @@ public class ComponentTypesDataLoader extends AbstractEntityWithPropertiesDataLo
                             if (!comptypePropertyValue.isPropertyDefinition()) {
                                 comptypeEJB.deleteChild(comptypePropertyValue);
                             } else {
-                                result.addRowMessage(ErrorMessage.PROPERTY_TYPE_INCORRECT, HDR_PROP_TYPE);
+                                result.addRowMessage(ErrorMessage.PROPERTY_TYPE_INCORRECT, HDR_PROP_TYPE, propTypeFld);
                             }
                         }
                     } else {
@@ -225,26 +225,26 @@ public class ComponentTypesDataLoader extends AbstractEntityWithPropertiesDataLo
 
     private void addPropertyValue(ComponentType comptypeToUpdate) {
         if (Strings.isNullOrEmpty(propNameFld)) {
-            result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, HDR_PROP_NAME);
+            result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, HDR_PROP_NAME, propNameFld);
             return;
         }
 
         if (Strings.isNullOrEmpty(propTypeFld)) {
-            result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, HDR_PROP_TYPE);
+            result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, HDR_PROP_TYPE, propTypeFld);
             return;
         }
 
         // does property exist
         final @Nullable Property property = propertyEJB.findByName(propNameFld);
         if (property == null) {
-            result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_PROP_NAME);
+            result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_PROP_NAME, propNameFld);
             return;
         }
 
         // is this property value already added
         for (final ComptypePropertyValue value : comptypeToUpdate.getComptypePropertyList()) {
             if (value.getProperty().equals(property)) {
-                result.addRowMessage(ErrorMessage.NAME_ALREADY_EXISTS, HDR_PROP_NAME);
+                result.addRowMessage(ErrorMessage.NAME_ALREADY_EXISTS, HDR_PROP_NAME, propNameFld);
                 return;
             }
         }
@@ -269,7 +269,7 @@ public class ComponentTypesDataLoader extends AbstractEntityWithPropertiesDataLo
                 propertyValue.setDefinitionTargetDevice(true);
                 break;
             default:
-                result.addRowMessage(ErrorMessage.COMMAND_NOT_VALID, HDR_PROP_TYPE);
+                result.addRowMessage(ErrorMessage.COMMAND_NOT_VALID, HDR_PROP_TYPE, propTypeFld);
                 return;
         }
         comptypeEJB.addChild(propertyValue);

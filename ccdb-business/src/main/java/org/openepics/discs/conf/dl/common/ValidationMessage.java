@@ -32,10 +32,11 @@ import org.openepics.discs.conf.ent.EntityTypeOperation;
 public class ValidationMessage {
     private ErrorMessage message;
 
-    private Integer row;
-    private String column;
-    private String fileName;
+    final private Integer row;
+    final private String column;
+    final private String fileName;
     private String orphanSlotName;
+    final private String value;
 
     /**
      * Constructs the message.
@@ -43,7 +44,12 @@ public class ValidationMessage {
      * @param fileName the name of the file the validation was performed for
      */
     public ValidationMessage(String fileName) {
+        super();
         this.fileName = fileName;
+        this.message = null;
+        this.row = null;
+        this.column = null;
+        this.value = null;
     }
 
     /**
@@ -52,13 +58,16 @@ public class ValidationMessage {
      * @param message the message enumeration
      * @param row the row
      * @param column the column
+     * @param value the value
      */
     public ValidationMessage(ErrorMessage message, Integer row,
-                             String column) {
+                             String column, String value) {
         super();
+        this.fileName = null;
         this.message = message;
         this.row = row;
         this.column = column;
+        this.value = value;
     }
 
     public void setOrphanSlotName(String orphanSlotName) {
@@ -70,14 +79,19 @@ public class ValidationMessage {
         return message;
     }
 
-    /** @return the row label, or null if not specified */
+    /** @return the row label, or <code>null</code> if not specified */
     public Integer getRow() {
         return row;
     }
 
-    /** @return the column label, or null if not specified */
+    /** @return the column label, or <code>null</code> if not specified */
     public String getColumn() {
         return column;
+    }
+
+    /** @return the string representation of the value that caused the row error, may be <code>null</code> */
+    public String getValue() {
+        return value;
     }
 
     @Override
@@ -91,16 +105,21 @@ public class ValidationMessage {
                 builder.append(orphanSlotName);
                 builder.append(", ");
             }
-            if (getRow() != null) {
+            if (row != null) {
                 builder.append("Row ");
-                builder.append(getRow());
+                builder.append(row);
             }
-            if (getRow() != null && getColumn() != null) {
+            if (row != null && column != null) {
                 builder.append(", ");
             }
-            if (getColumn() != null) {
+            if (column != null) {
                 builder.append("Column ");
-                builder.append(getColumn());
+                builder.append(column);
+            }
+            if (row != null) {
+                // value only applies to row errors.
+                builder.append(", Value ");
+                builder.append(value);
             }
             builder.append(": ");
             builder.append(getMessage().toString());
@@ -114,13 +133,14 @@ public class ValidationMessage {
             return false;
         }
 
-        final ValidationMessage  valMesToCompare = (ValidationMessage) obj;
+        final ValidationMessage valMesToCompare = (ValidationMessage) obj;
 
         return Objects.equals(this.fileName, valMesToCompare.fileName) &&
                 Objects.equals(this.column, valMesToCompare.column) &&
                 Objects.equals(this.message, valMesToCompare.message) &&
                 Objects.equals(this.orphanSlotName, valMesToCompare.orphanSlotName) &&
-                Objects.equals(this.row, valMesToCompare.row);
+                Objects.equals(this.row, valMesToCompare.row) &&
+                Objects.equals(this.value, valMesToCompare.value);
     }
 
     @Override
@@ -132,7 +152,7 @@ public class ValidationMessage {
         result = prime * result + ((message == null) ? 0 : message.hashCode());
         result = prime * result + ((orphanSlotName == null) ? 0 : orphanSlotName.hashCode());
         result = prime * result + ((row == null) ? 0 : row.hashCode());
+        result = prime * result + ((value == null) ? 0 : value.hashCode());
         return result;
     }
-
 }

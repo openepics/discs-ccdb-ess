@@ -134,7 +134,7 @@ public class UserEnumerationView {
             while (scanner.hasNext()) {
                 String enumVal = scanner.nextLine().replaceAll("\\u00A0", " ").trim();
                 if (!enumVal.isEmpty()) {
-                    if (!enumVal.matches("^[\\w\\-_]*$")) {
+                    if (!enumVal.matches(DataType.ALLOWED_ENUM_CHARS_REGEX)) {
                         throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
                                 UiUtility.MESSAGE_SUMMARY_ERROR,
                                 "Enumeration value can only contain alphanumerical characters, hyphens and "

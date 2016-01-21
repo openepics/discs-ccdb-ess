@@ -108,11 +108,11 @@ public class SignalsDataLoader extends AbstractDataLoader implements DataLoader 
                 return;
             }
             // If both values are defined update is possible
-            if (!isPropertyValueDefined(installationSlot, PROPERTY_NAME_PREFIX + numberFld)) {
-                result.addRowMessage(ErrorMessage.MODIFY_VALUE_MISSING, PROPERTY_NAME_PREFIX + numberFld);
+            if (!isPropertyValueDefined(installationSlot, HDR_NAME, PROPERTY_NAME_PREFIX + numberFld)) {
+                result.addRowMessage(ErrorMessage.MODIFY_VALUE_MISSING, PROPERTY_NAME_PREFIX + numberFld, nameFld);
             }
-            if (!isPropertyValueDefined(installationSlot, PROPERTY_DESC_PREFIX + numberFld)) {
-                result.addRowMessage(ErrorMessage.MODIFY_VALUE_MISSING, PROPERTY_DESC_PREFIX + numberFld);
+            if (!isPropertyValueDefined(installationSlot, HDR_DESC, PROPERTY_DESC_PREFIX + numberFld)) {
+                result.addRowMessage(ErrorMessage.MODIFY_VALUE_MISSING, PROPERTY_DESC_PREFIX + numberFld, descFld);
             }
             // Proceed if no errors
             if (!result.isRowError()) {
@@ -132,8 +132,8 @@ public class SignalsDataLoader extends AbstractDataLoader implements DataLoader 
         }
 
         try {
-            setPropertyValue(installationSlot, PROPERTY_NAME_PREFIX + numberFld, null);
-            setPropertyValue(installationSlot, PROPERTY_DESC_PREFIX + numberFld, null);
+            setPropertyValue(installationSlot, HDR_NAME, PROPERTY_NAME_PREFIX + numberFld, null);
+            setPropertyValue(installationSlot, HDR_DESC, PROPERTY_DESC_PREFIX + numberFld, null);
             if (!result.isRowError()) {
                 slotEJB.save(installationSlot);
             }
@@ -150,11 +150,11 @@ public class SignalsDataLoader extends AbstractDataLoader implements DataLoader 
                 return;
             }
             // If both values are undefined creation is possible
-            if (isPropertyValueDefined(installationSlot, PROPERTY_NAME_PREFIX + numberFld)) {
-                result.addRowMessage(ErrorMessage.CREATE_VALUE_EXISTS, PROPERTY_NAME_PREFIX + numberFld);
+            if (isPropertyValueDefined(installationSlot, HDR_NAME, PROPERTY_NAME_PREFIX + numberFld)) {
+                result.addRowMessage(ErrorMessage.CREATE_VALUE_EXISTS, PROPERTY_NAME_PREFIX + numberFld, nameFld);
             }
-            if (isPropertyValueDefined(installationSlot, PROPERTY_DESC_PREFIX + numberFld)) {
-                result.addRowMessage(ErrorMessage.CREATE_VALUE_EXISTS, PROPERTY_DESC_PREFIX + numberFld);
+            if (isPropertyValueDefined(installationSlot, HDR_DESC, PROPERTY_DESC_PREFIX + numberFld)) {
+                result.addRowMessage(ErrorMessage.CREATE_VALUE_EXISTS, PROPERTY_DESC_PREFIX + numberFld, descFld);
             }
             // Proceed if no errors
             if (!result.isRowError()) {
@@ -180,8 +180,8 @@ public class SignalsDataLoader extends AbstractDataLoader implements DataLoader 
 
     private void handleCreateUpdate(final Slot installationSlot) {
         try {
-            setPropertyValue(installationSlot, PROPERTY_NAME_PREFIX + numberFld, nameFld);
-            setPropertyValue(installationSlot, PROPERTY_DESC_PREFIX + numberFld, descFld);
+            setPropertyValue(installationSlot, HDR_NAME, PROPERTY_NAME_PREFIX + numberFld, nameFld);
+            setPropertyValue(installationSlot, HDR_DESC, PROPERTY_DESC_PREFIX + numberFld, descFld);
             if (!result.isRowError()) {
                 slotEJB.save(installationSlot);
             }
@@ -190,18 +190,19 @@ public class SignalsDataLoader extends AbstractDataLoader implements DataLoader 
         }
     }
 
-    private boolean isPropertyValueDefined(final Slot slot, final String propertyValueName) {
+    private boolean isPropertyValueDefined(final Slot slot, final String headerName, final String propertyValueName) {
         final List<SlotPropertyValue> propValues = slot.getSlotPropertyList();
         for (SlotPropertyValue propValue : propValues) {
             if (propValue.getProperty().getName().equalsIgnoreCase(propertyValueName)) {
                 return propValue.getPropValue() != null;
             }
         }
-        result.addRowMessage(ErrorMessage.PROPERTY_NOT_FOUND, propertyValueName);
+        result.addRowMessage(ErrorMessage.PROPERTY_NOT_FOUND, headerName, propertyValueName);
         throw new PropertyValueUnassignedException(propertyValueName);
     }
 
-    private void setPropertyValue(final Slot slot, final String propertyValueName, final @Nullable String value) {
+    private void setPropertyValue(final Slot slot, final String headerName, final String propertyValueName,
+                                                                                    final @Nullable String value) {
         final List<SlotPropertyValue> propValues = slot.getSlotPropertyList();
         for (SlotPropertyValue propValue : propValues) {
             if (propValue.getProperty().getName().equalsIgnoreCase(propertyValueName)) {
@@ -211,18 +212,18 @@ public class SignalsDataLoader extends AbstractDataLoader implements DataLoader 
         }
         // property not found
         LOGGER.log(Level.FINE, "Signals import - property not found: " + propertyValueName);
-        result.addRowMessage(ErrorMessage.PROPERTY_NOT_FOUND, propertyValueName);
+        result.addRowMessage(ErrorMessage.PROPERTY_NOT_FOUND, headerName, propertyValueName);
     }
 
     private boolean isSlotOK(Slot installationSlot) {
         if (installationSlot == null) {
             LOGGER.log(Level.FINE, "Signals import - installation slot not found: " + deviceFld);
-            result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_DEVICE);
+            result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_DEVICE, deviceFld);
             return false;
         }
         if (!installationSlot.isHostingSlot()) {
             LOGGER.log(Level.FINE, "Signal import - trying to add a signal to container: " + deviceFld);
-            result.addRowMessage(ErrorMessage.INSTALLATION_SLOT_REQUIRED, HDR_DEVICE);
+            result.addRowMessage(ErrorMessage.INSTALLATION_SLOT_REQUIRED, HDR_DEVICE, deviceFld);
             return false;
         }
         return true;

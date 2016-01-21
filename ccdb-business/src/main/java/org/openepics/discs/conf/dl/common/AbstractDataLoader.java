@@ -66,6 +66,9 @@ public abstract class AbstractDataLoader implements DataLoader {
      */
     private List<String> currentRowData = null;
 
+    /** The command parsed for the current row. */
+    private String command;
+
     @Override
     public int getImportDataStartIndex() {
         return DEFAULT_EXCEL_TAMPLATE_DATA_START_ROW;
@@ -113,7 +116,7 @@ public abstract class AbstractDataLoader implements DataLoader {
             } else {
                 ++dataRows;
 
-                final String command = checkCommandAndRequiredFields();
+                command = checkCommandAndRequiredFields();
                 if (command == null) {
                     continue;
                 }
@@ -153,7 +156,7 @@ public abstract class AbstractDataLoader implements DataLoader {
                         ++createRows;
                         break;
                     default:
-                        result.addRowMessage(ErrorMessage.COMMAND_NOT_VALID, HDR_OPERATION);
+                        result.addRowMessage(ErrorMessage.COMMAND_NOT_VALID, HDR_OPERATION, command);
                 }
             }
         }
@@ -311,7 +314,7 @@ public abstract class AbstractDataLoader implements DataLoader {
     protected void handleLoadingError(Logger logger, Exception e) { // NOSONAR
         logger.log(Level.FINE, e.getMessage(), e);
         if (e.getCause() instanceof org.openepics.discs.conf.security.SecurityException) {
-            result.addRowMessage(ErrorMessage.NOT_AUTHORIZED, HDR_OPERATION);
+            result.addRowMessage(ErrorMessage.NOT_AUTHORIZED, HDR_OPERATION, command);
         } else {
             result.addRowMessage(ErrorMessage.SYSTEM_EXCEPTION);
         }

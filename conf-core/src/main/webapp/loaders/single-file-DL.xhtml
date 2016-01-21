@@ -108,7 +108,11 @@
                         sortBy="#{errorRow.column}">
                     <h:outputText value="#{errorRow.column}" />
                 </p:column>
-                <p:column headerText="Error" width="70%" filterBy="#{errorRow.message.toString()}" 
+                <p:column headerText="Value" width="15%" filterBy="#{errorRow.value}" filterMatchMode="contains" 
+                        sortBy="#{errorRow.value}">
+                    <h:outputText value="#{empty errorRow.value ? '&lt;undefined&gt;' : errorRow.value}" />
+                </p:column>
+                <p:column headerText="Error" width="55%" filterBy="#{errorRow.message.toString()}" 
                         filterMatchMode="contains" sortBy="#{errorRow.message.toString()}">
                     <h:outputText value="#{errorRow.message.toString()}" />
                 </p:column>

@@ -211,22 +211,22 @@ public class DevicesDataLoaderIT {
         final List<ValidationMessage> expectedValidationMessages = new ArrayList<>();
         // error due to: adding device for which component type doesn't exist
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, 11,
-                                                                        DevicesDataLoader.HDR_CTYPE));
+                                                                        DevicesDataLoader.HDR_CTYPE, "BPM56"));
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, 12,
-                                                                        DevicesDataLoader.HDR_CTYPE));
+                                                                        DevicesDataLoader.HDR_CTYPE, "PTR"));
         // error due to: trying to add device which already exist.
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.NAME_ALREADY_EXISTS, 13,
-                                                                        DevicesDataLoader.HDR_SERIAL));
+                                                                        DevicesDataLoader.HDR_SERIAL, "BPM2-01"));
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.NAME_ALREADY_EXISTS, 14,
-                                                                        DevicesDataLoader.HDR_SERIAL));
+                                                                        DevicesDataLoader.HDR_SERIAL, "PRG-02"));
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.NAME_ALREADY_EXISTS, 15,
-                                                                        DevicesDataLoader.HDR_SERIAL));
+                                                                        DevicesDataLoader.HDR_SERIAL, "TOOR-02"));
         // error due to: trying to add device without type defined
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 16,
-                                                                        DevicesDataLoader.HDR_CTYPE));
+                                                                        DevicesDataLoader.HDR_CTYPE, null));
         // error due to: trying to add device without name defined
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 17,
-                                                                        DevicesDataLoader.HDR_SERIAL));
+                                                                        DevicesDataLoader.HDR_SERIAL, null));
 
         // Trying to load data
         final InputStream testDataStream = this.getClass().
@@ -254,24 +254,24 @@ public class DevicesDataLoaderIT {
         final List<ValidationMessage> expectedValidationMessages = new ArrayList<>();
         // error due to: trying to delete device which doesen't exist.
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, 11,
-                                                                                DevicesDataLoader.HDR_SERIAL));
+                                                                        DevicesDataLoader.HDR_SERIAL, "BPM2-31"));
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, 12,
-                                                                                DevicesDataLoader.HDR_SERIAL));
+                                                                        DevicesDataLoader.HDR_SERIAL, "PRG-07"));
         // error due to: trying to delete a non existing property
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, 13,
-                                                                                DevicesDataLoader.HDR_PROP_NAME));
+                                                                        DevicesDataLoader.HDR_PROP_NAME, "PWR"));
         // error due to: trying to delete a property not assigned to device
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.PROPERTY_NOT_FOUND, 14,
-                                                                                DevicesDataLoader.HDR_PROP_NAME));
+                                                                        DevicesDataLoader.HDR_PROP_NAME, "VOLTAGE"));
         // error due to: trying to delete device without type specified
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 15,
-                                                                                DevicesDataLoader.HDR_CTYPE));
+                                                                        DevicesDataLoader.HDR_CTYPE, null));
         // error due to: trying to delete device without a name specified
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 16,
-                                                                                DevicesDataLoader.HDR_SERIAL));
+                                                                        DevicesDataLoader.HDR_SERIAL, null));
         // error due to: trying to delete a property without property name specified
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 17,
-                                                                                DevicesDataLoader.HDR_PROP_NAME));
+                                                                        DevicesDataLoader.HDR_PROP_NAME, null));
 
         // Trying to load data
         final InputStream testDataStream = this.getClass().
@@ -300,26 +300,26 @@ public class DevicesDataLoaderIT {
         final List<ValidationMessage> expectedValidationMessages = new ArrayList<>();
         // error due to: trying to update device which doesen't exist.
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, 11,
-                                                                            DevicesDataLoader.HDR_SERIAL));
+                                                                    DevicesDataLoader.HDR_SERIAL, "BPM"));
         // error due to: trying to update device with type that doesen't exist.
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, 12,
-                                                                            DevicesDataLoader.HDR_CTYPE));
+                                                                    DevicesDataLoader.HDR_CTYPE, "BPM545"));
 
         // error due to: trying to update a non existing property
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.ENTITY_NOT_FOUND, 13,
-                                                                            DevicesDataLoader.HDR_PROP_NAME));
+                                                                    DevicesDataLoader.HDR_PROP_NAME, "PWR"));
         // error due to: trying to update a property not assigned to device
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.PROPERTY_NOT_FOUND, 14,
-                                                                            DevicesDataLoader.HDR_PROP_NAME));
+                                                                    DevicesDataLoader.HDR_PROP_NAME, "VOLTAGE"));
         // error due to: trying to update device without type specified
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 15,
-                                                                            DevicesDataLoader.HDR_CTYPE));
+                                                                    DevicesDataLoader.HDR_CTYPE, null));
         // error due to: trying to update device without a name specified
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 16,
-                                                                            DevicesDataLoader.HDR_SERIAL));
+                                                                    DevicesDataLoader.HDR_SERIAL, null));
         // error due to: trying to update a property without property name specified
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 17,
-                                                                            DevicesDataLoader.HDR_PROP_NAME));
+                                                                    DevicesDataLoader.HDR_PROP_NAME, null));
 
         // Trying to load data
         final InputStream testDataStream = this.getClass()

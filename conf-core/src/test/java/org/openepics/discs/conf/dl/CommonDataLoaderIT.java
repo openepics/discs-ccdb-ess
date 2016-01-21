@@ -80,11 +80,14 @@ public class CommonDataLoaderIT {
         final List<ValidationMessage> expectedValidationMessages = new ArrayList<>();
 
         expectedValidationMessages.
-                add(new ValidationMessage(ErrorMessage.COMMAND_NOT_VALID, 13, AbstractDataLoader.HDR_OPERATION));
+                add(new ValidationMessage(ErrorMessage.COMMAND_NOT_VALID, 13, AbstractDataLoader.HDR_OPERATION,
+                                                                                                    "CREATE CAR"));
         expectedValidationMessages.
-                add(new ValidationMessage(ErrorMessage.COMMAND_NOT_VALID, 14, AbstractDataLoader.HDR_OPERATION));
+                add(new ValidationMessage(ErrorMessage.COMMAND_NOT_VALID, 14, AbstractDataLoader.HDR_OPERATION,
+                                                                                                    "UPDATE CAR"));
         expectedValidationMessages.
-                add(new ValidationMessage(ErrorMessage.COMMAND_NOT_VALID, 15, AbstractDataLoader.HDR_OPERATION));
+                add(new ValidationMessage(ErrorMessage.COMMAND_NOT_VALID, 15, AbstractDataLoader.HDR_OPERATION,
+                                                                                                    "CREATE CAT"));
         final InputStream testDataStream = this.getClass().
                 getResourceAsStream(TestUtility.DATALOADERS_PATH + "common-fail-commands.test.xlsx");
         final DataLoaderResult loaderResult = dataLoaderHandler.loadData(testDataStream, devicesDataLoader);

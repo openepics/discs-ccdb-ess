@@ -120,7 +120,7 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
                 final Unit unitToUpdate = unitByName.get(nameFld);
                 // if unit is in use, we cannot modify name or symbol attributes.
                 if (unitEJB.isUnitUsed(unitToUpdate) && !unitToUpdate.getSymbol().equals(symbolFld)) {
-                    result.addRowMessage(ErrorMessage.MODIFY_IN_USE, HDR_SYMBOL);
+                    result.addRowMessage(ErrorMessage.MODIFY_IN_USE, HDR_SYMBOL, symbolFld);
                 } else {
                     unitToUpdate.setDescription(descriptionFld);
                     unitToUpdate.setSymbol(symbolFld);
@@ -130,7 +130,7 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
                 handleLoadingError(LOGGER, e);
             }
         } else {
-            result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_NAME);
+            result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_NAME, nameFld);
         }
     }
 
@@ -145,7 +145,7 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
                 handleLoadingError(LOGGER, e);
             }
         } else {
-            result.addRowMessage(ErrorMessage.NAME_ALREADY_EXISTS, HDR_NAME);
+            result.addRowMessage(ErrorMessage.NAME_ALREADY_EXISTS, HDR_NAME, nameFld);
         }
     }
 
@@ -154,9 +154,9 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
         try {
             final Unit unitToDelete = unitByName.get(nameFld);
             if (unitToDelete == null) {
-                result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_NAME);
+                result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_NAME, nameFld);
             } else if (unitEJB.isUnitUsed(unitToDelete)) {
-                result.addRowMessage(ErrorMessage.DELETE_IN_USE);
+                result.addRowMessage(ErrorMessage.DELETE_IN_USE, HDR_NAME, nameFld);
             } else {
                 unitEJB.delete(unitToDelete);
                 unitByName.remove(unitToDelete.getName());
