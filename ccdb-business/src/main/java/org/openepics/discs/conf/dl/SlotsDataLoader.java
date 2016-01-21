@@ -20,12 +20,9 @@
 package org.openepics.discs.conf.dl;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -101,8 +98,6 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
     private static final int COL_INDEX_RELATION_ENTITY_NAME = 9;
     private static final int COL_INDEX_INSTALLATION = 10;
 
-    private static final Set<String> REQUIRED_COLUMNS = new HashSet<>(Arrays.asList(HDR_ENTITY_TYPE, HDR_ENTITY_NAME));
-
     private static class RelationshipInfo {
         SlotRelationName relationship;
         Slot parent;
@@ -129,11 +124,6 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
         newSlots = new ArrayList<>();
 
         result.getContextualData().put(DataLoaderResult.CTX_NEW_SLOTS, newSlots);
-    }
-
-    @Override
-    protected Set<String> getRequiredColumnNames() {
-        return REQUIRED_COLUMNS;
     }
 
     @Override
@@ -170,6 +160,9 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
     }
 
     private void updateSlot() {
+        if (Strings.isNullOrEmpty(entityDescriptionFld)) {
+            result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, HDR_ENTITY_DESCRIPTION);
+        }
         final Slot workingSlot = getWorkingSlot();
         if (result.isRowError()) {
             return;
@@ -291,6 +284,10 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
     private void createSlot() {
         if (Strings.isNullOrEmpty(entityDescriptionFld)) {
             result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, HDR_ENTITY_DESCRIPTION);
+        }
+        if (Strings.isNullOrEmpty(entityTypeFld)) {
+            result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, HDR_ENTITY_TYPE);
+            return;
         }
         isHostingSlot = isHostingSlot();
         // device type must be defined for installation slots

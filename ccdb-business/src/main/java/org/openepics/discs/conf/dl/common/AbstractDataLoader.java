@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -42,8 +41,9 @@ import com.google.common.base.Preconditions;
  * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  */
 public abstract class AbstractDataLoader implements DataLoader {
-
+    /** The name of the first column in the Excel sheet */
     public static final String HDR_OPERATION = "OPERATION";
+
     /** Constant representing the index of the command (Operation) in the data row */
     protected static final int COL_INDEX_OPERATION = 0;
 
@@ -56,9 +56,7 @@ public abstract class AbstractDataLoader implements DataLoader {
     /** Contextual data map */
     private Map<String, Object> contextualData;
 
-    /**
-     * Indexes of all relevant fields within a row, stateful.
-     */
+    /** Indexes of all relevant fields within a row, stateful. */
     protected Map<String, Integer> indicies = null;
 
     /** For stateful row processing, represents the data for the current row, private, exposed to sub-classes by
@@ -180,13 +178,6 @@ public abstract class AbstractDataLoader implements DataLoader {
     }
 
     /**
-     * Sub-classes should implement list to get a set of required column entries
-     *
-     * @return a set containing column names that are required
-     */
-    protected abstract Set<String> getRequiredColumnNames();
-
-    /**
      * Sub-classes should implement this abstract method to define the name of the unique column (a column used do
      * uniquely identify a data row, for example a column containing entity names or serial numbers)
      *
@@ -263,7 +254,6 @@ public abstract class AbstractDataLoader implements DataLoader {
         final String command = currentRowData.get(COL_INDEX_OPERATION);
 
         final @Nullable Integer uniqueIndex = getUniqueColumnIndex();
-        final Set<String> requiredColumns = getRequiredColumnNames();
 
         for (Entry<String, Integer> indexEntry : indicies.entrySet()) {
             final String columnName = indexEntry.getKey();
@@ -273,11 +263,6 @@ public abstract class AbstractDataLoader implements DataLoader {
             // Check if data is missing for given conditions
             if ((uniqueIndex != null) && uniqueIndex.equals(index)) {
                 if (currentRowData.get(index) == null) {
-                    result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, columnName);
-                }
-            } else {
-                if (requiredColumns.contains(columnName) && currentRowData.get(index) == null
-                        && !DataLoader.CMD_DELETE.equals(command)) {
                     result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, columnName);
                 }
             }

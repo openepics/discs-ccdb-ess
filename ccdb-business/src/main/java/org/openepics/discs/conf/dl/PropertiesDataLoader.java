@@ -19,11 +19,8 @@
  */
 package org.openepics.discs.conf.dl;
 
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -44,6 +41,7 @@ import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyValueUniqueness;
 import org.openepics.discs.conf.ent.Unit;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
@@ -52,7 +50,7 @@ import com.google.common.collect.ImmutableMap.Builder;
  *
  * @author <a href="mailto:andraz.pozar@cosylab.com">Andraž Požar</a>
  * @author <a href="mailto:miroslav.pavleski@cosylab.com">Miroslav Pavleski</a>
- *
+ * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  */
 @Stateless
 @PropertiesLoader
@@ -71,9 +69,6 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
     private static final int COL_INDEX_DATATYPE = 3;
     private static final int COL_INDEX_UNIT = 4;
     private static final int COL_INDEX_UNIQUE = 5;
-
-    private static final Set<String> REQUIRED_COLUMNS = new HashSet<>(
-                                                Arrays.asList(HDR_DATATYPE, HDR_DESC, HDR_DATATYPE, HDR_UNIQUE));
 
     @Inject private PropertyEJB propertyEJB;
     @Inject private DataTypeEJB dataTypeEJB;
@@ -102,11 +97,6 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
     }
 
     @Override
-    protected Set<String> getRequiredColumnNames() {
-        return REQUIRED_COLUMNS;
-    }
-
-    @Override
     protected @Nullable Integer getUniqueColumnIndex() {
         return COL_INDEX_NAME;
     }
@@ -122,6 +112,9 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
 
     @Override
     protected void handleUpdate(String actualCommand) {
+        checkRequired();
+        if (result.isRowError()) return;
+
         if (propertyByName.containsKey(nameFld)) {
             try {
                 final Property propertyToUpdate = propertyByName.get(nameFld);
@@ -143,6 +136,9 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
 
     @Override
     protected void handleCreate(String actualCommand) {
+        checkRequired();
+        if (result.isRowError()) return;
+
         if (!propertyByName.containsKey(nameFld)) {
             try {
                 final Property propertyToAdd = new Property(nameFld, descFld);
@@ -249,5 +245,17 @@ public class PropertiesDataLoader extends AbstractDataLoader implements DataLoad
         mapBuilder.put(HDR_UNIQUE, COL_INDEX_UNIQUE);
 
         indicies = mapBuilder.build();
+    }
+
+    private void checkRequired() {
+        if (Strings.isNullOrEmpty(descFld)) {
+            result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, HDR_DESC);
+        }
+        if (Strings.isNullOrEmpty(dataTypeFld)) {
+            result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, HDR_DATATYPE);
+        }
+        if (Strings.isNullOrEmpty(readCurrentRowCellForHeader(COL_INDEX_UNIQUE))) {
+            result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, HDR_UNIQUE);
+        }
     }
 }

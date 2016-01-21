@@ -19,8 +19,6 @@
  */
 package org.openepics.discs.conf.dl;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.annotation.Nullable;
@@ -50,6 +48,7 @@ import com.google.common.collect.ImmutableMap.Builder;
  *
  * @author <a href="mailto:andraz.pozar@cosylab.com">Andraž Požar</a>
  * @author <a href="mailto:miroslav.pavleski@cosylab.com">Miroslav Pavleski</a>
+ * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  */
 @Stateless
 @ComponentTypesLoader
@@ -71,17 +70,10 @@ public class ComponentTypesDataLoader extends AbstractEntityWithPropertiesDataLo
     private static final int COL_INDEX_PROP_NAME = 4;
     private static final int COL_INDEX_PROP_VALUE = 5;
 
-    private static final Set<String> REQUIRED_COLUMNS = new HashSet<>();
-
     // Fields for row cells
     private String nameFld, descriptionFld, propTypeFld, propNameFld, propValueFld;;
 
     @Inject private ComptypeEJB comptypeEJB;
-
-    @Override
-    protected Set<String> getRequiredColumnNames() {
-        return REQUIRED_COLUMNS;
-    }
 
     @Override
     protected @Nullable Integer getUniqueColumnIndex() {

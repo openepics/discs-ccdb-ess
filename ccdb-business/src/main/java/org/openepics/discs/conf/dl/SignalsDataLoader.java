@@ -19,10 +19,7 @@
  */
 package org.openepics.discs.conf.dl;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -30,6 +27,8 @@ import javax.annotation.Nullable;
 import javax.ejb.EJBTransactionRolledbackException;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+
+import joptsimple.internal.Strings;
 
 import org.openepics.discs.conf.dl.annotations.SignalsLoader;
 import org.openepics.discs.conf.dl.common.AbstractDataLoader;
@@ -69,9 +68,6 @@ public class SignalsDataLoader extends AbstractDataLoader implements DataLoader 
     private static final String PROPERTY_NAME_PREFIX = "SignalName";
     private static final String PROPERTY_DESC_PREFIX = "SignalDescription";
 
-    private static final Set<String> REQUIRED_COLUMNS = new HashSet<>(
-                                                Arrays.asList(HDR_DEVICE, HDR_NUMBER, HDR_NAME, HDR_DESC));
-
     @Inject private SlotEJB slotEJB;
 
     private String deviceFld, nameFld, descFld;
@@ -80,11 +76,6 @@ public class SignalsDataLoader extends AbstractDataLoader implements DataLoader 
     @Override
     public int getDataWidth() {
         return 5;
-    }
-
-    @Override
-    protected Set<String> getRequiredColumnNames() {
-        return REQUIRED_COLUMNS;
     }
 
     @Override
@@ -102,6 +93,9 @@ public class SignalsDataLoader extends AbstractDataLoader implements DataLoader 
 
     @Override
     protected void handleUpdate(String actualCommand) {
+        checkRequired();
+        if (result.isRowError()) return;
+
         try {
             Slot installationSlot = slotEJB.findByName(deviceFld);
             if (!isSlotOK(installationSlot)) {
@@ -126,6 +120,9 @@ public class SignalsDataLoader extends AbstractDataLoader implements DataLoader 
 
     @Override
     protected void handleDelete(String actualCommand) {
+        checkRequired();
+        if (result.isRowError()) return;
+
         Slot installationSlot = slotEJB.findByName(deviceFld);
         if (!isSlotOK(installationSlot)) {
             return;
@@ -144,6 +141,9 @@ public class SignalsDataLoader extends AbstractDataLoader implements DataLoader 
 
     @Override
     protected void handleCreate(String actualCommand) {
+        checkRequired();
+        if (result.isRowError()) return;
+
         try {
             Slot installationSlot = slotEJB.findByName(deviceFld);
             if (!isSlotOK(installationSlot)) {
@@ -227,5 +227,20 @@ public class SignalsDataLoader extends AbstractDataLoader implements DataLoader 
             return false;
         }
         return true;
+    }
+
+    private void checkRequired() {
+        if (Strings.isNullOrEmpty(deviceFld)) {
+            result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, HDR_DEVICE);
+        }
+        if (Strings.isNullOrEmpty(readCurrentRowCellForHeader(COL_INDEX_NUMBER))) {
+            result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, HDR_NUMBER);
+        }
+        if (Strings.isNullOrEmpty(nameFld)) {
+            result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, HDR_NAME);
+        }
+        if (Strings.isNullOrEmpty(descFld)) {
+            result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, HDR_DESC);
+        }
     }
 }

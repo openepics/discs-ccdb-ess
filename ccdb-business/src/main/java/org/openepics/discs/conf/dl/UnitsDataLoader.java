@@ -19,16 +19,15 @@
  */
 package org.openepics.discs.conf.dl;
 
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.ejb.EJBTransactionRolledbackException;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+
+import joptsimple.internal.Strings;
 
 import org.openepics.discs.conf.dl.annotations.UnitsLoader;
 import org.openepics.discs.conf.dl.common.AbstractDataLoader;
@@ -63,8 +62,6 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
     private static final int COL_INDEX_DESC = 2;
     private static final int COL_INDEX_SYMBOL = 3;
 
-    private static final Set<String> REQUIRED_COLUMNS = new HashSet<>(Arrays.asList(HDR_SYMBOL, HDR_DESC));
-
     @Inject private UnitEJB unitEJB;
 
     /**
@@ -83,11 +80,6 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
         unitByName = new HashMap<>();
         for (Unit unit : unitEJB.findAll())
             unitByName.put(unit.getName(), unit);
-    }
-
-    @Override
-    protected Set<String> getRequiredColumnNames() {
-        return REQUIRED_COLUMNS;
     }
 
     @Override
@@ -115,6 +107,9 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
 
     @Override
     protected void handleUpdate(String actualCommand) {
+        checkRequired();
+        if (result.isRowError()) return;
+
         if (unitByName.containsKey(nameFld)) {
             try {
                 final Unit unitToUpdate = unitByName.get(nameFld);
@@ -136,6 +131,9 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
 
     @Override
     protected void handleCreate(String actualCommand) {
+        checkRequired();
+        if (result.isRowError()) return;
+
         if (!unitByName.containsKey(nameFld)) {
             try {
                 final Unit unitToAdd = new Unit(nameFld, symbolFld, descriptionFld);
@@ -169,5 +167,14 @@ public class UnitsDataLoader extends AbstractDataLoader implements DataLoader {
     @Override
     public int getDataWidth() {
         return 4;
+    }
+
+    private void checkRequired() {
+        if (Strings.isNullOrEmpty(descriptionFld)) {
+            result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, HDR_DESC);
+        }
+        if (Strings.isNullOrEmpty(symbolFld)) {
+            result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, HDR_SYMBOL);
+        }
     }
 }

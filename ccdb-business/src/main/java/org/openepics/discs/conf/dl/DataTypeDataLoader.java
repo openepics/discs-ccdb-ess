@@ -19,10 +19,7 @@
  */
 package org.openepics.discs.conf.dl;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -48,7 +45,6 @@ import com.google.common.collect.Lists;
  * Implementation of loader for enumerations.
  *
  * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
- *
  */
 @Stateless
 @DataTypeLoader
@@ -63,8 +59,6 @@ public class DataTypeDataLoader extends AbstractDataLoader implements DataLoader
     private static final int COL_INDEX_DESC = 2;
     private static final int COL_INDEX_DEFINITION = 3;
 
-    private static final Set<String> REQUIRED_COLUMNS = new HashSet<>(Arrays.asList(HDR_DESC, HDR_DEFINITION));
-
     // Row data for individual cells within a row
     private String nameFld, descriptionFld, definitionFld;
 
@@ -73,11 +67,6 @@ public class DataTypeDataLoader extends AbstractDataLoader implements DataLoader
     @Override
     public int getDataWidth() {
         return 4;
-    }
-
-    @Override
-    protected Set<String> getRequiredColumnNames() {
-       return REQUIRED_COLUMNS;
     }
 
     @Override
@@ -105,6 +94,9 @@ public class DataTypeDataLoader extends AbstractDataLoader implements DataLoader
 
     @Override
     protected void handleUpdate(String actualCommand) {
+        checkRequired();
+        if (result.isRowError()) return;
+
         final DataType modifiedEnum = dataTypeEJB.findByName(nameFld);
         final List<String> enumValues = parseEnumDefinitions();
 
@@ -132,6 +124,9 @@ public class DataTypeDataLoader extends AbstractDataLoader implements DataLoader
 
     @Override
     protected void handleCreate(String actualCommand) {
+        checkRequired();
+        if (result.isRowError()) return;
+
         if (dataTypeEJB.findByName(nameFld) != null) {
             result.addRowMessage(ErrorMessage.NAME_ALREADY_EXISTS, HDR_NAME, nameFld);
         }
@@ -160,7 +155,6 @@ public class DataTypeDataLoader extends AbstractDataLoader implements DataLoader
                 defs.add(def);
             }
         }
-
         return defs;
     }
 
@@ -210,5 +204,14 @@ public class DataTypeDataLoader extends AbstractDataLoader implements DataLoader
             }
         }
         return true;
+    }
+
+    private void checkRequired() {
+        if (Strings.isNullOrEmpty(descriptionFld)) {
+            result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, HDR_DESC);
+        }
+        if (Strings.isNullOrEmpty(definitionFld)) {
+            result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, HDR_DEFINITION);
+        }
     }
 }

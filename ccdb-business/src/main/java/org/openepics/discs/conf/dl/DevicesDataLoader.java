@@ -19,15 +19,14 @@
  */
 package org.openepics.discs.conf.dl;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.annotation.Nullable;
 import javax.ejb.EJBTransactionRolledbackException;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+
+import joptsimple.internal.Strings;
 
 import org.openepics.discs.conf.dl.annotations.DevicesLoader;
 import org.openepics.discs.conf.dl.common.AbstractEntityWithPropertiesDataLoader;
@@ -48,7 +47,7 @@ import com.google.common.collect.ImmutableMap.Builder;
  *
  * @author <a href="mailto:andraz.pozar@cosylab.com">Andraž Požar</a>
  * @author <a href="mailto:miroslav.pavleski@cosylab.com">Miroslav Pavleski</a>
- *
+ * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  */
 @Stateless
 @DevicesLoader
@@ -68,18 +67,10 @@ public class DevicesDataLoader extends AbstractEntityWithPropertiesDataLoader<De
     private static final int COL_INDEX_PROP_NAME = 3;
     private static final int COL_INDEX_PROP_VALUE = 4;
 
-
-    private static final Set<String> REQUIRED_COLUMNS = new HashSet<>(Arrays.asList(HDR_CTYPE));
-
     private String serialFld, componentTypeFld, propNameFld, propValueFld;
 
     @Inject private ComptypeEJB comptypeEJB;
     @Inject private DeviceEJB deviceEJB;
-
-    @Override
-    protected Set<String> getRequiredColumnNames() {
-        return REQUIRED_COLUMNS;
-    }
 
     @Override
     protected @Nullable Integer getUniqueColumnIndex() {
@@ -96,6 +87,9 @@ public class DevicesDataLoader extends AbstractEntityWithPropertiesDataLoader<De
 
     @Override
     protected void handleUpdate(String actualCommand) {
+        checkRequired();
+        if (result.isRowError()) return;
+
         final Device deviceToUpdate = deviceEJB.findDeviceBySerialNumber(serialFld);
         if (deviceToUpdate != null) {
             final @Nullable ComponentType compType = comptypeEJB.findByName(componentTypeFld);
@@ -123,6 +117,9 @@ public class DevicesDataLoader extends AbstractEntityWithPropertiesDataLoader<De
 
     @Override
     protected void handleCreate(String actualCommand) {
+        checkRequired();
+        if (result.isRowError()) return;
+
         final Device deviceToUpdate = deviceEJB.findDeviceBySerialNumber(serialFld);
         if (deviceToUpdate == null) {
             final @Nullable ComponentType compType = comptypeEJB.findByName(componentTypeFld);
@@ -195,5 +192,11 @@ public class DevicesDataLoader extends AbstractEntityWithPropertiesDataLoader<De
     public int getImportDataStartIndex() {
         // the devices template starts with data in row 11 (0 based == 10)
         return 10;
+    }
+
+    private void checkRequired() {
+        if (Strings.isNullOrEmpty(componentTypeFld)) {
+            result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, HDR_CTYPE);
+        }
     }
 }
