@@ -96,8 +96,8 @@
                             <goal>prepare-agent</goal>
                         </goals>
                         <configuration>
-                            <append>false</append>
-                            <destFile>${basedir}/../target/business.exec</destFile>
+                            <append>true</append>
+                            <destFile>${basedir}/../target/jacoco.exec</destFile>
                         </configuration>
                     </execution>                                   
                 </executions>                   

@@ -448,8 +448,8 @@
                                     <goal>prepare-agent-integration</goal>
                                 </goals>
                                 <configuration>
-                                    <append>false</append>
-                                    <destFile>${basedir}/../target/${jacoco.out.file}</destFile>
+                                    <append>true</append>
+                                    <destFile>${basedir}/../target/jacoco.exec</destFile>
                                 </configuration>
                             </execution>                                   
                             <execution>
@@ -458,25 +458,8 @@
                                     <goal>prepare-agent</goal>
                                 </goals>
                                 <configuration>
-                                    <append>false</append>
-                                    <destFile>${basedir}/../target/unit-test.exec</destFile>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>merge</id>
-                                <phase>post-integration-test</phase>
-                                <goals>
-                                    <goal>merge</goal>
-                                </goals>
-                                <configuration>
-                                    <fileSets>
-                                        <fileSet>
-                                            <directory>${basedir}/../target</directory>
-                                            <includes>
-                                                <include>*.exec</include>
-                                            </includes>
-                                        </fileSet>
-                                    </fileSets>
+                                    <append>true</append>
+                                    <skip>${jacoco.unit.skip}</skip>
                                     <destFile>${basedir}/../target/jacoco.exec</destFile>
                                 </configuration>
                             </execution>
