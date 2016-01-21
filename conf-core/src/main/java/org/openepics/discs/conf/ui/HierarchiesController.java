@@ -1358,7 +1358,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
                             UiUtility.MESSAGE_SUMMARY_ERROR, "The installation slot name must be unique."));
             } else {
                 // check uniqueness only for the parent
-                if (!slotEJB.isContainerNameUnique(valueStr, selectedSlotView.getSlot()))
+                final Slot slotParent = selectedSlotView != null ? selectedSlotView.getSlot() : slotEJB.getRootNode();
+                if (!slotEJB.isContainerNameUnique(valueStr, slotParent))
                         throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR,
                                 UiUtility.MESSAGE_SUMMARY_ERROR, "Parent alread contains equally named child."));
             }

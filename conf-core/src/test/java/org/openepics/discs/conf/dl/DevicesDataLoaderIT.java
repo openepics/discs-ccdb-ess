@@ -263,9 +263,6 @@ public class DevicesDataLoaderIT {
         // error due to: trying to delete a property not assigned to device
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.PROPERTY_NOT_FOUND, 14,
                                                                         DevicesDataLoader.HDR_PROP_NAME, "VOLTAGE"));
-        // error due to: trying to delete device without type specified
-        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 15,
-                                                                        DevicesDataLoader.HDR_CTYPE, null));
         // error due to: trying to delete device without a name specified
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 16,
                                                                         DevicesDataLoader.HDR_SERIAL, null));
@@ -311,9 +308,6 @@ public class DevicesDataLoaderIT {
         // error due to: trying to update a property not assigned to device
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.PROPERTY_NOT_FOUND, 14,
                                                                     DevicesDataLoader.HDR_PROP_NAME, "VOLTAGE"));
-        // error due to: trying to update device without type specified
-        expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 15,
-                                                                    DevicesDataLoader.HDR_CTYPE, null));
         // error due to: trying to update device without a name specified
         expectedValidationMessages.add(new ValidationMessage(ErrorMessage.REQUIRED_FIELD_MISSING, 16,
                                                                     DevicesDataLoader.HDR_SERIAL, null));
