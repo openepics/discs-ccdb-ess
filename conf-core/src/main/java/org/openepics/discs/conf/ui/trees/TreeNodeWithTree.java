@@ -13,5 +13,9 @@ public abstract class TreeNodeWithTree<D> extends BasicTreeNode<D> {
 	public List<? extends BasicTreeNode<D>> getAllChildren() {
 		return tree.getAllChildren(this);
 	}
+
+	protected Tree<D> getTree() {
+		return tree;
+	}
 	
 }

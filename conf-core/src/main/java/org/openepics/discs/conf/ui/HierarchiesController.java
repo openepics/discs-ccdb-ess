@@ -768,6 +768,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      * @return the name of the CSS class
      */
     public String calcNameClass(final SlotView slot) {
+    	if (slot == null) return "nameMissing"; //TREE
         Preconditions.checkNotNull(slot);
         if (!slot.isHostingSlot()) {
             return "nameContainer";
@@ -1552,78 +1553,11 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         return hasDevice;
     }
 
-    /** @return the filterContainsTree */
-    public String getFilterContainsTree() {
-        return null;//TREE filterContainsTree;
-    }
-
-    /** @param filterContainsTree the filterContainsTree to set */
-    public void setFilterContainsTree(String filterContainsTree) {
-        //TREE this.filterContainsTree = filterContainsTree;
-    }
-
     /** @return the namingRedirectionUrl */
     public String getNamingRedirectionUrl() {
         return namingRedirectionUrl;
     }
 
-    /** @return the filterControlsTree */
-    public String getFilterControlsTree() {
-        return null; //TREE filterControlsTree;
-    }
-
-    /** @param filterControlsTree the filterControlsTree to set */
-    public void setFilterControlsTree(String filterControlsTree) {
-        //TREE this.filterControlsTree = filterControlsTree;
-    }
-
-    /** @return the filterPowersTree */
-    public String getFilterPowersTree() {
-        return null;//TREE filterPowersTree;
-    }
-
-    /** @param filterPowersTree the filterPowersTree to set */
-    public void setFilterPowersTree(String filterPowersTree) {
-        //TREE this.filterPowersTree = filterPowersTree;
-    }
-
-    /** @return the filterConnectsTree */
-    public String getFilterConnectsTree() {
-        return null;//TREE filterConnectsTree;
-    }
-
-    /** @param filterConnectsTree the filterConnectsTree to set */
-    public void setFilterConnectsTree(String filterConnectsTree) {
-        //TREE this.filterConnectsTree = filterConnectsTree;
-    }
-
-    public void filterContainsTree() {
-        /*TREE hierarchyBuilder.setFilterValue(filterContainsTree);
-        hierarchyBuilder.applyFilter(rootNode, new ArrayList<>(rootNode.getChildren()));
-        unselectAllTreeNodes();
-        selectedNodes = null;*/
-    }
-
-    public void filterControlsTree() {
-        /*TREE controlsHierarchyBuilder.setFilterValue(filterControlsTree);
-        controlsHierarchyBuilder.applyFilter(controlsRootNode, controlsChildren);
-        unselectAllTreeNodes();
-        selectedNodes = null;*/
-    }
-
-    public void filterPowersTree() {
-        /*TREE powersHierarchyBuilder.setFilterValue(filterPowersTree);
-        powersHierarchyBuilder.applyFilter(powersRootNode,powersChildren);
-        unselectAllTreeNodes();
-        selectedNodes = null;*/
-    }
-
-    public void filterConnectsTree() {
-        /*TREE connectsHierarchyBuilder.setFilterValue(filterConnectsTree);
-        connectsHierarchyBuilder.applyFilter(connectsRootNode, connectsChildren);
-        unselectAllTreeNodes();
-        selectedNodes = null;*/
-    }
 
     /** @return the linkSlot */
     public SlotView getLinkSlot() {

@@ -4,12 +4,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.openepics.discs.conf.views.SlotView;
 import org.primefaces.model.TreeNode;
 
 import com.google.common.collect.Lists;
 
 public abstract class Tree<D> {
 	private List<BasicTreeNode<D>> selectedNodes = new ArrayList<>();
+	private String filter = "";
+	private String appliedFilter = "";
 	
 	public abstract BasicTreeNode<D> getRootNode();
 
@@ -28,6 +31,33 @@ public abstract class Tree<D> {
 	public void setSelectedNodesArray(TreeNode[] selectedNodes)
 	{
 		this.selectedNodes.clear();
-		this.selectedNodes = (List<BasicTreeNode<D>>)(Object)Lists.newArrayList(selectedNodes);
+		if (selectedNodes != null)
+			this.selectedNodes.addAll((List<BasicTreeNode<D>>)(Object)Arrays.asList(selectedNodes));
 	}
+
+	public String getFilter() {
+		return filter;
+	}
+
+	public void setFilter(String filter) {
+		this.filter = filter;
+	}
+	
+	public String getAppliedFilter() {
+		return appliedFilter;
+	}
+	
+	public void applyFilter() {
+		this.appliedFilter = filter == null ? "" : filter.toUpperCase();
+		((FilteredTreeNode<D>)getRootNode()).cleanFilterCache();
+	//	print(0, getRootNode());
+	}
+
+	private void print(int i, TreeNode rootNode) {
+		System.out.println(i+" "+((SlotView)rootNode.getData()).getName());
+		for (TreeNode node : rootNode.getChildren())
+			print(i+1, node);
+		
+	}
+
 }

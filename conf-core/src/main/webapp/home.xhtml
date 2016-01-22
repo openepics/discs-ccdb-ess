@@ -46,9 +46,9 @@
                                         :hierarchies:clipboardOperations"                                    
                                     onstart="PF('statusDialog').show()" oncomplete="PF('statusDialog').hide(); hierarchiesResizeAll();" />
                                 <p:tab id="INCLUDES" title="Contains" style="height: 100%">
-                                    <p:inputText id="filterContainsTree" value="#{hierarchiesController.filterContainsTree}"
+                                    <p:inputText id="filterContainsTree" value="#{hierarchiesController.containsTree.filter}"
                                                  style="box-sizing: border-box; width:100%">
-                                        <p:ajax event="keyup" delay="1000" listener="#{hierarchiesController.filterContainsTree()}"
+                                        <p:ajax event="keyup" delay="1000" listener="#{hierarchiesController.containsTree.applyFilter()}"
                                          update=":hierarchies:relationsTable :hierarchies:deleteButton :hierarchies:downButton
                                                         :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton
                                                         :hierarchies:installationDetails :hierarchies:slotAttributes
@@ -104,9 +104,9 @@
                                     </div>                                    
                                 </p:tab>
                                 <p:tab id="CONTROLS" title="Controls" style="height: 100%">
-                                    <p:inputText id="filterControlsTree" value="#{hierarchiesController.filterControlsTree}"
+                                    <p:inputText id="filterControlsTree" value="#{hierarchiesController.controlsTree.filter}"
                                                  style="box-sizing: border-box; width:100%">
-                                        <p:ajax event="keyup" delay="1000" listener="#{hierarchiesController.filterControlsTree()}"
+                                        <p:ajax event="keyup" delay="1000" listener="#{hierarchiesController.controlsTree.applyFilter()}"
                                          update=":hierarchies:relationsTable :hierarchies:deleteButton :hierarchies:downButton
                                                         :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton
                                                         :hierarchies:installationDetails :hierarchies:slotAttributes
@@ -149,9 +149,9 @@
                                     </div>
                                 </p:tab>
                                 <p:tab id="POWERS" title="Powers" style="height: 100%">
-                                    <p:inputText id="filterPowersTree" value="#{hierarchiesController.filterPowersTree}"
+                                    <p:inputText id="filterPowersTree" value="#{hierarchiesController.powersTree.filter}"
                                                  style="box-sizing: border-box; width:100%">
-                                        <p:ajax event="keyup" delay="1000" listener="#{hierarchiesController.filterPowersTree()}"
+                                        <p:ajax event="keyup" delay="1000" listener="#{hierarchiesController.powersTree.applyFilter()}"
                                          update=":hierarchies:relationsTable :hierarchies:deleteButton :hierarchies:downButton
                                                         :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton
                                                         :hierarchies:installationDetails :hierarchies:slotAttributes
@@ -194,9 +194,9 @@
 	                               </div>
                                 </p:tab>
                                 <p:tab id="CONNECTS" title="Connects" rendered="#{hierarchiesController.cableDBStatus}">
-                                    <p:inputText id="filterConnectsTree" value="#{hierarchiesController.filterConnectsTree}"
+                                    <p:inputText id="filterConnectsTree" value="#{hierarchiesController.connectsTree.filter}"
                                                  style="box-sizing: border-box; width:100%">
-                                        <p:ajax event="keyup" delay="1000" listener="#{hierarchiesController.filterConnectsTree()}"
+                                        <p:ajax event="keyup" delay="1000" listener="#{hierarchiesController.connectsTree.applyFilter()}"
                                          update=":hierarchies:relationsTable :hierarchies:deleteButton :hierarchies:downButton
                                                         :hierarchies:upButton :hierarchies:editButton :hierarchies:addButton
                                                         :hierarchies:installationDetails :hierarchies:slotAttributes
@@ -289,7 +289,7 @@
                                 update=":hierarchies:hierarchyTabs:tree :hierarchies:downButton :hierarchies:upButton"
                                 disabled="#{not hierarchiesController.singleNodeSelected
                                                 or not hierarchiesController.includesActive
-                                                or not empty hierarchiesController.filterContainsTree
+                                                or not empty hierarchiesController.containsTree.filter
                                                 or hierarchiesController.singleSelectedSlotView.last
                                                 or not securityPolicy.getUIHint('MOVE_SLOT')}"
                                 actionListener="#{hierarchiesController.moveSlotDown()}" />
@@ -299,7 +299,7 @@
                                 update=":hierarchies:hierarchyTabs:tree :hierarchies:upButton :hierarchies:downButton"
                                 disabled="#{not hierarchiesController.singleNodeSelected
                                                 or not hierarchiesController.includesActive
-                                                or not empty hierarchiesController.filterContainsTree
+                                                or not empty hierarchiesController.containsTree.filter
                                                 or hierarchiesController.singleSelectedSlotView.first
                                                 or not securityPolicy.getUIHint('MOVE_SLOT')}"
                                 actionListener="#{hierarchiesController.moveSlotUp()}" />

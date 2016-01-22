@@ -13,7 +13,7 @@ public abstract class BasicTreeNode<D> implements TreeNode {
 	private boolean expanded;
     private boolean selected;    
     private boolean selectable = true;    
-    private String rowKey;
+    private int rowKey;
 	
 	public BasicTreeNode(D data, BasicTreeNode<D> parent) {
         this.type = DEFAULT_TYPE;       
@@ -96,16 +96,25 @@ public abstract class BasicTreeNode<D> implements TreeNode {
 
 	@Override
     public String getRowKey() {
-		if (rowKey == null) {
-			if (parent == null) rowKey = "root";
-			else if (parent.parent == null) rowKey = String.valueOf(parent.getAllChildren().indexOf(this));
-			else rowKey = parent.getRowKey() + "_" + String.valueOf(parent.getAllChildren().indexOf(this));			
-		}
-        return rowKey;
+		if (parent == null) return "root";
+		else if (parent.parent == null) return String.valueOf(rowKey);
+		else return parent.getRowKey()+"_"+String.valueOf(rowKey);
     }
+	
+	protected void updateRowKeys() {		
+		int i = 0;
+		for (TreeNode node : getChildren()) {
+			((BasicTreeNode<D>)node).setRowKey(i);
+			i++;
+		}		 
+	}
 
-    @Override
-    public void setRowKey(String rowKey) {
+	@Override
+	public void setRowKey(String rowKey) {
+		
+	}
+	
+    protected void setRowKey(int rowKey) {
         this.rowKey = rowKey;
     }
 
