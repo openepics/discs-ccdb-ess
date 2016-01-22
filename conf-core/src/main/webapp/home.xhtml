@@ -286,8 +286,8 @@
                                     disabled="#{not hierarchiesController.includesActive and 
                                                 not securityPolicy.getUIHint('HIERARCHY_ALL')}"
                                     update=":importSlotsForm" />
-                                <p:menuitem value="Signals" id="importSignals" icon="ui-icon-signal"
-                                    title="Import signals" oncomplete="PF('importSignals').show();"
+                                <p:menuitem value="Signals List" id="importSignals" icon="ui-icon-signal"
+                                    title="Import Signals List" oncomplete="PF('importSignals').show();"
                                     action="#{hierarchiesController.prepareImportSignalPopup()}" 
                                     disabled="#{not hierarchiesController.includesActive and 
                                                 not securityPolicy.getUIHint('IMPORT_SIGNALS')}"

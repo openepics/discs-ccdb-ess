@@ -170,13 +170,17 @@
             <p:commandButton value="Close" type="button" styleClass="dialogButton" onclick="PF('resultDialog').hide();" 
                     style="margin-top: 1ex;">
                 <p:ajax disabled="#{not fn:endsWith(request.requestURL,'devices.xhtml')}" 
-                    update=":devicesForm:devicesTable :devicesForm:attributesDataTable:attributesDataTable"/>
+                    update=":devicesForm:devicesTable :devicesForm:attributesDataTable:attributesDataTable" 
+                    oncomplete="PF('devicesTableVar').clearFilters();PF('attributesDataTable').clearFilters();" />
                 <p:ajax disabled="#{not fn:endsWith(request.requestURL,'device-types.xhtml')}" 
-                    update=":deviceTypesForm:deviceTypeTable :deviceTypesForm:attributesDataTable:attributesDataTable"/>
+                    update=":deviceTypesForm:deviceTypeTable :deviceTypesForm:attributesDataTable:attributesDataTable"
+                    oncomplete="PF('deviceTypeTableVar').clearFilters();PF('attributesDataTable').clearFilters();" />
                 <p:ajax disabled="#{not fn:endsWith(request.requestURL,'properties.xhtml')}" 
-                    update=":propertiesForm:propertiesTable"/>
-                <p:ajax disabled="#{not fn:endsWith(request.requestURL,'enums.xhtml')}" update=":enumsForm:enumsTable"/>
-                <p:ajax disabled="#{not fn:endsWith(request.requestURL,'units.xhtml')}" update=":unitsForm:unitsTable"/>
+                    update=":propertiesForm:propertiesTable" oncomplete="PF('propertiesTableVar').clearFilters();" />
+                <p:ajax disabled="#{not fn:endsWith(request.requestURL,'enums.xhtml')}" update=":enumsForm:enumsTable"
+                    oncomplete="PF('enumsTableVar').clearFilters();" />
+                <p:ajax disabled="#{not fn:endsWith(request.requestURL,'units.xhtml')}" update=":unitsForm:unitsTable"
+                    oncomplete="PF('unitsTableVar').clearFilters();" />
                 <p:ajax disabled="#{not fn:endsWith(request.requestURL,'home.xhtml')}" 
                     update=":hierarchies:hierarchyTabs :hierarchies:attributesDataTable:attributesDataTable 
                             :hierarchies:relationsTable :hierarchies:installationDetails" 
