@@ -175,6 +175,7 @@ public class ComponentTypeManager implements SimpleTableExporter, ExcelSingleFil
     @Override
     public void doImport() {
         excelSingleFileImportUI.doImport();
+        clearDeviceTypeRelatedInformation();
         reloadDeviceTypes();
     }
 

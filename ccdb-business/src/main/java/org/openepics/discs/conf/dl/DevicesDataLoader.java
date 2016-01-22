@@ -87,28 +87,28 @@ public class DevicesDataLoader extends AbstractEntityWithPropertiesDataLoader<De
 
     @Override
     protected void handleUpdate(String actualCommand) {
-        checkRequired();
-        if (result.isRowError()) return;
-
         final Device deviceToUpdate = deviceEJB.findDeviceBySerialNumber(serialFld);
         if (deviceToUpdate != null) {
-            final @Nullable ComponentType compType = comptypeEJB.findByName(componentTypeFld);
-            if (compType == null) {
-                result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_CTYPE, componentTypeFld);
-            } else {
-                try {
-                    if (DataLoader.CMD_UPDATE_DEVICE.equals(actualCommand)) {
-                        addOrUpdateDevice(deviceToUpdate, compType);
+            try {
+                if (DataLoader.CMD_UPDATE_DEVICE.equals(actualCommand)) {
+                    checkRequired();
+                    if (result.isRowError()) return;
+
+                    final @Nullable ComponentType compType = comptypeEJB.findByName(componentTypeFld);
+                    if (compType == null) {
+                        result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_CTYPE, componentTypeFld);
                     } else {
-                        if (propNameFld != null) {
-                            addOrUpdateProperty(deviceToUpdate, propNameFld, propValueFld, HDR_PROP_NAME);
-                        } else {
-                            result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, HDR_PROP_NAME);
-                        }
+                        addOrUpdateDevice(deviceToUpdate, compType);
                     }
-                } catch (EJBTransactionRolledbackException e) {
-                    handleLoadingError(LOGGER, e);
+                } else {
+                    if (propNameFld != null) {
+                        addOrUpdateProperty(deviceToUpdate, propNameFld, propValueFld, HDR_PROP_NAME);
+                    } else {
+                        result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, HDR_PROP_NAME);
+                    }
                 }
+            } catch (EJBTransactionRolledbackException e) {
+                handleLoadingError(LOGGER, e);
             }
         } else {
             result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_SERIAL, serialFld);

@@ -207,6 +207,7 @@ public class DevicesController implements SimpleTableExporter, ExcelSingleFileIm
     @Override
     public void doImport() {
         excelSingleFileImportUI.doImport();
+        deviceAttributesController.clearRelatedAttributeInformation();
         prepareDevicesForDisplay(null);
     }
 
