@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.views.SlotView;
 import org.primefaces.model.TreeNode;
 
@@ -13,6 +14,11 @@ public abstract class Tree<D> {
 	private List<BasicTreeNode<D>> selectedNodes = new ArrayList<>();
 	private String filter = "";
 	private String appliedFilter = "";
+	final protected SlotEJB slotEJB;
+	
+	public Tree(SlotEJB slotEJB) {
+		this.slotEJB = slotEJB;
+	}
 	
 	public abstract BasicTreeNode<D> getRootNode();
 
@@ -53,7 +59,7 @@ public abstract class Tree<D> {
 	//	print(0, getRootNode());
 	}
 
-	private void print(int i, TreeNode rootNode) {
+	public void print(int i, TreeNode rootNode) {
 		System.out.println(i+" "+((SlotView)rootNode.getData()).getName());
 		for (TreeNode node : rootNode.getChildren())
 			print(i+1, node);

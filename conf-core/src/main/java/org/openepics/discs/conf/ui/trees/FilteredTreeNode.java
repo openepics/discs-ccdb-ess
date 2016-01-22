@@ -9,8 +9,8 @@ import org.primefaces.model.TreeNode;
 
 public class FilteredTreeNode<D> extends TreeNodeWithTree<D> {
 
-	private List<FilteredTreeNode<D>> bufferedAllChildren = null;
-	private List<TreeNode> bufferedFilteredChildren = null;
+	protected List<FilteredTreeNode<D>> bufferedAllChildren = null;
+	protected List<TreeNode> bufferedFilteredChildren = null;
 	
 	public FilteredTreeNode(D data, BasicTreeNode<D> parent, Tree<D> tree) {
 		super(data, parent, tree);

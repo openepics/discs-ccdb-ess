@@ -6,24 +6,19 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ent.Slot;
-import org.openepics.discs.conf.ent.SlotPair;
-import org.openepics.discs.conf.ent.SlotRelation;
-import org.openepics.discs.conf.ent.SlotRelationName;
 import org.openepics.discs.conf.views.SlotView;
 
 import com.google.common.collect.Lists;
 
-public class SlotRelationshipTreeWithChildren extends SlotRelationshipTree {
-	private List<FilteredTreeNode<SlotView>> children = new ArrayList<>();
-	
-	public SlotRelationshipTreeWithChildren(SlotView data, SlotRelationName relationship, SlotEJB slotEJB) {
-		super(data, relationship, slotEJB);
+public class RootNodeWithChildren extends FilteredTreeNode<SlotView> {		
+	public RootNodeWithChildren(SlotView data, Tree<SlotView> tree) {
+		super(data, null, tree);
+		bufferedAllChildren = new ArrayList<>();
 	}
 	
 	public void initHierarchy(final List<BasicTreeNode<SlotView>> selectedNodes) {
-		children = new ArrayList<>();
+		bufferedAllChildren = new ArrayList<>();
         
         final List<Slot> childrenSlots = Lists.newArrayList();
 
@@ -35,21 +30,20 @@ public class SlotRelationshipTreeWithChildren extends SlotRelationshipTree {
         // build the tree
         int order = 0;
         for (final Slot slot : childrenSlots) {        	
-            final SlotView levelOneView = new SlotView(slot, getRootNode().getData(), ++order, slotEJB);
+            final SlotView levelOneView = new SlotView(slot, getData(), ++order, getTree().slotEJB);
             levelOneView.setLevel(1);            
-            children.add(new FilteredTreeNode<SlotView>(levelOneView, getRootNode(), this));
+            bufferedAllChildren.add(new FilteredTreeNode<SlotView>(levelOneView, this, getTree()));
         }
 
         removeRedundantRoots();
                 
-        getRootNode().cleanCache();       
+        cleanCache();       
 	}
 	
     private void findRelationRootsForSelectedNode(final BasicTreeNode<SlotView> containsNode, final List<Slot> rootSlots) {        
         final Slot nodeSlot = containsNode.getData().getSlot();
-        
-        final List<SlotPair> relations = containsNode.getData().getSlot().getPairsInWhichThisSlotIsAParentList();                
-        if (relations.stream().map(SlotPair::getSlotRelation).map(SlotRelation::getName).anyMatch(relationship::equals) 
+                
+        if (getTree().getAllChildren(containsNode).size() > 0   // TREE could be optimized to hasChildren()
         		&& !rootSlots.contains(nodeSlot)) {
         	rootSlots.add(nodeSlot);
         }
@@ -62,18 +56,18 @@ public class SlotRelationshipTreeWithChildren extends SlotRelationshipTree {
 
     public void removeRedundantRoots() {
         final Set<Long> levelOneIds = new HashSet<>();
-        for (BasicTreeNode<SlotView> node : children) {
+        for (BasicTreeNode<SlotView> node : bufferedAllChildren) {
             levelOneIds.add(node.getData().getId());
         }
 
         // find redundant roots
         final Set<Long> visited = new HashSet<>();
-        for (BasicTreeNode<SlotView> levelOne : children) {
+        for (BasicTreeNode<SlotView> levelOne : bufferedAllChildren) {
             removeRedundantRoots(levelOne, levelOneIds, visited);
         }
 
         // remove them
-        Iterator<? extends BasicTreeNode<SlotView>> i = children.iterator();
+        Iterator<? extends BasicTreeNode<SlotView>> i = bufferedAllChildren.iterator();
         while (i.hasNext()) {
             BasicTreeNode<SlotView> n = i.next();
             if (!levelOneIds.contains(n.getData().getId())) {
@@ -99,14 +93,9 @@ public class SlotRelationshipTreeWithChildren extends SlotRelationshipTree {
             removeRedundantRoots(child, levelOne, visited);
         }
     }
-
-
+	
 	@Override
-	public List<? extends BasicTreeNode<SlotView>> getAllChildren(BasicTreeNode<SlotView> parent) {		
-		if (parent == getRootNode()) {
-			return children;			
-		}
-		
-		return super.getAllChildren(parent);
+	public void cleanCache() {
+		bufferedFilteredChildren = null;
 	}
 }

@@ -65,8 +65,9 @@ import org.openepics.discs.conf.ui.common.DataLoaderHandler;
 import org.openepics.discs.conf.ui.common.HierarchyBuilder;
 import org.openepics.discs.conf.ui.common.UIException;
 import org.openepics.discs.conf.ui.trees.BasicTreeNode;
+import org.openepics.discs.conf.ui.trees.FilteredTreeNode;
+import org.openepics.discs.conf.ui.trees.RootNodeWithChildren;
 import org.openepics.discs.conf.ui.trees.SlotRelationshipTree;
-import org.openepics.discs.conf.ui.trees.SlotRelationshipTreeWithChildren;
 import org.openepics.discs.conf.ui.trees.Tree;
 import org.openepics.discs.conf.ui.util.ConnectsManager;
 import org.openepics.discs.conf.ui.util.UiUtility;
@@ -151,8 +152,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     private Tree<SlotView> selectedTree;
     
     private SlotRelationshipTree containsTree;
-    private SlotRelationshipTreeWithChildren powersTree;
-    private SlotRelationshipTreeWithChildren controlsTree;
+    private SlotRelationshipTree powersTree;
+    private SlotRelationshipTree controlsTree;
     private SlotRelationshipTree connectsTree; //TREE
     
     /*TREE private TreeNode powersRootNode;
@@ -611,13 +612,14 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     		selectedTree = containsTree;
     		break;
     	case POWERS:
-    		powersTree.initHierarchy(masterNodes);
+    		((RootNodeWithChildren)powersTree.getRootNode()).initHierarchy(masterNodes);
     		selectedTree = powersTree;
     		break;
         case CONTROLS:
-        	controlsTree.initHierarchy(masterNodes);
+        	((RootNodeWithChildren)controlsTree.getRootNode()).initHierarchy(masterNodes);
         	selectedTree = controlsTree;
         case CONNECTS:        	        
+        	((RootNodeWithChildren)connectsTree.getRootNode()).initHierarchy(masterNodes);
         	selectedTree = connectsTree;
         	break;        
     	}
@@ -984,11 +986,20 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     }
 
     private void initHierarchies() {
-    	containsTree = new SlotRelationshipTree(new SlotView(slotEJB.getRootNode(), null, 1, slotEJB), SlotRelationName.CONTAINS, slotEJB);
-    	controlsTree = new SlotRelationshipTreeWithChildren(new SlotView(slotEJB.getRootNode(), null, 1, slotEJB), SlotRelationName.CONTROLS, slotEJB);
-    	powersTree = new SlotRelationshipTreeWithChildren(new SlotView(slotEJB.getRootNode(), null, 1, slotEJB), SlotRelationName.POWERS, slotEJB);
+    	SlotView rootView = new SlotView(slotEJB.getRootNode(), null, 1, slotEJB);
+    			
+    	containsTree = new SlotRelationshipTree(SlotRelationName.CONTAINS, slotEJB);
+    	containsTree.setRootNode(new FilteredTreeNode<SlotView>(rootView, null, containsTree));
     	
-    	connectsTree =  new SlotRelationshipTree(new SlotView(slotEJB.getRootNode(), null, 1, slotEJB), SlotRelationName.CONTAINS, slotEJB); //TREE
+    	
+    	controlsTree = new SlotRelationshipTree(SlotRelationName.CONTROLS, slotEJB);
+    	controlsTree.setRootNode(new RootNodeWithChildren(rootView, controlsTree));
+    	
+    	powersTree = new SlotRelationshipTree(SlotRelationName.POWERS, slotEJB);
+    	powersTree.setRootNode(new RootNodeWithChildren(rootView, powersTree));
+    	
+    	connectsTree = new SlotRelationshipTree(SlotRelationName.CONTAINS, slotEJB);
+    	connectsTree.setRootNode(new FilteredTreeNode<SlotView>(rootView, null, connectsTree));//TREE
     	
     	selectedTree = containsTree;
         /*TREE connectsHierarchyBuilder = new ConnectsHierarchyBuilder(connectsManager, slotEJB);

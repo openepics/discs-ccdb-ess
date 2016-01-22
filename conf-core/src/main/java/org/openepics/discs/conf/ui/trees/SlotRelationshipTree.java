@@ -11,13 +11,15 @@ import org.openepics.discs.conf.views.SlotView;
 
 public class SlotRelationshipTree extends Tree<SlotView> {
 	protected SlotRelationName relationship;
-	final protected SlotEJB slotEJB;
-	final FilteredTreeNode<SlotView> rootNode;
+	private FilteredTreeNode<SlotView> rootNode;
 	 
-	public SlotRelationshipTree(SlotView data, SlotRelationName relationship, SlotEJB slotEJB) {
-		rootNode = new FilteredTreeNode<SlotView>(data, null, this);
-		this.relationship = relationship;
-		this.slotEJB = slotEJB;
+	public SlotRelationshipTree(SlotRelationName relationship, SlotEJB slotEJB) {
+		super(slotEJB);		
+		this.relationship = relationship;		
+	}
+	
+	public void setRootNode(FilteredTreeNode<SlotView> rootNode) {
+		this.rootNode = rootNode;
 	}
 	
 	@Override
