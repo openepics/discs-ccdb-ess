@@ -572,6 +572,11 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
     }
 
     private Slot getWorkingSlot() {
+        if (Strings.isNullOrEmpty(entityTypeFld)) {
+            result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, HDR_ENTITY_TYPE);
+            return null;
+        }
+
         isHostingSlot = isHostingSlot();
         if (isHostingSlot) {
             // installation slot must be found by its unique name
@@ -594,6 +599,9 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
         switch (actualCommand) {
             case DataLoader.CMD_DELETE_ENTITY:
                 deleteSlot();
+                break;
+            case DataLoader.CMD_DELETE_ENTITY_AND_CHILDREN:
+                deleteSlotWithChildren();
                 break;
             case DataLoader.CMD_DELETE_PROPERTY:
                 deleteSlotProperty();
@@ -641,6 +649,15 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
         }
 
         slotEJB.delete(workingSlot);
+    }
+
+    private void deleteSlotWithChildren() {
+        final Slot workingSlot = getWorkingSlot();
+        if (result.isRowError()) {
+            return;
+        }
+
+        slotEJB.deleteWithChildren(workingSlot);
     }
 
     private void deleteSlotProperty() {

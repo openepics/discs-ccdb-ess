@@ -21,6 +21,7 @@ package org.openepics.discs.conf.ejb;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +43,7 @@ import org.openepics.discs.conf.ent.ComptypePropertyValue;
 import org.openepics.discs.conf.ent.DeviceArtifact;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
+import org.openepics.discs.conf.ent.InstallationRecord;
 import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyValue;
 import org.openepics.discs.conf.ent.PropertyValueUniqueness;
@@ -59,6 +61,7 @@ import org.openepics.discs.conf.util.DuplicateNameException;
 import org.openepics.discs.conf.util.UnhandledCaseException;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 
 /**
  * DAO Service for accessing Installation {@link Slot} entities.
@@ -79,6 +82,7 @@ public class SlotEJB extends DAO<Slot> {
     @Inject private SlotRelationEJB slotRelationEJB;
     @Inject private ComptypeEJB comptypeEJB;
     @Inject private transient BlobStore blobStore;
+    @Inject private InstallationEJB installationEJB;
 
     /**
      * Queries database for slots by partial name
@@ -420,6 +424,66 @@ public class SlotEJB extends DAO<Slot> {
         final Map<Slot, Slot> originalToCopy = new HashMap<>();
         copySlotsToParent(sourceSlots, parentSlot, originalToCopy);
         createRelationshipCopies(originalToCopy);
+    }
+
+    /** Deletes a slot and all it's children.
+     * @param slotToDelete the {@link Slot} to delete
+     * @return the list of all {@link Slot}s that were affected by this deletion.
+     */
+    @CRUDOperation(operation=EntityTypeOperation.DELETE)
+    @Authorized
+    public List<Slot> deleteWithChildren(final Slot slotToDelete) {
+        final List<Long> parentRefreshList = Lists.newArrayList();
+        deleteWithChildren(slotToDelete, parentRefreshList);
+
+        return parentRefreshList.stream().map(id -> findById(id)).collect(Collectors.toList());
+    }
+
+    private void deleteWithChildren(final Slot slotToDelete, final List<Long> parentRefreshList) {
+        // delete all the children
+        final Long deleteSlotId = slotToDelete.getId();
+
+        final List<SlotPair> containsChildrenPairs = slotToDelete.getPairsInWhichThisSlotIsAParentList().stream().
+                filter(pair -> pair.getSlotRelation().getName() == SlotRelationName.CONTAINS).
+                collect(Collectors.toList());
+        for (final Slot child : containsChildrenPairs.stream().map(SlotPair::getChildSlot).collect(Collectors.toList())) {
+            deleteWithChildren(child, parentRefreshList);
+        }
+
+        // remove pairs that their children were just deleted - the pairs were removed from child were remove
+        for (final SlotPair childPair : containsChildrenPairs) {
+            slotToDelete.getPairsInWhichThisSlotIsAParentList().remove(childPair);
+        }
+
+        // update the parent refresh list for the current slot
+        final List<SlotPair> containsParentPairs = slotToDelete.getPairsInWhichThisSlotIsAChildList().stream().
+                filter(pair -> pair.getSlotRelation().getName() == SlotRelationName.CONTAINS).
+                collect(Collectors.toList());
+        parentRefreshList.addAll(containsParentPairs.stream().map(pair -> pair.getParentSlot().getId()).
+                                                                                    collect(Collectors.toList()));
+        // remove the pairs to parent
+        for (final SlotPair parentPair : containsParentPairs) {
+            slotPairEJB.delete(parentPair);
+        }
+
+        Slot freshSlot = findById(deleteSlotId);
+
+        // uninstall device that may be installed
+        final InstallationRecord record = installationEJB.getActiveInstallationRecordForSlot(freshSlot);
+        if (record != null) {
+            record.setUninstallDate(new Date());
+            installationEJB.save(record);
+        }
+
+        // remove the slot that is about to be deleted from the parent refresh list
+        while (parentRefreshList.contains(deleteSlotId)) {
+            parentRefreshList.remove(deleteSlotId);
+        }
+
+        // audit log the deletion of this slot
+        explicitAuditLog(freshSlot, EntityTypeOperation.DELETE);
+        // and delete the slot
+        delete(freshSlot);
     }
 
     private void copySlotsToParent(final List<Slot> sourceSlots, final Slot parentSlot,

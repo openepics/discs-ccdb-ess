@@ -56,6 +56,7 @@ public interface DataLoader {
     public static final String CMD_DELETE_PROPERTY = "DELETE PROPERTY";
     public static final String CMD_DELETE_DEVICE_TYPE = "DELETE DEVICE TYPE";
     public static final String CMD_DELETE_ENTITY = "DELETE ENTITY";
+    public static final String CMD_DELETE_ENTITY_AND_CHILDREN = "DELETE ENTITY AND CHILDREN";
     public static final String CMD_DELETE_RELATION = "DELETE RELATIONSHIP";
     public static final String CMD_UNINSTALL = "UNINSTALL DEVICE";
 

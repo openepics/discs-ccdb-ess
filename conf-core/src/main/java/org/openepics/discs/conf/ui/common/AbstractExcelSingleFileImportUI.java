@@ -165,6 +165,7 @@ public abstract class AbstractExcelSingleFileImportUI implements ExcelSingleFile
                     case DataLoader.CMD_DELETE_PROPERTY:
                     case DataLoader.CMD_DELETE_DEVICE_TYPE:
                     case DataLoader.CMD_DELETE_ENTITY:
+                    case DataLoader.CMD_DELETE_ENTITY_AND_CHILDREN:
                     case DataLoader.CMD_DELETE_RELATION:
                     case DataLoader.CMD_UNINSTALL:
                         ++deleteRows;
