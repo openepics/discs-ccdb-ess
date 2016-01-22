@@ -15,12 +15,20 @@ public abstract class Tree<D> {
 	private String filter = "";
 	private String appliedFilter = "";
 	final protected SlotEJB slotEJB;
-	
+	private FilteredTreeNode<D> rootNode;
+
 	public Tree(SlotEJB slotEJB) {
 		this.slotEJB = slotEJB;
 	}
 	
-	public abstract BasicTreeNode<D> getRootNode();
+	public void setRootNode(FilteredTreeNode<D> rootNode) {
+		this.rootNode = rootNode;
+	}
+	
+	public FilteredTreeNode<D> getRootNode() {
+		return rootNode;
+	}
+
 
 	public abstract List<? extends BasicTreeNode<D>> getAllChildren(BasicTreeNode<D> data);	
 	

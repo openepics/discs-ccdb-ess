@@ -11,15 +11,10 @@ import org.openepics.discs.conf.views.SlotView;
 
 public class SlotRelationshipTree extends Tree<SlotView> {
 	protected SlotRelationName relationship;
-	private FilteredTreeNode<SlotView> rootNode;
-	 
+
 	public SlotRelationshipTree(SlotRelationName relationship, SlotEJB slotEJB) {
 		super(slotEJB);		
 		this.relationship = relationship;		
-	}
-	
-	public void setRootNode(FilteredTreeNode<SlotView> rootNode) {
-		this.rootNode = rootNode;
 	}
 	
 	@Override
@@ -39,10 +34,4 @@ public class SlotRelationshipTree extends Tree<SlotView> {
 	    }
 		return allChildren;
 	}
-
-	@Override
-	public FilteredTreeNode<SlotView> getRootNode() {
-		return rootNode;
-	}
-
 }
