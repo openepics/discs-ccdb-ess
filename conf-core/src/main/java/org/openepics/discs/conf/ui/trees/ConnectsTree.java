@@ -26,6 +26,7 @@ public class ConnectsTree extends Tree<SlotView> {
 		final List<BasicTreeNode<SlotView>> allChildren = new ArrayList<>();
 		
 		for (Slot child : childSlots) {
+			if (hasCycle(parentSlotView, child.getId())) continue;
 			final SlotView childSlotView = new SlotView(child, parentSlotView, 0, slotEJB);
 	        childSlotView.setLevel(parentSlotView.getLevel()+1);
 	        allChildren.add(new FilteredTreeNode<SlotView>(childSlotView, parent, this));
@@ -33,4 +34,14 @@ public class ConnectsTree extends Tree<SlotView> {
 	    }
 		return allChildren;
 	}
+
+
+	private boolean hasCycle(SlotView parentSlotView, Long id) {
+		while (parentSlotView != null) {
+			if (id.equals(parentSlotView.getId())) return true;
+			parentSlotView = parentSlotView.getParentNode();
+		}
+		return false;
+	}
+	
 }
