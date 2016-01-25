@@ -31,7 +31,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -76,7 +75,6 @@ import org.openepics.discs.conf.util.Utility;
 import org.openepics.discs.conf.views.SlotView;
 import org.openepics.names.jaxb.DeviceNameElement;
 import org.primefaces.context.RequestContext;
-import org.primefaces.event.NodeExpandEvent;
 import org.primefaces.event.NodeSelectEvent;
 import org.primefaces.event.NodeUnselectEvent;
 import org.primefaces.event.TabChangeEvent;
@@ -898,26 +896,10 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      */
     public void moveSlotUp() {
         Preconditions.checkState(isSingleNodeSelected());
-        final TreeNode currentNode = selectedTree.getSelectedNodes().get(0);
-        final TreeNode parent = currentNode.getParent();
-
-        final ListIterator<TreeNode> listIterator = parent.getChildren().listIterator();
-        while (listIterator.hasNext()) {
-            final TreeNode element = listIterator.next();
-            if (element.equals(currentNode) && listIterator.hasPrevious()) {
-                final SlotView movedSlotView = (SlotView) currentNode.getData();
-                final SlotView currentNodesParentSlotView = (SlotView) parent.getData();
-                listIterator.remove();
-                final SlotView affectedNode = (SlotView) listIterator.previous().getData();
-                affectedNode.setLast(movedSlotView.isLast());
-                affectedNode.setFirst(false);
-                movedSlotView.setLast(false);
-                movedSlotView.setFirst(!listIterator.hasPrevious());
-                listIterator.add(currentNode);
-                slotPairEJB.moveUp(currentNodesParentSlotView.getSlot(), movedSlotView.getSlot());
-                break;
-            }
-        }
+        final FilteredTreeNode<SlotView> currentNode = selectedTree.getSelectedNodes().get(0);
+        final FilteredTreeNode<SlotView> parent = (FilteredTreeNode<SlotView>)currentNode.getParent(); 
+        slotPairEJB.moveUp(parent.getData().getSlot(), currentNode.getData().getSlot());
+        parent.refreshCache();
     }
 
     /** The action event to be called when the user presses the "move down" action button. This action moves the current
@@ -925,26 +907,10 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      */
     public void moveSlotDown() {
         Preconditions.checkState(isSingleNodeSelected());
-        final TreeNode currentNode = selectedTree.getSelectedNodes().get(0);
-        final TreeNode parent = currentNode.getParent();
-
-        final ListIterator<TreeNode> listIterator = parent.getChildren().listIterator();
-        while (listIterator.hasNext()) {
-            final TreeNode element = listIterator.next();
-            if (element.equals(currentNode) && listIterator.hasNext()) {
-                final SlotView movedSlotView = (SlotView) currentNode.getData();
-                final SlotView currentNodesParentSlotView = (SlotView) parent.getData();
-                listIterator.remove();
-                final SlotView affectedNode = (SlotView) listIterator.next().getData();
-                affectedNode.setFirst(movedSlotView.isFirst());
-                affectedNode.setLast(false);
-                movedSlotView.setFirst(false);
-                movedSlotView.setLast(!listIterator.hasNext());
-                listIterator.add(currentNode);
-                slotPairEJB.moveDown(currentNodesParentSlotView.getSlot(), movedSlotView.getSlot());
-                break;
-            }
-        }
+        final FilteredTreeNode<SlotView> currentNode = selectedTree.getSelectedNodes().get(0);
+        final FilteredTreeNode<SlotView> parent = (FilteredTreeNode<SlotView>)currentNode.getParent(); 
+        slotPairEJB.moveDown(parent.getData().getSlot(), currentNode.getData().getSlot());
+        parent.refreshCache();
     }
 
     /** Prepares fields that are used in pop up for editing an existing container */

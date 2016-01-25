@@ -2,6 +2,7 @@ package org.openepics.discs.conf.ui.trees;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.views.SlotView;
@@ -71,5 +72,22 @@ public class FilteredTreeNode<D> extends TreeNodeWithTree<D> {
 			}
 		}
 		
+	}
+
+	public void refreshCache() {
+		List<FilteredTreeNode<D>> oldBuffer = bufferedAllChildren;
+		ArrayList<FilteredTreeNode<D>> newBuffer = (ArrayList<FilteredTreeNode<D>>)getAllChildren();
+		for (int i = 0; i<newBuffer.size(); i++) {
+			Long id = ((SlotView)newBuffer.get(i).getData()).getId();
+			for (FilteredTreeNode<D> oldNode : oldBuffer) {
+				if (((SlotView)oldNode.getData()).getId().equals(id)) {
+					newBuffer.set(i, oldNode);
+				}
+			}
+			((SlotView)newBuffer.get(i).getData()).setFirst(i == 0);
+			((SlotView)newBuffer.get(i).getData()).setLast(i == newBuffer.size()-1);
+		}		
+		bufferedAllChildren = newBuffer;
+		bufferedFilteredChildren = null;		
 	}
 }
