@@ -5,8 +5,10 @@ import java.util.List;
 import org.primefaces.model.TreeNode;
 
 /**
- * This is a basic extension of primefaces TreeNode, not doing any additional logic.
- * 
+ * This is a basic extension of primefaces' TreeNode, not doing any additional logic.
+ * <p>
+ * Be careful with PF implementation. Rowkeys are used to find the nodes in tree.
+ * So rowkeys need to be updated every time children change.
  * 
  * @author ilist
  *

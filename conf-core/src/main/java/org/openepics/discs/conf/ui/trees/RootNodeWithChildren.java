@@ -11,6 +11,16 @@ import org.openepics.discs.conf.views.SlotView;
 
 import com.google.common.collect.Lists;
 
+/**
+ * Some hierarchies need a root node with predefined children.
+ * Such are controls, powers and connects.
+ * 
+ * The children are searched through contains hierarchy. Only the children acting in the new hierarchy are used.
+ * If a root appears somewhere in the new tree as a subnode it is removed.
+ * 
+ * @author ilist
+ *
+ */
 public class RootNodeWithChildren extends FilteredTreeNode<SlotView> {		
 	public RootNodeWithChildren(SlotView data, Tree<SlotView> tree) {
 		super(data, null, tree);

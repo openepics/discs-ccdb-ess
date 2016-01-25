@@ -8,6 +8,13 @@ import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ui.util.ConnectsManager;
 import org.openepics.discs.conf.views.SlotView;
 
+/**
+ * Implements extrinsic method, that return's tree node's children based on connects database.
+ * Takes care of removing cycles.
+ * 
+ * @author ilist
+ *
+ */
 public class ConnectsTree extends Tree<SlotView> {
 	private final ConnectsManager connectsManager;	
 	 

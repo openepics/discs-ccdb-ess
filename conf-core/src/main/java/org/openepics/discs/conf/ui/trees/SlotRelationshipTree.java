@@ -9,6 +9,12 @@ import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotRelationName;
 import org.openepics.discs.conf.views.SlotView;
 
+/**
+ * Implements extrinsic method, that return's tree node's children based on given relationship name. 
+ * 
+ * @author ilist
+ *
+ */
 public class SlotRelationshipTree extends Tree<SlotView> {
 	protected SlotRelationName relationship;
 

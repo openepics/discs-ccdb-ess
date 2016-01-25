@@ -8,8 +8,16 @@ import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.views.SlotView;
 import org.primefaces.model.TreeNode;
 
-import com.google.common.collect.Lists;
-
+/**
+ * Tree class contains global info about the tree.
+ * Additionally it has an "extrinsic" method to find tree node's children.
+ * 
+ * Theoretically this could be inside tree's root node, but then we couldn't use RootNodeWithChildren for all: powers, controls and connects trees.
+ * 
+ * @author ilist
+ *
+ * @param <D>
+ */
 public abstract class Tree<D> {
 	private List<FilteredTreeNode<D>> selectedNodes = new ArrayList<>();
 	private String filter = "";

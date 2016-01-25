@@ -6,6 +6,13 @@ import java.util.List;
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.views.SlotView;
 
+/**
+ * Adds filtering and buffering support to tree nodes.
+ * 
+ * @author ilist
+ *
+ * @param <D> type of data
+ */
 public class FilteredTreeNode<D> extends TreeNodeWithTree<D> {
 
 	protected List<FilteredTreeNode<D>> bufferedAllChildren = null;
