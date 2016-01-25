@@ -62,9 +62,7 @@ import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotRelationName;
 import org.openepics.discs.conf.ui.common.AbstractExcelSingleFileImportUI;
 import org.openepics.discs.conf.ui.common.DataLoaderHandler;
-import org.openepics.discs.conf.ui.common.HierarchyBuilder;
 import org.openepics.discs.conf.ui.common.UIException;
-import org.openepics.discs.conf.ui.trees.BasicTreeNode;
 import org.openepics.discs.conf.ui.trees.ConnectsTree;
 import org.openepics.discs.conf.ui.trees.FilteredTreeNode;
 import org.openepics.discs.conf.ui.trees.RootNodeWithChildren;
@@ -82,7 +80,6 @@ import org.primefaces.event.NodeExpandEvent;
 import org.primefaces.event.NodeSelectEvent;
 import org.primefaces.event.NodeUnselectEvent;
 import org.primefaces.event.TabChangeEvent;
-import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 
 import com.google.common.base.Preconditions;
@@ -145,11 +142,6 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     private String requestedSlot;
 
     // ---- variables for hierarchies and tabs --------
-    /*TREE private transient EntityHierarchyBuilder hierarchyBuilder;
-    private transient EntityHierarchyBuilder powersHierarchyBuilder;
-    private transient EntityHierarchyBuilder controlsHierarchyBuilder;
-    private transient ConnectsHierarchyBuilder connectsHierarchyBuilder;*/
-    
     private Tree<SlotView> selectedTree;
     
     private SlotRelationshipTree containsTree;
@@ -157,15 +149,6 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     private SlotRelationshipTree controlsTree;
     private ConnectsTree connectsTree;
     
-    /*TREE private TreeNode powersRootNode;
-    private TreeNode controlsRootNode;
-    private TreeNode connectsRootNode;
-    private List<TreeNode> powersChildren;
-    private List<TreeNode> controlsChildren;
-    private List<TreeNode> connectsChildren;*/
-
-    //TREE private transient List<TreeNode> selectedNodes;
-    //TREE private transient List<TreeNode> savedIncludesSelectedNodes;
     /** <code>selectedSlot</code> is only initialized when there is only one node in the tree selected */
     private Slot selectedSlot;
     /** <code>selectedSlotView</code> is only initialized when there is only one node in the tree selected */
@@ -192,11 +175,6 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     private transient List<String> namesForAutoComplete;
     private boolean isNewInstallationSlot;
     private transient Map<String, DeviceNameElement> nameList;
-
-    /*TREE private String filterContainsTree;
-    private String filterControlsTree;
-    private String filterPowersTree;
-    private String filterConnectsTree;*/
 
     private String namingRedirectionUrl;
     private String cableRedirectionUrl;
@@ -862,10 +840,11 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         }*/
     }
 
-    private void expandOrCollapseNode(final TreeNode root, final boolean expand, final HierarchyBuilder hb,
+    private void expandOrCollapseNode(final TreeNode root, final boolean expand, 
             final boolean show)
     {
-        if (expand) {
+    	//TREE
+       /* if (expand) {
             if (!((SlotView)root.getData()).isInitialzed()) {
                 hb.expandNode(root);
                 root.setExpanded(show);
@@ -881,7 +860,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         }
         for (final TreeNode node : root.getChildren()) {
             expandOrCollapseNode(node, expand, hb, show);
-        }
+        }*/
     }
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -989,14 +968,14 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     private void initHierarchies() {
     	SlotView rootView = new SlotView(slotEJB.getRootNode(), null, 1, slotEJB);
     			
-    	containsTree = new SlotRelationshipTree(SlotRelationName.CONTAINS, slotEJB);
+    	containsTree = new SlotRelationshipTree(SlotRelationName.CONTAINS, slotEJB, installationEJB);
     	containsTree.setRootNode(new FilteredTreeNode<SlotView>(rootView, null, containsTree));
     	
     	
-    	controlsTree = new SlotRelationshipTree(SlotRelationName.CONTROLS, slotEJB);
+    	controlsTree = new SlotRelationshipTree(SlotRelationName.CONTROLS, slotEJB, installationEJB);
     	controlsTree.setRootNode(new RootNodeWithChildren(rootView, controlsTree));
     	
-    	powersTree = new SlotRelationshipTree(SlotRelationName.POWERS, slotEJB);
+    	powersTree = new SlotRelationshipTree(SlotRelationName.POWERS, slotEJB, installationEJB);
     	powersTree.setRootNode(new RootNodeWithChildren(rootView, powersTree));
     	
     	connectsTree = new ConnectsTree(slotEJB, connectsManager);
