@@ -156,7 +156,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     private transient List<SlotView> pasteErrors;
     private ClipboardOperations clipboardOperation;
     private String pasteErrorReason;
-    private transient List<TreeNode> nodesToDelete;
+    private transient List<FilteredTreeNode<SlotView>> nodesToDelete;
     private transient List<SlotView> slotsToDelete;
     private transient List<SlotView> filteredSlotsToDelete;
     private boolean detectNamingStatus;
@@ -245,7 +245,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     }
 
     private void updateTreeWithFreshSlot(final TreeNode node, final Slot freshSlot, boolean rebuildAffectedSlots) {
-        /* TREE final SlotView nodeSlotView = (SlotView) node.getData();
+/*         final SlotView nodeSlotView = (SlotView) node.getData();
         if (freshSlot.getId().equals(nodeSlotView.getId())) {
             nodeSlotView.setSlot(freshSlot);
             if (rebuildAffectedSlots) {
@@ -769,24 +769,21 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         Preconditions.checkNotNull(selectedTree.getSelectedNodes());
 
         nodesToDelete = Lists.newArrayList();
-        for (final TreeNode nodeToDelete : selectedTree.getSelectedNodes()) {
+        for (final FilteredTreeNode<SlotView> nodeToDelete : selectedTree.getSelectedNodes()) {
             addSlotToDeleteWithChildren(nodeToDelete);
         }
-        slotsToDelete = nodesToDelete.stream().map(node -> (SlotView) node.getData())
-                            .collect(Collectors.toList());
+        slotsToDelete = nodesToDelete.stream().map(FilteredTreeNode::getData).collect(Collectors.toList());
     }
 
-    private void addSlotToDeleteWithChildren(final TreeNode nodeToDelete) {
-        /* TREE if (!nodesToDelete.contains(nodeToDelete)) {
+    private void addSlotToDeleteWithChildren(final FilteredTreeNode<SlotView> nodeToDelete) {
+        if (!nodesToDelete.contains(nodeToDelete)) {
             nodesToDelete.add(nodeToDelete);
         }
         // make sure that the tree children are properly initialized.
-        if (!((SlotView)nodeToDelete.getData()).isInitialzed()) {
-            hierarchyBuilder.expandNode(nodeToDelete);
-        }
-        for (final TreeNode child : nodeToDelete.getChildren()) {
+        
+        for (final FilteredTreeNode<SlotView> child : nodeToDelete.getBufferedAllChildren()) {
             addSlotToDeleteWithChildren(child);
-        }*/
+        }
     }
 
     /** Deletes selected container */
@@ -794,14 +791,10 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         Preconditions.checkNotNull(nodesToDelete);
         Preconditions.checkState(!nodesToDelete.isEmpty());
 
-        final int numSlotsToDelete = nodesToDelete.size();
-        final List<TreeNode> parentRefreshList = Lists.newArrayList();
+        final int numSlotsToDelete = nodesToDelete.size();        
         while (!nodesToDelete.isEmpty()) {
             removeDeletedFromClipboard();
-            deleteWithChildren(nodesToDelete.get(0), parentRefreshList);
-        }
-        for (final TreeNode refreshNode : parentRefreshList) {
-            updateTreesWithFreshSlot(((SlotView) refreshNode.getData()).getSlot(), true);
+            deleteWithChildren(nodesToDelete.get(0));
         }
         UiUtility.showMessage(FacesMessage.SEVERITY_INFO, "Slots deleted", Integer.toString(numSlotsToDelete)
                                             + " slots have been successfully deleted");
@@ -818,12 +811,12 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         }
     }
 
-    private void deleteWithChildren(final TreeNode node, final List<TreeNode> parentRefreshList) {
-        while (!node.getChildren().isEmpty()) {
-            deleteWithChildren(node.getChildren().get(0), parentRefreshList);
+    private void deleteWithChildren(final FilteredTreeNode<SlotView> node) {
+        while (!node.getBufferedAllChildren().isEmpty()) {
+            deleteWithChildren(node.getBufferedAllChildren().get(0));
         }
-        final TreeNode parentTreeNode = node.getParent();
-        final SlotView slotViewToDelete = (SlotView) node.getData();
+        final FilteredTreeNode<SlotView> parentTreeNode = (FilteredTreeNode<SlotView>)node.getParent();
+        final SlotView slotViewToDelete = node.getData();
         final Slot slotToDelete = slotViewToDelete.getSlot();
         // uninstall device if one is installed
         final Device deviceToUninstall = slotViewToDelete.getInstalledDevice();
@@ -834,17 +827,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         }
         slotEJB.delete(slotToDelete);
         // update UI data as well
-        parentTreeNode.getChildren().remove(node);
-        if (parentTreeNode.getChildCount() == 0) {
-            ((SlotView) parentTreeNode.getData()).setDeletable(true);
-        }
+        parentTreeNode.refreshCache();
         nodesToDelete.remove(node);
-        // the parent needs to be refreshed
-        if (!parentRefreshList.contains(parentTreeNode)) {
-            parentRefreshList.add(parentTreeNode);
-        }
-        // maybe this node had some children, and it was added previously
-        parentRefreshList.remove(node);
     }
 
     public boolean isNodesDeletable() {
