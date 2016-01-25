@@ -449,6 +449,7 @@
                                 </goals>
                                 <configuration>
                                     <append>true</append>
+                                    <skip>${jacoco.it.skip}</skip>
                                     <destFile>${basedir}/../target/jacoco.exec</destFile>
                                 </configuration>
                             </execution>                                   
