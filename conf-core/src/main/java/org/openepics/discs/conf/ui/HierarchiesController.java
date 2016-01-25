@@ -446,7 +446,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      * @param slot the slot we want to switch to
      */
     public void selectNode(final Slot slot) {
-        BasicTreeNode<SlotView> node = findNode(slot);
+        FilteredTreeNode<SlotView> node = findNode(slot);
 
         // the final slot found
         unselectAllTreeNodes();
@@ -454,7 +454,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         fakeUISelection(node);
     }
 
-    public BasicTreeNode<SlotView> findNode(final Slot slot) {
+    public FilteredTreeNode<SlotView> findNode(final Slot slot) {
         Preconditions.checkNotNull(slot);
 
      /*TREE   TreeNode node = rootNode;
@@ -488,7 +488,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         return null;
     }
 
-    private void fakeUISelection(final BasicTreeNode<SlotView> node) {        
+    private void fakeUISelection(final FilteredTreeNode<SlotView> node) {        
         selectedTree.getSelectedNodes().add(node);
         node.setSelected(true);
         updateDisplayedSlotInformation();
@@ -603,7 +603,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      * @param event the event
      */
     public void onTabChange(TabChangeEvent event) {
-    	final List<BasicTreeNode<SlotView>> masterNodes = containsTree.getSelectedNodes().size() > 0
+    	final List<FilteredTreeNode<SlotView>> masterNodes = containsTree.getSelectedNodes().size() > 0
                 ? containsTree.getSelectedNodes() : Arrays.asList(containsTree.getRootNode());
     	
     	ActiveTab newActiveTab = ActiveTab.valueOf(event.getTab().getId());

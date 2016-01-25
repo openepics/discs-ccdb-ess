@@ -17,13 +17,18 @@ public class RootNodeWithChildren extends FilteredTreeNode<SlotView> {
 		bufferedAllChildren = new ArrayList<>();
 	}
 	
-	public void initHierarchy(final List<BasicTreeNode<SlotView>> selectedNodes) {
+	@Override
+	public List<? extends BasicTreeNode<SlotView>> getAllChildren() {
+		return bufferedAllChildren;
+	}
+	
+	public void initHierarchy(final List<FilteredTreeNode<SlotView>> selectedNodes) {
 		bufferedAllChildren = new ArrayList<>();
         
         final List<Slot> childrenSlots = Lists.newArrayList();
 
         // find root nodes for the selected sub-tree        
-        for (BasicTreeNode<SlotView> selectedNode : selectedNodes) {
+        for (FilteredTreeNode<SlotView> selectedNode : selectedNodes) {
             findRelationRootsForSelectedNode(selectedNode, childrenSlots);
         }
 
@@ -40,7 +45,7 @@ public class RootNodeWithChildren extends FilteredTreeNode<SlotView> {
         cleanCache();       
 	}
 	
-    private void findRelationRootsForSelectedNode(final BasicTreeNode<SlotView> containsNode, final List<Slot> rootSlots) {        
+    private void findRelationRootsForSelectedNode(final FilteredTreeNode<SlotView> containsNode, final List<Slot> rootSlots) {        
         final Slot nodeSlot = containsNode.getData().getSlot();
                 
         if (getTree().getAllChildren(containsNode).size() > 0   // TREE could be optimized to hasChildren()
@@ -49,7 +54,7 @@ public class RootNodeWithChildren extends FilteredTreeNode<SlotView> {
         }
         
         // this node is not a root
-        for (final BasicTreeNode<SlotView> childNode : containsNode.getAllChildren()) {
+        for (final FilteredTreeNode<SlotView> childNode : containsNode.getBufferedAllChildren()) {
             findRelationRootsForSelectedNode(childNode, rootSlots);
         }
     }
@@ -62,7 +67,7 @@ public class RootNodeWithChildren extends FilteredTreeNode<SlotView> {
 
         // find redundant roots
         final Set<Long> visited = new HashSet<>();
-        for (BasicTreeNode<SlotView> levelOne : bufferedAllChildren) {
+        for (FilteredTreeNode<SlotView> levelOne : bufferedAllChildren) {
             removeRedundantRoots(levelOne, levelOneIds, visited);
         }
 
@@ -77,7 +82,7 @@ public class RootNodeWithChildren extends FilteredTreeNode<SlotView> {
     }
     
     
-    private void removeRedundantRoots(BasicTreeNode<SlotView> node, Set<Long> levelOne, Set<Long> visited) {
+    private void removeRedundantRoots(FilteredTreeNode<SlotView> node, Set<Long> levelOne, Set<Long> visited) {
         final SlotView nodeSlotView = node.getData();        
 
         if (visited.contains(nodeSlotView.getId())) return;
@@ -89,7 +94,7 @@ public class RootNodeWithChildren extends FilteredTreeNode<SlotView> {
                 // after removal, we still need to visit the subtree of this node
             }
         }
-        for (BasicTreeNode<SlotView> child : node.getAllChildren()) {
+        for (FilteredTreeNode<SlotView> child : node.getBufferedAllChildren()) {
             removeRedundantRoots(child, levelOne, visited);
         }
     }

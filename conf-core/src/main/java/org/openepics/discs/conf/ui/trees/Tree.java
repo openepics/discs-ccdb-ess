@@ -11,7 +11,7 @@ import org.primefaces.model.TreeNode;
 import com.google.common.collect.Lists;
 
 public abstract class Tree<D> {
-	private List<BasicTreeNode<D>> selectedNodes = new ArrayList<>();
+	private List<FilteredTreeNode<D>> selectedNodes = new ArrayList<>();
 	private String filter = "";
 	private String appliedFilter = "";
 	final protected SlotEJB slotEJB;
@@ -32,7 +32,7 @@ public abstract class Tree<D> {
 
 	public abstract List<? extends BasicTreeNode<D>> getAllChildren(BasicTreeNode<D> data);	
 	
-	public List<BasicTreeNode<D>> getSelectedNodes()
+	public List<FilteredTreeNode<D>> getSelectedNodes()
 	{
 		return selectedNodes;
 	}	
@@ -46,7 +46,7 @@ public abstract class Tree<D> {
 	{
 		this.selectedNodes.clear();
 		if (selectedNodes != null)
-			this.selectedNodes.addAll((List<BasicTreeNode<D>>)(Object)Arrays.asList(selectedNodes));
+			this.selectedNodes.addAll((List<FilteredTreeNode<D>>)(List<?>)Arrays.asList(selectedNodes));
 	}
 
 	public String getFilter() {

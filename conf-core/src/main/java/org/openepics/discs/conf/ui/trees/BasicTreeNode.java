@@ -4,6 +4,14 @@ import java.util.List;
 
 import org.primefaces.model.TreeNode;
 
+/**
+ * This is a basic extension of primefaces TreeNode, not doing any additional logic.
+ * 
+ * 
+ * @author ilist
+ *
+ * @param <D> type of the data it contains
+ */
 public abstract class BasicTreeNode<D> implements TreeNode {
 
 	public static final String DEFAULT_TYPE = "default";
@@ -22,6 +30,12 @@ public abstract class BasicTreeNode<D> implements TreeNode {
     }
 	
 	public abstract List<? extends BasicTreeNode<D>> getAllChildren();
+	public abstract List<? extends BasicTreeNode<D>> getFilteredChildren();
+	
+	@Override @Deprecated
+	public List<TreeNode> getChildren() {
+		return (List<TreeNode>)(List<?>)getFilteredChildren();
+	}
 		
 	@Override
 	public String getType() {
@@ -103,10 +117,10 @@ public abstract class BasicTreeNode<D> implements TreeNode {
 	
 	protected void updateRowKeys() {		
 		int i = 0;
-		for (TreeNode node : getChildren()) {
-			((BasicTreeNode<D>)node).setRowKey(i);
+		for (BasicTreeNode<D> node : getFilteredChildren()) {
+			node.setRowKey(i);
 			i++;
-		}		 
+		}
 	}
 
 	@Override
