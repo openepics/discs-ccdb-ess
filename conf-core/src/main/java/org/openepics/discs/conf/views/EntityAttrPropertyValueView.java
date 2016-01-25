@@ -58,6 +58,12 @@ public class EntityAttrPropertyValueView<E extends ConfigurationEntity & NamedEn
     private PropertyValue propertyValue;
     private boolean propertyNameChangeDisabled;
 
+    /**
+     * @param propertyValue the {@link PropertyValue}
+     * @param kind the kind of of {@link PropertyValue}
+     * @param viewParent the view parent of the {@link PropertyValue} (the one selected in the table)
+     * @param propertyValueParent the actual parent of the {@link PropertyValue} (usually {@link ComponentType})
+     */
     public <P extends ConfigurationEntity & NamedEntity>
             EntityAttrPropertyValueView(PropertyValue propertyValue, EntityAttributeViewKind kind, E viewParent,
                     P propertyValueParent) {
@@ -65,10 +71,19 @@ public class EntityAttrPropertyValueView<E extends ConfigurationEntity & NamedEn
         setKind(kind);
     }
 
+    /**
+     * @param propertyValue the {@link PropertyValue}
+     * @param viewParent the parent of the {@link PropertyValue}
+     */
     public EntityAttrPropertyValueView(PropertyValue propertyValue, E viewParent) {
         this(propertyValue, viewParent, null);
     }
 
+    /**
+     * @param propertyValue the {@link PropertyValue}
+     * @param viewParent the view parent of the {@link PropertyValue} (the one selected in the table)
+     * @param propertyValueParent the actual parent of the {@link PropertyValue} (usually {@link ComponentType})
+     */
     public <P extends ConfigurationEntity & NamedEntity> EntityAttrPropertyValueView(PropertyValue propertyValue,
             E viewParent, P propertyValueParent) {
         super(viewParent, propertyValueParent != null ? propertyValueParent.getName() : "");
@@ -172,6 +187,10 @@ public class EntityAttrPropertyValueView<E extends ConfigurationEntity & NamedEn
         validateSingleLine(value.toString(), dataType);
     }
 
+    /** Validates the {@link PropertyValue} value in a dialog for properties that accept a single value
+     * @param strValue the value from the dialog
+     * @param dataType the expected {@link DataType} of the value
+     */
     public static void validateSingleLine(final String strValue, final DataType dataType) {
         switch (Conversion.getBuiltInDataType(dataType)) {
             case DOUBLE:
@@ -228,6 +247,11 @@ public class EntityAttrPropertyValueView<E extends ConfigurationEntity & NamedEn
         validateMultiLine(value.toString(), dataType);
     }
 
+    /** Validates the {@link PropertyValue} value in a dialog for properties that accept multiple values
+     * (vectors, lists, tables)
+     * @param strValue the value from the dialog
+     * @param dataType the expected {@link DataType} of the value
+     */
     public static void validateMultiLine(final String strValue, final DataType dataType) {
         switch (Conversion.getBuiltInDataType(dataType)) {
             case DBL_TABLE:

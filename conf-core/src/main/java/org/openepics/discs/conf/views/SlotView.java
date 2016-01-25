@@ -180,7 +180,32 @@ public class SlotView {
                                         parentSlot.getName() + ")");
     }
 
-    /**
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((cableNumber == null) ? 0 : cableNumber.hashCode());
+        result = prime * result
+                + ((description == null) ? 0 : description.hashCode());
+        result = prime * result
+                + ((deviceTypeName == null) ? 0 : deviceTypeName.hashCode());
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = prime * result + (isDeletable ? 1231 : 1237);
+        result = prime * result + (isFirst ? 1231 : 1237);
+        result = prime * result + (isHostingSlot ? 1231 : 1237);
+        result = prime * result + (isInitialzed ? 1231 : 1237);
+        result = prime * result + (isLast ? 1231 : 1237);
+        result = prime * result + level;
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + order;
+        return result;
+    }
+
+    /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override

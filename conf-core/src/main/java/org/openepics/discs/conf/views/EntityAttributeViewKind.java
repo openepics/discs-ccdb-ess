@@ -55,6 +55,10 @@ public enum EntityAttributeViewKind {
     }
 
 
+    /** The method to map the database entity into the EntityAttributeViewKind
+     * @param property the {@link ComptypePropertyValue} to determine the kind for
+     * @return the EntityAttributeViewKind
+     */
     public static EntityAttributeViewKind getPropertyValueKind(ComptypePropertyValue property) {
         if (property.isDefinitionTargetSlot()) {
             return EntityAttributeViewKind.INSTALL_SLOT_PROPERTY;

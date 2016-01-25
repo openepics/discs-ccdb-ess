@@ -74,6 +74,12 @@ public class SlotRelationshipView {
         this.id = slotPair.getId().toString();
     }
 
+    /** Constructs a SlotRelationshipView
+     * @param id the unique identifier for this relationship (not DB id)
+     * @param sourceSlot source {@link Slot}
+     * @param targetSlot target {@link Slot}
+     * @param relationshipName the name of the Relationship
+     */
     public SlotRelationshipView(String id, Slot sourceSlot, Slot targetSlot, String relationshipName) {
         this.sourceSlot = sourceSlot;
         this.sourceSlotName = sourceSlot.getName();

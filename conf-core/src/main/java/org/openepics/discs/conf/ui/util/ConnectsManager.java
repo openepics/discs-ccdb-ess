@@ -51,6 +51,7 @@ public class ConnectsManager implements Serializable  {
     private List<CableElement> cables = null;
     private boolean cableDBStatus = false;
 
+    /** Java EE post construct life-cycle method. */
     @PostConstruct
     public void init() {
         final String cableDBStatusStr = properties.getProperty(AppProperties.CABLEDB_STATUS);
@@ -92,7 +93,12 @@ public class ConnectsManager implements Serializable  {
         return connects;
     }
 
-    public List<CableElement> getCobles(Slot slot1, Slot slot2) {
+    /** Return all cables connecting two {@link Slot}s
+     * @param slot1 slot1
+     * @param slot2 slot2
+     * @return A {@link List} of {@link CableElement}s connecting the two {@link Slot}s
+     */
+    public List<CableElement> getCables(Slot slot1, Slot slot2) {
         List<CableElement> r = new ArrayList<CableElement>();
         String n1 = slot1.getName();
         String n2 = slot2.getName();

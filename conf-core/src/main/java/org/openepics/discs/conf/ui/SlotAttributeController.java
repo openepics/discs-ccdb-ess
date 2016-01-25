@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2014 European Spallation Source
- * Copyright (c) 2014 Cosylab d.d.
+ * Copyright (c) 2016 European Spallation Source
+ * Copyright (c) 2016 Cosylab d.d.
  *
  * This file is part of Controls Configuration Database.
  *
@@ -77,6 +77,7 @@ public class SlotAttributeController
 
     public SlotAttributeController() {}
 
+    /** Java EE post construct life-cycle method. */
     @PostConstruct
     public void init() {
         setDao(slotEJB);
@@ -255,6 +256,7 @@ public class SlotAttributeController
         filterProperties();
     }
 
+    /** A method to add a {@link PropertyValue} to a container. */
     public void addPropertyValue() {
         Preconditions.checkNotNull(dialogAttribute);
 

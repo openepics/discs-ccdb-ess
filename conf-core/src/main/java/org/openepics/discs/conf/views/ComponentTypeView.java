@@ -45,6 +45,9 @@ public class ComponentTypeView {
         componentType = new ComponentType();
     }
 
+    /** New ComponentTypeView based on {@link ComponentType}
+     * @param componentType the {@link ComponentType}
+     */
     public ComponentTypeView(ComponentType componentType) {
         this.componentType = componentType;
     }

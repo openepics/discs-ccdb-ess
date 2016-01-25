@@ -171,6 +171,7 @@ public class DevicesController implements SimpleTableExporter, ExcelSingleFileIm
 
     public DevicesController() {}
 
+    /** Java EE post construct life-cycle method. */
     @PostConstruct
     public void init() {
         try {

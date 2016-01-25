@@ -31,6 +31,8 @@ import org.openepics.discs.conf.ent.Unit;
  * to the user. The objects of this class also contain a reference to the actual database entity the data is coming
  * from.
  *
+ * @param E the {@link ConfigurationEntity} that is the parent of this attribute
+ *
  * @author <a href="mailto:andraz.pozar@cosylab.com">Andraž Požar</a>
  * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  *

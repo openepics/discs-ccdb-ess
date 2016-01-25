@@ -71,6 +71,7 @@ import com.google.common.collect.Lists;
 /**
  * Parent class for all classes that handle entity attributes manipulation
  *
+ * @param <C> There are 3 entities in the database having Property values, Tags and Artifacts with the same interface.
  * @param <T> There are 4 property value tables in the database, but all have the same columns and interface.
  * @param <S> There are 4 artifact tables in the database, but all have the same columns and interface.
  *
@@ -101,9 +102,7 @@ public abstract class AbstractAttributesController
 
     private DAO<C> dao;
 
-    /**
-     * This method resets the fields related to the dialog that was just shown to the user.
-     */
+    /** This method resets the fields related to the dialog that was just shown to the user. */
     public void resetFields() {
         dialogAttribute = null;
     }
@@ -388,6 +387,7 @@ public abstract class AbstractAttributesController
         return false;
     }
 
+    /** This method is called when there is no main entity selected and the attributes tables must be made empty */
     public void clearRelatedAttributeInformation() {
         attributes = null;
         filteredAttributes = null;

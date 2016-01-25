@@ -1,3 +1,22 @@
+/*
+ * Copyright (c) 2015 European Spallation Source
+ * Copyright (c) 2015 Cosylab d.d.
+ *
+ * This file is part of Controls Configuration Database.
+ *
+ * Controls Configuration Database is free software: you can redistribute it
+ * and/or modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 2 of the License,
+ * or any newer version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
+ */
 package org.openepics.discs.conf.views;
 
 import java.util.Arrays;
@@ -15,6 +34,9 @@ import org.openepics.discs.conf.ent.Unit;
 import org.openepics.discs.conf.ui.util.UiUtility;
 import org.openepics.discs.conf.util.BuiltInDataType;
 
+/**
+ * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
+ */
 public class PropertyView {
     private final Property prop;
     private final boolean beingAdded;
@@ -23,19 +45,21 @@ public class PropertyView {
             BuiltInDataType.DBL_NAME, BuiltInDataType.INT_VECTOR_NAME,
             BuiltInDataType.DBL_VECTOR_NAME, BuiltInDataType.DBL_TABLE_NAME});
 
-    public PropertyView()
-    {
+    /** Default ctor */
+    public PropertyView() {
         this.prop = new Property();
         beingAdded = true;
     }
 
-    public PropertyView(Property prop)
-    {
+    /** PropertyView based on {@link Property}
+     * @param prop the {@link Property}
+     */
+    public PropertyView(Property prop) {
         this.prop = prop;
         beingAdded = false;
     }
 
-    /* @return the id */
+    /** @return the id */
     public Long getId() {
         return prop.getId();
     }
@@ -139,6 +163,9 @@ public class PropertyView {
         return prop.getDataType() != null ? UNIT_CAPABLE_DATA_TYPES.contains(prop.getDataType().getName()) : false;
     }
 
+    /** Checks whether the {@link Property} name is valid
+     * @param propertyName the name to validate
+     */
     public void nameValidator(String propertyName) {
         if (propertyName.contains("{i}")) {
             throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_ERROR, UiUtility.MESSAGE_SUMMARY_ERROR,

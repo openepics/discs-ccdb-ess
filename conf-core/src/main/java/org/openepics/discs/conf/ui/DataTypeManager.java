@@ -1,5 +1,5 @@
 /*
-pre * Copyright (c) 2014 European Spallation Source
+ * Copyright (c) 2014 European Spallation Source
  * Copyright (c) 2014 Cosylab d.d.
  *
  * This file is part of Controls Configuration Database.

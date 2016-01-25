@@ -35,6 +35,7 @@ public class UnitView {
     private final boolean unitAdd;
     private String usedBy;
 
+    /** Constructs a new UnitView based on fresh (non-existing) {@link Unit} */
     public UnitView() {
         this.unit = new Unit();
         unitAdd = true;

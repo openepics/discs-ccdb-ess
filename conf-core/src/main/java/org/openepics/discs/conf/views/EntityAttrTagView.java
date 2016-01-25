@@ -38,16 +38,28 @@ import org.openepics.discs.conf.util.UnhandledCaseException;
 public class EntityAttrTagView<E extends ConfigurationEntity & NamedEntity> extends EntityAttributeView<E> {
     private Tag entity;
 
+    /**
+     * @param entity the {@link Tag}
+     * @param viewParent the view parent of the {@link Tag} (the one selected in the table)
+     * @param tagParent the actual parent of the {@link Tag} (usually {@link ComponentType})
+     */
     public <P extends ConfigurationEntity & NamedEntity> EntityAttrTagView(Tag entity, E viewParent, P tagParent) {
         super(viewParent, tagParent != null ? tagParent.getName() : "");
         this.entity = entity;
         setKind(tagParent == null ? getEntityKind(viewParent) : getEntityKind(tagParent));
     }
 
+    /**
+     * @param entity the {@link Tag}
+     * @param viewParent the {@link Tag} parent
+     */
     public EntityAttrTagView(Tag entity, E viewParent) {
         this(entity, viewParent, null);
     }
 
+    /** Constructor for new {@link Tag}
+     * @param parent the {@link Tag} parent
+     */
     public EntityAttrTagView(E parent) {
         super(parent);
         entity = new Tag();

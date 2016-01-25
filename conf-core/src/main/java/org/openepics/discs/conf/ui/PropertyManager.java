@@ -354,6 +354,7 @@ public class PropertyManager extends AbstractExcelSingleFileImportUI implements
         return usedProperties;
     }
 
+    /** This method resets all dialog fields */
     public void resetFields() {
         dialogProperty = null;
     }

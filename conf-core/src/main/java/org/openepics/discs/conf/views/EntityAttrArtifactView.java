@@ -46,6 +46,11 @@ public class EntityAttrArtifactView<E extends ConfigurationEntity & NamedEntity>
     private final Artifact entity;
     protected byte[] importData;
 
+    /**
+     * @param entity the {@link Artifact}
+     * @param viewParent the view parent of the {@link Artifact} (the one selected in the table)
+     * @param artifactParent the actual parent of the {@link Artifact} (usually {@link ComponentType})
+     */
     public <P extends ConfigurationEntity & NamedEntity>
             EntityAttrArtifactView(Artifact entity, E viewParent, P artifactParent) {
         super(viewParent, artifactParent != null ? artifactParent.getName() : "");
@@ -53,6 +58,10 @@ public class EntityAttrArtifactView<E extends ConfigurationEntity & NamedEntity>
         setKind(artifactParent == null ? getEntityKind(viewParent) : getEntityKind(artifactParent));
     }
 
+    /**
+     * @param entity the {@link Artifact}
+     * @param viewParent the {@link Artifact} parent
+     */
     public EntityAttrArtifactView(Artifact entity, E viewParent) {
         this(entity, viewParent, null);
     }

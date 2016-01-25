@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2014 European Spallation Source
- * Copyright (c) 2014 Cosylab d.d.
+ * Copyright (c) 2016 European Spallation Source
+ * Copyright (c) 2016 Cosylab d.d.
  *
  * This file is part of Controls Configuration Database.
  *
@@ -100,6 +100,7 @@ public class ComptypeAttributesController
     private transient List<MultiPropertyValueView> selectionPropertyValuesFiltered;
     private boolean selectAllRows;
 
+    /** Java EE post construct life-cycle method. */
     @PostConstruct
     public void init() {
         setDao(comptypeEJB);
@@ -216,6 +217,7 @@ public class ComptypeAttributesController
                 && attributeKind != EntityAttributeViewKind.DEVICE_TYPE_TAG;
     }
 
+    /** Prepares the data for device type property creation */
     public void prepareForPropertyValueAdd() {
         filterProperties();
         filteredPropertyValues = filteredProperties.stream().map(MultiPropertyValueView::new).

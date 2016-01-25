@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2014 European Spallation Source
- * Copyright (c) 2014 Cosylab d.d.
+ * Copyright (c) 2016 European Spallation Source
+ * Copyright (c) 2016 Cosylab d.d.
  *
  * This file is part of Controls Configuration Database.
  *
@@ -41,6 +41,11 @@ import org.openepics.discs.conf.views.InstallationView;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
+/**
+ * A controller to display the Installation table on the Home screen.
+ *
+ * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
+ */
 @Named
 @ViewScoped
 public class InstallationController implements Serializable {

@@ -59,6 +59,7 @@ public class UserEnumerationView {
         enumerationBeingAdded = false;
     }
 
+    /** Default constructor. Creates view based on fresh (non-existing) {@link DataType} */
     public UserEnumerationView() {
         enumeration = new DataType();
         enumerationBeingAdded = true;

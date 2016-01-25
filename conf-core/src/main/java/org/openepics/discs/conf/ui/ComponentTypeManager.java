@@ -140,6 +140,7 @@ public class ComponentTypeManager implements SimpleTableExporter, ExcelSingleFil
         }
     }
 
+    /** Java EE post construct life-cycle method. */
     @PostConstruct
     public void init() {
         final String deviceTypeIdStr = ((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().
@@ -286,6 +287,7 @@ public class ComponentTypeManager implements SimpleTableExporter, ExcelSingleFil
         RequestContext.getCurrentInstance().update("addDeviceTypeForm:addDeviceType");
     }
 
+    /** This method resets the dialog fields related to the selected device type */
     public void resetFields() {
         if (selectedDeviceTypes != null && selectedDeviceTypes.size() == 1) {
             selectedComponent = selectedDeviceTypes.get(0);
