@@ -20,18 +20,29 @@ public class ConnectsTree extends Tree<SlotView> {
 	@Override
 	public List<? extends BasicTreeNode<SlotView>> getAllChildren(BasicTreeNode<SlotView> parent) {
 		final SlotView parentSlotView = parent.getData();
+		final Slot parentSlot = parentSlotView.getSlot();
 		
-		List<Slot> childSlots = connectsManager.getSlotConnects(parentSlotView.getSlot());
+		List<Slot> childSlots = connectsManager.getSlotConnects(parentSlot);
 		  
 		final List<BasicTreeNode<SlotView>> allChildren = new ArrayList<>();
 		
 		for (Slot child : childSlots) {
-			if (hasCycle(parentSlotView, child.getId())) continue;
+			if (hasCycle(parentSlotView, child.getId())) {
+				// This sets the default for parent if the only connection from the slot is to itself.
+                // If there are any other connections, this will get set to correct value after the loop.
+				parentSlotView.setCableNumber(connectsManager.getCobles(parentSlot, child).get(0).getNumber());
+				continue;
+			}
 			final SlotView childSlotView = new SlotView(child, parentSlotView, 0, slotEJB);
 	        childSlotView.setLevel(parentSlotView.getLevel()+1);
 	        allChildren.add(new FilteredTreeNode<SlotView>(childSlotView, parent, this));
-	    	//TREE check cycleas
+	    	
+	        childSlotView.setCableNumber(connectsManager.getCobles(parentSlot, child).get(0).getNumber()); // points to parent
 	    }
+		
+		if (allChildren.size() > 0) {  // points to first child // TREE lazy loading may introduce bugs here
+			parentSlotView.setCableNumber(connectsManager.getCobles(parentSlot, allChildren.get(0).getData().getSlot()).get(0).getNumber());
+		}
 		return allChildren;
 	}
 
