@@ -78,8 +78,12 @@ public class PropertyEJB extends DAO<Property> {
         return !typePropertyValues.isEmpty();
     }
 
-    public List<? extends PropertyValue> findPropertyValues(Property property, int maxResults)
-    {
+    /** Returns the {@link PropertyValue} of any kind  that match a given {@link Property}
+     * @param property the {@link Property} to use for search
+     * @param maxResults the maximum value of results to return for any of the three types
+     * @return the {@link List} of {@link PropertyValue}s that match the {@link Property}
+     */
+    public List<? extends PropertyValue> findPropertyValues(Property property, int maxResults) {
         List<PropertyValue> propertyValues = Lists.newArrayList();
         propertyValues.addAll(em.createQuery("SELECT pv FROM ComptypePropertyValue pv "
                 + "WHERE pv.property = :property", ComptypePropertyValue.class).setParameter("property", property)

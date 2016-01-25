@@ -74,6 +74,10 @@ public abstract class ValueConverter<T extends Value> {
      */
     public abstract String convertToDatabaseColumn(T attribute);
 
+    /** Converts the DB data (SEDS encoded) into a CCDB {@link Value}
+     * @param dbData the database data
+     * @return the {@link Value} the is decoded from database
+     */
     public static Value convertToEntityAttribute(String dbData) {
         if (dbData == null) {
             return null;

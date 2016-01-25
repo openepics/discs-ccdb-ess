@@ -408,6 +408,10 @@ public class SlotEJB extends DAO<Slot> {
                 .setParameter("relation", relation).getResultList();
     }
 
+    /** Finds all {@link Slot}s that match a given name
+     * @param name the name to search for
+     * @return a {@link List} of {@link Slot} that match the name
+     */
     public List<Slot> findAllByName(final String name) {
         return em.createNamedQuery("Slot.findByName", Slot.class).setParameter("name", name).getResultList();
     }
