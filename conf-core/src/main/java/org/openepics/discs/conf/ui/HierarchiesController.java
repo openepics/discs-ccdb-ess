@@ -963,7 +963,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
     /** Called to add a new installation slot / container to the database */
     public void onSlotAdd() {
-  /*TREE      Preconditions.checkState(selectedNodes == null || selectedNodes.size() == 1);
+        Preconditions.checkState(selectedTree.getSelectedNodes().size() <= 1);
         final Slot newSlot = new Slot(name, isInstallationSlot);
         newSlot.setDescription(description);
         if (isInstallationSlot) {
@@ -971,29 +971,16 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         } else {
             newSlot.setComponentType(comptypeEJB.findByName(SlotEJB.GRP_COMPONENT_TYPE));
         }
-        final TreeNode parentNode = selectedNodes != null ? selectedNodes.get(0) : rootNode;
-        final Slot parentSlot = selectedNodes != null ? ((SlotView) parentNode.getData()).getSlot() : null;
+        final FilteredTreeNode<SlotView> parentNode = selectedTree.getSelectedNodes().size() == 1 ? selectedTree.getSelectedNodes().get(0) : selectedTree.getRootNode();
+        final Slot parentSlot = parentNode.getData().getSlot();
         slotEJB.addSlotToParentWithPropertyDefs(newSlot, parentSlot, false);
 
         // first update the back-end data
-        final SlotView slotViewToUpdate = (SlotView) parentNode.getData();
-        if (selectedSlotView != null) {
-            selectedSlotView = slotViewToUpdate;
-        }
-
-        // now update the front-end data as well.
-        if (slotViewToUpdate.isInitialzed()) {
-            final List<SlotPair> containsRelation = slotPairEJB.findSlotPairsByParentChildRelation(newSlot.getName(),
-                    slotViewToUpdate.getName(), SlotRelationName.CONTAINS);
-            final SlotPair newRelation = containsRelation.get(0);
-            final SlotView slotViewToAdd = new SlotView(newSlot, slotViewToUpdate, newRelation.getSlotOrder(), slotEJB);
-            hierarchyBuilder.addChildToParent(parentNode, slotViewToAdd);
-        } else {
-            hierarchyBuilder.rebuildSubTree(parentNode);
-        }
-        slotViewToUpdate.setDeletable(false);
+        parentNode.refreshCache();
+        final SlotView slotViewToUpdate = parentNode.getData(); 
+        slotViewToUpdate.setDeletable(false); 
         parentNode.setExpanded(true);
-        UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS, "Slot has been successfully created");*/
+        UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS, "Slot has been successfully created");
     }
 
     /**
