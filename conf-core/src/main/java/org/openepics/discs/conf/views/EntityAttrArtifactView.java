@@ -50,6 +50,7 @@ public class EntityAttrArtifactView<E extends ConfigurationEntity & NamedEntity>
      * @param entity the {@link Artifact}
      * @param viewParent the view parent of the {@link Artifact} (the one selected in the table)
      * @param artifactParent the actual parent of the {@link Artifact} (usually {@link ComponentType})
+     * @param <P> the type of the of the actual parent
      */
     public <P extends ConfigurationEntity & NamedEntity>
             EntityAttrArtifactView(Artifact entity, E viewParent, P artifactParent) {

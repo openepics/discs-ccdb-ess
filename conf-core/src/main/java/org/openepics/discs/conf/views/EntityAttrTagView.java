@@ -42,6 +42,7 @@ public class EntityAttrTagView<E extends ConfigurationEntity & NamedEntity> exte
      * @param entity the {@link Tag}
      * @param viewParent the view parent of the {@link Tag} (the one selected in the table)
      * @param tagParent the actual parent of the {@link Tag} (usually {@link ComponentType})
+     * @param <P> the type of the of the actual parent
      */
     public <P extends ConfigurationEntity & NamedEntity> EntityAttrTagView(Tag entity, E viewParent, P tagParent) {
         super(viewParent, tagParent != null ? tagParent.getName() : "");

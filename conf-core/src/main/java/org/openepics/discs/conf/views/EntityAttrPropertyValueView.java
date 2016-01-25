@@ -63,6 +63,7 @@ public class EntityAttrPropertyValueView<E extends ConfigurationEntity & NamedEn
      * @param kind the kind of of {@link PropertyValue}
      * @param viewParent the view parent of the {@link PropertyValue} (the one selected in the table)
      * @param propertyValueParent the actual parent of the {@link PropertyValue} (usually {@link ComponentType})
+     * @param <P> the type of the of the actual parent
      */
     public <P extends ConfigurationEntity & NamedEntity>
             EntityAttrPropertyValueView(PropertyValue propertyValue, EntityAttributeViewKind kind, E viewParent,
@@ -83,6 +84,7 @@ public class EntityAttrPropertyValueView<E extends ConfigurationEntity & NamedEn
      * @param propertyValue the {@link PropertyValue}
      * @param viewParent the view parent of the {@link PropertyValue} (the one selected in the table)
      * @param propertyValueParent the actual parent of the {@link PropertyValue} (usually {@link ComponentType})
+     * @param <P> the type of the of the actual parent
      */
     public <P extends ConfigurationEntity & NamedEntity> EntityAttrPropertyValueView(PropertyValue propertyValue,
             E viewParent, P propertyValueParent) {
