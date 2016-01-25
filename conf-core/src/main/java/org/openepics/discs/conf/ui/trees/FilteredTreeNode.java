@@ -23,7 +23,7 @@ public class FilteredTreeNode<D> extends TreeNodeWithTree<D> {
 	}
 
 	@Override
-	public List<? extends BasicTreeNode<D>> getFilteredChildren() {		
+	public List<? extends FilteredTreeNode<D>> getFilteredChildren() {		
 		if (bufferedFilteredChildren == null) {
 			getBufferedAllChildren();
 			if ("".equals(getTree().getAppliedFilter())) {

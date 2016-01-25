@@ -72,8 +72,6 @@
                                                         :hierarchies:installationDetails :hierarchies:slotAttributes
                                                         :hierarchies:addRelationship :hierarchies:editRelationship :hierarchies:clipboardOperations"
                                                 oncomplete="hierarchiesResizeAll();" />
-                                            <p:ajax event="expand" listener="#{hierarchiesController.onContainsExpand}" />
-    
                                             <p:column id="name" headerText="Name" style="white-space: normal;">
                                                 <h:outputText value="" rendered="#{installationSlot.hostingSlot}"
                                                     style="display:inline-block; vertical-align:bottom !important"
@@ -127,8 +125,6 @@
                                                     update=":hierarchies:relationsTable :hierarchies:installationDetails
                                                             :hierarchies:slotAttributes :hierarchies:addRelationship :hierarchies:editRelationship"
                                                     oncomplete="hierarchiesResizeAll();" />
-                                            <p:ajax event="expand" listener="#{hierarchiesController.onControlsExpand}" />
-    
                                             <p:column id="ctrlName" headerText="Name">
                                                 <h:outputText value="" rendered="#{ctrlSlot.hostingSlot}"
                                                     style="display:inline-block; vertical-align:bottom !important"
@@ -172,8 +168,6 @@
                                                     update=":hierarchies:relationsTable :hierarchies:installationDetails
                                                             :hierarchies:slotAttributes :hierarchies:addRelationship :hierarchies:editRelationship"
                                                     oncomplete="hierarchiesResizeAll();" />
-                                            <p:ajax event="expand" listener="#{hierarchiesController.onPowersExpand}" />
-    
                                             <p:column id="powersName" headerText="Name">
                                                 <h:outputText value="" rendered="#{powerSlot.hostingSlot}"
                                                     style="display:inline-block; vertical-align:bottom !important"
@@ -216,8 +210,6 @@
                                                     update=":hierarchies:relationsTable :hierarchies:installationDetails
                                                             :hierarchies:slotAttributes :hierarchies:addRelationship :hierarchies:editRelationship"
                                                     oncomplete="hierarchiesResizeAll();" />
-                                            <p:ajax event="expand" listener="#{hierarchiesController.onConnectsExpand}" />
-    
                                             <p:column id="connectsName" headerText="Name">
                                                 <h:outputText value="" rendered="#{connectsSlot.hostingSlot}"
                                                     style="display:inline-block; vertical-align:bottom !important"

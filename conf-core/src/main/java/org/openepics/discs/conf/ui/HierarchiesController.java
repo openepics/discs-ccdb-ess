@@ -527,55 +527,6 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             removeTreeData();
         }
     }
-
-    /**
-     * Builds the part of the tree under the expanded node if that is necessary.
-     *
-     * @param event Event triggered on node expand action
-     */
-    public void onContainsExpand(NodeExpandEvent event) {
-        /*TREE final TreeNode expandedNode = event.getTreeNode();
-        if (expandedNode != null) {
-            hierarchyBuilder.expandNode(expandedNode);
-        }*/
-    }
-
-    /**
-     * Builds the part of the tree under the expanded node if that is necessary.
-     *
-     * @param event Event triggered on node expand action
-     */
-    public void onPowersExpand(NodeExpandEvent event) {
-    	/*TREE final TreeNode expandedNode = event.getTreeNode();
-        if (expandedNode != null) {
-            powersHierarchyBuilder.expandNode(expandedNode);
-        }*/
-    }
-
-    /**
-     * Builds the part of the tree under the expanded node if that is necessary.
-     *
-     * @param event Event triggered on node expand action
-     */
-    public void onControlsExpand(NodeExpandEvent event) {
-    	/*TREE final TreeNode expandedNode = event.getTreeNode();
-        if (expandedNode != null) {
-            controlsHierarchyBuilder.expandNode(expandedNode);
-        }*/
-    }
-
-    /**
-     * Builds the part of the tree under the expanded node if that is necessary.
-     *
-     * @param event Event triggered on node expand action
-     */
-    public void onConnectsExpand(NodeExpandEvent event) {
-    	/*TREE final TreeNode expandedNode = event.getTreeNode();
-        if (expandedNode != null) {
-            connectsHierarchyBuilder.expandNode(expandedNode);
-        }*/
-    }
-
     /**
      * The event is triggered when the hierarchy tab is changed.
      * @param event the event
@@ -781,86 +732,32 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
     public void expandTreeNodes()
     {
-       /*TREE final HierarchyBuilder hb;
-        final TreeNode root;
-        switch (activeTab) {
-            case CONTROLS:
-                hb = controlsHierarchyBuilder;
-                root = controlsRootNode;
-                break;
-            case POWERS:
-                hb = powersHierarchyBuilder;
-                root = powersRootNode;
-                break;
-            case CONNECTS:
-                hb = connectsHierarchyBuilder;
-                root = connectsRootNode;
-                break;
-            case INCLUDES:
-            default:
-                hb = hierarchyBuilder;
-                root = rootNode;
-                break;
-        }
-
-        if (selectedNodes == null) {
-            expandOrCollapseNode(root, true, hb, true);
-        } else {
-            for (final TreeNode node : selectedNodes) {
-                expandOrCollapseNode(node, true, hb, true);
-            }
-        }*/
+    	if (selectedTree.getSelectedNodes().isEmpty()) {
+    		expandOrCollapseNode(selectedTree.getRootNode(), true);
+    	} else {
+    		for (final FilteredTreeNode<SlotView> node: selectedTree.getSelectedNodes()) {
+    			expandOrCollapseNode(node, true);
+    		}
+    	}
     }
 
     public void collapseTreeNodes()
     {
-    /*TREE    final TreeNode root;
-        switch (activeTab) {
-            case CONTROLS:
-                root = controlsRootNode;
-                break;
-            case POWERS:
-                root = powersRootNode;
-                break;
-            case CONNECTS:
-                root = connectsRootNode;
-                break;
-            case INCLUDES:
-            default:
-                root = rootNode;
-                break;
-        }
-
-        if (selectedNodes == null) {
-            expandOrCollapseNode(root, false, null, true);
-        } else {
-            for (final TreeNode node : selectedNodes) {
-                expandOrCollapseNode(node, false, null, true);
-            }
-        }*/
+    	if (selectedTree.getSelectedNodes().isEmpty()) {
+    		expandOrCollapseNode(selectedTree.getRootNode(), false);
+    	} else {
+    		for (final FilteredTreeNode<SlotView> node: selectedTree.getSelectedNodes()) {
+    			expandOrCollapseNode(node, false);
+    		}
+    	}
     }
 
-    private void expandOrCollapseNode(final TreeNode root, final boolean expand, 
-            final boolean show)
+    private void expandOrCollapseNode(final FilteredTreeNode<SlotView> parent, final boolean expand)
     {
-    	//TREE
-       /* if (expand) {
-            if (!((SlotView)root.getData()).isInitialzed()) {
-                hb.expandNode(root);
-                root.setExpanded(show);
-            } else {
-                if (show) {
-                    root.setExpanded(true);
-                }
-            }
-        } else {
-            if (show) {
-                root.setExpanded(false);
-            }
+    	parent.setExpanded(expand);
+        for (final  FilteredTreeNode<SlotView> node : parent.getFilteredChildren()) {
+            expandOrCollapseNode(node, expand);
         }
-        for (final TreeNode node : root.getChildren()) {
-            expandOrCollapseNode(node, expand, hb, show);
-        }*/
     }
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
