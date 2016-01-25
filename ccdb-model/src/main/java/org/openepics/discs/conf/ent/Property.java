@@ -92,6 +92,9 @@ public class Property extends ConfigurationEntity implements NamedEntity {
         this.description = description;
     }
 
+    /** Copy constructor
+     * @param prop the {@link Property} to copy
+     */
     public Property(Property prop) {
         this.name = prop.name;
         this.description = prop.description;
