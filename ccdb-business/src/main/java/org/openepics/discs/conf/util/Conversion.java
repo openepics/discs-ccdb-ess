@@ -91,13 +91,13 @@ public class Conversion {
 
     private static Properties messagesProperties = new Properties();
 
-    private static final String messagesPropertiesFile = "/messages.properties";
+    private static final String MESSAGES_PROPERTIES_FILE = "/messages.properties";
 
     static {
         try {
-            messagesProperties.load(Conversion.class.getResourceAsStream(messagesPropertiesFile));
+            messagesProperties.load(Conversion.class.getResourceAsStream(MESSAGES_PROPERTIES_FILE));
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Could not load messges.properties");
+            LOGGER.log(Level.SEVERE, "Could not load messges.properties", e);
         }
         DATE_ONLY_FORMAT = messagesProperties.getProperty("isoDateFormat", "yyyy-MM-dd");
         TIME_ONLY_FORMAT = messagesProperties.getProperty("isoTimeFormat", "HH:mm:ss");

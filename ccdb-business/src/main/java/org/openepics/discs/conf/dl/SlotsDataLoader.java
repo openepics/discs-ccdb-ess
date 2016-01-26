@@ -160,10 +160,7 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
     }
 
     private void updateSlot() {
-        if (Strings.isNullOrEmpty(entityDescriptionFld)) {
-            result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, HDR_ENTITY_DESCRIPTION);
-        }
-        final Slot workingSlot = getWorkingSlot();
+        Slot workingSlot = getWorkingSlot();
         if (result.isRowError()) {
             return;
         }
@@ -173,7 +170,10 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
                 return;
             }
 
-            workingSlot.setDescription(entityDescriptionFld);
+            if (!Strings.isNullOrEmpty(entityDescriptionFld)) {
+                // if description is omitted, we leave it as it is
+                workingSlot.setDescription(entityDescriptionFld);
+            }
             if (!importType.equals(workingSlot.getComponentType())) {
                 final InstallationRecord activeInstallationRecord =
                         installationEJB.getActiveInstallationRecordForSlot(workingSlot);
@@ -182,7 +182,7 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
                                                                                             entityDeviceTypeFld);
                     return;
                 } else {
-                    workingSlot.setComponentType(importType);
+                    workingSlot = slotEJB.changeSlotType(workingSlot, importType);
                 }
             }
             updateSlotParent(workingSlot);
@@ -190,6 +190,10 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
                 return;
             }
         } else {
+            if (Strings.isNullOrEmpty(entityDescriptionFld)) {
+                result.addRowMessage(ErrorMessage.REQUIRED_FIELD_MISSING, HDR_ENTITY_DESCRIPTION);
+                return;
+            }
             // for container only description can be updated, parent is used to locate the container
             workingSlot.setDescription(entityDescriptionFld);
         }
@@ -789,7 +793,7 @@ public class SlotsDataLoader extends AbstractEntityWithPropertiesDataLoader<Slot
 
     private boolean isHostingSlot() {
         // entityTypeFld is in REQUIRED_COLUMNS
-        return DataLoader.ENTITY_TYPE_SLOT.equals(entityTypeFld.toUpperCase());
+        return DataLoader.ENTITY_TYPE_SLOT.equalsIgnoreCase(entityTypeFld);
     }
 
     private RelationshipInfo determineParentChild(final Slot orignator, final Slot target) {

@@ -34,6 +34,7 @@ import org.openepics.discs.conf.ent.Device;
 import org.openepics.discs.conf.ent.DeviceArtifact;
 import org.openepics.discs.conf.ent.DevicePropertyValue;
 import org.openepics.discs.conf.ent.EntityTypeOperation;
+import org.openepics.discs.conf.ent.Property;
 import org.openepics.discs.conf.ent.PropertyValue;
 import org.openepics.discs.conf.ent.PropertyValueUniqueness;
 import org.openepics.discs.conf.ent.values.Value;
@@ -111,7 +112,9 @@ public class DeviceEJB extends DAO<Device> {
     @CRUDOperation(operation=EntityTypeOperation.CREATE)
     @Authorized
     public int duplicate(List<Device> devicesToCopy) {
-        if (Utility.isNullOrEmpty(devicesToCopy)) return 0;
+        if (Utility.isNullOrEmpty(devicesToCopy)) {
+            return 0;
+        }
 
         int duplicated = 0;
         for (final Device deviceToCopy : devicesToCopy) {
@@ -123,6 +126,75 @@ public class DeviceEJB extends DAO<Device> {
             ++duplicated;
         }
         return duplicated;
+    }
+
+    /**
+     * If the type of the device has changed (the method performs this check), the method adds new property values
+     * for this type of device from the type definition, and removes the existing ones. If both type definitions
+     * contain the same properties, those values are preserved.
+     *
+     * @param device the {@link Device} to change type for
+     * @param newDeviceType the new device type
+     * @return the {@link Device} that was passed, fresh form the database if the type was changed
+     */
+    @CRUDOperation(operation=EntityTypeOperation.UPDATE)
+    @Authorized
+    public Device changeDeviceType(final Device device, final ComponentType newDeviceType) {
+        Preconditions.checkNotNull(device);
+        Preconditions.checkNotNull(newDeviceType);
+
+        if (device.getComponentType().equals(newDeviceType))
+            return device;
+
+        Device freshDevice = findById(device.getId());
+        final List<DevicePropertyValue> deleteList = new ArrayList<>(freshDevice.getDevicePropertyList());
+        for (final ComptypePropertyValue newPropDefinition : newDeviceType.getComptypePropertyList()) {
+            final boolean isPropertyInDeleteList = isPropertyInPVList(newPropDefinition.getProperty(), deleteList);
+            if (newPropDefinition.isDefinitionTargetDevice()) {
+                if (!isPropertyInDeleteList) {
+                    // old device does not have this property value
+                    final DevicePropertyValue newPropertyValue = new DevicePropertyValue(false);
+                    newPropertyValue.setProperty(newPropDefinition.getProperty());
+                    newPropertyValue.setDevice(freshDevice);
+                    addChild(newPropertyValue);
+                } else {
+                    // the property will remain with the current slot, so we remove it from the delete list
+                    DevicePropertyValue valueToDelete = null;
+                    for (final DevicePropertyValue dpv : deleteList) {
+                        if (dpv.getProperty().equals(newPropDefinition.getProperty())) {
+                            valueToDelete = dpv;
+                            break;
+                        }
+                    }
+                    if (valueToDelete != null) {
+                        deleteList.remove(valueToDelete);
+                    }
+                }
+                freshDevice = findById(device.getId());
+            }
+        }
+        removePropertyDefinitionsForTypeChange(deleteList);
+        freshDevice = findById(device.getId());
+        freshDevice.setComponentType(newDeviceType);
+        save(freshDevice);
+        return findById(device.getId());
+    }
+
+    private boolean isPropertyInPVList(final Property prop, final List<DevicePropertyValue> propertyValues) {
+        for (final DevicePropertyValue propertyValue : propertyValues) {
+            if (propertyValue.getProperty().equals(prop)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void removePropertyDefinitionsForTypeChange(final List<DevicePropertyValue> deleteList) {
+        // delete all properties marked for removal
+        final List<DevicePropertyValue> deleteListCopy = new ArrayList<>(deleteList);
+        for (final DevicePropertyValue propertyValueToDelete : deleteListCopy) {
+            deleteChild(propertyValueToDelete);
+        }
     }
 
     /** Creates a duplicate device, copying all the properties. For the {@link Device} property values

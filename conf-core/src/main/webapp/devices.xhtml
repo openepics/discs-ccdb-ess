@@ -142,10 +142,11 @@
             <ui:param name="formId" value="deviceEditForm" />
             <ui:param name="widgetName" value="editDeviceDialog" />
             <ui:param name="dialogTitle" value="Edit Device" />
-            <ui:param name="saveAction" value="PF('devicesTableVar').clearFilters();" />
+            <ui:param name="saveAction" value="PF('devicesTableVar').clearFilters();PF('attributesDataTable').clearFilters();" />
             <ui:param name="updateComponents" value=":devicesForm:devicesTable :devicesForm:deleteButton 
                                                     :devicesForm:editButton :devicesForm:exportButton
-                                                    :devicesForm:duplicateButton :devicesForm:growl" />
+                                                    :devicesForm:duplicateButton :devicesForm:growl
+                                                    :devicesForm:attributesDataTable:attributesDataTable" />
             <ui:param name="submitHandler" value="onDeviceEdit" />
         </ui:include>
 

@@ -375,10 +375,18 @@ public class DevicesController implements SimpleTableExporter, ExcelSingleFileIm
         Preconditions.checkState(isSingleDeviceSelected());
         device = deviceEJB.findById(selectedDevices.get(0).getDevice().getId());
         device.setSerialNumber(serialNumber);
-        device.setComponentType(selectedComponentType);
-        deviceEJB.save(device);
+        final boolean deviceTypeChange = !device.getComponentType().equals(selectedComponentType);
+        if (deviceTypeChange) {
+            device = deviceEJB.changeDeviceType(device, selectedComponentType);
+        } else {
+            deviceEJB.save(device);
+        }
 
         selectedDevices.get(0).refreshDevice(deviceEJB.findById(device.getId()));
+        if (deviceTypeChange) {
+            deviceAttributesController.clearRelatedAttributeInformation();
+            deviceAttributesController.populateAttributesList();
+        }
         UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS, "Device updated.");
     }
 

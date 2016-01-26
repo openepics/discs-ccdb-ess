@@ -197,6 +197,7 @@ public class SlotEJB extends DAO<Slot> {
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
     @Authorized
+    @Deprecated
     public void removePropertyDefinitionsForTypeChange(final Slot slot, final List<SlotPropertyValue> deleteList) {
         // delete all properties marked for removal
         final List<SlotPropertyValue> deleteListCopy = new ArrayList<>(deleteList);
@@ -214,6 +215,7 @@ public class SlotEJB extends DAO<Slot> {
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
     @Audit
     @Authorized
+    @Deprecated
     public void addPropertyDefinitionsForTypeChange(final Slot slot, final ComponentType newComponentType) {
         // add all property values to the new type
         final Slot slotFromDatabase = findById(slot.getId());
@@ -242,6 +244,8 @@ public class SlotEJB extends DAO<Slot> {
      * @param newDeviceType the new device type
      * @return the {@link Slot} that was passed, fresh form the database if the type was changed
      */
+    @CRUDOperation(operation=EntityTypeOperation.UPDATE)
+    @Authorized
     public Slot changeSlotType(final Slot slot, final ComponentType newDeviceType) {
         Preconditions.checkNotNull(slot);
         Preconditions.checkNotNull(newDeviceType);
@@ -252,44 +256,51 @@ public class SlotEJB extends DAO<Slot> {
         Slot freshSlot = findById(slot.getId());
 
         final List<SlotPropertyValue> deleteList = new ArrayList<>(freshSlot.getSlotPropertyList());
-        for (ComptypePropertyValue newPropDefinition : newDeviceType.getComptypePropertyList()) {
-            final boolean isPropertyInParentList = isPropertyInParentList(newPropDefinition.getProperty(), deleteList);
-            if (newPropDefinition.isDefinitionTargetSlot() && !isPropertyInParentList) {
-                final SlotPropertyValue newPropertyValue = new SlotPropertyValue(false);
-                newPropertyValue.setProperty(newPropDefinition.getProperty());
-                newPropertyValue.setSlot(freshSlot);
-                addChild(newPropertyValue);
-            }
-
-            // the property will remain with the current slot, so we remove it from the delete list
-            if (isPropertyInParentList && newPropDefinition.isDefinitionTargetSlot()) {
-                SlotPropertyValue valueToDelete = null;
-                for (SlotPropertyValue spv : deleteList) {
-                    if (spv.getProperty().equals(newPropDefinition.getProperty())) {
-                        valueToDelete = spv;
-                        break;
+        for (final ComptypePropertyValue newPropDefinition : newDeviceType.getComptypePropertyList()) {
+            final boolean isPropertyInDeleteList = isPropertyInParentList(newPropDefinition.getProperty(), deleteList);
+            if (newPropDefinition.isDefinitionTargetSlot()) {
+                if (!isPropertyInDeleteList) {
+                    final SlotPropertyValue newPropertyValue = new SlotPropertyValue(false);
+                    newPropertyValue.setProperty(newPropDefinition.getProperty());
+                    newPropertyValue.setSlot(freshSlot);
+                    addChild(newPropertyValue);
+                } else {
+                    SlotPropertyValue valueToDelete = null;
+                    for (final SlotPropertyValue spv : deleteList) {
+                        if (spv.getProperty().equals(newPropDefinition.getProperty())) {
+                            valueToDelete = spv;
+                            break;
+                        }
+                    }
+                    if (valueToDelete != null) {
+                        deleteList.remove(valueToDelete);
                     }
                 }
-                if (valueToDelete != null) {
-                    deleteList.remove(valueToDelete);
-                }
+                freshSlot = findById(slot.getId());
             }
-            freshSlot = findById(slot.getId());
         }
-        removePropertyDefinitionsForTypeChange(freshSlot, deleteList);
+        removePropertyDefinitionsForTypeChange(deleteList);
         freshSlot = findById(slot.getId());
         freshSlot.setComponentType(newDeviceType);
         save(freshSlot);
         return findById(freshSlot.getId());
     }
 
-    private boolean isPropertyInParentList(Property prop, List<SlotPropertyValue> parentPropertyValues) {
-        for (SlotPropertyValue propertyValueChild : parentPropertyValues) {
+    private boolean isPropertyInParentList(final Property prop, final List<SlotPropertyValue> parentPropertyValues) {
+        for (final SlotPropertyValue propertyValueChild : parentPropertyValues) {
             if (propertyValueChild.getProperty().equals(prop)) {
                 return true;
             }
         }
         return false;
+    }
+
+    private void removePropertyDefinitionsForTypeChange(final List<SlotPropertyValue> deleteList) {
+        // delete all properties marked for removal
+        final List<SlotPropertyValue> deleteListCopy = new ArrayList<>(deleteList);
+        for (final SlotPropertyValue propertyValueToDelete : deleteListCopy) {
+            deleteChild(propertyValueToDelete);
+        }
     }
 
     /**
@@ -312,9 +323,8 @@ public class SlotEJB extends DAO<Slot> {
     public boolean isContainerNameUnique(final String newContainerName, final @Nullable Slot parentSlot) {
         Preconditions.checkNotNull(newContainerName);
         final Slot actualParentSlot = (parentSlot != null) ? parentSlot : getRootNode();
-        final String candidateName = newContainerName.toLowerCase();
         final long equalyNamedSiblings = actualParentSlot.getPairsInWhichThisSlotIsAParentList().stream().
-                                            filter(e -> e.getChildSlot().getName().toLowerCase().equals(candidateName)).
+                                            filter(e -> e.getChildSlot().getName().equalsIgnoreCase(newContainerName)).
                                             count();
         return equalyNamedSiblings == 0;
     }

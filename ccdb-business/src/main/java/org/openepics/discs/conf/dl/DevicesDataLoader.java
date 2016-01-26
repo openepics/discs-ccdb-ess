@@ -92,13 +92,17 @@ public class DevicesDataLoader extends AbstractEntityWithPropertiesDataLoader<De
             try {
                 if (DataLoader.CMD_UPDATE_DEVICE.equals(actualCommand)) {
                     checkRequired();
-                    if (result.isRowError()) return;
+                    if (result.isRowError()) {
+                        return;
+                    }
 
                     final @Nullable ComponentType compType = comptypeEJB.findByName(componentTypeFld);
                     if (compType == null) {
                         result.addRowMessage(ErrorMessage.ENTITY_NOT_FOUND, HDR_CTYPE, componentTypeFld);
                     } else {
-                        addOrUpdateDevice(deviceToUpdate, compType);
+                        if (!deviceToUpdate.getComponentType().equals(compType)) {
+                            deviceEJB.changeDeviceType(deviceToUpdate, compType);
+                        }
                     }
                 } else {
                     if (propNameFld != null) {
@@ -118,7 +122,9 @@ public class DevicesDataLoader extends AbstractEntityWithPropertiesDataLoader<De
     @Override
     protected void handleCreate(String actualCommand) {
         checkRequired();
-        if (result.isRowError()) return;
+        if (result.isRowError()) {
+            return;
+        }
 
         final Device deviceToUpdate = deviceEJB.findDeviceBySerialNumber(serialFld);
         if (deviceToUpdate == null) {
@@ -128,7 +134,7 @@ public class DevicesDataLoader extends AbstractEntityWithPropertiesDataLoader<De
             } else {
                 try {
                     final Device newDevice = new Device(serialFld);
-                    addOrUpdateDevice(newDevice, compType);
+                    newDevice.setComponentType(compType);
                     deviceEJB.addDeviceAndPropertyDefs(newDevice);
                 } catch (EJBTransactionRolledbackException e) {
                     handleLoadingError(LOGGER, e);
@@ -165,10 +171,6 @@ public class DevicesDataLoader extends AbstractEntityWithPropertiesDataLoader<De
     @Override
     protected DAO<Device> getDAO() {
         return deviceEJB;
-    }
-
-    private void addOrUpdateDevice(Device device, ComponentType compType) {
-        device.setComponentType(compType);
     }
 
     @Override
