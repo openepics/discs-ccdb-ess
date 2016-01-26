@@ -138,6 +138,7 @@ public class DeviceEJB extends DAO<Device> {
      * @return the {@link Device} that was passed, fresh form the database if the type was changed
      */
     @CRUDOperation(operation=EntityTypeOperation.UPDATE)
+    @Audit
     @Authorized
     public Device changeDeviceType(final Device device, final ComponentType newDeviceType) {
         Preconditions.checkNotNull(device);
