@@ -480,6 +480,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         case CONTROLS:
         	((RootNodeWithChildren)controlsTree.getRootNode()).initHierarchy(masterNodes);
         	selectedTree = controlsTree;
+        	break;
         case CONNECTS:
         	((RootNodeWithChildren)connectsTree.getRootNode()).initHierarchy(masterNodes);
         	selectedTree = connectsTree;
