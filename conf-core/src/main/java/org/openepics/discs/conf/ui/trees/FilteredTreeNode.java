@@ -76,6 +76,7 @@ public class FilteredTreeNode<D> extends TreeNodeWithTree<D> {
 
 	public void refreshCache() {
 		List<FilteredTreeNode<D>> oldBuffer = bufferedAllChildren;
+		if (oldBuffer == null) return;
 		ArrayList<FilteredTreeNode<D>> newBuffer = (ArrayList<FilteredTreeNode<D>>)getAllChildren();
 		for (int i = 0; i<newBuffer.size(); i++) {
 			Long id = ((SlotView)newBuffer.get(i).getData()).getId();
