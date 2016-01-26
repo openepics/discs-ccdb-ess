@@ -97,7 +97,7 @@ public class Conversion {
         try {
             messagesProperties.load(Conversion.class.getResourceAsStream(MESSAGES_PROPERTIES_FILE));
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Could not load messges.properties", e);
+            LOGGER.log(Level.SEVERE, "Could not load " + MESSAGES_PROPERTIES_FILE, e);
         }
         DATE_ONLY_FORMAT = messagesProperties.getProperty("isoDateFormat", "yyyy-MM-dd");
         TIME_ONLY_FORMAT = messagesProperties.getProperty("isoTimeFormat", "HH:mm:ss");
