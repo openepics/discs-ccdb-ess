@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.views.SlotView;
+import org.primefaces.model.TreeNode;
 
 import com.google.common.collect.Lists;
 
@@ -51,7 +52,8 @@ public class RootNodeWithChildren extends FilteredTreeNode<SlotView> {
         }
 
         removeRedundantRoots();
-                
+        
+        getTree().setSelectedNodesArray(new TreeNode[0]);
         cleanCache();       
 	}
 	

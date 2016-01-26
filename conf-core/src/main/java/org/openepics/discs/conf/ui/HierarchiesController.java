@@ -423,7 +423,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      * @param slot the slot we want to switch to
      */
     public void selectNode(final Slot slot) {
-        FilteredTreeNode<SlotView> node = findNode(slot);
+        FilteredTreeNode<SlotView> node = containsTree.findNode(slot);
 
         // the final slot found
         unselectAllTreeNodes();
@@ -431,74 +431,11 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         fakeUISelection(node);
     }
 
-    public FilteredTreeNode<SlotView> findNode(final Slot slot) {
-        Preconditions.checkNotNull(slot);
-
-     /*TREE   TreeNode node = rootNode;
-        final List<Slot> pathToRoot = getPathToRoot(slot);
-        final ListIterator<Slot> pathIterator = pathToRoot.listIterator(pathToRoot.size());
-        // we're not interested in the root node. Skip it.
-        pathIterator.previous();
-        while (pathIterator.hasPrevious()) {
-            final Slot soughtSlot = pathIterator.previous();
-            boolean soughtChildFound = false;
-            for (TreeNode child : node.getChildren()) {
-                final SlotView slotView = (SlotView) child.getData();
-                if (slotView.getSlot().equals(soughtSlot)) {
-                    // the sought TreeNode found. Process it.
-                    soughtChildFound = true;
-                    node = child;
-                    hierarchyBuilder.expandNode(node);
-                    if (!node.isLeaf()) {
-                        node.setExpanded(true);
-                    }
-                    break;
-                }
-            }
-            if (!soughtChildFound) {
-                // the tree does not contain a slot in the path
-                throw new IllegalStateException("Slot " + ((SlotView)node.getData()).getName() +
-                        " does not CONTAINS slot " + soughtSlot.getName());
-            }
-        }
-        return node;*/
-        return null;
-    }
 
     private void fakeUISelection(final FilteredTreeNode<SlotView> node) {        
         selectedTree.getSelectedNodes().add(node);
         node.setSelected(true);
         updateDisplayedSlotInformation();
-    }
-
-    /** The method generates the paćth from the requested node to the root of the contains hierarchy. If an element has
-     * multiple parents, this method always chooses the first parent it encounters.
-     * @param slotOnPath the slot to find the path for
-     * @return the path from requested node (first element) to the root of the hierarchy (last element).
-     */
-    private List<Slot> getPathToRoot(Slot slot) {
-        final List<Slot> path = Lists.newArrayList();
-        final Slot rootSlot = slotEJB.getRootNode();
-        Slot slotOnPath = slot;
-
-        path.add(slotOnPath);
-
-        while (!rootSlot.equals(slotOnPath)) {
-            final List<SlotPair> parents = slotOnPath.getPairsInWhichThisSlotIsAChildList();
-            boolean containsParentFound = false;
-            for (final SlotPair pair : parents) {
-                if (pair.getSlotRelation().getName() == SlotRelationName.CONTAINS) {
-                    containsParentFound = true;
-                    slotOnPath = pair.getParentSlot();
-                    path.add(slotOnPath);
-                    break;
-                }
-            }
-            if (!containsParentFound) {
-                throw new IllegalStateException("Slot " + slotOnPath.getName() + " does not have a CONTAINS parent.");
-            }
-        }
-        return path;
     }
 
     /**
@@ -554,110 +491,14 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     	}
     	
     	activeTab = newActiveTab;
-    	
-    /*TREE    ActiveTab newActiveTab = ActiveTab.valueOf(event.getTab().getId());
-
-
-        if (activeTab == ActiveTab.INCLUDES) {
-            savedIncludesSelectedNodes = selectedNodes;
-        }
-
-        final List<TreeNode> masterNodes = savedIncludesSelectedNodes != null && savedIncludesSelectedNodes.size() > 0
-                ? savedIncludesSelectedNodes : Arrays.asList(rootNode);
-
-        if (activeTab == ActiveTab.INCLUDES) {
-            // we need to clear the filter temporarily
-            hierarchyBuilder.setFilterValue(null);
-            hierarchyBuilder.applyFilter(rootNode, new ArrayList<>(rootNode.getChildren()));
-            // we need to expand the nodes virtually for the following searches
-            for (TreeNode n : masterNodes) {
-                expandOrCollapseNode(n, true, hierarchyBuilder, false);
-            }
-        }
-
-        switch (newActiveTab) {
-            case POWERS:
-                powersHierarchyBuilder.setFilterValue(null);
-                filterPowersTree = null;
-                powersChildren = powersHierarchyBuilder.initHierarchy(masterNodes, powersRootNode);
-            break;
-            case CONTROLS:
-                controlsHierarchyBuilder.setFilterValue(null);
-                filterControlsTree = null;
-                controlsChildren = controlsHierarchyBuilder.initHierarchy(masterNodes, controlsRootNode); break;
-            case CONNECTS:
-                connectsHierarchyBuilder.setFilterValue(null);
-                filterConnectsTree = null;
-                connectsChildren = connectsHierarchyBuilder.initHierarchy(masterNodes, connectsRootNode); break;
-            default:break;
-        }
-
-        activeTab = newActiveTab;
-        unselectAllTreeNodes();
-        selectedNodes = null;
-        clearRelatedInformation();
-
-        if (newActiveTab == ActiveTab.INCLUDES) {
-            hierarchyBuilder.setFilterValue(filterContainsTree);
-            hierarchyBuilder.applyFilter(rootNode, new ArrayList<>(rootNode.getChildren()));
-
-            selectedNodes = new ArrayList<TreeNode>();
-            reselectNodes(rootNode, savedIncludesSelectedNodes);
-            savedIncludesSelectedNodes = null;
-
-            onNodeSelect(null);
-        }*/
-    }
-
-    /**
-     * On each filter event new TreeNodes are created. This functions takes care to select
-     * old nodes from selectedNodes in the new tree with root root.
-     */
-    /*TREE private void reselectNodes(TreeNode root, List<TreeNode> selectedNodes) {
-        if (selectedNodes == null) return;
-        for (TreeNode node : selectedNodes) {
-            TreeNode newNode = findNode(root, node);
-            if (newNode != null) {
-                newNode.setSelected(true);
-                this.selectedNodes.add(newNode);
-            }
-
-        }
-    }*/
-
-    /**
-     * Finds a new version of old "node" in the new tree with "root".
-     * @param root
-     * @param node
-     * @return
-     */
-    private TreeNode findNode(TreeNode root, TreeNode node) {
-        if (node.getParent() == null) {
-            return root;
-        }
-
-        final TreeNode searchNode = findNode(root, node.getParent());
-        if (searchNode == null) return null;
-
-        Long searchId = ((SlotView)node.getData()).getId();
-        for (TreeNode child : searchNode.getChildren()) {
-            Long childId = ((SlotView)child.getData()).getId();
-            if (childId.equals(searchId)) {
-                return child;
-            }
-        }
-        return null;
     }
 
     private void removeTreeData()
     {
         // remove other trees
-  /*TREE      ((SlotView)controlsRootNode.getData()).setInitialzed(false);
-        controlsRootNode.getChildren().clear();
-        ((SlotView)powersRootNode.getData()).setInitialzed(false);
-        powersRootNode.getChildren().clear();
-        ((SlotView)connectsRootNode.getData()).setInitialzed(false);
-        connectsRootNode.getChildren().clear();*/
+    	((RootNodeWithChildren)powersTree.getRootNode()).initHierarchy(Arrays.asList());
+    	((RootNodeWithChildren)controlsTree.getRootNode()).initHierarchy(Arrays.asList());
+        ((RootNodeWithChildren)connectsTree.getRootNode()).initHierarchy(Arrays.asList());
     }
 
     @Override
@@ -668,7 +509,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     @Override
     public void doImport() {
         try (InputStream inputStream = new ByteArrayInputStream(importData)) {
-            setLoaderResult(dataLoaderHandler.loadData(inputStream, dataLoader));            
+            setLoaderResult(dataLoaderHandler.loadData(inputStream, dataLoader));
             initHierarchies();
             initNamingInformation();
             clearRelatedInformation();
@@ -699,7 +540,6 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      * @return the name of the CSS class
      */
     public String calcNameClass(final SlotView slot) {
-    	if (slot == null) return "nameMissing"; //TREE
         Preconditions.checkNotNull(slot);
         if (!slot.isHostingSlot()) {
             return "nameContainer";
@@ -862,10 +702,6 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     	connectsTree.setRootNode(new RootNodeWithChildren(rootView, connectsTree));
     	
     	selectedTree = containsTree;
-        /*TREE connectsHierarchyBuilder = new ConnectsHierarchyBuilder(connectsManager, slotEJB);
-        connectsHierarchyBuilder.setFilterMethod(new TreeFilterContains());
-        // initializing root node prevents NPE in initial page display
-        connectsRootNode = new DefaultTreeNode(new SlotView(slotEJB.getRootNode(), null, 1, slotEJB), null);*/
     }
 
     /**
@@ -1024,6 +860,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             return true;
         } else {
              return isAncestorNodeInClipboard(node.getParent());
+        }
     }
 
     private void putSelectedNodesOntoClipboard() {
@@ -1208,31 +1045,6 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      * Above: Input field validators regardless of the dialog they are used in.
-     *
-     * Below: Relationships related methods
-     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-    protected void prepareTreeForRelationshipsPopup() {
-        // hide the current main selection, since the same data can be used to add new relationships.
-        // Will be restored when the user finishes relationship manipulation.
-   /*TREE     for (TreeNode node : selectedNodes) node.setSelected(false);
-        hierarchyBuilder.setFilterValue(null);
-        hierarchyBuilder.applyFilter(rootNode, new ArrayList<>(rootNode.getChildren()));*/
-    }
-
-    protected void restoreTreeAfterRelationshipPopup() {
-        // restore the current main selection. The relationship manipulation is done.
-/*TREE        hierarchyBuilder.setFilterValue(filterContainsTree);
-        hierarchyBuilder.applyFilter(rootNode, new ArrayList<>(rootNode.getChildren()));
-        List<TreeNode> selected = selectedNodes;
-        selectedNodes = new ArrayList<TreeNode>();
-        reselectNodes(rootNode, selected);
-
-        refreshSlot(selectedSlot);*/
-    }
-
-    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     * Above: Relationships related methods
      *
      * Below: Getters and setter all logically grouped based on where they are used. All getters and setters are
      *        usually called from the UI dialogs.

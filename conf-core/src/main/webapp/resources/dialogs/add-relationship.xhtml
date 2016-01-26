@@ -34,14 +34,13 @@
                 </p:row>
                 <p:row>
                     <p:column>
-                        <p:tree value="#{hierarchiesController.rootNode}" id="relationshipTree" dynamic="true" 
+                        <p:tree value="#{relationshipController.containsTree.rootNode}" id="relationshipTree" dynamic="true" 
                                 selectionMode="single" var="slotView" style="width: 100%; height: 27em; overflow: auto;"
                                 selection="#{relationshipController.editedRelationshipView.targetNode}">
                             <p:ajax event="select" 
                                 update=":addSlotRelationshipForm:relationshipTypeSelect :addSlotRelationshipForm:addButton" />
                             <p:ajax event="unselect" 
                                 update=":addSlotRelationshipForm:relationshipTypeSelect :addSlotRelationshipForm:addButton" />
-                            <p:ajax event="expand" listener="#{hierarchiesController.onContainsExpand}" />
 
                             <p:treeNode>
                                 <h:outputText value="" 

@@ -36,6 +36,7 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.openepics.discs.conf.ejb.InstallationEJB;
 import org.openepics.discs.conf.ejb.SlotEJB;
 import org.openepics.discs.conf.ejb.SlotPairEJB;
 import org.openepics.discs.conf.ejb.SlotRelationEJB;
@@ -43,6 +44,8 @@ import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotRelation;
 import org.openepics.discs.conf.ent.SlotRelationName;
+import org.openepics.discs.conf.ui.trees.FilteredTreeNode;
+import org.openepics.discs.conf.ui.trees.SlotRelationshipTree;
 import org.openepics.discs.conf.ui.util.ConnectsManager;
 import org.openepics.discs.conf.ui.util.UiUtility;
 import org.openepics.discs.conf.views.SlotRelationshipView;
@@ -64,6 +67,7 @@ public class RelationshipController implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Inject private transient SlotEJB slotEJB;
+    @Inject private transient InstallationEJB installationEJB;
     @Inject private transient SlotRelationEJB slotRelationEJB;
     @Inject private transient SlotPairEJB slotPairEJB;
     @Inject private transient ConnectsManager connectsManager;
@@ -79,12 +83,17 @@ public class RelationshipController implements Serializable {
     private List<String> relationshipTypesForDialog;
     private Map<String, SlotRelation> slotRelationBySlotRelationStringName;
 
+    private SlotRelationshipTree containsTree;
 
     public RelationshipController() {}
 
     @PostConstruct
     public void init() {
         relationshipTypes = buildRelationshipTypeList();
+        
+    	SlotView rootView = new SlotView(slotEJB.getRootNode(), null, 1, slotEJB);
+    	containsTree = new SlotRelationshipTree(SlotRelationName.CONTAINS, slotEJB, installationEJB);
+    	containsTree.setRootNode(new FilteredTreeNode<SlotView>(rootView, null, containsTree));
     }
 
     /** Tell this bean which {@link HierarchiesController} is its "master"
@@ -192,7 +201,7 @@ public class RelationshipController implements Serializable {
 
             editedRelationshipView = null;
         }
-        hierarchiesController.restoreTreeAfterRelationshipPopup();
+        // TREE refresh hierarchiesController.restoreTreeAfterRelationshipPopup();
     }
 
     /** Called when button to delete relationship is clicked */
@@ -244,13 +253,12 @@ public class RelationshipController implements Serializable {
     /** Prepares data for editing new relationship */
     public void prepareEditRelationshipPopup() {
         Preconditions.checkState((selectedRelationships != null) && (selectedRelationships.size() == 1));
-        hierarchiesController.prepareTreeForRelationshipsPopup();
 
         // setups the dialog
         SlotRelationshipView v = selectedRelationships.get(0);
         editedRelationshipView = new SlotRelationshipView(v.getSlotPair(), v.getSourceSlot());
 
-        TreeNode node = hierarchiesController.findNode(editedRelationshipView.getTargetSlot());
+        FilteredTreeNode<SlotView> node = containsTree.findNode(editedRelationshipView.getTargetSlot());
         node.setSelected(true);
         editedRelationshipView.setTargetNode(node);
 
@@ -263,8 +271,6 @@ public class RelationshipController implements Serializable {
     public void prepareAddRelationshipPopup() {
         Preconditions.checkNotNull(hierarchiesController.getSelectedNodeSlot());
         Preconditions.checkState(hierarchiesController.isSingleNodeSelected());
-
-        hierarchiesController.prepareTreeForRelationshipsPopup();
 
         // clear the previous dialog selection in case the dialog was already used before
         editedRelationshipView = new SlotRelationshipView(null, hierarchiesController.getSelectedNodeSlot());
@@ -364,6 +370,7 @@ public class RelationshipController implements Serializable {
             onRelationshipPopupClose();
         }
     }
+    
 
     /** @return The list of relationships for the currently selected slot. */
     public List<SlotRelationshipView> getRelationships() {
@@ -409,4 +416,9 @@ public class RelationshipController implements Serializable {
     public SlotRelationshipView getEditedRelationshipView() {
         return editedRelationshipView;
     }
+
+    /**@return the contains tree */
+	public SlotRelationshipTree getContainsTree() {
+		return containsTree;
+	}
 }
