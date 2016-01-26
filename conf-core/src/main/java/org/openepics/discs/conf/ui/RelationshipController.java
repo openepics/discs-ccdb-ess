@@ -20,7 +20,9 @@
 package org.openepics.discs.conf.ui;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -51,7 +53,6 @@ import org.openepics.discs.conf.ui.util.UiUtility;
 import org.openepics.discs.conf.views.SlotRelationshipView;
 import org.openepics.discs.conf.views.SlotView;
 import org.primefaces.context.RequestContext;
-import org.primefaces.model.TreeNode;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
@@ -218,8 +219,7 @@ public class RelationshipController implements Serializable {
                 UiUtility.showMessage(FacesMessage.SEVERITY_INFO, UiUtility.MESSAGE_SUMMARY_SUCCESS,
                         "Relationship deleted.");
                 selectedRelationship = null;
-                hierarchiesController.updateTreesWithFreshSlot(slotEJB.findById(childSlotId), isContainsRemoved);
-                hierarchiesController.updateTreesWithFreshSlot(slotEJB.findById(parentSlotId), isContainsRemoved);
+                hierarchiesController.refreshTrees(new HashSet<>(Arrays.asList(childSlotId, parentSlotId)));
             }
             selectedRelationships = null;
         } else {
@@ -358,10 +358,7 @@ public class RelationshipController implements Serializable {
             }
 
             final boolean isContainsAdded = (slotRelation.getName() == SlotRelationName.CONTAINS);
-            hierarchiesController.updateTreesWithFreshSlot(slotEJB.findById(childSlot.getId()),
-                                                                isContainsAdded || isContainsRemoved);
-            hierarchiesController.updateTreesWithFreshSlot(slotEJB.findById(parentSlot.getId()),
-                                                                isContainsAdded || isContainsRemoved);
+            hierarchiesController.refreshTrees(new HashSet<>(Arrays.asList(childSlot.getId(), parentSlot.getId())));
 
             if (isContainsAdded && (parentSlot == hierarchiesController.getSelectedNodeSlot())) {
                 hierarchiesController.expandFirstSelectedNode();

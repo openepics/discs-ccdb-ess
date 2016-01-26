@@ -22,7 +22,9 @@ import com.google.common.collect.Lists;
  * @author ilist
  *
  */
-public class RootNodeWithChildren extends FilteredTreeNode<SlotView> {		
+public class RootNodeWithChildren extends FilteredTreeNode<SlotView> {
+	private boolean initialized = false;
+	
 	public RootNodeWithChildren(SlotView data, Tree<SlotView> tree) {
 		super(data, null, tree);
 		bufferedAllChildren = new ArrayList<>();
@@ -34,6 +36,8 @@ public class RootNodeWithChildren extends FilteredTreeNode<SlotView> {
 	}
 	
 	public void initHierarchy(final List<FilteredTreeNode<SlotView>> selectedNodes) {
+		if (initialized) return;
+		
 		bufferedAllChildren = new ArrayList<>();
         
         final List<Slot> childrenSlots = Lists.newArrayList();
@@ -54,7 +58,16 @@ public class RootNodeWithChildren extends FilteredTreeNode<SlotView> {
         removeRedundantRoots();
         
         getTree().setSelectedNodesArray(new TreeNode[0]);
-        cleanCache();       
+        cleanCache();
+
+        initialized = true;
+	}
+	
+	public void reset() {
+		initialized = false;
+		bufferedAllChildren = new ArrayList<>();
+		bufferedFilteredChildren = null;
+		getTree().setSelectedNodesArray(new TreeNode[0]);
 	}
 	
     private void findRelationRootsForSelectedNode(final FilteredTreeNode<SlotView> containsNode, final List<Slot> rootSlots) {        

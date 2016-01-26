@@ -102,7 +102,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             "The following containers cannot become children of installation slot:";
     private static final String     CANNOT_PASTE_INTO_SELF =
             "The following containers cannot become children of themselves:";
-    private static final int        PRELOAD_LIMIT = 3;
+    
     /** The device page part of the URL containing all the required parameters already. */
     private static final String     NAMING_DEVICE_PAGE = "devices.xhtml?i=2&deviceName=";
 
@@ -239,33 +239,29 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         }
     }
 
-    protected void updateTreesWithFreshSlot(final Slot freshSlot, boolean rebuildAffectedSlots) {
-  /*TREE      updateTreeWithFreshSlot(rootNode, freshSlot, rebuildAffectedSlots);
-        updateTreeWithFreshSlot(controlsRootNode, freshSlot, rebuildAffectedSlots);
-        updateTreeWithFreshSlot(powersRootNode, freshSlot, rebuildAffectedSlots);*/
+    protected void refreshTrees(HashSet<Long> ids) 
+    {
+    	containsTree.refreshIds(ids);
+    	if (selectedTree == controlsTree) {
+    		controlsTree.refreshIds(ids); 
+    	} else {
+    		((RootNodeWithChildren)controlsTree.getRootNode()).reset();
+    	}
+    	
+    	if (selectedTree == powersTree) {
+    		powersTree.refreshIds(ids); 
+    	} else {
+    		((RootNodeWithChildren)powersTree.getRootNode()).reset();
+    	}
+    	
+    	if (selectedTree == connectsTree) {
+    		connectsTree.refreshIds(ids);
+    	} else {
+    		((RootNodeWithChildren)connectsTree.getRootNode()).reset();
+    	}
     }
 
-    private void updateTreeWithFreshSlot(final TreeNode node, final Slot freshSlot, boolean rebuildAffectedSlots) {
-/*         final SlotView nodeSlotView = (SlotView) node.getData();
-        if (freshSlot.getId().equals(nodeSlotView.getId())) {
-            nodeSlotView.setSlot(freshSlot);
-            if (rebuildAffectedSlots) {
-                hierarchyBuilder.rebuildSubTree(node);
-            }
-        } else {
-            for (final TreeNode nodeChild : node.getChildren()) {
-                updateTreeWithFreshSlot(nodeChild, freshSlot, rebuildAffectedSlots);
-            }
-        }*/
-    }
 
-    private void unselectAllTreeNodes() {
-        /* TREE if (selectedNodes != null) {
-            for (final TreeNode node : selectedNodes) {
-                node.setSelected(false);
-            }
-        } */
-    }
 
     private void navigateToUrlSelectedSlot() {
         // navigate to slot based on ID or name
@@ -392,8 +388,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
     private void initNodeIds() {
         selectedNodeIds = new HashSet<Long>();
-        for (final TreeNode node : selectedTree.getSelectedNodes()) {
-            selectedNodeIds.add(((SlotView) node.getData()).getId());
+        for (final FilteredTreeNode<SlotView> node : selectedTree.getSelectedNodes()) {
+            selectedNodeIds.add(node.getData().getId());
         }
     }
 
@@ -426,7 +422,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         FilteredTreeNode<SlotView> node = containsTree.findNode(slot);
 
         // the final slot found
-        unselectAllTreeNodes();
+        containsTree.unselectAllTreeNodes();
         clearRelatedInformation();
         fakeUISelection(node);
     }
@@ -484,21 +480,22 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         case CONTROLS:
         	((RootNodeWithChildren)controlsTree.getRootNode()).initHierarchy(masterNodes);
         	selectedTree = controlsTree;
-        case CONNECTS:        	        
+        case CONNECTS:
         	((RootNodeWithChildren)connectsTree.getRootNode()).initHierarchy(masterNodes);
         	selectedTree = connectsTree;
-        	break;        
+        	break;
     	}
-    	
+ 
     	activeTab = newActiveTab;
+    	updateDisplayedSlotInformation();
     }
 
     private void removeTreeData()
     {
         // remove other trees
-    	((RootNodeWithChildren)powersTree.getRootNode()).initHierarchy(Arrays.asList());
-    	((RootNodeWithChildren)controlsTree.getRootNode()).initHierarchy(Arrays.asList());
-        ((RootNodeWithChildren)connectsTree.getRootNode()).initHierarchy(Arrays.asList());
+    	((RootNodeWithChildren)powersTree.getRootNode()).reset();
+    	((RootNodeWithChildren)controlsTree.getRootNode()).reset();
+        ((RootNodeWithChildren)connectsTree.getRootNode()).reset();
     }
 
     @Override

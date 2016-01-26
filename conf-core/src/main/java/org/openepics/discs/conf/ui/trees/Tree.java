@@ -2,6 +2,7 @@ package org.openepics.discs.conf.ui.trees;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import org.openepics.discs.conf.ejb.SlotEJB;
@@ -81,5 +82,26 @@ public abstract class Tree<D> {
 			print(i+1, node);
 		
 	}
+	
+    public void unselectAllTreeNodes() {        
+    	for (final TreeNode node : selectedNodes) {
+    		node.setSelected(false);
+        }
+        selectedNodes = new ArrayList<>();
+    }
 
+    
+    public void refreshIds(HashSet<Long> ids) {
+    	refreshIds(ids, getRootNode());
+    }
+    
+    private void refreshIds(HashSet<Long> ids, FilteredTreeNode<D> node) {
+    	   if (ids.contains(((SlotView)node.getData()).getId())) {
+    		   node.refreshCache();
+    	   } else {
+    		   for (final FilteredTreeNode<D> child : node.getBufferedAllChildren()) {
+    			   refreshIds(ids, child);
+    		   }
+    	   }
+    }
 }
