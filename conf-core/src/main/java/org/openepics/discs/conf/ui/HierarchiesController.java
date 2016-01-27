@@ -34,7 +34,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
@@ -79,7 +78,6 @@ import org.primefaces.context.RequestContext;
 import org.primefaces.event.NodeSelectEvent;
 import org.primefaces.event.NodeUnselectEvent;
 import org.primefaces.event.TabChangeEvent;
-import org.primefaces.model.TreeNode;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
@@ -410,8 +408,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         relationshipController.clearRelationshipInformation();
     }
 
-    private void selectSingleNode(final TreeNode selectedNode) {
-        selectedSlotView = (SlotView) selectedNode.getData();
+    private void selectSingleNode(final FilteredTreeNode<SlotView> selectedNode) {
+        selectedSlotView = selectedNode.getData();
         selectedSlot = selectedSlotView.getSlot();
     }
 
@@ -644,7 +642,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
     private void removeDeletedFromClipboard() {
         if (!Utility.isNullOrEmpty(clipboardSlots)) {
-            for (final TreeNode deleteCandidate : nodesToDelete) {
+            for (final FilteredTreeNode<SlotView> deleteCandidate : nodesToDelete) {
                 clipboardSlots.remove(deleteCandidate.getData());
             }
         }
@@ -674,8 +672,8 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         if (Utility.isNullOrEmpty(selectedTree.getSelectedNodes())) {
             return false;
         }
-        for (final TreeNode node : selectedTree.getSelectedNodes()) {
-            final SlotView nodeSlot = (SlotView) node.getData();
+        for (final FilteredTreeNode<SlotView> node : selectedTree.getSelectedNodes()) {
+            final SlotView nodeSlot = node.getData();
             if ((node.getChildCount() > 0) || (nodeSlot.getInstalledDevice() != null)) {
                 return false;
             }
@@ -995,19 +993,6 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
         newParentSlotView.setDeletable(false);
         parentNode.refreshCache();
         parentNode.setExpanded(true); 
-    }
-
-    /*
-     * Finds a TreeNode for a given slot among the parent's children. If no such TreeNode can be found, the methods
-     * returns 'null'.
-     */
-    private @Nullable TreeNode findNodeForSlot(final Slot slot, final TreeNode parentNode) {
-        for (final TreeNode child : parentNode.getChildren()) {
-            if (((SlotView)child.getData()).getSlot().equals(slot)) {
-                return child;
-            }
-        }
-        return null;
     }
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *

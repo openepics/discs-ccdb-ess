@@ -3,11 +3,15 @@ package org.openepics.discs.conf.ui.trees;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.views.SlotView;
 
 /**
  * Adds filtering and buffering support to tree nodes.
+ * It takes care to implement filtering without generating new tree nodes.
+ * Buffering is done on all children and when needed. It's also done on filtered children.
+ * The call to cleanCache() causes the buffers to clear and reload.
+ * More elegant is call to refreshCache() which updates added/moved/removed nodes keeping their state,
+ * i.e. expanded.
  * 
  * @author ilist
  *
@@ -18,10 +22,21 @@ public class FilteredTreeNode<D> extends TreeNodeWithTree<D> {
 	protected List<FilteredTreeNode<D>> bufferedAllChildren = null;
 	protected List<FilteredTreeNode<D>> bufferedFilteredChildren = null;
 	
+	/**
+	 * Same construction as for the parent class.
+	 * 
+	 * @param data data
+	 * @param parent the parent
+	 * @param tree the tree
+	 */
 	public FilteredTreeNode(D data, BasicTreeNode<D> parent, Tree<D> tree) {
 		super(data, parent, tree);
 	}
 
+	/**
+	 * Returns children available in current filter.
+	 * @return filtered children
+	 */
 	@Override
 	public List<? extends FilteredTreeNode<D>> getFilteredChildren() {
 		if (bufferedFilteredChildren == null) {
@@ -31,9 +46,9 @@ public class FilteredTreeNode<D> extends TreeNodeWithTree<D> {
 			} else {				
 				bufferedFilteredChildren = new ArrayList<>();
 				for (FilteredTreeNode<D> node : bufferedAllChildren) {
-					if (node.isThisNodeAbsolutelyInFilter()) {
+					if (getTree().isNodeInFilter(node)) {
 						bufferedFilteredChildren.add(node);
-					} else if (!node.isLeaf()) {
+					} else if (!node.isLeaf()) { // isLeaf actually calls getFilteredChildren
 						bufferedFilteredChildren.add(node);
 					} // else remove the leafs
 				}
@@ -43,24 +58,29 @@ public class FilteredTreeNode<D> extends TreeNodeWithTree<D> {
 		return bufferedFilteredChildren;
 	}
 		
+	/**
+	 * Returns and buffers children.
+	 * @return the children
+	 */
+	@SuppressWarnings("unchecked")
 	public List<? extends FilteredTreeNode<D>> getBufferedAllChildren() {
 		if (bufferedAllChildren == null) {
 			bufferedAllChildren = (List<FilteredTreeNode<D>>)getAllChildren();
 		}
 		return bufferedAllChildren;
 	}
-	
-    public boolean isThisNodeAbsolutelyInFilter() {
-    	SlotView view = (SlotView)getData(); // TREE clean up this code
-    	Slot slot = view.getSlot();
-    	return !slot.isHostingSlot() || slot.getName().toUpperCase().contains(getTree().getAppliedFilter().toUpperCase());
-    }
     
+    /**
+     * Cleans the cache, so the next time data are reloaded from source.
+     */
 	public void cleanCache() {
 		bufferedAllChildren = null;
 		bufferedFilteredChildren = null;
 	}
 	
+	/**
+	 * Cleans filter cache on this node and all descendants. This way next time the filter is reapplied.
+	 */
 	public void cleanFilterCache() {
 		bufferedFilteredChildren = null;
 		if (bufferedAllChildren != null) {
@@ -71,6 +91,11 @@ public class FilteredTreeNode<D> extends TreeNodeWithTree<D> {
 		
 	}
 
+	/**
+	 * Refreshes cache in a smart way to keep the old state of the nodes.
+	 * TODO SlotView cast is used on data to compare the Slots.
+	 */
+	@SuppressWarnings("unchecked")
 	public void refreshCache() {
 		List<FilteredTreeNode<D>> oldBuffer = bufferedAllChildren;
 		if (oldBuffer == null) return;

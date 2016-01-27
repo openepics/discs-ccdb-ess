@@ -296,11 +296,11 @@ public class RelationshipController implements Serializable {
             final Slot parentSlot;
             final Slot childSlot;
             if (slotRelation.getNameAsString().equals(editedRelationshipView.getRelationshipName())) {
-                childSlot = ((SlotView) editedRelationshipView.getTargetNode().getData()).getSlot();
+                childSlot =  editedRelationshipView.getTargetNode().getData().getSlot();
                 parentSlot = editedRelationshipView.getSourceSlot();
             } else {
                 childSlot = editedRelationshipView.getSourceSlot();
-                parentSlot = ((SlotView) editedRelationshipView.getTargetNode().getData()).getSlot();
+                parentSlot = editedRelationshipView.getTargetNode().getData().getSlot();
             }
 
             if (childSlot.equals(parentSlot)) {

@@ -30,6 +30,17 @@ public class ConnectsTree extends Tree<SlotView> {
 	}
 	
 	/**
+	 * Containers and nodes containing the filter string are present.
+	 * @param node the node
+	 * @return should the node be displayed
+	 */
+	@Override
+	public boolean isNodeInFilter(BasicTreeNode<SlotView> node) {
+		Slot slot = node.getData().getSlot();
+		return !slot.isHostingSlot() || slot.getName().toUpperCase().contains(getAppliedFilter());
+	}
+	
+	/**
 	 * Returns "cable" children of current tree node. Takes care of cycles.
 	 * Takes care of cable numbers.
 	 * 

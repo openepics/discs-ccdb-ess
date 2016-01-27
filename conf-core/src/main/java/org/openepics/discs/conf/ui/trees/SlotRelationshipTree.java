@@ -12,7 +12,6 @@ import org.openepics.discs.conf.ent.Slot;
 import org.openepics.discs.conf.ent.SlotPair;
 import org.openepics.discs.conf.ent.SlotRelationName;
 import org.openepics.discs.conf.views.SlotView;
-import org.primefaces.model.TreeNode;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -27,12 +26,35 @@ public class SlotRelationshipTree extends Tree<SlotView> {
 	protected SlotRelationName relationship;
 	protected InstallationEJB installationEJB;
 
+	/**
+	 * Initializes the tree.
+	 * Relationship determines the type of hierarchy.
+	 * SlotEJB and installationEJB are needed to generate the children.
+	 * @param relationship the type of hierarchy
+	 * @param slotEJB slotEJB
+	 * @param installationEJB installationEJB
+	 */
 	public SlotRelationshipTree(SlotRelationName relationship, SlotEJB slotEJB, InstallationEJB installationEJB) {
 		super(slotEJB);		
 		this.relationship = relationship;		
 		this.installationEJB = installationEJB;
 	}
 	
+	/**
+	 * Containers and nodes containing the filter string are present.
+	 * @param node the node
+	 * @return should the node be displayed
+	 */
+	@Override
+	public boolean isNodeInFilter(BasicTreeNode<SlotView> node) {
+		Slot slot = node.getData().getSlot();
+		return !slot.isHostingSlot() || slot.getName().toUpperCase().contains(getAppliedFilter());
+	}
+	
+	/**
+	 * Returns all children. Takes care of correct order and initialization of them.
+	 * @param parent the parent node
+	 */
 	@Override
 	public List<? extends BasicTreeNode<SlotView>> getAllChildren(BasicTreeNode<SlotView> parent) {
 		final SlotView slotView = parent.getData();
@@ -69,7 +91,13 @@ public class SlotRelationshipTree extends Tree<SlotView> {
 		return allChildren;
 	}
 	
-	
+	/**
+	 * Finds a one instance of the slot in the tree. Only works for "contains" tree, but it could work for any entity based trees.
+	 * TODO This code could be simplified by turning everything into recursion. Or we could use a similar map mentioned next to Tree.refreshNodeIds
+	 * 
+	 * @param slot the slot to find
+	 * @return one of it's tree nodes
+	 */
     public FilteredTreeNode<SlotView> findNode(final Slot slot) {
         Preconditions.checkNotNull(slot);
 
@@ -82,7 +110,7 @@ public class SlotRelationshipTree extends Tree<SlotView> {
             final Slot soughtSlot = pathIterator.previous();
             boolean soughtChildFound = false;
             for (FilteredTreeNode<SlotView> child : node.getBufferedAllChildren()) {
-                final SlotView slotView = (SlotView) child.getData();
+                final SlotView slotView = child.getData();
                 if (slotView.getSlot().equals(soughtSlot)) {
                     // the sought TreeNode found. Process it.
                     soughtChildFound = true;
@@ -95,7 +123,7 @@ public class SlotRelationshipTree extends Tree<SlotView> {
             }
             if (!soughtChildFound) {
                 // the tree does not contain a slot in the path
-                throw new IllegalStateException("Slot " + ((SlotView)node.getData()).getName() +
+                throw new IllegalStateException("Slot " + node.getData().getName() +
                         " does not CONTAINS slot " + soughtSlot.getName());
             }
         }
@@ -105,6 +133,7 @@ public class SlotRelationshipTree extends Tree<SlotView> {
     
     /** The method generates the path from the requested node to the root of the contains hierarchy. If an element has
      * multiple parents, this method always chooses the first parent it encounters.
+     * 
      * @param slotOnPath the slot to find the path for
      * @return the path from requested node (first element) to the root of the hierarchy (last element).
      */

@@ -138,6 +138,14 @@ public abstract class Tree<D> {
 	//	print(0, getRootNode());
 	}
 
+	/**
+	 * Returns whether the node should be displayed when filtering or not.
+	 * Implementation depends on the data in the tree.
+	 * 
+	 * @param node the node
+	 * @return should the node be displayed
+	 */
+    public abstract boolean isNodeInFilter(BasicTreeNode<D> node);
 
     /**
      * Refreshes nodes which contain slot with the given IDs.

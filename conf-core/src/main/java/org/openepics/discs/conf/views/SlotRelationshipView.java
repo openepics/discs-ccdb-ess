@@ -111,7 +111,7 @@ public class SlotRelationshipView {
     public void setTargetNode(FilteredTreeNode<SlotView> targetNode) {
         if (targetNode != null) {
             this.targetNode = targetNode;
-            targetSlot = ((SlotView)targetNode.getData()).getSlot();
+            targetSlot = targetNode.getData().getSlot();
             targetSlotName = targetSlot.getName();
         }
     }
