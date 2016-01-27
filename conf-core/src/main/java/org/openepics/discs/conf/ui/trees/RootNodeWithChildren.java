@@ -120,47 +120,39 @@ public class RootNodeWithChildren extends FilteredTreeNode<SlotView> {
      * A root is redundant when it already appears in the tree. 
      */
     private void removeRedundantRoots() {
-        final Set<Long> levelOneIds = new HashSet<>();
-        for (BasicTreeNode<SlotView> node : bufferedAllChildren) {
-            levelOneIds.add(node.getData().getId());
-        }
-
-        // find redundant roots
+        // visit all subtrees
         final Set<Long> visited = new HashSet<>();
         for (FilteredTreeNode<SlotView> levelOne : bufferedAllChildren) {
-            removeRedundantRoots(levelOne, levelOneIds, visited);
+        	if (!visited.contains(levelOne.getData().getId())) { // this prevents {a->b, b->a} to be both removed
+        		for (FilteredTreeNode<SlotView> levelTwo : levelOne.getBufferedAllChildren()) {
+        			dfs(levelTwo, visited);
+        		}
+        	}
         }
 
         // remove them
         Iterator<? extends BasicTreeNode<SlotView>> i = bufferedAllChildren.iterator();
         while (i.hasNext()) {
             BasicTreeNode<SlotView> n = i.next();
-            if (!levelOneIds.contains(n.getData().getId())) {
+            if (visited.contains(n.getData().getId())) {
                 i.remove();
             }
         }
     }
     
     /**
-     * Traverses starting in node. Marking visited nodes and removes nodes from levelOne.
+     * Traverses starting in argument "node", marking visited nodes.
      * @param node currently inspected node
-     * @param levelOne root nodes that are still present
      * @param visited already visited nodes
      */
-    private void removeRedundantRoots(FilteredTreeNode<SlotView> node, Set<Long> levelOne, Set<Long> visited) {
-        final SlotView nodeSlotView = node.getData();        
+    private void dfs(FilteredTreeNode<SlotView> node, Set<Long> visited) {
+        final SlotView nodeSlotView = node.getData();
 
         if (visited.contains(nodeSlotView.getId())) return;
         visited.add(nodeSlotView.getId());
 
-        if (nodeSlotView.getLevel() > 1) {
-            if (levelOne.contains(nodeSlotView.getId())) {
-                levelOne.remove(nodeSlotView.getId());
-                // after removal, we still need to visit the subtree of this node
-            }
-        }
         for (FilteredTreeNode<SlotView> child : node.getBufferedAllChildren()) {
-            removeRedundantRoots(child, levelOne, visited);
+            dfs(child, visited);
         }
     }
 	
