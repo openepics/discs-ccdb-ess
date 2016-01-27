@@ -245,13 +245,15 @@
                                 <p:menuitem value="Expand" id="expandButton" icon="ui-icon-plus"
                                     title="Expand Selected Items"
                                     action="#{hierarchiesController.expandTreeNodes}" oncomplete="hierarchiesResizeAll();"                                   
-                                    update=":hierarchies:hierarchyTabs:tree :hierarchies:hierarchyTabs:controlsTree :hierarchies:hierarchyTabs:powersTree
-                                       :hierarchies:hierarchyTabs:connectsTree" />
+                                    update=":hierarchies:hierarchyTabs:tree :hierarchies:hierarchyTabs:controlsTree 
+                                            :hierarchies:hierarchyTabs:powersTree
+                                            :hierarchies:hierarchyTabs:connectsTree" />
                                 <p:menuitem value="Collapse" id="collapseButton" icon="ui-icon-minus"
                                     title="Collapse Selected Items"
                                     action="#{hierarchiesController.collapseTreeNodes}" oncomplete="hierarchiesResizeAll();"                                    
-                                    update=":hierarchies:hierarchyTabs:tree :hierarchies:hierarchyTabs:controlsTree :hierarchies:hierarchyTabs:powersTree
-                                       :hierarchies:hierarchyTabs:connectsTree" />                            
+                                    update=":hierarchies:hierarchyTabs:tree :hierarchies:hierarchyTabs:controlsTree 
+                                            :hierarchies:hierarchyTabs:powersTree
+                                            :hierarchies:hierarchyTabs:connectsTree" />                            
                             </p:menuButton>
                             <p:menuButton value="C/P" id="clipboardOperations" style="float: right; margin: 1em 1ex 0 0;"
                                     disabled="#{not hierarchiesController.includesActive 
@@ -497,6 +499,24 @@
                     </p:column>
                 </p:row>
             </p:panelGrid>
+        </h:form>
+
+        <h:form id="namingServiceErrorForm">
+            <p:dialog widgetVar="namingServiceError" id="namingServiceError" modal="true" resizable="false" 
+                    width="30em" closable="false" closeOnEscape="true" visible="#{names.error}"
+                    onShow="$('#namingServiceErrorForm .defaultCommand').focus()">
+                <f:facet name="header">
+                    <h:outputText value="Naming Service Error" />
+                </f:facet>
+                <h:panelGroup style="margin-top: 1ex; margin-bottom: 1em;" layout="block">
+                    <h:outputText value="There was an error connecting to the naming service." />
+                </h:panelGroup>
+                <p:panel style="text-align: right; padding: 0; border: 0;" styleClass="dialogButtonPanel">
+                    <p:commandButton value="Ok" id="confirm" styleClass="dialogButton defaultCommand" 
+                        onclick="PF('namingServiceError').hide();" />
+                </p:panel>
+                <p:defaultCommand target="confirm" />
+            </p:dialog>
         </h:form>
 
         <ui:include src="/resources/dialogs/install-device.xhtml">

@@ -31,8 +31,14 @@ import org.openepics.names.jaxb.DeviceNameElement;
  * for auto complete when creating new installation {@link Slot}
  *
  * @author <a href="mailto:andraz.pozar@cosylab.com">Andraž Požar</a>
+ * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  */
 public interface Names extends Serializable {
+
+    /**
+     * @return <code>true</code> if there was an error constructing a list of names, <code>false</code> otherwise
+     */
+    public boolean isError();
 
     /**
      * Returns a set of all names that can be used for installation {@link Slot} name

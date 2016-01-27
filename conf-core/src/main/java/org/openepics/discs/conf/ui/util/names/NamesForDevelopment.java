@@ -20,29 +20,34 @@
 package org.openepics.discs.conf.ui.util.names;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import javax.ejb.Stateless;
+
 import javax.enterprise.inject.Alternative;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 
 import org.openepics.names.jaxb.DeviceNameElement;
 
 /**
- * @author <a href="mailto:andraz.pozar@cosylab.com">Andraž Požar</a>
+ * Provides an empty list of names for the purposes of development so that the application doesn't
+ * have to connect to naming server every time.
  *
+ * @author <a href="mailto:andraz.pozar@cosylab.com">Andraž Požar</a>
+ * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  */
+@Named("names")
+@ViewScoped
 @Alternative
-@Stateless
 public class NamesForDevelopment implements Names {
     private static final long serialVersionUID = 7974397392868166709L;
 
-    /**
-     * Returns an empty {@link HashSet} for the purposes of development so that the application doesn't
-     * have to connect to naming server every time.
-     */
     @Override
     public Map<String, DeviceNameElement> getAllNames() {
         return new HashMap<>();
     }
 
+    @Override
+    public boolean isError() {
+        return false;
+    }
 }

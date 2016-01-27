@@ -26,22 +26,33 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import javax.ejb.Stateless;
 import javax.enterprise.inject.Alternative;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 
 import org.openepics.names.client.NamesClient;
 import org.openepics.names.jaxb.DeviceNameElement;
 
 /**
- * @author <a href="mailto:andraz.pozar@cosylab.com">Andraž Požar</a>
+ * Obtains a list of valid names from the ESS Naming Service.
  *
+ * @author <a href="mailto:andraz.pozar@cosylab.com">Andraž Požar</a>
+ * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovič</a>
  */
+@Named("names")
+@ViewScoped
 @Alternative
-@Stateless
 public class NamesESS implements Names {
     private static final long serialVersionUID = -7527895029962617807L;
 
     private static final Logger LOGGER = Logger.getLogger(NamesESS.class.getCanonicalName());
+
+    private boolean isError = false;
+
+    @Override
+    public boolean isError() {
+        return isError;
+    }
 
     @Override
     public Map<String, DeviceNameElement> getAllNames() {
@@ -51,6 +62,7 @@ public class NamesESS implements Names {
                     .collect(Collectors.toMap(DeviceNameElement::getName, Function.identity()));
         } catch (RuntimeException e) {
             LOGGER.log(Level.SEVERE, "There was an error retriving data from the naming service.", e);
+            isError = true;
             return new HashMap<>();
         }
     }

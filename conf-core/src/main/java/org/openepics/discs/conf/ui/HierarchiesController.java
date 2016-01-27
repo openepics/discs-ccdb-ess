@@ -33,6 +33,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
@@ -97,6 +99,8 @@ import com.google.common.collect.Lists;
 public class HierarchiesController extends AbstractExcelSingleFileImportUI implements Serializable {
     private static final long       serialVersionUID = 2743408661782529373L;
 
+    private static final Logger     LOGGER = Logger.getLogger(HierarchiesController.class.getCanonicalName());
+
     private static final String     CANNOT_PASTE_INTO_ROOT =
                                                 "The following installation slots cannot be made hierarchy roots:";
     private static final String     CANNOT_PASTE_INTO_SLOT =
@@ -107,7 +111,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
     /** The device page part of the URL containing all the required parameters already. */
     private static final String     NAMING_DEVICE_PAGE = "devices.xhtml?i=2&deviceName=";
 
-    private static final String CABLEDB_DEVICE_PAGE = "index.xhtml?cableNumber=";
+    private static final String     CABLEDB_DEVICE_PAGE = "index.xhtml?cableNumber=";
 
     @Inject private transient SlotEJB slotEJB;
     @Inject private transient SlotPairEJB slotPairEJB;
@@ -215,12 +219,10 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
     private void initNamingInformation() {
         final String namingStatus = properties.getProperty(AppProperties.NAMING_DETECT_STATUS);
-        detectNamingStatus = namingStatus == null ? false : "TRUE".equals(namingStatus.toUpperCase());
+        detectNamingStatus = "TRUE".equalsIgnoreCase(namingStatus);
 
         final String restrictNames = properties.getProperty(AppProperties.RESTRICT_TO_CONVENTION_NAMES);
-        restrictToConventionNames = restrictNames == null || !detectNamingStatus
-                                            ? false
-                                            : "TRUE".equals(restrictNames.toUpperCase());
+        restrictToConventionNames = !detectNamingStatus && "TRUE".equalsIgnoreCase(restrictNames);
 
         nameList = detectNamingStatus ? names.getAllNames() : new HashMap<>();
         namesForAutoComplete = ImmutableList.copyOf(nameList.keySet());
@@ -229,6 +231,9 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
 
         if (Strings.isNullOrEmpty(namingUrl)) {
             namingRedirectionUrl = null;
+            if (detectNamingStatus) {
+                LOGGER.log(Level.WARNING, AppProperties.NAMING_APPLICATION_URL + " not defined.");
+            }
         } else {
             final StringBuilder redirectionUrl = new StringBuilder(namingUrl);
             if (redirectionUrl.charAt(redirectionUrl.length() - 1) != '/') {
@@ -236,7 +241,7 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
             }
             redirectionUrl.append(NAMING_DEVICE_PAGE);
             namingRedirectionUrl = redirectionUrl.toString();
-            System.out.println("Naming url: " + namingRedirectionUrl);
+            LOGGER.log(Level.FINE, "Naming url: " + namingRedirectionUrl);
         }
     }
 
@@ -594,7 +599,6 @@ public class HierarchiesController extends AbstractExcelSingleFileImportUI imple
      */
     public void onTabChange(TabChangeEvent event) {
         ActiveTab newActiveTab = ActiveTab.valueOf(event.getTab().getId());
-
 
         if (activeTab == ActiveTab.INCLUDES) {
             savedIncludesSelectedNodes = selectedNodes;
